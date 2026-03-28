@@ -97,3 +97,35 @@
 - Root `package.json` now has `"type": "module"` — all `.js` files are ESM
 - Prettier uses double quotes (not single) — be consistent
 - React hooks + refresh plugins are scoped to `packages/frontend/src/**`
+
+---
+
+## 2026-03-28 — T1.2.1: Scaffold Vite + React + TypeScript
+
+**Task:** Scaffold Vite + React 19 + TypeScript in `packages/frontend`, configure path aliases, verify dev/build.
+
+**Done:**
+- Installed react 19.2.4, react-dom 19.2.4, vite 8.0.3, @vitejs/plugin-react, @types/react, @types/react-dom
+- Created `vite.config.ts` with react plugin and `@/` → `src/` path alias (matching tsconfig paths)
+- Created `index.html` entry point for Vite
+- Updated `src/main.tsx` — renders React app with StrictMode into `#root`
+- Created `src/app.tsx` — minimal App component
+- Created `tsconfig.node.json` for Vite config file IDE support
+- Verified: `npx vite build` produces dist, `tsc --noEmit` passes, `pnpm lint` clean, `pnpm format:check` clean
+
+**Files created:**
+- `packages/frontend/vite.config.ts`
+- `packages/frontend/index.html`
+- `packages/frontend/src/app.tsx`
+- `packages/frontend/tsconfig.node.json`
+
+**Files modified:**
+- `packages/frontend/src/main.tsx` (now renders React app)
+- `packages/frontend/package.json` (dependencies added)
+
+**Notes for next agent:**
+- T1.2.2 is next: install and configure Tailwind CSS
+- Path alias `@/` is configured in both tsconfig and vite.config.ts
+- Frontend runs on port 5173 by default
+- `verbatimModuleSyntax` is on — use `import type` for type-only imports
+- App component is in `src/app.tsx` (kebab-case file, named export)

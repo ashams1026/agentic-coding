@@ -17,7 +17,7 @@
 
 ### Frontend Foundation
 
-- [ ] **T1.2.1** — Scaffold Vite + React + TypeScript in `packages/frontend`. Create `vite.config.ts`, install React 19, configure path aliases (`@/` → `src/`). Verify `pnpm dev` runs and shows a blank page.
+- [x] **T1.2.1** — Scaffold Vite + React + TypeScript in `packages/frontend`. Create `vite.config.ts`, install React 19, configure path aliases (`@/` → `src/`). Verify `pnpm dev` runs and shows a blank page.
 
 - [ ] **T1.2.2** — Install and configure Tailwind CSS. Set up `tailwind.config.ts` with custom theme tokens (colors for agent personas, status badges, priorities). Add base CSS with CSS variables for dark mode.
 
