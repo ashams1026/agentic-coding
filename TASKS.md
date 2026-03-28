@@ -21,7 +21,7 @@
 
 - [x] **T1.2.2** — Install and configure Tailwind CSS. Set up `tailwind.config.ts` with custom theme tokens (colors for agent personas, status badges, priorities). Add base CSS with CSS variables for dark mode.
 
-- [ ] **T1.2.3** — Install and configure shadcn/ui. Run init, add foundational components: Button, Card, Badge, Input, Textarea, Select, Dialog, Sheet, Tabs, Tooltip, DropdownMenu, ScrollArea, Separator, Skeleton. Set up `cn()` utility.
+- [x] **T1.2.3** — Install and configure shadcn/ui. Run init, add foundational components: Button, Card, Badge, Input, Textarea, Select, Dialog, Sheet, Tabs, Tooltip, DropdownMenu, ScrollArea, Separator, Skeleton. Set up `cn()` utility.
 
 - [ ] **T1.2.4** — Set up React Router with route stubs. Create routes for all 9 screens: `/` (dashboard), `/board` (kanban), `/stories/:id` (story detail), `/tasks/:id` (task detail), `/agents` (agent monitor), `/activity` (feed), `/workflows` (designer), `/personas` (manager), `/settings`. Each route renders a placeholder page component.
 

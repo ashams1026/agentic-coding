@@ -166,3 +166,35 @@
 - Use `.dark` class on `<html>` to toggle dark mode
 - Persona colors available as `bg-persona-pm`, `text-persona-engineer`, etc.
 - Status colors: `bg-status-success`, `text-status-failure`, etc.
+
+---
+
+## 2026-03-28 — T1.2.3: Install and configure shadcn/ui
+
+**Task:** Install shadcn/ui, add 14 foundational components, set up cn() utility.
+
+**Done:**
+- Installed deps: clsx, tailwind-merge, class-variance-authority, lucide-react
+- Created `components.json` for shadcn CLI (new-york style, Tailwind v4, no rsc)
+- Created `src/lib/utils.ts` with `cn()` utility (clsx + tailwind-merge)
+- Added `@theme inline` block to `src/index.css` — maps CSS variables to Tailwind color utilities (bg-background, text-foreground, bg-primary, etc.) and radius tokens
+- Used `npx shadcn@latest add` to install all 14 components: Button, Card, Badge, Input, Textarea, Select, Dialog, Sheet, Tabs, Tooltip, DropdownMenu, ScrollArea, Separator, Skeleton
+- shadcn CLI also installed: @radix-ui/* primitives (dialog, dropdown-menu, scroll-area, select, separator, sheet, tabs, tooltip)
+- Verified: vite build (36.78 KB CSS), typecheck clean, lint clean (3 warnings from shadcn-generated files — expected)
+
+**Files created:**
+- `packages/frontend/components.json`
+- `packages/frontend/src/lib/utils.ts`
+- `packages/frontend/src/components/ui/` — 14 component files
+
+**Files modified:**
+- `packages/frontend/src/index.css` (added @theme inline block)
+- `packages/frontend/package.json` (new dependencies)
+
+**Notes for next agent:**
+- T1.2.4 is next: React Router with route stubs
+- Import shadcn components from `@/components/ui/button` etc.
+- Use `cn()` from `@/lib/utils` for conditional classes
+- Tooltip requires `<TooltipProvider>` wrapping the app — do this when building layout
+- shadcn components use `@radix-ui` primitives under the hood
+- To add more shadcn components later: `cd packages/frontend && npx shadcn@latest add [name]`
