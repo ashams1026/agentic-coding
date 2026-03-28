@@ -21,7 +21,7 @@ START
   │     YES → go to WORK
   │     NO ↓
   │
-  └─── → STOP (nothing to do)
+  └─── → STOP (nothing to do) — run /compact
 ```
 
 ---
@@ -58,7 +58,7 @@ CLEANUP
   git push origin main
   │
   ▼
-STOP
+STOP — run /compact
 ```
 
 ---
@@ -102,7 +102,7 @@ DECOMPOSE
   git push origin main
   │
   ▼
-STOP
+STOP — run /compact
 ```
 
 ---
@@ -167,7 +167,7 @@ WORK
   git push origin main
   │
   ▼
-STOP — do not pick up another task
+STOP — do not pick up another task — run /compact
 ```
 
 ### Worker Rules
