@@ -31,7 +31,8 @@ A local-first, workflow-driven application that orchestrates AI coding agents. R
 
 ### Agent Personas
 - A **persona** is a named agent configuration: system prompt, model, allowed tools, behavior constraints
-- Examples: "Tech Lead", "Engineer", "Code Reviewer", "QA Engineer", "Product Manager"
+- Examples: "Tech Lead", "Engineer", "Code Reviewer", "QA Engineer", "Product Manager", "Router"
+- **Router** personas are a lightweight archetype: fast model (haiku), read-only tools + `route_to_state`, designed for quick evaluation at decision points
 - Personas are reusable across workflows and projects
 - Each persona has a scoped set of custom MCP tools (e.g., Tech Lead gets `create_tasks`, Engineer gets `flag_blocked`)
 
@@ -40,8 +41,24 @@ A local-first, workflow-driven application that orchestrates AI coding agents. R
 - "When story enters `Ready for Implementation`, spawn the `Tech Lead` persona"
 - "When task enters `In Progress`, spawn the `Engineer` persona"
 - Triggers are the core automation primitive — they replace simple cron-based scheduling
-- Three dispatch modes per trigger: `auto` | `propose` | `gated`
+- Four dispatch modes per trigger: `auto` | `propose` | `gated` | `evaluate`
 - Two-phase dispatch: (1) state transition matches trigger, (2) dependency graph check confirms all upstream resolved
+
+### Evaluate Transitions (Adaptive Routing)
+- At certain workflow nodes, instead of a fixed next state, an **evaluator agent** decides the path
+- Evaluator triggers bind to **multiple possible target states** — the agent picks which one
+- Evaluator agents are a lightweight persona archetype: fast model (haiku), read-only tools, plus `route_to_state` MCP tool
+- The evaluator reads task/story context, codebase state, and decides: needs more planning? ready for work? should be split? blocked?
+- Routing reasoning is stored as a comment on the task (audit trail for why the router chose that path)
+- In the workflow designer, evaluate nodes appear as diamond-shaped decision points with fan-out edges
+- Example:
+  ```
+  Task enters [Ready] → Evaluate trigger fires → Router agent spawns
+    → "Task is clear and small" → routes to [In Progress] → Engineer
+    → "Task is too vague" → routes to [Needs Planning] → Tech Lead
+    → "Task should be split" → routes to [Decomposition] → Tech Lead
+    → "Missing info" → routes to [Blocked] → User notified
+  ```
 
 ### Comment Stream
 - Every story and task has a chronological **comment stream**
@@ -210,7 +227,7 @@ User creates Story ("Add OAuth2 login")
   - **TaskEdge**: id, fromId, toId, type (`blocks` | `depends_on` | `related_to`) — DAG dependency graph
   - **Workflow**: id, name, type (`story` | `task`), states[], transitions[], initialState, finalStates[], isDefault
   - **Persona**: id, name, description, avatar (color + icon), systemPrompt, model (`opus` | `sonnet` | `haiku`), allowedTools[], mcpTools[] (custom tools this persona can call), maxBudgetPerRun, settings
-  - **Trigger**: id, workflowId, fromState, toState, personaId, dispatchMode (`auto` | `propose` | `gated`), maxRetries (default 3), config
+  - **Trigger**: id, workflowId, fromState, toState (single state for auto/propose/gated, null for evaluate), personaId, dispatchMode (`auto` | `propose` | `gated` | `evaluate`), possibleTargets[] (for evaluate mode — list of valid target states the router can pick), maxRetries (default 3), config
   - **Execution**: id, taskId|storyId, personaId, status, startedAt, completedAt, costUsd, durationMs, summary (compressed), outcome (`success` | `failure` | `rejected`), rejectionPayload (reason, severity, hint), logs
   - **Comment**: id, targetId (storyId or taskId), targetType (`story` | `task`), authorType (`agent` | `user` | `system`), authorId (personaId or null), authorName, content, metadata (JSON — files referenced, tools used, etc.), createdAt
   - **ProjectMemory**: id, projectId, storyId (source), summary, filesChanged[], keyDecisions[], createdAt, consolidatedInto (for decay)
@@ -332,9 +349,11 @@ User creates Story ("Add OAuth2 login")
     - Select state/transition to configure in a right-side properties panel
   - **Trigger configuration** (on transitions):
     - Assign persona from dropdown
-    - Set dispatch mode: auto / propose / gated
+    - Set dispatch mode: auto / propose / gated / evaluate
+    - For `evaluate` mode: select multiple possible target states (fan-out), assign router persona
     - Set max retries (for rejection loops)
     - Set advancement mode: auto / approval / agent
+  - **Decision nodes**: evaluate triggers render as diamond shapes in the canvas with fan-out edges to each possible target state. Each edge labeled with the target state name.
   - **Validation**: real-time warnings — orphan states, unreachable end states, missing initial state
   - **Workflow templates**: "Default Story Workflow", "Default Task Workflow" — clone and customize
   - **Preview mode**: step through the workflow with mock data to see how triggers would fire
@@ -465,10 +484,21 @@ User creates Story ("Add OAuth2 login")
   - **Two-phase trigger dispatcher:**
     1. State transition fires → match trigger
     2. Check dependency graph → all upstream resolved?
-    3. If ready → dispatch per mode (`auto`: spawn immediately, `propose`: stage for review, `gated`: wait for user start)
+    3. If ready → dispatch per mode:
+       - `auto`: spawn immediately
+       - `propose`: stage for review
+       - `gated`: wait for user start
+       - `evaluate`: spawn router agent → router picks target state from `possibleTargets` → system transitions to chosen state → downstream triggers fire
     4. If deps unresolved → register as "waiting" → auto-fire when deps clear
   - Concurrency-aware: respect max agent limit before dispatching
   - Dispatch queue: FIFO with priority when at capacity
+
+- [ ] **T4.2b — Implement evaluate/router dispatch**
+  - Router agent spawns with read-only tools + `route_to_state` MCP tool
+  - `route_to_state`: `{itemId, targetState, reasoning}` — targetState must be in trigger's `possibleTargets[]`
+  - Routing reasoning auto-posted as comment on the task/story (audit trail)
+  - After routing: system transitions to chosen state, which may fire its own downstream triggers
+  - Fast execution: router personas use haiku model, read-only tools, budget-capped low
 
 - [ ] **T4.3 — Implement parent-child state coordination**
   - When all tasks in a story reach a target state, auto-advance the parent story
@@ -496,12 +526,17 @@ User creates Story ("Add OAuth2 login")
   - Register custom MCP server `agentops` with tools:
     - `create_tasks` — create subtasks under a story `{storyId, tasks: [{title, description, dependsOn[]}]}`
     - `transition_state` — advance/reject with reason `{itemId, targetState, reason}`
+    - `route_to_state` — evaluator-only: pick target from allowed options `{itemId, targetState, reasoning}` (targetState validated against trigger's `possibleTargets[]`)
     - `request_review` — request user attention `{itemId, message}`
     - `flag_blocked` — mark as blocked `{itemId, reason}`
     - `post_comment` — post to comment stream `{targetId, content, metadata?}`
     - `list_tasks` — query tasks with verbosity control `{storyId, status?, verbosity: "summary"|"detail"}`
     - `get_context` — retrieve project memory + task execution history `{taskId, includeMemory: boolean}`
-  - **Per-persona tool allowlists**: Tech Lead gets `create_tasks` + `transition_state` + `post_comment`, Engineer gets `transition_state` + `flag_blocked` + `post_comment`, Reviewer gets `transition_state` + `request_review` + `post_comment`
+  - **Per-persona tool allowlists**:
+    - Tech Lead: `create_tasks` + `transition_state` + `post_comment`
+    - Engineer: `transition_state` + `flag_blocked` + `post_comment`
+    - Reviewer: `transition_state` + `request_review` + `post_comment`
+    - **Router**: `route_to_state` + `list_tasks` + `get_context` + `post_comment` (read-only + routing)
   - All personas get `post_comment` by default
   - All responses are compact, structured JSON — context-window-aware
 
@@ -628,6 +663,7 @@ User creates Story ("Add OAuth2 login")
 | D18 | Agent memory | None vs execution context | **Execution context per task** — bounded history (last 3 runs), older summarized. Plus project-level memory with decay (inspired by Beads) | Decided |
 | D19 | Development approach | Backend-first vs UI-first | **UI-first with mocked data** — build and validate all screens against mock data/WebSocket before backend implementation | Decided |
 | D20 | UI component library | Custom vs shadcn/ui | **shadcn/ui** — polished, accessible, Tailwind-native, copy-paste ownership (no dependency lock-in) | Decided |
+| D21 | Adaptive routing | Static transitions vs agent-evaluated | **Evaluate mode** — 4th trigger dispatch mode where a router agent picks the next state from multiple options. Diamond decision nodes in workflow designer. | Decided |
 
 ---
 
