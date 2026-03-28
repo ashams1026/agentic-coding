@@ -13,6 +13,10 @@ START
   │     YES → go to CLEANUP
   │     NO ↓
   │
+  ├─── review_count ([review] tasks) > 0?
+  │     YES → go to REVIEW
+  │     NO ↓
+  │
   ├─── pending_count ([ ] tasks, not [in-progress] or [blocked]) == 0?
   │     YES → go to DECOMPOSE
   │     NO ↓
@@ -23,6 +27,15 @@ START
   │
   └─── → STOP (nothing to do)
 ```
+
+**Priority order:** CLEANUP → REVIEW → DECOMPOSE → WORK
+
+**Task statuses in TASKS.md:**
+- `[ ]` — pending (available for work). May have a `> [feedback: ...]` block below if reworking.
+- `[in-progress: YYYY-MM-DD]` — claimed by a worker
+- `[review]` — work done, awaiting review
+- `[x]` — reviewed and approved
+- `[blocked: reason]` — cannot proceed
 
 ---
 
@@ -38,7 +51,7 @@ CLEANUP
 [ARCHIVE TASKS]
   Move all [x] tasks from TASKS.md → TASKS_ARCHIVE.md
   Group by sprint/phase, include completion date
-  TASKS.md keeps only: pending, in-progress, blocked
+  TASKS.md keeps only: pending, in-progress, review, blocked
   │
   ▼
 [ARCHIVE WORKLOG]
@@ -60,6 +73,85 @@ CLEANUP
   ▼
 STOP
 ```
+
+---
+
+## State: REVIEW
+
+> Trigger: tasks marked [review] exist
+> Role: Review ONE task's implementation. Do NOT write new features.
+
+```
+REVIEW
+  │
+  ▼
+[SELECT TASK]
+  Read TASKS.md → find FIRST [review] task
+  │
+  ▼
+[GATHER CONTEXT]
+  Read the task description — what was it supposed to do?
+  Read WORKLOG.md → find the worker's entry for this task (what they did, files changed)
+  Read CLAUDE.md → coding conventions to check against
+  │
+  ▼
+[INSPECT WORK]
+  Read the files the worker created/modified (from their WORKLOG entry)
+  Check:
+    - Does the implementation match the task description?
+    - Does it follow conventions in CLAUDE.md?
+    - Does the code have obvious bugs, missing imports, or broken logic?
+    - Are there hardcoded values that should use mock data?
+    - Does it integrate with existing code correctly?
+  Run: pnpm build or pnpm dev — does it compile without errors?
+  │
+  ▼
+[DECIDE]
+  │
+  ├── APPROVE: work is correct and complete
+  │     │
+  │     ▼
+  │   [APPROVE]
+  │     Update TASKS.md: change [review] → [x]
+  │     Append to WORKLOG.md:
+  │       "## YYYY-MM-DD — Review: TASK_ID (approved)"
+  │       - What was reviewed
+  │       - Verdict: approved
+  │     Commit message: "review: approve TASK_ID — short description"
+  │     git push origin main
+  │     │
+  │     ▼
+  │   STOP
+  │
+  └── REJECT: work has issues that need fixing
+        │
+        ▼
+      [REJECT]
+        Update TASKS.md: change [review] → [ ]
+        Add feedback block directly below the task:
+          > [feedback: Clear description of what's wrong and how to fix it.
+          >  Be specific — reference file names, line numbers, expected behavior.
+          >  Example: "Button component in story-card.tsx is missing onClick handler
+          >  for the drag initiation. Add onMouseDown prop wired to dnd-kit."]
+        Append to WORKLOG.md:
+          "## YYYY-MM-DD — Review: TASK_ID (rejected)"
+          - What was reviewed
+          - Issues found
+          - Feedback given
+        Commit message: "review: reject TASK_ID — short description of issues"
+        git push origin main
+        │
+        ▼
+      STOP
+```
+
+### Reviewer Rules
+
+- **ONE task per review cycle.** Review one task, then STOP.
+- **Be specific in feedback.** The worker agent has no memory of its previous run — the feedback block is all it gets. Include file names, what's wrong, and what the fix should be.
+- **Don't fix it yourself.** Your job is to identify issues and write clear feedback. The worker will fix it on the next cycle.
+- **Build must pass.** If `pnpm build` fails, that's an automatic rejection.
+- **Check conventions.** Refer to CLAUDE.md for naming, structure, and patterns.
 
 ---
 
@@ -118,6 +210,8 @@ WORK
   ▼
 [SELECT TASK]
   Read TASKS.md → find FIRST [ ] task (not [in-progress] or [blocked])
+  If task has a [feedback: ...] block below it → this is a REWORK
+    Read the feedback carefully — it tells you exactly what to fix
   │
   ▼
 [GATHER CONTEXT]
@@ -132,6 +226,7 @@ WORK
   ▼
 [IMPLEMENT]
   Do the work following conventions in CLAUDE.md
+  If reworking: address ALL points in the [feedback: ...] block
   │
   ├── Blocked? → mark [blocked: reason] in TASKS.md
   │               append blocker note to WORKLOG.md
@@ -150,13 +245,14 @@ WORK
   │
   ▼
 [COMPLETE]
-  Update TASKS.md: mark task [x], remove [in-progress]
+  Update TASKS.md: mark task [review], remove [in-progress]
+  If reworking: remove the [feedback: ...] block
   │
   ▼
 [UPDATE WORKLOG]
   Append to WORKLOG.md:
     - Date
-    - Task ID
+    - Task ID (note if rework)
     - What was done
     - Files changed/created
     - Notes for next agent
@@ -177,3 +273,4 @@ STOP — do not pick up another task
 - **One task = one commit.** Keep changes atomic.
 - **Preserve mock data layer** — components must use mock data, no hardcoded placeholders.
 - **Follow established patterns** — check WORKLOG.md and existing code for consistency.
+- **Read feedback carefully.** If a task has a `[feedback: ...]` block, address every point before marking [review].
