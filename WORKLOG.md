@@ -198,3 +198,42 @@
 - Tooltip requires `<TooltipProvider>` wrapping the app — do this when building layout
 - shadcn components use `@radix-ui` primitives under the hood
 - To add more shadcn components later: `cd packages/frontend && npx shadcn@latest add [name]`
+
+---
+
+## 2026-03-28 — T1.2.4: Set up React Router with route stubs
+
+**Task:** Install React Router, create routes for all 9 screens with placeholder page components.
+
+**Done:**
+- Installed react-router (v7)
+- Created 9 page components in `src/pages/`: dashboard, story-board, story-detail, task-detail, agent-monitor, activity-feed, workflow-designer, persona-manager, settings
+- Created `src/router.tsx` with `createBrowserRouter` — all routes nested under RootLayout
+- Created `src/layouts/root-layout.tsx` with `<Outlet />` for nested routing
+- Updated `src/app.tsx` to use `<RouterProvider>`
+- Routes: `/` (dashboard), `/board`, `/stories/:id`, `/tasks/:id`, `/agents`, `/activity`, `/workflows`, `/personas`, `/settings`
+- Verified: typecheck clean, vite build (285 KB JS), lint clean
+
+**Files created:**
+- `packages/frontend/src/router.tsx`
+- `packages/frontend/src/layouts/root-layout.tsx`
+- `packages/frontend/src/pages/dashboard.tsx`
+- `packages/frontend/src/pages/story-board.tsx`
+- `packages/frontend/src/pages/story-detail.tsx`
+- `packages/frontend/src/pages/task-detail.tsx`
+- `packages/frontend/src/pages/agent-monitor.tsx`
+- `packages/frontend/src/pages/activity-feed.tsx`
+- `packages/frontend/src/pages/workflow-designer.tsx`
+- `packages/frontend/src/pages/persona-manager.tsx`
+- `packages/frontend/src/pages/settings.tsx`
+
+**Files modified:**
+- `packages/frontend/src/app.tsx` (now uses RouterProvider)
+- `packages/frontend/package.json` (react-router dep)
+
+**Notes for next agent:**
+- T1.2.5 is next: TanStack Query + Zustand
+- RootLayout in `src/layouts/root-layout.tsx` is minimal — T1.2.6 will build the full app shell (sidebar, status bar) there
+- Story/task detail pages use `useParams` for `:id`
+- All routes are nested under RootLayout with `<Outlet />`
+- React Router v7 uses `react-router` package (not `react-router-dom`)

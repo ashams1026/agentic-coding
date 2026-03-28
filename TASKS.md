@@ -23,7 +23,7 @@
 
 - [x] **T1.2.3** — Install and configure shadcn/ui. Run init, add foundational components: Button, Card, Badge, Input, Textarea, Select, Dialog, Sheet, Tabs, Tooltip, DropdownMenu, ScrollArea, Separator, Skeleton. Set up `cn()` utility.
 
-- [ ] **T1.2.4** — Set up React Router with route stubs. Create routes for all 9 screens: `/` (dashboard), `/board` (kanban), `/stories/:id` (story detail), `/tasks/:id` (task detail), `/agents` (agent monitor), `/activity` (feed), `/workflows` (designer), `/personas` (manager), `/settings`. Each route renders a placeholder page component.
+- [review] **T1.2.4** — Set up React Router with route stubs. Create routes for all 9 screens: `/` (dashboard), `/board` (kanban), `/stories/:id` (story detail), `/tasks/:id` (task detail), `/agents` (agent monitor), `/activity` (feed), `/workflows` (designer), `/personas` (manager), `/settings`. Each route renders a placeholder page component.
 
 - [ ] **T1.2.5** — Install TanStack Query + Zustand. Configure QueryClient with defaults (stale time, refetch). Create a base Zustand store for UI state (sidebar collapsed, selected project, theme). Wrap app in QueryClientProvider.
 
