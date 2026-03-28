@@ -63,7 +63,8 @@ Scheduled agents follow this protocol when picking up development tasks.
 7. **Update `TASKS.md`**: mark the task `[x]`, remove `[in-progress]`
 8. **Append to `WORKLOG.md`**: add an entry with date, task ID, what was done, files changed/created, any notes for the next agent
 9. **Commit all changes** including `TASKS.md` and `WORKLOG.md` updates in the same commit as the implementation
-10. **If you have remaining capacity**, pick up the next task and repeat from step 1
+10. **Push** to origin/main
+11. **STOP.** Do not pick up another task. One task per run.
 
 ### Rules
 
