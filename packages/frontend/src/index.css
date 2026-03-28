@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+/*
+ * AgentOps theme tokens
+ * Tailwind v4 CSS-first configuration via @theme
+ */
+@theme {
+  /* Persona colors — each agent role gets a distinct color */
+  --color-persona-pm: #8b5cf6;
+  --color-persona-tech-lead: #3b82f6;
+  --color-persona-engineer: #10b981;
+  --color-persona-reviewer: #f59e0b;
+  --color-persona-qa: #ef4444;
+
+  /* Status colors */
+  --color-status-pending: #94a3b8;
+  --color-status-in-progress: #3b82f6;
+  --color-status-running: #10b981;
+  --color-status-success: #22c55e;
+  --color-status-failure: #ef4444;
+  --color-status-rejected: #f59e0b;
+  --color-status-blocked: #f97316;
+
+  /* Priority colors */
+  --color-priority-p0: #ef4444;
+  --color-priority-p1: #f97316;
+  --color-priority-p2: #eab308;
+  --color-priority-p3: #94a3b8;
+
+  /* Proposal/attention colors */
+  --color-proposal: #f59e0b;
+  --color-attention: #ef4444;
+
+  /* Sidebar width */
+  --spacing-sidebar: 16rem;
+  --spacing-sidebar-collapsed: 4rem;
+}
+
+/*
+ * Dark mode CSS variables
+ * Applied via .dark class on <html> (Tailwind dark mode strategy)
+ */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 240 5.9% 10%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 240 5.9% 10%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 240 4.9% 83.9%;
+}
+
+/*
+ * Base styles
+ */
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+}

@@ -129,3 +129,40 @@
 - Frontend runs on port 5173 by default
 - `verbatimModuleSyntax` is on — use `import type` for type-only imports
 - App component is in `src/app.tsx` (kebab-case file, named export)
+
+---
+
+## 2026-03-28 — T1.2.2: Install and configure Tailwind CSS
+
+**Task:** Install Tailwind CSS v4 with Vite plugin, custom theme tokens, dark mode CSS variables.
+
+**Done:**
+- Installed tailwindcss + @tailwindcss/vite (Tailwind v4 — CSS-first, no tailwind.config.ts needed)
+- Added `tailwindcss()` to vite.config.ts plugins
+- Created `src/index.css` with:
+  - `@import "tailwindcss"` (v4 syntax)
+  - `@theme` block with persona colors (PM purple, Tech Lead blue, Engineer green, Reviewer amber, QA red)
+  - Status colors (pending, in-progress, running, success, failure, rejected, blocked)
+  - Priority colors (P0 red, P1 orange, P2 yellow, P3 gray)
+  - Sidebar spacing tokens
+  - Dark mode CSS variables (`:root` light + `.dark` overrides) — shadcn/ui compatible HSL format
+  - Base body/border styles
+- Imported CSS in main.tsx, updated app.tsx with Tailwind classes to verify
+- Verified: `vite build` produces CSS output (5.88 kB), typecheck clean, lint clean
+
+**Files created:**
+- `packages/frontend/src/index.css`
+
+**Files modified:**
+- `packages/frontend/vite.config.ts` (added tailwindcss plugin)
+- `packages/frontend/src/main.tsx` (CSS import)
+- `packages/frontend/src/app.tsx` (Tailwind classes)
+- `packages/frontend/package.json` (dependencies)
+
+**Notes for next agent:**
+- T1.2.3 is next: install and configure shadcn/ui
+- Tailwind v4 uses CSS-first config — NO `tailwind.config.ts`. Theme tokens are in `@theme {}` in `src/index.css`
+- Dark mode variables use HSL format without `hsl()` wrapper (shadcn convention): `--background: 240 10% 3.9%`
+- Use `.dark` class on `<html>` to toggle dark mode
+- Persona colors available as `bg-persona-pm`, `text-persona-engineer`, etc.
+- Status colors: `bg-status-success`, `text-status-failure`, etc.

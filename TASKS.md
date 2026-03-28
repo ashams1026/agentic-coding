@@ -19,7 +19,7 @@
 
 - [x] **T1.2.1** — Scaffold Vite + React + TypeScript in `packages/frontend`. Create `vite.config.ts`, install React 19, configure path aliases (`@/` → `src/`). Verify `pnpm dev` runs and shows a blank page.
 
-- [ ] **T1.2.2** — Install and configure Tailwind CSS. Set up `tailwind.config.ts` with custom theme tokens (colors for agent personas, status badges, priorities). Add base CSS with CSS variables for dark mode.
+- [x] **T1.2.2** — Install and configure Tailwind CSS. Set up `tailwind.config.ts` with custom theme tokens (colors for agent personas, status badges, priorities). Add base CSS with CSS variables for dark mode.
 
 - [ ] **T1.2.3** — Install and configure shadcn/ui. Run init, add foundational components: Button, Card, Badge, Input, Textarea, Select, Dialog, Sheet, Tabs, Tooltip, DropdownMenu, ScrollArea, Separator, Skeleton. Set up `cn()` utility.
 
