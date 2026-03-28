@@ -9,7 +9,7 @@
 
 ### Monorepo & Tooling
 
-- [ ] **T1.1.1** — Initialize pnpm workspace with `packages/frontend`, `packages/backend`, `packages/shared`. Create root `package.json` with workspace config, `pnpm-workspace.yaml`, root `.gitignore`, and root `.nvmrc` (Node 22 LTS).
+- [x] **T1.1.1** — Initialize pnpm workspace with `packages/frontend`, `packages/backend`, `packages/shared`. Create root `package.json` with workspace config, `pnpm-workspace.yaml`, root `.gitignore`, and root `.nvmrc` (Node 22 LTS).
 
 - [ ] **T1.1.2** — Set up TypeScript config. Root `tsconfig.base.json` with strict mode, per-package `tsconfig.json` files extending base. Ensure cross-package imports work.
 
