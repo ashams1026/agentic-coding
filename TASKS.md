@@ -11,7 +11,7 @@
 
 - [x] **T1.1.1** — Initialize pnpm workspace with `packages/frontend`, `packages/backend`, `packages/shared`. Create root `package.json` with workspace config, `pnpm-workspace.yaml`, root `.gitignore`, and root `.nvmrc` (Node 22 LTS).
 
-- [ ] **T1.1.2** — Set up TypeScript config. Root `tsconfig.base.json` with strict mode, per-package `tsconfig.json` files extending base. Ensure cross-package imports work.
+- [x] **T1.1.2** — Set up TypeScript config. Root `tsconfig.base.json` with strict mode, per-package `tsconfig.json` files extending base. Ensure cross-package imports work.
 
 - [ ] **T1.1.3** — Set up ESLint + Prettier. Root config, TypeScript-aware rules, React plugin for frontend. Add `lint` and `format` scripts to root `package.json`.
 
