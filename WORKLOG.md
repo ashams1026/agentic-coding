@@ -64,3 +64,36 @@
 - Frontend uses path alias `@/*` — Vite will need a matching `resolve.alias` in T1.2.1
 - `verbatimModuleSyntax` is enabled — always use `import type` for type-only imports
 - Project references are set up: shared → backend, shared → frontend. Run `npx tsc --build` at root for full build
+
+---
+
+## 2026-03-28 — T1.1.3: Set up ESLint + Prettier
+
+**Task:** Root ESLint flat config (v9) with TypeScript-aware rules, React plugins for frontend, Prettier integration.
+
+**Done:**
+- Installed at root: eslint 10, @eslint/js, typescript-eslint, eslint-plugin-react-hooks, eslint-plugin-react-refresh, eslint-config-prettier, globals, prettier
+- Created `eslint.config.js` (ESLint 9 flat config): base JS + TS recommended rules, frontend-specific React hooks + refresh plugin with browser globals, backend-specific node globals, eslint-config-prettier last to avoid conflicts
+- Created `.prettierrc` (semi, double quotes, trailing commas, 100 width, 2-space indent)
+- Created `.prettierignore` (dist, node_modules, pnpm-lock.yaml)
+- Updated root `package.json`: `lint` runs eslint directly, `format` runs prettier directly, added `format:check`, added `"type": "module"` to eliminate Node warning
+- Updated per-package lint/format scripts for standalone usage
+- Verified: `pnpm lint` passes clean, `pnpm format:check` passes, `npx tsc --build` still works
+
+**Files created:**
+- `eslint.config.js`
+- `.prettierrc`
+- `.prettierignore`
+
+**Files modified:**
+- `package.json` (root — added type:module, updated lint/format scripts)
+- `packages/shared/package.json` (lint/format scripts)
+- `packages/backend/package.json` (lint/format scripts)
+- `packages/frontend/package.json` (lint/format scripts)
+
+**Notes for next agent:**
+- T1.2.1 is next: scaffold Vite + React + TypeScript in frontend
+- ESLint uses flat config (v9) at root — no per-package `.eslintrc` needed
+- Root `package.json` now has `"type": "module"` — all `.js` files are ESM
+- Prettier uses double quotes (not single) — be consistent
+- React hooks + refresh plugins are scoped to `packages/frontend/src/**`

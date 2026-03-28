@@ -13,7 +13,7 @@
 
 - [x] **T1.1.2** — Set up TypeScript config. Root `tsconfig.base.json` with strict mode, per-package `tsconfig.json` files extending base. Ensure cross-package imports work.
 
-- [ ] **T1.1.3** — Set up ESLint + Prettier. Root config, TypeScript-aware rules, React plugin for frontend. Add `lint` and `format` scripts to root `package.json`.
+- [x] **T1.1.3** — Set up ESLint + Prettier. Root config, TypeScript-aware rules, React plugin for frontend. Add `lint` and `format` scripts to root `package.json`.
 
 ### Frontend Foundation
 
