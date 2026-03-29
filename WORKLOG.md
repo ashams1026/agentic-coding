@@ -5,6 +5,41 @@
 
 ---
 
+## 2026-03-29 — T2.5.5: Build multi-agent side-by-side view
+
+**Task:** Toggle button: "Split view". Shows 2-3 agent output panes side-by-side. Each pane has its own agent selector dropdown. Useful when multiple agents work in parallel. Falls back to single pane on narrow screens.
+
+**Done:**
+- Created `features/agent-monitor/split-view.tsx`:
+  - `SplitView` — CSS grid layout showing 2-3 panes side-by-side (capped at number of active agents, min 2)
+  - `Pane` — wraps AgentSelector dropdown + TerminalRenderer, each pane independently selectable
+  - `AgentSelector` — dropdown with persona avatar + name + task title for each running agent
+  - Default assignment: first N active executions auto-assigned to panes
+- Updated `features/agent-monitor/agent-monitor-layout.tsx`:
+  - Added "Split view" / "Single view" toggle button (Columns2 / Square icons) in a thin bar above the content area
+  - Split mode hides the left sidebar (each pane has its own selector dropdown)
+  - Normal mode retains sidebar + single TerminalRenderer layout
+  - New state: `splitMode` boolean + `activeExecutionIds` memo
+- Added responsive CSS in `index.css`:
+  - `@media (max-width: 768px)` forces `.split-view-grid` to `grid-template-columns: 1fr` — single column fallback on narrow screens
+- Added second running execution to mock data: EXEC_8 (Reviewer reviewing TASK_1_3 OAuth token handling) — gives 2 active agents for split view testing
+
+**Files created:**
+- `packages/frontend/src/features/agent-monitor/split-view.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`
+- `packages/frontend/src/index.css`
+- `packages/frontend/src/mocks/fixtures.ts` (added EXEC_8 running execution)
+
+**Notes for next agent:**
+- T2.5.6 is next: agent control bar (Stop/Force Stop buttons, persona name, model badge, cost, links)
+- Two running executions now: EXEC_4 (Engineer on TASK_1_2) and EXEC_8 (Reviewer on TASK_1_3)
+- Split view panes reuse TerminalRenderer — each pane independently subscribes to WS events
+- TanStack Query deduplicates the executions/personas/tasks/stories fetches across panes
+
+---
+
 ## 2026-03-29 — Review: T2.5.4 (approved)
 
 **Reviewed:** Tool call display sections — `features/agent-monitor/tool-call-display.tsx`, terminal renderer pairing logic, WS typed chunk support, demo data.

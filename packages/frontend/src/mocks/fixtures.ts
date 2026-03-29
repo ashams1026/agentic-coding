@@ -52,6 +52,7 @@ const EXEC_4 = "ex-exec004" as ExecutionId;
 const EXEC_5 = "ex-exec005" as ExecutionId;
 const EXEC_6 = "ex-exec006" as ExecutionId;
 const EXEC_7 = "ex-exec007" as ExecutionId;
+const EXEC_8 = "ex-exec008" as ExecutionId;
 
 // ── Workflows ──────────────────────────────────────────────────────
 
@@ -560,6 +561,21 @@ export const executions: Execution[] = [
     outcome: "success",
     rejectionPayload: null,
     logs: "Reading story...\nDesigning component breakdown...\nCreating tasks with descriptions...\nDone.",
+  },
+  {
+    id: EXEC_8,
+    targetId: TASK_1_3,
+    targetType: "task",
+    personaId: PERSONA_REVIEWER,
+    status: "running",
+    startedAt: "2026-03-27T14:30:00Z",
+    completedAt: null,
+    costUsd: 0.12,
+    durationMs: 0,
+    summary: "",
+    outcome: null,
+    rejectionPayload: null,
+    logs: "Reading submitted code changes...\nChecking OAuth token handling...\nVerifying CSRF middleware integration...",
   },
 ];
 

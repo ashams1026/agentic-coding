@@ -131,3 +131,12 @@ body {
     -apple-system,
     sans-serif;
 }
+
+/* Agent monitor split view — collapse to single pane on narrow screens */
+@media (max-width: 768px) {
+  .split-view-grid {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 1fr;
+    overflow-y: auto;
+  }
+}
