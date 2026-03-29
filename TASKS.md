@@ -27,7 +27,7 @@
 
 - [x] **T2.4.1** — Build task detail view. Same slide-out pattern as story detail. Header: title, state badge, assigned persona, parent story link (click navigates to story). Tabs or sections for the content areas below.
 
-- [review] **T2.4.2** — Build inherited context section. Collapsible panel showing context passed from parent story: story description excerpt, acceptance criteria, any notes the Tech Lead left. Clearly labeled "Inherited from [Story Name]".
+- [x] **T2.4.2** — Build inherited context section. Collapsible panel showing context passed from parent story: story description excerpt, acceptance criteria, any notes the Tech Lead left. Clearly labeled "Inherited from [Story Name]".
 
 - [ ] **T2.4.3** — Build dependency info display. "Depends on" list: each dependency shows task title + state badge (green if resolved, yellow if in-progress, gray if pending). "Blocks" list: tasks that depend on this one. Visual indicator if this task is currently blocking something.
 

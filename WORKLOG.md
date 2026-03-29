@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: T2.4.2 (approved)
+
+**Reviewed:** Inherited context section — `features/task-detail/inherited-context.tsx` and task-detail page integration.
+- All requirements met: collapsible panel (open by default), "Inherited from [Story Name]" header with clickable story link (`e.stopPropagation()` prevents toggle — nice detail)
+- Three content sections with consistent FileText + uppercase label pattern: Context (task.inheritedContext), Story Description (line-clamp-4), Acceptance Criteria (line-clamp-6)
+- "View full story" link at bottom, returns null when no content
+- New `features/task-detail/` directory established for task detail components
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.4.2: Build inherited context section
 
 **Task:** Collapsible panel showing context from parent story: description excerpt, acceptance criteria, Tech Lead notes. Labeled "Inherited from [Story Name]".
