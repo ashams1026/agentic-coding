@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T2.7.2 (approved)
+
+**Reviewed:** Activity feed filters and real-time updates — `features/activity-feed/activity-feed.tsx`, `stores/activity-store.ts`, `components/sidebar.tsx`, `index.css`.
+- FilterBar: event type checkboxes (expandable grid), persona/story/date dropdowns, clear button — all working
+- WS subscription via `subscribeAll` + `wsEventToActivity` handles 6 event types correctly
+- Live events animate with slide-down CSS keyframe, get "LIVE" badge
+- "New events" indicator: scroll tracking + sticky button
+- Unread badge: Zustand store, sky-blue badge on nav item (both modes)
+- Filter pipeline: clean chain of `useMemo` (allEvents → filtered → grouped)
+- Noted limitation: unread badge only tracks while ActivityFeed is mounted — acceptable for mock phase
+- Build passes
+- **Verdict: approved** — Activity Feed section complete!
+
+---
+
 ## 2026-03-29 — T2.7.2: Build activity feed filters and real-time updates
 
 **Task:** Filter bar: by event type (checkboxes), by persona, by story, by date range. New events animate in at top (slide-down animation, via mock WebSocket). "New events" indicator if user has scrolled down. Unread count badge on Activity Feed nav item.
