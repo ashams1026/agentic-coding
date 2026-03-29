@@ -5,6 +5,7 @@ import { useDashboardStats } from "@/hooks";
 import { ActiveAgentsStrip } from "@/features/dashboard/active-agents-strip";
 import { RecentActivity } from "@/features/dashboard/recent-activity";
 import { UpcomingWork } from "@/features/dashboard/upcoming-work";
+import { CostSummary } from "@/features/dashboard/cost-summary";
 
 interface StatCardProps {
   title: string;
@@ -90,14 +91,7 @@ export function DashboardPage() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <RecentActivity />
         <UpcomingWork />
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm font-medium text-muted-foreground">Cost Summary</p>
-            <p className="mt-2 text-sm text-muted-foreground/60">
-              Cost chart will be built in T2.1.5
-            </p>
-          </CardContent>
-        </Card>
+        <CostSummary />
       </div>
     </div>
   );

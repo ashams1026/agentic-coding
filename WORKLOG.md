@@ -5,6 +5,36 @@
 
 ---
 
+## 2026-03-28 — T2.1.5: Build cost summary widget
+
+**Task:** Sparkline chart showing daily spend for last 7 days, monthly total vs cap progress bar, today's spend display.
+
+**Done:**
+- Installed `recharts` in frontend package
+- Created `CostSummary` component in `features/dashboard/cost-summary.tsx`
+- Uses `useCostSummary()` hook (returns dailySpend array, monthTotal, monthCap from mock API)
+- Today's spend displayed prominently with dollar icon
+- Sparkline: recharts `AreaChart` with gradient fill, minimal axes (X shows weekday names, Y hidden), custom tooltip styled with shadcn popover colors
+- Progress bar: month total vs cap with color coding (green <80%, amber 80-95%, red ≥95%)
+- "$0.00 today" shown gracefully when no data; empty state for chart
+- Integrated into dashboard.tsx replacing the Cost Summary placeholder
+- Fixed two TS strict mode errors (array indexing possibly undefined)
+
+**Files created:**
+- `packages/frontend/src/features/dashboard/cost-summary.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/dashboard.tsx` (import + replace placeholder)
+- `packages/frontend/package.json` (recharts dependency)
+- `pnpm-lock.yaml`
+
+**Notes for next agent:**
+- recharts adds ~330KB to the bundle (warning about 500KB+ chunk). Consider code-splitting later if needed.
+- Dashboard is now complete: 4 stat cards + active agents strip + 3 widgets (RecentActivity, UpcomingWork, CostSummary)
+- Next task is T2.2.1: Kanban board layout for story board
+
+---
+
 ## 2026-03-28 — Review: T2.1.4 (approved)
 
 **Reviewed:** Upcoming work widget — `features/dashboard/upcoming-work.tsx` and dashboard integration.
