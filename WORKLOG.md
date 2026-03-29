@@ -5,6 +5,38 @@
 
 ---
 
+## 2026-03-29 — T2.9.2: Build persona editor
+
+**Task:** Full-page or large sheet. Sections: Identity (name, description, avatar picker), Model (selector with cost/capability info), System Prompt (large editor), Tools (checklists), Budget (max per run input).
+
+**Done:**
+- Created `features/persona-manager/persona-editor.tsx`:
+  - Large Sheet (right side, max-w-2xl) with scrollable content
+  - **Identity section**: name input, description textarea, avatar picker (12 color swatches + 14 icon options with live preview)
+  - **Model section**: 3-card selector (Opus/Sonnet/Haiku) with cost label ($/$$/$$), description, color-coded selected state
+  - **System Prompt section**: monospace textarea with character count
+  - **Tools section**: SDK Tools (8 items, 4-col grid) and AgentOps Tools (7 items, 3-col grid) — each as checkbox with tooltip description
+  - **Budget section**: dollar input with DollarSign icon
+  - Header with avatar preview, title, Cancel/Save buttons
+  - Local form state synced from persona data via useEffect, saved via useUpdatePersona
+- Updated `pages/persona-manager.tsx` — conditionally renders PersonaEditor when editingId is set
+
+**Files created:**
+- `packages/frontend/src/features/persona-manager/persona-editor.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/persona-manager.tsx`
+
+**Notes for next agent:**
+- T2.9.3 (system prompt editor) will enhance the basic textarea here with line numbers, markdown preview, token count
+- T2.9.4 (tool configuration) will enhance the tool checkboxes here with presets
+- T2.9.5 (test run panel) adds collapsible test section at the bottom of this editor
+- The editor uses a Sheet so it overlays the list — no page navigation needed
+- Avatar picker has 12 colors + 14 icons from lucide-react
+- Model cards show cost/capability info inline
+
+---
+
 ## 2026-03-29 — Review: T2.9.1 (approved)
 
 **Reviewed:** Persona list view — `persona-list.tsx` + page update.
