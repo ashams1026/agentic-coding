@@ -11,6 +11,7 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { ProjectsSection } from "./projects-section";
 
 // ── Section definitions ─────────────────────────────────────────
 
@@ -89,8 +90,12 @@ export function SettingsLayout() {
             <Separator className="mt-3" />
           </div>
 
-          {/* Section content — placeholders for now, T2.10.2-T2.10.5 will replace these */}
-          <SectionPlaceholder section={currentSection} />
+          {/* Section content */}
+          {activeSection === "projects" ? (
+            <ProjectsSection />
+          ) : (
+            <SectionPlaceholder section={currentSection} />
+          )}
         </div>
       </div>
     </div>

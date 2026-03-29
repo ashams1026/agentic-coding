@@ -5,6 +5,37 @@
 
 ---
 
+## 2026-03-29 — T2.10.2: Build projects section
+
+**Task:** Build the projects settings section with list of registered projects, add/edit/remove forms, workflow selector, and path validation.
+
+**Done:**
+- Created `features/settings/projects-section.tsx`:
+  - `ProjectsSection` — main component: lists projects, add/edit/delete with mutations
+  - `ProjectForm` — reusable add/edit form: name input, path input with FolderOpen icon and path validation indicator (checks absolute path format), workflow selector dropdown (filtered to story workflows)
+  - `ProjectRow` — compact row: name, workflow badge, path, hover-to-reveal edit/delete buttons
+  - Empty state with CTA button when no projects registered
+  - Uses `useProjects`, `useCreateProject`, `useUpdateProject`, `useDeleteProject` hooks
+  - Uses `useWorkflows` for workflow selector options
+- Updated `features/settings/settings-layout.tsx`:
+  - Imported `ProjectsSection`, renders it when `activeSection === "projects"`
+  - Other sections still show `SectionPlaceholder`
+
+**Files created:**
+- `packages/frontend/src/features/settings/projects-section.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/settings/settings-layout.tsx` (import + conditional render)
+
+**Notes for next agent:**
+- Pattern established: settings sections are separate components imported into `settings-layout.tsx` with conditional rendering by `activeSection`
+- `ProjectForm` is used for both add and edit (via `initial` prop)
+- Path validation is simple format check (starts with `/`) — mock only, no filesystem access
+- Workflow selector filters to `type === "story"` workflows only
+- Next: T2.10.3 (API keys and concurrency section)
+
+---
+
 ## 2026-03-29 — Review: R.6 (approved)
 
 **Reviewed:** Nested task detail panel with breadcrumb navigation — `task-detail-side-panel.tsx` + modifications to child-tasks-section, story-detail-side-panel, story-board.
