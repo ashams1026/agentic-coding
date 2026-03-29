@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-03-28 — Review: T2.2.3 (approved)
+
+**Reviewed:** Drag-and-drop between kanban columns — `draggable-story-card.tsx`, updated `kanban-board.tsx` and `kanban-column.tsx`.
+
+**Verdict:** Approved. All requirements met: @dnd-kit/core with DndContext, useDraggable, useDroppable, DragOverlay. Smooth animations via CSS.Translate transforms and 200ms drop animation. Column highlight (bg-accent + ring) on hover, "Drop here" text in empty columns. Drop triggers useUpdateStory mutation for state transition, with no-op on same-column drop. PointerSensor 8px activation prevents accidental drags. Original card fades to 0.4 opacity, overlay shows rotated clone. Cancel handler cleans up. Build clean.
+
+---
+
 ## 2026-03-28 — T2.2.3: Implement drag-and-drop between columns
 
 **Task:** Drag-and-drop story cards between kanban columns with smooth animations, drop placeholder, and state transition via mock API.
