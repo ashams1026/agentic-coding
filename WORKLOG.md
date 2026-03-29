@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-28 — Review: T2.3.2 (approved)
+
+**Reviewed:** Description and context section for story detail page.
+- Implementation matches task description: markdown textarea with preview toggle, acceptance criteria section, inline edit with save/cancel
+- MarkdownPreview handles paragraphs, bold, inline code, bullet lists correctly
+- EditableSection is cleanly reusable with Write/Preview tabs
+- Uses `useUpdateStory` mutation for both description and acceptance criteria
+- Build passes with no errors
+- Follows conventions (kebab-case file, named exports, feature directory colocation)
+- **Verdict: approved**
+
+---
+
 ## 2026-03-28 — T2.3.2: Build description and context section
 
 **Task:** Rich text area for story description (markdown textarea + rendered preview) and acceptance criteria section, both editable inline with save/cancel.
