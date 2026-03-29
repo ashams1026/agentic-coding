@@ -499,3 +499,11 @@
 - Story 1 "Auth" has a running execution (EXEC_4) — good for agent monitor testing
 - Story 2 "Dashboard" has a pending proposal (pp-prop002) — good for proposals UI testing
 - Frontend now depends on @agentops/shared as workspace package
+
+---
+
+## 2026-03-28 — Review: T1.4.1 (approved)
+
+**Reviewed:** Mock data fixtures for all entity types.
+
+**Verdict:** Approved. All requirements met: 1 project, 2 workflows (story 7-state + task 5-state), 5 personas with distinct colors/icons, 3 stories in different states, 10 tasks, 4 dependency edges, 6 executions (including 1 running), 15 comments across entities, 2 proposals (1 approved + 1 pending — good for testing both states), 2 project memories. Strongly typed with no `as any`. Build passes.

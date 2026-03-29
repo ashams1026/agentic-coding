@@ -15,7 +15,7 @@
 
 ### Mock Data Layer
 
-- [review] **T1.4.1** — Create mock data fixtures in `packages/frontend/src/mocks/`. Realistic dataset: 1 project ("AgentOps" itself), 2 workflows (story + task), 5 personas (PM, Tech Lead, Engineer, Reviewer, QA — each with avatar color/icon), 3 stories in various states with 8-10 child tasks, dependency edges between tasks, 5-6 execution records, 15-20 comments across stories/tasks, 2 pending proposals, mock project memory entries.
+- [x] **T1.4.1** — Create mock data fixtures in `packages/frontend/src/mocks/`. Realistic dataset: 1 project ("AgentOps" itself), 2 workflows (story + task), 5 personas (PM, Tech Lead, Engineer, Reviewer, QA — each with avatar color/icon), 3 stories in various states with 8-10 child tasks, dependency edges between tasks, 5-6 execution records, 15-20 comments across stories/tasks, 2 pending proposals, mock project memory entries.
 
 - [ ] **T1.4.2** — Build mock API service layer in `packages/frontend/src/mocks/api.ts`. In-memory store initialized from fixtures. Functions matching real API shape: `getStories()`, `getStory(id)`, `updateStory()`, `getTasks()`, `getComments()`, `getExecutions()`, `getPersonas()`, `getWorkflows()`, etc. Simulated latency (50-150ms) for realistic loading states.
 
