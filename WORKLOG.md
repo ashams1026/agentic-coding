@@ -5,6 +5,41 @@
 
 ---
 
+## 2026-03-29 — T2.8.1: Build workflow list sidebar
+
+**Task:** Left sidebar showing all workflows. Each entry: name, type badge (story/task), state count. "Create new" button. "Duplicate" and "Delete" actions. Click selects workflow for editing in main canvas.
+
+**Done:**
+- Created `features/workflow-designer/workflow-list-sidebar.tsx`:
+  - `WorkflowListSidebar` — scrollable list of workflows from `useWorkflows()` hook
+  - `WorkflowEntry` — clickable row with GitBranch icon, workflow name, type badge (violet for story, blue for task), state count, "Default" badge, hover actions (Duplicate, Delete)
+  - "Create new" button creates a minimal workflow (Backlog → Done) and auto-selects it
+  - Duplicate clones workflow with "(copy)" suffix
+  - Delete with AlertDialog confirmation, warns if deleting a default workflow
+  - Empty state with icon and "Create your first workflow" link
+- Created `features/workflow-designer/workflow-designer-layout.tsx`:
+  - Split layout: 260px sidebar + flex-1 main area
+  - Auto-selects first workflow if none selected
+  - Main area shows placeholder for canvas (T2.8.2 will replace)
+  - No-workflow empty state
+- Updated `pages/workflow-designer.tsx` to render `<WorkflowDesignerLayout />`
+
+**Files created:**
+- `packages/frontend/src/features/workflow-designer/workflow-list-sidebar.tsx`
+- `packages/frontend/src/features/workflow-designer/workflow-designer-layout.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/workflow-designer.tsx`
+
+**Notes for next agent:**
+- T2.8.2 is next: state machine canvas (replace the placeholder in workflow-designer-layout.tsx main area)
+- The layout passes `selectedWorkflow` to the main area — T2.8.2 should receive it as a prop
+- Mock data has 2 workflows: "Default Story Workflow" (7 states, 8 transitions) and "Default Task Workflow" (5 states, 5 transitions)
+- Create workflow uses mock API which generates IDs and handles initialState/finalStates
+- Feature directory: `features/workflow-designer/`
+
+---
+
 ## 2026-03-29 — Review: T2.7.2 (approved)
 
 **Reviewed:** Activity feed filters and real-time updates — `features/activity-feed/activity-feed.tsx`, `stores/activity-store.ts`, `components/sidebar.tsx`, `index.css`.
