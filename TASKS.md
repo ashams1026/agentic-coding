@@ -9,7 +9,7 @@
 
 ### Dashboard (Home)
 
-- [ ] **T2.1.4** — Build upcoming work widget. Shows next 5 tasks ready for dispatch (from mock ready-work data). Each entry: task title, parent story name, persona that would handle it, dependency status. Helps user see what will fire next.
+- [review] **T2.1.4** — Build upcoming work widget. Shows next 5 tasks ready for dispatch (from mock ready-work data). Each entry: task title, parent story name, persona that would handle it, dependency status. Helps user see what will fire next.
 
 - [ ] **T2.1.5** — Build cost summary widget. Sparkline chart (small inline chart) showing daily spend for last 7 days. Current month total vs configured cap (progress bar). Use a lightweight chart lib (recharts or similar). Shows "$0.00 today" gracefully when no data.
 

@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-28 — T2.1.4: Build upcoming work widget
+
+**Task:** Dashboard widget showing next 5 tasks ready for dispatch with task title, parent story name, persona, and dependency status.
+
+**Done:**
+- Created `UpcomingWork` component in `features/dashboard/upcoming-work.tsx`
+- Uses `useReadyWork()` hook (fetches pending tasks from mock API, limited to 5)
+- Uses `useTaskEdges()` to determine dependency status per task
+- Each row shows: persona avatar (colored if assigned, muted if not), task title, parent story name, persona name badge, dependency icon (amber GitBranch if has deps, green CheckCircle if clear)
+- Links each row to `/tasks/:id` for navigation
+- "View board" link navigates to `/board`
+- Empty state: "No tasks ready for dispatch"
+- Integrated into dashboard.tsx replacing the placeholder card
+- Follows established pattern from active-agents-strip and recent-activity components
+
+**Files created:**
+- `packages/frontend/src/features/dashboard/upcoming-work.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/dashboard.tsx` (import + replace placeholder)
+
+**Notes for next agent:**
+- T2.1.5 is next: Cost summary widget with sparkline chart (recharts or similar)
+- The dashboard now has 3 widgets in a 2-col grid: RecentActivity, UpcomingWork, and a Cost Summary placeholder
+- All dashboard feature components live in `src/features/dashboard/`
+
+---
+
 ## 2026-03-28 — T1.3.1: Define all entity types
 
 **Task:** TypeScript interfaces for all entities + ID prefix types + nanoid generator.

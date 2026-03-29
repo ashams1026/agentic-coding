@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useDashboardStats } from "@/hooks";
 import { ActiveAgentsStrip } from "@/features/dashboard/active-agents-strip";
 import { RecentActivity } from "@/features/dashboard/recent-activity";
+import { UpcomingWork } from "@/features/dashboard/upcoming-work";
 
 interface StatCardProps {
   title: string;
@@ -85,17 +86,10 @@ export function DashboardPage() {
 
       <ActiveAgentsStrip />
 
-      {/* Placeholder sections for T2.1.4-T2.1.5 widgets */}
+      {/* Dashboard widgets */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <RecentActivity />
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm font-medium text-muted-foreground">Upcoming Work</p>
-            <p className="mt-2 text-sm text-muted-foreground/60">
-              Work widget will be built in T2.1.4
-            </p>
-          </CardContent>
-        </Card>
+        <UpcomingWork />
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm font-medium text-muted-foreground">Cost Summary</p>
