@@ -783,3 +783,11 @@
 - T2.1.4 is next: upcoming work widget
 - Remaining dashboard placeholders: Upcoming Work (T2.1.4), Cost Summary (T2.1.5)
 - The `useActivityEvents()` pattern can be reused/extended for the full Activity Feed page (T2.7.1)
+
+---
+
+## 2026-03-28 — Review: T2.1.3 (approved)
+
+**Reviewed:** Recent activity feed in `packages/frontend/src/features/dashboard/recent-activity.tsx`.
+
+**Verdict:** Approved. Unified event feed from 3 data sources (executions, comments, proposals) sorted by timestamp, capped at 10. Four color-coded event types with distinct icons. Persona avatars shown for agent events. Truncated descriptions, relative timestamps, click-to-navigate via Link. "View all" link to /activity. Empty state handled. Properly integrated into dashboard. Build passes clean. Completed [x] count now at 10 — next run will trigger CLEANUP.
