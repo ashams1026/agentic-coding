@@ -575,3 +575,11 @@
 - Query keys are in `@/hooks/query-keys` — use for manual invalidation or prefetching
 - Optimistic updates are on story and task update mutations (the most frequently edited entities)
 - T1.4.4 is next: mock WebSocket system
+
+---
+
+## 2026-03-28 — Review: T1.4.3 (approved)
+
+**Reviewed:** TanStack Query hooks in `packages/frontend/src/hooks/`.
+
+**Verdict:** Approved. All requirements met: 22 query hooks + 18 mutation hooks covering every mock API function. Centralized query key factory with proper `as const` typing. Optimistic updates on `useUpdateStory` and `useUpdateTask` with cancel/snapshot/rollback pattern. All mutations invalidate relevant queries. `useUpdateProposal` also invalidates dashboard stats. Barrel export in `hooks/index.ts`. Consistent patterns, proper `import type` usage. Build passes clean.
