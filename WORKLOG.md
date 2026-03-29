@@ -5,6 +5,41 @@
 
 ---
 
+## 2026-03-28 — T2.2.5: Build filter bar and sort controls
+
+**Task:** Filter bar above kanban board with multi-select filters (label, priority, persona), has-proposals toggle, sort controls, URL param persistence.
+
+**Done:**
+- Created `features/kanban/kanban-filters.tsx`:
+  - `KanbanFilterBar` component with shadcn `DropdownMenu` + `DropdownMenuCheckboxItem` for multi-select
+  - 4 filters: Labels (derived from stories), Priority (P0-P3), Persona (from usePersonas with colored dots), Has proposals (toggle button)
+  - Sort dropdown: Priority (default), Created date, Updated date
+  - "Clear (N)" button shows when filters are active
+  - Badge counts on each filter button showing active selections
+  - `useKanbanFilters()` hook — reads/writes `KanbanFilters` from `useSearchParams`
+  - URL params: `labels`, `priorities`, `personas` as comma-separated, `hasProposals` as boolean, `sortBy` (omitted when default)
+  - `replace: true` on setSearchParams to avoid polluting browser history
+- Updated `kanban-board.tsx`:
+  - `KanbanBoard` now accepts `filters: KanbanFilters` prop
+  - `filterAndSortStories()` — applies all filters then sorts (priority order, created desc, updated desc)
+  - Persona filter matches against active agent persona
+  - Reordered useMemo: cardDataMap → filteredStories → grouped (dependency order)
+- Updated `story-board.tsx` — renders `KanbanFilterBar` above board, passes filters to `KanbanBoard`
+
+**Files created:**
+- `packages/frontend/src/features/kanban/kanban-filters.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/kanban/kanban-board.tsx` (accepts filters, filter/sort logic)
+- `packages/frontend/src/pages/story-board.tsx` (added filter bar + filters prop)
+
+**Notes for next agent:**
+- T2.2.6 is next: inline story creation in the Backlog column
+- Filter state persists in URL params — e.g., `/board?labels=auth,ui&priorities=p0&sortBy=updated`
+- `useKanbanFilters()` is a reusable hook exported from `kanban-filters.tsx`
+
+---
+
 ## 2026-03-28 — Review: T2.2.4 (approved)
 
 **Reviewed:** Transition prompt modal — `transition-prompt-modal.tsx` and updated `kanban-board.tsx`.

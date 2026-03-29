@@ -1,6 +1,9 @@
 import { KanbanBoard } from "@/features/kanban/kanban-board";
+import { KanbanFilterBar, useKanbanFilters } from "@/features/kanban/kanban-filters";
 
 export function StoryBoardPage() {
+  const [filters] = useKanbanFilters();
+
   return (
     <div className="flex h-full flex-col p-6">
       <div className="mb-4 shrink-0">
@@ -9,8 +12,11 @@ export function StoryBoardPage() {
           Drag stories between workflow states.
         </p>
       </div>
+      <div className="mb-4 shrink-0">
+        <KanbanFilterBar />
+      </div>
       <div className="min-h-0 flex-1">
-        <KanbanBoard />
+        <KanbanBoard filters={filters} />
       </div>
     </div>
   );

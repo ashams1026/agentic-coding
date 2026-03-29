@@ -35,6 +35,7 @@ import { StoryCard } from "./story-card";
 import type { StoryCardData } from "./story-card";
 import { TransitionPromptModal } from "./transition-prompt-modal";
 import type { TransitionPromptData } from "./transition-prompt-modal";
+import type { KanbanFilters } from "./kanban-filters";
 
 // ── Find the story workflow ──────────────────────────────────────
 
@@ -103,6 +104,56 @@ function buildCardDataMap(
   return map;
 }
 
+// ── Filter and sort stories ──────────────────────────────────────
+
+const PRIORITY_ORDER: Record<string, number> = { p0: 0, p1: 1, p2: 2, p3: 3 };
+
+function filterAndSortStories(
+  stories: Story[],
+  filters: KanbanFilters,
+  cardDataMap: Map<StoryId, StoryCardData>,
+): Story[] {
+  let result = stories;
+
+  if (filters.labels.length > 0) {
+    result = result.filter((s) =>
+      filters.labels.some((l) => s.labels.includes(l)),
+    );
+  }
+  if (filters.priorities.length > 0) {
+    result = result.filter((s) => filters.priorities.includes(s.priority));
+  }
+  if (filters.personas.length > 0) {
+    result = result.filter((s) => {
+      const data = cardDataMap.get(s.id);
+      return data?.activeAgent
+        ? filters.personas.some((pid) => data.activeAgent?.persona.id === pid)
+        : false;
+    });
+  }
+  if (filters.hasProposals) {
+    result = result.filter((s) => {
+      const data = cardDataMap.get(s.id);
+      return (data?.pendingProposalCount ?? 0) > 0;
+    });
+  }
+
+  const sorted = [...result];
+  switch (filters.sortBy) {
+    case "priority":
+      sorted.sort((a, b) => (PRIORITY_ORDER[a.priority] ?? 9) - (PRIORITY_ORDER[b.priority] ?? 9));
+      break;
+    case "created":
+      sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      break;
+    case "updated":
+      sorted.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+      break;
+  }
+
+  return sorted;
+}
+
 // ── Find trigger for a transition ────────────────────────────────
 
 function findTrigger(
@@ -128,7 +179,11 @@ interface PendingDrop {
 
 // ── Board component ──────────────────────────────────────────────
 
-export function KanbanBoard() {
+interface KanbanBoardProps {
+  filters: KanbanFilters;
+}
+
+export function KanbanBoard({ filters }: KanbanBoardProps) {
   const { data: stories, isLoading: storiesLoading } = useStories();
   const { data: workflows, isLoading: workflowsLoading } = useWorkflows();
   const { data: tasks } = useTasks();
@@ -154,11 +209,6 @@ export function KanbanBoard() {
     [personas],
   );
 
-  const grouped = useMemo(
-    () => (workflow ? groupByState(stories ?? [], workflow.states) : new Map()),
-    [stories, workflow],
-  );
-
   const cardDataMap = useMemo(
     () =>
       buildCardDataMap(
@@ -169,6 +219,16 @@ export function KanbanBoard() {
         personas ?? [],
       ),
     [stories, tasks, proposals, executions, personas],
+  );
+
+  const filteredStories = useMemo(
+    () => filterAndSortStories(stories ?? [], filters, cardDataMap),
+    [stories, filters, cardDataMap],
+  );
+
+  const grouped = useMemo(
+    () => (workflow ? groupByState(filteredStories, workflow.states) : new Map()),
+    [filteredStories, workflow],
   );
 
   const handleDragStart = useCallback(
