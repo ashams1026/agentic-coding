@@ -7,29 +7,7 @@
 
 ## Sprint 4: Activity Feed, Workflow Designer, Persona Manager, Settings (Phase 2F-2I)
 
-### Workflow Designer
-
-- [x] **T2.8.1** — Build workflow list sidebar. Left sidebar showing all workflows. Each entry: name, type badge (story/task), state count. "Create new" button. "Duplicate" and "Delete" actions. Click selects workflow for editing in main canvas.
-
-- [x] **T2.8.2** — Build state machine canvas. Main area: states rendered as rounded rectangles positioned on a canvas. Each state: name, color, entry/exit indicators. Transitions as directed arrows between states, labeled with transition name. Use a layout algorithm for initial positioning (dagre or similar). States are draggable to rearrange.
-
-- [x] **T2.8.3** — Build state editing interactions. Click state to select → properties panel on right: edit name, color, set as initial/final. "Add state" button or double-click canvas to create new state. Delete state (with confirmation if transitions exist). Visual indicators: initial state has a filled circle, final states have double border.
-
-- [x] **T2.8.4** — Build transition creation and editing. Drag from one state's edge to another to create a transition. Click transition arrow to select → properties panel: transition name, trigger configuration. Delete transition via properties panel or keyboard shortcut.
-
-- [x] **T2.8.5** — Build trigger configuration panel. When a transition is selected, show trigger options in properties panel: assign persona (dropdown of all personas with avatars), dispatch mode (auto/propose/gated radio), max retries (number input), advancement mode (auto/approval/agent). Shows "No trigger" option to leave transition manual-only.
-
-- [x] **T2.8.6** — Build validation warnings. Real-time validation as user edits: warning badges on orphan states (no incoming transitions except initial), unreachable final states, missing initial state. Warning panel at bottom listing all issues. Prevent save if critical issues exist.
-
-- [x] **T2.8.7** — Build workflow templates. "Templates" tab in sidebar: "Default Story Workflow" and "Default Task Workflow" pre-built. "Use template" button clones into a new editable workflow. Templates show preview thumbnail.
-
 ### Persona Manager
-
-- [x] **T2.9.1** — Build persona list view. Grid of persona cards. Each card: avatar (colored circle + icon), name, model badge (opus/sonnet/haiku), description snippet (2 lines), tool count pill. Quick actions on hover: Edit, Duplicate, Delete. "Create new persona" card with + icon. Built-in personas have a "Built-in" badge (editable but restorable).
-
-- [x] **T2.9.2** — Build persona editor. Full-page or large sheet. Sections: Identity (name, description, avatar picker — choose color + icon), Model (selector with cost/capability info per model), System Prompt (large editor), Tools (checklists), Budget (max per run input).
-
-- [x] **T2.9.3** — Build system prompt editor. Large textarea with monospace font. Markdown preview toggle (side-by-side or switch). Line numbers. Character/token count estimate in footer. Placeholder text showing a good example prompt for the persona type.
 
 - [ ] **T2.9.4** — Build tool configuration section. Two groups: "SDK Tools" (Read, Edit, Glob, Grep, Bash, Write, WebFetch, WebSearch — checkboxes) and "AgentOps Tools" (create_tasks, transition_state, request_review, flag_blocked, post_comment, list_tasks, get_context — checkboxes). Each tool has a tooltip describing what it does. Presets button: "Tech Lead preset", "Engineer preset", etc.
 

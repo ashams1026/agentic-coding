@@ -139,3 +139,27 @@
 - [x] **T2.7.1** — Build activity feed page. Full-page chronological stream with 10 event types, date grouping, persona avatars, entity links. *(completed 2026-03-29)*
 
 - [x] **T2.7.2** — Build activity feed filters and real-time updates. Filter bar (event type checkboxes, persona, story, date range), WS subscription for live events with slide-down animation, "new events" indicator, unread nav badge. *(completed 2026-03-29)*
+
+### Workflow Designer
+
+- [x] **T2.8.1** — Build workflow list sidebar. Left sidebar showing all workflows. Each entry: name, type badge (story/task), state count. "Create new" button. "Duplicate" and "Delete" actions. Click selects workflow for editing in main canvas. *(completed 2026-03-29)*
+
+- [x] **T2.8.2** — Build state machine canvas. Main area: states rendered as rounded rectangles positioned on a canvas. Each state: name, color, entry/exit indicators. Transitions as directed arrows between states, labeled with transition name. BFS layout algorithm for positioning. States are draggable. *(completed 2026-03-29)*
+
+- [x] **T2.8.3** — Build state editing interactions. Click state to select → properties panel on right: edit name, color, set as initial/final. "Add state" button or double-click canvas. Delete state with confirmation. Visual indicators: initial filled circle, final double border. *(completed 2026-03-29)*
+
+- [x] **T2.8.4** — Build transition creation and editing. Drag from state edge to another to create transition. Click transition arrow to select → properties panel: transition name, trigger configuration. Delete via panel or keyboard shortcut. *(completed 2026-03-29)*
+
+- [x] **T2.8.5** — Build trigger configuration panel. Transition properties: assign persona (dropdown with avatars), dispatch mode (auto/propose/gated), max retries, advancement mode (auto/approval/agent). "No trigger" option for manual-only. *(completed 2026-03-29)*
+
+- [x] **T2.8.6** — Build validation warnings. Real-time validation: orphan states, unreachable finals, missing initial. Warning panel at bottom. Prevent save on critical issues. *(completed 2026-03-29)*
+
+- [x] **T2.8.7** — Build workflow templates. "Templates" tab in sidebar: "Default Story Workflow" and "Default Task Workflow" pre-built. "Use template" button clones into editable workflow. Preview thumbnails. *(completed 2026-03-29)*
+
+### Persona Manager
+
+- [x] **T2.9.1** — Build persona list view. Grid of persona cards with avatar, name, model badge, description, tool count pill. Hover actions: Edit, Duplicate, Delete. Create card with + icon. Built-in badge. *(completed 2026-03-29)*
+
+- [x] **T2.9.2** — Build persona editor. Large right Sheet with Identity (name, description, avatar picker), Model (3-card selector with cost info), System Prompt (editor), Tools (checkboxes with tooltips), Budget (dollar input). *(completed 2026-03-29)*
+
+- [x] **T2.9.3** — Build system prompt editor. Monospace textarea with line numbers, Edit/Preview toggle with markdown renderer, character/token/line count footer, placeholder example prompt. *(completed 2026-03-29)*

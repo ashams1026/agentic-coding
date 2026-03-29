@@ -5,65 +5,13 @@
 
 ---
 
-## Sprint 1: Monorepo & Tooling (T1.1.1–T1.1.3) — 2026-03-28
+## Sprint 1: Project Scaffolding (T1.1–T1.4) — 2026-03-28
 
-**Summary:** Set up pnpm monorepo with 3 packages (frontend, backend, shared). TypeScript strict mode with project references, bundler moduleResolution, `verbatimModuleSyntax`. ESLint 9 flat config with React plugins for frontend. Prettier with double quotes, trailing commas, 100 width.
+**Summary:** Set up pnpm monorepo (frontend/backend/shared), TypeScript strict mode, ESLint 9, Prettier. React 19 + Vite 8 + Tailwind v4 (CSS-first) + shadcn/ui (new-york, 14 components). React Router v7 (9 routes), TanStack Query + Zustand. Full app shell with collapsible sidebar, dark mode. Defined all entity/API/WS types with branded IDs. Built mock data layer: fixtures, in-memory CRUD API with latency, TanStack Query hooks, mock WebSocket, 60s demo mode.
 
-**Key decisions:**
-- Node 22 LTS, pnpm 10
-- Shared package exports `.ts` source directly (not compiled)
-- Root `"type": "module"` for ESM throughout
-- `verbatimModuleSyntax` requires `import type` for type-only imports
+**Key decisions:** Node 22/pnpm 10, ESM throughout, `verbatimModuleSyntax`, Tailwind v4 `@theme` blocks, dark mode via `.dark` class + HSL vars, branded IDs (`StoryId = \`st-\${string}\``), mock API returns copies, singleton WS EventEmitter.
 
-**Patterns established:**
-- `@/` path alias in frontend (tsconfig + vite.config)
-- Composite project references: shared → frontend, shared → backend
-- `pnpm build` runs all packages, `pnpm typecheck` for type checks
-
----
-
-## Sprint 1: Frontend Foundation (T1.2.1–T1.2.7) — 2026-03-28
-
-**Summary:** Scaffolded React 19 + Vite 8 + Tailwind v4 frontend. Installed shadcn/ui (new-york style, 14 components). React Router v7 with 9 route stubs. TanStack Query + Zustand with persist. Full app shell with collapsible sidebar, project switcher, status bar. Dark mode with system/light/dark cycle.
-
-**Key decisions:**
-- Tailwind v4 CSS-first — `@theme` blocks in index.css, no tailwind.config.ts
-- shadcn/ui `@theme inline` block maps CSS vars to Tailwind utilities
-- Dark mode via `.dark` class on `<html>`, HSL CSS variables
-- Zustand `persist` middleware stores sidebar + theme to localStorage (`agentops-ui` key)
-- `tslib` added as direct dep to fix pnpm strict mode issue with react-remove-scroll
-
-**Patterns established:**
-- `cn()` utility from `@/lib/utils` for class merging
-- Named exports, kebab-case files, PascalCase components
-- `useThemeSync()` hook in RootLayout for theme class management
-- NavLink with active state in sidebar, conditional tooltips when collapsed
-- `TooltipProvider` wraps entire app at RootLayout level
-
-**Files of note:**
-- `src/index.css` — theme tokens, dark mode vars, shadcn inline theme
-- `src/stores/ui-store.ts` — Zustand with persist
-- `src/hooks/use-theme.ts` — theme sync hook
-- `src/components/sidebar.tsx` — full sidebar with nav, project switcher, theme toggle
-- `src/layouts/root-layout.tsx` — app shell layout
-
----
-
-## Sprint 1: Shared Types & Mock Data (T1.3.1–T1.4.5) — 2026-03-28
-
-**Summary:** Defined all entity types (Project, Story, Task, TaskEdge, Workflow, Persona, Trigger, Execution, Comment, ProjectMemory, Proposal) with branded ID types (nanoid-based prefixes). API contract types (request/response) and WebSocket event types. Created comprehensive mock fixtures with cross-referenced data. Built in-memory mock API with full CRUD and simulated latency. TanStack Query hooks for all API calls with optimistic updates. Mock WebSocket system with typed event emitter. Demo mode with 60-second scripted lifecycle replay.
-
-**Key decisions:**
-- Branded ID types: `StoryId = \`st-\${string}\``, `TaskId = \`tk-\${string}\`` — require `as string` casts for Map/Set ops
-- Mock API returns copies (not references) to simulate real API behavior
-- Query keys follow `["entity", id?]` pattern with helper factory
-- WebSocket mock uses singleton EventEmitter pattern
-
-**Patterns established:**
-- Entity types in `packages/shared/src/entities.ts`, IDs in `ids.ts`, API types in `api-types.ts`, WS events in `ws-events.ts`
-- Mock fixtures in `mocks/fixtures.ts`, API in `mocks/api.ts`, WS in `mocks/ws.ts`, demo in `mocks/demo.ts`
-- Query hooks in `hooks/use-*.ts`, re-exported from `hooks/index.ts`
-- `queryKeys` factory in `hooks/query-keys.ts`
+**Core patterns:** `cn()` utility, named exports, kebab-case files, `@/` path alias, query hooks in `hooks/use-*.ts`, mock data in `mocks/`, Zustand persist to localStorage.
 
 ---
 
@@ -164,3 +112,40 @@
 - Model badge pattern: `modelConfig` maps opus→purple, sonnet→blue, haiku→emerald
 - Live counter: `useState` + `useEffect` with `setInterval(1000)` and `tabular-nums` CSS
 - StatusIndicator: Loader2 spinning blue (running), Check emerald (success), X red (error)
+
+---
+
+## Sprint 4: Activity Feed (T2.7.1–T2.7.2) — 2026-03-29
+
+**Summary:** Built activity feed page with full chronological event stream (10 event types: state_change, comment_added, agent_started/completed/failed, task_created, proposal_created/approved/rejected, cost_alert), date grouping with sticky headers, persona avatars, entity links. Filter bar with event type checkboxes (expandable grid), persona/story/date dropdowns, clear all. Live WS subscription via `mockWs.subscribeAll()` with `wsEventToActivity()` converter, slide-down animation for new events, "new events" indicator when scrolled. Zustand activity store for unread nav badge (sky-blue, "9+" cap).
+
+**Key decisions:**
+- `useBaseActivityEvents()` builds from executions/comments/proposals mock data
+- `useLiveActivityEvents()` subscribes to all WS events, converts via mapping function
+- Activity store: simple `{unreadCount, increment, reset}` — reset on mount, increment on WS
+- CSS `@keyframes slide-down` animation for live events entering the feed
+
+**Patterns established:**
+- Activity feed features in `features/activity-feed/` directory
+- `useActivityStore` Zustand store in `stores/activity-store.ts`
+- Sidebar badge pattern: conditional Badge with count, "9+" overflow
+
+---
+
+## Sprint 4: Workflow Designer early (T2.8.1–T2.8.3) — 2026-03-29
+
+**Summary:** Built workflow designer with 3-column layout (260px sidebar + flex canvas + 280px right panel). Sidebar: workflow list with type badges (violet=story, blue=task), state count, Default badge, hover actions (Duplicate, Delete with AlertDialog), "Create new" button. Canvas: SVG-based state machine with BFS layout algorithm (level-based horizontal positioning from initial state), cubic bezier arrows (forward right→left, backward bottom→bottom), arrowhead rotation, grid dot pattern, drag support with SVG coordinate transform and 5px click-vs-drag threshold. State editing: click-to-select with properties panel (name, 12-color swatch + hex input, initial/final checkboxes), add state via button/double-click, delete with transition cleanup confirmation.
+
+**Key decisions:**
+- SVG-based canvas (no external graph library) — custom BFS layout + bezier paths
+- `transitionKey()` = "from→to→name" for unique transition identification
+- `resolvedTransition` derived from workflow data (not separate state) to stay in sync after mutations
+- Click vs drag: 5px mouse movement threshold
+- `key={selectedStateName}` resets properties panel on selection change
+
+**Patterns established:**
+- Workflow designer features in `features/workflow-designer/` directory
+- `computeLayout()` — BFS from initial state, assigns levels, horizontal positioning with vertical centering
+- `computeArrowPath()` — cubic bezier, forward vs backward paths
+- `ConnectionHandle` on right edge for drag-to-connect
+- State/transition selection mutually exclusive in layout
