@@ -370,3 +370,41 @@
 **Reviewed:** Dark mode implementation — theme sync hook, sidebar toggle, persistence.
 
 **Verdict:** Approved. useThemeSync hook correctly handles all three modes with proper media query listener cleanup for system mode. Theme cycle button cleanly integrated into sidebar footer. Zustand selector isolates re-renders. Build passes.
+
+---
+
+## 2026-03-28 — T1.3.1: Define all entity types
+
+**Task:** TypeScript interfaces for all entities + ID prefix types + nanoid generator.
+
+**Done:**
+- Installed nanoid in @agentops/shared
+- Created `src/ids.ts` — branded template literal ID types (`ProjectId = pj-${string}`, `StoryId = st-${string}`, etc. for all 11 entity types), `EntityId` union, `createId` factory object with methods for each entity type (7-char nanoid)
+- Created `src/entities.ts` — all entity interfaces matching PLANNING.md T1.4:
+  - Project, Story, Task (with ExecutionContextEntry[], RejectionPayload)
+  - TaskEdge (DAG dependency graph)
+  - Workflow, WorkflowState, WorkflowTransition
+  - Persona (with avatar, model, tools, budget)
+  - Trigger (with dispatchMode, advancementMode, possibleTargets for evaluate mode)
+  - Execution (with status, outcome, cost, duration, logs)
+  - Comment (with targetType, authorType, metadata)
+  - ProjectMemory (with filesChanged, keyDecisions, consolidatedInto for decay)
+  - Proposal (with type, payload, status)
+  - All enum/union types: Priority, DispatchMode, AdvancementMode, ExecutionStatus, ExecutionOutcome, etc.
+- Updated `src/index.ts` barrel export
+- Verified: shared typecheck clean, full project `tsc --build` clean, lint clean
+
+**Files created:**
+- `packages/shared/src/ids.ts`
+- `packages/shared/src/entities.ts`
+
+**Files modified:**
+- `packages/shared/src/index.ts` (barrel exports)
+- `packages/shared/package.json` (nanoid dep)
+
+**Notes for next agent:**
+- T1.3.2 is next: API contract types (request/response, WebSocket events, enums)
+- Import types from `@agentops/shared` — e.g., `import type { Story, StoryId } from "@agentops/shared"`
+- `createId.story()` generates IDs like `st-a8f3k2m`
+- `verbatimModuleSyntax` is on — use `import type` for type-only imports
+- Story/Task states are `string` (dynamic, defined by workflow) — not fixed enums
