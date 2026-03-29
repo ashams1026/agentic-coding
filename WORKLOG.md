@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — O.1: Refactor shared entity types
+
+**Task:** Replace Story/Task/Workflow/Trigger types with unified WorkItem model.
+
+**Done:**
+- Rewrote `packages/shared/src/ids.ts`: removed `StoryId`, `TaskId`, `TaskEdgeId`, `WorkflowId`, `TriggerId`; added `WorkItemId` (`wi-` prefix), `WorkItemEdgeId` (`we-` prefix); updated `createId` factory
+- Rewrote `packages/shared/src/entities.ts`: replaced `Story` + `Task` with `WorkItem` (parentId for hierarchy); replaced `TaskEdge` with `WorkItemEdge`; removed `Workflow`, `Trigger`, `WorkflowState`, `WorkflowTransition`; added `PersonaAssignment`; updated `Comment`, `Execution`, `Proposal`, `ProjectMemory` to use `workItemId`; removed `Project.defaultWorkflowId`; removed obsolete enum types (`StoryState`, `TaskState`, `WorkflowType`, `DispatchMode`, `AdvancementMode`, `CommentTargetType`); renamed `TaskEdgeType` → `WorkItemEdgeType`
+- Updated `packages/shared/src/api.ts`: replaced Story/Task/Workflow CRUD types with WorkItem equivalents; added `PersonaAssignment` CRUD types; updated route param types
+- Updated `packages/shared/src/ws-events.ts`: replaced `StoryId`/`TaskId` refs with `WorkItemId`; removed `targetType` fields; renamed `taskTitle` → `workItemTitle`
+
+**Files changed:** `packages/shared/src/ids.ts`, `packages/shared/src/entities.ts`, `packages/shared/src/api.ts`, `packages/shared/src/ws-events.ts`
+
+**Notes:** Shared package compiles and builds clean. Frontend will fail because it still imports old types (Story, Task, StoryId, etc.) — this is expected and will be fixed by O.4-O.6 (mock data + hooks refactor). Backend schema.ts still uses old table names — O.18 handles that.
+
+---
+
 ## 2026-03-29 — Review: T3.1.1 (approved)
 
 **Reviewed:** Backend scaffolding — `server.ts`, `index.ts`, `package.json`, root `package.json`.

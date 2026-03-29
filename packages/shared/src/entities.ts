@@ -1,11 +1,8 @@
 import type {
   ProjectId,
-  StoryId,
-  TaskId,
-  TaskEdgeId,
-  WorkflowId,
+  WorkItemId,
+  WorkItemEdgeId,
   PersonaId,
-  TriggerId,
   ExecutionId,
   CommentId,
   ProjectMemoryId,
@@ -16,23 +13,11 @@ import type {
 
 export type Priority = "p0" | "p1" | "p2" | "p3";
 
-export type StoryState = string; // Dynamic — defined by workflow
-
-export type TaskState = string; // Dynamic — defined by workflow
-
-export type WorkflowType = "story" | "task";
-
 export type PersonaModel = "opus" | "sonnet" | "haiku";
-
-export type DispatchMode = "auto" | "propose" | "gated" | "evaluate";
-
-export type AdvancementMode = "auto" | "approval" | "agent";
 
 export type ExecutionStatus = "pending" | "running" | "completed" | "failed" | "cancelled";
 
 export type ExecutionOutcome = "success" | "failure" | "rejected";
-
-export type CommentTargetType = "story" | "task";
 
 export type CommentAuthorType = "agent" | "user" | "system";
 
@@ -40,7 +25,7 @@ export type ProposalType = "task_creation" | "state_transition" | "review_reques
 
 export type ProposalStatus = "pending" | "approved" | "rejected" | "expired";
 
-export type TaskEdgeType = "blocks" | "depends_on" | "related_to";
+export type WorkItemEdgeType = "blocks" | "depends_on" | "related_to";
 
 // ── Entities ───────────────────────────────────────────────────────
 
@@ -48,38 +33,21 @@ export interface Project {
   id: ProjectId;
   name: string;
   path: string;
-  defaultWorkflowId: WorkflowId | null;
   settings: Record<string, unknown>;
   createdAt: string;
 }
 
-export interface Story {
-  id: StoryId;
+export interface WorkItem {
+  id: WorkItemId;
+  parentId: WorkItemId | null;
   projectId: ProjectId;
   title: string;
   description: string;
-  workflowId: WorkflowId;
-  currentState: StoryState;
+  context: Record<string, unknown>;
+  currentState: string;
   priority: Priority;
   labels: string[];
-  context: {
-    acceptanceCriteria: string;
-    notes: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Task {
-  id: TaskId;
-  storyId: StoryId;
-  title: string;
-  description: string;
-  workflowId: WorkflowId;
-  currentState: TaskState;
   assignedPersonaId: PersonaId | null;
-  parentTaskId: TaskId | null;
-  inheritedContext: string;
   executionContext: ExecutionContextEntry[];
   createdAt: string;
   updatedAt: string;
@@ -99,35 +67,17 @@ export interface RejectionPayload {
   retryCount: number;
 }
 
-export interface TaskEdge {
-  id: TaskEdgeId;
-  fromId: TaskId;
-  toId: TaskId;
-  type: TaskEdgeType;
+export interface WorkItemEdge {
+  id: WorkItemEdgeId;
+  fromId: WorkItemId;
+  toId: WorkItemId;
+  type: WorkItemEdgeType;
 }
 
-export interface WorkflowState {
-  name: string;
-  color: string;
-  isInitial: boolean;
-  isFinal: boolean;
-}
-
-export interface WorkflowTransition {
-  from: string;
-  to: string;
-  name: string;
-}
-
-export interface Workflow {
-  id: WorkflowId;
-  name: string;
-  type: WorkflowType;
-  states: WorkflowState[];
-  transitions: WorkflowTransition[];
-  initialState: string;
-  finalStates: string[];
-  isDefault: boolean;
+export interface PersonaAssignment {
+  projectId: ProjectId;
+  stateName: string;
+  personaId: PersonaId;
 }
 
 export interface Persona {
@@ -146,23 +96,9 @@ export interface Persona {
   settings: Record<string, unknown>;
 }
 
-export interface Trigger {
-  id: TriggerId;
-  workflowId: WorkflowId;
-  fromState: string;
-  toState: string | null;
-  personaId: PersonaId;
-  dispatchMode: DispatchMode;
-  advancementMode: AdvancementMode;
-  possibleTargets: string[];
-  maxRetries: number;
-  config: Record<string, unknown>;
-}
-
 export interface Execution {
   id: ExecutionId;
-  targetId: StoryId | TaskId;
-  targetType: "story" | "task";
+  workItemId: WorkItemId;
   personaId: PersonaId;
   status: ExecutionStatus;
   startedAt: string;
@@ -177,8 +113,7 @@ export interface Execution {
 
 export interface Comment {
   id: CommentId;
-  targetId: StoryId | TaskId;
-  targetType: CommentTargetType;
+  workItemId: WorkItemId;
   authorType: CommentAuthorType;
   authorId: PersonaId | null;
   authorName: string;
@@ -190,7 +125,7 @@ export interface Comment {
 export interface ProjectMemory {
   id: ProjectMemoryId;
   projectId: ProjectId;
-  storyId: StoryId;
+  workItemId: WorkItemId;
   summary: string;
   filesChanged: string[];
   keyDecisions: string[];
@@ -201,8 +136,7 @@ export interface ProjectMemory {
 export interface Proposal {
   id: ProposalId;
   executionId: ExecutionId;
-  parentId: StoryId | TaskId;
-  parentType: "story" | "task";
+  workItemId: WorkItemId;
   type: ProposalType;
   payload: Record<string, unknown>;
   status: ProposalStatus;

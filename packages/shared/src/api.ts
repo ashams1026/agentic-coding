@@ -1,9 +1,7 @@
 import type {
   ProjectId,
-  StoryId,
-  TaskId,
-  TaskEdgeId,
-  WorkflowId,
+  WorkItemId,
+  WorkItemEdgeId,
   PersonaId,
   ExecutionId,
   CommentId,
@@ -11,16 +9,15 @@ import type {
 } from "./ids.js";
 import type {
   Project,
-  Story,
-  Task,
-  TaskEdge,
-  Workflow,
+  WorkItem,
+  WorkItemEdge,
   Persona,
+  PersonaAssignment,
   Execution,
   Comment,
   Proposal,
   Priority,
-  TaskEdgeType,
+  WorkItemEdgeType,
   CommentAuthorType,
   ProposalStatus,
 } from "./entities.js";
@@ -48,101 +45,64 @@ export interface ApiErrorResponse {
 export interface CreateProjectRequest {
   name: string;
   path: string;
-  defaultWorkflowId?: WorkflowId;
   settings?: Record<string, unknown>;
 }
 
 export interface UpdateProjectRequest {
   name?: string;
   path?: string;
-  defaultWorkflowId?: WorkflowId | null;
   settings?: Record<string, unknown>;
 }
 
 export type ProjectResponse = ApiResponse<Project>;
 export type ProjectListResponse = ApiListResponse<Project>;
 
-// ── Story endpoints ────────────────────────────────────────────────
+// ── WorkItem endpoints ─────────────────────────────────────────────
 
-export interface CreateStoryRequest {
+export interface CreateWorkItemRequest {
   projectId: ProjectId;
+  parentId?: WorkItemId;
   title: string;
   description?: string;
-  workflowId: WorkflowId;
   priority?: Priority;
   labels?: string[];
-  context?: {
-    acceptanceCriteria?: string;
-    notes?: string;
-  };
+  context?: Record<string, unknown>;
 }
 
-export interface UpdateStoryRequest {
+export interface UpdateWorkItemRequest {
   title?: string;
   description?: string;
   priority?: Priority;
   labels?: string[];
   currentState?: string;
-  context?: {
-    acceptanceCriteria?: string;
-    notes?: string;
-  };
-}
-
-export type StoryResponse = ApiResponse<Story>;
-export type StoryListResponse = ApiListResponse<Story>;
-
-// ── Task endpoints ─────────────────────────────────────────────────
-
-export interface CreateTaskRequest {
-  storyId: StoryId;
-  title: string;
-  description?: string;
-  workflowId: WorkflowId;
-  assignedPersonaId?: PersonaId;
-  parentTaskId?: TaskId;
-}
-
-export interface UpdateTaskRequest {
-  title?: string;
-  description?: string;
-  currentState?: string;
+  context?: Record<string, unknown>;
   assignedPersonaId?: PersonaId | null;
 }
 
-export type TaskResponse = ApiResponse<Task>;
-export type TaskListResponse = ApiListResponse<Task>;
+export type WorkItemResponse = ApiResponse<WorkItem>;
+export type WorkItemListResponse = ApiListResponse<WorkItem>;
 
-// ── TaskEdge endpoints ─────────────────────────────────────────────
+// ── WorkItemEdge endpoints ─────────────────────────────────────────
 
-export interface CreateTaskEdgeRequest {
-  fromId: TaskId;
-  toId: TaskId;
-  type: TaskEdgeType;
+export interface CreateWorkItemEdgeRequest {
+  fromId: WorkItemId;
+  toId: WorkItemId;
+  type: WorkItemEdgeType;
 }
 
-export type TaskEdgeResponse = ApiResponse<TaskEdge>;
-export type TaskEdgeListResponse = ApiListResponse<TaskEdge>;
+export type WorkItemEdgeResponse = ApiResponse<WorkItemEdge>;
+export type WorkItemEdgeListResponse = ApiListResponse<WorkItemEdge>;
 
-// ── Workflow endpoints ─────────────────────────────────────────────
+// ── PersonaAssignment endpoints ────────────────────────────────────
 
-export interface CreateWorkflowRequest {
-  name: string;
-  type: "story" | "task";
-  states: { name: string; color: string; isInitial: boolean; isFinal: boolean }[];
-  transitions: { from: string; to: string; name: string }[];
-  isDefault?: boolean;
+export interface UpsertPersonaAssignmentRequest {
+  projectId: ProjectId;
+  stateName: string;
+  personaId: PersonaId;
 }
 
-export interface UpdateWorkflowRequest {
-  name?: string;
-  states?: { name: string; color: string; isInitial: boolean; isFinal: boolean }[];
-  transitions?: { from: string; to: string; name: string }[];
-  isDefault?: boolean;
-}
-
-export type WorkflowResponse = ApiResponse<Workflow>;
-export type WorkflowListResponse = ApiListResponse<Workflow>;
+export type PersonaAssignmentResponse = ApiResponse<PersonaAssignment>;
+export type PersonaAssignmentListResponse = ApiListResponse<PersonaAssignment>;
 
 // ── Persona endpoints ──────────────────────────────────────────────
 
@@ -179,8 +139,7 @@ export type ExecutionListResponse = ApiListResponse<Execution>;
 // ── Comment endpoints ──────────────────────────────────────────────
 
 export interface CreateCommentRequest {
-  targetId: StoryId | TaskId;
-  targetType: "story" | "task";
+  workItemId: WorkItemId;
   authorType: CommentAuthorType;
   authorId?: PersonaId;
   authorName: string;
@@ -204,8 +163,7 @@ export type ProposalListResponse = ApiListResponse<Proposal>;
 // ── Ready work query ───────────────────────────────────────────────
 
 export interface ReadyWorkItem {
-  task: Task;
-  story: Story;
+  workItem: WorkItem;
   persona: Persona | null;
 }
 
@@ -239,12 +197,8 @@ export interface ProjectParams {
   projectId: ProjectId;
 }
 
-export interface StoryParams {
-  storyId: StoryId;
-}
-
-export interface TaskParams {
-  taskId: TaskId;
+export interface WorkItemParams {
+  workItemId: WorkItemId;
 }
 
 export interface ExecutionParams {
@@ -259,6 +213,6 @@ export interface ProposalParams {
   proposalId: ProposalId;
 }
 
-export interface TaskEdgeParams {
-  edgeId: TaskEdgeId;
+export interface WorkItemEdgeParams {
+  edgeId: WorkItemEdgeId;
 }

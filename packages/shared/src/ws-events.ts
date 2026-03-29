@@ -1,6 +1,5 @@
 import type {
-  StoryId,
-  TaskId,
+  WorkItemId,
   PersonaId,
   ExecutionId,
   CommentId,
@@ -29,8 +28,7 @@ export type WsEventType =
 
 export interface StateChangeEvent {
   type: "state_change";
-  targetId: StoryId | TaskId;
-  targetType: "story" | "task";
+  workItemId: WorkItemId;
   fromState: string;
   toState: string;
   triggeredBy: PersonaId | "user" | "system";
@@ -40,8 +38,7 @@ export interface StateChangeEvent {
 export interface CommentCreatedEvent {
   type: "comment_created";
   commentId: CommentId;
-  targetId: StoryId | TaskId;
-  targetType: "story" | "task";
+  workItemId: WorkItemId;
   authorName: string;
   contentPreview: string;
   timestamp: string;
@@ -60,9 +57,8 @@ export interface AgentStartedEvent {
   type: "agent_started";
   executionId: ExecutionId;
   personaId: PersonaId;
-  targetId: StoryId | TaskId;
-  targetType: "story" | "task";
-  taskTitle: string;
+  workItemId: WorkItemId;
+  workItemTitle: string;
   timestamp: string;
 }
 
@@ -70,8 +66,7 @@ export interface AgentCompletedEvent {
   type: "agent_completed";
   executionId: ExecutionId;
   personaId: PersonaId;
-  targetId: StoryId | TaskId;
-  targetType: "story" | "task";
+  workItemId: WorkItemId;
   outcome: ExecutionOutcome;
   durationMs: number;
   costUsd: number;
@@ -82,8 +77,7 @@ export interface ProposalCreatedEvent {
   type: "proposal_created";
   proposalId: ProposalId;
   executionId: ExecutionId;
-  parentId: StoryId | TaskId;
-  parentType: "story" | "task";
+  workItemId: WorkItemId;
   proposalType: ProposalType;
   timestamp: string;
 }
