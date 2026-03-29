@@ -5,6 +5,42 @@
 
 ---
 
+## 2026-03-28 — T2.2.4: Build transition prompt modal
+
+**Task:** Modal shown when dropping a story on a column with a configured trigger. Shows persona info, "Run trigger"/"Skip trigger"/"Cancel" buttons.
+
+**Done:**
+- Created `features/kanban/transition-prompt-modal.tsx`:
+  - `TransitionPromptModal` component with shadcn `Dialog`
+  - Shows story title, fromState → toState transition description
+  - Persona avatar (colored circle + Bot icon) with name and description
+  - Three buttons: "Run trigger" (primary), "Skip trigger" (secondary), "Cancel" (outline)
+  - `onOpenChange` wired to cancel for closing via overlay/escape
+- Updated `kanban-board.tsx`:
+  - Added `useTriggers()` hook + persona map
+  - `findTrigger()` helper — matches trigger by workflowId, fromState, toState (or null toState)
+  - `PendingDrop` state stores storyId + targetState while modal is open
+  - `onDragEnd` now checks for trigger before transitioning:
+    - Trigger found + persona resolved → show modal, defer transition
+    - No trigger → transition silently (same as before)
+  - `handleRunTrigger` — transitions the story (mock: same mutation, real: would also dispatch agent)
+  - `handleSkipTrigger` — transitions without running agent
+  - `handleCancelDrop` — cancels drop entirely, no state change
+- Mock data has 4 triggers on story workflow: Backlog→Defining (PM), Defining→Decomposing (Tech Lead), In Progress→In Review (Reviewer), In Review→QA (QA)
+
+**Files created:**
+- `packages/frontend/src/features/kanban/transition-prompt-modal.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/kanban/kanban-board.tsx` (trigger check, modal integration)
+
+**Notes for next agent:**
+- T2.2.5 is next: filter bar and sort controls for the kanban board
+- Currently "Run trigger" and "Skip trigger" both call the same mutation (updateStory). When the backend is built, "Run trigger" would also dispatch the agent execution.
+- Transitions without triggers (e.g., Decomposing→In Progress, QA→Done) still transition silently.
+
+---
+
 ## 2026-03-28 — Review: T2.2.3 (approved)
 
 **Reviewed:** Drag-and-drop between kanban columns — `draggable-story-card.tsx`, updated `kanban-board.tsx` and `kanban-column.tsx`.
