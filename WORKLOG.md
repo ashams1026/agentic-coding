@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: T2.5.2 (approved)
+
+**Reviewed:** Active agent sidebar list — `features/agent-monitor/active-agent-sidebar.tsx`, layout update, and sidebar nav badge.
+- All requirements met: persona avatar with pulsing green dot, name, task name (truncated), live elapsed time (1s interval, tabular-nums), cost ticker ($X.XX), click selection, sorted by start time
+- Badge on main sidebar nav: emerald pill (expanded) / circle overlay (collapsed), driven by useExecutions
+- Clean separation: sidebar component owns its data, layout handles selection/empty state
+- TanStack Query deduplicates redundant fetches between sidebar and layout
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.5.2: Build active agent sidebar list
 
 **Task:** Enhanced sidebar entries with persona avatar, name, task name, live elapsed time counter, live cost ticker, pulsing status dot. Click selects agent. Sorted by start time. Badge count in sidebar nav updates.
