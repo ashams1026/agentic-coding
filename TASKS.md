@@ -25,7 +25,7 @@
 
 ### Persona Manager
 
-- [review] **T2.9.1** — Build persona list view. Grid of persona cards. Each card: avatar (colored circle + icon), name, model badge (opus/sonnet/haiku), description snippet (2 lines), tool count pill. Quick actions on hover: Edit, Duplicate, Delete. "Create new persona" card with + icon. Built-in personas have a "Built-in" badge (editable but restorable).
+- [x] **T2.9.1** — Build persona list view. Grid of persona cards. Each card: avatar (colored circle + icon), name, model badge (opus/sonnet/haiku), description snippet (2 lines), tool count pill. Quick actions on hover: Edit, Duplicate, Delete. "Create new persona" card with + icon. Built-in personas have a "Built-in" badge (editable but restorable).
 
 - [ ] **T2.9.2** — Build persona editor. Full-page or large sheet. Sections: Identity (name, description, avatar picker — choose color + icon), Model (selector with cost/capability info per model), System Prompt (large editor), Tools (checklists), Budget (max per run input).
 

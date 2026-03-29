@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: T2.9.1 (approved)
+
+**Reviewed:** Persona list view — `persona-list.tsx` + page update.
+- Responsive grid (1-4 cols) with PersonaCard: avatar (colored circle + mapped icon), name, Built-in badge, model badge (violet/blue/emerald), 2-line description, tool count pill
+- Hover actions: Edit (Pencil), Duplicate (Copy), Delete (Trash2)
+- CreateCard: dashed border, Plus icon, creates default persona + navigates to editor
+- BUILT_IN_IDS matches fixture IDs (ps-pm00001 etc.)
+- Delete dialog with built-in warning
+- Empty state with Users icon + CTA
+- Uses mock hooks (usePersonas, useCreatePersona, useDeletePersona)
+- Dark mode, cn(), shadcn components, named exports — all conventions followed
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.9.1: Build persona list view
 
 **Task:** Grid of persona cards with avatar, name, model badge, description, tool count pill. Quick actions on hover. Create card with + icon. Built-in persona badge.
