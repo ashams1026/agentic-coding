@@ -149,3 +149,39 @@
 - `computeArrowPath()` — cubic bezier, forward vs backward paths
 - `ConnectionHandle` on right edge for drag-to-connect
 - State/transition selection mutually exclusive in layout
+
+---
+
+## Sprint 4: Workflow Designer continued (T2.8.4–T2.8.7) — 2026-03-29
+
+**Summary:** Completed workflow designer with transition creation (drag-to-connect from right-edge handle, preview dashed line, hit-test drop), transition editing (click-to-select arrows with 12px invisible hit area, properties panel with name input, delete via panel or keyboard), trigger configuration (persona dropdown with avatars/model badges, dispatch mode auto/propose/gated, max retries, advancement mode auto/approval/agent, no-trigger toggle), validation warnings (5 rules: missing/multiple initial as errors, no finals/orphans/unreachable finals/dead-ends as warnings, amber badges on states, collapsible bottom panel), and workflow templates (Workflows/Templates tabs, two pre-built templates matching fixtures, TemplatePreview mini SVG, "Use template" clones into editable workflow).
+
+**Key decisions:**
+- `OptionGroup<T>` generic segmented button component for radio-like selection (reusable)
+- Trigger config is local state + read from mock triggers — no save mutation yet
+- Validation via pure `validateWorkflow()` function + `useWorkflowValidation()` useMemo hook
+- Templates defined as constants matching mock fixture data, clone via createWorkflow mutation
+
+**Patterns established:**
+- `TransitionPropertiesPanel` — right panel for transition editing (mutually exclusive with state properties)
+- `ConnectionHandle` + drag preview + hit-test for creating transitions
+- Trigger lookup: `triggers.find(t => t.fromState === from && t.toState === to)`
+- Validation badges: `stateWarnings` map for O(1) lookup in canvas
+
+---
+
+## Refinements: UI Polish & UX (R.1–R.6) — 2026-03-29
+
+**Summary:** Completed 6 refinement tasks: sidebar spacing normalization (consistent badge sizing h-4/h-5, padding px-2 py-2, space-y-0.5), sidebar transitions (duration-300 ease-in-out, scale/opacity badge animations, label width+opacity transitions), mobile responsiveness (fixed overlay with backdrop, slide-in via translate-x, auto-close on navigation, hamburger menu in mobile top bar), shared component extraction (moved CommentStream + ExecutionTimeline to features/common/ via git mv), story list view with master-detail panels (search/sort, compact StoryListRow with state badge + priority + progress bar, StoryDetailSidePanel at ~60% width, Board/List toggle), nested task detail panel (TaskDetailSidePanel with breadcrumb navigation, optional onTaskClick callback pattern for backward compatibility).
+
+**Key decisions:**
+- `sidebarContent` variable pattern for rendering same sidebar in desktop and mobile contexts
+- `mobileSidebarOpen` excluded from Zustand persist (always starts closed)
+- Breadcrumb navigation over nested panel stacking for task detail (simpler UX)
+- `onTaskClick` optional prop — renders `<button>` when provided, falls back to `<Link>` when not
+
+**Patterns established:**
+- Mobile sidebar: fixed overlay (md:hidden) + desktop inline (hidden md:block), backdrop bg-black/50
+- Master-detail: left panel `w-2/5` when detail open, `w-full` when not, transition-all duration-300
+- Story list features in `features/story-list/` directory
+- Shared reusable components in `features/common/` directory

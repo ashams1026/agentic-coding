@@ -163,3 +163,33 @@
 - [x] **T2.9.2** — Build persona editor. Large right Sheet with Identity (name, description, avatar picker), Model (3-card selector with cost info), System Prompt (editor), Tools (checkboxes with tooltips), Budget (dollar input). *(completed 2026-03-29)*
 
 - [x] **T2.9.3** — Build system prompt editor. Monospace textarea with line numbers, Edit/Preview toggle with markdown renderer, character/token/line count footer, placeholder example prompt. *(completed 2026-03-29)*
+
+- [x] **T2.9.4** — Build tool configuration section. Two groups: "SDK Tools" and "AgentOps Tools" with checkboxes and tooltips. Presets button for Tech Lead/Engineer/etc. *(completed 2026-03-29)*
+
+- [x] **T2.9.5** — Build test run panel. Collapsible section at bottom of persona editor with sample prompt input, test button, and mini terminal output renderer. *(completed 2026-03-29)*
+
+### Settings
+
+- [x] **T2.10.1** — Build settings page layout. Left sidebar nav (200px, 7 sections) + scrollable content area (max-w-2xl centered). *(completed 2026-03-29)*
+
+- [x] **T2.10.2** — Build projects section. Project list with name/path/workflow badge, add/edit forms with path validation and workflow selector, edit/remove actions, empty state. *(completed 2026-03-29)*
+
+---
+
+## Refinements: UI Polish & UX Improvements — completed 2026-03-29
+
+### Sidebar Fixes
+
+- [x] **R.1** — Fix sidebar spacing and alignment. Normalized padding/gaps, badge sizing consistency, project switcher alignment, nav item padding. *(completed 2026-03-29)*
+
+- [x] **R.2** — Improve sidebar transitions. Duration-300 ease-in-out, scale/opacity badge animations, label width+opacity transitions. *(completed 2026-03-29)*
+
+- [x] **R.3** — Add sidebar mobile responsiveness. Fixed overlay with backdrop, slide-in animation, auto-close on navigation, hamburger menu in mobile top bar. *(completed 2026-03-29)*
+
+### Story/Task UX Overhaul
+
+- [x] **R.4** — Extract shared detail components. Moved CommentStream and ExecutionTimeline to features/common/. *(completed 2026-03-29)*
+
+- [x] **R.5** — Build story list view with master-detail panels. Filterable/sortable list, side-panel detail at ~60% width, Board/List toggle. *(completed 2026-03-29)*
+
+- [x] **R.6** — Build nested task detail panel. TaskDetailSidePanel with breadcrumb navigation, reuses all task detail components. *(completed 2026-03-29)*
