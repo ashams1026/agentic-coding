@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T2.8.3 (approved)
+
+**Reviewed:** State editing interactions — `state-properties-panel.tsx`, canvas modifications, layout rewire.
+- Click-to-select with 5px drag threshold — clean UX pattern
+- Properties panel: name (blur/Enter save), 12-color swatch + hex input, initial/final checkboxes (mutually exclusive)
+- Layout correctly handles state rename in transitions, initial state exclusivity, delete with transition cleanup
+- Add state: floating button + double-click canvas, unique name generation
+- Delete: AlertDialog with connected transition count warning
+- `key={selectedStateName}` resets panel state on selection change
+- Selection highlight: dashed stroke-ring rectangle
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.8.3: Build state editing interactions
 
 **Task:** Click state to select → properties panel on right: edit name, color, set as initial/final. "Add state" button or double-click canvas to create new state. Delete state (with confirmation if transitions exist). Visual indicators: initial state has a filled circle, final states have double border.
