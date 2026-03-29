@@ -5,6 +5,47 @@
 
 ---
 
+## 2026-03-29 — T2.8.2: Build state machine canvas
+
+**Task:** States as rounded rectangles on SVG canvas. Name, color, entry/exit indicators. Transitions as directed arrows with labels. Layout algorithm for initial positioning. States are draggable.
+
+**Done:**
+- Created `features/workflow-designer/state-machine-canvas.tsx`:
+  - `StateMachineCanvas` — SVG-based canvas with grid dot background
+  - `computeLayout()` — BFS-based level layout from initial state: states grouped by BFS level, positioned horizontally (left-to-right), vertically centered within each level
+  - `StateNode` — rounded rectangle (rx=10) with color stroke, colored bar at top, state name centered
+    - Initial state: filled circle indicator to the left, "entry" label at bottom
+    - Final state: double border (inner rect), "exit" label at bottom
+    - Cursor grab/grabbing for drag feedback
+  - `TransitionArrow` — cubic bezier SVG paths between states
+    - Forward arrows: right-side → left-side with smooth curves
+    - Backward arrows: bottom → bottom with curve offset below
+    - Arrowhead polygon at endpoint, rotated to match path tangent
+    - Label background rect + text at midpoint
+  - `computeArrowPath()` — generates SVG path strings for forward/backward transitions
+  - `getArrowheadAngle()` — parses bezier endpoint for arrowhead rotation
+  - Drag support: onMouseDown/Move/Up with SVG coordinate transformation (handles viewport scaling)
+  - Positions reset when workflow changes (tracked via ref)
+  - Dynamic viewBox computed from node positions
+  - Empty state: "No states defined" message
+- Updated `workflow-designer-layout.tsx`: replaced canvas placeholder with `<StateMachineCanvas workflow={selectedWorkflow} />`
+
+**Files created:**
+- `packages/frontend/src/features/workflow-designer/state-machine-canvas.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/workflow-designer/workflow-designer-layout.tsx`
+
+**Notes for next agent:**
+- T2.8.3 is next: state editing interactions (click to select → properties panel, add/delete states)
+- The canvas currently renders states and transitions but has no selection/editing — T2.8.3 will add click-to-select and properties panel
+- Drag works via SVG coordinate math (accounting for viewBox/viewport scale)
+- Layout uses BFS levels — mostly linear workflows look clean, but complex graphs may need manual adjustment (that's what drag is for)
+- Grid dot pattern uses CSS classes (fill-border/50) for theme support
+- SVG text uses Tailwind classes (fill-foreground, fill-muted-foreground) for dark mode
+
+---
+
 ## 2026-03-29 — Review: T2.8.1 (approved)
 
 **Reviewed:** Workflow list sidebar — `features/workflow-designer/workflow-list-sidebar.tsx`, `workflow-designer-layout.tsx`, `pages/workflow-designer.tsx`.

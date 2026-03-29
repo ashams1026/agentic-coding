@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { GitBranch } from "lucide-react";
 import { WorkflowListSidebar } from "./workflow-list-sidebar";
+import { StateMachineCanvas } from "./state-machine-canvas";
 import { useWorkflows } from "@/hooks";
 import type { WorkflowId } from "@agentops/shared";
 
@@ -22,28 +23,19 @@ export function WorkflowDesignerLayout() {
         />
       </div>
 
-      {/* Main area — canvas placeholder (T2.8.2 will replace this) */}
-      <div className="flex-1 flex items-center justify-center bg-background">
+      {/* Main area — state machine canvas */}
+      <div className="flex-1 overflow-hidden">
         {selectedWorkflow ? (
-          <div className="text-center space-y-3">
-            <div className="flex items-center justify-center gap-2">
-              <GitBranch className="h-5 w-5 text-muted-foreground" />
-              <h2 className="text-lg font-semibold">{selectedWorkflow.name}</h2>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {selectedWorkflow.states.length} states &middot; {selectedWorkflow.transitions.length} transitions
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Canvas editor will be built in T2.8.2
-            </p>
-          </div>
+          <StateMachineCanvas workflow={selectedWorkflow} />
         ) : (
-          <div className="text-center space-y-2">
-            <GitBranch className="h-10 w-10 text-muted-foreground/30 mx-auto" />
-            <p className="text-sm font-medium">No workflow selected</p>
-            <p className="text-xs text-muted-foreground">
-              Select a workflow from the sidebar or create a new one.
-            </p>
+          <div className="flex h-full items-center justify-center bg-background">
+            <div className="text-center space-y-2">
+              <GitBranch className="h-10 w-10 text-muted-foreground/30 mx-auto" />
+              <p className="text-sm font-medium">No workflow selected</p>
+              <p className="text-xs text-muted-foreground">
+                Select a workflow from the sidebar or create a new one.
+              </p>
+            </div>
           </div>
         )}
       </div>
