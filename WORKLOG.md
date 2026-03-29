@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: R.1 (approved)
+
+**Reviewed:** Sidebar spacing/alignment fixes in `sidebar.tsx`.
+- All 4 task requirements addressed: padding normalization, badge sizing consistency, project switcher centering, nav item padding
+- Collapsed badges `h-4 min-w-4` vs expanded `h-5 min-w-5` — proportionally appropriate for their contexts (absolute overlay vs inline pill)
+- Project switcher centered with `justify-center` in both states
+- Nav spacing tightened to `space-y-0.5`
+- Minimal diff, no new imports or components, build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — R.1: Fix sidebar spacing and alignment
 
 **Task:** Normalize padding/gaps between collapsed and expanded states. Fix badge sizing consistency. Adjust project switcher vertical alignment. Normalize nav item padding.
