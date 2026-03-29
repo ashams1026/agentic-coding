@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.7.1 (approved)
+
+**Reviewed:** Activity feed page — `features/activity-feed/activity-feed.tsx` and `pages/activity-feed.tsx`.
+- All 10 event types implemented with correct icons, colors (light+dark), and labels
+- Events derived from real mock data (executions, comments, proposals) + mock cost alert
+- Date grouping with sticky headers (Today/Yesterday/weekday+date)
+- EventRow: type icon, persona avatar, description, timestamp, type badge, entity link
+- Empty state handled
+- Build passes
+- Minor nit: `personas` in useMemo deps array but unused inside memo — harmless
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.7.1: Build activity feed page
 
 **Task:** Full-page chronological stream. Each event entry: timestamp, colored icon by type, persona avatar (if agent-sourced), description text, link to source entity. Types: state transition, agent started, agent completed, agent failed, comment posted, proposal created, proposal approved/rejected, manual override, cost alert.
