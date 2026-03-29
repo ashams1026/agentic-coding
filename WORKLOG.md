@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-03-28 — Review: T2.1.5 (approved)
+
+**Reviewed:** Cost summary widget — `features/dashboard/cost-summary.tsx` and dashboard integration.
+
+**Verdict:** Approved. All requirements met: recharts AreaChart sparkline with gradient fill showing 7-day daily spend, custom tooltip with shadcn styling, today's spend display with graceful $0.00 handling, monthly progress bar with green/amber/red thresholds. Uses `useCostSummary()` mock hook. Proper TypeScript strict mode handling (optional chaining for array access). Dashboard widget grid now complete. Build clean.
+
+---
+
 ## 2026-03-28 — T2.1.5: Build cost summary widget
 
 **Task:** Sparkline chart showing daily spend for last 7 days, monthly total vs cap progress bar, today's spend display.
