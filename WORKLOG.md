@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: T2.12.2 (approved)
+
+**Reviewed:** Demo mode — `use-demo.ts`, `demo-controls.tsx`, `dashboard.tsx`, `root-layout.tsx`.
+- "Watch Demo" button correctly placed in dashboard header, hidden while demo runs
+- `DemoControls` floating overlay: red pulsing indicator, DEMO badge, progress bar (linear 1s transition), elapsed time (font-mono m:ss), stop button (red)
+- `useDemo` hook: wraps `mocks/demo.ts` with React state, `useSearchParams()` for `?demo=true` auto-start, cleanup on stop/unmount
+- Demo script fires all WS events: state changes, agent runs with output chunks, comments, proposals — consumed by `useWsQuerySync` + `useToastEvents` + terminal renderer + activity feed
+- Stop works correctly via `stopDemo()` which cancels all timers/intervals and calls `mockWs.clearAll()`
+- Note: pause not implemented (only stop) — acceptable since demo script's setTimeout-based scheduling doesn't support pause natively
+- `DEMO_DURATION = 61` matches script's final schedule at 61s
+- Build passes, conventions followed
+- Verdict: **approved**
+- **Sprint 4 is now complete.** All 9 tasks (T2.10.3–T2.12.2) approved.
+
+---
+
 ## 2026-03-29 — T2.12.2: Build demo mode
 
 **Task:** "Watch Demo" button on dashboard, `?demo=true` auto-start, ~60s scripted replay of full story lifecycle with controls overlay.
