@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: T2.3.7 (approved)
+
+**Reviewed:** Story metadata collapsible section — `story-metadata.tsx` and story-detail page integration.
+- All requirements met: collapsible section (closed by default, ChevronDown rotation via Radix data-state), MetaRow reusable subcomponent with icon + label + value
+- Displays: created/updated dates, project name (resolved via useProjects), workflow name + type, trigger status ("Waiting for [Persona]" with color dot or "No trigger configured"), rejection count (conditional, amber)
+- Read-only, clean data resolution via hooks + useMemo lookups
+- Added shadcn Collapsible component
+- Story Detail section now complete (T2.3.1–T2.3.7): Header, Description, Proposals, Tasks, Comments, Execution History, Metadata
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.3.7: Build story metadata sidebar
 
 **Task:** Collapsible section showing read-only story info: created date, updated date, project name, workflow name, current trigger status, retry count.
