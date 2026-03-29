@@ -5,6 +5,41 @@
 
 ---
 
+## 2026-03-29 — T2.6.1: Build agent history list
+
+**Task:** Tab or toggle: "Live" / "History" on the agent monitor page. Table/list of past executions. Columns: persona avatar + name, task/story title, started time, duration, cost, outcome badge. Sortable columns. Click expands to full output (reuse terminal renderer).
+
+**Done:**
+- Created `features/agent-monitor/agent-history.tsx`:
+  - `AgentHistory` — table of past executions (status !== "running"), driven by `useExecutions`
+  - Columns: persona avatar + name, target (task/story title), started time (formatted date), duration (Xs/Xm Ys), cost ($X.XX), outcome badge (Success=emerald, Failed=red, Rejected=amber)
+  - Sortable columns: "Started", "Duration", "Cost" — click toggles asc/desc, `SortIcon` shows active sort direction
+  - `HistoryRow` — uses shadcn Collapsible wrapping TableRow, click expands to show TerminalRenderer (300px height) with full execution logs
+  - Empty state: "No execution history" message
+- Added shadcn Table component (`components/ui/table.tsx`)
+- Refactored `features/agent-monitor/agent-monitor-layout.tsx`:
+  - Added "Live" / "History" tabs using shadcn Tabs at top of page
+  - Live tab shows active agent count badge (emerald pill)
+  - Extracted `LiveView` sub-component for the existing live view (sidebar + terminal/split)
+  - History tab shows `AgentHistory` component
+  - `EmptyState` only shown within LiveView when no active agents
+
+**Files created:**
+- `packages/frontend/src/features/agent-monitor/agent-history.tsx`
+- `packages/frontend/src/components/ui/table.tsx` (shadcn)
+
+**Files modified:**
+- `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`
+
+**Notes for next agent:**
+- T2.6.2 is next: history filters and aggregate stats (filter bar + stats summary)
+- The history table reuses TerminalRenderer for expanded log view — same component as live view
+- Mock data has 7 completed executions (EXEC_1-3, 5-7) + 1 rejected (EXEC_7) for testing
+- Sort state defaults to "startedAt" descending (most recent first)
+- Only one row can be expanded at a time (single expandedId state)
+
+---
+
 ## 2026-03-29 — Review: T2.5.6 (approved)
 
 **Reviewed:** Agent control bar — `features/agent-monitor/agent-control-bar.tsx`, layout integration, AlertDialog component.

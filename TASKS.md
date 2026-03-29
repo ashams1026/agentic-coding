@@ -23,7 +23,7 @@
 
 ### Agent Monitor — History View
 
-- [ ] **T2.6.1** — Build agent history list. Tab or toggle: "Live" / "History" on the agent monitor page. Table/list of past executions. Columns: persona avatar + name, task/story title, started time, duration, cost, outcome badge. Sortable columns. Click expands to full output (reuse terminal renderer).
+- [review] **T2.6.1** — Build agent history list. Tab or toggle: "Live" / "History" on the agent monitor page. Table/list of past executions. Columns: persona avatar + name, task/story title, started time, duration, cost, outcome badge. Sortable columns. Click expands to full output (reuse terminal renderer).
 
 - [ ] **T2.6.2** — Build history filters and aggregate stats. Filter by: persona, outcome (success/failure/rejected), date range, cost range. Stats bar above list: total runs, total cost, success rate %, average duration. Updates reactively as filters change.
 

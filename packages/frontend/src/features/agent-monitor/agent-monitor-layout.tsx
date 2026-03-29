@@ -2,9 +2,11 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router";
 import { Monitor, ArrowRight, Columns2, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useExecutions } from "@/hooks";
 import { ActiveAgentSidebar } from "./active-agent-sidebar";
 import { AgentControlBar } from "./agent-control-bar";
+import { AgentHistory } from "./agent-history";
 import { TerminalRenderer } from "./terminal-renderer";
 import { SplitView } from "./split-view";
 import type { ExecutionId } from "@agentops/shared";
@@ -35,35 +37,28 @@ function EmptyState() {
   );
 }
 
-// ── Main layout ────────────────────────────────────────────────
+// ── Live view content ─────────────────────────────────────────
 
-export function AgentMonitorLayout() {
-  const { data: executions = [] } = useExecutions();
+interface LiveViewProps {
+  effectiveSelectedId: ExecutionId | null;
+  activeExecutionIds: ExecutionId[];
+  splitMode: boolean;
+  setSplitMode: (v: boolean) => void;
+  selectedId: ExecutionId | null;
+  setSelectedId: (id: ExecutionId) => void;
+  hasActiveAgents: boolean;
+}
 
-  const [selectedId, setSelectedId] = useState<ExecutionId | null>(null);
-  const [splitMode, setSplitMode] = useState(false);
-
-  // Active (running) executions
-  const activeExecutions = useMemo(
-    () => executions.filter((e) => e.status === "running"),
-    [executions],
-  );
-
-  const activeExecutionIds = useMemo(
-    () => activeExecutions.map((e) => e.id),
-    [activeExecutions],
-  );
-
-  // Auto-select first agent if none selected or selection no longer valid
-  const effectiveSelectedId = useMemo(() => {
-    if (selectedId && activeExecutions.some((e) => e.id === selectedId)) {
-      return selectedId;
-    }
-    return activeExecutions.length > 0 ? activeExecutions[0]!.id : null;
-  }, [selectedId, activeExecutions]);
-
-  // No active agents — full empty state
-  if (activeExecutions.length === 0) {
+function LiveView({
+  effectiveSelectedId,
+  activeExecutionIds,
+  splitMode,
+  setSplitMode,
+  selectedId: _selectedId,
+  setSelectedId,
+  hasActiveAgents,
+}: LiveViewProps) {
+  if (!hasActiveAgents) {
     return <EmptyState />;
   }
 
@@ -120,6 +115,75 @@ export function AgentMonitorLayout() {
             </div>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main layout ────────────────────────────────────────────────
+
+export function AgentMonitorLayout() {
+  const { data: executions = [] } = useExecutions();
+
+  const [selectedId, setSelectedId] = useState<ExecutionId | null>(null);
+  const [splitMode, setSplitMode] = useState(false);
+  const [tab, setTab] = useState<"live" | "history">("live");
+
+  // Active (running) executions
+  const activeExecutions = useMemo(
+    () => executions.filter((e) => e.status === "running"),
+    [executions],
+  );
+
+  const activeExecutionIds = useMemo(
+    () => activeExecutions.map((e) => e.id),
+    [activeExecutions],
+  );
+
+  // Auto-select first agent if none selected or selection no longer valid
+  const effectiveSelectedId = useMemo(() => {
+    if (selectedId && activeExecutions.some((e) => e.id === selectedId)) {
+      return selectedId;
+    }
+    return activeExecutions.length > 0 ? activeExecutions[0]!.id : null;
+  }, [selectedId, activeExecutions]);
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Tab bar */}
+      <div className="flex items-center px-4 py-2 border-b">
+        <Tabs value={tab} onValueChange={(v) => setTab(v as "live" | "history")}>
+          <TabsList className="h-8">
+            <TabsTrigger value="live" className="text-xs px-3 h-6">
+              Live
+              {activeExecutions.length > 0 && (
+                <span className="ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[9px] font-bold text-white">
+                  {activeExecutions.length}
+                </span>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="history" className="text-xs px-3 h-6">
+              History
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      {/* Tab content */}
+      <div className="flex-1 min-h-0">
+        {tab === "live" ? (
+          <LiveView
+            effectiveSelectedId={effectiveSelectedId}
+            activeExecutionIds={activeExecutionIds}
+            splitMode={splitMode}
+            setSplitMode={setSplitMode}
+            selectedId={selectedId}
+            setSelectedId={setSelectedId}
+            hasActiveAgents={activeExecutions.length > 0}
+          />
+        ) : (
+          <AgentHistory />
+        )}
       </div>
     </div>
   );
