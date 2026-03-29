@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
+import { useActivityStore } from "@/stores/activity-store";
 import { useExecutions } from "@/hooks";
 import { Button } from "@/components/ui/button";
 import {
@@ -50,6 +51,7 @@ export function Sidebar() {
   const { sidebarCollapsed, toggleSidebar, theme, setTheme } = useUIStore();
   const { data: executions } = useExecutions();
   const activeAgentCount = executions?.filter((e) => e.status === "running").length ?? 0;
+  const unreadActivityCount = useActivityStore((s) => s.unreadCount);
 
   return (
     <aside
@@ -107,6 +109,11 @@ export function Sidebar() {
                       {activeAgentCount}
                     </span>
                   )}
+                  {to === "/activity" && unreadActivityCount > 0 && sidebarCollapsed && (
+                    <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-sky-500 text-[8px] font-bold text-white">
+                      {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
+                    </span>
+                  )}
                 </span>
                 {!sidebarCollapsed && (
                   <>
@@ -114,6 +121,11 @@ export function Sidebar() {
                     {to === "/agents" && activeAgentCount > 0 && (
                       <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[10px] font-bold text-white">
                         {activeAgentCount}
+                      </span>
+                    )}
+                    {to === "/activity" && unreadActivityCount > 0 && (
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1.5 text-[10px] font-bold text-white">
+                        {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
                       </span>
                     )}
                   </>

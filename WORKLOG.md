@@ -5,6 +5,44 @@
 
 ---
 
+## 2026-03-29 — T2.7.2: Build activity feed filters and real-time updates
+
+**Task:** Filter bar: by event type (checkboxes), by persona, by story, by date range. New events animate in at top (slide-down animation, via mock WebSocket). "New events" indicator if user has scrolled down. Unread count badge on Activity Feed nav item.
+
+**Done:**
+- Enhanced `features/activity-feed/activity-feed.tsx`:
+  - `FilterBar` — event type checkboxes (expandable grid, select/deselect all), persona dropdown, story dropdown, date range preset (Today/Yesterday/7d/30d/All), Clear button
+  - `useLiveActivityEvents()` — subscribes to mockWs via `subscribeAll`, converts WS events (agent_started, agent_completed, state_change, comment_created, proposal_created, proposal_updated) to ActivityEvents
+  - `wsEventToActivity()` — maps WS event types to activity event types
+  - Live events are prepended to list, merged with base events, sorted by timestamp
+  - `animate-slide-down` CSS class on live events for slide-down entrance animation
+  - "New events" indicator — sticky button at top when scrolled down + new events arrive, click scrolls to top
+  - Empty filter state: "No events match the current filters"
+  - Live events get a "LIVE" badge
+- Created `stores/activity-store.ts`:
+  - Zustand store: `unreadCount`, `increment()`, `reset()`
+  - Incremented by WS subscription in activity feed, reset when feed mounts
+- Updated `components/sidebar.tsx`:
+  - Added sky-blue unread badge on Activity Feed nav item (both collapsed + expanded)
+  - Shows "9+" for counts over 9
+- Added `animate-slide-down` keyframe animation to `index.css`
+
+**Files created:**
+- `packages/frontend/src/stores/activity-store.ts`
+
+**Files modified:**
+- `packages/frontend/src/features/activity-feed/activity-feed.tsx`
+- `packages/frontend/src/components/sidebar.tsx`
+- `packages/frontend/src/index.css`
+
+**Notes for next agent:**
+- Date range uses presets instead of a datepicker (no datepicker component available yet)
+- WS subscription uses `subscribeAll` and filters relevant events — ignores agent_output_chunk, cost_update, execution_update
+- The unread badge increments globally (even when on other pages) via the WS subscription in useLiveActivityEvents — the hook runs when ActivityFeed is mounted; for global tracking, would need a provider-level subscription (acceptable scope for mock phase)
+- Story filter matches by checking if targetPath contains the storyId — works for story-level events, task events with story context would need parent lookup
+
+---
+
 ## 2026-03-29 — Review: T2.7.1 (approved)
 
 **Reviewed:** Activity feed page — `features/activity-feed/activity-feed.tsx` and `pages/activity-feed.tsx`.

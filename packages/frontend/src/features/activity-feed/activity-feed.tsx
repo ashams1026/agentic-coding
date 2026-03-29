@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router";
 import {
   ArrowRightLeft,
@@ -12,16 +12,40 @@ import {
   Play,
   Wrench,
   DollarSign,
+  Filter,
+  X,
+  ArrowDown,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   useExecutions,
   useProposals,
   usePersonas,
+  useStories,
 } from "@/hooks";
 import { fixtures } from "@/mocks/fixtures";
+import { mockWs } from "@/mocks/ws";
+import { useActivityStore } from "@/stores/activity-store";
 import type { Persona } from "@agentops/shared";
+import type {
+  WsEvent,
+  AgentStartedEvent,
+  AgentCompletedEvent,
+  StateChangeEvent,
+  CommentCreatedEvent,
+  ProposalCreatedEvent,
+  ProposalUpdatedEvent,
+} from "@agentops/shared";
 
 // ── Event types ───────────────────────────────────────────────────
 
@@ -45,6 +69,8 @@ interface ActivityEvent {
   targetPath: string;
   targetLabel: string;
   timestamp: string;
+  /** True if event arrived via WebSocket (used for animation) */
+  isLive?: boolean;
 }
 
 // ── Icon/color config per event type ──────────────────────────────
@@ -105,6 +131,8 @@ const eventConfig: Record<
   },
 };
 
+const ALL_EVENT_TYPES = Object.keys(eventConfig) as ActivityEventType[];
+
 // ── Date helpers ──────────────────────────────────────────────────
 
 function formatTimestamp(iso: string): string {
@@ -132,17 +160,40 @@ function formatDateGroup(iso: string): string {
   });
 }
 
+/** Date filter presets (date range without a datepicker) */
+type DatePreset = "all" | "today" | "yesterday" | "7d" | "30d";
+
+function getDateCutoff(preset: DatePreset): Date | null {
+  if (preset === "all") return null;
+  const now = new Date();
+  if (preset === "today") {
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  }
+  if (preset === "yesterday") {
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    d.setDate(d.getDate() - 1);
+    return d;
+  }
+  if (preset === "7d") {
+    const d = new Date(now);
+    d.setDate(d.getDate() - 7);
+    return d;
+  }
+  // 30d
+  const d = new Date(now);
+  d.setDate(d.getDate() - 30);
+  return d;
+}
+
 // ── Build events from mock data ──────────────────────────────────
 
-function useAllActivityEvents(): ActivityEvent[] {
+function useBaseActivityEvents(): ActivityEvent[] {
   const { data: executions } = useExecutions();
   const { data: proposals } = useProposals();
-  const { data: personas } = usePersonas();
 
   return useMemo(() => {
     const events: ActivityEvent[] = [];
 
-    // Target path helper
     const targetPath = (type: "story" | "task", id: string) =>
       type === "story" ? `/stories/${id}` : `/tasks/${id}`;
 
@@ -236,7 +287,6 @@ function useAllActivityEvents(): ActivityEvent[] {
             personaId: null,
             targetPath: path,
             targetLabel: proposal.parentType,
-            // Approved slightly after creation
             timestamp: new Date(
               new Date(proposal.createdAt).getTime() + 120000,
             ).toISOString(),
@@ -269,14 +319,308 @@ function useAllActivityEvents(): ActivityEvent[] {
       timestamp: "2026-03-27T16:00:00Z",
     });
 
-    // Sort by timestamp descending
-    events.sort(
-      (a, b) =>
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-    );
-
     return events;
-  }, [executions, proposals, personas]);
+  }, [executions, proposals]);
+}
+
+// ── Convert WS events to ActivityEvents ─────────────────────────
+
+function wsEventToActivity(event: WsEvent): ActivityEvent | null {
+  const targetPath = (type: "story" | "task", id: string) =>
+    type === "story" ? `/stories/${id}` : `/tasks/${id}`;
+
+  switch (event.type) {
+    case "agent_started": {
+      const e = event as AgentStartedEvent;
+      return {
+        id: `live-started-${e.executionId}-${Date.now()}`,
+        type: "agent_started",
+        description: `Agent started working on ${e.targetType}: ${e.taskTitle}`,
+        personaId: e.personaId,
+        targetPath: targetPath(e.targetType, e.targetId),
+        targetLabel: e.targetType,
+        timestamp: e.timestamp,
+        isLive: true,
+      };
+    }
+    case "agent_completed": {
+      const e = event as AgentCompletedEvent;
+      const isFailed = e.outcome !== "success";
+      return {
+        id: `live-${isFailed ? "failed" : "completed"}-${e.executionId}-${Date.now()}`,
+        type: isFailed ? "agent_failed" : "agent_completed",
+        description: isFailed
+          ? `Agent failed on ${e.targetType}`
+          : `Agent completed ${e.targetType} ($${e.costUsd.toFixed(2)})`,
+        personaId: e.personaId,
+        targetPath: targetPath(e.targetType, e.targetId),
+        targetLabel: e.targetType,
+        timestamp: e.timestamp,
+        isLive: true,
+      };
+    }
+    case "state_change": {
+      const e = event as StateChangeEvent;
+      return {
+        id: `live-state-${e.targetId}-${Date.now()}`,
+        type: "state_transition",
+        description: `${e.targetType} moved from ${e.fromState} to ${e.toState}`,
+        personaId: typeof e.triggeredBy === "string" && e.triggeredBy.startsWith("ps-") ? e.triggeredBy : null,
+        targetPath: targetPath(e.targetType, e.targetId),
+        targetLabel: e.targetType,
+        timestamp: e.timestamp,
+        isLive: true,
+      };
+    }
+    case "comment_created": {
+      const e = event as CommentCreatedEvent;
+      return {
+        id: `live-comment-${e.commentId}-${Date.now()}`,
+        type: "comment_posted",
+        description: `${e.authorName}: ${e.contentPreview}`,
+        personaId: null,
+        targetPath: targetPath(e.targetType, e.targetId),
+        targetLabel: e.targetType,
+        timestamp: e.timestamp,
+        isLive: true,
+      };
+    }
+    case "proposal_created": {
+      const e = event as ProposalCreatedEvent;
+      return {
+        id: `live-prop-${e.proposalId}-${Date.now()}`,
+        type: "proposal_created",
+        description: `New ${e.proposalType.replace(/_/g, " ")} proposal`,
+        personaId: null,
+        targetPath: targetPath(e.parentType, e.parentId),
+        targetLabel: e.parentType,
+        timestamp: e.timestamp,
+        isLive: true,
+      };
+    }
+    case "proposal_updated": {
+      const e = event as ProposalUpdatedEvent;
+      if (e.status === "approved" || e.status === "rejected") {
+        return {
+          id: `live-prop-${e.status}-${e.proposalId}-${Date.now()}`,
+          type: e.status === "approved" ? "proposal_approved" : "proposal_rejected",
+          description: `Proposal ${e.status}`,
+          personaId: null,
+          targetPath: "/board",
+          targetLabel: "proposal",
+          timestamp: e.timestamp,
+          isLive: true,
+        };
+      }
+      return null;
+    }
+    default:
+      return null;
+  }
+}
+
+// ── Hook: subscribe to live WS events ───────────────────────────
+
+function useLiveActivityEvents(): ActivityEvent[] {
+  const [liveEvents, setLiveEvents] = useState<ActivityEvent[]>([]);
+  const incrementUnread = useActivityStore((s) => s.increment);
+
+  useEffect(() => {
+    const unsub = mockWs.subscribeAll((event: WsEvent) => {
+      const activityEvent = wsEventToActivity(event);
+      if (activityEvent) {
+        setLiveEvents((prev) => [activityEvent, ...prev]);
+        incrementUnread();
+      }
+    });
+    return unsub;
+  }, [incrementUnread]);
+
+  return liveEvents;
+}
+
+// ── Filters ─────────────────────────────────────────────────────
+
+interface Filters {
+  eventTypes: Set<ActivityEventType>;
+  personaId: string | "all";
+  storyId: string | "all";
+  datePreset: DatePreset;
+}
+
+const defaultFilters: Filters = {
+  eventTypes: new Set(ALL_EVENT_TYPES),
+  personaId: "all",
+  storyId: "all",
+  datePreset: "all",
+};
+
+function hasActiveFilters(filters: Filters): boolean {
+  return (
+    filters.eventTypes.size !== ALL_EVENT_TYPES.length ||
+    filters.personaId !== "all" ||
+    filters.storyId !== "all" ||
+    filters.datePreset !== "all"
+  );
+}
+
+// ── FilterBar component ──────────────────────────────────────────
+
+interface FilterBarProps {
+  filters: Filters;
+  onFiltersChange: (filters: Filters) => void;
+  personas: Persona[];
+  stories: { id: string; title: string }[];
+}
+
+function FilterBar({ filters, onFiltersChange, personas, stories }: FilterBarProps) {
+  const [showTypes, setShowTypes] = useState(false);
+
+  const toggleEventType = (type: ActivityEventType) => {
+    const next = new Set(filters.eventTypes);
+    if (next.has(type)) {
+      next.delete(type);
+    } else {
+      next.add(type);
+    }
+    onFiltersChange({ ...filters, eventTypes: next });
+  };
+
+  const selectAllTypes = () => {
+    onFiltersChange({ ...filters, eventTypes: new Set(ALL_EVENT_TYPES) });
+  };
+
+  const deselectAllTypes = () => {
+    onFiltersChange({ ...filters, eventTypes: new Set() });
+  };
+
+  return (
+    <div className="space-y-3 rounded-lg border border-border bg-card p-3">
+      <div className="flex items-center gap-2 flex-wrap">
+        <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
+
+        {/* Event type toggle */}
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-7 text-xs"
+          onClick={() => setShowTypes(!showTypes)}
+        >
+          Types
+          {filters.eventTypes.size < ALL_EVENT_TYPES.length && (
+            <Badge variant="secondary" className="ml-1 px-1 py-0 text-[9px]">
+              {filters.eventTypes.size}
+            </Badge>
+          )}
+        </Button>
+
+        {/* Persona filter */}
+        <Select
+          value={filters.personaId}
+          onValueChange={(v) => onFiltersChange({ ...filters, personaId: v })}
+        >
+          <SelectTrigger className="h-7 w-[140px] text-xs">
+            <SelectValue placeholder="All personas" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All personas</SelectItem>
+            {personas.map((p) => (
+              <SelectItem key={p.id as string} value={p.id as string}>
+                <span className="flex items-center gap-1.5">
+                  <span
+                    className="inline-block h-2 w-2 rounded-full"
+                    style={{ backgroundColor: p.avatar.color }}
+                  />
+                  {p.name}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Story filter */}
+        <Select
+          value={filters.storyId}
+          onValueChange={(v) => onFiltersChange({ ...filters, storyId: v })}
+        >
+          <SelectTrigger className="h-7 w-[160px] text-xs">
+            <SelectValue placeholder="All stories" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All stories</SelectItem>
+            {stories.map((s) => (
+              <SelectItem key={s.id} value={s.id}>
+                {s.title.length > 25 ? s.title.slice(0, 25) + "..." : s.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Date range */}
+        <Select
+          value={filters.datePreset}
+          onValueChange={(v) => onFiltersChange({ ...filters, datePreset: v as DatePreset })}
+        >
+          <SelectTrigger className="h-7 w-[120px] text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All time</SelectItem>
+            <SelectItem value="today">Today</SelectItem>
+            <SelectItem value="yesterday">Since yesterday</SelectItem>
+            <SelectItem value="7d">Last 7 days</SelectItem>
+            <SelectItem value="30d">Last 30 days</SelectItem>
+          </SelectContent>
+        </Select>
+
+        {/* Clear button */}
+        {hasActiveFilters(filters) && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 text-xs text-muted-foreground"
+            onClick={() => onFiltersChange(defaultFilters)}
+          >
+            <X className="mr-1 h-3 w-3" />
+            Clear
+          </Button>
+        )}
+      </div>
+
+      {/* Event type checkboxes — expandable */}
+      {showTypes && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Button variant="link" size="sm" className="h-5 px-0 text-[10px]" onClick={selectAllTypes}>
+              Select all
+            </Button>
+            <Button variant="link" size="sm" className="h-5 px-0 text-[10px]" onClick={deselectAllTypes}>
+              Deselect all
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 sm:grid-cols-3 md:grid-cols-5">
+            {ALL_EVENT_TYPES.map((type) => {
+              const cfg = eventConfig[type];
+              return (
+                <label
+                  key={type}
+                  className="flex items-center gap-1.5 text-xs cursor-pointer select-none"
+                >
+                  <Checkbox
+                    checked={filters.eventTypes.has(type)}
+                    onCheckedChange={() => toggleEventType(type)}
+                  />
+                  <span className={cfg.colorClass.split(" ")[0]}>
+                    {cfg.label}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 // ── Event row ─────────────────────────────────────────────────────
@@ -295,7 +639,9 @@ function EventRow({ event, personaMap }: EventRowProps) {
   return (
     <Link
       to={event.targetPath}
-      className="flex items-start gap-3 rounded-md px-3 py-2.5 transition-colors hover:bg-accent/50"
+      className={`flex items-start gap-3 rounded-md px-3 py-2.5 transition-colors hover:bg-accent/50 ${
+        event.isLive ? "animate-slide-down" : ""
+      }`}
     >
       {/* Event type icon */}
       <div
@@ -327,6 +673,11 @@ function EventRow({ event, personaMap }: EventRowProps) {
           <span className="text-[10px] text-muted-foreground capitalize">
             {event.targetLabel}
           </span>
+          {event.isLive && (
+            <Badge className="bg-sky-500/20 text-sky-600 dark:text-sky-400 text-[8px] px-1 py-0 border-0">
+              LIVE
+            </Badge>
+          )}
         </div>
       </div>
     </Link>
@@ -336,19 +687,73 @@ function EventRow({ event, personaMap }: EventRowProps) {
 // ── Main component ────────────────────────────────────────────────
 
 export function ActivityFeed() {
-  const events = useAllActivityEvents();
+  const baseEvents = useBaseActivityEvents();
+  const liveEvents = useLiveActivityEvents();
   const { data: personas } = usePersonas();
+  const { data: stories } = useStories();
+  const resetUnread = useActivityStore((s) => s.reset);
+
+  // Reset unread count when component mounts
+  useEffect(() => {
+    resetUnread();
+  }, [resetUnread]);
+
   const personaMap = useMemo(
     () => new Map(personas?.map((p) => [p.id as string, p]) ?? []),
     [personas],
   );
+
+  const storyOptions = useMemo(
+    () => stories?.map((s) => ({ id: s.id as string, title: s.title })) ?? [],
+    [stories],
+  );
+
+  // Filters
+  const [filters, setFilters] = useState<Filters>(defaultFilters);
+
+  // Merge base + live events, deduplicate, sort
+  const allEvents = useMemo(() => {
+    const merged = [...liveEvents, ...baseEvents];
+    merged.sort(
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
+    return merged;
+  }, [baseEvents, liveEvents]);
+
+  // Apply filters
+  const filteredEvents = useMemo(() => {
+    const dateCutoff = getDateCutoff(filters.datePreset);
+
+    return allEvents.filter((event) => {
+      // Event type
+      if (!filters.eventTypes.has(event.type)) return false;
+
+      // Persona
+      if (filters.personaId !== "all") {
+        if (event.personaId !== filters.personaId) return false;
+      }
+
+      // Story — match by target path containing story ID
+      if (filters.storyId !== "all") {
+        if (!event.targetPath.includes(filters.storyId)) return false;
+      }
+
+      // Date
+      if (dateCutoff) {
+        if (new Date(event.timestamp) < dateCutoff) return false;
+      }
+
+      return true;
+    });
+  }, [allEvents, filters]);
 
   // Group events by date
   const grouped = useMemo(() => {
     const groups: { date: string; events: ActivityEvent[] }[] = [];
     let currentDate = "";
 
-    for (const event of events) {
+    for (const event of filteredEvents) {
       const dateGroup = formatDateGroup(event.timestamp);
       if (dateGroup !== currentDate) {
         currentDate = dateGroup;
@@ -357,9 +762,37 @@ export function ActivityFeed() {
       groups[groups.length - 1]!.events.push(event);
     }
     return groups;
-  }, [events]);
+  }, [filteredEvents]);
 
-  if (events.length === 0) {
+  // Scroll tracking for "new events" indicator
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isScrolledDown, setIsScrolledDown] = useState(false);
+  const [newEventCount, setNewEventCount] = useState(0);
+
+  // Track live event count while scrolled down
+  useEffect(() => {
+    if (isScrolledDown && liveEvents.length > 0) {
+      setNewEventCount(liveEvents.length);
+    }
+  }, [liveEvents.length, isScrolledDown]);
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const scrolled = el.scrollTop > 100;
+    setIsScrolledDown(scrolled);
+    if (!scrolled) {
+      setNewEventCount(0);
+    }
+  }, []);
+
+  const scrollToTop = useCallback(() => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    setNewEventCount(0);
+    setIsScrolledDown(false);
+  }, []);
+
+  if (allEvents.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center space-y-2">
@@ -373,31 +806,64 @@ export function ActivityFeed() {
   }
 
   return (
-    <div className="h-full overflow-auto">
+    <div className="h-full overflow-auto" ref={scrollRef} onScroll={handleScroll}>
       <div className="max-w-3xl mx-auto py-4 px-4">
-        {grouped.map((group, gi) => (
-          <div key={group.date}>
-            {/* Date header */}
-            <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-2">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                {group.date}
+        {/* Filter bar */}
+        <FilterBar
+          filters={filters}
+          onFiltersChange={setFilters}
+          personas={personas ?? []}
+          stories={storyOptions}
+        />
+
+        {/* New events indicator */}
+        {isScrolledDown && newEventCount > 0 && (
+          <div className="sticky top-2 z-20 flex justify-center mb-2">
+            <Button
+              size="sm"
+              className="rounded-full shadow-lg gap-1.5 text-xs"
+              onClick={scrollToTop}
+            >
+              <ArrowDown className="h-3 w-3 rotate-180" />
+              {newEventCount} new event{newEventCount !== 1 ? "s" : ""}
+            </Button>
+          </div>
+        )}
+
+        {/* Event groups */}
+        <div className="mt-3">
+          {filteredEvents.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-sm text-muted-foreground">
+                No events match the current filters.
               </p>
             </div>
+          ) : (
+            grouped.map((group, gi) => (
+              <div key={group.date}>
+                {/* Date header */}
+                <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-2">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    {group.date}
+                  </p>
+                </div>
 
-            {/* Events */}
-            <div className="space-y-0.5 mb-2">
-              {group.events.map((event) => (
-                <EventRow
-                  key={event.id}
-                  event={event}
-                  personaMap={personaMap}
-                />
-              ))}
-            </div>
+                {/* Events */}
+                <div className="space-y-0.5 mb-2">
+                  {group.events.map((event) => (
+                    <EventRow
+                      key={event.id}
+                      event={event}
+                      personaMap={personaMap}
+                    />
+                  ))}
+                </div>
 
-            {gi < grouped.length - 1 && <Separator className="my-3" />}
-          </div>
-        ))}
+                {gi < grouped.length - 1 && <Separator className="my-3" />}
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

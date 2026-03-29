@@ -35,7 +35,7 @@
 
 - [x] **T2.7.1** — Build activity feed page. Full-page chronological stream. Each event entry: timestamp, colored icon by type, persona avatar (if agent-sourced), description text, link to source entity. Types: state transition, agent started, agent completed, agent failed, comment posted, proposal created, proposal approved/rejected, manual override, cost alert.
 
-- [ ] **T2.7.2** — Build activity feed filters and real-time updates. Filter bar: by event type (checkboxes), by persona, by story, by date range. New events animate in at top (slide-down animation, via mock WebSocket). "New events" indicator if user has scrolled down. Unread count badge on Activity Feed nav item.
+- [review] **T2.7.2** — Build activity feed filters and real-time updates. Filter bar: by event type (checkboxes), by persona, by story, by date range. New events animate in at top (slide-down animation, via mock WebSocket). "New events" indicator if user has scrolled down. Unread count badge on Activity Feed nav item.
 
 ### Workflow Designer
 
