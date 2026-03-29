@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-03-28 — Review: T2.2.2 (approved)
+
+**Reviewed:** Story card component — `features/kanban/story-card.tsx`, updated `kanban-board.tsx` and `kanban-column.tsx`.
+
+**Verdict:** Approved. All requirements met: title with line-clamp, P0-P3 priority badges with distinct colors (red/amber/blue/slate), label pills (max 2), task progress bar with green fill + done/total count, amber proposal badge with count, pulsing persona avatar for active agents. Board-level data aggregation via `buildCardDataMap()` avoids N+1 queries with `useMemo` for performance. Proper null safety on activeAgent persona lookup. Build clean.
+
+---
+
 ## 2026-03-28 — T2.2.2: Build story card component
 
 **Task:** Compact story card with priority badge (P0-P3 colors), label pills, task progress bar, proposal badge, active agent indicator.
