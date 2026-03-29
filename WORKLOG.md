@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T2.10.4 (approved)
+
+**Reviewed:** Cost management settings section — `costs-section.tsx` + settings-layout integration.
+- All 4 requirements met: monthly cap with dollar input + progress bar, warning threshold percentage input, optional daily limit with toggle, 30-day bar chart
+- Progress bar: green/amber/red thresholds, dynamically reacts to warning threshold input changes
+- Warning message with AlertTriangle icon when threshold exceeded — good UX
+- Daily limit: clean Enable/Disable toggle, defaults to $10 on enable
+- Chart: recharts BarChart, deterministic mock data via date seed, responsive, tooltip matches dashboard pattern
+- `useMemo` on chart data generation — correct optimization
+- Conventions: cn(), named exports, shadcn/ui, dark mode, $ prefix on inputs
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T2.10.4: Build cost management section
 
 **Task:** Monthly cost cap with progress bar, warning threshold percentage, optional daily limit, and 30-day cost history bar chart.
