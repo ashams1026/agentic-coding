@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: T2.3.4 (approved)
+
+**Reviewed:** Proposals section — `proposals-section.tsx` and story-detail page integration.
+- All core requirements met: only renders when pending proposals exist (returns null otherwise), amber-themed Card with prominent styling, proposed task list with title + description, green approve / red reject buttons, "Approve all" bulk action (shown when >1 pending), reject form with autofocus textarea and Escape cancel
+- Placed above ChildTasksSection in story-detail page per spec ("at top of detail")
+- Minor gap: task spec mentions "editable inline" for proposed task title/description, but `UpdateProposalRequest` API only supports `status` + `feedback` — inline editing of payload would need API extension. Acceptable for mock phase.
+- Uses `useProposals(story.id)` and `useUpdateProposal` hooks correctly
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-28 — T2.3.4: Build proposals section
 
 **Task:** Proposals section for story detail — only visible when pending proposals exist. Yellow/amber panel with proposed tasks, approve/reject per-item, "Approve all" bulk action, reject shows textarea for feedback.
