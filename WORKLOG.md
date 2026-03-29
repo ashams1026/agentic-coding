@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-03-28 — Review: T2.1.4 (approved)
+
+**Reviewed:** Upcoming work widget — `features/dashboard/upcoming-work.tsx` and dashboard integration.
+
+**Verdict:** Approved. All task requirements met: shows next 5 ready tasks with title, parent story, persona badge, and dependency status icons. Uses `useReadyWork()` and `useTaskEdges()` hooks backed by mock data. Empty state handled. Follows established patterns from other dashboard widgets (named export, kebab-case, feature colocation, shadcn components, dark mode CSS vars). Build passes clean.
+
+---
+
 ## 2026-03-28 — T2.1.4: Build upcoming work widget
 
 **Task:** Dashboard widget showing next 5 tasks ready for dispatch with task title, parent story name, persona, and dependency status.
