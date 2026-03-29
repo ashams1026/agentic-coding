@@ -5,6 +5,35 @@
 
 ---
 
+## 2026-03-29 — T2.10.4: Build cost management section
+
+**Task:** Monthly cost cap with progress bar, warning threshold percentage, optional daily limit, and 30-day cost history bar chart.
+
+**Done:**
+- Created `features/settings/costs-section.tsx`:
+  - `CostCapSection` — monthly cap dollar input with progress bar (green/amber/red based on threshold), current spend display ($32.47 mock), percentage indicator, warning message when threshold exceeded
+  - Warning threshold: percentage input (0-100), dynamically affects progress bar color
+  - Daily spend limit: optional toggle (Enable/Disable button), dollar input appears when enabled
+  - `CostHistoryChart` — recharts BarChart showing 30 days of mock data, XAxis with date labels (every 5th day), YAxis with dollar format, tooltip on hover, 30-day total display
+  - `generate30DayData()` — deterministic pseudo-random mock cost data based on date seed
+  - `CostsSection` — combines cap section and chart with Separator
+- Updated `features/settings/settings-layout.tsx`:
+  - Imported `CostsSection`, renders when `activeSection === "costs"`
+
+**Files created:**
+- `packages/frontend/src/features/settings/costs-section.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/settings/settings-layout.tsx` (import + conditional render)
+
+**Notes for next agent:**
+- Reuses same recharts tooltip pattern as dashboard `cost-summary.tsx` (popover style)
+- Mock data is self-contained via `generate30DayData()` — no new mock API or hooks needed
+- Progress bar pattern consistent with dashboard CostProgressBar (green/amber/red thresholds)
+- Next: T2.10.5 (appearance and service section — last settings section)
+
+---
+
 ## 2026-03-29 — Review: T2.10.3 (approved)
 
 **Reviewed:** API keys and concurrency settings section — `api-keys-section.tsx` + settings-layout integration.

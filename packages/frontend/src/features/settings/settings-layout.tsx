@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { ProjectsSection } from "./projects-section";
 import { ApiKeysSection } from "./api-keys-section";
+import { CostsSection } from "./costs-section";
 
 // ── Section definitions ─────────────────────────────────────────
 
@@ -96,6 +97,8 @@ export function SettingsLayout() {
             <ProjectsSection />
           ) : activeSection === "api-keys" || activeSection === "concurrency" ? (
             <ApiKeysSection />
+          ) : activeSection === "costs" ? (
+            <CostsSection />
           ) : (
             <SectionPlaceholder section={currentSection} />
           )}
