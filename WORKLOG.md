@@ -533,3 +533,11 @@
 - The `mockApi` export can be imported as a namespace: `import { mockApi } from "@/mocks/api"`
 - Individual functions are also exported for direct import: `import { getStories } from "@/mocks/api"`
 - Mutations (create/update/delete) mutate the in-memory store directly — TanStack Query hooks should invalidate queries after mutations
+
+---
+
+## 2026-03-28 — Review: T1.4.2 (approved)
+
+**Reviewed:** Mock API service layer in `packages/frontend/src/mocks/api.ts`.
+
+**Verdict:** Approved. All requirements met: in-memory store from fixtures, 50-150ms simulated latency, full CRUD for all 11 entity types, aggregate queries (dashboard stats, cost summary, execution stats, ready work) matching shared contract types, `resetStore()` utility, bundled `mockApi` namespace. Properly typed with `import type` for type-only imports. Build passes clean.
