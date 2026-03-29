@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-29 — T2.8.7: Build workflow templates
+
+**Task:** "Templates" tab in sidebar: "Default Story Workflow" and "Default Task Workflow" pre-built. "Use template" button clones into a new editable workflow. Templates show preview thumbnail.
+
+**Done:**
+- Rewrote `features/workflow-designer/workflow-list-sidebar.tsx`:
+  - Added shadcn Tabs (Workflows / Templates) at top of sidebar
+  - Workflows tab: existing workflow list + create button (unchanged logic)
+  - Templates tab: two pre-built templates matching mock data fixtures
+  - `TEMPLATES` constant array with full state/transition definitions for Story (7 states) and Task (5 states) workflows
+  - `TemplateCard` — card with preview thumbnail, name, description, type badge, state count, "Use template" button
+  - `TemplatePreview` — mini SVG showing states as colored rectangles with connecting lines (horizontal layout)
+  - `handleUseTemplate()` — clones template into a new workflow via `useCreateWorkflow`, auto-selects it
+  - Disabled state on button while mutation is pending
+
+**Files modified:**
+- `packages/frontend/src/features/workflow-designer/workflow-list-sidebar.tsx`
+
+**Notes for next agent:**
+- Workflow Designer section (T2.8.1-T2.8.7) is now complete!
+- T2.9.1 is next: Persona Manager — persona list view (grid of persona cards)
+- Templates are defined as constants — they mirror the mock fixture data exactly
+- "Use template" creates a real workflow (not just selects the mock one) so user can edit freely
+- The preview SVG is a simplified horizontal layout (not the full BFS canvas) — sufficient for thumbnail
+- Feature directory: `features/workflow-designer/` now has 6 files
+
+---
+
 ## 2026-03-29 — Review: T2.8.6 (approved)
 
 **Reviewed:** Validation warnings — `workflow-validation.tsx`, canvas and layout changes.
