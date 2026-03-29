@@ -5,6 +5,47 @@
 
 ---
 
+## 2026-03-29 — R.6: Build nested task detail panel
+
+**Task:** When a task is clicked in the story detail side-panel, replace the story panel with a task detail panel using breadcrumb navigation back.
+
+**Done:**
+- Created `features/story-list/task-detail-side-panel.tsx`:
+  - Breadcrumb header: parent story title (clickable → back) > task title
+  - Full page link (ExternalLink) and close button
+  - Task header: state badge (color-coded), assigned persona avatar
+  - Reuses all task detail components: InheritedContext, DependencyInfo, ExecutionContextViewer, RejectionHistory, CommentStream, ExecutionTimeline
+  - Description section when available
+  - Scrollable content via ScrollArea
+- Updated `features/story-detail/child-tasks-section.tsx`:
+  - Added optional `onTaskClick?: (taskId: string) => void` prop to both `ChildTasksSection` and `TaskRow`
+  - When `onTaskClick` provided: renders task title as `<button>` with callback instead of `<Link>`
+  - When not provided: falls back to existing `<Link to={/tasks/:id}>` behavior (no breaking change)
+- Updated `features/story-list/story-detail-side-panel.tsx`:
+  - Added optional `onTaskClick` prop, passes it through to `ChildTasksSection`
+- Updated `pages/story-board.tsx`:
+  - Added `selectedTaskId` state alongside `selectedStoryId`
+  - `handleTaskClick`: sets task ID when task clicked in story detail
+  - `handleBackToStory`: clears task ID to return to story detail
+  - `handleClosePanel`: clears both story and task IDs
+  - Right panel renders `TaskDetailSidePanel` when task selected, `StoryDetailSidePanel` otherwise
+
+**Files created:**
+- `packages/frontend/src/features/story-list/task-detail-side-panel.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/story-detail/child-tasks-section.tsx` (added onTaskClick prop)
+- `packages/frontend/src/features/story-list/story-detail-side-panel.tsx` (added onTaskClick prop)
+- `packages/frontend/src/pages/story-board.tsx` (nested panel state management)
+
+**Notes for next agent:**
+- R.6 completes the entire Refinements section (R.1-R.6)
+- The `onTaskClick` prop on `ChildTasksSection` is backward-compatible — existing consumers don't pass it
+- Breadcrumb navigation chosen over nested panels to keep the UI simple and avoid deep panel stacking
+- Next tasks are Sprint 4 settings (T2.10.2-T2.10.5) or global components (T2.11.x)
+
+---
+
 ## 2026-03-29 — Review: R.5 (approved)
 
 **Reviewed:** Story list view with master-detail panels — 3 new components + updated story-board page.

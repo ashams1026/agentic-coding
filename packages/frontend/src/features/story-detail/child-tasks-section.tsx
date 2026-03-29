@@ -75,9 +75,10 @@ interface TaskRowProps {
   persona: Persona | undefined;
   hasDeps: boolean;
   onToggleDone: (task: Task) => void;
+  onTaskClick?: (taskId: string) => void;
 }
 
-function TaskRow({ task, persona, hasDeps, onToggleDone }: TaskRowProps) {
+function TaskRow({ task, persona, hasDeps, onToggleDone, onTaskClick }: TaskRowProps) {
   const cfg = getStateConfig(task.currentState);
   const isDone = task.currentState === "Done";
 
@@ -93,13 +94,22 @@ function TaskRow({ task, persona, hasDeps, onToggleDone }: TaskRowProps) {
       {/* State icon */}
       <span className="shrink-0">{cfg.icon}</span>
 
-      {/* Title — link to task detail */}
-      <Link
-        to={`/tasks/${task.id}`}
-        className={`flex-1 text-sm truncate hover:underline ${isDone ? "line-through text-muted-foreground" : ""}`}
-      >
-        {task.title}
-      </Link>
+      {/* Title — link to task detail or callback */}
+      {onTaskClick ? (
+        <button
+          onClick={() => onTaskClick(task.id)}
+          className={`flex-1 text-sm truncate text-left hover:underline ${isDone ? "line-through text-muted-foreground" : ""}`}
+        >
+          {task.title}
+        </button>
+      ) : (
+        <Link
+          to={`/tasks/${task.id}`}
+          className={`flex-1 text-sm truncate hover:underline ${isDone ? "line-through text-muted-foreground" : ""}`}
+        >
+          {task.title}
+        </Link>
+      )}
 
       {/* State badge */}
       <Badge variant="outline" className={`text-xs shrink-0 ${cfg.color}`}>
@@ -380,9 +390,10 @@ function MiniDepGraph({ tasks, edges }: MiniDepGraphProps) {
 
 interface ChildTasksSectionProps {
   story: Story;
+  onTaskClick?: (taskId: string) => void;
 }
 
-export function ChildTasksSection({ story }: ChildTasksSectionProps) {
+export function ChildTasksSection({ story, onTaskClick }: ChildTasksSectionProps) {
   const [showForm, setShowForm] = useState(false);
   const { data: tasks = [] } = useTasks(story.id);
   const { data: allEdges = [] } = useTaskEdges();
@@ -488,6 +499,7 @@ export function ChildTasksSection({ story }: ChildTasksSectionProps) {
               }
               hasDeps={tasksWithDeps.has(task.id as string)}
               onToggleDone={handleToggleDone}
+              onTaskClick={onTaskClick}
             />
           ))}
         </div>

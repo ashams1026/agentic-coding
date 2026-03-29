@@ -18,9 +18,10 @@ import type { StoryId } from "@agentops/shared";
 interface StoryDetailSidePanelProps {
   storyId: StoryId;
   onClose: () => void;
+  onTaskClick?: (taskId: string) => void;
 }
 
-export function StoryDetailSidePanel({ storyId, onClose }: StoryDetailSidePanelProps) {
+export function StoryDetailSidePanel({ storyId, onClose, onTaskClick }: StoryDetailSidePanelProps) {
   const { data: story, isLoading } = useStory(storyId);
 
   if (isLoading) {
@@ -65,7 +66,7 @@ export function StoryDetailSidePanel({ storyId, onClose }: StoryDetailSidePanelP
           <Separator />
           <StoryDescription story={story} />
           <ProposalsSection story={story} />
-          <ChildTasksSection story={story} />
+          <ChildTasksSection story={story} onTaskClick={onTaskClick} />
           <CommentStream targetId={story.id} targetType="story" />
           <ExecutionTimeline targetId={story.id} />
           <StoryMetadata story={story} />

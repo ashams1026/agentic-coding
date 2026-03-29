@@ -23,7 +23,7 @@
 
 - [x] **R.5** — Build story list view with master-detail panels. New layout for `/board` (or new `/stories` route): left panel is a filterable/sortable story list (compact rows: title, state badge, priority, task progress). Clicking a story opens its detail in a right side-panel (~50-60% width). Reuse existing story detail components (StoryDetailHeader, StoryDescription, ChildTasksSection, ProposalsSection, CommentStream, ExecutionTimeline, StoryMetadata). Add a toggle to switch between list view and kanban board view. Keep both views available. Files: create `packages/frontend/src/features/story-list/` directory with new components, update router.
 
-- [ ] **R.6** — Build nested task detail panel. When a task is clicked in the story detail side-panel, open the task detail in a second nested panel (pushing the story panel narrower, or replacing it with breadcrumb navigation back). Reuse existing task detail components (InheritedContext, DependencyInfo, ExecutionContextViewer, RejectionHistory, CommentStream, ExecutionTimeline). Task panel should show parent story link as breadcrumb at top. Files: extend the master-detail layout from R.5.
+- [review] **R.6** — Build nested task detail panel. When a task is clicked in the story detail side-panel, open the task detail in a second nested panel (pushing the story panel narrower, or replacing it with breadcrumb navigation back). Reuse existing task detail components (InheritedContext, DependencyInfo, ExecutionContextViewer, RejectionHistory, CommentStream, ExecutionTimeline). Task panel should show parent story link as breadcrumb at top. Files: extend the master-detail layout from R.5.
 
 ---
 

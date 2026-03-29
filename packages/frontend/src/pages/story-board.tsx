@@ -6,7 +6,8 @@ import { KanbanBoard } from "@/features/kanban/kanban-board";
 import { KanbanFilterBar, useKanbanFilters } from "@/features/kanban/kanban-filters";
 import { StoryListPanel } from "@/features/story-list/story-list-panel";
 import { StoryDetailSidePanel } from "@/features/story-list/story-detail-side-panel";
-import type { StoryId } from "@agentops/shared";
+import { TaskDetailSidePanel } from "@/features/story-list/task-detail-side-panel";
+import type { StoryId, TaskId } from "@agentops/shared";
 
 type ViewMode = "kanban" | "list";
 
@@ -14,6 +15,25 @@ export function StoryBoardPage() {
   const [filters] = useKanbanFilters();
   const [viewMode, setViewMode] = useState<ViewMode>("kanban");
   const [selectedStoryId, setSelectedStoryId] = useState<StoryId | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<TaskId | null>(null);
+
+  const handleSelectStory = (id: StoryId) => {
+    setSelectedStoryId(id);
+    setSelectedTaskId(null);
+  };
+
+  const handleTaskClick = (taskId: string) => {
+    setSelectedTaskId(taskId as TaskId);
+  };
+
+  const handleBackToStory = () => {
+    setSelectedTaskId(null);
+  };
+
+  const handleClosePanel = () => {
+    setSelectedStoryId(null);
+    setSelectedTaskId(null);
+  };
 
   return (
     <div className="flex h-full flex-col">
@@ -81,17 +101,27 @@ export function StoryBoardPage() {
           >
             <StoryListPanel
               selectedStoryId={selectedStoryId}
-              onSelectStory={setSelectedStoryId}
+              onSelectStory={handleSelectStory}
             />
           </div>
 
-          {/* Right: story detail side panel */}
+          {/* Right: detail side panel — story or task */}
           {selectedStoryId && (
             <div className="flex-1 min-w-0">
-              <StoryDetailSidePanel
-                storyId={selectedStoryId}
-                onClose={() => setSelectedStoryId(null)}
-              />
+              {selectedTaskId ? (
+                <TaskDetailSidePanel
+                  taskId={selectedTaskId}
+                  parentStoryId={selectedStoryId}
+                  onBack={handleBackToStory}
+                  onClose={handleClosePanel}
+                />
+              ) : (
+                <StoryDetailSidePanel
+                  storyId={selectedStoryId}
+                  onClose={handleClosePanel}
+                  onTaskClick={handleTaskClick}
+                />
+              )}
             </div>
           )}
         </div>
