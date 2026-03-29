@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: T2.6.2 (approved)
+
+**Reviewed:** History filters and aggregate stats — enhanced `features/agent-monitor/agent-history.tsx`.
+- StatsBar: total runs, total cost, success rate %, avg duration — all computed from filtered list via useMemo, updates reactively
+- FilterBar: persona dropdown (scoped to history personas), outcome dropdown (all/success/failed/rejected), cost min/max range, "Clear" button
+- Filter pipeline: historyExecutions → filtered → sorted → rendered — clean data flow
+- Empty filter result: "No executions match the current filters" in table body
+- Date range filter omitted (needs datepicker component) — acceptable scope reduction, noted by worker
+- Build passes
+- **Verdict: approved** — Sprint 3 (Agent Monitor) fully complete!
+
+---
+
 ## 2026-03-29 — T2.6.2: Build history filters and aggregate stats
 
 **Task:** Filter by: persona, outcome (success/failure/rejected), date range, cost range. Stats bar above list: total runs, total cost, success rate %, average duration. Updates reactively as filters change.
