@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: T2.11.4 (approved)
+
+**Reviewed:** Nav badges and status bar — `sidebar.tsx` + `status-bar.tsx`.
+- Story Board badge: amber pill badge showing `pendingProposals` from `useDashboardStats()`, both collapsed (icon dot) and expanded (pill) modes — follows exact same pattern as existing agent/activity badges
+- Agent Monitor badge: pre-existing from earlier sprint, still works correctly
+- Status bar: project name "AgentOps" left-aligned, right side has agent count (with `animate-ping` pulse when >0), `$X.XX today` cost, health dot (green/red via `fill-status-success`/`fill-status-error`)
+- All data driven by `useDashboardStats()` hook — no hardcoded values (except health=true, noted as mock placeholder)
+- Minor cosmetic note: ping container is 2x2 but Bot icon is 3x3 — pulse appears behind icon, acceptable visual effect
+- Build passes, conventions followed
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T2.11.4: Build nav badges and status bar
 
 **Task:** Story Board nav badge (pending proposals), Agent Monitor badge (active agents — already existed), status bar driven by mock data with pulsing dot, cost, and health indicator.
