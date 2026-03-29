@@ -59,3 +59,27 @@
 - [x] **T2.1.2** — Build active agents strip component. Horizontal scrollable row with live elapsed time, pulsing status dots.
 
 - [x] **T2.1.3** — Build recent activity feed component. Unified event feed from executions, comments, proposals with color-coded icons.
+
+- [x] **T2.1.4** — Build upcoming work widget. Shows next 5 tasks ready for dispatch (from mock ready-work data). Each entry: task title, parent story name, persona that would handle it, dependency status. Helps user see what will fire next. *(completed 2026-03-28)*
+
+- [x] **T2.1.5** — Build cost summary widget. Sparkline chart (small inline chart) showing daily spend for last 7 days. Current month total vs configured cap (progress bar). Use a lightweight chart lib (recharts or similar). Shows "$0.00 today" gracefully when no data. *(completed 2026-03-28)*
+
+### Story Board (Kanban)
+
+- [x] **T2.2.1** — Build kanban board layout. Columns generated from story workflow states. Column headers with state name, item count, and color indicator. Horizontally scrollable when many columns. Board fills available viewport height. *(completed 2026-03-28)*
+
+- [x] **T2.2.2** — Build story card component. Compact card showing: title (truncated), priority badge (P0-P3 with colors), label pills, task progress bar ("3/5 tasks"), proposal badge (amber dot with count if pending), active agent indicator (pulsing persona avatar if agent running). Card has subtle hover state and click handler. *(completed 2026-03-28)*
+
+- [x] **T2.2.3** — Implement drag-and-drop between columns. Use @dnd-kit or react-beautiful-dnd. Smooth animations on drag. Card placeholder shows in target column during drag. Drop triggers state transition via mock API. *(completed 2026-03-28)*
+
+- [x] **T2.2.4** — Build transition prompt modal. When dropping a story on a column that has a trigger configured: show modal with "This will trigger [Persona Name] agent." Three buttons: "Run trigger", "Skip trigger", "Cancel". If no trigger, transition happens silently. Show persona avatar in the modal. *(completed 2026-03-28)*
+
+- [x] **T2.2.5** — Build filter bar and sort controls. Above the kanban board. Filter by: label (multi-select), priority (multi-select), persona (multi-select), has proposals (toggle). Sort by: priority, created date, updated date. Persist filter state in URL params. *(completed 2026-03-28)*
+
+- [x] **T2.2.6** — Build inline story creation. "+" button in the Backlog column header. Clicking shows an inline form (title input + priority select + create button). Creates story in Backlog state via mock API. Smooth animation as card appears. *(completed 2026-03-28)*
+
+### Story Detail
+
+- [x] **T2.3.1** — Build story detail panel. Slide-out sheet (shadcn Sheet) from the right, ~60% viewport width. Or full-page view (toggle). Header: title (click to edit inline), state badge, priority selector, label pills (editable). Close button returns to board. *(completed 2026-03-28)*
+
+- [x] **T2.3.2** — Build description and context section. Rich text area for story description (markdown support via textarea, rendered preview). Acceptance criteria section below. Both editable inline with save/cancel. *(completed 2026-03-28)*
