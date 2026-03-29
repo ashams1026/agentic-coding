@@ -320,3 +320,11 @@
 - Story/task detail pages aren't in the sidebar nav (they're accessed via board/links) — this is correct
 - `TooltipProvider` is in RootLayout — tooltips work everywhere
 - `tslib` was needed to fix react-remove-scroll build issue with pnpm strict mode
+
+---
+
+## 2026-03-28 — Review: T1.2.6 (approved)
+
+**Reviewed:** App shell layout — sidebar, status bar, root layout.
+
+**Verdict:** Approved. Sidebar correctly uses NavLink with active state, conditional tooltips when collapsed, project switcher. Status bar has appropriate placeholder content. Root layout flex structure is sound with proper overflow handling. Zustand integration clean. Build passes.
