@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: R.4 (approved)
+
+**Reviewed:** Extraction of CommentStream and ExecutionTimeline to `features/common/`.
+- Both files moved via `git mv` — proper history tracking, content unchanged
+- Both consumers updated: `pages/story-detail.tsx` and `pages/task-detail.tsx` import from `@/features/common/`
+- Zero remaining references to old paths confirmed via grep
+- `features/common/` directory created as shared component location
+- Build passes, no code changes to components themselves (pure move)
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — R.4: Extract shared detail components
 
 **Task:** Move `CommentStream` and `ExecutionTimeline` from `features/story-detail/` to `features/common/` since they're reused by both story and task detail views. Update all imports.
