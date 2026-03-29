@@ -5,6 +5,38 @@
 
 ---
 
+## 2026-03-29 — T2.5.1: Build agent monitor page layout
+
+**Task:** Split-pane: left sidebar (~250px) lists active agents, main area shows selected agent output. If no agents active, show empty state with "No agents running" and link to story board.
+
+**Done:**
+- Created `features/agent-monitor/agent-monitor-layout.tsx`:
+  - `AgentMonitorLayout` — main component, fetches all executions/personas/tasks/stories
+  - Filters to `status === "running"` executions, sorted by start time
+  - Split-pane layout: 250px left sidebar + flex main area
+  - `AgentEntry` — sidebar item with persona avatar (colored circle + Bot icon), persona name, task/story name (truncated), pulsing green status dot, selected state highlight
+  - `EmptyState` — Monitor icon, "No agents running" message, link to Story Board
+  - `SelectedAgentPlaceholder` — placeholder for agent output (to be replaced by T2.5.3 terminal renderer)
+  - Auto-selects first agent if none selected or selection becomes invalid
+  - Lookup maps for persona, task/story names via `useMemo`
+- Updated `pages/agent-monitor.tsx`: replaced placeholder with `<AgentMonitorLayout />`
+- Created `features/agent-monitor/` directory for agent monitor feature components
+
+**Files created:**
+- `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/agent-monitor.tsx`
+
+**Notes for next agent:**
+- T2.5.2 is next: active agent sidebar list (enhanced version with live elapsed time, cost ticker)
+- The current sidebar in T2.5.1 is minimal — T2.5.2 will enhance it with live counters
+- `SelectedAgentPlaceholder` is a stub — T2.5.3 (terminal renderer) will replace it
+- Mock data: only EXEC_4 (Engineer working on TASK_1_2 "Build login UI component") is running
+- Feature directory: `features/agent-monitor/`
+
+---
+
 ## 2026-03-29 — Review: T2.4.5 (approved)
 
 **Reviewed:** Rejection history display — `features/task-detail/rejection-history.tsx` and task-detail page integration.

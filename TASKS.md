@@ -9,7 +9,7 @@
 
 ### Agent Monitor — Live View
 
-- [ ] **T2.5.1** — Build agent monitor page layout. Split-pane: left sidebar (~250px) lists active agents, main area shows selected agent output. If no agents active, show empty state with "No agents running" and link to story board.
+- [review] **T2.5.1** — Build agent monitor page layout. Split-pane: left sidebar (~250px) lists active agents, main area shows selected agent output. If no agents active, show empty state with "No agents running" and link to story board.
 
 - [ ] **T2.5.2** — Build active agent sidebar list. Each entry: persona avatar, persona name, task name (truncated), elapsed time (live counter), cost ticker (live), status dot (pulsing green = running). Click selects agent and shows output in main pane. Sort by start time. Badge count in sidebar nav updates.
 
