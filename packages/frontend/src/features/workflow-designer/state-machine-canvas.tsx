@@ -276,14 +276,21 @@ function StateNode({ state, position, isSelected, onDragStart, onClick }: StateN
 
 // ── TransitionArrow component ────────────────────────────────────
 
+/** Unique key for a transition */
+export function transitionKey(t: WorkflowTransition): string {
+  return `${t.from}→${t.to}→${t.name}`;
+}
+
 interface TransitionArrowProps {
   transition: WorkflowTransition;
   fromPos: Position;
   toPos: Position;
   isBackward: boolean;
+  isSelected: boolean;
+  onClick: (t: WorkflowTransition) => void;
 }
 
-function TransitionArrow({ transition, fromPos, toPos, isBackward }: TransitionArrowProps) {
+function TransitionArrow({ transition, fromPos, toPos, isBackward, isSelected, onClick }: TransitionArrowProps) {
   const path = computeArrowPath(fromPos, toPos, isBackward);
   const { x: tipX, y: tipY, angle } = getArrowheadAngle(path);
 
@@ -293,20 +300,29 @@ function TransitionArrow({ transition, fromPos, toPos, isBackward }: TransitionA
 
   return (
     <g>
+      {/* Invisible wider hit area for clicking */}
+      <path
+        d={path}
+        fill="none"
+        stroke="transparent"
+        strokeWidth={12}
+        className="cursor-pointer"
+        onClick={(e) => { e.stopPropagation(); onClick(transition); }}
+      />
+
       {/* Arrow path */}
       <path
         d={path}
         fill="none"
-        className="stroke-muted-foreground/50"
-        strokeWidth={1.5}
-        markerEnd=""
+        className={isSelected ? "stroke-ring" : "stroke-muted-foreground/50"}
+        strokeWidth={isSelected ? 2.5 : 1.5}
       />
 
       {/* Arrowhead */}
       <polygon
         points="0,-4 8,0 0,4"
         transform={`translate(${tipX}, ${tipY}) rotate(${angle})`}
-        className="fill-muted-foreground/50"
+        className={isSelected ? "fill-ring" : "fill-muted-foreground/50"}
       />
 
       {/* Label */}
@@ -317,13 +333,13 @@ function TransitionArrow({ transition, fromPos, toPos, isBackward }: TransitionA
           width={transition.name.length * 6 + 12}
           height={16}
           rx={4}
-          className="fill-background/90"
-          stroke="none"
+          className={isSelected ? "fill-ring/10 stroke-ring" : "fill-background/90"}
+          strokeWidth={isSelected ? 1 : 0}
         />
         <text
           textAnchor="middle"
           y={4}
-          className="fill-muted-foreground select-none pointer-events-none"
+          className={`select-none pointer-events-none ${isSelected ? "fill-foreground font-medium" : "fill-muted-foreground"}`}
           style={{ fontSize: "9px" }}
         >
           {transition.name}
@@ -333,19 +349,57 @@ function TransitionArrow({ transition, fromPos, toPos, isBackward }: TransitionA
   );
 }
 
+// ── Connection handle (right edge of state) ─────────────────────
+
+interface ConnectionHandleProps {
+  position: Position;
+  stateName: string;
+  onStartConnect: (stateName: string, e: React.MouseEvent) => void;
+}
+
+function ConnectionHandle({ position, stateName, onStartConnect }: ConnectionHandleProps) {
+  return (
+    <circle
+      cx={position.x + NODE_W}
+      cy={position.y + NODE_H / 2}
+      r={6}
+      className="fill-background stroke-muted-foreground/40 hover:stroke-ring hover:fill-ring/20 cursor-crosshair transition-colors"
+      strokeWidth={1.5}
+      onMouseDown={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        onStartConnect(stateName, e);
+      }}
+    />
+  );
+}
+
 // ── Main canvas component ────────────────────────────────────────
 
 interface StateMachineCanvasProps {
   workflow: Workflow;
   selectedState: string | null;
+  selectedTransitionKey: string | null;
   onSelectState: (name: string | null) => void;
+  onSelectTransition: (key: string | null, transition: WorkflowTransition | null) => void;
   onAddState: (position: { x: number; y: number }) => void;
+  onCreateTransition: (from: string, to: string) => void;
 }
 
-export function StateMachineCanvas({ workflow, selectedState, onSelectState, onAddState }: StateMachineCanvasProps) {
+export function StateMachineCanvas({
+  workflow,
+  selectedState,
+  selectedTransitionKey,
+  onSelectState,
+  onSelectTransition,
+  onAddState,
+  onCreateTransition,
+}: StateMachineCanvasProps) {
   const initialPositions = useMemo(() => computeLayout(workflow), [workflow]);
   const [positions, setPositions] = useState<Map<string, Position>>(() => initialPositions);
   const [dragging, setDragging] = useState<string | null>(null);
+  const [connectingFrom, setConnectingFrom] = useState<string | null>(null);
+  const [connectCursor, setConnectCursor] = useState<Position>({ x: 0, y: 0 });
   const dragOffset = useRef<Position>({ x: 0, y: 0 });
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -409,15 +463,29 @@ export function StateMachineCanvas({ workflow, selectedState, onSelectState, onA
     setDragging(name);
   }, [positions, viewBox.width]);
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!dragging || !svgRef.current) return;
-
+  const getSvgCoords = useCallback((e: React.MouseEvent): Position => {
+    if (!svgRef.current) return { x: 0, y: 0 };
     const svgRect = svgRef.current.getBoundingClientRect();
     const svgWidth = svgRef.current.viewBox.baseVal.width || viewBox.width;
     const scale = svgWidth / svgRect.width;
+    return {
+      x: (e.clientX - svgRect.left) * scale,
+      y: (e.clientY - svgRect.top) * scale,
+    };
+  }, [viewBox.width]);
 
-    const newX = (e.clientX - svgRect.left) * scale - dragOffset.current.x;
-    const newY = (e.clientY - svgRect.top) * scale - dragOffset.current.y;
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    // Connection drag
+    if (connectingFrom) {
+      setConnectCursor(getSvgCoords(e));
+      return;
+    }
+
+    if (!dragging || !svgRef.current) return;
+
+    const coords = getSvgCoords(e);
+    const newX = coords.x - dragOffset.current.x;
+    const newY = coords.y - dragOffset.current.y;
 
     setPositions((prev) => {
       const next = new Map(prev);
@@ -427,11 +495,36 @@ export function StateMachineCanvas({ workflow, selectedState, onSelectState, onA
       });
       return next;
     });
-  }, [dragging, viewBox.width]);
+  }, [dragging, connectingFrom, getSvgCoords]);
 
-  const handleMouseUp = useCallback(() => {
+  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+    if (connectingFrom) {
+      // Check if cursor is over a state node
+      const coords = getSvgCoords(e);
+      for (const [name, pos] of positions) {
+        if (
+          name !== connectingFrom &&
+          coords.x >= pos.x &&
+          coords.x <= pos.x + NODE_W &&
+          coords.y >= pos.y &&
+          coords.y <= pos.y + NODE_H
+        ) {
+          onCreateTransition(connectingFrom, name);
+          break;
+        }
+      }
+      setConnectingFrom(null);
+    }
     setDragging(null);
-  }, []);
+  }, [connectingFrom, positions, getSvgCoords, onCreateTransition]);
+
+  const handleStartConnect = useCallback((stateName: string, e: React.MouseEvent) => {
+    setConnectingFrom(stateName);
+    setConnectCursor(getSvgCoords(e));
+    // Clear other selections
+    onSelectState(null);
+    onSelectTransition(null, null);
+  }, [getSvgCoords, onSelectState, onSelectTransition]);
 
   if (workflow.states.length === 0) {
     return (
@@ -453,7 +546,7 @@ export function StateMachineCanvas({ workflow, selectedState, onSelectState, onA
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        onClick={() => onSelectState(null)}
+        onClick={() => { onSelectState(null); onSelectTransition(null, null); }}
         onDoubleClick={(e) => {
           if (!svgRef.current) return;
           const svgRect = svgRef.current.getBoundingClientRect();
@@ -483,13 +576,19 @@ export function StateMachineCanvas({ workflow, selectedState, onSelectState, onA
           const toLevel = levelMap.get(t.to) ?? 0;
           const isBackward = toLevel <= fromLevel;
 
+          const tKey = transitionKey(t);
           return (
             <TransitionArrow
-              key={`${t.from}-${t.to}-${t.name}`}
+              key={tKey}
               transition={t}
               fromPos={fromPos}
               toPos={toPos}
               isBackward={isBackward}
+              isSelected={selectedTransitionKey === tKey}
+              onClick={(tr) => {
+                onSelectState(null);
+                onSelectTransition(transitionKey(tr), tr);
+              }}
             />
           );
         })}
@@ -507,10 +606,43 @@ export function StateMachineCanvas({ workflow, selectedState, onSelectState, onA
               onDragStart={handleDragStart}
               onClick={(name) => {
                 onSelectState(name);
+                onSelectTransition(null, null);
               }}
             />
           );
         })}
+
+        {/* Connection handles on right edge of each state */}
+        {workflow.states.map((state) => {
+          const pos = positions.get(state.name);
+          if (!pos) return null;
+          return (
+            <ConnectionHandle
+              key={`handle-${state.name}`}
+              position={pos}
+              stateName={state.name}
+              onStartConnect={handleStartConnect}
+            />
+          );
+        })}
+
+        {/* Connection preview line while dragging */}
+        {connectingFrom && (() => {
+          const fromPos = positions.get(connectingFrom);
+          if (!fromPos) return null;
+          return (
+            <line
+              x1={fromPos.x + NODE_W}
+              y1={fromPos.y + NODE_H / 2}
+              x2={connectCursor.x}
+              y2={connectCursor.y}
+              className="stroke-ring"
+              strokeWidth={2}
+              strokeDasharray="6 3"
+              pointerEvents="none"
+            />
+          );
+        })()}
       </svg>
     </div>
   );

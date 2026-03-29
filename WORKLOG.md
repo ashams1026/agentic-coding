@@ -5,6 +5,48 @@
 
 ---
 
+## 2026-03-29 — T2.8.4: Build transition creation and editing
+
+**Task:** Drag from one state's edge to another to create a transition. Click transition arrow to select → properties panel: transition name, trigger configuration. Delete transition via properties panel or keyboard shortcut.
+
+**Done:**
+- Created `features/workflow-designer/transition-properties-panel.tsx`:
+  - `TransitionPropertiesPanel` — right panel showing from→to direction, name input, trigger placeholder (T2.8.5), delete button
+  - Name saves on blur/Enter
+- Modified `features/workflow-designer/state-machine-canvas.tsx`:
+  - `ConnectionHandle` — small circle on right edge of each state, cursor=crosshair, hover highlight
+  - `connectingFrom` + `connectCursor` state — tracks drag-to-connect
+  - Preview dashed line from source state to cursor while connecting
+  - On mouse up, hit-tests all states to find target, calls `onCreateTransition(from, to)`
+  - `TransitionArrow` now has invisible 12px wide hit area for click selection
+  - `isSelected` prop: thicker stroke, fill-ring color, label highlight
+  - Exported `transitionKey()` helper for unique transition identification
+  - Added `selectedTransitionKey`, `onSelectTransition`, `onCreateTransition` props
+  - Click state clears transition selection and vice versa
+- Rewrote `features/workflow-designer/workflow-designer-layout.tsx`:
+  - `selectedTransitionKey` state, `resolvedTransition` derived from workflow data
+  - `handleCreateTransition()` — prevents duplicates, auto-names "From → To", auto-selects new transition
+  - `handleUpdateTransition()` — finds by key, replaces, updates key
+  - `handleDeleteTransition()` — removes by key, clears selection
+  - Keyboard handler: Delete/Backspace deletes selected transition (skips when in input/textarea)
+  - Right panel shows state OR transition properties (mutually exclusive)
+
+**Files created:**
+- `packages/frontend/src/features/workflow-designer/transition-properties-panel.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/workflow-designer/state-machine-canvas.tsx`
+- `packages/frontend/src/features/workflow-designer/workflow-designer-layout.tsx`
+
+**Notes for next agent:**
+- T2.8.5 is next: trigger configuration panel (populate the trigger placeholder in transition-properties-panel)
+- Transition selection uses `transitionKey()` = "from→to→name" string as unique identifier
+- Connection creation: drag from right-edge handle, preview dashed line, drop on target state
+- `resolvedTransition` re-derives from workflow data after mutations to stay in sync
+- The `handleSelectTransition` callback receives both key and transition, but layout only stores key (transition is resolved from workflow data)
+
+---
+
 ## 2026-03-29 — Review: T2.8.3 (approved)
 
 **Reviewed:** State editing interactions — `state-properties-panel.tsx`, canvas modifications, layout rewire.
