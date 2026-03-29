@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-03-28 — Review: T2.3.1 (approved)
+
+**Reviewed:** Story detail panel — `story-detail-header.tsx` and `story-detail.tsx` page.
+
+**Verdict:** Approved. All requirements met: inline-editable title (click to edit, Enter/Escape, save/cancel buttons), state badge, priority selector with colored styling, editable label pills (comma-separated input, "+ Add labels" empty state). Close button navigates to /board. Full-page layout at /stories/:id with loading/not-found states. Decision to use full-page instead of Sheet is reasonable and documented — header is reusable for Sheet mode later. Feature colocation in `features/story-detail/`. Build clean.
+
+---
+
 ## 2026-03-28 — T2.3.1: Build story detail panel
 
 **Task:** Story detail page with editable header (inline title, state badge, priority selector, label pills), close button, full-page layout.
