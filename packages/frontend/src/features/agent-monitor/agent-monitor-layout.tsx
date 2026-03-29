@@ -4,6 +4,7 @@ import { Monitor, ArrowRight, Columns2, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useExecutions } from "@/hooks";
 import { ActiveAgentSidebar } from "./active-agent-sidebar";
+import { AgentControlBar } from "./agent-control-bar";
 import { TerminalRenderer } from "./terminal-renderer";
 import { SplitView } from "./split-view";
 import type { ExecutionId } from "@agentops/shared";
@@ -99,6 +100,11 @@ export function AgentMonitorLayout() {
             )}
           </Button>
         </div>
+
+        {/* Agent control bar (single view only) */}
+        {!splitMode && effectiveSelectedId && (
+          <AgentControlBar executionId={effectiveSelectedId} />
+        )}
 
         {/* Content area */}
         <div className="flex-1 min-h-0">

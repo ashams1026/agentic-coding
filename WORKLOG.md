@@ -5,6 +5,38 @@
 
 ---
 
+## 2026-03-29 — T2.5.6: Build agent control bar
+
+**Task:** Below agent info header. Buttons: "Stop" (graceful cancel — confirmation dialog), "Force Stop" (warning dialog), link to task detail, link to story. Show persona name, model badge (opus/sonnet/haiku), elapsed time, running cost.
+
+**Done:**
+- Created `features/agent-monitor/agent-control-bar.tsx`:
+  - `AgentControlBar` — horizontal bar showing persona avatar + name, model badge (Opus=purple, Sonnet=blue, Haiku=emerald), live elapsed timer (1s interval, tabular-nums), running cost ($X.XX)
+  - "Task" and "Story" navigation links (ExternalLink icon) — task link shown when target is a task, story link resolves parent story
+  - "Stop" button — outline variant, StopCircle icon, opens AlertDialog: "This will gracefully cancel [persona] working on [task]. The agent will finish its current operation and stop."
+  - "Force Stop" button — destructive variant, OctagonX icon, opens AlertDialog: "This will immediately terminate [persona]. Any in-progress work will be lost."
+  - Both dialogs are mock-only (no actual cancel logic) — Cancel/Action buttons present
+- Added shadcn AlertDialog component (`components/ui/alert-dialog.tsx`)
+- Updated `features/agent-monitor/agent-monitor-layout.tsx`:
+  - Imported AgentControlBar, placed between view toggle bar and content area in single-view mode
+  - Only shown when not in split mode and an agent is selected
+
+**Files created:**
+- `packages/frontend/src/features/agent-monitor/agent-control-bar.tsx`
+- `packages/frontend/src/components/ui/alert-dialog.tsx` (shadcn)
+
+**Files modified:**
+- `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`
+
+**Notes for next agent:**
+- T2.6.1 is next: agent history list (Live/History toggle, past executions table)
+- Agent Monitor Live View section (T2.5.x) is now complete!
+- Control bar is only in single-view mode — split view panes have their own selector but no individual control bars (to save space)
+- Stop/Force Stop buttons are mock-only — wire to real cancellation in Phase 3+
+- `modelConfig` maps "opus"/"sonnet"/"haiku" to colored badges — reusable pattern for persona displays
+
+---
+
 ## 2026-03-29 — Review: T2.5.5 (approved)
 
 **Reviewed:** Multi-agent side-by-side view — `features/agent-monitor/split-view.tsx`, layout toggle, responsive CSS, mock data.
