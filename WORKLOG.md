@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.8.5 (approved)
+
+**Reviewed:** Trigger configuration panel — `transition-properties-panel.tsx` and layout update.
+- All requirements met: persona dropdown with avatars + model badges, dispatch mode (auto/propose/gated), max retries, advancement mode (auto/approval/agent), no-trigger toggle
+- Generic `OptionGroup<T>` segmented button component — clean and reusable
+- Existing trigger lookup via `useTriggers(workflowId)` matching fromState + toState
+- Selected persona preview card with avatar pattern
+- Descriptive text per mode option
+- Config is local state (no persist mutation) — appropriate for mock UI phase
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.8.5: Build trigger configuration panel
 
 **Task:** When a transition is selected, show trigger options in properties panel: assign persona (dropdown of all personas with avatars), dispatch mode (auto/propose/gated radio), max retries (number input), advancement mode (auto/approval/agent). Shows "No trigger" option to leave transition manual-only.
