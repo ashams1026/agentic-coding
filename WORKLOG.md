@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-03-29 — Decompose: Sprint 5 — Backend API & Data Layer (Phase 3)
+
+**Phase:** Phase 3 from PLANNING.md (T3.1–T3.10)
+
+**Context gathered:**
+- Backend is empty stub (`src/index.ts` with `export {}`, no dependencies installed)
+- Shared types fully defined: 11 entity types, branded ID types with nanoid generators, API contract types, WS event types
+- Frontend has complete mock data layer (`mocks/fixtures.ts`, `mocks/api.ts`, `mocks/ws.ts`) — backend API shape must match what frontend already consumes
+- Frontend hooks use TanStack Query with `queryKeys` structure — API client just needs to replace mock functions
+
+**Decomposition: 17 tasks in 3 sections:**
+1. **Database & Server Foundation** (T3.1.1–T3.1.3): Install deps, scaffold Fastify, define Drizzle schema, migrations, seed
+2. **CRUD API Routes** (T3.2.1–T3.2.10): One route file per entity — projects, stories, tasks, edges, comments, workflows, personas, executions, proposals, dashboard aggregates
+3. **WebSocket & Frontend Integration** (T3.3.1–T3.3.4): Real WS server, API client, mode toggle, WS client
+
+**Key decisions:**
+- Tasks ordered by dependency: foundation → CRUD → integration
+- Each route file is a Fastify plugin registered in server.ts
+- API prefix: `/api/` for REST, `/ws` for WebSocket
+- Frontend gets api-mode toggle (mock vs live) so existing mock behavior is preserved
+- Seed script reuses fixture data from frontend mocks for data parity
+
+---
+
 ## 2026-03-29 — Review: T2.12.2 (approved)
 
 **Reviewed:** Demo mode — `use-demo.ts`, `demo-controls.tsx`, `dashboard.tsx`, `root-layout.tsx`.
