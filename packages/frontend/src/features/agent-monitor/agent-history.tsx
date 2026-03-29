@@ -6,8 +6,22 @@ import {
   ChevronsUpDown,
   Clock,
   DollarSign,
+  Filter,
+  Timer,
+  TrendingUp,
+  Hash,
+  X,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -74,6 +88,159 @@ function SortIcon({ field, activeField, dir }: { field: SortField; activeField: 
     <ChevronUp className="h-3 w-3" />
   ) : (
     <ChevronDown className="h-3 w-3" />
+  );
+}
+
+// ── Filter types ──────────────────────────────────────────────────
+
+interface Filters {
+  personaId: string; // "all" or PersonaId
+  outcome: string; // "all" | "success" | "failure" | "rejected"
+  costMin: string; // empty or number string
+  costMax: string; // empty or number string
+}
+
+const defaultFilters: Filters = {
+  personaId: "all",
+  outcome: "all",
+  costMin: "",
+  costMax: "",
+};
+
+// ── Stats bar ─────────────────────────────────────────────────────
+
+interface StatsBarProps {
+  executions: Execution[];
+}
+
+function StatsBar({ executions }: StatsBarProps) {
+  const stats = useMemo(() => {
+    const total = executions.length;
+    const totalCost = executions.reduce((sum, e) => sum + e.costUsd, 0);
+    const successCount = executions.filter((e) => e.outcome === "success").length;
+    const successRate = total > 0 ? (successCount / total) * 100 : 0;
+    const totalDuration = executions.reduce((sum, e) => sum + e.durationMs, 0);
+    const avgDuration = total > 0 ? totalDuration / total : 0;
+    return { total, totalCost, successRate, avgDuration };
+  }, [executions]);
+
+  return (
+    <div className="flex items-center gap-6 px-4 py-2.5 border-b bg-muted/20">
+      <div className="flex items-center gap-1.5">
+        <Hash className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-xs text-muted-foreground">Runs</span>
+        <span className="text-sm font-semibold tabular-nums">{stats.total}</span>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-xs text-muted-foreground">Total Cost</span>
+        <span className="text-sm font-semibold tabular-nums">
+          ${stats.totalCost.toFixed(2)}
+        </span>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <TrendingUp className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-xs text-muted-foreground">Success</span>
+        <span className="text-sm font-semibold tabular-nums">
+          {stats.successRate.toFixed(0)}%
+        </span>
+      </div>
+      <div className="flex items-center gap-1.5">
+        <Timer className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className="text-xs text-muted-foreground">Avg Duration</span>
+        <span className="text-sm font-semibold tabular-nums">
+          {formatDuration(stats.avgDuration)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ── Filter bar ────────────────────────────────────────────────────
+
+interface FilterBarProps {
+  filters: Filters;
+  onChange: (filters: Filters) => void;
+  personas: { id: string; name: string }[];
+  hasActiveFilters: boolean;
+}
+
+function FilterBar({ filters, onChange, personas, hasActiveFilters }: FilterBarProps) {
+  return (
+    <div className="flex items-center gap-2 px-4 py-2 border-b bg-muted/10">
+      <Filter className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+
+      {/* Persona filter */}
+      <Select
+        value={filters.personaId}
+        onValueChange={(v) => onChange({ ...filters, personaId: v })}
+      >
+        <SelectTrigger className="h-7 w-[140px] text-xs">
+          <SelectValue placeholder="All agents" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All agents</SelectItem>
+          {personas.map((p) => (
+            <SelectItem key={p.id} value={p.id}>
+              {p.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      {/* Outcome filter */}
+      <Select
+        value={filters.outcome}
+        onValueChange={(v) => onChange({ ...filters, outcome: v })}
+      >
+        <SelectTrigger className="h-7 w-[120px] text-xs">
+          <SelectValue placeholder="All outcomes" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All outcomes</SelectItem>
+          <SelectItem value="success">Success</SelectItem>
+          <SelectItem value="failure">Failed</SelectItem>
+          <SelectItem value="rejected">Rejected</SelectItem>
+        </SelectContent>
+      </Select>
+
+      {/* Cost range */}
+      <div className="flex items-center gap-1">
+        <DollarSign className="h-3 w-3 text-muted-foreground" />
+        <Input
+          type="number"
+          placeholder="Min"
+          value={filters.costMin}
+          onChange={(e) => onChange({ ...filters, costMin: e.target.value })}
+          className="h-7 w-[70px] text-xs"
+          step="0.01"
+          min="0"
+        />
+        <span className="text-xs text-muted-foreground">–</span>
+        <Input
+          type="number"
+          placeholder="Max"
+          value={filters.costMax}
+          onChange={(e) => onChange({ ...filters, costMax: e.target.value })}
+          className="h-7 w-[70px] text-xs"
+          step="0.01"
+          min="0"
+        />
+      </div>
+
+      {/* Clear filters */}
+      {hasActiveFilters && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 text-xs gap-1"
+          onClick={() => onChange(defaultFilters)}
+        >
+          <X className="h-3 w-3" />
+          Clear
+        </Button>
+      )}
+    </div>
   );
 }
 
@@ -181,6 +348,7 @@ export function AgentHistory() {
   const [sortField, setSortField] = useState<SortField>("startedAt");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [expandedId, setExpandedId] = useState<ExecutionId | null>(null);
+  const [filters, setFilters] = useState<Filters>(defaultFilters);
 
   // Past executions (not running)
   const historyExecutions = useMemo(
@@ -188,9 +356,33 @@ export function AgentHistory() {
     [executions],
   );
 
+  // Check if any filters are active
+  const hasActiveFilters =
+    filters.personaId !== "all" ||
+    filters.outcome !== "all" ||
+    filters.costMin !== "" ||
+    filters.costMax !== "";
+
+  // Apply filters
+  const filtered = useMemo(() => {
+    return historyExecutions.filter((e) => {
+      if (filters.personaId !== "all" && e.personaId !== filters.personaId) return false;
+      if (filters.outcome !== "all" && e.outcome !== filters.outcome) return false;
+      if (filters.costMin !== "") {
+        const min = parseFloat(filters.costMin);
+        if (!isNaN(min) && e.costUsd < min) return false;
+      }
+      if (filters.costMax !== "") {
+        const max = parseFloat(filters.costMax);
+        if (!isNaN(max) && e.costUsd > max) return false;
+      }
+      return true;
+    });
+  }, [historyExecutions, filters]);
+
   // Sorted
   const sorted = useMemo(() => {
-    const copy = [...historyExecutions];
+    const copy = [...filtered];
     copy.sort((a, b) => {
       let aVal: number;
       let bVal: number;
@@ -211,7 +403,7 @@ export function AgentHistory() {
       return sortDir === "asc" ? aVal - bVal : bVal - aVal;
     });
     return copy;
-  }, [historyExecutions, sortField, sortDir]);
+  }, [filtered, sortField, sortDir]);
 
   // Lookup maps
   const personaMap = useMemo(
@@ -225,6 +417,14 @@ export function AgentHistory() {
     for (const s of stories) map.set(s.id as string, s.title);
     return map;
   }, [tasks, stories]);
+
+  // Unique personas that appear in history (for filter dropdown)
+  const historyPersonas = useMemo(() => {
+    const ids = new Set(historyExecutions.map((e) => e.personaId as string));
+    return personas
+      .filter((p) => ids.has(p.id as string))
+      .map((p) => ({ id: p.id as string, name: p.name }));
+  }, [historyExecutions, personas]);
 
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
@@ -249,64 +449,88 @@ export function AgentHistory() {
   }
 
   return (
-    <div className="h-full overflow-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[160px]">Agent</TableHead>
-            <TableHead>Target</TableHead>
-            <TableHead
-              className="w-[150px] cursor-pointer select-none"
-              onClick={() => toggleSort("startedAt")}
-            >
-              <div className="flex items-center gap-1">
-                Started
-                <SortIcon field="startedAt" activeField={sortField} dir={sortDir} />
-              </div>
-            </TableHead>
-            <TableHead
-              className="w-[100px] cursor-pointer select-none"
-              onClick={() => toggleSort("durationMs")}
-            >
-              <div className="flex items-center gap-1">
-                Duration
-                <SortIcon field="durationMs" activeField={sortField} dir={sortDir} />
-              </div>
-            </TableHead>
-            <TableHead
-              className="w-[90px] cursor-pointer select-none"
-              onClick={() => toggleSort("costUsd")}
-            >
-              <div className="flex items-center gap-1">
-                Cost
-                <SortIcon field="costUsd" activeField={sortField} dir={sortDir} />
-              </div>
-            </TableHead>
-            <TableHead className="w-[100px]">Outcome</TableHead>
-            <TableHead className="w-8" />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {sorted.map((exec) => {
-            const persona = personaMap.get(exec.personaId as string);
-            return (
-              <HistoryRow
-                key={exec.id}
-                execution={exec}
-                personaName={persona?.name ?? "Agent"}
-                personaColor={persona?.avatar.color ?? "#6b7280"}
-                targetName={
-                  targetNameMap.get(exec.targetId as string) ?? exec.targetId
-                }
-                isExpanded={expandedId === exec.id}
-                onToggle={() =>
-                  setExpandedId(expandedId === exec.id ? null : exec.id)
-                }
-              />
-            );
-          })}
-        </TableBody>
-      </Table>
+    <div className="flex flex-col h-full">
+      {/* Stats bar — computed from filtered results */}
+      <StatsBar executions={filtered} />
+
+      {/* Filter bar */}
+      <FilterBar
+        filters={filters}
+        onChange={setFilters}
+        personas={historyPersonas}
+        hasActiveFilters={hasActiveFilters}
+      />
+
+      {/* Table */}
+      <div className="flex-1 overflow-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[160px]">Agent</TableHead>
+              <TableHead>Target</TableHead>
+              <TableHead
+                className="w-[150px] cursor-pointer select-none"
+                onClick={() => toggleSort("startedAt")}
+              >
+                <div className="flex items-center gap-1">
+                  Started
+                  <SortIcon field="startedAt" activeField={sortField} dir={sortDir} />
+                </div>
+              </TableHead>
+              <TableHead
+                className="w-[100px] cursor-pointer select-none"
+                onClick={() => toggleSort("durationMs")}
+              >
+                <div className="flex items-center gap-1">
+                  Duration
+                  <SortIcon field="durationMs" activeField={sortField} dir={sortDir} />
+                </div>
+              </TableHead>
+              <TableHead
+                className="w-[90px] cursor-pointer select-none"
+                onClick={() => toggleSort("costUsd")}
+              >
+                <div className="flex items-center gap-1">
+                  Cost
+                  <SortIcon field="costUsd" activeField={sortField} dir={sortDir} />
+                </div>
+              </TableHead>
+              <TableHead className="w-[100px]">Outcome</TableHead>
+              <TableHead className="w-8" />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sorted.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-8">
+                  <p className="text-sm text-muted-foreground">
+                    No executions match the current filters.
+                  </p>
+                </TableCell>
+              </TableRow>
+            ) : (
+              sorted.map((exec) => {
+                const persona = personaMap.get(exec.personaId as string);
+                return (
+                  <HistoryRow
+                    key={exec.id}
+                    execution={exec}
+                    personaName={persona?.name ?? "Agent"}
+                    personaColor={persona?.avatar.color ?? "#6b7280"}
+                    targetName={
+                      targetNameMap.get(exec.targetId as string) ?? exec.targetId
+                    }
+                    isExpanded={expandedId === exec.id}
+                    onToggle={() =>
+                      setExpandedId(expandedId === exec.id ? null : exec.id)
+                    }
+                  />
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

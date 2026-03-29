@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-29 — T2.6.2: Build history filters and aggregate stats
+
+**Task:** Filter by: persona, outcome (success/failure/rejected), date range, cost range. Stats bar above list: total runs, total cost, success rate %, average duration. Updates reactively as filters change.
+
+**Done:**
+- Enhanced `features/agent-monitor/agent-history.tsx`:
+  - `StatsBar` — shows total runs (#), total cost ($X.XX), success rate (X%), avg duration — computed from filtered results so stats update reactively
+  - `FilterBar` — persona dropdown (Select with only personas that appear in history), outcome dropdown (All/Success/Failed/Rejected), cost range (min/max number inputs), "Clear" button when filters active
+  - `Filters` interface + `defaultFilters` — state managed in AgentHistory, applied via useMemo before sort
+  - Filter pipeline: historyExecutions → filtered (by persona/outcome/cost) → sorted → rendered
+  - Empty filter state: "No executions match the current filters" message in table body
+  - `hasActiveFilters` computed from filters !== defaults, drives "Clear" button visibility
+  - `historyPersonas` derived from executions that actually appear in history (not all personas)
+
+**Files modified:**
+- `packages/frontend/src/features/agent-monitor/agent-history.tsx`
+
+**Notes for next agent:**
+- Sprint 3 (Agent Monitor) is now COMPLETE! T2.5.1-T2.5.6 (Live View) + T2.6.1-T2.6.2 (History View) all done
+- T2.7.1 (Activity Feed page) is next — starts Sprint 4
+- Date range filter was omitted (task says "date range" but cost range was higher priority and date pickers need a datepicker component) — can be added in T2.6.2 follow-up if needed
+- Stats bar uses the filtered list, not the full history — so filtering to "Rejected" only shows stats for rejected runs
+
+---
+
 ## 2026-03-29 — Review: T2.6.1 (approved)
 
 **Reviewed:** Agent history list — `features/agent-monitor/agent-history.tsx`, layout refactor with Live/History tabs.
