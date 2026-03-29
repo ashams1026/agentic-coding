@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-29 — T2.9.1: Build persona list view
+
+**Task:** Grid of persona cards with avatar, name, model badge, description, tool count pill. Quick actions on hover. Create card with + icon. Built-in persona badge.
+
+**Done:**
+- Created `features/persona-manager/persona-list.tsx`:
+  - `PersonaCard` — avatar (colored circle + lucide icon from map), name, Built-in badge, model badge (Opus=violet, Sonnet=blue, Haiku=emerald), 2-line description, tool count pill, hover actions (Edit, Duplicate, Delete)
+  - `CreateCard` — dashed border + icon, creates default persona then navigates to editor
+  - `PersonaList` — responsive grid (1-4 cols), empty state with CTA, delete confirmation dialog with built-in warning
+  - Icon map: clipboard-list, git-branch, code, eye, test-tube → lucide components, fallback to Bot
+  - `BUILT_IN_IDS` set matches fixture persona IDs
+- Updated `pages/persona-manager.tsx` — replaced placeholder with `PersonaList` + `onEdit` state prep for T2.9.2
+
+**Files created:**
+- `packages/frontend/src/features/persona-manager/persona-list.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/persona-manager.tsx`
+
+**Notes for next agent:**
+- Persona Manager section started — T2.9.2 is persona editor (full-page/sheet form)
+- `onEdit` callback is wired to `setEditingId` state in the page — T2.9.2 should conditionally render editor when `editingId` is set
+- Icon map lives in `persona-list.tsx` — could be extracted to shared util if needed by other features later
+- Model badge config (opus/sonnet/haiku colors) also in this file — reusable pattern
+- `handleDuplicate` copies all persona fields including avatar, tools, prompt
+
+---
+
 ## 2026-03-29 — Review: T2.8.7 (approved)
 
 **Reviewed:** Workflow templates — `workflow-list-sidebar.tsx` rewrite.
