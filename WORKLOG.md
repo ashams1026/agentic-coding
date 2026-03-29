@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T2.8.2 (approved)
+
+**Reviewed:** State machine canvas — `features/workflow-designer/state-machine-canvas.tsx` and layout update.
+- All requirements met: rounded rectangles with name/color/entry/exit, directed arrows with labels, BFS layout, drag support
+- `computeLayout()`: clean BFS from initial state, handles unreachable states, level-based horizontal positioning
+- `StateNode`: color stroke + top bar, initial circle + "entry", final double border + "exit"
+- `TransitionArrow`: cubic bezier paths (forward right→left, backward bottom→bottom), arrowhead polygon with tangent rotation
+- Drag: SVG coordinate transform with viewBox/viewport scaling, positions clamped to ≥0
+- Dynamic viewBox, grid dot pattern, dark mode CSS vars, empty state
+- Label width uses char-count approximation — acceptable for short labels
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.8.2: Build state machine canvas
 
 **Task:** States as rounded rectangles on SVG canvas. Name, color, entry/exit indicators. Transitions as directed arrows with labels. Layout algorithm for initial positioning. States are draggable.
