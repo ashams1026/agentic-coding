@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: R.5 (approved)
+
+**Reviewed:** Story list view with master-detail panels — 3 new components + updated story-board page.
+- All 6 task requirements met: filterable/sortable list, side panel at ~60%, reused all 7 story detail components, Board/List toggle, both views available, `features/story-list/` directory created
+- `StoryListRow`: compact row with state badge (8 color-coded states with dark mode), priority badge, truncated title, mini progress bar
+- `StoryListPanel`: search by title/state/labels, sort by 4 keys, story count footer, empty states
+- `StoryDetailSidePanel`: panel header with title/external-link/close, scrollable content with all story detail components
+- `story-board.tsx`: clean view toggle with pill-style buttons, master-detail with smooth `w-2/5` transition
+- Conventions followed: cn(), named exports, shadcn/ui, mock data via hooks, dark mode
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — R.5: Build story list view with master-detail panels
 
 **Task:** New list view for `/board` with filterable/sortable story list, side-panel story detail, toggle between list/kanban views.
