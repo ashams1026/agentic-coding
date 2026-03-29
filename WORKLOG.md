@@ -662,3 +662,11 @@
 - `startDemo()` can be wired to a "Watch Demo" button on the dashboard
 - `onDemoStop(callback)` can reset UI state when demo ends
 - Next work is Sprint 2: Core UI Screens (T2.1.1+)
+
+---
+
+## 2026-03-28 — Review: T1.4.5 (approved)
+
+**Reviewed:** Demo mode in `packages/frontend/src/mocks/demo.ts`.
+
+**Verdict:** Approved. Full story lifecycle scripted over ~60 seconds across all 7 workflow states. 5 agent runs (PM, TL, Engineer, Reviewer, QA) with realistic streaming output — including actual TypeScript code from Engineer. All 9 WS event types exercised. Proper timer management: `schedule()` tracks timeouts, `stopDemo()` cancels everything including cost ticker. Control API complete: start/stop/isRunning/onStop/autoStart. Demo IDs properly namespaced to avoid fixture conflicts. Build passes clean. Sprint 1 mock data layer is now fully complete.
