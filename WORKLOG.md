@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: T2.5.5 (approved)
+
+**Reviewed:** Multi-agent side-by-side view — `features/agent-monitor/split-view.tsx`, layout toggle, responsive CSS, mock data.
+- All requirements met: toggle button (Columns2/Square), 2-3 panes via CSS grid, per-pane agent selector dropdown with persona avatars, narrow screen fallback via media query
+- Split mode correctly hides sidebar, each pane independently selectable
+- EXEC_8 (Reviewer on TASK_1_3) added as second running agent — split view has data to show
+- Pane state management is clean: each Pane owns its selectedId, defaults to assigned execution
+- TanStack Query deduplicates across multiple AgentSelector instances
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.5.5: Build multi-agent side-by-side view
 
 **Task:** Toggle button: "Split view". Shows 2-3 agent output panes side-by-side. Each pane has its own agent selector dropdown. Useful when multiple agents work in parallel. Falls back to single pane on narrow screens.

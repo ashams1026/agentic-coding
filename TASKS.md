@@ -17,7 +17,7 @@
 
 - [x] **T2.5.4** — Build tool call display sections. When agent makes tool calls, show as collapsible sections in the output stream. Header: tool icon + tool name + status (running spinner / success check / error x). Collapsed: one-line summary. Expanded: tool input (formatted JSON or code) + tool output (formatted). File edits show mini diff view.
 
-- [review] **T2.5.5** — Build multi-agent side-by-side view. Toggle button: "Split view". Shows 2-3 agent output panes side-by-side. Each pane has its own agent selector dropdown. Useful when multiple agents work in parallel. Falls back to single pane on narrow screens.
+- [x] **T2.5.5** — Build multi-agent side-by-side view. Toggle button: "Split view". Shows 2-3 agent output panes side-by-side. Each pane has its own agent selector dropdown. Useful when multiple agents work in parallel. Falls back to single pane on narrow screens.
 
 - [ ] **T2.5.6** — Build agent control bar. Below agent info header. Buttons: "Stop" (graceful cancel — confirmation dialog), "Force Stop" (warning dialog), link to task detail, link to story. Show persona name, model badge (opus/sonnet/haiku), elapsed time, running cost.
 
