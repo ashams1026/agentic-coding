@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T2.3.5 (approved)
+
+**Reviewed:** Comment stream component — `comment-stream.tsx` and story-detail page integration.
+- All requirements met: reusable with `targetId`+`targetType` props (works for stories and tasks), chronological sort, three distinct renderers for agent/user/system comments
+- Agent comments: persona-colored avatar, name + "agent" badge + timestamp, `whitespace-pre-wrap` content, metadata chips (FileCode with tooltip for files, Wrench for tools)
+- User comments: primary-colored User avatar, name + timestamp
+- System comments: compact muted inline with Info icon
+- Input: Textarea + Send button, Cmd/Ctrl+Enter keyboard shortcut, `useCreateComment` with clear-on-success
+- Auto-scroll via `useEffect` on `sorted.length`, max-h-[400px] scroll container
+- `formatTime` provides clean relative timestamps
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.3.5: Build comment stream component
 
 **Task:** Reusable comment stream for stories and tasks. Three author types (agent, user, system) with different styling. Agent comments have persona avatars and metadata chips. User input at bottom. Auto-scroll to bottom on new comments.
