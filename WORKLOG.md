@@ -5,6 +5,40 @@
 
 ---
 
+## 2026-03-29 — T2.11.3: Build loading skeletons and empty states
+
+**Task:** Skeleton components matching screen layouts (shimmer animation). Empty states for stories, agents, activity, personas with icons, descriptions, and CTA buttons.
+
+**Done:**
+- Created `features/common/loading-skeletons.tsx` with 6 screen-specific skeletons:
+  - `DashboardSkeleton` — 4 stat cards, agents strip, 2-column activity+cost layout
+  - `KanbanSkeleton` — header, filter bar, 5 columns with varying card counts
+  - `DetailSkeleton` — title, badges, description paragraphs, task list
+  - `AgentMonitorSkeleton` — sidebar with 3 agent entries, terminal area with output lines
+  - `ActivityFeedSkeleton` — header, filter bar, 6 event rows with avatars
+  - `SettingsSkeleton` — sidebar nav (7 items), content area with form fields
+  - All use shadcn `Skeleton` component (`animate-pulse` shimmer)
+- Created `features/common/empty-states.tsx` with 6 empty state components:
+  - `NoStoriesEmpty` — Kanban icon, "Create your first story", CTA → /board
+  - `NoAgentsEmpty` — Bot icon, "All quiet", CTA → /board
+  - `NoActivityEmpty` — Activity icon, "Nothing yet", CTA → /
+  - `NoPersonasEmpty` — Users icon, "Set up your team", CTA → /personas
+  - `NoTasksEmpty` — CheckSquare icon, "No tasks yet", no CTA
+  - `NoStoryDetailEmpty` — FileText icon, "Story not found", CTA → /board
+  - Generic `EmptyState` base component: icon circle, title, description, optional action button
+
+**Files created:**
+- `packages/frontend/src/features/common/loading-skeletons.tsx`
+- `packages/frontend/src/features/common/empty-states.tsx`
+
+**Notes for next agent:**
+- Skeletons and empty states are in `features/common/` — ready to be imported by any page
+- Not yet wired into actual pages (pages currently show their own loading states) — can be integrated incrementally
+- Empty states use `<Link>` + `<Button>` for CTA navigation
+- Next: T2.11.4 (nav badges and status bar)
+
+---
+
 ## 2026-03-29 — Review: T2.11.2 (approved)
 
 **Reviewed:** Toast notification system — `toast-store.ts`, `toast-renderer.tsx`, `use-toast-events.ts` + root layout integration.
