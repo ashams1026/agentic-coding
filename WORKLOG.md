@@ -5,6 +5,40 @@
 
 ---
 
+## 2026-03-29 — T3.1.1: Install backend dependencies and scaffold Fastify server
+
+**Task:** Install all backend deps, create Fastify server with CORS and health check, verify it starts.
+
+**Done:**
+- Installed production deps: `fastify`, `@fastify/cors`, `@fastify/websocket`, `better-sqlite3`, `drizzle-orm`, `pino-pretty`
+- Installed dev deps: `@types/better-sqlite3`, `drizzle-kit`, `tsx`
+- Added `pnpm.onlyBuiltDependencies` to root `package.json` for `better-sqlite3` and `esbuild` (required by drizzle-kit)
+- Created `packages/backend/src/server.ts`:
+  - `buildServer()` async function returning configured Fastify instance
+  - CORS allowing `localhost:5173` (vite dev) and `localhost:4173` (vite preview)
+  - `GET /health` returning `{ status: "ok", timestamp }`
+  - Pino logger with pino-pretty transport
+- Updated `packages/backend/src/index.ts`:
+  - Calls `buildServer()`, listens on port 3001 (configurable via PORT env)
+  - Graceful error handling and exit
+- Verified: `pnpm build` passes, server starts via `tsx`, `/health` responds with 200
+
+**Files created:**
+- `packages/backend/src/server.ts`
+
+**Files modified:**
+- `packages/backend/src/index.ts` — replaced stub with server startup
+- `packages/backend/package.json` — added all dependencies
+- `package.json` (root) — added `pnpm.onlyBuiltDependencies`
+- `pnpm-lock.yaml` — updated
+
+**Notes for next agent:**
+- Server exports `buildServer()` — route plugins will be registered in there
+- `@fastify/websocket` is installed but not yet registered (T3.3.1)
+- Backend `tsconfig.json` uses `moduleResolution: "bundler"` + `verbatimModuleSyntax: true` — use `import type` for type-only imports, `.js` extensions in relative imports
+
+---
+
 ## 2026-03-29 — Decompose: Sprint 5 — Backend API & Data Layer (Phase 3)
 
 **Phase:** Phase 3 from PLANNING.md (T3.1–T3.10)

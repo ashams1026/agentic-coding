@@ -12,7 +12,7 @@
 
 ### Database & Server Foundation
 
-- [ ] **T3.1.1** — Install backend dependencies and scaffold Fastify server. Install `fastify`, `@fastify/cors`, `@fastify/websocket`, `better-sqlite3`, `drizzle-orm`, `drizzle-kit`, and dev deps (`@types/better-sqlite3`, `tsx`). Create `packages/backend/src/server.ts` with Fastify instance, CORS config (allow frontend origin), and health check route `GET /health`. Update `src/index.ts` to start the server on port 3001. Verify `pnpm dev` starts and `/health` responds.
+- [review] **T3.1.1** — Install backend dependencies and scaffold Fastify server. Install `fastify`, `@fastify/cors`, `@fastify/websocket`, `better-sqlite3`, `drizzle-orm`, `drizzle-kit`, and dev deps (`@types/better-sqlite3`, `tsx`). Create `packages/backend/src/server.ts` with Fastify instance, CORS config (allow frontend origin), and health check route `GET /health`. Update `src/index.ts` to start the server on port 3001. Verify `pnpm dev` starts and `/health` responds.
 
 - [ ] **T3.1.2** — Define Drizzle schema for all entities. Create `packages/backend/src/db/schema.ts` with SQLite tables matching the shared types in `packages/shared/src/entities.ts`: `projects`, `stories`, `tasks`, `task_edges`, `workflows`, `personas`, `triggers`, `executions`, `comments`, `project_memories`, `proposals`. Use `text` for IDs (prefixed nanoids), `text` for JSON columns (labels, context, settings, states), `integer` for timestamps stored as epoch ms. Add proper foreign key references. Create `packages/backend/src/db/index.ts` that initializes better-sqlite3 + Drizzle and exports `db`.
 
