@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T2.4.1 (approved)
+
+**Reviewed:** Task detail page — `task-detail.tsx` rewrite.
+- All requirements met: header with title, colored state badge, assigned persona avatar + name, parent story link with ExternalLink icon navigating to `/stories/:id`
+- Follows same full-page layout pattern as story detail (`max-w-4xl p-6 space-y-6`)
+- Back button with `navigate(-1)`, description section with whitespace-pre-wrap
+- Reuses `CommentStream` and `ExecutionTimeline` from story-detail features — validates the generic design
+- Placeholder sections for T2.4.2–T2.4.5
+- Parent story resolved via `useStories()` + find to avoid optional StoryId TS issue
+- Loading/not-found states
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.4.1: Build task detail view
 
 **Task:** Task detail page at `/tasks/:id`. Header with title, state badge, assigned persona, parent story link. Placeholder sections for T2.4.2–T2.4.5. Reuse CommentStream and ExecutionTimeline.
