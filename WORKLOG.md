@@ -5,6 +5,46 @@
 
 ---
 
+## 2026-03-29 — T2.11.2: Build toast notification system
+
+**Task:** Non-blocking toasts in bottom-right, 4 types, auto-dismiss 5s, stack up to 3, action buttons, mock WS events.
+
+**Done:**
+- Created `stores/toast-store.ts`:
+  - Zustand store with `toasts[]`, `addToast()`, `removeToast()`
+  - 4 types: success, error, info, warning
+  - Auto-dismiss after 5s via setTimeout
+  - Max 3 toasts — oldest trimmed when new one added
+  - Toast supports optional `action: { label, onClick }`
+- Created `features/toasts/toast-renderer.tsx`:
+  - Fixed bottom-right positioned container (`z-50`, 360px wide)
+  - Per-type config: icon (CheckCircle2/AlertCircle/Info/AlertTriangle), colors (green/red/blue/amber), border tints
+  - Slide-in animation via `animate-in slide-in-from-right-full fade-in`
+  - Title, optional description, optional action button (variant="link"), close X button
+  - Dark mode support on all color variants
+- Created `features/toasts/use-toast-events.ts`:
+  - Subscribes to mock WS via `mockWs.subscribeAll()`
+  - Maps 5 event types to toasts: agent_completed (success/error), agent_started (info), proposal_created (warning), state_change (info), cost_update (warning when > $40)
+  - Action buttons navigate to relevant pages (agents, board, settings)
+- Updated `layouts/root-layout.tsx`:
+  - Added `useToastEvents()` hook and `<ToastRenderer />` component
+
+**Files created:**
+- `packages/frontend/src/stores/toast-store.ts`
+- `packages/frontend/src/features/toasts/toast-renderer.tsx`
+- `packages/frontend/src/features/toasts/use-toast-events.ts`
+
+**Files modified:**
+- `packages/frontend/src/layouts/root-layout.tsx` (imports + hook + render)
+
+**Notes for next agent:**
+- `useToastStore` can be called from anywhere to add toasts: `useToastStore.getState().addToast({ type, title })`
+- WS events auto-trigger toasts — any mock WS emission will show notifications
+- Animation uses Tailwind `animate-in` class (from shadcn/tailwind-animate)
+- Next: T2.11.3 (loading skeletons and empty states)
+
+---
+
 ## 2026-03-29 — Review: T2.11.1 (approved)
 
 **Reviewed:** Command palette — `command-palette.tsx` + root layout integration.

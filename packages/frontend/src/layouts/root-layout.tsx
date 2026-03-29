@@ -7,9 +7,12 @@ import { StatusBar } from "@/components/status-bar";
 import { useThemeSync } from "@/hooks/use-theme";
 import { useUIStore } from "@/stores/ui-store";
 import { CommandPalette } from "@/features/command-palette/command-palette";
+import { ToastRenderer } from "@/features/toasts/toast-renderer";
+import { useToastEvents } from "@/features/toasts/use-toast-events";
 
 export function RootLayout() {
   useThemeSync();
+  useToastEvents();
   const setMobileSidebarOpen = useUIStore((s) => s.setMobileSidebarOpen);
 
   return (
@@ -36,6 +39,7 @@ export function RootLayout() {
         </div>
       </div>
       <CommandPalette />
+      <ToastRenderer />
     </TooltipProvider>
   );
 }
