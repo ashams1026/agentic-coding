@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.9.4 (approved)
+
+**Reviewed:** Tool configuration section — `tool-configuration.tsx` + persona-editor refactor.
+- SDK Tools (8, 4-col) + AgentOps Tools (7, 3-col) checkboxes with tooltip descriptions
+- ToolCheckbox: checked highlight (border-primary/30 bg-primary/5), mono font for AgentOps
+- Presets dropdown: PM, Tech Lead, Engineer, Reviewer, QA, All, None — all match fixture data
+- Header: selected/total count badge + Presets button
+- Per-group count badges
+- Standalone controlled component, old inline code properly removed from persona-editor
+- Build passes, conventions followed
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.9.4: Build tool configuration section
 
 **Task:** Two tool groups (SDK + AgentOps) with checkboxes and tooltips. Each tool has a description. Presets button: "Tech Lead preset", "Engineer preset", etc.
