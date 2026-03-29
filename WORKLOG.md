@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-29 — R.2: Improve sidebar transitions
+
+**Task:** Change transition timing, smooth badge transitions, animate label opacity separately from width.
+
+**Done:**
+- **Sidebar container**: Changed `transition-all duration-200` → `transition-all duration-300 ease-in-out` for smoother width animation
+- **Nav items**: Changed `transition-colors` → `transition-all duration-300 ease-in-out` so padding changes also animate
+- **Collapsed badges**: No longer conditionally rendered — always present with `transition-all duration-300 ease-in-out`, using `scale-100 opacity-100` when collapsed and `scale-0 opacity-0` when expanded. Smooth scale+fade instead of pop in/out
+- **Labels + expanded badges**: Wrapped in a single `<span>` with `overflow-hidden` and `transition-all duration-300 ease-in-out`. Opacity animates independently (`opacity-0`/`opacity-100`) from width (`w-0`/`w-auto`). Labels use `truncate` to prevent overflow during transition
+
+**Files modified:**
+- `packages/frontend/src/components/sidebar.tsx`
+
+**Notes for next agent:**
+- R.3 (mobile responsiveness) is next — sidebar needs to become overlay on screens < 768px
+- Badges are now always rendered (not conditionally) — they transition via opacity/scale instead
+- The label wrapper span animates width+opacity together for a clean collapse/expand effect
+
+---
+
 ## 2026-03-29 — Review: R.1 (approved)
 
 **Reviewed:** Sidebar spacing/alignment fixes in `sidebar.tsx`.

@@ -56,7 +56,7 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "flex h-screen flex-col border-r border-border bg-card transition-all duration-200",
+        "flex h-screen flex-col border-r border-border bg-card transition-all duration-300 ease-in-out",
         sidebarCollapsed ? "w-sidebar-collapsed" : "w-sidebar",
       )}
     >
@@ -93,7 +93,7 @@ export function Sidebar() {
                 end={to === "/"}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-300 ease-in-out",
                     "hover:bg-accent hover:text-accent-foreground",
                     isActive
                       ? "bg-accent text-accent-foreground"
@@ -104,32 +104,47 @@ export function Sidebar() {
               >
                 <span className="relative">
                   <Icon className="h-4 w-4 shrink-0" />
-                  {to === "/agents" && activeAgentCount > 0 && sidebarCollapsed && (
-                    <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-0.5 text-[9px] font-bold text-white">
+                  {/* Collapsed badges — fade in/out with transition */}
+                  {to === "/agents" && activeAgentCount > 0 && (
+                    <span
+                      className={cn(
+                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-0.5 text-[9px] font-bold text-white transition-all duration-300 ease-in-out",
+                        sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
+                      )}
+                    >
                       {activeAgentCount}
                     </span>
                   )}
-                  {to === "/activity" && unreadActivityCount > 0 && sidebarCollapsed && (
-                    <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-500 px-0.5 text-[9px] font-bold text-white">
+                  {to === "/activity" && unreadActivityCount > 0 && (
+                    <span
+                      className={cn(
+                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-500 px-0.5 text-[9px] font-bold text-white transition-all duration-300 ease-in-out",
+                        sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
+                      )}
+                    >
                       {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
                     </span>
                   )}
                 </span>
-                {!sidebarCollapsed && (
-                  <>
-                    <span className="flex-1">{label}</span>
-                    {to === "/agents" && activeAgentCount > 0 && (
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white">
-                        {activeAgentCount}
-                      </span>
-                    )}
-                    {to === "/activity" && unreadActivityCount > 0 && (
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1 text-[10px] font-bold text-white">
-                        {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
-                      </span>
-                    )}
-                  </>
-                )}
+                {/* Labels + expanded badges — animate opacity separately */}
+                <span
+                  className={cn(
+                    "flex flex-1 items-center gap-3 overflow-hidden transition-all duration-300 ease-in-out",
+                    sidebarCollapsed ? "w-0 opacity-0" : "w-auto opacity-100",
+                  )}
+                >
+                  <span className="flex-1 truncate">{label}</span>
+                  {to === "/agents" && activeAgentCount > 0 && (
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white shrink-0">
+                      {activeAgentCount}
+                    </span>
+                  )}
+                  {to === "/activity" && unreadActivityCount > 0 && (
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1 text-[10px] font-bold text-white shrink-0">
+                      {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
+                    </span>
+                  )}
+                </span>
               </NavLink>
             </TooltipTrigger>
             {sidebarCollapsed && (
