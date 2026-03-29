@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.4.4 (approved)
+
+**Reviewed:** Execution context viewer — `features/task-detail/execution-context.tsx` and task-detail page integration.
+- Three collapsible sections implemented: "Previous Run Summaries" (run number, execution ID, outcome badge, summary, inline rejection), "Rejection Payloads" (filtered view with severity/hint/attempt), "Project Memory Injected" (summary, key decisions, file badges)
+- `OutcomeBadge` with green/red/amber colors, `RunEntry` with embedded rejection display, `MemoryRow` with bulleted decisions and mono file badges
+- Header shows "has rejections" amber badge when applicable
+- Returns null when no execution context and no memories — clean empty state
+- Mock data enriched: TASK_1_1 has rejected+success runs, TASK_1_2 has success run
+- Dark mode support throughout, follows established Collapsible/chevron pattern
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.4.4: Build execution context viewer
 
 **Task:** Shows what context the agent received for this task. Collapsible sections: "Previous run summaries" (from executionContext), "Rejection payloads" (if any), "Project memory injected". Useful for debugging agent behavior.
