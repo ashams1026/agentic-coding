@@ -5,37 +5,9 @@
 
 ---
 
-## Sprint 1: Project Scaffolding (Phase 1)
-
-### Shared Types
-
-- [x] **T1.3.1** — Define all entity types in `packages/shared`. TypeScript interfaces for: Project, Story, Task, TaskEdge, Workflow, WorkflowState, WorkflowTransition, Persona, Trigger, Execution, Comment, ProjectMemory, Proposal. Include ID prefix types and nanoid generator utility.
-
-- [x] **T1.3.2** — Define API contract types in `packages/shared`. Request/response types for all CRUD endpoints. WebSocket event types (state change, new comment, agent output chunk, proposal created, cost update). Enum types for all status fields.
-
-### Mock Data Layer
-
-- [x] **T1.4.1** — Create mock data fixtures in `packages/frontend/src/mocks/`. Realistic dataset: 1 project ("AgentOps" itself), 2 workflows (story + task), 5 personas (PM, Tech Lead, Engineer, Reviewer, QA — each with avatar color/icon), 3 stories in various states with 8-10 child tasks, dependency edges between tasks, 5-6 execution records, 15-20 comments across stories/tasks, 2 pending proposals, mock project memory entries.
-
-- [x] **T1.4.2** — Build mock API service layer in `packages/frontend/src/mocks/api.ts`. In-memory store initialized from fixtures. Functions matching real API shape: `getStories()`, `getStory(id)`, `updateStory()`, `getTasks()`, `getComments()`, `getExecutions()`, `getPersonas()`, `getWorkflows()`, etc. Simulated latency (50-150ms) for realistic loading states.
-
-- [x] **T1.4.3** — Build TanStack Query hooks in `packages/frontend/src/hooks/`. One hook per API call: `useStories()`, `useStory(id)`, `useTasks(storyId)`, `useComments(targetId)`, `usePersonas()`, `useWorkflows()`, etc. All backed by mock API for now. Include optimistic update helpers for mutations.
-
-- [x] **T1.4.4** — Build mock WebSocket system in `packages/frontend/src/mocks/ws.ts`. Event emitter that simulates: agent output streaming (text chunks arriving over time), state transition events, new comment events, proposal creation, cost ticker. Expose `subscribe(eventType, callback)` API. Components can subscribe for real-time updates.
-
-- [x] **T1.4.5** — Build demo mode in `packages/frontend/src/mocks/demo.ts`. Scripted replay of a story lifecycle: story created → PM writes criteria → Tech Lead decomposes → Engineer works (with streaming output) → Reviewer reviews → QA tests → Done. Plays out over ~60 seconds, firing mock WebSocket events at each step. Toggle via UI button or query param `?demo=true`.
-
----
-
 ## Sprint 2: Core UI Screens (Phase 2A-2C)
 
 ### Dashboard (Home)
-
-- [x] **T2.1.1** — Build dashboard page layout. Status cards row at top: "Active Agents" (count), "Pending Proposals" (count), "Needs Attention" (count), "Today's Cost" (dollar amount). Each card is clickable, navigates to relevant screen. Use shadcn Card component.
-
-- [x] **T2.1.2** — Build active agents strip component. Horizontal scrollable row of agent cards below status row. Each card: persona avatar (colored circle + icon), task name truncated, elapsed time (live-updating), pulsing status dot. Click navigates to agent monitor with that agent selected. Shows "No active agents" empty state.
-
-- [x] **T2.1.3** — Build recent activity feed component for dashboard. Compact list of last ~10 events. Each entry: event icon (color-coded by type), persona avatar (if agent), short description, relative timestamp. Event types: state change, agent completed, comment posted, proposal created. Click navigates to source. "View all" link to full activity feed.
 
 - [ ] **T2.1.4** — Build upcoming work widget. Shows next 5 tasks ready for dispatch (from mock ready-work data). Each entry: task title, parent story name, persona that would handle it, dependency status. Helps user see what will fire next.
 

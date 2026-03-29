@@ -29,3 +29,33 @@
 - [x] **T1.2.6** — Build app shell layout. Sidebar navigation (collapsible) with icons + labels for all 9 routes. Project switcher dropdown at top. Status bar at bottom (placeholder content). Main content area with `<Outlet />`. Responsive: sidebar collapses to icons on narrow screens.
 
 - [x] **T1.2.7** — Implement dark mode. Toggle in sidebar footer or status bar. Use Tailwind `dark:` variant. Persist preference in Zustand + localStorage. Default to system preference.
+
+### Shared Types
+
+- [x] **T1.3.1** — Define all entity types in `packages/shared`. TypeScript interfaces for: Project, Story, Task, TaskEdge, Workflow, WorkflowState, WorkflowTransition, Persona, Trigger, Execution, Comment, ProjectMemory, Proposal. Include ID prefix types and nanoid generator utility.
+
+- [x] **T1.3.2** — Define API contract types in `packages/shared`. Request/response types for all CRUD endpoints. WebSocket event types (state change, new comment, agent output chunk, proposal created, cost update). Enum types for all status fields.
+
+### Mock Data Layer
+
+- [x] **T1.4.1** — Create mock data fixtures in `packages/frontend/src/mocks/`. Realistic dataset covering all entity types with cross-references.
+
+- [x] **T1.4.2** — Build mock API service layer in `packages/frontend/src/mocks/api.ts`. In-memory store, full CRUD, simulated latency.
+
+- [x] **T1.4.3** — Build TanStack Query hooks in `packages/frontend/src/hooks/`. One hook per API call with optimistic update helpers.
+
+- [x] **T1.4.4** — Build mock WebSocket system in `packages/frontend/src/mocks/ws.ts`. Typed event emitter with simulation helpers.
+
+- [x] **T1.4.5** — Build demo mode in `packages/frontend/src/mocks/demo.ts`. 60-second scripted story lifecycle replay.
+
+---
+
+## Sprint 2: Core UI Screens (Phase 2A-2C) — started 2026-03-28
+
+### Dashboard (Home)
+
+- [x] **T2.1.1** — Build dashboard page layout. 4 status cards (Active Agents, Pending Proposals, Needs Attention, Today's Cost) driven by useDashboardStats() hook.
+
+- [x] **T2.1.2** — Build active agents strip component. Horizontal scrollable row with live elapsed time, pulsing status dots.
+
+- [x] **T2.1.3** — Build recent activity feed component. Unified event feed from executions, comments, proposals with color-coded icons.
