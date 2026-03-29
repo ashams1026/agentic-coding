@@ -6,8 +6,8 @@ import { StoryDetailHeader } from "@/features/story-detail/story-detail-header";
 import { StoryDescription } from "@/features/story-detail/story-description";
 import { ChildTasksSection } from "@/features/story-detail/child-tasks-section";
 import { ProposalsSection } from "@/features/story-detail/proposals-section";
-import { CommentStream } from "@/features/story-detail/comment-stream";
-import { ExecutionTimeline } from "@/features/story-detail/execution-timeline";
+import { CommentStream } from "@/features/common/comment-stream";
+import { ExecutionTimeline } from "@/features/common/execution-timeline";
 import { StoryMetadata } from "@/features/story-detail/story-metadata";
 
 export function StoryDetailPage() {

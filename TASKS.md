@@ -19,7 +19,7 @@
 
 ### Story/Task UX Overhaul
 
-- [ ] **R.4** — Extract shared detail components. Move `CommentStream` and `ExecutionTimeline` from `features/story-detail/` to `features/common/` since they're reused by both story and task detail views. Update all imports. Files: `packages/frontend/src/features/story-detail/comment-stream.tsx`, `packages/frontend/src/features/story-detail/execution-timeline.tsx`, and all consumers.
+- [review] **R.4** — Extract shared detail components. Move `CommentStream` and `ExecutionTimeline` from `features/story-detail/` to `features/common/` since they're reused by both story and task detail views. Update all imports. Files: `packages/frontend/src/features/story-detail/comment-stream.tsx`, `packages/frontend/src/features/story-detail/execution-timeline.tsx`, and all consumers.
 
 - [ ] **R.5** — Build story list view with master-detail panels. New layout for `/board` (or new `/stories` route): left panel is a filterable/sortable story list (compact rows: title, state badge, priority, task progress). Clicking a story opens its detail in a right side-panel (~50-60% width). Reuse existing story detail components (StoryDetailHeader, StoryDescription, ChildTasksSection, ProposalsSection, CommentStream, ExecutionTimeline, StoryMetadata). Add a toggle to switch between list view and kanban board view. Keep both views available. Files: create `packages/frontend/src/features/story-list/` directory with new components, update router.
 

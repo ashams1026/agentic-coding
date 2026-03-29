@@ -5,6 +5,33 @@
 
 ---
 
+## 2026-03-29 — R.4: Extract shared detail components
+
+**Task:** Move `CommentStream` and `ExecutionTimeline` from `features/story-detail/` to `features/common/` since they're reused by both story and task detail views. Update all imports.
+
+**Done:**
+- Created `features/common/` directory
+- Moved `comment-stream.tsx` and `execution-timeline.tsx` from `features/story-detail/` to `features/common/` using `git mv`
+- Updated imports in `pages/story-detail.tsx`: `@/features/story-detail/` → `@/features/common/`
+- Updated imports in `pages/task-detail.tsx`: `@/features/story-detail/` → `@/features/common/`
+- Verified no remaining references to old paths via grep
+- Build passes
+
+**Files moved:**
+- `features/story-detail/comment-stream.tsx` → `features/common/comment-stream.tsx`
+- `features/story-detail/execution-timeline.tsx` → `features/common/execution-timeline.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/story-detail.tsx` (import paths)
+- `packages/frontend/src/pages/task-detail.tsx` (import paths)
+
+**Notes for next agent:**
+- `features/common/` is now the home for shared components reused across multiple detail views
+- R.5 (story list view) and R.6 (nested task detail) should import from `features/common/` for these components
+- The `features/story-detail/` directory still has 5 components: story-detail-header, story-description, child-tasks-section, proposals-section, story-metadata
+
+---
+
 ## 2026-03-29 — Review: R.3 (approved)
 
 **Reviewed:** Sidebar mobile responsiveness — `sidebar.tsx`, `root-layout.tsx`, `ui-store.ts`.
