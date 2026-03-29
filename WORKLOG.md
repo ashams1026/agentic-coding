@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-28 — Review: T2.3.3 (approved)
+
+**Reviewed:** Child tasks section — `child-tasks-section.tsx` and story-detail page integration.
+- All requirements met: task list with checkbox toggle (Done/Pending), state icons (animated spinner for Running), title links to `/tasks/:id`, state badges with per-state colors, persona avatars with tooltips, dependency indicators (amber GitBranch)
+- Mini dependency graph: SVG-based with topological BFS layering, state-colored left indicator per node, arrow markers. Only renders when story has edges — correct behavior for Story 1 (chain) vs Story 2 (no graph)
+- Inline "Add task" form: autofocus, Enter/Escape, auto-detects task workflow ID, creates via `useCreateTask`
+- Progress bar with done/total count, empty state with CTA
+- Clean TypeScript: `StateConfig` interface with explicit return type avoids TS strict issues
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-28 — T2.3.3: Build child tasks section
 
 **Task:** List of tasks belonging to story, each with checkbox state toggle, title, state badge, persona avatar, dependency indicator. Mini dependency graph. Inline "Add task" form.
