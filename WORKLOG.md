@@ -623,3 +623,42 @@
 **Reviewed:** Mock WebSocket system in `packages/frontend/src/mocks/ws.ts`.
 
 **Verdict:** Approved. All requirements met: typed event emitter using `WsEventMap` with per-type + wildcard subscriptions, `subscribe()` returning unsubscribe function for React cleanup. Simulation helpers cover agent output streaming (chunks at intervals), cost ticker (periodic with rounding), and full agent lifecycle orchestration. Event factory helpers for all event types. Proper timer/interval management with `clearAll()`. Singleton `mockWs` export. Build passes clean.
+
+---
+
+## 2026-03-28 — T1.4.5: Build demo mode
+
+**Task:** Build scripted ~60-second demo replaying a story lifecycle via mock WebSocket events. Toggle via UI button or `?demo=true`.
+
+**Done:**
+- Created `packages/frontend/src/mocks/demo.ts` with scripted demo sequence
+- Full story lifecycle over ~60 seconds:
+  - 0s: Story created → Backlog
+  - 2s: Story → Defining, PM agent streams acceptance criteria (~10s)
+  - 12s: PM done, comment posted, story → Decomposing
+  - 14s: Tech Lead agent streams task decomposition (~12s)
+  - 26s: Tech Lead done, proposal created (3 tasks)
+  - 29s: Proposal approved, story → In Progress, 3 tasks → Pending
+  - 31s: Engineer starts task 1, streams code implementation (~10s)
+  - 42s: Engineer done, task → Review, story → In Review
+  - 44s: Reviewer agent streams review (~6s)
+  - 51s: Review passed, task → Done, story → QA
+  - 53s: QA agent streams test results (~5s)
+  - 59s: QA passed, story → Done
+  - 61s: Demo auto-stops
+- Uses `mockWs.simulateAgentRun()` for all agent lifecycles (started→chunks→completed)
+- Cost ticker runs throughout the demo at $0.02/2s increments
+- Realistic agent output text (PM criteria, TL decomposition, Engineer code, Reviewer checks, QA tests)
+- API: `startDemo()`, `stopDemo()`, `isDemoRunning()`, `onDemoStop(callback)`, `checkDemoAutoStart()`
+- `checkDemoAutoStart()` reads `?demo=true` from URL params
+- All timers tracked and cancellable via `stopDemo()` + `mockWs.clearAll()`
+
+**Files created:**
+- `packages/frontend/src/mocks/demo.ts`
+
+**Notes for next agent:**
+- Sprint 1 mock data layer is now complete (T1.4.1–T1.4.5)
+- Call `checkDemoAutoStart()` in app initialization to support `?demo=true` auto-start
+- `startDemo()` can be wired to a "Watch Demo" button on the dashboard
+- `onDemoStop(callback)` can reset UI state when demo ends
+- Next work is Sprint 2: Core UI Screens (T2.1.1+)
