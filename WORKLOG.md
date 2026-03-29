@@ -5,6 +5,41 @@
 
 ---
 
+## 2026-03-28 — T2.2.2: Build story card component
+
+**Task:** Compact story card with priority badge (P0-P3 colors), label pills, task progress bar, proposal badge, active agent indicator.
+
+**Done:**
+- Created `features/kanban/story-card.tsx`:
+  - `StoryCard` component with `StoryCardData` prop for aggregated data
+  - Priority badge with per-level colors (P0=red, P1=amber, P2=blue, P3=slate)
+  - Label pills (up to 2 shown)
+  - `TaskProgressBar` — green fill bar with "done/total" text
+  - Proposal badge — amber FileCheck icon + count (only when pending > 0)
+  - Active agent indicator — persona-colored avatar with pulsing green dot + persona name
+  - Hover state via `hover:bg-accent/50`, links to `/stories/:id`
+- Updated `kanban-board.tsx`:
+  - Added `useTasks`, `useProposals`, `useExecutions`, `usePersonas` hooks
+  - `buildCardDataMap()` — computes per-story aggregates (task progress, pending proposals, active agent) at board level to avoid N+1 queries
+  - `useMemo` on grouped stories and card data map for performance
+- Updated `kanban-column.tsx` — replaced `StoryCardPlaceholder` with `StoryCard`, passes `cardDataMap` prop
+- Fixed TS strict mode error: branded `TaskId` in Set required explicit `Set<string>` typing
+
+**Files created:**
+- `packages/frontend/src/features/kanban/story-card.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/kanban/kanban-board.tsx` (added data fetching + aggregation)
+- `packages/frontend/src/features/kanban/kanban-column.tsx` (replaced placeholder with StoryCard)
+
+**Notes for next agent:**
+- T2.2.3 is next: drag-and-drop between columns using @dnd-kit
+- `StoryCardData` interface is exported from `story-card.tsx` — other components can reuse it
+- The board fetches ALL tasks/proposals/executions/personas once and computes per-story aggregates. This avoids per-card queries.
+- Mock data: Story 1 ("Auth") has 3 tasks (1 Done, 1 Running, 1 Pending) and 1 running execution
+
+---
+
 ## 2026-03-28 — Review: T2.2.1 (approved)
 
 **Reviewed:** Kanban board layout — `features/kanban/kanban-board.tsx`, `kanban-column.tsx`, and `story-board.tsx` page.

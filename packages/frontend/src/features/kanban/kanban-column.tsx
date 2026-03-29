@@ -1,10 +1,10 @@
-import { Link } from "react-router";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { Story, WorkflowState } from "@agentops/shared";
+import type { Story, StoryId, WorkflowState } from "@agentops/shared";
+import { StoryCard } from "./story-card";
+import type { StoryCardData } from "./story-card";
 
-// ── Column header ────────────────────────────────────────────────
+// ── Column header ─────────────────────────────────────────��──────
 
 interface ColumnHeaderProps {
   state: WorkflowState;
@@ -26,51 +26,22 @@ function ColumnHeader({ state, count }: ColumnHeaderProps) {
   );
 }
 
-// ── Placeholder story card (compact, until T2.2.2 builds the real one) ──
-
-interface StoryCardPlaceholderProps {
-  story: Story;
-}
-
-function StoryCardPlaceholder({ story }: StoryCardPlaceholderProps) {
-  return (
-    <Link to={`/stories/${story.id}`}>
-      <Card className="cursor-pointer transition-colors hover:bg-accent/50">
-        <CardContent className="px-3 py-2.5">
-          <p className="text-sm font-medium leading-snug line-clamp-2">
-            {story.title}
-          </p>
-          <div className="mt-1.5 flex items-center gap-1.5">
-            <Badge
-              variant="outline"
-              className="text-[10px] px-1.5 py-0 uppercase"
-            >
-              {story.priority}
-            </Badge>
-            {story.labels.slice(0, 2).map((label) => (
-              <Badge
-                key={label}
-                variant="secondary"
-                className="text-[10px] px-1.5 py-0"
-              >
-                {label}
-              </Badge>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
-  );
-}
-
-// ── Column component ─────────────────────────���───────────────────
+// ���─ Column component ───────────────────────────────────────��─────
 
 interface KanbanColumnProps {
   state: WorkflowState;
   stories: Story[];
+  cardDataMap: Map<StoryId, StoryCardData>;
 }
 
-export function KanbanColumn({ state, stories }: KanbanColumnProps) {
+export function KanbanColumn({ state, stories, cardDataMap }: KanbanColumnProps) {
+  const defaultData: StoryCardData = {
+    tasksDone: 0,
+    tasksTotal: 0,
+    pendingProposalCount: 0,
+    activeAgent: null,
+  };
+
   return (
     <div className="flex w-[280px] shrink-0 flex-col">
       <ColumnHeader state={state} count={stories.length} />
@@ -82,7 +53,11 @@ export function KanbanColumn({ state, stories }: KanbanColumnProps) {
             </div>
           ) : (
             stories.map((story) => (
-              <StoryCardPlaceholder key={story.id} story={story} />
+              <StoryCard
+                key={story.id}
+                story={story}
+                data={cardDataMap.get(story.id) ?? defaultData}
+              />
             ))
           )}
         </div>
