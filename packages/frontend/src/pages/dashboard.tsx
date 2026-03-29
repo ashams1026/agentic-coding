@@ -6,6 +6,7 @@ import { ActiveAgentsStrip } from "@/features/dashboard/active-agents-strip";
 import { RecentActivity } from "@/features/dashboard/recent-activity";
 import { UpcomingWork } from "@/features/dashboard/upcoming-work";
 import { CostSummary } from "@/features/dashboard/cost-summary";
+import { DemoButton } from "@/features/demo/demo-controls";
 
 interface StatCardProps {
   title: string;
@@ -47,11 +48,14 @@ export function DashboardPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
-          At-a-glance status for your project.
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground mt-1">
+            At-a-glance status for your project.
+          </p>
+        </div>
+        <DemoButton />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

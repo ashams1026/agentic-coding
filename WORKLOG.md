@@ -5,6 +5,60 @@
 
 ---
 
+## 2026-03-29 — T2.12.2: Build demo mode
+
+**Task:** "Watch Demo" button on dashboard, `?demo=true` auto-start, ~60s scripted replay of full story lifecycle with controls overlay.
+
+**Done:**
+- Created `hooks/use-demo.ts` — React hook wrapping `mocks/demo.ts` module:
+  - `start()` / `stop()` — controls demo lifecycle
+  - `running` / `elapsed` / `progress` — reactive state
+  - Elapsed timer ticking every 1s for progress bar
+  - Auto-start from `?demo=true` URL param via `useSearchParams()`
+  - Cleans up `?demo` param on stop
+  - Registers `onDemoStop()` callback for natural completion
+- Created `features/demo/demo-controls.tsx` with two components:
+  - `DemoButton` — "Watch Demo" button with Play icon, hidden when demo is running
+  - `DemoControls` — floating top-center overlay (rounded pill) with:
+    - Red pulsing recording indicator
+    - "DEMO" badge with Bot icon
+    - Progress bar (132px, linear 1s transition)
+    - Elapsed time display (m:ss font-mono)
+    - Stop button (red square icon)
+- Wired `DemoButton` into dashboard page header (right-aligned)
+- Wired `DemoControls` into `RootLayout` (visible from any screen during demo)
+
+**How the demo script works (pre-existing in `mocks/demo.ts`):**
+- 0s: Story created → Backlog
+- 2s: PM starts (streaming output)
+- 12s: PM done, comment posted, story → Decomposing
+- 14s: Tech Lead starts
+- 26s: Proposal created (badge appears)
+- 29s: Proposal approved, tasks created, story → In Progress
+- 31s: Engineer starts (tool calls visible in agent monitor)
+- 42s: Engineer done → Review
+- 44s: Reviewer starts
+- 51s: Review passed → QA
+- 53s: QA starts
+- 59s: All passed, story → Done
+- 61s: Demo stops
+
+**Files created:**
+- `packages/frontend/src/hooks/use-demo.ts`
+- `packages/frontend/src/features/demo/demo-controls.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/dashboard.tsx` — added DemoButton in header
+- `packages/frontend/src/layouts/root-layout.tsx` — added DemoControls overlay
+
+**Notes for next agent:**
+- Demo fires WS events consumed by `useWsQuerySync` (T2.12.1) + `useToastEvents` — all screens update live during demo
+- The `mocks/demo.ts` script uses `mockWs.simulateAgentRun()` which emits agent_started → output_chunks → agent_completed + execution_update
+- Progress bar is approximate (linear over 61s) — demo timing is hard-coded in `demo.ts`
+- Sprint 4 is now complete (all T2.10.3–T2.12.2 done)
+
+---
+
 ## 2026-03-29 — Review: T2.12.1 (approved)
 
 **Reviewed:** Mock WebSocket wiring to all UI — `use-ws-sync.ts`, `root-layout.tsx`, `recent-activity.tsx`.
