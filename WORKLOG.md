@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-03-29 — T2.11.4: Build nav badges and status bar
+
+**Task:** Story Board nav badge (pending proposals), Agent Monitor badge (active agents — already existed), status bar driven by mock data with pulsing dot, cost, and health indicator.
+
+**Done:**
+- Added Story Board (`/board`) nav badge showing pending proposal count (amber, matching proposal theme)
+  - Both collapsed mode (small dot on icon) and expanded mode (pill badge) — same pattern as existing agent/activity badges
+  - Uses `useDashboardStats()` → `pendingProposals` for count
+- Updated `status-bar.tsx` to use live mock data via `useDashboardStats()`:
+  - Active agents count with pulsing animation dot (green) when agents are running
+  - Today's cost formatted as `$X.XX`
+  - Health indicator (green/red dot) — currently always healthy (mock)
+  - Project name "AgentOps" on the left
+- All data driven by mock layer, no hardcoded values
+
+**Files modified:**
+- `packages/frontend/src/components/sidebar.tsx` — added Story Board badge + `useDashboardStats` import
+- `packages/frontend/src/components/status-bar.tsx` — rewired to use `useDashboardStats()` hook
+
+**Notes for next agent:**
+- Agent Monitor badge was already implemented in sidebar from earlier sprint — just added Story Board badge
+- Status bar uses `animate-ping` for the pulsing dot effect on active agents
+- Health status is hardcoded to `true` for now — will need a real health check when backend is connected
+
+---
+
 ## 2026-03-29 — Review: T2.11.3 (approved)
 
 **Reviewed:** Loading skeletons and empty states — `loading-skeletons.tsx` + `empty-states.tsx` in features/common/.

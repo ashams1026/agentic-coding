@@ -18,7 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
 import { useActivityStore } from "@/stores/activity-store";
-import { useExecutions } from "@/hooks";
+import { useExecutions, useDashboardStats } from "@/hooks";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -51,7 +51,9 @@ const themeLabel = { system: "System", light: "Light", dark: "Dark" } as const;
 export function Sidebar() {
   const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, setMobileSidebarOpen, theme, setTheme } = useUIStore();
   const { data: executions } = useExecutions();
+  const { data: dashboardStats } = useDashboardStats();
   const activeAgentCount = executions?.filter((e) => e.status === "running").length ?? 0;
+  const pendingProposalCount = dashboardStats?.pendingProposals ?? 0;
   const unreadActivityCount = useActivityStore((s) => s.unreadCount);
   const location = useLocation();
 
@@ -112,6 +114,16 @@ export function Sidebar() {
                 <span className="relative">
                   <Icon className="h-4 w-4 shrink-0" />
                   {/* Collapsed badges — fade in/out with transition */}
+                  {to === "/board" && pendingProposalCount > 0 && (
+                    <span
+                      className={cn(
+                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-0.5 text-[9px] font-bold text-white transition-all duration-300 ease-in-out",
+                        sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
+                      )}
+                    >
+                      {pendingProposalCount}
+                    </span>
+                  )}
                   {to === "/agents" && activeAgentCount > 0 && (
                     <span
                       className={cn(
@@ -141,6 +153,11 @@ export function Sidebar() {
                   )}
                 >
                   <span className="flex-1 truncate">{label}</span>
+                  {to === "/board" && pendingProposalCount > 0 && (
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white shrink-0">
+                      {pendingProposalCount}
+                    </span>
+                  )}
                   {to === "/agents" && activeAgentCount > 0 && (
                     <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white shrink-0">
                       {activeAgentCount}
