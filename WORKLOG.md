@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: T2.9.2 (approved)
+
+**Reviewed:** Persona editor — `persona-editor.tsx` + page wiring.
+- Large right Sheet (max-w-2xl) with scrollable content, header with avatar preview + Cancel/Save
+- Identity: name input, description textarea, avatar picker (12 colors + 14 icons with live preview)
+- Model: 3-card selector (Opus/Sonnet/Haiku) with cost labels and descriptions, color-coded selection
+- System Prompt: monospace textarea with character count
+- Tools: SDK (8 items, 4-col) + AgentOps (7 items, 3-col) checkboxes with tooltips
+- Budget: dollar input with DollarSign icon
+- Local form state synced from usePersona, saved via useUpdatePersona
+- Page conditionally renders editor when editingId is set
+- Build passes, conventions followed
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.9.2: Build persona editor
 
 **Task:** Full-page or large sheet. Sections: Identity (name, description, avatar picker), Model (selector with cost/capability info), System Prompt (large editor), Tools (checklists), Budget (max per run input).
