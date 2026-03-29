@@ -33,7 +33,7 @@
 
 - [x] **T2.1.1** — Build dashboard page layout. Status cards row at top: "Active Agents" (count), "Pending Proposals" (count), "Needs Attention" (count), "Today's Cost" (dollar amount). Each card is clickable, navigates to relevant screen. Use shadcn Card component.
 
-- [ ] **T2.1.2** — Build active agents strip component. Horizontal scrollable row of agent cards below status row. Each card: persona avatar (colored circle + icon), task name truncated, elapsed time (live-updating), pulsing status dot. Click navigates to agent monitor with that agent selected. Shows "No active agents" empty state.
+- [review] **T2.1.2** — Build active agents strip component. Horizontal scrollable row of agent cards below status row. Each card: persona avatar (colored circle + icon), task name truncated, elapsed time (live-updating), pulsing status dot. Click navigates to agent monitor with that agent selected. Shows "No active agents" empty state.
 
 - [ ] **T2.1.3** — Build recent activity feed component for dashboard. Compact list of last ~10 events. Each entry: event icon (color-coded by type), persona avatar (if agent), short description, relative timestamp. Event types: state change, agent completed, comment posted, proposal created. Click navigates to source. "View all" link to full activity feed.
 

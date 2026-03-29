@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { Bot, FileCheck, AlertTriangle, DollarSign } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useDashboardStats } from "@/hooks";
+import { ActiveAgentsStrip } from "@/features/dashboard/active-agents-strip";
 
 interface StatCardProps {
   title: string;
@@ -81,16 +82,10 @@ export function DashboardPage() {
         />
       </div>
 
-      {/* Placeholder sections for T2.1.2-T2.1.5 widgets */}
+      <ActiveAgentsStrip />
+
+      {/* Placeholder sections for T2.1.3-T2.1.5 widgets */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm font-medium text-muted-foreground">Active Agents</p>
-            <p className="mt-2 text-sm text-muted-foreground/60">
-              Agent strip will be built in T2.1.2
-            </p>
-          </CardContent>
-        </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm font-medium text-muted-foreground">Recent Activity</p>

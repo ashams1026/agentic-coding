@@ -708,3 +708,33 @@
 **Reviewed:** Dashboard page layout with status cards in `packages/frontend/src/pages/dashboard.tsx`.
 
 **Verdict:** Approved. All 4 status cards present with correct navigation targets. Data driven by `useDashboardStats()` hook. Responsive grid (1→2→4 cols). Loading state, dark mode, hover effects all correct. Reusable `StatCard` component cleanly extracted. Placeholder cards for upcoming T2.1.2–T2.1.5 widgets. Build passes clean.
+
+---
+
+## 2026-03-28 — T2.1.2: Build active agents strip component
+
+**Task:** Build horizontal scrollable row of active agent cards on the dashboard. Each card shows persona avatar, task name, elapsed time (live-updating), pulsing status dot. Empty state when no agents running.
+
+**Done:**
+- Created `packages/frontend/src/features/dashboard/active-agents-strip.tsx`
+- `ActiveAgentsStrip` component filters running executions from `useExecutions()` hook
+- Persona lookup via `usePersonas()` for avatar color and name
+- Each `AgentCard`: persona-colored avatar circle with Bot icon, pulsing green status dot (CSS `animate-ping`), persona name, task summary, live elapsed time (1-second interval via `useState`/`useEffect`)
+- Horizontal scroll via shadcn `ScrollArea` with `ScrollBar orientation="horizontal"`
+- Fixed card width (w-56) for consistent scrollable layout
+- Click navigates to `/agents` (agent monitor)
+- Empty state: centered Bot icon with "No active agents" text
+- Integrated into dashboard page, replacing the "Active Agents" placeholder card
+- First use of `features/` directory convention per CLAUDE.md
+
+**Files created:**
+- `packages/frontend/src/features/dashboard/active-agents-strip.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/dashboard.tsx` (added import + replaced placeholder)
+
+**Notes for next agent:**
+- T2.1.3 is next: recent activity feed component for the dashboard
+- `features/dashboard/` is now established as the pattern for dashboard sub-components
+- The elapsed time updates every second — `formatElapsed()` helper handles s/m/h formatting
+- Remaining placeholder cards on dashboard: Recent Activity (T2.1.3), Upcoming Work (T2.1.4), Cost Summary (T2.1.5)
