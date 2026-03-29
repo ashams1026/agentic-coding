@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-03-28 — Review: T2.2.5 (approved)
+
+**Reviewed:** Filter bar and sort controls — `kanban-filters.tsx`, updated `kanban-board.tsx` and `story-board.tsx`.
+
+**Verdict:** Approved. All requirements met: multi-select dropdowns for labels (derived from stories), priority (P0-P3), persona (with colored dots). Has-proposals toggle button. Sort by priority/created/updated with dropdown. URL param persistence via `useSearchParams` with `replace: true`. Badge counts on filter buttons. "Clear (N)" button. Board applies filters via `filterAndSortStories()` with correct memo dependency chain. Build clean.
+
+---
+
 ## 2026-03-28 — T2.2.5: Build filter bar and sort controls
 
 **Task:** Filter bar above kanban board with multi-select filters (label, priority, persona), has-proposals toggle, sort controls, URL param persistence.
