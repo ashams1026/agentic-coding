@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: T2.5.6 (approved)
+
+**Reviewed:** Agent control bar — `features/agent-monitor/agent-control-bar.tsx`, layout integration, AlertDialog component.
+- All requirements met: persona avatar + name, model badge (opus=purple, sonnet=blue, haiku=emerald), live elapsed timer (1s), running cost ($X.XX), Task/Story nav links, Stop + Force Stop with AlertDialog confirmations
+- Stop dialog: graceful tone, "finish current operation." Force Stop: warning tone, "work will be lost" + destructive styling on action button
+- Navigation resolves parent storyId for task targets, shows both Task and Story links appropriately
+- Control bar shown in single-view mode only (between toggle bar and terminal)
+- shadcn AlertDialog added cleanly
+- Build passes
+- **Verdict: approved** — Agent Monitor Live View section (T2.5.1-T2.5.6) complete!
+
+---
+
 ## 2026-03-29 — T2.5.6: Build agent control bar
 
 **Task:** Below agent info header. Buttons: "Stop" (graceful cancel — confirmation dialog), "Force Stop" (warning dialog), link to task detail, link to story. Show persona name, model badge (opus/sonnet/haiku), elapsed time, running cost.
