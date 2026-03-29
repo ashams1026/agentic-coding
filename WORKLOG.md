@@ -541,3 +541,37 @@
 **Reviewed:** Mock API service layer in `packages/frontend/src/mocks/api.ts`.
 
 **Verdict:** Approved. All requirements met: in-memory store from fixtures, 50-150ms simulated latency, full CRUD for all 11 entity types, aggregate queries (dashboard stats, cost summary, execution stats, ready work) matching shared contract types, `resetStore()` utility, bundled `mockApi` namespace. Properly typed with `import type` for type-only imports. Build passes clean.
+
+---
+
+## 2026-03-28 — T1.4.3: Build TanStack Query hooks
+
+**Task:** Build TanStack Query hooks backed by mock API, one hook per API call, with optimistic update helpers for mutations.
+
+**Done:**
+- Created centralized `query-keys.ts` with typed query key factory for all entities
+- Created hook files per domain: `use-projects.ts`, `use-stories.ts`, `use-tasks.ts`, `use-workflows.ts`, `use-personas.ts`, `use-executions.ts`, `use-comments.ts`, `use-proposals.ts`, `use-dashboard.ts`
+- Query hooks: `useProjects`, `useProject`, `useStories`, `useStory`, `useTasks`, `useTask`, `useTaskEdges`, `useWorkflows`, `useWorkflow`, `useTriggers`, `usePersonas`, `usePersona`, `useExecutions`, `useExecution`, `useComments`, `useProposals`, `useProposal`, `useProjectMemories`, `useDashboardStats`, `useCostSummary`, `useExecutionStats`, `useReadyWork`
+- Mutation hooks: `useCreateStory`, `useUpdateStory`, `useDeleteStory`, `useCreateTask`, `useUpdateTask`, `useDeleteTask`, `useCreateTaskEdge`, `useDeleteTaskEdge`, `useCreateWorkflow`, `useUpdateWorkflow`, `useDeleteWorkflow`, `useCreatePersona`, `useUpdatePersona`, `useDeletePersona`, `useCreateProject`, `useUpdateProject`, `useDeleteProject`, `useCreateComment`, `useUpdateProposal`
+- Optimistic updates on `useUpdateStory` and `useUpdateTask` (cancel in-flight, snapshot previous, rollback on error)
+- All mutations invalidate relevant queries on success/settle
+- Barrel export in `hooks/index.ts`
+
+**Files created:**
+- `packages/frontend/src/hooks/query-keys.ts`
+- `packages/frontend/src/hooks/use-projects.ts`
+- `packages/frontend/src/hooks/use-stories.ts`
+- `packages/frontend/src/hooks/use-tasks.ts`
+- `packages/frontend/src/hooks/use-workflows.ts`
+- `packages/frontend/src/hooks/use-personas.ts`
+- `packages/frontend/src/hooks/use-executions.ts`
+- `packages/frontend/src/hooks/use-comments.ts`
+- `packages/frontend/src/hooks/use-proposals.ts`
+- `packages/frontend/src/hooks/use-dashboard.ts`
+- `packages/frontend/src/hooks/index.ts`
+
+**Notes for next agent:**
+- Import hooks from `@/hooks` (barrel export) or individual files
+- Query keys are in `@/hooks/query-keys` — use for manual invalidation or prefetching
+- Optimistic updates are on story and task update mutations (the most frequently edited entities)
+- T1.4.4 is next: mock WebSocket system
