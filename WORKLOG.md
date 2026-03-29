@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T2.10.3 (approved)
+
+**Reviewed:** API keys and concurrency settings section — `api-keys-section.tsx` + settings-layout integration.
+- All 4 requirements met: masked API key input with eye toggle, test connection with mock delay/spinner/result, slider 1-10 with value badge, per-persona limits table
+- Custom masking logic (first 12 + bullets + last 4) — appropriate for API key display
+- Mock test: 1.2s delay, sk- prefix passes, Loader2 → Check icon transition
+- Slider uses native `<input type="range">` with `accent-primary` — acceptable without shadcn Slider
+- Persona table: colored avatars, number inputs with placeholder "—", clear button, hidden when empty
+- Both "API Keys" and "Concurrency" nav items render same component — logical grouping
+- Conventions: cn(), named exports, shadcn/ui, dark mode, mock data via hooks
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T2.10.3: Build API keys and concurrency section
 
 **Task:** Build API keys section with masked input and test connection, concurrency slider, and per-persona limits table.
