@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-29 — T2.4.1: Build task detail view
+
+**Task:** Task detail page at `/tasks/:id`. Header with title, state badge, assigned persona, parent story link. Placeholder sections for T2.4.2–T2.4.5. Reuse CommentStream and ExecutionTimeline.
+
+**Done:**
+- Rewrote `pages/task-detail.tsx` (replaced placeholder):
+  - Header: task title (h1), state badge (colored per state), assigned persona (avatar + name), parent story link (ExternalLink icon, navigates to `/stories/:id`)
+  - Back button (ArrowLeft) using `navigate(-1)`
+  - Description section (from `task.description`, whitespace-pre-wrap)
+  - Placeholder sections for T2.4.2–T2.4.5 (inherited context, dependency info, execution context, rejection history)
+  - Reuses `CommentStream` with `targetId={task.id} targetType="task"` — shows task-level comments
+  - Reuses `ExecutionTimeline` with `targetId={task.id}` — shows task executions
+  - Loading/not-found states
+  - `stateColors` map for task workflow states (Pending/Running/Review/Done)
+  - Parent story resolved via `useStories()` + find (avoids optional StoryId issue with `useStory`)
+  - Persona resolved via `usePersonas()` + find by `task.assignedPersonaId`
+
+**Files modified:**
+- `packages/frontend/src/pages/task-detail.tsx` (complete rewrite)
+
+**Notes for next agent:**
+- T2.4.2 is next: inherited context section
+- Task detail reuses `CommentStream` and `ExecutionTimeline` from `features/story-detail/` — they're generic by design
+- Mock data: Task "tk-au01001" has comments and executions; clicking through from Story 1's child tasks section reaches this page
+- Placeholder sections follow the same dashed-border pattern for T2.4.2–T2.4.5
+
+---
+
 ## 2026-03-29 — Review: T2.3.7 (approved)
 
 **Reviewed:** Story metadata collapsible section — `story-metadata.tsx` and story-detail page integration.
