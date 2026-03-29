@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: T2.4.3 (approved)
+
+**Reviewed:** Dependency info display — `features/task-detail/dependency-info.tsx` and task-detail page integration.
+- All requirements met: "Depends on" (edges where toId=task) and "Blocks" (edges where fromId=task) sections with correct direction logic
+- State badges: green Done (CheckCircle2), emerald Running (animated Loader2), amber Review (Circle), gray Pending (Circle)
+- Amber AlertCircle blocking indicator on "Blocks" rows where blocked task is not Done
+- Rows are clickable Links to `/tasks/:id`, returns null when no deps
+- Clean `stateStyle()` switch, `useMemo` for edge filtering + task resolution
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.4.3: Build dependency info display
 
 **Task:** "Depends on" list with task title + state badge (colored by state). "Blocks" list showing tasks this one blocks. Visual indicator if blocking something.
