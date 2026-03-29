@@ -15,7 +15,7 @@
 
 - [x] **T2.8.3** — Build state editing interactions. Click state to select → properties panel on right: edit name, color, set as initial/final. "Add state" button or double-click canvas to create new state. Delete state (with confirmation if transitions exist). Visual indicators: initial state has a filled circle, final states have double border.
 
-- [review] **T2.8.4** — Build transition creation and editing. Drag from one state's edge to another to create a transition. Click transition arrow to select → properties panel: transition name, trigger configuration. Delete transition via properties panel or keyboard shortcut.
+- [x] **T2.8.4** — Build transition creation and editing. Drag from one state's edge to another to create a transition. Click transition arrow to select → properties panel: transition name, trigger configuration. Delete transition via properties panel or keyboard shortcut.
 
 - [ ] **T2.8.5** — Build trigger configuration panel. When a transition is selected, show trigger options in properties panel: assign persona (dropdown of all personas with avatars), dispatch mode (auto/propose/gated radio), max retries (number input), advancement mode (auto/approval/agent). Shows "No trigger" option to leave transition manual-only.
 

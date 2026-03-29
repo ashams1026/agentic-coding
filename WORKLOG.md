@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: T2.8.4 (approved)
+
+**Reviewed:** Transition creation and editing — `transition-properties-panel.tsx`, canvas and layout modifications.
+- Drag-to-connect: ConnectionHandle on right edge with hover affordance, preview dashed line, hit-test on drop
+- Click-to-select arrows: 12px invisible hit area, stopPropagation, ring highlight + thicker stroke
+- Properties panel: from→to direction display, name input (blur/Enter save), delete button
+- Trigger placeholder for T2.8.5 — appropriate
+- Keyboard Delete/Backspace: input/textarea aware, prevents default
+- `transitionKey()` shared between canvas and layout for unique identification
+- `resolvedTransition` derived from workflow data — stays in sync after mutations
+- Duplicate prevention, auto-naming, selection exclusivity all correct
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.8.4: Build transition creation and editing
 
 **Task:** Drag from one state's edge to another to create a transition. Click transition arrow to select → properties panel: transition name, trigger configuration. Delete transition via properties panel or keyboard shortcut.
