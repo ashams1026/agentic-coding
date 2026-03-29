@@ -66,21 +66,21 @@ const TL_CHUNKS = [
   "Done.",
 ];
 
-const ENG_CHUNKS = [
+const ENG_CHUNKS: (string | { content: string; chunkType: "text" | "code" | "thinking" | "tool_call" | "tool_result" })[] = [
   "Reading task context and inherited requirements...\n",
+  { content: JSON.stringify({ toolCallId: "tc_001", toolName: "Read", input: { file_path: "/src/routes/index.ts" }, summary: "Reading /src/routes/index.ts" }), chunkType: "tool_call" },
+  { content: JSON.stringify({ toolCallId: "tc_001", toolName: "Read", status: "success", output: "import { Router } from 'express';\n\nconst router = Router();\n\nrouter.get('/health', (req, res) => res.json({ ok: true }));\n\nexport default router;", summary: "Read 7 lines from /src/routes/index.ts" }), chunkType: "tool_result" },
   "Scanning existing codebase for patterns...\n",
+  { content: JSON.stringify({ toolCallId: "tc_002", toolName: "Grep", input: { pattern: "multer|upload", path: "/src" }, summary: "Searching for upload patterns in /src" }), chunkType: "tool_call" },
+  { content: JSON.stringify({ toolCallId: "tc_002", toolName: "Grep", status: "success", output: "No matches found", summary: "0 matches" }), chunkType: "tool_result" },
   "Creating upload API endpoint...\n",
-  "```typescript\n",
-  "app.post('/api/upload', upload.single('file'), async (req, res) => {\n",
-  "  const { file } = req;\n",
-  "  if (!file) return res.status(400).json({ error: 'No file' });\n",
-  "  const id = generateId();\n",
-  "  await storage.put(id, file.buffer);\n",
-  "  res.json({ id, name: file.originalname, size: file.size });\n",
-  "});\n",
-  "```\n",
+  { content: JSON.stringify({ toolCallId: "tc_003", toolName: "Write", input: { file_path: "/src/routes/upload.ts" }, summary: "Writing /src/routes/upload.ts" }), chunkType: "tool_call" },
+  { content: JSON.stringify({ toolCallId: "tc_003", toolName: "Write", status: "success", output: "", summary: "Created /src/routes/upload.ts" }), chunkType: "tool_result" },
   "Adding validation middleware...\n",
-  "Writing integration tests...\n",
+  { content: JSON.stringify({ toolCallId: "tc_004", toolName: "Edit", input: { file_path: "/src/routes/upload.ts", old_string: "const { file } = req;", new_string: "const { file } = req;\n  if (!file) return res.status(400).json({ error: 'No file provided' });\n  if (file.size > 10_000_000) return res.status(413).json({ error: 'File too large' });" }, summary: "Editing /src/routes/upload.ts" }), chunkType: "tool_call" },
+  { content: JSON.stringify({ toolCallId: "tc_004", toolName: "Edit", status: "success", output: "- const { file } = req;\n+ const { file } = req;\n+   if (!file) return res.status(400).json({ error: 'No file provided' });\n+   if (file.size > 10_000_000) return res.status(413).json({ error: 'File too large' });", summary: "Edited /src/routes/upload.ts (+3 -1)", isDiff: true }), chunkType: "tool_result" },
+  { content: JSON.stringify({ toolCallId: "tc_005", toolName: "Bash", input: { command: "npm test -- --grep upload" }, summary: "Running upload tests" }), chunkType: "tool_call" },
+  { content: JSON.stringify({ toolCallId: "tc_005", toolName: "Bash", status: "success", output: "PASS src/routes/upload.test.ts\n  Upload endpoint\n    ✓ accepts valid file (45ms)\n    ✓ rejects missing file (12ms)\n    ✓ rejects oversized file (8ms)\n\n3 tests passed", summary: "3 tests passed" }), chunkType: "tool_result" },
   "All tests passing. Upload endpoint ready.\n",
   "Done.",
 ];

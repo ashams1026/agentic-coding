@@ -15,7 +15,7 @@
 
 - [x] **T2.5.3** — Build terminal-style output renderer. Monospace font display area. Renders agent output as it streams (via mock WebSocket). Text blocks: normal style. Code blocks: syntax highlighted (use a lightweight highlighter). Thinking/reasoning: italic, muted color. Auto-scrolls to bottom. "Scroll lock" toggle: when user scrolls up, pause auto-scroll, show "New output below ↓" indicator.
 
-- [ ] **T2.5.4** — Build tool call display sections. When agent makes tool calls, show as collapsible sections in the output stream. Header: tool icon + tool name + status (running spinner / success check / error x). Collapsed: one-line summary. Expanded: tool input (formatted JSON or code) + tool output (formatted). File edits show mini diff view.
+- [review] **T2.5.4** — Build tool call display sections. When agent makes tool calls, show as collapsible sections in the output stream. Header: tool icon + tool name + status (running spinner / success check / error x). Collapsed: one-line summary. Expanded: tool input (formatted JSON or code) + tool output (formatted). File edits show mini diff view.
 
 - [ ] **T2.5.5** — Build multi-agent side-by-side view. Toggle button: "Split view". Shows 2-3 agent output panes side-by-side. Each pane has its own agent selector dropdown. Useful when multiple agents work in parallel. Falls back to single pane on narrow screens.
 

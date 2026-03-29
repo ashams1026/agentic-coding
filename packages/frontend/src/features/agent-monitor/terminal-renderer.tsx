@@ -1,9 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, Lock, Unlock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { mockWs } from "@/mocks/ws";
 import { useExecution } from "@/hooks";
+import {
+  ToolCallSection,
+  parseToolJson,
+  type ToolCallData,
+  type ToolResultData,
+} from "./tool-call-display";
 import type { ExecutionId, AgentOutputChunkEvent } from "@agentops/shared";
 
 // ── Chunk types ────────────────────────────────────────────────
@@ -56,7 +62,7 @@ function TextBlock({ content }: { content: string }) {
   );
 }
 
-// ── Chunk renderer ─────────────────────────────────────────────
+// ── Chunk renderer (text, code, thinking only) ────────────────
 
 function ChunkRenderer({ chunk }: { chunk: OutputChunk }) {
   switch (chunk.chunkType) {
@@ -64,14 +70,50 @@ function ChunkRenderer({ chunk }: { chunk: OutputChunk }) {
       return <CodeBlock content={chunk.content} />;
     case "thinking":
       return <ThinkingBlock content={chunk.content} />;
-    case "tool_call":
-    case "tool_result":
-      // T2.5.4 will build proper tool call display — render as code for now
-      return <CodeBlock content={chunk.content} />;
     case "text":
     default:
       return <TextBlock content={chunk.content} />;
   }
+}
+
+// ── Processed display items (pairs tool_call + tool_result) ───
+
+type DisplayItem =
+  | { kind: "chunk"; id: string; chunk: OutputChunk }
+  | {
+      kind: "tool";
+      id: string;
+      callData: ToolCallData | null;
+      resultData: ToolResultData | null;
+    };
+
+function processChunks(chunks: OutputChunk[]): DisplayItem[] {
+  const items: DisplayItem[] = [];
+  const callIndexMap = new Map<string, number>();
+
+  for (const chunk of chunks) {
+    if (chunk.chunkType === "tool_call") {
+      const data = parseToolJson(chunk.content) as ToolCallData | null;
+      const idx = items.length;
+      items.push({ kind: "tool", id: chunk.id, callData: data, resultData: null });
+      if (data?.toolCallId) {
+        callIndexMap.set(data.toolCallId, idx);
+      }
+    } else if (chunk.chunkType === "tool_result") {
+      const data = parseToolJson(chunk.content) as ToolResultData | null;
+      if (data?.toolCallId && callIndexMap.has(data.toolCallId)) {
+        const idx = callIndexMap.get(data.toolCallId)!;
+        const existing = items[idx] as DisplayItem & { kind: "tool" };
+        items[idx] = { ...existing, resultData: data };
+      } else {
+        // Orphan result — render standalone
+        items.push({ kind: "tool", id: chunk.id, callData: null, resultData: data });
+      }
+    } else {
+      items.push({ kind: "chunk", id: chunk.id, chunk });
+    }
+  }
+  return items;
 }
 
 // ── Main component ─────────────────────────────────────────────
@@ -156,6 +198,9 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
+  // Process chunks to pair tool_call + tool_result
+  const displayItems = useMemo(() => processChunks(chunks), [chunks]);
+
   return (
     <div className="flex flex-col h-full">
       {/* Toolbar */}
@@ -200,14 +245,22 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto bg-zinc-950 dark:bg-zinc-950 px-4 py-3 font-mono text-zinc-200"
       >
-        {chunks.length === 0 ? (
+        {displayItems.length === 0 ? (
           <p className="text-xs text-zinc-500 italic">
             Waiting for agent output...
           </p>
         ) : (
-          chunks.map((chunk) => (
-            <ChunkRenderer key={chunk.id} chunk={chunk} />
-          ))
+          displayItems.map((item) =>
+            item.kind === "chunk" ? (
+              <ChunkRenderer key={item.id} chunk={item.chunk} />
+            ) : (
+              <ToolCallSection
+                key={item.id}
+                callData={item.callData}
+                resultData={item.resultData}
+              />
+            ),
+          )
         )}
         <div ref={bottomRef} />
       </div>

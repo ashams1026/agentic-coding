@@ -103,13 +103,14 @@ class MockWsClient {
   // ── Simulation helpers ────────────────────────────────────────────
 
   /**
-   * Simulate agent output streaming. Emits text chunks at intervals.
+   * Simulate agent output streaming. Emits typed chunks at intervals.
+   * Chunks can be plain strings (emitted as "text") or typed objects.
    * Returns a cancel function.
    */
   simulateAgentOutput(opts: {
     executionId: ExecutionId;
     personaId: PersonaId;
-    chunks: string[];
+    chunks: (string | { content: string; chunkType: AgentOutputChunkEvent["chunkType"] })[];
     intervalMs?: number;
   }): () => void {
     const { executionId, personaId, chunks, intervalMs = 200 } = opts;
@@ -121,12 +122,15 @@ class MockWsClient {
         if (idx !== -1) this.activeIntervals.splice(idx, 1);
         return;
       }
+      const raw = chunks[index]!;
+      const content = typeof raw === "string" ? raw : raw.content;
+      const chunkType = typeof raw === "string" ? "text" as const : raw.chunkType;
       const event: AgentOutputChunkEvent = {
         type: "agent_output_chunk",
         executionId,
         personaId,
-        chunk: chunks[index]!,
-        chunkType: "text",
+        chunk: content,
+        chunkType,
         timestamp: new Date().toISOString(),
       };
       this.emit(event);
@@ -179,7 +183,7 @@ class MockWsClient {
     targetId: StoryId | TaskId;
     targetType: "story" | "task";
     taskTitle: string;
-    chunks: string[];
+    chunks: (string | { content: string; chunkType: AgentOutputChunkEvent["chunkType"] })[];
     chunkIntervalMs?: number;
     costUsd?: number;
   }): () => void {

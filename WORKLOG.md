@@ -5,6 +5,48 @@
 
 ---
 
+## 2026-03-29 — T2.5.4: Build tool call display sections
+
+**Task:** When agent makes tool calls, show as collapsible sections in the output stream. Header: tool icon + tool name + status (running spinner / success check / error x). Collapsed: one-line summary. Expanded: tool input (formatted JSON or code) + tool output (formatted). File edits show mini diff view.
+
+**Done:**
+- Created `features/agent-monitor/tool-call-display.tsx`:
+  - `ToolCallSection` — collapsible section for tool call display in terminal output
+  - Header: tool-specific icon (Read→FileText, Edit→PenLine, Write→FilePlus2, Grep→Search, Glob→FolderSearch, Bash→TerminalSquare, WebFetch/WebSearch→Globe, default→Wrench) + tool name + status indicator + one-line summary + chevron toggle
+  - Status: `Loader2` spinning (blue, running), `Check` (emerald, success), `X` (red, error) — error state gets red bg tint
+  - Expanded view: "Input" section with formatted JSON, "Output" section with formatted text or mini diff view
+  - `DiffView` — parses diff-style lines (+ green, - red, @@ blue) for file edit results
+  - `parseToolJson` exported for use by terminal renderer
+  - `ToolCallData` / `ToolResultData` types exported for structured chunk content
+- Updated `features/agent-monitor/terminal-renderer.tsx`:
+  - Added `processChunks()` function that pairs `tool_call` + `tool_result` chunks by `toolCallId` into `DisplayItem` union type
+  - Render loop uses `displayItems` (via `useMemo`) instead of raw chunks — regular chunks render via `ChunkRenderer`, tool pairs render via `ToolCallSection`
+  - Orphan tool_result chunks (no matching call) render as standalone sections
+  - Removed tool_call/tool_result cases from `ChunkRenderer` (no longer falls back to CodeBlock)
+- Updated `mocks/ws.ts`:
+  - `simulateAgentOutput` now accepts typed chunks: `(string | { content: string; chunkType })[]` — plain strings emit as "text", objects emit with their specified chunkType
+  - `simulateAgentRun` chunk type updated to match
+- Updated `mocks/demo.ts`:
+  - `ENG_CHUNKS` now includes tool_call/tool_result pairs: Read (reading routes file), Grep (searching for upload patterns), Write (creating upload route), Edit (adding validation — with diff output), Bash (running tests — with pass output)
+  - Demo mode exercises all tool call display features: success status, diff view, JSON input/output
+
+**Files created:**
+- `packages/frontend/src/features/agent-monitor/tool-call-display.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`
+- `packages/frontend/src/mocks/ws.ts`
+- `packages/frontend/src/mocks/demo.ts`
+
+**Notes for next agent:**
+- Tool call chunks must be JSON strings with `toolCallId` field for pairing to work
+- ToolCallData: `{ toolCallId, toolName, input, summary }`
+- ToolResultData: `{ toolCallId, toolName, status, output, summary, isDiff? }`
+- Set `isDiff: true` in result data to render mini diff view (colored +/- lines)
+- T2.5.5 is next: multi-agent side-by-side view (split view toggle showing 2-3 panes)
+
+---
+
 ## 2026-03-29 — Review: T2.5.3 (approved)
 
 **Reviewed:** Terminal-style output renderer — `features/agent-monitor/terminal-renderer.tsx` and layout integration.
