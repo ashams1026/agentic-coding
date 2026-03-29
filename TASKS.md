@@ -5,35 +5,7 @@
 
 ---
 
-## Sprint 2: Core UI Screens (Phase 2A-2C)
-
-### Story Detail (continued)
-
-- [x] **T2.3.3** — Build child tasks section. List of tasks belonging to this story. Each task row: checkbox (state), title, state badge, assigned persona avatar, dependency indicator (icon if has deps). Mini dependency graph visualization using a simple node-edge layout (tasks as small boxes, arrows for edges). "Add task" button opens inline form.
-
-- [x] **T2.3.4** — Build proposals section. Only visible when story has pending proposals. Yellow/amber highlight panel at top of detail. Lists proposed tasks from Tech Lead agent. Each: title, description (editable inline), approve button (green), reject button (red). "Approve all" bulk action. Reject shows textarea for feedback. Approved tasks appear in child tasks list.
-
-- [x] **T2.3.5** — Build comment stream component. Reusable for both stories and tasks. Chronological thread. Agent comments: persona avatar (colored circle) + name + timestamp + content. User comments: user avatar + timestamp + content. System comments: muted style, icon, "Story moved to In Review" etc. Agent comments may have metadata chips (files changed, tools used). Input box at bottom — user types and posts comment via mock API. Auto-scroll to bottom on new comments. Scroll up to read history.
-
-- [x] **T2.3.6** — Build execution history timeline. Vertical timeline on the story detail. Each entry: persona avatar, "Tech Lead ran for 2m 34s", cost badge ("$0.42"), outcome badge (green success / red failure / amber rejected). Click to expand: shows full agent output (reuse terminal renderer from agent monitor). Collapsed by default — shows summary only.
-
-- [x] **T2.3.7** — Build story metadata sidebar. Right column or collapsible section. Shows: created date, updated date, project name, workflow name, current trigger status ("Waiting for Engineer"), retry count (if in rejection loop). Read-only context info.
-
----
-
 ## Sprint 3: Task Detail & Agent Monitor (Phase 2D-2E)
-
-### Task Detail
-
-- [x] **T2.4.1** — Build task detail view. Same slide-out pattern as story detail. Header: title, state badge, assigned persona, parent story link (click navigates to story). Tabs or sections for the content areas below.
-
-- [x] **T2.4.2** — Build inherited context section. Collapsible panel showing context passed from parent story: story description excerpt, acceptance criteria, any notes the Tech Lead left. Clearly labeled "Inherited from [Story Name]".
-
-- [x] **T2.4.3** — Build dependency info display. "Depends on" list: each dependency shows task title + state badge (green if resolved, yellow if in-progress, gray if pending). "Blocks" list: tasks that depend on this one. Visual indicator if this task is currently blocking something.
-
-- [x] **T2.4.4** — Build execution context viewer. Shows what context the agent received for this task. Collapsible sections: "Previous run summaries" (from executionContext), "Rejection payloads" (if any), "Project memory injected". Useful for debugging why an agent behaved a certain way.
-
-- [x] **T2.4.5** — Build rejection history display. Only visible if task has been rejected. Timeline of rejection events: reviewer persona avatar, rejection reason, severity badge, retry hint, retry count ("Attempt 2 of 3"). Current attempt highlighted.
 
 ### Agent Monitor — Live View
 

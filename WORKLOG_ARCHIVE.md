@@ -46,3 +46,70 @@
 - `src/hooks/use-theme.ts` — theme sync hook
 - `src/components/sidebar.tsx` — full sidebar with nav, project switcher, theme toggle
 - `src/layouts/root-layout.tsx` — app shell layout
+
+---
+
+## Sprint 1: Shared Types & Mock Data (T1.3.1–T1.4.5) — 2026-03-28
+
+**Summary:** Defined all entity types (Project, Story, Task, TaskEdge, Workflow, Persona, Trigger, Execution, Comment, ProjectMemory, Proposal) with branded ID types (nanoid-based prefixes). API contract types (request/response) and WebSocket event types. Created comprehensive mock fixtures with cross-referenced data. Built in-memory mock API with full CRUD and simulated latency. TanStack Query hooks for all API calls with optimistic updates. Mock WebSocket system with typed event emitter. Demo mode with 60-second scripted lifecycle replay.
+
+**Key decisions:**
+- Branded ID types: `StoryId = \`st-\${string}\``, `TaskId = \`tk-\${string}\`` — require `as string` casts for Map/Set ops
+- Mock API returns copies (not references) to simulate real API behavior
+- Query keys follow `["entity", id?]` pattern with helper factory
+- WebSocket mock uses singleton EventEmitter pattern
+
+**Patterns established:**
+- Entity types in `packages/shared/src/entities.ts`, IDs in `ids.ts`, API types in `api-types.ts`, WS events in `ws-events.ts`
+- Mock fixtures in `mocks/fixtures.ts`, API in `mocks/api.ts`, WS in `mocks/ws.ts`, demo in `mocks/demo.ts`
+- Query hooks in `hooks/use-*.ts`, re-exported from `hooks/index.ts`
+- `queryKeys` factory in `hooks/query-keys.ts`
+
+---
+
+## Sprint 2: Dashboard (T2.1.1–T2.1.5) — 2026-03-28
+
+**Summary:** Built dashboard with 4 stat cards (active agents, pending proposals, needs attention, today's cost), active agents strip (horizontal scroll, live elapsed time, pulsing dots), recent activity feed (unified from executions/comments/proposals, color-coded icons, persona avatars), upcoming work widget (next 5 dispatchable tasks), cost summary widget (recharts sparkline, monthly cap progress bar).
+
+**Key decisions:**
+- `useDashboardStats()` aggregates across stories, executions, proposals in one hook
+- Activity feed uses `useActivityEvents()` which merges 3 data sources by timestamp
+- Recharts for chart components (cost sparkline)
+
+**Patterns established:**
+- Dashboard features in `features/dashboard/` directory
+- Status card pattern: icon + label + value + trend indicator
+- Elapsed time with `useEffect` interval for live counters
+
+---
+
+## Sprint 2: Story Board / Kanban (T2.2.1–T2.2.6) — 2026-03-28
+
+**Summary:** Built kanban board with columns from workflow states, story cards (title, priority badge, labels, task progress, proposal badge, active agent indicator), drag-and-drop via @dnd-kit, transition prompt modal (shows trigger persona + run/skip/cancel), filter bar (label/priority/persona/proposals multi-select, sort options, URL params), inline story creation ("+" in Backlog column).
+
+**Key decisions:**
+- @dnd-kit over react-beautiful-dnd (better maintained, more flexible)
+- Filters persisted in URL search params via `useSearchParams`
+- Transition modal only appears when target column has a trigger configured
+- Inline creation form only on initial (Backlog) state column
+
+**Patterns established:**
+- Kanban features in `features/kanban/` directory
+- `StoryCard` reusable component with `priorityConfig` color mapping
+- DndContext wraps the board, each column is a Droppable, cards are Draggable
+
+---
+
+## Sprint 2: Story Detail (T2.3.1–T2.3.2) — 2026-03-28
+
+**Summary:** Built story detail as full-page view at `/stories/:id`. Header with inline-editable title (click to edit, Enter/Escape), state badge, priority selector (P0-P3 colored), editable label pills. Description section with markdown textarea + preview toggle (Write/Preview tabs), acceptance criteria section. Both editable inline with save/cancel via `useUpdateStory`.
+
+**Key decisions:**
+- Full-page layout over Sheet (route already existed, more room for content)
+- Lightweight inline markdown renderer (`MarkdownPreview`) — paragraphs, bold, code, bullets
+- `EditableSection` reusable for both description and acceptance criteria
+
+**Patterns established:**
+- Story detail features in `features/story-detail/` directory
+- Inline edit pattern: view mode → click "Edit" → Write/Preview tabs → Save/Cancel
+- `priorityConfig` maps P0-P3 to colors (duplicated from story-card.tsx — extract if reused again)

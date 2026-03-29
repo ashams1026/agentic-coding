@@ -83,3 +83,29 @@
 - [x] **T2.3.1** — Build story detail panel. Slide-out sheet (shadcn Sheet) from the right, ~60% viewport width. Or full-page view (toggle). Header: title (click to edit inline), state badge, priority selector, label pills (editable). Close button returns to board. *(completed 2026-03-28)*
 
 - [x] **T2.3.2** — Build description and context section. Rich text area for story description (markdown support via textarea, rendered preview). Acceptance criteria section below. Both editable inline with save/cancel. *(completed 2026-03-28)*
+
+- [x] **T2.3.3** — Build child tasks section. Task rows with checkbox, title, state badge, persona avatar, dependency indicator. Mini SVG dependency graph. "Add task" inline form. *(completed 2026-03-29)*
+
+- [x] **T2.3.4** — Build proposals section. Amber-themed panel for pending proposals. Approve/reject buttons, "Approve all" bulk action, reject textarea for feedback. *(completed 2026-03-29)*
+
+- [x] **T2.3.5** — Build comment stream component. Reusable for stories and tasks. Agent/user/system comment renderers, metadata chips, auto-scroll, Cmd+Enter submit. *(completed 2026-03-29)*
+
+- [x] **T2.3.6** — Build execution history timeline. Vertical timeline with persona avatars, duration, cost/outcome badges, expandable logs. Reusable for stories and tasks. *(completed 2026-03-29)*
+
+- [x] **T2.3.7** — Build story metadata sidebar. Collapsible section with created/updated dates, project, workflow, trigger status, rejection count. *(completed 2026-03-29)*
+
+---
+
+## Sprint 3: Task Detail & Agent Monitor (Phase 2D-2E) — started 2026-03-29
+
+### Task Detail
+
+- [x] **T2.4.1** — Build task detail view. Full-page view with header (title, state badge, persona avatar, parent story link), description, and content sections. *(completed 2026-03-29)*
+
+- [x] **T2.4.2** — Build inherited context section. Collapsible panel with context from parent story: description excerpt, acceptance criteria, Tech Lead notes. *(completed 2026-03-29)*
+
+- [x] **T2.4.3** — Build dependency info display. "Depends on" and "Blocks" lists with state-colored badges and blocking indicators. *(completed 2026-03-29)*
+
+- [x] **T2.4.4** — Build execution context viewer. Collapsible sections for previous run summaries, rejection payloads, and project memory injected. *(completed 2026-03-29)*
+
+- [x] **T2.4.5** — Build rejection history display. Vertical timeline of rejection events with reviewer persona avatar, severity badge, retry hint, attempt count. Current attempt highlighted. *(completed 2026-03-29)*
