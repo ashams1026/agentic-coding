@@ -5,6 +5,35 @@
 
 ---
 
+## 2026-03-28 — T2.2.1: Build kanban board layout
+
+**Task:** Kanban board with columns from story workflow states, column headers with state name/count/color, horizontal scroll, full viewport height.
+
+**Done:**
+- Created `features/kanban/` directory with two components:
+  - `kanban-board.tsx` — main board: fetches stories + workflows, finds default story workflow, groups stories by `currentState`, renders columns in workflow state order, horizontal `ScrollArea` with `ScrollBar`
+  - `kanban-column.tsx` — single column: colored dot + state name + count badge header, vertically scrollable story list, empty state with dashed border placeholder
+- Placeholder story card (`StoryCardPlaceholder`) shows title (line-clamped), priority badge, label pills — will be replaced by full `StoryCard` in T2.2.2
+- Board fills available viewport height via `h-full flex-col` layout in page, `min-h-0 flex-1` for the board container
+- Each column is 280px wide with `shrink-0` for consistent sizing
+- Updated `story-board.tsx` page to render `KanbanBoard`
+- Loading and empty states handled (workflow loading, no story workflow configured)
+
+**Files created:**
+- `packages/frontend/src/features/kanban/kanban-board.tsx`
+- `packages/frontend/src/features/kanban/kanban-column.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/story-board.tsx` (replaced placeholder with KanbanBoard)
+
+**Notes for next agent:**
+- T2.2.2 is next: Build the full StoryCard component (priority colors, task progress, proposal badge, agent indicator). It will replace `StoryCardPlaceholder` in `kanban-column.tsx`.
+- The kanban feature lives in `src/features/kanban/` — collocate related components there.
+- Workflow states from fixtures: Backlog, Defining, Decomposing, In Progress, In Review, QA, Done (7 columns, each with color).
+- Mock stories are in: Backlog (1), Decomposing (1), In Progress (1). Other columns are empty.
+
+---
+
 ## 2026-03-28 — Review: T2.1.5 (approved)
 
 **Reviewed:** Cost summary widget — `features/dashboard/cost-summary.tsx` and dashboard integration.

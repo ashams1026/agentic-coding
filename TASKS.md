@@ -15,7 +15,7 @@
 
 ### Story Board (Kanban)
 
-- [ ] **T2.2.1** — Build kanban board layout. Columns generated from story workflow states. Column headers with state name, item count, and color indicator. Horizontally scrollable when many columns. Board fills available viewport height.
+- [review] **T2.2.1** — Build kanban board layout. Columns generated from story workflow states. Column headers with state name, item count, and color indicator. Horizontally scrollable when many columns. Board fills available viewport height.
 
 - [ ] **T2.2.2** — Build story card component. Compact card showing: title (truncated), priority badge (P0-P3 with colors), label pills, task progress bar ("3/5 tasks"), proposal badge (amber dot with count if pending), active agent indicator (pulsing persona avatar if agent running). Card has subtle hover state and click handler.
 
