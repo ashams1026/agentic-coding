@@ -5,6 +5,41 @@
 
 ---
 
+## 2026-03-29 — T2.3.7: Build story metadata sidebar
+
+**Task:** Collapsible section showing read-only story info: created date, updated date, project name, workflow name, current trigger status, retry count.
+
+**Done:**
+- Created `features/story-detail/story-metadata.tsx`:
+  - `StoryMetadata` — collapsible section (shadcn Collapsible, closed by default)
+  - `MetaRow` — reusable row with icon + label (uppercase 11px) + value
+  - Displays:
+    - Created date (Calendar icon) — formatted with month, day, year, time
+    - Updated date (Clock icon) — same format
+    - Project name (FolderOpen icon) — resolved from `useProjects` by `story.projectId`
+    - Workflow name + type badge (GitBranch icon) — resolved from `useWorkflows` by `story.workflowId`
+    - Trigger status (Bot icon) — finds next trigger matching `story.workflowId` + `story.currentState`, shows "Waiting for [Persona Name]" with persona color dot, or "No trigger configured"
+    - Rejection loop count (RefreshCw icon) — counts rejected executions, only shown when >0, amber text
+  - Added shadcn Collapsible component
+- Updated `pages/story-detail.tsx`:
+  - Added `StoryMetadata` import, placed at bottom of content sections
+  - Story Detail section is now **complete** (T2.3.1–T2.3.7)
+
+**Files created:**
+- `packages/frontend/src/features/story-detail/story-metadata.tsx`
+- `packages/frontend/src/components/ui/collapsible.tsx` (shadcn)
+
+**Files modified:**
+- `packages/frontend/src/pages/story-detail.tsx` (added StoryMetadata)
+
+**Notes for next agent:**
+- Sprint 2 Story Detail section is complete (T2.3.1–T2.3.7)
+- Next task in Sprint 3: T2.4.1 (Task Detail view)
+- The collapsible pattern could be reused for other sections
+- Story detail page section order: Header → Description → Proposals → Tasks → Comments → Execution History → Metadata
+
+---
+
 ## 2026-03-29 — Review: T2.3.6 (approved)
 
 **Reviewed:** Execution history timeline — `execution-timeline.tsx` and story-detail page integration.

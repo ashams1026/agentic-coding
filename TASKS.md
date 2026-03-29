@@ -17,7 +17,7 @@
 
 - [x] **T2.3.6** — Build execution history timeline. Vertical timeline on the story detail. Each entry: persona avatar, "Tech Lead ran for 2m 34s", cost badge ("$0.42"), outcome badge (green success / red failure / amber rejected). Click to expand: shows full agent output (reuse terminal renderer from agent monitor). Collapsed by default — shows summary only.
 
-- [ ] **T2.3.7** — Build story metadata sidebar. Right column or collapsible section. Shows: created date, updated date, project name, workflow name, current trigger status ("Waiting for Engineer"), retry count (if in rejection loop). Read-only context info.
+- [review] **T2.3.7** — Build story metadata sidebar. Right column or collapsible section. Shows: created date, updated date, project name, workflow name, current trigger status ("Waiting for Engineer"), retry count (if in rejection loop). Read-only context info.
 
 ---
 

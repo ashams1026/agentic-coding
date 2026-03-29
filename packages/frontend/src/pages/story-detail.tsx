@@ -8,6 +8,7 @@ import { ChildTasksSection } from "@/features/story-detail/child-tasks-section";
 import { ProposalsSection } from "@/features/story-detail/proposals-section";
 import { CommentStream } from "@/features/story-detail/comment-stream";
 import { ExecutionTimeline } from "@/features/story-detail/execution-timeline";
+import { StoryMetadata } from "@/features/story-detail/story-metadata";
 
 export function StoryDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -46,6 +47,7 @@ export function StoryDetailPage() {
           <ChildTasksSection story={story} />
           <CommentStream targetId={story.id} targetType="story" />
           <ExecutionTimeline targetId={story.id} />
+          <StoryMetadata story={story} />
         </div>
       </div>
     </div>
