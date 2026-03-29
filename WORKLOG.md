@@ -5,6 +5,44 @@
 
 ---
 
+## 2026-03-29 — T2.12.1: Wire up mock WebSocket to all UI components
+
+**Task:** Make all screens reactive to mock WS events — dashboard stats, kanban cards, story comments, agent monitor, activity feed, toast notifications.
+
+**Done:**
+- Created `hooks/use-ws-sync.ts` — centralized hook that subscribes to `mockWs.subscribeAll()` and invalidates TanStack Query caches:
+  - `agent_started` / `agent_completed` / `execution_update` → invalidate `executions`, `dashboardStats`
+  - `state_change` → invalidate `stories`, `tasks`, `dashboardStats` (kanban columns re-render)
+  - `comment_created` → invalidate `comments` (story detail comments update)
+  - `proposal_created` / `proposal_updated` → invalidate `proposals`, `dashboardStats`
+  - `cost_update` → invalidate `costSummary`, `dashboardStats`
+- Wired `useWsQuerySync()` in `RootLayout` alongside existing `useToastEvents()`
+- Enhanced `RecentActivity` (dashboard widget) with live WS event feed:
+  - Added `useLiveActivityEvents()` hook subscribing to WS events
+  - Live events merge with base events, sorted by timestamp, capped at 10
+  - Live events show `LIVE` badge and `animate-slide-down` animation
+- **Already wired (from prior sprints):**
+  - Agent monitor terminal: `terminal-renderer.tsx` subscribes to `agent_output_chunk`
+  - Activity feed page: `activity-feed.tsx` has `useLiveActivityEvents()` + WS subscription
+  - Toast notifications: `use-toast-events.ts` subscribes to all events
+
+**How it works:**
+All screens use TanStack Query hooks. When WS events arrive, `useWsQuerySync` invalidates the matching query keys, which triggers automatic refetches. Components re-render with fresh data without needing individual WS subscriptions.
+
+**Files created:**
+- `packages/frontend/src/hooks/use-ws-sync.ts`
+
+**Files modified:**
+- `packages/frontend/src/layouts/root-layout.tsx` — added `useWsQuerySync()` call
+- `packages/frontend/src/features/dashboard/recent-activity.tsx` — added live WS events with LIVE badge
+
+**Notes for next agent:**
+- The `useWsQuerySync` pattern means any new query hook automatically benefits from WS updates — just use the right query key prefix
+- Dashboard widget and full activity feed both have independent WS subscriptions for their live feeds (one in `recent-activity.tsx`, one in `activity-feed.tsx`)
+- Kanban animation on state change is handled by React re-render + existing `transition-*` CSS classes on cards
+
+---
+
 ## 2026-03-29 — Review: T2.11.4 (approved)
 
 **Reviewed:** Nav badges and status bar — `sidebar.tsx` + `status-bar.tsx`.

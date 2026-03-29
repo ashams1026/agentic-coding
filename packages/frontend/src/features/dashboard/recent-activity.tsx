@@ -1,3 +1,4 @@
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router";
 import {
   ArrowRightLeft,
@@ -6,9 +7,19 @@ import {
   MessageSquare,
   FileCheck,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useExecutions, useProposals, usePersonas } from "@/hooks";
+import { mockWs } from "@/mocks/ws";
 import type { Persona } from "@agentops/shared";
+import type {
+  WsEvent,
+  AgentStartedEvent,
+  AgentCompletedEvent,
+  StateChangeEvent,
+  CommentCreatedEvent,
+  ProposalCreatedEvent,
+} from "@agentops/shared";
 import { fixtures } from "@/mocks/fixtures";
 
 // ── Unified activity event ────────────────────────────────────────
@@ -26,6 +37,7 @@ interface ActivityEvent {
   personaId: string | null;
   targetPath: string;
   timestamp: string;
+  isLive?: boolean;
 }
 
 // ── Icon/color mapping ────────────────────────────────────────────
@@ -148,6 +160,94 @@ function useActivityEvents(): ActivityEvent[] {
   return events.slice(0, 10);
 }
 
+// ── Live WS events for dashboard ─────────────────────────────────
+
+function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
+  const targetPath = (type: "story" | "task", id: string) =>
+    type === "story" ? `/stories/${id}` : `/tasks/${id}`;
+
+  switch (event.type) {
+    case "agent_started": {
+      const e = event as AgentStartedEvent;
+      return {
+        id: `live-started-${e.executionId}-${Date.now()}`,
+        type: "agent_completed", // reuse icon
+        description: `Agent started: ${e.taskTitle}`,
+        personaId: e.personaId,
+        targetPath: targetPath(e.targetType, e.targetId),
+        timestamp: e.timestamp,
+        isLive: true,
+      };
+    }
+    case "agent_completed": {
+      const e = event as AgentCompletedEvent;
+      return {
+        id: `live-completed-${e.executionId}-${Date.now()}`,
+        type: "agent_completed",
+        description: `Agent completed ${e.targetType} ($${e.costUsd.toFixed(2)})`,
+        personaId: e.personaId,
+        targetPath: targetPath(e.targetType, e.targetId),
+        timestamp: e.timestamp,
+        isLive: true,
+      };
+    }
+    case "state_change": {
+      const e = event as StateChangeEvent;
+      return {
+        id: `live-state-${e.targetId}-${Date.now()}`,
+        type: "state_change",
+        description: `${e.targetType} moved to ${e.toState}`,
+        personaId: null,
+        targetPath: targetPath(e.targetType, e.targetId),
+        timestamp: e.timestamp,
+        isLive: true,
+      };
+    }
+    case "comment_created": {
+      const e = event as CommentCreatedEvent;
+      return {
+        id: `live-comment-${e.commentId}-${Date.now()}`,
+        type: "comment_posted",
+        description: `${e.authorName}: ${e.contentPreview}`,
+        personaId: null,
+        targetPath: targetPath(e.targetType, e.targetId),
+        timestamp: e.timestamp,
+        isLive: true,
+      };
+    }
+    case "proposal_created": {
+      const e = event as ProposalCreatedEvent;
+      return {
+        id: `live-prop-${e.proposalId}-${Date.now()}`,
+        type: "proposal_created",
+        description: `New ${e.proposalType.replace(/_/g, " ")} proposal`,
+        personaId: null,
+        targetPath: targetPath(e.parentType, e.parentId),
+        timestamp: e.timestamp,
+        isLive: true,
+      };
+    }
+    default:
+      return null;
+  }
+}
+
+function useLiveActivityEvents(): ActivityEvent[] {
+  const [liveEvents, setLiveEvents] = useState<ActivityEvent[]>([]);
+
+  useEffect(() => {
+    const unsub = mockWs.subscribeAll((event: WsEvent) => {
+      const activityEvent = wsToActivityEvent(event);
+      if (activityEvent) {
+        setLiveEvents((prev) => [activityEvent, ...prev].slice(0, 10));
+      }
+    });
+    return unsub;
+  }, []);
+
+  return liveEvents;
+}
+
 // ── Component ─────────────────────────────────────────────────────
 
 interface ActivityRowProps {
@@ -162,7 +262,9 @@ function ActivityRow({ event, personaMap }: ActivityRowProps) {
   return (
     <Link
       to={event.targetPath}
-      className="flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-accent/50"
+      className={`flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-accent/50 ${
+        event.isLive ? "animate-slide-down" : ""
+      }`}
     >
       <div
         className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${config.colorClass}`}
@@ -178,7 +280,14 @@ function ActivityRow({ event, personaMap }: ActivityRowProps) {
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm">{event.description}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="truncate text-sm">{event.description}</p>
+          {event.isLive && (
+            <Badge className="bg-sky-500/20 text-sky-600 dark:text-sky-400 text-[8px] px-1 py-0 border-0 shrink-0">
+              LIVE
+            </Badge>
+          )}
+        </div>
         <p className="text-xs text-muted-foreground">{relativeTime(event.timestamp)}</p>
       </div>
     </Link>
@@ -186,9 +295,19 @@ function ActivityRow({ event, personaMap }: ActivityRowProps) {
 }
 
 export function RecentActivity() {
-  const events = useActivityEvents();
+  const baseEvents = useActivityEvents();
+  const liveEvents = useLiveActivityEvents();
   const { data: personas } = usePersonas();
   const personaMap = new Map(personas?.map((p) => [p.id, p]));
+
+  // Merge live + base, sort descending, take 10
+  const events = useMemo(() => {
+    const merged = [...liveEvents, ...baseEvents];
+    merged.sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
+    return merged.slice(0, 10);
+  }, [baseEvents, liveEvents]);
 
   return (
     <Card>

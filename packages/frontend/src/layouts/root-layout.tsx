@@ -9,10 +9,12 @@ import { useUIStore } from "@/stores/ui-store";
 import { CommandPalette } from "@/features/command-palette/command-palette";
 import { ToastRenderer } from "@/features/toasts/toast-renderer";
 import { useToastEvents } from "@/features/toasts/use-toast-events";
+import { useWsQuerySync } from "@/hooks/use-ws-sync";
 
 export function RootLayout() {
   useThemeSync();
   useToastEvents();
+  useWsQuerySync();
   const setMobileSidebarOpen = useUIStore((s) => s.setMobileSidebarOpen);
 
   return (
