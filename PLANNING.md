@@ -2,7 +2,7 @@
 
 ## Vision
 
-A local-first, workflow-driven application that orchestrates AI coding agents. Runs as a system service on the user's machine with a web-based UI for managing stories, designing workflows, configuring agent personas, and monitoring execution. Users define story lifecycles as state machines — each state transition can trigger a specialized agent persona to autonomously perform its role (planning, coding, reviewing, testing, etc.).
+A local-first application that orchestrates AI coding agents through a unified work item model with a hardcoded workflow. Runs as a system service on the user's machine with a web-based UI for managing work items, monitoring agent activity, and reviewing results. A Router agent automatically transitions work items between states after each persona completes, creating a fully autonomous development pipeline that can be toggled on or off.
 
 **The UI is the product.** A clear, intuitive, modern interface is what makes autonomous agents trustworthy. Every feature exists to give the user visibility into what agents are doing, what they did, what's upcoming, and what needs their input.
 
@@ -10,78 +10,97 @@ A local-first, workflow-driven application that orchestrates AI coding agents. R
 
 ## Core Concepts
 
-### Stories & Tasks (Two-Tier Work Items)
-- **Story** — a top-level work item (feature, bug, refactor) that moves through a user-defined workflow
-- **Task** — a smaller unit of work decomposed from a story, also moves through its own workflow
-- Stories contain tasks. A story's progression can depend on its child tasks completing.
-- Tasks inherit context from their parent story (acceptance criteria, relevant files, architectural notes)
+### Work Items (Unified Recursive Model)
+- **WorkItem** — the single entity for all work: what was previously "story", "task", and "sub-task"
+- **Recursive hierarchy** via `parentId`: top-level items (stories) have no parent, children (tasks) reference their parent, sub-tasks reference a task, etc.
+- **All work items move through the same workflow** — both leaf items and parent items have a real `currentState`
+- **Leaf items** (no children): move through the workflow via agents or manual drag
+- **Parent items** (have children): also move through the workflow, but some transitions auto-trigger when children complete (e.g., all children Done → parent advances to In Review)
+- **Decomposition is recursive**: any work item can be decomposed into children at any level
+- **UI depth limit**: 3 levels (story → task → sub-task) for visual clarity
 
-### Dependency Graph (DAG)
-- Work items (stories and tasks) form a **directed acyclic graph** via explicit dependency edges
-- Dependencies are first-class: `task_edges` table with typed relationships (`blocks`, `depends_on`, `related_to`)
-- **Ready work detection**: a task is "ready" when it's in a triggerable state AND all upstream dependencies are resolved
-- The trigger dispatcher uses DAG-awareness — triggers only fire when dependency constraints are satisfied
+### Hardcoded Workflow (State Machine)
+- One workflow per project — **hardcoded, not user-configurable** (simplifies everything, can be made editable in a future version)
+- The workflow defines states and valid transitions (a DAG). The Router uses transitions to narrow its decision space.
+- **Fixed anchors**: initial state (Backlog) and final state (Done) cannot be deleted, only renamed
+- States: `Backlog → Planning → Decomposition → Ready → In Progress → In Review → Done` plus `Blocked`
+- Transitions define which states can flow to which:
+  ```
+  Backlog        → [Planning]
+  Planning       → [Ready, Blocked]
+  Decomposition  → [In Progress, Blocked]
+  Ready          → [In Progress, Decomposition, Blocked]
+  In Progress    → [In Review, Blocked]
+  In Review      → [Done, In Progress]  (approve or reject)
+  Blocked        → [previous state]
+  ```
 
-### Workflows (State Machines)
-- A **workflow** defines the states a story or task can be in, and the valid transitions between them
-- Workflows are user-configurable — not hardcoded
-- Custom-built workflow engine (~80-120 lines), designed for xstate upgrade path if needed later
-- Example story workflow: `Backlog → Planning → Ready → In Progress → In Review → Testing → Done`
-- Example task workflow: `Queued → In Progress → In Review → Done | Failed`
+### Router (Automatic State Transitions)
+- After any persona completes work on a work item, the **Router agent** decides the next state
+- The Router is a lightweight agent (haiku model, read-only tools + `route_to_state` MCP tool)
+- Router receives: current state, valid transitions from the state machine, work item context, persona output
+- Router picks from the valid transitions — the state machine narrows the decision space to 1-3 options
+- Router posts its reasoning as a comment (audit trail)
+- **Auto-routing is a project-level toggle:**
+  - **ON**: Router fires automatically after each persona completes → fully autonomous pipeline
+  - **OFF**: user manually moves items between states → agents only fire when items land in their state
+
+### Persona-Per-State Configuration
+- Each workflow state has an assigned persona that fires when a work item enters that state
+- This is the **only user configuration** for the workflow — a simple table in project settings:
+  ```
+  State           │ Persona            │ Model
+  ────────────────┼────────────────────┼────────
+  Planning        │ Product Manager    │ Sonnet
+  Decomposition   │ Tech Lead          │ Sonnet
+  Ready           │ Router             │ Haiku
+  In Progress     │ Engineer           │ Sonnet
+  In Review       │ Code Reviewer      │ Sonnet
+  ```
+- Backlog, Done, and Blocked have no personas — they're manual or auto-triggered states
 
 ### Agent Personas
 - A **persona** is a named agent configuration: system prompt, model, allowed tools, behavior constraints
-- Examples: "Tech Lead", "Engineer", "Code Reviewer", "QA Engineer", "Product Manager", "Router"
-- **Router** personas are a lightweight archetype: fast model (haiku), read-only tools + `route_to_state`, designed for quick evaluation at decision points
-- Personas are reusable across workflows and projects
-- Each persona has a scoped set of custom MCP tools (e.g., Tech Lead gets `create_tasks`, Engineer gets `flag_blocked`)
+- Built-in personas: Product Manager, Tech Lead, Engineer, Code Reviewer, QA Engineer, Router
+- Each persona has a scoped set of custom MCP tools (e.g., Tech Lead gets `create_children`, Engineer gets `flag_blocked`)
+- The **Router** is a special lightweight persona: haiku model, read-only tools + `route_to_state`, runs after every other persona completes
 
-### Triggers
-- A **trigger** binds a workflow state transition to an agent persona
-- "When story enters `Ready for Implementation`, spawn the `Tech Lead` persona"
-- "When task enters `In Progress`, spawn the `Engineer` persona"
-- Triggers are the core automation primitive — they replace simple cron-based scheduling
-- Four dispatch modes per trigger: `auto` | `propose` | `gated` | `evaluate`
-- Two-phase dispatch: (1) state transition matches trigger, (2) dependency graph check confirms all upstream resolved
+### Parent-Child State Coordination
+- When all children of a parent reach Done → parent auto-advances to the next state (configurable target, default: In Review)
+- Parent entering In Review triggers a reviewer to check the **integrated whole** (not just individual children)
+- If any child enters Blocked → parent shows a "blocked children" indicator (doesn't auto-change state)
+- User can always manually drag a parent to any state, overriding auto-advancement
 
-### Evaluate Transitions (Adaptive Routing)
-- At certain workflow nodes, instead of a fixed next state, an **evaluator agent** decides the path
-- Evaluator triggers bind to **multiple possible target states** — the agent picks which one
-- Evaluator agents are a lightweight persona archetype: fast model (haiku), read-only tools, plus `route_to_state` MCP tool
-- The evaluator reads task/story context, codebase state, and decides: needs more planning? ready for work? should be split? blocked?
-- Routing reasoning is stored as a comment on the task (audit trail for why the router chose that path)
-- In the workflow designer, evaluate nodes appear as diamond-shaped decision points with fan-out edges
-- Example:
-  ```
-  Task enters [Ready] → Evaluate trigger fires → Router agent spawns
-    → "Task is clear and small" → routes to [In Progress] → Engineer
-    → "Task is too vague" → routes to [Needs Planning] → Tech Lead
-    → "Task should be split" → routes to [Decomposition] → Tech Lead
-    → "Missing info" → routes to [Blocked] → User notified
-  ```
+### Dependency Graph (DAG)
+- Work items form a **directed acyclic graph** via explicit dependency edges
+- Dependencies are first-class: `work_item_edges` table with typed relationships (`blocks`, `depends_on`, `related_to`)
+- **Ready work detection**: an item is "ready" when it's in a triggerable state AND all upstream dependencies are resolved
+- Cycle detection on edge creation
 
 ### Comment Stream
-- Every story and task has a chronological **comment stream**
+- Every work item has a chronological **comment stream**
 - Agents post comments noting work done, questions, messages for other agents, blockers
 - Users post comments for guidance, feedback, or context
+- Router posts routing reasoning as comments (audit trail)
 - Each comment has a timestamp, author (persona name or user), and content
-- Comments persist across agent sessions — a running conversation trail on every work item
+- Comments persist across agent sessions — a running conversation trail
 
 ### Projects
 - A **project** is a registered working directory on the local filesystem
-- Stories and tasks are scoped to a project
+- Work items are scoped to a project
 - Agents are spawned with `cwd` set to the project directory
 - Each project has an `agentops.md` context file (like CLAUDE.md) that all personas inherit
+- **Auto-routing toggle** is per-project
 
 ### Project Memory
-- As stories complete, a compressed summary is generated (what was done, key decisions, files changed)
+- As top-level work items complete, a compressed summary is generated (what was done, key decisions, files changed)
 - Stored in `project_memory` table — recent memories injected into agent context at spawn time
 - **Memory decay**: older memories are periodically consolidated into higher-level summaries to save context window
 - Distinct from `agentops.md` (static project description) — project memory captures "what's been done recently"
 
-### Execution Context (Per-Task Agent Memory)
-- Each execution appends a structured summary to the task: what the agent did, tools used, outcome, rejection reason
-- When a task is retried (e.g., after code review rejection), the next agent gets the previous execution history
+### Execution Context (Per-Item Agent Memory)
+- Each execution appends a structured summary to the work item: what the agent did, tools used, outcome, rejection reason
+- When an item is retried (e.g., after code review rejection), the next agent gets the previous execution history
 - Bounded: last 3 full executions retained, older ones summarized (same decay pattern as project memory)
 
 ---
@@ -94,11 +113,11 @@ A local-first, workflow-driven application that orchestrates AI coding agents. R
 │                 (Frontend Dashboard UI)                  │
 │                                                          │
 │  ┌──────────┐ ┌───────────┐ ┌──────────┐ ┌────────────┐ │
-│  │Dashboard │ │Story Board│ │ Workflow │ │  Agent     │ │
-│  │ (Home)   │ │ (Kanban)  │ │ Designer │ │  Monitor   │ │
-│  ├──────────┤ ├───────────┤ ├──────────┤ ├────────────┤ │
-│  │Activity  │ │ Story     │ │ Persona  │ │  Settings  │ │
-│  │  Feed    │ │  Detail   │ │ Manager  │ │            │ │
+│  │Dashboard │ │Work Items │ │ Persona  │ │  Agent     │ │
+│  │ (Home)   │ │ (Multi-   │ │ Manager  │ │  Monitor   │ │
+│  ├──────────┤ │  View)    │ ├──────────┤ ├────────────┤ │
+│  │Activity  │ │ List/Board│ │          │ │  Settings  │ │
+│  │  Feed    │ │ /Tree     │ │          │ │            │ │
 │  └──────────┘ └───────────┘ └──────────┘ └────────────┘ │
 └───────────────────────┬──────────────────────────────────┘
                         │ REST / WebSocket
@@ -106,14 +125,15 @@ A local-first, workflow-driven application that orchestrates AI coding agents. R
 │                 Backend Service (Fastify)                 │
 │                                                          │
 │  ┌──────────────┐  ┌──────────────┐  ┌────────────────┐  │
-│  │ Story/Task   │  │ Workflow     │  │ Trigger        │  │
-│  │ Manager      │  │ Engine       │  │ Dispatcher     │  │
-│  │ (DAG-aware)  │  │ (custom)     │  │ (2-phase)      │  │
+│  │ WorkItem     │  │ Hardcoded    │  │ Router         │  │
+│  │ Manager      │  │ Workflow     │  │ Agent          │  │
+│  │ (DAG-aware)  │  │ (state      │  │ (auto-routing) │  │
+│  │              │  │  machine)    │  │                │  │
 │  └──────┬───────┘  └──────┬───────┘  └───────┬────────┘  │
 │         │                 │                   │           │
 │  ┌──────┴─────────────────┴───────────────────┴────────┐  │
 │  │              Persona Registry                        │  │
-│  │  (Tech Lead, Engineer, Reviewer, QA, custom...)     │  │
+│  │  (PM, Tech Lead, Engineer, Reviewer, Router, ...)   │  │
 │  └──────────────────────┬──────────────────────────────┘  │
 │                         │                                 │
 │  ┌──────────────────────┴──────────────────────────────┐  │
@@ -134,39 +154,50 @@ A local-first, workflow-driven application that orchestrates AI coding agents. R
 │  │           SQLite (via better-sqlite3 + Drizzle)     │  │
 │  └─────────────────────────────────────────────────────┘  │
 │                                                          │
-│  ┌──────────────┐  ┌──────────────────────────────────┐  │
-│  │ Scheduler    │  │ Concurrency Manager              │  │
-│  │ (node-cron)  │  │ (max agents, cost caps)          │  │
-│  └──────────────┘  └──────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │           Concurrency Manager (max agents, cost caps)│  │
+│  └──────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────┘
 ```
 
-**Data flow for a story lifecycle:**
+**Data flow for a work item lifecycle (auto-routing ON):**
 
 ```
-User creates Story ("Add OAuth2 login")
-  → Story enters [Backlog] state
-  → User moves to [Planning] (manual transition)
-  → Trigger fires: spawn "Product Manager" persona
-  → PM agent posts comment: "Writing acceptance criteria..."
-  → PM agent writes acceptance criteria, transitions story to [Ready]
-  → Trigger fires: spawn "Tech Lead" persona
-  → TL agent decomposes into Tasks (via create_tasks MCP tool) → tasks enter [Proposed]
-  → TL agent posts comment: "Broke this into 3 tasks, OAuth callback needs to land first"
-  → User reviews proposed tasks, approves/edits → tasks enter [Queued]
-  → Trigger dispatcher checks each task: in triggerable state + deps resolved? → "ready work"
-  → Trigger fires per ready task: spawn "Engineer" persona
-  → Engineer agents work in parallel (respecting concurrency limits)
-  → Engineer posts comment: "Implemented OAuth callback, added 2 new endpoints"
-  → Each task completes → enters [In Review]
-  → Trigger fires: spawn "Code Reviewer" persona
-  → Reviewer approves → task advances
-  → Reviewer rejects → posts comment with reason → task returns to [In Progress] → Engineer retries (max 3)
-  → All tasks done → Story auto-transitions to [Testing]
-  → Trigger fires: spawn "QA Engineer" persona
-  → QA runs tests, posts comment: "All 12 tests passing, 94% coverage"
-  → Story → [Done]
-  → Project memory updated with story summary
+User creates work item ("Add OAuth2 login") → enters [Backlog]
+  │
+  User drags to [Planning]
+  │ PM persona fires → writes acceptance criteria → completes
+  │ Router evaluates: transitions = [Ready, Blocked] → picks "Ready"
+  │
+  [Ready]
+  │ Router fires immediately (this IS the evaluation state)
+  │ Router evaluates: transitions = [In Progress, Decomposition, Blocked]
+  │ Router decides: "Too large, needs breakdown" → picks "Decomposition"
+  │
+  [Decomposition]
+  │ Tech Lead fires → creates 3 child work items → completes
+  │ Children enter [Backlog]
+  │ Router evaluates: transitions = [In Progress, Blocked] → picks "In Progress"
+  │
+  [In Progress] — parent waits here while children work
+  │
+  │  Each child goes through the same workflow:
+  │  [Backlog] → [Planning] → [Ready] → [In Progress] → [In Review] → [Done]
+  │  (same states, same personas, same Router decisions)
+  │
+  │  If Router decides a child is too large at [Ready]:
+  │    → [Decomposition] → Tech Lead creates sub-tasks → same pattern recursively
+  │
+  │  All children reach [Done] → parent auto-advances to [In Review]
+  │
+  [In Review]
+  │ Code Reviewer fires → reviews integrated whole → completes
+  │ Router evaluates: transitions = [Done, In Progress]
+  │ Router decides: "Approved" → picks "Done"
+  │  (or "Rejected" → picks "In Progress" with rejection feedback)
+  │
+  [Done] ✓
+  │ Project memory updated with work item summary
 ```
 
 ---
@@ -220,18 +251,17 @@ User creates Story ("Add OAuth2 login")
   - Toggle: "demo mode" replays a scripted agent session for testing UI reactivity
 
 - [ ] **T1.4 — Define shared types and schemas**
-  - **ID convention**: short nanoid-style hash IDs (e.g., `st-x7k2m` for stories, `tk-p9f3n` for tasks, `ps-r8d2j` for personas). Collision-resistant, URL-safe, readable.
-  - **Project**: id, name, path, defaultWorkflowId, settings, createdAt
-  - **Story**: id, projectId, title, description, workflowId, currentState, priority, labels[], context (acceptance criteria, notes), createdAt, updatedAt
-  - **Task**: id, storyId, title, description, workflowId, currentState, assignedPersonaId, parentTaskId (for sub-decomposition), inheritedContext (from parent story), executionContext[] (bounded history from previous runs), createdAt, updatedAt
-  - **TaskEdge**: id, fromId, toId, type (`blocks` | `depends_on` | `related_to`) — DAG dependency graph
-  - **Workflow**: id, name, type (`story` | `task`), states[], transitions[], initialState, finalStates[], isDefault
+  - **ID convention**: short nanoid-style hash IDs (e.g., `wi-x7k2m` for work items, `ps-r8d2j` for personas). Collision-resistant, URL-safe, readable.
+  - **Project**: id, name, path, autoRoutingEnabled (boolean, default true), settings, createdAt
+  - **WorkItem**: id, parentId (nullable — null = top-level, non-null = child), projectId, title, description, context (acceptance criteria, notes), currentState (workflow state name), priority, labels[], assignedPersonaId, executionContext[] (bounded history from previous runs), createdAt, updatedAt
+  - **WorkItemEdge**: id, fromId, toId, type (`blocks` | `depends_on` | `related_to`) — DAG dependency graph
   - **Persona**: id, name, description, avatar (color + icon), systemPrompt, model (`opus` | `sonnet` | `haiku`), allowedTools[], mcpTools[] (custom tools this persona can call), maxBudgetPerRun, settings
-  - **Trigger**: id, workflowId, fromState, toState (single state for auto/propose/gated, null for evaluate), personaId, dispatchMode (`auto` | `propose` | `gated` | `evaluate`), possibleTargets[] (for evaluate mode — list of valid target states the router can pick), maxRetries (default 3), config
-  - **Execution**: id, taskId|storyId, personaId, status, startedAt, completedAt, costUsd, durationMs, summary (compressed), outcome (`success` | `failure` | `rejected`), rejectionPayload (reason, severity, hint), logs
-  - **Comment**: id, targetId (storyId or taskId), targetType (`story` | `task`), authorType (`agent` | `user` | `system`), authorId (personaId or null), authorName, content, metadata (JSON — files referenced, tools used, etc.), createdAt
-  - **ProjectMemory**: id, projectId, storyId (source), summary, filesChanged[], keyDecisions[], createdAt, consolidatedInto (for decay)
-  - **Proposal**: id, executionId, parentStoryId|parentTaskId, type (`task_creation` | `state_transition` | `review_request`), payload (JSON), status (`pending` | `approved` | `rejected` | `expired`), createdAt
+  - **PersonaAssignment**: projectId, stateName, personaId — maps workflow states to personas (the only workflow config)
+  - **Execution**: id, workItemId, personaId, status, startedAt, completedAt, costUsd, durationMs, summary (compressed), outcome (`success` | `failure` | `rejected`), rejectionPayload (reason, severity, hint), logs
+  - **Comment**: id, workItemId, authorType (`agent` | `user` | `system`), authorId (personaId or null), authorName, content, metadata (JSON — files referenced, tools used, routing reasoning, etc.), createdAt
+  - **ProjectMemory**: id, projectId, workItemId (source), summary, filesChanged[], keyDecisions[], createdAt, consolidatedInto (for decay)
+  - **Proposal**: id, executionId, parentWorkItemId, type (`child_creation` | `review_request`), payload (JSON), status (`pending` | `approved` | `rejected` | `expired`), createdAt
+  - **Workflow**: hardcoded constant in code (not a database entity) — states[], transitions{} as described in Core Concepts
 
 ---
 
@@ -250,55 +280,53 @@ User creates Story ("Add OAuth2 login")
   - **Cost summary widget**: sparkline chart of daily spend for the last 7 days, current month total vs cap
   - Responsive: works on wide and narrow viewports
 
-#### 2B: Story Board (Kanban)
+#### 2B: Work Items — Multi-View
 
-- [ ] **T2.2 — Build kanban board**
-  - Columns per workflow state, populated from the active project's story workflow
-  - Story cards: title, priority badge, label pills, task progress bar (3/5 tasks done), proposal badge (amber dot), active agent indicator (pulsing persona avatar)
-  - **Drag-and-drop** between columns for manual state transitions
-  - On drop: if trigger exists for that transition, show prompt — "This will trigger [Persona]. Run trigger / Skip trigger / Cancel"
-  - Column header shows count of items
-  - Filter bar: filter by label, priority, persona, has-proposals
-  - Sort: by priority, created date, updated date
-  - Quick-add: "+" button at top of Backlog column to create new story inline
+- [ ] **T2.2 — Build work items page with view toggle**
+  - Page layout: top bar with `[List] [Board] [Tree]` view toggle, filter/group/sort controls, detail panel on right
+  - View toggle persists in URL params and Zustand
+  - Filter bar: filter by state, priority, persona, labels, parent, has-proposals
+  - Group by: state, parent, priority, persona
+  - Sort: priority, created date, updated date, state
+  - Quick-add: "+" button to create new top-level work item
 
-- [ ] **T2.3 — Build story detail panel**
-  - Slide-out panel (or full-page view) when clicking a story card
-  - **Header**: story title (editable inline), priority selector, label pills (editable), current state badge, workflow name
-  - **Description section**: rich text description, acceptance criteria, editable
-  - **Child tasks section**:
-    - Task list showing each task's state, assigned persona, dependency status
-    - Mini dependency graph visualization (nodes = tasks, edges = dependencies)
-    - Inline task state badges with progress
-    - "Add task" button for manual task creation
-  - **Proposals section** (if pending):
-    - List of proposed tasks from Tech Lead agent
-    - Each proposal: title, description, edit inline, approve/reject buttons
-    - Bulk approve all / reject all with feedback
-  - **Comment stream**:
-    - Chronological thread of all comments on this story
-    - Agent comments: persona avatar + name + timestamp + content
-    - User comments: user avatar + timestamp + content
-    - System comments: state changes, trigger fires, auto-transitions (muted style)
-    - Comment input box at bottom — user can type replies
-    - Comments from agents may include metadata: files changed, tools used (shown as subtle chips)
-  - **Execution history timeline**:
-    - Visual timeline of all agent executions on this story
-    - Each entry: persona avatar, duration, cost, outcome badge (success/failure/rejected)
-    - Click to expand: full agent output log
-  - **Sidebar metadata**: created date, updated date, project, workflow, trigger status
+- [ ] **T2.3 — Build list view (primary)**
+  - Tree-indented rows showing work item hierarchy (parent → child → sub-task)
+  - Each row: expand/collapse toggle, title, state badge, priority badge, progress bar (if has children), assigned persona avatar, active agent indicator
+  - Collapsible groups when grouped by state/priority/etc.
+  - Collapse "Done" group by default to reduce noise
+  - Click a row to select → opens detail in right panel
 
-#### 2C: Task Detail
+- [ ] **T2.4 — Build board view (optional)**
+  - Columns = hardcoded workflow states
+  - Flat cards — filter to one scope: "top-level items" or "children of [selected item]"
+  - Cards show: title, priority, progress pill (if has children), persona avatar
+  - Drag-and-drop to move items between states (manual transition)
+  - When dragging to a state with an assigned persona: show prompt "This will trigger [Persona]. Run / Skip / Cancel"
+  - Scope selector: breadcrumb at top showing which level you're viewing
 
-- [ ] **T2.4 — Build task detail view**
-  - Similar structure to story detail but scoped to a single task
-  - **Header**: task title, state badge, assigned persona, parent story link
-  - **Inherited context**: collapsible section showing context from parent story
-  - **Dependency info**: what this task depends on (with state), what depends on this task
-  - **Comment stream**: same as story but task-scoped
-  - **Execution history**: per-task timeline with agent output, cost, duration
-  - **Execution context viewer**: show what context the agent received (previous run summaries, rejection payloads) — useful for debugging agent behavior
-  - **Rejection history** (if any): structured view of rejection payloads — decision, reason, severity, hint, retry count
+- [ ] **T2.5 — Build tree view (hierarchy)**
+  - Pure parent-child tree display, no state grouping
+  - Each node: title, state badge, priority, progress bar
+  - Expand/collapse at any level
+  - Useful for understanding decomposition scope
+  - Click to select → detail panel
+
+- [ ] **T2.6 — Build work item detail panel**
+  - Right-side panel (~50-60% width) showing selected work item
+  - **Header**: title (editable inline), state badge, priority selector, labels (editable), parent link (breadcrumb if nested)
+  - **Description section**: rich text, acceptance criteria, editable
+  - **Children section** (if has children):
+    - List of child items with state badges, persona avatars, dependency indicators
+    - Progress bar summary
+    - "Add child" button, "Decompose" button (triggers Tech Lead)
+  - **Proposals section** (if pending): proposed children from Tech Lead, approve/edit/reject inline
+  - **Comment stream**: chronological thread (agent + user + system comments), input box at bottom
+  - **Execution history timeline**: persona avatar, duration, cost, outcome badge, expandable for full output
+  - **Flow history**: the actual path this item took through states (branches, back-flows, retries)
+  - **Dependency info**: "depends on" and "blocks" lists with state badges
+  - **Execution context viewer**: what context the agent received (previous runs, rejections)
+  - **Metadata**: created date, updated date, project, current persona, retry count
 
 #### 2D: Agent Monitor
 
@@ -322,44 +350,24 @@ User creates Story ("Add OAuth2 login")
   - Aggregate stats: total cost, total runs, success rate, average duration
   - Filter by: persona, outcome, date range, cost range
 
-#### 2E: Activity Feed
+#### 2D: Activity Feed
 
 - [ ] **T2.7 — Build activity feed**
   - Full-page chronological stream of all system events
   - Event types (each with distinct icon + color):
-    - State transitions (story/task moved to X)
+    - State transitions (work item moved to X)
     - Agent started / completed / failed
     - Comments posted (by agent or user)
+    - Router decisions (with reasoning)
     - Proposals created / approved / rejected
-    - Triggers fired / queued / waiting on deps
     - User manual overrides
     - Cost alerts (approaching cap)
   - Each entry: timestamp, icon, persona avatar (if agent), description, link to source entity
-  - Filters: by event type, persona, story, date range
+  - Filters: by event type, persona, work item, date range
   - Real-time: new events animate in at the top (via WebSocket)
   - Unread indicator: mark events since last visit
 
-#### 2F: Workflow Designer
-
-- [ ] **T2.8 — Build workflow designer**
-  - **Visual state machine editor**:
-    - Canvas area with states as rounded rectangles (nodes) and transitions as directed arrows (edges)
-    - Add state: click canvas or "Add state" button → name, color, is-initial, is-final
-    - Add transition: drag from one state to another → name the transition event
-    - Select state/transition to configure in a right-side properties panel
-  - **Trigger configuration** (on transitions):
-    - Assign persona from dropdown
-    - Set dispatch mode: auto / propose / gated / evaluate
-    - For `evaluate` mode: select multiple possible target states (fan-out), assign router persona
-    - Set max retries (for rejection loops)
-    - Set advancement mode: auto / approval / agent
-  - **Decision nodes**: evaluate triggers render as diamond shapes in the canvas with fan-out edges to each possible target state. Each edge labeled with the target state name.
-  - **Validation**: real-time warnings — orphan states, unreachable end states, missing initial state
-  - **Workflow templates**: "Default Story Workflow", "Default Task Workflow" — clone and customize
-  - **Preview mode**: step through the workflow with mock data to see how triggers would fire
-  - **Workflow list**: sidebar showing all workflows, create new, duplicate, delete
-
-#### 2G: Persona Manager
+#### 2E: Persona Manager
 
 - [ ] **T2.9 — Build persona manager**
   - **Persona list**: card grid or list view of all personas
@@ -371,15 +379,19 @@ User creates Story ("Add OAuth2 login")
     - Model selector: opus / sonnet / haiku with cost/capability indicators
     - **Tool configuration**:
       - SDK tools checklist (Read, Edit, Glob, Grep, Bash, Write, WebFetch, WebSearch)
-      - MCP tools checklist (create_tasks, transition_state, request_review, flag_blocked, post_comment, list_tasks, get_context)
+      - MCP tools checklist (create_children, transition_state, route_to_state, request_review, flag_blocked, post_comment, list_items, get_context)
     - Max budget per run (USD input)
-    - **Test run panel**: enter a sample prompt, run against mock, see simulated output — validates the persona behaves as expected
+    - **Test run panel**: enter a sample prompt, run against mock, see simulated output
   - **Built-in personas** (shipped with app): clearly marked, editable but restorable to defaults
 
-#### 2H: Settings
+#### 2F: Settings
 
 - [ ] **T2.10 — Build settings page**
-  - **Projects**: registered projects list, add/remove, edit path, set default workflow
+  - **Projects**: registered projects list, add/remove, edit path
+  - **Workflow configuration** (per project):
+    - Auto-routing toggle (ON/OFF)
+    - Persona-per-state table: state → persona → model (the only workflow config)
+    - Visual diagram of the hardcoded state machine (read-only, shows states and transitions)
   - **API Keys**: Anthropic API key input (masked), connection test button
   - **Concurrency**: max concurrent agents slider (1-10), per-persona limits
   - **Cost management**: monthly cost cap input, warning threshold, daily spend limit
@@ -387,14 +399,14 @@ User creates Story ("Add OAuth2 login")
   - **Service status**: pm2 status, uptime, restart button
   - **Data**: export/import settings, clear execution history, database size
 
-#### 2I: Global UI Components
+#### 2G: Global UI Components
 
 - [ ] **T2.11 — Build global layout and navigation**
   - **Sidebar navigation**: collapsible, icons + labels
-    - Dashboard, Story Board, Agent Monitor, Activity Feed, Workflows, Personas, Settings
+    - Dashboard, Work Items, Agent Monitor, Activity Feed, Personas, Settings
     - Project switcher at top of sidebar (dropdown)
     - Active agents count badge on Agent Monitor nav item
-    - Pending proposals count badge on Story Board nav item
+    - Pending proposals count badge on Work Items nav item
   - **Status bar** (bottom or top): current project name, active agents count, today's cost, system health indicator
   - **Command palette** (Cmd+K): quick navigation, search stories/tasks, quick actions
   - **Toast notifications**: non-blocking alerts for agent completions, proposal arrivals, errors
@@ -470,51 +482,46 @@ User creates Story ("Add OAuth2 login")
 
 ---
 
-### Phase 4: Workflow Engine & Trigger System
+### Phase 4: Workflow & Router System
 
-- [ ] **T4.1 — Implement workflow engine**
-  - Custom state machine: states array, transitions map, validate + advance (~80-120 lines)
-  - Transition execution: validate allowed → fire associated triggers
-  - Store as JSON in SQLite, deserialize on use
-  - Default workflows shipped with the app (one for stories, one for tasks)
-  - Design for xstate swap-in: `advance()` function is the only integration point
+- [ ] **T4.1 — Implement hardcoded workflow**
+  - Export workflow constant: states array, transitions map (state → valid next states[])
+  - `getValidTransitions(currentState)` function returns allowed next states
+  - `isValidTransition(from, to)` validation function
+  - No database storage — pure code constant
+  - States: Backlog, Planning, Decomposition, Ready, In Progress, In Review, Done, Blocked
 
-- [ ] **T4.2 — Implement trigger system**
-  - Trigger registry: bind persona + dispatch mode to workflow transition
-  - **Two-phase trigger dispatcher:**
-    1. State transition fires → match trigger
-    2. Check dependency graph → all upstream resolved?
-    3. If ready → dispatch per mode:
-       - `auto`: spawn immediately
-       - `propose`: stage for review
-       - `gated`: wait for user start
-       - `evaluate`: spawn router agent → router picks target state from `possibleTargets` → system transitions to chosen state → downstream triggers fire
-    4. If deps unresolved → register as "waiting" → auto-fire when deps clear
-  - Concurrency-aware: respect max agent limit before dispatching
-  - Dispatch queue: FIFO with priority when at capacity
+- [ ] **T4.2 — Implement Router agent**
+  - After any persona completes work → if auto-routing enabled → spawn Router
+  - Router receives: current state, valid transitions, work item context, persona output summary
+  - Router uses `route_to_state` MCP tool: `{workItemId, targetState, reasoning}`
+  - `targetState` validated against `getValidTransitions(currentState)`
+  - Routing reasoning auto-posted as comment (audit trail)
+  - Router uses haiku model, read-only tools + `route_to_state`, budget-capped low
+  - If auto-routing disabled: skip Router, item stays in current state
 
-- [ ] **T4.2b — Implement evaluate/router dispatch**
-  - Router agent spawns with read-only tools + `route_to_state` MCP tool
-  - `route_to_state`: `{itemId, targetState, reasoning}` — targetState must be in trigger's `possibleTargets[]`
-  - Routing reasoning auto-posted as comment on the task/story (audit trail)
-  - After routing: system transitions to chosen state, which may fire its own downstream triggers
-  - Fast execution: router personas use haiku model, read-only tools, budget-capped low
+- [ ] **T4.3 — Implement persona dispatch on state entry**
+  - When a work item enters a state → look up PersonaAssignment for that state
+  - If persona assigned → check concurrency limits → spawn agent executor
+  - If no persona assigned → no-op (manual states like Backlog, Done)
+  - Dispatch queue: FIFO with priority when at concurrency cap
 
-- [ ] **T4.3 — Implement parent-child state coordination**
-  - When all tasks in a story reach a target state, auto-advance the parent story
-  - Configurable rules: "all tasks must be Done" vs "all tasks must be in Review or later"
-  - Handle partial failure: if one task fails, story enters a "partially failed" state, user decides
+- [ ] **T4.4 — Implement parent-child state coordination**
+  - When all children of a parent reach Done → auto-advance parent to next state (configurable target, default: In Review)
+  - Reviewer checks integrated whole at parent level
+  - If any child enters Blocked → parent shows indicator (no auto-change)
+  - User can always manually override parent state
 
-- [ ] **T4.4 — Implement rejection and retry logic**
-  - Workflow defines rejection transitions (e.g., `in_review` → reject → `in_progress`)
-  - Max retry count per trigger (default 3)
+- [ ] **T4.5 — Implement rejection and retry logic**
+  - Router decides "In Progress" (rejection) from In Review → item goes back with feedback
+  - Max retry count (default 3) tracked per work item
   - Each rejection carries structured payload: `{ decision, reason, severity, retry_hint }`
-  - Rejection context appended to task's `executionContext` for next agent
-  - On max retries exhausted: escalate to user (task enters `needs_attention` state)
+  - Rejection context appended to work item's `executionContext` for next agent
+  - On max retries exhausted: item enters Blocked, user notified
 
-- [ ] **T4.5 — Implement user intervention controls**
-  - Manual state override: user can drag to any state
-  - Override prompt: "Skip triggers / Run triggers anyway / Cancel"
+- [ ] **T4.6 — Implement user intervention controls**
+  - Manual state override: user can drag/move item to any state
+  - If target state has a persona: prompt "This will trigger [Persona]. Run / Skip / Cancel"
   - **Agent cancellation**: graceful shutdown (30s cleanup window) then force-terminate
   - Partial output preserved on cancellation, not discarded
 
@@ -524,19 +531,18 @@ User creates Story ("Add OAuth2 login")
 
 - [ ] **T5.1 — Implement AgentOps MCP server (custom tools)**
   - Register custom MCP server `agentops` with tools:
-    - `create_tasks` — create subtasks under a story `{storyId, tasks: [{title, description, dependsOn[]}]}`
-    - `transition_state` — advance/reject with reason `{itemId, targetState, reason}`
-    - `route_to_state` — evaluator-only: pick target from allowed options `{itemId, targetState, reasoning}` (targetState validated against trigger's `possibleTargets[]`)
-    - `request_review` — request user attention `{itemId, message}`
-    - `flag_blocked` — mark as blocked `{itemId, reason}`
-    - `post_comment` — post to comment stream `{targetId, content, metadata?}`
-    - `list_tasks` — query tasks with verbosity control `{storyId, status?, verbosity: "summary"|"detail"}`
-    - `get_context` — retrieve project memory + task execution history `{taskId, includeMemory: boolean}`
+    - `create_children` — create child work items `{parentId, children: [{title, description, dependsOn[]}]}`
+    - `route_to_state` — Router-only: pick next state `{workItemId, targetState, reasoning}` (validated against workflow transitions)
+    - `request_review` — request user attention `{workItemId, message}`
+    - `flag_blocked` — mark as blocked `{workItemId, reason}`
+    - `post_comment` — post to comment stream `{workItemId, content, metadata?}`
+    - `list_items` — query work items with verbosity control `{parentId?, state?, verbosity: "summary"|"detail"}`
+    - `get_context` — retrieve project memory + execution history `{workItemId, includeMemory: boolean}`
   - **Per-persona tool allowlists**:
-    - Tech Lead: `create_tasks` + `transition_state` + `post_comment`
-    - Engineer: `transition_state` + `flag_blocked` + `post_comment`
-    - Reviewer: `transition_state` + `request_review` + `post_comment`
-    - **Router**: `route_to_state` + `list_tasks` + `get_context` + `post_comment` (read-only + routing)
+    - Tech Lead: `create_children` + `post_comment`
+    - Engineer: `flag_blocked` + `post_comment`
+    - Reviewer: `request_review` + `post_comment`
+    - **Router**: `route_to_state` + `list_items` + `get_context` + `post_comment` (read-only + routing)
   - All personas get `post_comment` by default
   - All responses are compact, structured JSON — context-window-aware
 
@@ -651,19 +657,24 @@ User creates Story ("Add OAuth2 login")
 | D6 | Frontend routing | React Router vs TanStack Router | **React Router** — sufficient for ~6 routes, battle-tested, lower complexity | Decided |
 | D7 | State management | TanStack Query + Zustand | **TanStack Query + Zustand** — Query for server state, Zustand for client UI state, WebSocket invalidates Query cache | Decided |
 | D8 | Monorepo tool | pnpm workspaces vs turborepo | **pnpm workspaces** — zero overhead for 3 packages, Turborepo layerable later if needed | Decided |
-| D9 | Workflow engine | xstate vs custom | **Custom engine** — ~80-120 lines, JSON schema in SQLite, xstate upgrade path via swappable `advance()` | Decided |
-| D10 | Agent-system communication | Custom tools vs text parsing vs structured output | **Custom MCP tools** — `agentops` MCP server with per-persona scoped tools, executor handles auto-transitions | Decided |
+| D9 | Workflow engine | xstate vs custom vs hardcoded | **Hardcoded workflow** — states and transitions as code constants, not user-configurable. Simplifies everything, editable workflow deferred to future version. | Decided (revised) |
+| D10 | Agent-system communication | Custom tools vs text parsing vs structured output | **Custom MCP tools** — `agentops` MCP server with per-persona scoped tools, Router handles transitions | Decided |
 | D11 | ID strategy | Auto-increment vs UUID vs nanoid | **Short nanoid hashes** — e.g., `st-x7k2m`, collision-resistant, URL-safe, merge-safe (inspired by Beads) | Decided |
 | D12 | Task dependencies | Simple blocked_by field vs DAG | **DAG** — `task_edges` table with typed relationships, enables ready-work detection (inspired by Beads) | Decided |
 | D13 | Agent context strategy | Tool discovery vs system prompt injection | **Layered injection** — persona prompt + `agentops.md` + project summary + task context + execution history | Decided |
-| D14 | Approval gates | Auto-fire vs require approval | **Three-mode enum per trigger** — `auto` / `propose` (default for decomposition) / `gated` | Decided |
-| D15 | State advancement | Agent-driven vs system-driven | **System auto-advances** by default, configurable per trigger (`auto` / `approval` / `agent`) | Decided |
-| D16 | Failure handling | Ad-hoc vs workflow-defined | **Workflow-defined** rejection transitions with bounded retries (max 3), structured rejection payloads, escalation on exhaustion | Decided |
+| D14 | Approval gates | Auto-fire vs require approval | **Superseded by D22 (Router)** — Router handles all transition decisions | Decided (revised) |
+| D15 | State advancement | Agent-driven vs system-driven | **Superseded by D22 (Router)** — Router decides all transitions when auto-routing is ON | Decided (revised) |
+| D16 | Failure handling | Ad-hoc vs workflow-defined | **Router-driven** — Router decides "In Progress" (reject) or "Done" (approve) from In Review. Bounded retries (max 3), structured rejection payloads. | Decided (revised) |
 | D17 | User intervention | Restricted vs unrestricted | **Unrestricted** manual overrides with prompt (skip/run triggers), graceful agent cancellation (30s cleanup) | Decided |
 | D18 | Agent memory | None vs execution context | **Execution context per task** — bounded history (last 3 runs), older summarized. Plus project-level memory with decay (inspired by Beads) | Decided |
 | D19 | Development approach | Backend-first vs UI-first | **UI-first with mocked data** — build and validate all screens against mock data/WebSocket before backend implementation | Decided |
 | D20 | UI component library | Custom vs shadcn/ui | **shadcn/ui** — polished, accessible, Tailwind-native, copy-paste ownership (no dependency lock-in) | Decided |
-| D21 | Adaptive routing | Static transitions vs agent-evaluated | **Evaluate mode** — 4th trigger dispatch mode where a router agent picks the next state from multiple options. Diamond decision nodes in workflow designer. | Decided |
+| D21 | Adaptive routing | Static transitions vs agent-evaluated | **Superseded by D22** — Router is now the only transition mechanism, not a special mode | Decided (revised) |
+| D22 | Data model | Separate Story + Task vs unified WorkItem | **Unified WorkItem** — single recursive entity with parentId. Stories are top-level, tasks are children, sub-tasks are grandchildren. | Decided |
+| D23 | Workflow configurability | User-configurable vs hardcoded | **Hardcoded** — states and transitions as code constants. One persona-per-state table is the only config. Editable workflows deferred. | Decided |
+| D24 | State transitions | Dispatch modes vs Router agent | **Router agent** — single mechanism for all transitions. Haiku model, picks from valid transitions. Togglable via auto-routing ON/OFF per project. | Decided |
+| D25 | Work item visualization | Kanban-only vs multi-view | **Multi-view** — List (primary), Board (optional), Tree (hierarchy). Detail panel shared across views. Replaces separate kanban + workflow designer. | Decided |
+| D26 | Workflow editing | Standalone designer vs inline | **Inline settings** — persona-per-state table in project settings. Read-only state machine diagram. No standalone workflow designer page. | Decided |
 
 ---
 
@@ -685,7 +696,7 @@ User creates Story ("Add OAuth2 login")
    → **Workflow-driven decomposition.** Tech Lead persona breaks stories into right-sized tasks. Opus context handles most individual tasks.
 
 6. ~~Who advances the state?~~
-   → **System auto-advances by default.** Configurable per trigger: `auto` (system advances on success), `approval` (held for user), `agent` (agent gets `advance_state` tool). Follows Temporal/GH Actions pattern — orchestrator owns state.
+   → **Router agent.** After any persona completes, the Router picks the next state from valid transitions. Togglable: auto-routing ON = Router decides, OFF = user manually moves items.
 
 7. ~~What happens on failure?~~
    → **Workflow-defined rejection with bounded retries.** Personas declare outcomes, workflow maps them to transitions. Max 3 retries with structured rejection payloads passed to next agent. Escalate to user on exhaustion.
@@ -694,13 +705,13 @@ User creates Story ("Add OAuth2 login")
    → **Yes, always.** Users can drag to any state. Manual overrides prompt: skip triggers / run triggers / cancel. Running agents can be cancelled gracefully (30s cleanup). Partial output preserved.
 
 9. ~~Workflow engine: build vs buy?~~
-   → **Build custom.** ~80-120 lines. JSON schema in SQLite. Swappable `advance()` function as xstate upgrade path. We don't need parallel states or history states yet.
+   → **Hardcoded.** States and transitions as a code constant. No database storage, no user configuration. Persona-per-state table is the only config. Editable workflows deferred to future version.
 
 10. ~~How should personas reference project context?~~
     → **Layered system prompt injection.** Persona identity → `agentops.md` project context → cached project summary → task-specific context → execution history. ~2500 tokens for persona + project, actual code via tools.
 
 11. ~~Should task decomposition require user approval?~~
-    → **Propose-by-default.** Three-mode trigger dispatch: `auto` / `propose` / `gated`. Decomposition uses `propose` — tasks staged for review, user approves/edits/rejects inline on story card. Progressive trust model.
+    → **Decomposition is a workflow state.** Any work item entering "Decomposition" triggers a Tech Lead who creates children. Children appear as proposals in the detail panel — user can approve/edit/reject before they enter Backlog.
 
 12. ~~How do agents communicate structured actions?~~
-    → **Custom MCP tools.** `agentops` MCP server with per-persona scoped tools (`create_tasks`, `transition_state`, `request_review`, `flag_blocked`, `post_comment`). Tool calls are structurally typed — no text parsing. Executor handles auto-transitions on completion/failure separately.
+    → **Custom MCP tools.** `agentops` MCP server with per-persona scoped tools (`create_children`, `route_to_state`, `request_review`, `flag_blocked`, `post_comment`). Tool calls are structurally typed — no text parsing. Router handles all state transitions.
