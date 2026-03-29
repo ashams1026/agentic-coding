@@ -615,3 +615,11 @@
 - Event factories like `createStateChangeEvent()` save boilerplate when constructing events
 - `simulateAgentRun()` handles the full started→chunks→completed lifecycle
 - `clearAll()` should be called on demo stop/reset to cancel pending timers
+
+---
+
+## 2026-03-28 — Review: T1.4.4 (approved)
+
+**Reviewed:** Mock WebSocket system in `packages/frontend/src/mocks/ws.ts`.
+
+**Verdict:** Approved. All requirements met: typed event emitter using `WsEventMap` with per-type + wildcard subscriptions, `subscribe()` returning unsubscribe function for React cleanup. Simulation helpers cover agent output streaming (chunks at intervals), cost ticker (periodic with rounding), and full agent lifecycle orchestration. Event factory helpers for all event types. Proper timer/interval management with `clearAll()`. Singleton `mockWs` export. Build passes clean.
