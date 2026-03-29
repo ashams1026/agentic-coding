@@ -5,6 +5,37 @@
 
 ---
 
+## 2026-03-29 — T2.7.1: Build activity feed page
+
+**Task:** Full-page chronological stream. Each event entry: timestamp, colored icon by type, persona avatar (if agent-sourced), description text, link to source entity. Types: state transition, agent started, agent completed, agent failed, comment posted, proposal created, proposal approved/rejected, manual override, cost alert.
+
+**Done:**
+- Created `features/activity-feed/activity-feed.tsx`:
+  - `ActivityFeed` — full-page chronological event stream, grouped by date (Today/Yesterday/weekday+date)
+  - `useAllActivityEvents()` — builds events from executions (started/completed/failed), comments (system=state_transition, others=comment_posted), proposals (created + approved/rejected), plus a mock cost_alert event
+  - 10 event types: state_transition, agent_started, agent_completed, agent_failed, comment_posted, proposal_created, proposal_approved, proposal_rejected, manual_override, cost_alert
+  - `eventConfig` — per-type icon (lucide), color class (light+dark), label text
+  - `EventRow` — event type icon (colored circle), persona avatar (if agent-sourced), description, timestamp, type badge, target label, clickable Link to source entity
+  - Date grouping with sticky headers (`sticky top-0 bg-background/95 backdrop-blur`)
+  - Empty state: "Nothing yet" message
+  - Max-width 3xl container, centered, scrollable
+- Updated `pages/activity-feed.tsx`: replaced placeholder with `<ActivityFeed />`
+
+**Files created:**
+- `packages/frontend/src/features/activity-feed/activity-feed.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/activity-feed.tsx`
+
+**Notes for next agent:**
+- T2.7.2 is next: activity feed filters and real-time updates (WebSocket, filter bar, animations)
+- Events are derived from existing mock data (executions, comments, proposals) — no new fixtures needed
+- The dashboard `RecentActivity` is a separate mini version (10 items) — this is the full page
+- `manual_override` type is defined in eventConfig but no mock events use it yet — will be useful when workflow transitions are manual
+- Date grouping is naive (compares date strings) — works well for mock data timeframe
+
+---
+
 ## 2026-03-29 — Review: T2.6.2 (approved)
 
 **Reviewed:** History filters and aggregate stats — enhanced `features/agent-monitor/agent-history.tsx`.
