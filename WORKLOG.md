@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.6.1 (approved)
+
+**Reviewed:** Agent history list — `features/agent-monitor/agent-history.tsx`, layout refactor with Live/History tabs.
+- All requirements met: Live/History tabs (shadcn Tabs), sortable table (Started/Duration/Cost), persona avatars, outcome badges, click-to-expand with TerminalRenderer
+- History filters to `status !== "running"` — correct separation from live view
+- Sort defaults to startedAt desc (most recent first), toggles asc/desc on repeated click
+- Expanded row renders TerminalRenderer at 300px — reuses existing component
+- Layout cleanly refactored: LiveView extracted, tabs at top level
+- Minor: `selectedId` prop in LiveViewProps unused (aliased to `_selectedId`) — cosmetic, not blocking
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.6.1: Build agent history list
 
 **Task:** Tab or toggle: "Live" / "History" on the agent monitor page. Table/list of past executions. Columns: persona avatar + name, task/story title, started time, duration, cost, outcome badge. Sortable columns. Click expands to full output (reuse terminal renderer).
