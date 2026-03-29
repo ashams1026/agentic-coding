@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.12.1 (approved)
+
+**Reviewed:** Mock WebSocket wiring to all UI — `use-ws-sync.ts`, `root-layout.tsx`, `recent-activity.tsx`.
+- Centralized `useWsQuerySync` correctly maps all 9 WS event types to their TanStack Query key prefixes — verified keys match `query-keys.ts`
+- Dashboard: active agents strip refreshes via `["executions"]` invalidation, recent activity widget has new `useLiveActivityEvents()` with LIVE badge and slide-down animation
+- Kanban: `state_change` invalidates `["stories"]` + `["tasks"]` — board re-renders with cards in correct columns
+- Story detail: `["comments"]` invalidated on `comment_created`, `["executions"]` on agent events — both CommentStream and execution timeline update
+- Agent monitor + activity feed + toasts: pre-existing WS subscriptions confirmed working
+- Minor note: `agent_started` mapped to `agent_completed` event type in dashboard widget for icon reuse — acceptable for compact view
+- Build passes, conventions followed
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T2.12.1: Wire up mock WebSocket to all UI components
 
 **Task:** Make all screens reactive to mock WS events — dashboard stats, kanban cards, story comments, agent monitor, activity feed, toast notifications.
