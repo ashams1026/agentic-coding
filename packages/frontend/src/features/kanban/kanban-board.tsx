@@ -16,6 +16,7 @@ import {
   useProposals,
   useExecutions,
   usePersonas,
+  useProjects,
   useUpdateStory,
   useTriggers,
 } from "@/hooks";
@@ -191,6 +192,7 @@ export function KanbanBoard({ filters }: KanbanBoardProps) {
   const { data: executions } = useExecutions();
   const { data: personas } = usePersonas();
   const { data: triggers } = useTriggers();
+  const { data: projects } = useProjects();
   const updateStory = useUpdateStory();
 
   const [activeStory, setActiveStory] = useState<Story | null>(null);
@@ -204,6 +206,7 @@ export function KanbanBoard({ filters }: KanbanBoardProps) {
   );
 
   const workflow = workflows ? getStoryWorkflow(workflows) : undefined;
+  const projectId = projects?.[0]?.id;
   const personaMap = useMemo(
     () => new Map(personas?.map((p) => [p.id, p])),
     [personas],
@@ -356,6 +359,8 @@ export function KanbanBoard({ filters }: KanbanBoardProps) {
                 state={state}
                 stories={grouped.get(state.name) ?? []}
                 cardDataMap={cardDataMap}
+                projectId={projectId}
+                workflowId={workflow.id}
               />
             ))}
           </div>

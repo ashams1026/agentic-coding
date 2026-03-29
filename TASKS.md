@@ -25,7 +25,7 @@
 
 - [x] **T2.2.5** — Build filter bar and sort controls. Above the kanban board. Filter by: label (multi-select), priority (multi-select), persona (multi-select), has proposals (toggle). Sort by: priority, created date, updated date. Persist filter state in URL params.
 
-- [ ] **T2.2.6** — Build inline story creation. "+" button in the Backlog column header. Clicking shows an inline form (title input + priority select + create button). Creates story in Backlog state via mock API. Smooth animation as card appears.
+- [review] **T2.2.6** — Build inline story creation. "+" button in the Backlog column header. Clicking shows an inline form (title input + priority select + create button). Creates story in Backlog state via mock API. Smooth animation as card appears.
 
 ### Story Detail
 

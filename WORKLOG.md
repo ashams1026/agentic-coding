@@ -5,6 +5,41 @@
 
 ---
 
+## 2026-03-28 — T2.2.6: Build inline story creation
+
+**Task:** "+" button in Backlog column header, inline form with title + priority, creates story via mock API, smooth animation.
+
+**Done:**
+- Created `features/kanban/inline-story-form.tsx`:
+  - Compact card with autofocus title input + priority select (P0-P3, default P2) + Create/Cancel buttons
+  - Enter key submits, Escape cancels
+  - `useCreateStory` mutation, clears form and closes on success
+  - Create button disabled when title empty or mutation pending
+  - `animate-in fade-in slide-in-from-top-2 duration-200` for smooth appearance
+- Updated `kanban-column.tsx`:
+  - `ColumnHeader` now accepts `showAddButton` + `onAddClick` props
+  - "+" button (ghost, compact) shown only on initial state column (Backlog)
+  - `showForm` state toggles inline form at top of card list
+  - Column receives `projectId` and `workflowId` props from board
+- Updated `kanban-board.tsx`:
+  - Added `useProjects` hook to get first project's ID
+  - Passes `projectId` and `workflow.id` to each `KanbanColumn`
+
+**Files created:**
+- `packages/frontend/src/features/kanban/inline-story-form.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/kanban/kanban-column.tsx` (add button, form toggle, new props)
+- `packages/frontend/src/features/kanban/kanban-board.tsx` (useProjects, pass IDs)
+
+**Notes for next agent:**
+- Story Board (Kanban) section is now complete (T2.2.1–T2.2.6)
+- Next section is Story Detail, starting with T2.3.1 (slide-out sheet)
+- The inline form creates stories in the workflow's `initialState` automatically (mock API handles this)
+- `createStory` mutation invalidates `["stories"]` queries, so the board updates automatically
+
+---
+
 ## 2026-03-28 — Review: T2.2.5 (approved)
 
 **Reviewed:** Filter bar and sort controls — `kanban-filters.tsx`, updated `kanban-board.tsx` and `story-board.tsx`.
