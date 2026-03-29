@@ -55,10 +55,10 @@ CLEANUP
   │
   ▼
 [ARCHIVE WORKLOG]
-  Entries older than 7 days in WORKLOG.md → summarize
-  Write summary to WORKLOG_ARCHIVE.md (group by sprint, key decisions)
-  Remove summarized entries from WORKLOG.md
-  Keep at most 20 recent entries
+  If WORKLOG.md has more than 20 entries → archive the oldest ones
+  Keep the 20 most recent entries in WORKLOG.md
+  Write archived entries as a summary block to WORKLOG_ARCHIVE.md (group by sprint, key decisions)
+  Remove archived entries from WORKLOG.md
   │
   ▼
 [VALIDATE SIZES]

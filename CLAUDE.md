@@ -87,10 +87,10 @@ This agent's ONLY job is maintenance. It does NOT pick up implementation tasks.
    - Keep `TASKS.md` lean — only pending, in-progress, and blocked tasks remain
 
 2. **Summarize old worklog entries**:
-   - Entries older than 7 days in `WORKLOG.md` get summarized
-   - Write a summary block to `WORKLOG_ARCHIVE.md` (group by sprint, highlight key decisions and patterns established)
-   - Remove the summarized entries from `WORKLOG.md`
-   - Keep at most 20 recent entries in `WORKLOG.md`
+   - If `WORKLOG.md` has more than 20 entries, archive the oldest ones
+   - Keep the 20 most recent entries in `WORKLOG.md`
+   - Write archived entries as a summary block to `WORKLOG_ARCHIVE.md` (group by sprint, highlight key decisions and patterns established)
+   - Remove the archived entries from `WORKLOG.md`
 
 3. **Commit the cleanup** with message: "chore: archive completed tasks and summarize worklog"
 
