@@ -13,7 +13,7 @@
 
 - [x] **T2.3.4** — Build proposals section. Only visible when story has pending proposals. Yellow/amber highlight panel at top of detail. Lists proposed tasks from Tech Lead agent. Each: title, description (editable inline), approve button (green), reject button (red). "Approve all" bulk action. Reject shows textarea for feedback. Approved tasks appear in child tasks list.
 
-- [ ] **T2.3.5** — Build comment stream component. Reusable for both stories and tasks. Chronological thread. Agent comments: persona avatar (colored circle) + name + timestamp + content. User comments: user avatar + timestamp + content. System comments: muted style, icon, "Story moved to In Review" etc. Agent comments may have metadata chips (files changed, tools used). Input box at bottom — user types and posts comment via mock API. Auto-scroll to bottom on new comments. Scroll up to read history.
+- [review] **T2.3.5** — Build comment stream component. Reusable for both stories and tasks. Chronological thread. Agent comments: persona avatar (colored circle) + name + timestamp + content. User comments: user avatar + timestamp + content. System comments: muted style, icon, "Story moved to In Review" etc. Agent comments may have metadata chips (files changed, tools used). Input box at bottom — user types and posts comment via mock API. Auto-scroll to bottom on new comments. Scroll up to read history.
 
 - [ ] **T2.3.6** — Build execution history timeline. Vertical timeline on the story detail. Each entry: persona avatar, "Tech Lead ran for 2m 34s", cost badge ("$0.42"), outcome badge (green success / red failure / amber rejected). Click to expand: shows full agent output (reuse terminal renderer from agent monitor). Collapsed by default — shows summary only.
 

@@ -6,6 +6,7 @@ import { StoryDetailHeader } from "@/features/story-detail/story-detail-header";
 import { StoryDescription } from "@/features/story-detail/story-description";
 import { ChildTasksSection } from "@/features/story-detail/child-tasks-section";
 import { ProposalsSection } from "@/features/story-detail/proposals-section";
+import { CommentStream } from "@/features/story-detail/comment-stream";
 
 export function StoryDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -42,11 +43,7 @@ export function StoryDetailPage() {
           <StoryDescription story={story} />
           <ProposalsSection story={story} />
           <ChildTasksSection story={story} />
-          <div className="rounded-lg border border-dashed p-6">
-            <p className="text-sm text-muted-foreground">
-              Comment stream — T2.3.5
-            </p>
-          </div>
+          <CommentStream targetId={story.id} targetType="story" />
           <div className="rounded-lg border border-dashed p-6">
             <p className="text-sm text-muted-foreground">
               Execution history — T2.3.6

@@ -5,6 +5,39 @@
 
 ---
 
+## 2026-03-29 — T2.3.5: Build comment stream component
+
+**Task:** Reusable comment stream for stories and tasks. Three author types (agent, user, system) with different styling. Agent comments have persona avatars and metadata chips. User input at bottom. Auto-scroll to bottom on new comments.
+
+**Done:**
+- Created `features/story-detail/comment-stream.tsx`:
+  - `CommentStream` — reusable component accepting `targetId` + `targetType` (works for both stories and tasks)
+  - Fetches comments via `useComments(targetId)`, sorted chronologically
+  - Three comment renderers:
+    - `AgentComment` — persona-colored avatar (Bot icon), name + "agent" badge + timestamp, content with `whitespace-pre-wrap`, metadata chips for filesChanged (monospace, FileCode icon, tooltip with full path) and toolsUsed (Wrench icon)
+    - `UserComment` — primary-colored avatar (User icon), name + timestamp, content
+    - `SystemComment` — muted inline style with Info icon, content + timestamp (compact row)
+  - `CommentInput` — Textarea + Send button, Cmd/Ctrl+Enter submits, creates via `useCreateComment` with `authorType: "user"`, clears on success
+  - Auto-scroll: `useEffect` scrolls `scrollRef` to bottom when `sorted.length` changes
+  - Max height 400px with overflow-y scroll for long threads
+  - `formatTime` helper: relative time (just now, Xm/Xh/Xd ago) or short date
+- Updated `pages/story-detail.tsx`:
+  - Added `CommentStream` import, replaced comment placeholder with `<CommentStream targetId={story.id} targetType="story" />`
+
+**Files created:**
+- `packages/frontend/src/features/story-detail/comment-stream.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/story-detail.tsx` (replaced placeholder, added import)
+
+**Notes for next agent:**
+- T2.3.6 is next: execution history timeline
+- `CommentStream` is reusable — task detail page (T2.4.x) can use `<CommentStream targetId={task.id} targetType="task" />`
+- Mock data: Story 1 has 5 comments (user, agent PM, agent Tech Lead, system, user), Story 2 has 3 (agent PM, agent Tech Lead, system)
+- Agent metadata chips show truncated filenames with full path in tooltip
+
+---
+
 ## 2026-03-29 — Review: T2.3.4 (approved)
 
 **Reviewed:** Proposals section — `proposals-section.tsx` and story-detail page integration.
