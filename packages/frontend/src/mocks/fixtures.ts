@@ -252,7 +252,8 @@ export const tasks: Task[] = [
     parentTaskId: null,
     inheritedContext: "Implement OAuth2 login flow with Google and GitHub providers.",
     executionContext: [
-      { executionId: EXEC_1, summary: "Implemented OAuth routes with passport.js", outcome: "success", rejectionPayload: null },
+      { executionId: EXEC_4, summary: "Initial attempt at OAuth routes — used express-session directly without passport.", outcome: "rejected", rejectionPayload: { reason: "Session handling bypasses passport.js integration. Routes lack CSRF protection.", severity: "high", hint: "Use passport.js strategies for OAuth providers. Add csurf middleware.", retryCount: 1 } },
+      { executionId: EXEC_1, summary: "Implemented OAuth routes with passport.js. Added CSRF protection via csurf middleware. Google and GitHub strategies configured.", outcome: "success", rejectionPayload: null },
     ],
     createdAt: "2026-03-24T10:00:00Z",
     updatedAt: "2026-03-25T11:30:00Z",
@@ -267,7 +268,9 @@ export const tasks: Task[] = [
     assignedPersonaId: PERSONA_ENGINEER,
     parentTaskId: null,
     inheritedContext: "Implement OAuth2 login flow with Google and GitHub providers.",
-    executionContext: [],
+    executionContext: [
+      { executionId: EXEC_5, summary: "Building login page with social sign-in buttons. Implementing Google and GitHub OAuth flows.", outcome: "success", rejectionPayload: null },
+    ],
     createdAt: "2026-03-24T10:05:00Z",
     updatedAt: "2026-03-27T14:30:00Z",
   },

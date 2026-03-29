@@ -5,6 +5,38 @@
 
 ---
 
+## 2026-03-29 — T2.4.4: Build execution context viewer
+
+**Task:** Shows what context the agent received for this task. Collapsible sections: "Previous run summaries" (from executionContext), "Rejection payloads" (if any), "Project memory injected". Useful for debugging agent behavior.
+
+**Done:**
+- Created `features/task-detail/execution-context.tsx`:
+  - `ExecutionContextViewer` — collapsible panel (closed by default) with three sections
+  - "Previous Run Summaries": lists each `ExecutionContextEntry` with run number, execution ID, outcome badge (green/red/amber), summary text, and inline rejection payload display
+  - "Rejection Payloads": filtered view showing only rejected runs with severity badge (low/medium/high), attempt count, reason, and hint
+  - "Project Memory Injected": fetches project memories via `useProjectMemories` filtered to the task's story, shows summary, key decisions (bulleted), and files changed (mono badges)
+  - `OutcomeBadge` — success (green CheckCircle2), failure (red XCircle), rejected (amber AlertCircle)
+  - `RunEntry` — individual run with embedded rejection payload display
+  - `MemoryRow` — project memory with decisions and file badges
+  - Header badge "has rejections" when any run was rejected
+  - Returns null when no execution context and no memories
+- Enriched mock data: TASK_1_1 now has 2 execution context entries (1 rejected + 1 success), TASK_1_2 has 1 success entry
+- Updated `pages/task-detail.tsx`: replaced T2.4.4 placeholder with `<ExecutionContextViewer task={task} />`
+
+**Files created:**
+- `packages/frontend/src/features/task-detail/execution-context.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/task-detail.tsx`
+- `packages/frontend/src/mocks/fixtures.ts` (enriched execution context mock data)
+
+**Notes for next agent:**
+- T2.4.5 is next: rejection history display
+- TASK_1_1 (tk-au01001) has a rich execution context with a rejection — good for testing both this viewer and T2.4.5
+- The execution context viewer and rejection history (T2.4.5) have some overlap — T2.4.5 focuses specifically on a timeline of rejection events with reviewer persona, while this shows the broader execution context
+
+---
+
 ## 2026-03-29 — Review: T2.4.3 (approved)
 
 **Reviewed:** Dependency info display — `features/task-detail/dependency-info.tsx` and task-detail page integration.

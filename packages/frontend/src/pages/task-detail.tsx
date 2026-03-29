@@ -8,6 +8,7 @@ import { CommentStream } from "@/features/story-detail/comment-stream";
 import { ExecutionTimeline } from "@/features/story-detail/execution-timeline";
 import { InheritedContext } from "@/features/task-detail/inherited-context";
 import { DependencyInfo } from "@/features/task-detail/dependency-info";
+import { ExecutionContextViewer } from "@/features/task-detail/execution-context";
 import type { TaskId } from "@agentops/shared";
 import { useMemo } from "react";
 
@@ -127,11 +128,7 @@ export function TaskDetailPage() {
           {/* Inherited context */}
           <InheritedContext task={task} story={story} />
           <DependencyInfo task={task} />
-          <div className="rounded-lg border border-dashed p-6">
-            <p className="text-sm text-muted-foreground">
-              Execution context — T2.4.4
-            </p>
-          </div>
+          <ExecutionContextViewer task={task} />
           <div className="rounded-lg border border-dashed p-6">
             <p className="text-sm text-muted-foreground">
               Rejection history — T2.4.5
