@@ -21,7 +21,7 @@
 
 - [x] **T1.4.3** — Build TanStack Query hooks in `packages/frontend/src/hooks/`. One hook per API call: `useStories()`, `useStory(id)`, `useTasks(storyId)`, `useComments(targetId)`, `usePersonas()`, `useWorkflows()`, etc. All backed by mock API for now. Include optimistic update helpers for mutations.
 
-- [ ] **T1.4.4** — Build mock WebSocket system in `packages/frontend/src/mocks/ws.ts`. Event emitter that simulates: agent output streaming (text chunks arriving over time), state transition events, new comment events, proposal creation, cost ticker. Expose `subscribe(eventType, callback)` API. Components can subscribe for real-time updates.
+- [review] **T1.4.4** — Build mock WebSocket system in `packages/frontend/src/mocks/ws.ts`. Event emitter that simulates: agent output streaming (text chunks arriving over time), state transition events, new comment events, proposal creation, cost ticker. Expose `subscribe(eventType, callback)` API. Components can subscribe for real-time updates.
 
 - [ ] **T1.4.5** — Build demo mode in `packages/frontend/src/mocks/demo.ts`. Scripted replay of a story lifecycle: story created → PM writes criteria → Tech Lead decomposes → Engineer works (with streaming output) → Reviewer reviews → QA tests → Done. Plays out over ~60 seconds, firing mock WebSocket events at each step. Toggle via UI button or query param `?demo=true`.
 

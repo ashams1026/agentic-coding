@@ -583,3 +583,35 @@
 **Reviewed:** TanStack Query hooks in `packages/frontend/src/hooks/`.
 
 **Verdict:** Approved. All requirements met: 22 query hooks + 18 mutation hooks covering every mock API function. Centralized query key factory with proper `as const` typing. Optimistic updates on `useUpdateStory` and `useUpdateTask` with cancel/snapshot/rollback pattern. All mutations invalidate relevant queries. `useUpdateProposal` also invalidates dashboard stats. Barrel export in `hooks/index.ts`. Consistent patterns, proper `import type` usage. Build passes clean.
+
+---
+
+## 2026-03-28 — T1.4.4: Build mock WebSocket system
+
+**Task:** Build mock WebSocket event emitter with subscribe API, simulating agent output streaming, state transitions, comments, proposals, and cost ticker.
+
+**Done:**
+- Created `packages/frontend/src/mocks/ws.ts` with `MockWsClient` class
+- Typed event emitter using `WsEventMap` from `@agentops/shared` — per-type subscriber sets + wildcard `"*"` for all events
+- `subscribe(eventType, handler)` — returns unsubscribe function
+- `subscribeAll(handler)` — subscribe to all event types
+- `emit(event)` — dispatches to typed + wildcard subscribers
+- `emitAfter(event, delayMs)` — scheduled delayed emit with cancel
+- Simulation helpers:
+  - `simulateAgentOutput()` — streams text chunks at configurable intervals
+  - `simulateCostTicker()` — periodic cost_update events with incrementing values
+  - `simulateAgentRun()` — full lifecycle: agent_started → output chunks → agent_completed + execution_update
+- Timer/interval management: `clearAll()` cancels all pending, `removeAllListeners()` clears subscribers
+- Event factory helpers: `createStateChangeEvent()`, `createCommentCreatedEvent()`, etc. — convenience functions that auto-add `type` and `timestamp`
+- Singleton export: `mockWs` instance for app-wide use
+- Re-exports WsEvent types for consumer convenience
+
+**Files created:**
+- `packages/frontend/src/mocks/ws.ts`
+
+**Notes for next agent:**
+- T1.4.5 is next: demo mode. Use `mockWs` to emit events in a scripted sequence.
+- Import `mockWs` from `@/mocks/ws` — it's a singleton, shared across all components
+- Event factories like `createStateChangeEvent()` save boilerplate when constructing events
+- `simulateAgentRun()` handles the full started→chunks→completed lifecycle
+- `clearAll()` should be called on demo stop/reset to cancel pending timers
