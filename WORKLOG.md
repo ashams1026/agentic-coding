@@ -5,6 +5,36 @@
 
 ---
 
+## 2026-03-29 — T2.4.5: Build rejection history display
+
+**Task:** Only visible if task has been rejected. Timeline of rejection events: reviewer persona avatar, rejection reason, severity badge, retry hint, retry count ("Attempt 2 of 3"). Current attempt highlighted.
+
+**Done:**
+- Created `features/task-detail/rejection-history.tsx`:
+  - `RejectionHistory` — fetches executions via `useExecutions(task.id)`, filters to `outcome === "rejected"` with `rejectionPayload !== null`
+  - Vertical timeline with persona avatars + connector lines (same pattern as ExecutionTimeline)
+  - `RejectionEvent` — reviewer persona avatar (colored circle with Bot icon), persona name, severity badge (low=yellow, medium=amber, high=red), attempt count badge ("Attempt N of 3"), date
+  - Current attempt (most recent rejection) highlighted with ring on avatar, amber background, and "current" badge
+  - Rejection reason text + retry hint with ShieldAlert icon
+  - Collapsible (open by default) with amber warning style header showing rejection count
+  - Returns null when no rejections — component only visible for rejected tasks
+- Added rejected execution mock data: EXEC_7 — Reviewer rejected TASK_1_1 with high severity (session handling + CSRF issue)
+- Updated `pages/task-detail.tsx`: replaced T2.4.5 placeholder with `<RejectionHistory task={task} />`
+
+**Files created:**
+- `packages/frontend/src/features/task-detail/rejection-history.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/task-detail.tsx`
+- `packages/frontend/src/mocks/fixtures.ts` (added EXEC_7 rejected execution)
+
+**Notes for next agent:**
+- Task Detail section (T2.4.x) is now complete! All placeholders replaced.
+- T2.5.1 is next: Agent Monitor page layout (split-pane with sidebar)
+- TASK_1_1 (tk-au01001) exercises both execution context and rejection history — it has a rejection by Reviewer + successful re-run by Engineer
+
+---
+
 ## 2026-03-29 — Review: T2.4.4 (approved)
 
 **Reviewed:** Execution context viewer — `features/task-detail/execution-context.tsx` and task-detail page integration.

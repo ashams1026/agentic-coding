@@ -51,6 +51,7 @@ const EXEC_3 = "ex-exec003" as ExecutionId;
 const EXEC_4 = "ex-exec004" as ExecutionId;
 const EXEC_5 = "ex-exec005" as ExecutionId;
 const EXEC_6 = "ex-exec006" as ExecutionId;
+const EXEC_7 = "ex-exec007" as ExecutionId;
 
 // ── Workflows ──────────────────────────────────────────────────────
 
@@ -455,6 +456,21 @@ export const triggers: Trigger[] = [
 // ── Executions ─────────────────────────────────────────────────────
 
 export const executions: Execution[] = [
+  {
+    id: EXEC_7,
+    targetId: TASK_1_1,
+    targetType: "task",
+    personaId: PERSONA_REVIEWER,
+    status: "completed",
+    startedAt: "2026-03-25T08:00:00Z",
+    completedAt: "2026-03-25T08:03:15Z",
+    costUsd: 0.22,
+    durationMs: 195000,
+    summary: "Reviewed initial OAuth implementation. Found session handling bypasses passport.js and routes lack CSRF protection.",
+    outcome: "rejected",
+    rejectionPayload: { reason: "Session handling bypasses passport.js integration. Routes lack CSRF protection.", severity: "high", hint: "Use passport.js strategies for OAuth providers. Add csurf middleware.", retryCount: 1 },
+    logs: "Reading auth routes...\nChecking session handling...\nFound: express-session used directly without passport serialize/deserialize.\nChecking CSRF protection...\nNo csurf middleware found.\nRejecting with high severity.",
+  },
   {
     id: EXEC_1,
     targetId: TASK_1_1,

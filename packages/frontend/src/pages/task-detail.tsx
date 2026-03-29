@@ -9,6 +9,7 @@ import { ExecutionTimeline } from "@/features/story-detail/execution-timeline";
 import { InheritedContext } from "@/features/task-detail/inherited-context";
 import { DependencyInfo } from "@/features/task-detail/dependency-info";
 import { ExecutionContextViewer } from "@/features/task-detail/execution-context";
+import { RejectionHistory } from "@/features/task-detail/rejection-history";
 import type { TaskId } from "@agentops/shared";
 import { useMemo } from "react";
 
@@ -129,11 +130,7 @@ export function TaskDetailPage() {
           <InheritedContext task={task} story={story} />
           <DependencyInfo task={task} />
           <ExecutionContextViewer task={task} />
-          <div className="rounded-lg border border-dashed p-6">
-            <p className="text-sm text-muted-foreground">
-              Rejection history — T2.4.5
-            </p>
-          </div>
+          <RejectionHistory task={task} />
 
           {/* Reused components */}
           <CommentStream targetId={task.id} targetType="task" />
