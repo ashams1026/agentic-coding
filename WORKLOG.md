@@ -5,6 +5,35 @@
 
 ---
 
+## 2026-03-29 — T2.8.5: Build trigger configuration panel
+
+**Task:** When a transition is selected, show trigger options in properties panel: assign persona (dropdown of all personas with avatars), dispatch mode (auto/propose/gated radio), max retries (number input), advancement mode (auto/approval/agent). Shows "No trigger" option to leave transition manual-only.
+
+**Done:**
+- Rewrote `features/workflow-designer/transition-properties-panel.tsx`:
+  - Added `workflowId` prop to look up existing triggers via `useTriggers(workflowId)`
+  - "No trigger" state: toggle button to add/remove trigger, manual-only message when off
+  - Persona dropdown: `usePersonas()` hook, colored avatar dot + model badge per persona, selected persona preview card with avatar + description
+  - `OptionGroup<T>` — generic segmented button component for radio-like selection
+  - Dispatch mode: Auto/Propose/Gated with descriptive text per option
+  - Max retries: number input (0-10)
+  - Advancement mode: Auto/Approval/Agent with descriptive text per option
+  - Initializes from existing trigger data if found (matches by fromState + toState)
+- Updated `workflow-designer-layout.tsx`: passes `workflowId={effectiveId!}` to transition panel
+
+**Files modified:**
+- `packages/frontend/src/features/workflow-designer/transition-properties-panel.tsx`
+- `packages/frontend/src/features/workflow-designer/workflow-designer-layout.tsx`
+
+**Notes for next agent:**
+- T2.8.6 is next: validation warnings (orphan states, unreachable finals, missing initial)
+- Trigger config is currently read-only from mock data + local state — no mutation to save trigger changes (mock API doesn't have createTrigger/updateTrigger yet, but the UI is complete)
+- The `OptionGroup` component could be reused elsewhere (generic segmented radio)
+- DispatchMode includes "evaluate" in the shared type but task only specified auto/propose/gated — "evaluate" omitted from UI options
+- Trigger lookup: `triggers.find(t => t.fromState === from && t.toState === to)` — matches existing mock data
+
+---
+
 ## 2026-03-29 — Review: T2.8.4 (approved)
 
 **Reviewed:** Transition creation and editing — `transition-properties-panel.tsx`, canvas and layout modifications.

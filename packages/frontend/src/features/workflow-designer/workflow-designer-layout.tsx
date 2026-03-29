@@ -239,6 +239,7 @@ export function WorkflowDesignerLayout() {
           <TransitionPropertiesPanel
             key={selectedTransitionKey}
             transition={resolvedTransition}
+            workflowId={effectiveId!}
             onUpdate={handleUpdateTransition}
             onDelete={handleDeleteTransition}
             onClose={() => setSelectedTransitionKey(null)}
