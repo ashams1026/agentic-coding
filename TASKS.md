@@ -33,7 +33,7 @@
 
 - [x] **T2.4.4** — Build execution context viewer. Shows what context the agent received for this task. Collapsible sections: "Previous run summaries" (from executionContext), "Rejection payloads" (if any), "Project memory injected". Useful for debugging why an agent behaved a certain way.
 
-- [review] **T2.4.5** — Build rejection history display. Only visible if task has been rejected. Timeline of rejection events: reviewer persona avatar, rejection reason, severity badge, retry hint, retry count ("Attempt 2 of 3"). Current attempt highlighted.
+- [x] **T2.4.5** — Build rejection history display. Only visible if task has been rejected. Timeline of rejection events: reviewer persona avatar, rejection reason, severity badge, retry hint, retry count ("Attempt 2 of 3"). Current attempt highlighted.
 
 ### Agent Monitor — Live View
 

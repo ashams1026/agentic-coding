@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.4.5 (approved)
+
+**Reviewed:** Rejection history display — `features/task-detail/rejection-history.tsx` and task-detail page integration.
+- Timeline of rejection events with vertical connector lines between persona avatars
+- Reviewer persona avatar (Bot + color), severity badge (yellow/amber/red), "Attempt N of 3" badge, date
+- Current attempt highlighted with ring, colored background, and "current" badge
+- Rejection reason + retry hint (ShieldAlert), returns null when no rejections
+- Mock data: EXEC_7 (Reviewer rejected TASK_1_1 with high severity) exercises the component
+- All T2.4.x task detail placeholders now replaced — task detail section complete
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.4.5: Build rejection history display
 
 **Task:** Only visible if task has been rejected. Timeline of rejection events: reviewer persona avatar, rejection reason, severity badge, retry hint, retry count ("Attempt 2 of 3"). Current attempt highlighted.
