@@ -273,3 +273,11 @@
 - Theme state is available via `useUIStore().theme` — T1.2.7 will wire it to actual dark mode
 - QueryClient is in `src/lib/query-client.ts` — hooks in T1.4.3 will use it
 - Zustand store auto-persists to localStorage (agentops-ui key)
+
+---
+
+## 2026-03-28 — Review: T1.2.5 (approved)
+
+**Reviewed:** TanStack Query + Zustand installation and configuration.
+
+**Verdict:** Approved. QueryClient configured with sensible defaults. Zustand store properly uses `persist` middleware with `partialize` to exclude actions from serialization. App correctly wrapped in QueryClientProvider. Clean TypeScript, good file organization. Build passes.
