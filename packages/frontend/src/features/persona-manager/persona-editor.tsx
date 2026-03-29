@@ -35,6 +35,7 @@ import { usePersona, useUpdatePersona } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { SystemPromptEditor } from "./system-prompt-editor";
 import { ToolConfiguration } from "./tool-configuration";
+import { TestRunPanel } from "./test-run-panel";
 import type { PersonaId, PersonaModel } from "@agentops/shared";
 
 // ── Icon options for avatar picker ──────────────────────────────
@@ -376,6 +377,11 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
               </div>
             </div>
           </section>
+
+          <Separator />
+
+          {/* ── Test Run ─────────────────────────────────────── */}
+          <TestRunPanel personaName={name || "Untitled"} model={model} />
         </div>
       </SheetContent>
     </Sheet>

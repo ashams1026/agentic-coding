@@ -5,6 +5,36 @@
 
 ---
 
+## 2026-03-29 — T2.9.5: Build test run panel
+
+**Task:** Collapsible section at bottom of persona editor. Text input for a sample prompt. "Test" button runs against mock. Shows output in mini terminal renderer.
+
+**Done:**
+- Created `features/persona-manager/test-run-panel.tsx`:
+  - `TestRunPanel` — collapsible section using shadcn Collapsible (Terminal icon + "Test Run" label + chevron)
+  - Prompt input with Enter-to-submit, Test/Stop buttons
+  - `generateMockOutput()` — produces 17 typed output lines (thinking, tool calls, results, text) using persona name + model
+  - Lines stream one-at-a-time with 150-350ms random delay for realistic effect
+  - Mini terminal: monospace font, 100-200px height, auto-scroll, color-coded lines (blue=tool, emerald=result, muted=thinking)
+  - Blinking cursor while running, Stop button to interrupt
+  - Empty state: "Run a test to see output here"
+  - Cost shown in final line varies by model (opus=$0.42, sonnet=$0.18, haiku=$0.03)
+- Updated `persona-editor.tsx`: added TestRunPanel after Budget section with Separator
+
+**Files created:**
+- `packages/frontend/src/features/persona-manager/test-run-panel.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/persona-manager/persona-editor.tsx`
+
+**Notes for next agent:**
+- Persona Manager section (T2.9.1-T2.9.5) is now complete!
+- T2.10.1 is next: Settings page layout
+- The persona editor now has 4 standalone sub-components: SystemPromptEditor, ToolConfiguration, TestRunPanel, plus inline Identity/Model/Budget sections
+- Feature directory `features/persona-manager/` has 5 files: persona-list, persona-editor, system-prompt-editor, tool-configuration, test-run-panel
+
+---
+
 ## 2026-03-29 — Review: T2.9.4 (approved)
 
 **Reviewed:** Tool configuration section — `tool-configuration.tsx` + persona-editor refactor.
