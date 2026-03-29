@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T2.8.1 (approved)
+
+**Reviewed:** Workflow list sidebar — `features/workflow-designer/workflow-list-sidebar.tsx`, `workflow-designer-layout.tsx`, `pages/workflow-designer.tsx`.
+- All requirements met: name, type badge (story=violet, task=blue), state count, default badge
+- "Create new" creates minimal 2-state workflow and auto-selects
+- Duplicate clones with "(copy)" suffix, Delete with AlertDialog + default workflow warning
+- Proper a11y: role=button, tabIndex, onKeyDown
+- Action stopPropagation prevents row selection on button clicks
+- Loading, empty, and no-selection states handled
+- Layout provides clean sidebar + canvas split for T2.8.2
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.8.1: Build workflow list sidebar
 
 **Task:** Left sidebar showing all workflows. Each entry: name, type badge (story/task), state count. "Create new" button. "Duplicate" and "Delete" actions. Click selects workflow for editing in main canvas.

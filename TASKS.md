@@ -9,7 +9,7 @@
 
 ### Workflow Designer
 
-- [review] **T2.8.1** — Build workflow list sidebar. Left sidebar showing all workflows. Each entry: name, type badge (story/task), state count. "Create new" button. "Duplicate" and "Delete" actions. Click selects workflow for editing in main canvas.
+- [x] **T2.8.1** — Build workflow list sidebar. Left sidebar showing all workflows. Each entry: name, type badge (story/task), state count. "Create new" button. "Duplicate" and "Delete" actions. Click selects workflow for editing in main canvas.
 
 - [ ] **T2.8.2** — Build state machine canvas. Main area: states rendered as rounded rectangles positioned on a canvas. Each state: name, color, entry/exit indicators. Transitions as directed arrows between states, labeled with transition name. Use a layout algorithm for initial positioning (dagre or similar). States are draggable to rearrange.
 
