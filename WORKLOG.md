@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T3.1.1 (approved)
+
+**Reviewed:** Backend scaffolding — `server.ts`, `index.ts`, `package.json`, root `package.json`.
+- All required deps installed: fastify 5.8.4, @fastify/cors, @fastify/websocket, better-sqlite3, drizzle-orm, drizzle-kit, tsx
+- `buildServer()` factory pattern correct — returns configured Fastify instance, extensible for route plugins
+- CORS allows both vite dev (5173) and preview (4173) origins
+- Health check returns `{ status: "ok", timestamp }` — clean
+- `index.ts` properly uses `process.env["PORT"]` (bracket for noUncheckedIndexedAccess), defaults to 3001
+- `.js` extensions on relative imports — correct for ESM with verbatimModuleSyntax
+- Root `pnpm.onlyBuiltDependencies` correctly allows `better-sqlite3` and `esbuild` native builds
+- Build passes across all 3 packages
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T3.1.1: Install backend dependencies and scaffold Fastify server
 
 **Task:** Install all backend deps, create Fastify server with CORS and health check, verify it starts.
