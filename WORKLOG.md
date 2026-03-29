@@ -738,3 +738,11 @@
 - `features/dashboard/` is now established as the pattern for dashboard sub-components
 - The elapsed time updates every second — `formatElapsed()` helper handles s/m/h formatting
 - Remaining placeholder cards on dashboard: Recent Activity (T2.1.3), Upcoming Work (T2.1.4), Cost Summary (T2.1.5)
+
+---
+
+## 2026-03-28 — Review: T2.1.2 (approved)
+
+**Reviewed:** Active agents strip in `packages/frontend/src/features/dashboard/active-agents-strip.tsx`.
+
+**Verdict:** Approved. Horizontal scrollable row of agent cards via shadcn ScrollArea. Each card: persona-colored avatar with Bot icon, pulsing green dot (animate-ping), truncated summary, live elapsed time (1s interval with cleanup). Empty state when no running executions. Data from useExecutions() + usePersonas() hooks. Properly integrated into dashboard replacing placeholder. First use of features/dashboard/ convention. Build passes clean.
