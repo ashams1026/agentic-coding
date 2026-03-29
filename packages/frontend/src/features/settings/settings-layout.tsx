@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { ProjectsSection } from "./projects-section";
 import { ApiKeysSection } from "./api-keys-section";
 import { CostsSection } from "./costs-section";
+import { AppearanceSection, ServiceSection, DataSection } from "./appearance-section";
 
 // ── Section definitions ─────────────────────────────────────────
 
@@ -99,6 +100,12 @@ export function SettingsLayout() {
             <ApiKeysSection />
           ) : activeSection === "costs" ? (
             <CostsSection />
+          ) : activeSection === "appearance" ? (
+            <AppearanceSection />
+          ) : activeSection === "service" ? (
+            <ServiceSection />
+          ) : activeSection === "data" ? (
+            <DataSection />
           ) : (
             <SectionPlaceholder section={currentSection} />
           )}

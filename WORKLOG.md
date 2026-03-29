@@ -5,6 +5,35 @@
 
 ---
 
+## 2026-03-29 — T2.10.5: Build appearance and service section
+
+**Task:** Theme toggle (light/dark/system), density (comfortable/compact), service status (mock pm2), restart button, database info, export/clear buttons.
+
+**Done:**
+- Created `features/settings/appearance-section.tsx` with 3 exported sections:
+  - `AppearanceSection` — theme toggle (Light/Dark/System card buttons using `useUIStore`), density toggle (comfortable/compact with mini preview bars)
+  - `ServiceSection` — mock pm2 status grid (status with pulsing dot, uptime, memory, restarts), PID/Node info, "Restart Service" button with 2s mock delay and spinning icon
+  - `DataSection` — database info card (name, size "24.3 MB", rows "1,847", SQLite badge), "Export settings" and "Clear execution history" buttons with mock actions and success feedback
+- Updated `features/settings/settings-layout.tsx`:
+  - Imported all 3 sections, renders for `appearance`, `service`, and `data` nav items
+  - All 7 settings sections now have real components — no more placeholders!
+
+**Files created:**
+- `packages/frontend/src/features/settings/appearance-section.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/settings/settings-layout.tsx` (import + conditional render)
+
+**Notes for next agent:**
+- Settings page is now COMPLETE (T2.10.1-T2.10.5) — all 7 nav sections render real content
+- Theme toggle uses existing `useUIStore` with persist — changes apply immediately
+- Density is local state only (no store) — mock UI, can be wired later
+- Service restart and data actions are mock (setTimeout delays + success feedback)
+- 3 exports from one file: `AppearanceSection`, `ServiceSection`, `DataSection`
+- Next: Global Components (T2.11.x)
+
+---
+
 ## 2026-03-29 — Review: T2.10.4 (approved)
 
 **Reviewed:** Cost management settings section — `costs-section.tsx` + settings-layout integration.
