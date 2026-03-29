@@ -453,3 +453,11 @@
 - WsEvent is a discriminated union — use `event.type` to narrow: `if (event.type === "agent_output_chunk") { event.chunk }`
 - WsEventMap enables typed subscriptions: `subscribe<K extends WsEventType>(type: K, handler: (e: WsEventMap[K]) => void)`
 - All Shared Types tasks (T1.3.x) are now complete
+
+---
+
+## 2026-03-28 — Review: T1.3.2 (approved)
+
+**Reviewed:** API contract types and WebSocket event types.
+
+**Verdict:** Approved. Comprehensive CRUD request/response types for all endpoints. WsEvent discriminated union with 9 event types enables type-safe handling. WsEventMap provides typed subscription API. Aggregate stat types (DashboardStats, CostSummary, ExecutionStats) cover UI needs. All types properly reference entities via `import type`. Build passes.
