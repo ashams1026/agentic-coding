@@ -5,37 +5,7 @@
 
 ---
 
-## Sprint 3: Task Detail & Agent Monitor (Phase 2D-2E)
-
-### Agent Monitor — Live View
-
-- [x] **T2.5.1** — Build agent monitor page layout. Split-pane: left sidebar (~250px) lists active agents, main area shows selected agent output. If no agents active, show empty state with "No agents running" and link to story board.
-
-- [x] **T2.5.2** — Build active agent sidebar list. Each entry: persona avatar, persona name, task name (truncated), elapsed time (live counter), cost ticker (live), status dot (pulsing green = running). Click selects agent and shows output in main pane. Sort by start time. Badge count in sidebar nav updates.
-
-- [x] **T2.5.3** — Build terminal-style output renderer. Monospace font display area. Renders agent output as it streams (via mock WebSocket). Text blocks: normal style. Code blocks: syntax highlighted (use a lightweight highlighter). Thinking/reasoning: italic, muted color. Auto-scrolls to bottom. "Scroll lock" toggle: when user scrolls up, pause auto-scroll, show "New output below ↓" indicator.
-
-- [x] **T2.5.4** — Build tool call display sections. When agent makes tool calls, show as collapsible sections in the output stream. Header: tool icon + tool name + status (running spinner / success check / error x). Collapsed: one-line summary. Expanded: tool input (formatted JSON or code) + tool output (formatted). File edits show mini diff view.
-
-- [x] **T2.5.5** — Build multi-agent side-by-side view. Toggle button: "Split view". Shows 2-3 agent output panes side-by-side. Each pane has its own agent selector dropdown. Useful when multiple agents work in parallel. Falls back to single pane on narrow screens.
-
-- [x] **T2.5.6** — Build agent control bar. Below agent info header. Buttons: "Stop" (graceful cancel — confirmation dialog), "Force Stop" (warning dialog), link to task detail, link to story. Show persona name, model badge (opus/sonnet/haiku), elapsed time, running cost.
-
-### Agent Monitor — History View
-
-- [x] **T2.6.1** — Build agent history list. Tab or toggle: "Live" / "History" on the agent monitor page. Table/list of past executions. Columns: persona avatar + name, task/story title, started time, duration, cost, outcome badge. Sortable columns. Click expands to full output (reuse terminal renderer).
-
-- [x] **T2.6.2** — Build history filters and aggregate stats. Filter by: persona, outcome (success/failure/rejected), date range, cost range. Stats bar above list: total runs, total cost, success rate %, average duration. Updates reactively as filters change.
-
----
-
 ## Sprint 4: Activity Feed, Workflow Designer, Persona Manager, Settings (Phase 2F-2I)
-
-### Activity Feed
-
-- [x] **T2.7.1** — Build activity feed page. Full-page chronological stream. Each event entry: timestamp, colored icon by type, persona avatar (if agent-sourced), description text, link to source entity. Types: state transition, agent started, agent completed, agent failed, comment posted, proposal created, proposal approved/rejected, manual override, cost alert.
-
-- [x] **T2.7.2** — Build activity feed filters and real-time updates. Filter bar: by event type (checkboxes), by persona, by story, by date range. New events animate in at top (slide-down animation, via mock WebSocket). "New events" indicator if user has scrolled down. Unread count badge on Activity Feed nav item.
 
 ### Workflow Designer
 

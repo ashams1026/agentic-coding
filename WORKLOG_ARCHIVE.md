@@ -113,3 +113,54 @@
 - Story detail features in `features/story-detail/` directory
 - Inline edit pattern: view mode → click "Edit" → Write/Preview tabs → Save/Cancel
 - `priorityConfig` maps P0-P3 to colors (duplicated from story-card.tsx — extract if reused again)
+
+---
+
+## Sprint 2: Story Detail continued (T2.3.3–T2.3.7) — 2026-03-28 to 2026-03-29
+
+**Summary:** Completed Story Detail with child tasks section (task rows + mini SVG dep graph + inline add form), proposals section (amber-themed approve/reject/bulk), comment stream (reusable for stories+tasks, 3 author types, Cmd+Enter), execution timeline (vertical timeline with persona avatars, expandable logs, cost/outcome badges), and story metadata sidebar (collapsible with dates, workflow, trigger status, rejection count). Added shadcn Checkbox and Collapsible components.
+
+**Key decisions:**
+- `CommentStream` and `ExecutionTimeline` designed as reusable components via `targetId` prop — shared between story detail and task detail
+- Mini dep graph uses SVG with topological sort layout
+- Collapsible pattern: shadcn Collapsible with ChevronDown rotation, used across many components
+
+**Patterns established:**
+- Reusable components: `CommentStream`, `ExecutionTimeline` (used in both story + task detail)
+- Collapsible sections: open/closed by default varies by importance
+- Persona avatar pattern: `persona.avatar.color + "20"` for transparent bg, Bot icon with inline color
+
+---
+
+## Sprint 3: Task Detail (T2.4.1–T2.4.5) — 2026-03-29
+
+**Summary:** Built Task Detail with full-page view (header with title/state/persona/story link), inherited context (collapsible panel with parent story context), dependency info ("Depends on"/"Blocks" lists with state-colored badges), execution context viewer (3 collapsible sections: previous runs, rejection payloads, project memory), and rejection history (vertical timeline with severity badges, attempt counters, current attempt highlighted). Added mock data: EXEC_7 rejected execution for TASK_1_1.
+
+**Key decisions:**
+- Task detail reuses `CommentStream` and `ExecutionTimeline` from story-detail
+- Execution context shows what the agent received — useful for debugging agent behavior
+- Rejection history only renders when rejections exist (returns null otherwise)
+
+**Patterns established:**
+- Task detail features in `features/task-detail/` directory
+- Severity badge pattern: low=yellow, medium=amber, high=red
+- "Current attempt" highlighting with ring + colored bg + badge
+
+---
+
+## Sprint 3: Agent Monitor (T2.5.1–T2.6.2) — 2026-03-29
+
+**Summary:** Built Agent Monitor with split-pane layout (sidebar + terminal), active agent sidebar list (persona avatar, live elapsed time, cost ticker, pulsing status dot), terminal-style output renderer (typed chunks: text/code/thinking, auto-scroll + scroll lock), tool call display (collapsible sections with tool icons, status indicators, formatted JSON I/O, mini diff view), multi-agent split view (CSS grid 2-3 panes, independent selectors, responsive fallback), agent control bar (stop/force stop with dialogs, model badges, live counters), agent history list (sortable table, expandable rows with terminal renderer), and history filters with aggregate stats (persona/outcome/cost filters, stats bar). Enhanced mock WS to support typed chunks. Added second running execution (EXEC_8) for split view testing.
+
+**Key decisions:**
+- `processChunks()` pairs tool_call + tool_result by `toolCallId` into `DisplayItem` union type
+- Mock WS `simulateAgentOutput` accepts typed chunks: plain strings → "text", objects with `chunkType`
+- Agent monitor uses Live/History tabs (shadcn Tabs)
+- History omitted date range filter (needs datepicker component) — acceptable scope reduction
+
+**Patterns established:**
+- Agent monitor features in `features/agent-monitor/` directory
+- Tool icon mapping: Read→FileText, Edit→PenLine, Write→FilePlus2, Grep→Search, Glob→FolderSearch, Bash→TerminalSquare, WebFetch/WebSearch→Globe
+- Model badge pattern: `modelConfig` maps opus→purple, sonnet→blue, haiku→emerald
+- Live counter: `useState` + `useEffect` with `setInterval(1000)` and `tabular-nums` CSS
+- StatusIndicator: Loader2 spinning blue (running), Check emerald (success), X red (error)

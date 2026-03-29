@@ -109,3 +109,33 @@
 - [x] **T2.4.4** — Build execution context viewer. Collapsible sections for previous run summaries, rejection payloads, and project memory injected. *(completed 2026-03-29)*
 
 - [x] **T2.4.5** — Build rejection history display. Vertical timeline of rejection events with reviewer persona avatar, severity badge, retry hint, attempt count. Current attempt highlighted. *(completed 2026-03-29)*
+
+### Agent Monitor — Live View
+
+- [x] **T2.5.1** — Build agent monitor page layout. Split-pane: left sidebar (~250px) lists active agents, main area shows selected agent output. Empty state with "No agents running" and link to story board. *(completed 2026-03-29)*
+
+- [x] **T2.5.2** — Build active agent sidebar list. Each entry: persona avatar, persona name, task name (truncated), elapsed time (live counter), cost ticker (live), status dot (pulsing green = running). Click selects agent. Sort by start time. Badge count in sidebar nav. *(completed 2026-03-29)*
+
+- [x] **T2.5.3** — Build terminal-style output renderer. Monospace font, typed chunk rendering (text/code/thinking), auto-scroll with scroll lock toggle, "New output below" indicator. *(completed 2026-03-29)*
+
+- [x] **T2.5.4** — Build tool call display sections. Collapsible sections in output stream. Tool icon + name + status (spinner/check/x). Expanded: formatted JSON input + output. File edits show mini diff view. *(completed 2026-03-29)*
+
+- [x] **T2.5.5** — Build multi-agent side-by-side view. Toggle button for split view. 2-3 agent output panes side-by-side with independent selectors. Falls back to single pane on narrow screens. *(completed 2026-03-29)*
+
+- [x] **T2.5.6** — Build agent control bar. Stop/Force Stop buttons with confirmation dialogs. Persona name, model badge, elapsed time, running cost. Links to task detail and story. *(completed 2026-03-29)*
+
+### Agent Monitor — History View
+
+- [x] **T2.6.1** — Build agent history list. Live/History tabs. Table of past executions with sortable columns (persona, title, started, duration, cost, outcome). Click expands to full output via terminal renderer. *(completed 2026-03-29)*
+
+- [x] **T2.6.2** — Build history filters and aggregate stats. Filter by persona, outcome, cost range. Stats bar: total runs, total cost, success rate %, average duration. Updates reactively. *(completed 2026-03-29)*
+
+---
+
+## Sprint 4: Activity Feed, Workflow Designer, Persona Manager, Settings (Phase 2F-2I) — started 2026-03-29
+
+### Activity Feed
+
+- [x] **T2.7.1** — Build activity feed page. Full-page chronological stream with 10 event types, date grouping, persona avatars, entity links. *(completed 2026-03-29)*
+
+- [x] **T2.7.2** — Build activity feed filters and real-time updates. Filter bar (event type checkboxes, persona, story, date range), WS subscription for live events with slide-down animation, "new events" indicator, unread nav badge. *(completed 2026-03-29)*
