@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.3.6 (approved)
+
+**Reviewed:** Execution history timeline — `execution-timeline.tsx` and story-detail page integration.
+- All requirements met: vertical timeline with persona avatars + connectors, "[Name] ran for Xm Ys" summary, cost badge ($X.XX), outcome badges (success/failure/rejected/running with appropriate colors), click-to-expand with logs in monospace pre
+- Collapsed by default, ChevronRight/Down toggle, summary line-clamped to 1 line
+- Sorted most-recent-first (sensible for history), returns null when empty
+- Reusable for tasks via `targetId: StoryId | TaskId`
+- Uses `<pre>` for logs — correct interim approach since agent monitor terminal renderer (T2.5.3) hasn't been built yet
+- Story detail page now has no remaining placeholder sections
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.3.6: Build execution history timeline
 
 **Task:** Vertical timeline on story detail. Each entry: persona avatar, "[Name] ran for Xm Ys", cost badge, outcome badge (success/failure/rejected). Click to expand shows logs. Collapsed by default.

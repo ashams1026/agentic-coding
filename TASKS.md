@@ -15,7 +15,7 @@
 
 - [x] **T2.3.5** — Build comment stream component. Reusable for both stories and tasks. Chronological thread. Agent comments: persona avatar (colored circle) + name + timestamp + content. User comments: user avatar + timestamp + content. System comments: muted style, icon, "Story moved to In Review" etc. Agent comments may have metadata chips (files changed, tools used). Input box at bottom — user types and posts comment via mock API. Auto-scroll to bottom on new comments. Scroll up to read history.
 
-- [review] **T2.3.6** — Build execution history timeline. Vertical timeline on the story detail. Each entry: persona avatar, "Tech Lead ran for 2m 34s", cost badge ("$0.42"), outcome badge (green success / red failure / amber rejected). Click to expand: shows full agent output (reuse terminal renderer from agent monitor). Collapsed by default — shows summary only.
+- [x] **T2.3.6** — Build execution history timeline. Vertical timeline on the story detail. Each entry: persona avatar, "Tech Lead ran for 2m 34s", cost badge ("$0.42"), outcome badge (green success / red failure / amber rejected). Click to expand: shows full agent output (reuse terminal renderer from agent monitor). Collapsed by default — shows summary only.
 
 - [ ] **T2.3.7** — Build story metadata sidebar. Right column or collapsible section. Shows: created date, updated date, project name, workflow name, current trigger status ("Waiting for Engineer"), retry count (if in rejection loop). Read-only context info.
 
