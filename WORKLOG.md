@@ -408,3 +408,11 @@
 - `createId.story()` generates IDs like `st-a8f3k2m`
 - `verbatimModuleSyntax` is on — use `import type` for type-only imports
 - Story/Task states are `string` (dynamic, defined by workflow) — not fixed enums
+
+---
+
+## 2026-03-28 — Review: T1.3.1 (approved)
+
+**Reviewed:** Shared entity types, ID utilities, and type exports.
+
+**Verdict:** Approved. All 11 entity interfaces match PLANNING.md T1.4 spec precisely. Branded template literal ID types provide type safety. createId factory is clean with consistent 7-char nanoid. Proper use of `import type` for verbatimModuleSyntax. Full project build passes.
