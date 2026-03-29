@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-29 — T2.10.3: Build API keys and concurrency section
+
+**Task:** Build API keys section with masked input and test connection, concurrency slider, and per-persona limits table.
+
+**Done:**
+- Created `features/settings/api-keys-section.tsx`:
+  - `ApiKeySection` — masked API key input with eye toggle (reveal/hide), "Test connection" button with loading spinner + mock 1.2s delay, success/error result message, pre-filled with mock key
+  - `ConcurrencySection` — range slider (1-10) with current value badge, tick labels at 1/5/10, default value 3
+  - `PersonaLimitsSection` — table of all personas from `usePersonas()` hook, each row has colored avatar + name + number input (1-10, placeholder "—" for unlimited), clear button when limit is set
+  - `ApiKeysSection` — combines all three with Separator dividers
+- Updated `features/settings/settings-layout.tsx`:
+  - Imported `ApiKeysSection`, renders for both `api-keys` and `concurrency` nav items (they share one combined section)
+
+**Files created:**
+- `packages/frontend/src/features/settings/api-keys-section.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/settings/settings-layout.tsx` (import + conditional render)
+
+**Notes for next agent:**
+- Both "API Keys" and "Concurrency" sidebar nav items render the same `ApiKeysSection` component (task combines them)
+- No Slider shadcn component exists — used native `<input type="range">` with Tailwind styling
+- API key test is mock-only: keys starting with "sk-" pass, others fail
+- Per-persona limits table initializes lazily from `usePersonas()` data
+- Next: T2.10.4 (cost management section)
+
+---
+
 ## 2026-03-29 — Review: T2.10.2 (approved)
 
 **Reviewed:** Projects settings section — `projects-section.tsx` + settings-layout integration.

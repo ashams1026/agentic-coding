@@ -12,6 +12,7 @@ import type { LucideIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { ProjectsSection } from "./projects-section";
+import { ApiKeysSection } from "./api-keys-section";
 
 // ── Section definitions ─────────────────────────────────────────
 
@@ -93,6 +94,8 @@ export function SettingsLayout() {
           {/* Section content */}
           {activeSection === "projects" ? (
             <ProjectsSection />
+          ) : activeSection === "api-keys" || activeSection === "concurrency" ? (
+            <ApiKeysSection />
           ) : (
             <SectionPlaceholder section={currentSection} />
           )}
