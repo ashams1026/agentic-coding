@@ -142,11 +142,12 @@ interface StateNodeProps {
   state: WorkflowState;
   position: Position;
   isSelected: boolean;
+  warningCount: number;
   onDragStart: (name: string, e: React.MouseEvent) => void;
   onClick: (name: string) => void;
 }
 
-function StateNode({ state, position, isSelected, onDragStart, onClick }: StateNodeProps) {
+function StateNode({ state, position, isSelected, warningCount, onDragStart, onClick }: StateNodeProps) {
   const mouseDownPos = useRef<{ x: number; y: number } | null>(null);
 
   return (
@@ -270,6 +271,21 @@ function StateNode({ state, position, isSelected, onDragStart, onClick }: StateN
           </text>
         )}
       </g>
+
+      {/* Warning badge */}
+      {warningCount > 0 && (
+        <g transform={`translate(${NODE_W - 6}, -6)`}>
+          <circle r={8} fill="#f59e0b" />
+          <text
+            textAnchor="middle"
+            y={4}
+            className="select-none pointer-events-none"
+            style={{ fontSize: "9px", fill: "white", fontWeight: 700 }}
+          >
+            {warningCount}
+          </text>
+        </g>
+      )}
     </g>
   );
 }
@@ -380,6 +396,7 @@ interface StateMachineCanvasProps {
   workflow: Workflow;
   selectedState: string | null;
   selectedTransitionKey: string | null;
+  stateWarnings: Map<string, string[]>;
   onSelectState: (name: string | null) => void;
   onSelectTransition: (key: string | null, transition: WorkflowTransition | null) => void;
   onAddState: (position: { x: number; y: number }) => void;
@@ -390,6 +407,7 @@ export function StateMachineCanvas({
   workflow,
   selectedState,
   selectedTransitionKey,
+  stateWarnings,
   onSelectState,
   onSelectTransition,
   onAddState,
@@ -603,6 +621,7 @@ export function StateMachineCanvas({
               state={state}
               position={pos}
               isSelected={selectedState === state.name}
+              warningCount={stateWarnings.get(state.name)?.length ?? 0}
               onDragStart={handleDragStart}
               onClick={(name) => {
                 onSelectState(name);

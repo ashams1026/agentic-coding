@@ -5,6 +5,45 @@
 
 ---
 
+## 2026-03-29 — T2.8.6: Build validation warnings
+
+**Task:** Real-time validation as user edits: warning badges on orphan states (no incoming transitions except initial), unreachable final states, missing initial state. Warning panel at bottom listing all issues. Prevent save if critical issues exist.
+
+**Done:**
+- Created `features/workflow-designer/workflow-validation.tsx`:
+  - `validateWorkflow()` — pure function computing validation issues from workflow data
+    - Missing initial state (error), multiple initial states (error)
+    - No final states (warning)
+    - Orphan states with no incoming transitions except initial (warning, tagged with stateName)
+    - Unreachable final states via BFS from initial (warning, tagged with stateName)
+    - Dead-end non-final states with no outgoing transitions (warning, tagged with stateName)
+  - `useWorkflowValidation(workflow)` — useMemo hook returning issues, counts, and stateWarnings map
+  - `ValidationPanel` — collapsible bottom panel, summary bar shows error/warning counts, expand to see issue list with severity icons and state badges
+  - `ValidationIssue` type with id, severity (error/warning), message, optional stateName
+- Modified `features/workflow-designer/state-machine-canvas.tsx`:
+  - Added `stateWarnings` prop and `warningCount` prop to StateNode
+  - Amber warning badge (circle with count) on top-right of states with issues
+- Updated `workflow-designer-layout.tsx`:
+  - Added `useWorkflowValidation(selectedWorkflow)` hook call
+  - Passes `stateWarnings` to canvas
+  - Renders `ValidationPanel` at bottom of canvas area
+
+**Files created:**
+- `packages/frontend/src/features/workflow-designer/workflow-validation.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/workflow-designer/state-machine-canvas.tsx`
+- `packages/frontend/src/features/workflow-designer/workflow-designer-layout.tsx`
+
+**Notes for next agent:**
+- T2.8.7 is next: workflow templates (Templates tab in sidebar)
+- Validation runs reactively via useMemo — recalculates on every workflow change
+- "Prevent save" is noted in task but there's no save button yet — validation issues are displayed but don't block any action. When save is implemented, check `errorCount > 0`
+- The mock data workflows are well-formed so they'll show 0 issues — create a new workflow or delete states to see warnings
+- stateWarnings map is keyed by state name for efficient lookup in canvas
+
+---
+
 ## 2026-03-29 — Review: T2.8.5 (approved)
 
 **Reviewed:** Trigger configuration panel — `transition-properties-panel.tsx` and layout update.

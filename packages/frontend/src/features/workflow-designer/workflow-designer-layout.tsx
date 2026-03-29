@@ -5,6 +5,7 @@ import { WorkflowListSidebar } from "./workflow-list-sidebar";
 import { StateMachineCanvas, transitionKey } from "./state-machine-canvas";
 import { StatePropertiesPanel } from "./state-properties-panel";
 import { TransitionPropertiesPanel } from "./transition-properties-panel";
+import { useWorkflowValidation, ValidationPanel } from "./workflow-validation";
 import { useWorkflows, useUpdateWorkflow } from "@/hooks";
 import type { WorkflowId, WorkflowState, WorkflowTransition } from "@agentops/shared";
 
@@ -19,6 +20,9 @@ export function WorkflowDesignerLayout() {
   const effectiveId = selectedId ?? workflows?.[0]?.id ?? null;
   const selectedWorkflow = workflows?.find((w) => w.id === effectiveId) ?? null;
   const selectedState = selectedWorkflow?.states.find((s) => s.name === selectedStateName) ?? null;
+
+  // Validation
+  const { issues, errorCount, warningCount, stateWarnings } = useWorkflowValidation(selectedWorkflow);
 
   // Keep selectedTransition in sync with workflow data after mutations
   const resolvedTransition = selectedTransitionKey && selectedWorkflow
@@ -187,6 +191,7 @@ export function WorkflowDesignerLayout() {
               workflow={selectedWorkflow}
               selectedState={selectedStateName}
               selectedTransitionKey={selectedTransitionKey}
+              stateWarnings={stateWarnings}
               onSelectState={handleSelectState}
               onSelectTransition={handleSelectTransition}
               onAddState={handleAddState}
@@ -205,6 +210,13 @@ export function WorkflowDesignerLayout() {
                 Add state
               </Button>
             </div>
+
+            {/* Validation panel — bottom */}
+            <ValidationPanel
+              issues={issues}
+              errorCount={errorCount}
+              warningCount={warningCount}
+            />
           </>
         ) : (
           <div className="flex h-full items-center justify-center bg-background">
