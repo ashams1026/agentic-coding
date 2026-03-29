@@ -24,7 +24,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Sheet,
   SheetContent,
@@ -32,15 +31,10 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { usePersona, useUpdatePersona } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { SystemPromptEditor } from "./system-prompt-editor";
+import { ToolConfiguration } from "./tool-configuration";
 import type { PersonaId, PersonaModel } from "@agentops/shared";
 
 // ── Icon options for avatar picker ──────────────────────────────
@@ -111,34 +105,6 @@ const MODEL_OPTIONS: ModelOption[] = [
   },
 ];
 
-// ── SDK Tools ───────────────────────────────────────────────────
-
-interface ToolDef {
-  name: string;
-  description: string;
-}
-
-const SDK_TOOLS: ToolDef[] = [
-  { name: "Read", description: "Read file contents" },
-  { name: "Edit", description: "Edit files with search/replace" },
-  { name: "Write", description: "Write new files" },
-  { name: "Glob", description: "Find files by pattern" },
-  { name: "Grep", description: "Search file contents" },
-  { name: "Bash", description: "Execute shell commands" },
-  { name: "WebFetch", description: "Fetch web pages" },
-  { name: "WebSearch", description: "Search the web" },
-];
-
-const AGENTOPS_TOOLS: ToolDef[] = [
-  { name: "create_tasks", description: "Create subtasks for a story" },
-  { name: "transition_state", description: "Move a story/task to a new state" },
-  { name: "request_review", description: "Request human review of work" },
-  { name: "flag_blocked", description: "Flag a task as blocked" },
-  { name: "post_comment", description: "Post a comment on a story/task" },
-  { name: "list_tasks", description: "List tasks for a story" },
-  { name: "get_context", description: "Get project context and memory" },
-];
-
 // ── Props ───────────────────────────────────────────────────────
 
 interface PersonaEditorProps {
@@ -197,10 +163,6 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
       },
     });
   }, [persona, personaId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, maxBudget, updateMutation, onClose]);
-
-  const toggleTool = (list: string[], setList: (v: string[]) => void, tool: string) => {
-    setList(list.includes(tool) ? list.filter((t) => t !== tool) : [...list, tool]);
-  };
 
   const AvatarIcon = getIcon(avatarIcon);
 
@@ -384,55 +346,12 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
           {/* ── Tools ────────────────────────────────────────── */}
           <section>
             <h3 className="text-sm font-semibold mb-3">Tools</h3>
-            <TooltipProvider>
-              <div className="space-y-4">
-                {/* SDK Tools */}
-                <div>
-                  <span className="text-xs text-muted-foreground mb-2 block">SDK Tools</span>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {SDK_TOOLS.map((tool) => (
-                      <Tooltip key={tool.name}>
-                        <TooltipTrigger asChild>
-                          <label className="flex items-center gap-2 rounded-md border border-border px-2.5 py-1.5 cursor-pointer hover:bg-accent/30 transition-colors">
-                            <Checkbox
-                              checked={allowedTools.includes(tool.name)}
-                              onCheckedChange={() => toggleTool(allowedTools, setAllowedTools, tool.name)}
-                            />
-                            <span className="text-xs">{tool.name}</span>
-                          </label>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom">
-                          <p className="text-xs">{tool.description}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
-                  </div>
-                </div>
-
-                {/* AgentOps Tools */}
-                <div>
-                  <span className="text-xs text-muted-foreground mb-2 block">AgentOps Tools</span>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    {AGENTOPS_TOOLS.map((tool) => (
-                      <Tooltip key={tool.name}>
-                        <TooltipTrigger asChild>
-                          <label className="flex items-center gap-2 rounded-md border border-border px-2.5 py-1.5 cursor-pointer hover:bg-accent/30 transition-colors">
-                            <Checkbox
-                              checked={mcpTools.includes(tool.name)}
-                              onCheckedChange={() => toggleTool(mcpTools, setMcpTools, tool.name)}
-                            />
-                            <span className="text-xs font-mono">{tool.name}</span>
-                          </label>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom">
-                          <p className="text-xs">{tool.description}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </TooltipProvider>
+            <ToolConfiguration
+              allowedTools={allowedTools}
+              mcpTools={mcpTools}
+              onAllowedToolsChange={setAllowedTools}
+              onMcpToolsChange={setMcpTools}
+            />
           </section>
 
           <Separator />

@@ -5,6 +5,39 @@
 
 ---
 
+## 2026-03-29 — T2.9.4: Build tool configuration section
+
+**Task:** Two tool groups (SDK + AgentOps) with checkboxes and tooltips. Each tool has a description. Presets button: "Tech Lead preset", "Engineer preset", etc.
+
+**Done:**
+- Created `features/persona-manager/tool-configuration.tsx`:
+  - `ToolConfiguration` — standalone component with `allowedTools`/`mcpTools` props
+  - **SDK Tools** (8 items, 4-col grid): Read, Edit, Write, Glob, Grep, Bash, WebFetch, WebSearch
+  - **AgentOps Tools** (7 items, 3-col grid): create_tasks, transition_state, request_review, flag_blocked, post_comment, list_tasks, get_context
+  - `ToolCheckbox` — checkbox with tooltip, highlighted border when checked (primary/5 bg)
+  - **Presets dropdown**: PM, Tech Lead, Engineer, Reviewer, QA, All tools, None — matching fixture data
+  - Header: selected/total count badge + Presets dropdown button
+  - Per-group count badges
+  - Longer tool descriptions than before (more helpful for users)
+- Refactored `persona-editor.tsx`:
+  - Removed inline tool definitions (SDK_TOOLS, AGENTOPS_TOOLS, ToolDef, toggleTool)
+  - Removed Checkbox, Tooltip/TooltipContent/TooltipProvider/TooltipTrigger imports
+  - Replaced inline JSX with `<ToolConfiguration />` component
+
+**Files created:**
+- `packages/frontend/src/features/persona-manager/tool-configuration.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/persona-manager/persona-editor.tsx`
+
+**Notes for next agent:**
+- T2.9.5 is next: test run panel (collapsible at bottom of persona editor)
+- Presets match the 5 built-in persona tool configs from fixtures exactly
+- ToolConfiguration is a standalone controlled component — could be reused elsewhere
+- The persona editor is getting cleaner — each section is now its own component (SystemPromptEditor, ToolConfiguration)
+
+---
+
 ## 2026-03-29 — Review: T2.9.3 (approved)
 
 **Reviewed:** System prompt editor — `system-prompt-editor.tsx` + persona-editor integration.
