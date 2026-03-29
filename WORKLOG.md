@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-03-28 — Review: T2.2.4 (approved)
+
+**Reviewed:** Transition prompt modal — `transition-prompt-modal.tsx` and updated `kanban-board.tsx`.
+
+**Verdict:** Approved. All requirements met: modal shows when dropping on a column with a configured trigger, displaying persona avatar with colored circle + name + description. Three buttons (Run trigger/Skip trigger/Cancel) work correctly. `findTrigger()` matches by workflowId + fromState + toState. `PendingDrop` state cleanly defers the mutation. Transitions without triggers still happen silently. Dialog dismissable via overlay/escape. Build clean.
+
+---
+
 ## 2026-03-28 — T2.2.4: Build transition prompt modal
 
 **Task:** Modal shown when dropping a story on a column with a configured trigger. Shows persona info, "Run trigger"/"Skip trigger"/"Cancel" buttons.

@@ -21,7 +21,7 @@
 
 - [x] **T2.2.3** — Implement drag-and-drop between columns. Use @dnd-kit or react-beautiful-dnd. Smooth animations on drag. Card placeholder shows in target column during drag. Drop triggers state transition via mock API.
 
-- [review] **T2.2.4** — Build transition prompt modal. When dropping a story on a column that has a trigger configured: show modal with "This will trigger [Persona Name] agent." Three buttons: "Run trigger", "Skip trigger", "Cancel". If no trigger, transition happens silently. Show persona avatar in the modal.
+- [x] **T2.2.4** — Build transition prompt modal. When dropping a story on a column that has a trigger configured: show modal with "This will trigger [Persona Name] agent." Three buttons: "Run trigger", "Skip trigger", "Cancel". If no trigger, transition happens silently. Show persona avatar in the modal.
 
 - [ ] **T2.2.5** — Build filter bar and sort controls. Above the kanban board. Filter by: label (multi-select), priority (multi-select), persona (multi-select), has proposals (toggle). Sort by: priority, created date, updated date. Persist filter state in URL params.
 
