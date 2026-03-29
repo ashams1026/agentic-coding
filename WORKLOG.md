@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: R.6 (approved)
+
+**Reviewed:** Nested task detail panel with breadcrumb navigation — `task-detail-side-panel.tsx` + modifications to child-tasks-section, story-detail-side-panel, story-board.
+- All 5 requirements met: task click opens detail, breadcrumb navigation back, reuses all 6 task detail components, parent story breadcrumb at top, extends R.5 layout
+- `onTaskClick` prop is optional and backward-compatible — existing story detail page unaffected
+- Breadcrumb: clickable story title > ChevronRight > task title — clean navigation pattern
+- Panel swap logic in `story-board.tsx` is clean: `selectedTaskId` state, 3 handlers (taskClick, backToStory, closePanel)
+- State colors with dark mode variants, all components mock-data-driven
+- Build passes
+- Verdict: **approved** — completes the entire Refinements section (R.1-R.6)
+
+---
+
 ## 2026-03-29 — R.6: Build nested task detail panel
 
 **Task:** When a task is clicked in the story detail side-panel, replace the story panel with a task detail panel using breadcrumb navigation back.
