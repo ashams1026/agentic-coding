@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-29 — R.1: Fix sidebar spacing and alignment
+
+**Task:** Normalize padding/gaps between collapsed and expanded states. Fix badge sizing consistency. Adjust project switcher vertical alignment. Normalize nav item padding.
+
+**Done:**
+- **Project switcher**: Changed `px-3` → `px-2` and added `justify-center` for proper centering within `h-14` container in both states
+- **Nav item padding**: Changed collapsed state from `px-0 py-2` to `px-2 py-2` — items now have balanced horizontal padding in both states
+- **Badge sizing (collapsed)**: Changed from `h-3.5 w-3.5` to `h-4 min-w-4` with `px-0.5` padding and `text-[9px]` — closer in proportion to expanded badges. Also adjusted position from `-right-1 -top-1` to `-right-1.5 -top-1.5` for better placement with larger badge
+- **Badge sizing (expanded)**: Tightened horizontal padding from `px-1.5` to `px-1` — badges are more compact and consistent
+- **Nav spacing**: Changed `space-y-1` to `space-y-0.5` for tighter grouping between nav items
+
+**Files modified:**
+- `packages/frontend/src/components/sidebar.tsx`
+
+**Notes for next agent:**
+- R.2 (transitions) is next — current sidebar uses `transition-all duration-200`, task wants `duration-300 ease-in-out`
+- Badge sizes are now: collapsed `h-4 min-w-4`, expanded `h-5 min-w-5` — proportionally appropriate for their contexts
+- The project switcher centering works for both Button (collapsed) and Select (expanded)
+
+---
+
 ## 2026-03-29 — Review: T2.10.1 (approved)
 
 **Reviewed:** Settings page layout — `settings-layout.tsx` + `settings.tsx` page integration.

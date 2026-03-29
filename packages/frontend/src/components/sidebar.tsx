@@ -61,7 +61,7 @@ export function Sidebar() {
       )}
     >
       {/* Project switcher */}
-      <div className="flex h-14 items-center gap-2 border-b border-border px-3">
+      <div className="flex h-14 items-center border-b border-border px-2 justify-center">
         {sidebarCollapsed ? (
           <Tooltip>
             <TooltipTrigger asChild>
@@ -84,7 +84,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 overflow-y-auto p-2">
+      <nav className="flex-1 space-y-0.5 overflow-y-auto p-2">
         {navItems.map(({ to, icon: Icon, label }) => (
           <Tooltip key={to}>
             <TooltipTrigger asChild>
@@ -98,19 +98,19 @@ export function Sidebar() {
                     isActive
                       ? "bg-accent text-accent-foreground"
                       : "text-muted-foreground",
-                    sidebarCollapsed && "justify-center px-0",
+                    sidebarCollapsed && "justify-center px-2 py-2",
                   )
                 }
               >
                 <span className="relative">
                   <Icon className="h-4 w-4 shrink-0" />
                   {to === "/agents" && activeAgentCount > 0 && sidebarCollapsed && (
-                    <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-500 text-[8px] font-bold text-white">
+                    <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-0.5 text-[9px] font-bold text-white">
                       {activeAgentCount}
                     </span>
                   )}
                   {to === "/activity" && unreadActivityCount > 0 && sidebarCollapsed && (
-                    <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-sky-500 text-[8px] font-bold text-white">
+                    <span className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-500 px-0.5 text-[9px] font-bold text-white">
                       {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
                     </span>
                   )}
@@ -119,12 +119,12 @@ export function Sidebar() {
                   <>
                     <span className="flex-1">{label}</span>
                     {to === "/agents" && activeAgentCount > 0 && (
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[10px] font-bold text-white">
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white">
                         {activeAgentCount}
                       </span>
                     )}
                     {to === "/activity" && unreadActivityCount > 0 && (
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1.5 text-[10px] font-bold text-white">
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1 text-[10px] font-bold text-white">
                         {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
                       </span>
                     )}
