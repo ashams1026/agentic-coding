@@ -31,7 +31,7 @@
 
 ### Dashboard (Home)
 
-- [ ] **T2.1.1** — Build dashboard page layout. Status cards row at top: "Active Agents" (count), "Pending Proposals" (count), "Needs Attention" (count), "Today's Cost" (dollar amount). Each card is clickable, navigates to relevant screen. Use shadcn Card component.
+- [review] **T2.1.1** — Build dashboard page layout. Status cards row at top: "Active Agents" (count), "Pending Proposals" (count), "Needs Attention" (count), "Today's Cost" (dollar amount). Each card is clickable, navigates to relevant screen. Use shadcn Card component.
 
 - [ ] **T2.1.2** — Build active agents strip component. Horizontal scrollable row of agent cards below status row. Each card: persona avatar (colored circle + icon), task name truncated, elapsed time (live-updating), pulsing status dot. Click navigates to agent monitor with that agent selected. Shows "No active agents" empty state.
 

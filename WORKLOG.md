@@ -670,3 +670,33 @@
 **Reviewed:** Demo mode in `packages/frontend/src/mocks/demo.ts`.
 
 **Verdict:** Approved. Full story lifecycle scripted over ~60 seconds across all 7 workflow states. 5 agent runs (PM, TL, Engineer, Reviewer, QA) with realistic streaming output — including actual TypeScript code from Engineer. All 9 WS event types exercised. Proper timer management: `schedule()` tracks timeouts, `stopDemo()` cancels everything including cost ticker. Control API complete: start/stop/isRunning/onStop/autoStart. Demo IDs properly namespaced to avoid fixture conflicts. Build passes clean. Sprint 1 mock data layer is now fully complete.
+
+---
+
+## 2026-03-28 — T2.1.1: Build dashboard page layout
+
+**Task:** Build dashboard page with status cards row: Active Agents, Pending Proposals, Needs Attention, Today's Cost. Each clickable, navigating to relevant screen.
+
+**Done:**
+- Replaced placeholder `DashboardPage` with full layout
+- 4 status cards in responsive grid (1 col mobile, 2 col sm, 4 col lg)
+- Each card: icon with colored background, title label, large value
+  - Active Agents (green Bot icon) → navigates to /agents
+  - Pending Proposals (amber FileCheck icon) → navigates to /board
+  - Needs Attention (red AlertTriangle icon) → navigates to /activity
+  - Today's Cost (blue DollarSign icon) → navigates to /settings
+- Cards use `useDashboardStats()` hook from mock API — real data, not hardcoded
+- Loading state shows "—" while data fetches
+- Dark mode support on all icon backgrounds
+- Hover effect on cards (`hover:bg-accent/50`)
+- Placeholder cards for upcoming widgets (T2.1.2–T2.1.5) in 2-column grid
+- Extracted reusable `StatCard` component within the file
+
+**Files modified:**
+- `packages/frontend/src/pages/dashboard.tsx`
+
+**Notes for next agent:**
+- T2.1.2 is next: active agents strip component. Replace the "Active Agents" placeholder card in the bottom grid.
+- `useDashboardStats()` hook returns `{ activeAgents, pendingProposals, needsAttention, todayCostUsd }`
+- Dashboard uses `useNavigate` from react-router for card click navigation
+- lucide-react icons are used throughout — import from "lucide-react"
