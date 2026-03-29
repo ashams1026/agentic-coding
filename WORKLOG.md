@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: T2.5.4 (approved)
+
+**Reviewed:** Tool call display sections — `features/agent-monitor/tool-call-display.tsx`, terminal renderer pairing logic, WS typed chunk support, demo data.
+- All requirements met: collapsible sections with tool icon (8 mapped + fallback), tool name, status indicator (running=spin blue, success=check emerald, error=x red), one-line summary, expanded input (JSON) + output (text or diff)
+- `DiffView` correctly colors +/- lines with emerald/red backgrounds
+- `processChunks()` pairs tool_call + tool_result by `toolCallId`, handles orphan results
+- `simulateAgentOutput` backward compatible — plain strings still work
+- ENG_CHUNKS exercises Read, Grep, Write, Edit (with isDiff), Bash — good coverage
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.5.4: Build tool call display sections
 
 **Task:** When agent makes tool calls, show as collapsible sections in the output stream. Header: tool icon + tool name + status (running spinner / success check / error x). Collapsed: one-line summary. Expanded: tool input (formatted JSON or code) + tool output (formatted). File edits show mini diff view.
