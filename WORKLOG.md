@@ -5,6 +5,50 @@
 
 ---
 
+## 2026-03-29 — T2.8.3: Build state editing interactions
+
+**Task:** Click state to select → properties panel on right: edit name, color, set as initial/final. "Add state" button or double-click canvas to create new state. Delete state (with confirmation if transitions exist). Visual indicators: initial state has a filled circle, final states have double border.
+
+**Done:**
+- Created `features/workflow-designer/state-properties-panel.tsx`:
+  - `StatePropertiesPanel` — right panel (280px) for editing selected state
+  - Name input (saves on blur/Enter)
+  - Color picker: 12 preset swatches grid + hex input + preview
+  - Initial/Final checkboxes (mutually exclusive — setting one clears the other)
+  - When setting initial, other initial states are unset
+  - Related transitions list (from/to + name)
+  - Delete button with AlertDialog confirmation (warns about connected transitions count)
+- Modified `features/workflow-designer/state-machine-canvas.tsx`:
+  - Added `selectedState`, `onSelectState`, `onAddState` props
+  - Click-to-select: distinguishes click vs drag (5px threshold)
+  - Selection highlight: dashed `stroke-ring` rectangle around selected state
+  - Click background to deselect (`onClick` on SVG)
+  - Double-click canvas to add new state (`onDoubleClick` with SVG coordinate transform)
+- Rewrote `features/workflow-designer/workflow-designer-layout.tsx`:
+  - Manages `selectedStateName` state
+  - `handleUpdateState()` — updates state in workflow, renames transitions if name changed, unsets other initial states
+  - `handleDeleteState()` — removes state + connected transitions, clears selection
+  - `handleAddState()` — generates unique name ("State N"), adds to workflow, selects new state
+  - Floating "Add state" button (top-left, glassmorphism style)
+  - Right panel slides in when state selected (280px)
+  - Clears state selection when switching workflows
+
+**Files created:**
+- `packages/frontend/src/features/workflow-designer/state-properties-panel.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/workflow-designer/state-machine-canvas.tsx`
+- `packages/frontend/src/features/workflow-designer/workflow-designer-layout.tsx`
+
+**Notes for next agent:**
+- T2.8.4 is next: transition creation and editing (drag from state edge → another state, click arrow to select, properties panel)
+- Visual indicators (filled circle for initial, double border for final) were already built in T2.8.2
+- State mutations use `useUpdateWorkflow` which calls mock API and invalidates queries
+- Properties panel uses `key={selectedStateName}` to reset internal state on selection change
+- Color hex input allows free typing — validated by the browser's color rendering
+
+---
+
 ## 2026-03-29 — Review: T2.8.2 (approved)
 
 **Reviewed:** State machine canvas — `features/workflow-designer/state-machine-canvas.tsx` and layout update.

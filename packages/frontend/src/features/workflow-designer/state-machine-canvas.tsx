@@ -141,16 +141,50 @@ function getArrowheadAngle(path: string): { x: number; y: number; angle: number 
 interface StateNodeProps {
   state: WorkflowState;
   position: Position;
+  isSelected: boolean;
   onDragStart: (name: string, e: React.MouseEvent) => void;
+  onClick: (name: string) => void;
 }
 
-function StateNode({ state, position, onDragStart }: StateNodeProps) {
+function StateNode({ state, position, isSelected, onDragStart, onClick }: StateNodeProps) {
+  const mouseDownPos = useRef<{ x: number; y: number } | null>(null);
+
   return (
     <g
       transform={`translate(${position.x}, ${position.y})`}
       className="cursor-grab active:cursor-grabbing"
-      onMouseDown={(e) => onDragStart(state.name, e)}
+      onMouseDown={(e) => {
+        mouseDownPos.current = { x: e.clientX, y: e.clientY };
+        onDragStart(state.name, e);
+      }}
+      onMouseUp={(e) => {
+        // Only fire click if mouse didn't move (not a drag)
+        if (mouseDownPos.current) {
+          const dx = Math.abs(e.clientX - mouseDownPos.current.x);
+          const dy = Math.abs(e.clientY - mouseDownPos.current.y);
+          if (dx < 5 && dy < 5) {
+            onClick(state.name);
+          }
+        }
+        mouseDownPos.current = null;
+      }}
     >
+      {/* Selection highlight */}
+      {isSelected && (
+        <rect
+          x={-4}
+          y={-4}
+          width={NODE_W + 8}
+          height={NODE_H + 8}
+          rx={13}
+          ry={13}
+          fill="none"
+          className="stroke-ring"
+          strokeWidth={2}
+          strokeDasharray="4 2"
+        />
+      )}
+
       {/* Initial state indicator: filled circle to the left */}
       {state.isInitial && (
         <circle
@@ -303,9 +337,12 @@ function TransitionArrow({ transition, fromPos, toPos, isBackward }: TransitionA
 
 interface StateMachineCanvasProps {
   workflow: Workflow;
+  selectedState: string | null;
+  onSelectState: (name: string | null) => void;
+  onAddState: (position: { x: number; y: number }) => void;
 }
 
-export function StateMachineCanvas({ workflow }: StateMachineCanvasProps) {
+export function StateMachineCanvas({ workflow, selectedState, onSelectState, onAddState }: StateMachineCanvasProps) {
   const initialPositions = useMemo(() => computeLayout(workflow), [workflow]);
   const [positions, setPositions] = useState<Map<string, Position>>(() => initialPositions);
   const [dragging, setDragging] = useState<string | null>(null);
@@ -416,6 +453,17 @@ export function StateMachineCanvas({ workflow }: StateMachineCanvasProps) {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onClick={() => onSelectState(null)}
+        onDoubleClick={(e) => {
+          if (!svgRef.current) return;
+          const svgRect = svgRef.current.getBoundingClientRect();
+          const svgWidth = svgRef.current.viewBox.baseVal.width || viewBox.width;
+          const scale = svgWidth / svgRect.width;
+          onAddState({
+            x: (e.clientX - svgRect.left) * scale,
+            y: (e.clientY - svgRect.top) * scale,
+          });
+        }}
       >
         {/* Grid dots pattern */}
         <defs>
@@ -455,7 +503,11 @@ export function StateMachineCanvas({ workflow }: StateMachineCanvasProps) {
               key={state.name}
               state={state}
               position={pos}
+              isSelected={selectedState === state.name}
               onDragStart={handleDragStart}
+              onClick={(name) => {
+                onSelectState(name);
+              }}
             />
           );
         })}
