@@ -1,11 +1,20 @@
 import { Outlet } from "react-router";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Sidebar } from "@/components/sidebar";
+import { StatusBar } from "@/components/status-bar";
 
 export function RootLayout() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <main>
-        <Outlet />
-      </main>
-    </div>
+    <TooltipProvider delayDuration={0}>
+      <div className="flex h-screen overflow-hidden bg-background text-foreground">
+        <Sidebar />
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <main className="flex-1 overflow-y-auto">
+            <Outlet />
+          </main>
+          <StatusBar />
+        </div>
+      </div>
+    </TooltipProvider>
   );
 }

@@ -1,0 +1,130 @@
+import { NavLink } from "react-router";
+import {
+  LayoutDashboard,
+  Kanban,
+  Bot,
+  Activity,
+  GitBranch,
+  Users,
+  Settings,
+  PanelLeftClose,
+  PanelLeft,
+  FolderOpen,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useUIStore } from "@/stores/ui-store";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+
+const navItems = [
+  { to: "/", icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/board", icon: Kanban, label: "Story Board" },
+  { to: "/agents", icon: Bot, label: "Agent Monitor" },
+  { to: "/activity", icon: Activity, label: "Activity Feed" },
+  { to: "/workflows", icon: GitBranch, label: "Workflows" },
+  { to: "/personas", icon: Users, label: "Personas" },
+  { to: "/settings", icon: Settings, label: "Settings" },
+] as const;
+
+export function Sidebar() {
+  const { sidebarCollapsed, toggleSidebar } = useUIStore();
+
+  return (
+    <aside
+      className={cn(
+        "flex h-screen flex-col border-r border-border bg-card transition-all duration-200",
+        sidebarCollapsed ? "w-sidebar-collapsed" : "w-sidebar",
+      )}
+    >
+      {/* Project switcher */}
+      <div className="flex h-14 items-center gap-2 border-b border-border px-3">
+        {sidebarCollapsed ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
+                <FolderOpen className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">AgentOps</TooltipContent>
+          </Tooltip>
+        ) : (
+          <Select defaultValue="agentops">
+            <SelectTrigger className="h-8 w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="agentops">AgentOps</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 space-y-1 overflow-y-auto p-2">
+        {navItems.map(({ to, icon: Icon, label }) => (
+          <Tooltip key={to}>
+            <TooltipTrigger asChild>
+              <NavLink
+                to={to}
+                end={to === "/"}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    "hover:bg-accent hover:text-accent-foreground",
+                    isActive
+                      ? "bg-accent text-accent-foreground"
+                      : "text-muted-foreground",
+                    sidebarCollapsed && "justify-center px-0",
+                  )
+                }
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                {!sidebarCollapsed && <span>{label}</span>}
+              </NavLink>
+            </TooltipTrigger>
+            {sidebarCollapsed && (
+              <TooltipContent side="right">{label}</TooltipContent>
+            )}
+          </Tooltip>
+        ))}
+      </nav>
+
+      <Separator />
+
+      {/* Collapse toggle */}
+      <div className="flex items-center justify-center p-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={toggleSidebar}
+            >
+              {sidebarCollapsed ? (
+                <PanelLeft className="h-4 w-4" />
+              ) : (
+                <PanelLeftClose className="h-4 w-4" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            {sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </aside>
+  );
+}

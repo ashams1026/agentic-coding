@@ -27,7 +27,7 @@
 
 - [x] **T1.2.5** — Install TanStack Query + Zustand. Configure QueryClient with defaults (stale time, refetch). Create a base Zustand store for UI state (sidebar collapsed, selected project, theme). Wrap app in QueryClientProvider.
 
-- [ ] **T1.2.6** — Build app shell layout. Sidebar navigation (collapsible) with icons + labels for all 9 routes. Project switcher dropdown at top. Status bar at bottom (placeholder content). Main content area with `<Outlet />`. Responsive: sidebar collapses to icons on narrow screens.
+- [review] **T1.2.6** — Build app shell layout. Sidebar navigation (collapsible) with icons + labels for all 9 routes. Project switcher dropdown at top. Status bar at bottom (placeholder content). Main content area with `<Outlet />`. Responsive: sidebar collapses to icons on narrow screens.
 
 - [ ] **T1.2.7** — Implement dark mode. Toggle in sidebar footer or status bar. Use Tailwind `dark:` variant. Persist preference in Zustand + localStorage. Default to system preference.
 

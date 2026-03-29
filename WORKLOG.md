@@ -281,3 +281,42 @@
 **Reviewed:** TanStack Query + Zustand installation and configuration.
 
 **Verdict:** Approved. QueryClient configured with sensible defaults. Zustand store properly uses `persist` middleware with `partialize` to exclude actions from serialization. App correctly wrapped in QueryClientProvider. Clean TypeScript, good file organization. Build passes.
+
+---
+
+## 2026-03-28 — T1.2.6: Build app shell layout
+
+**Task:** Sidebar navigation (collapsible), project switcher, status bar, main content area.
+
+**Done:**
+- Created `src/components/sidebar.tsx` — collapsible sidebar with:
+  - Project switcher dropdown at top (Select component, defaults to "AgentOps")
+  - 7 nav items with lucide-react icons: Dashboard, Story Board, Agent Monitor, Activity Feed, Workflows, Personas, Settings
+  - Uses `NavLink` from react-router with active state highlighting
+  - Collapse toggle button at bottom (PanelLeftClose/PanelLeft icons)
+  - When collapsed: shows only icons with tooltips on hover
+  - Uses `useUIStore().sidebarCollapsed` and `toggleSidebar()` from Zustand
+  - Responsive via `w-sidebar` (16rem) / `w-sidebar-collapsed` (4rem) Tailwind tokens
+- Created `src/components/status-bar.tsx` — bottom status bar showing:
+  - Project name, active agents count (0), today's cost ($0.00), health indicator (green dot)
+- Updated `src/layouts/root-layout.tsx` — full app shell:
+  - Wraps everything in `TooltipProvider` (needed for sidebar tooltips)
+  - Flex layout: sidebar + main content column (main area scrollable + status bar fixed)
+  - `h-screen overflow-hidden` prevents double scrollbars
+- Added `tslib` to frontend deps (required by react-remove-scroll, a Radix UI transitive dep)
+- Verified: typecheck clean, vite build (433 KB JS, 37.9 KB CSS), lint clean
+
+**Files created:**
+- `packages/frontend/src/components/sidebar.tsx`
+- `packages/frontend/src/components/status-bar.tsx`
+
+**Files modified:**
+- `packages/frontend/src/layouts/root-layout.tsx` (full app shell)
+- `packages/frontend/package.json` (tslib dep)
+
+**Notes for next agent:**
+- T1.2.7 is next: dark mode toggle
+- Sidebar uses `useUIStore()` — sidebar collapse state is already persisted to localStorage
+- Story/task detail pages aren't in the sidebar nav (they're accessed via board/links) — this is correct
+- `TooltipProvider` is in RootLayout — tooltips work everywhere
+- `tslib` was needed to fix react-remove-scroll build issue with pnpm strict mode
