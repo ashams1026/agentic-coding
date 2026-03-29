@@ -245,3 +245,31 @@
 **Reviewed:** React Router setup with 9 route stubs.
 
 **Verdict:** Approved. All 9 routes present and correctly structured. Router uses `createBrowserRouter` with nested layout pattern. Page components use named exports, kebab-case files, proper TypeScript. `useParams` correctly typed on detail pages. Build and typecheck pass clean.
+
+---
+
+## 2026-03-28 — T1.2.5: Install TanStack Query + Zustand
+
+**Task:** Install TanStack Query + Zustand, configure QueryClient, create UI store, wrap app in provider.
+
+**Done:**
+- Installed @tanstack/react-query and zustand
+- Created `src/lib/query-client.ts` — QueryClient with 30s stale time, no refetch on window focus, 1 retry
+- Created `src/stores/ui-store.ts` — Zustand store with `persist` middleware for: sidebarCollapsed, selectedProjectId, theme (light/dark/system). Persists to localStorage under key `agentops-ui`. Actions: toggleSidebar, setSidebarCollapsed, setSelectedProjectId, setTheme
+- Updated `src/app.tsx` — wraps RouterProvider with QueryClientProvider
+- Verified: typecheck clean, vite build (309 KB JS), lint clean
+
+**Files created:**
+- `packages/frontend/src/lib/query-client.ts`
+- `packages/frontend/src/stores/ui-store.ts`
+
+**Files modified:**
+- `packages/frontend/src/app.tsx` (added QueryClientProvider wrapper)
+- `packages/frontend/package.json` (new dependencies)
+
+**Notes for next agent:**
+- T1.2.6 is next: build app shell layout (sidebar, status bar)
+- Use `useUIStore()` hook to access UI state: `const { sidebarCollapsed, toggleSidebar } = useUIStore()`
+- Theme state is available via `useUIStore().theme` — T1.2.7 will wire it to actual dark mode
+- QueryClient is in `src/lib/query-client.ts` — hooks in T1.4.3 will use it
+- Zustand store auto-persists to localStorage (agentops-ui key)
