@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: R.2 (approved)
+
+**Reviewed:** Sidebar transition improvements in `sidebar.tsx`.
+- All 3 task requirements met: timing change, smooth badge transitions, separate label opacity animation
+- Sidebar container + nav items both use `transition-all duration-300 ease-in-out`
+- Collapsed badges always rendered, toggle `scale-100 opacity-100` / `scale-0 opacity-0` — smooth scale+fade
+- Labels wrapped in `overflow-hidden` span with `w-0 opacity-0` / `w-auto opacity-100` — opacity fades while container width controls collapse
+- Note: `w-auto` → `w-0` can't animate natively in CSS but this is fine — the label opacity fades smoothly, and the sidebar width is animated by the container's `w-sidebar` transition
+- Build passes, no new dependencies
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — R.2: Improve sidebar transitions
 
 **Task:** Change transition timing, smooth badge transitions, animate label opacity separately from width.
