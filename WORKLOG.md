@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T2.8.6 (approved)
+
+**Reviewed:** Validation warnings — `workflow-validation.tsx`, canvas and layout changes.
+- 5 validation rules: missing/multiple initial (error), no finals, orphans, unreachable finals, dead-ends (warnings)
+- `validateWorkflow()` is pure function, `useWorkflowValidation()` is useMemo hook
+- Amber badges on states via `stateWarnings` map, O(1) lookup in canvas
+- `ValidationPanel`: collapsible bottom bar, error/warning counts, expandable issue list with differentiated icons
+- Panel hides when 0 issues
+- "Prevent save" noted as future work (no save button yet) — `errorCount` exposed
+- Bonus: dead-end state detection beyond task requirements
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.8.6: Build validation warnings
 
 **Task:** Real-time validation as user edits: warning badges on orphan states (no incoming transitions except initial), unreachable final states, missing initial state. Warning panel at bottom listing all issues. Prevent save if critical issues exist.
