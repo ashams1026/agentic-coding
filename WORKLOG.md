@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.8.7 (approved)
+
+**Reviewed:** Workflow templates — `workflow-list-sidebar.tsx` rewrite.
+- Tabs (Workflows / Templates) with proper height management
+- Two templates: Story (7 states) and Task (5 states), matching fixture data
+- `TemplatePreview` SVG: colored rects with connecting lines, dynamic viewBox
+- "Use template": clones via useCreateWorkflow, auto-selects new workflow
+- TemplateCard: name, description, type badge, state count, pending state on button
+- Existing workflow list behavior preserved
+- Build passes
+- **Verdict: approved** — Workflow Designer section (T2.8.1-T2.8.7) complete!
+
+---
+
 ## 2026-03-29 — T2.8.7: Build workflow templates
 
 **Task:** "Templates" tab in sidebar: "Default Story Workflow" and "Default Task Workflow" pre-built. "Use template" button clones into a new editable workflow. Templates show preview thumbnail.
