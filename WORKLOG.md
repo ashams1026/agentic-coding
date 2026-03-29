@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T2.9.5 (approved)
+
+**Reviewed:** Test run panel — `test-run-panel.tsx` + persona-editor integration.
+- Collapsible section (Terminal icon + chevron) at bottom of editor after Budget
+- Prompt input with Enter-to-submit, Test/Stop buttons (Play/Square icons)
+- Mock output: 17 typed lines (thinking, tool, result, text) using persona name + model
+- Streaming: 150-350ms random delay per line via setTimeout chain
+- Mini terminal: monospace, color-coded (blue=tool, emerald=result, muted=thinking), 100-200px
+- Blinking cursor while running, Stop appends "[Stopped by user]"
+- Auto-scroll, timer cleanup on unmount, empty state
+- Build passes, conventions followed
+- **Verdict: approved** — Persona Manager section (T2.9.1-T2.9.5) complete!
+
+---
+
 ## 2026-03-29 — T2.9.5: Build test run panel
 
 **Task:** Collapsible section at bottom of persona editor. Text input for a sample prompt. "Test" button runs against mock. Shows output in mini terminal renderer.
