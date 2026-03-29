@@ -11,7 +11,7 @@
 
 - [x] **T2.3.3** — Build child tasks section. List of tasks belonging to this story. Each task row: checkbox (state), title, state badge, assigned persona avatar, dependency indicator (icon if has deps). Mini dependency graph visualization using a simple node-edge layout (tasks as small boxes, arrows for edges). "Add task" button opens inline form.
 
-- [ ] **T2.3.4** — Build proposals section. Only visible when story has pending proposals. Yellow/amber highlight panel at top of detail. Lists proposed tasks from Tech Lead agent. Each: title, description (editable inline), approve button (green), reject button (red). "Approve all" bulk action. Reject shows textarea for feedback. Approved tasks appear in child tasks list.
+- [review] **T2.3.4** — Build proposals section. Only visible when story has pending proposals. Yellow/amber highlight panel at top of detail. Lists proposed tasks from Tech Lead agent. Each: title, description (editable inline), approve button (green), reject button (red). "Approve all" bulk action. Reject shows textarea for feedback. Approved tasks appear in child tasks list.
 
 - [ ] **T2.3.5** — Build comment stream component. Reusable for both stories and tasks. Chronological thread. Agent comments: persona avatar (colored circle) + name + timestamp + content. User comments: user avatar + timestamp + content. System comments: muted style, icon, "Story moved to In Review" etc. Agent comments may have metadata chips (files changed, tools used). Input box at bottom — user types and posts comment via mock API. Auto-scroll to bottom on new comments. Scroll up to read history.
 

@@ -5,6 +5,41 @@
 
 ---
 
+## 2026-03-28 — T2.3.4: Build proposals section
+
+**Task:** Proposals section for story detail — only visible when pending proposals exist. Yellow/amber panel with proposed tasks, approve/reject per-item, "Approve all" bulk action, reject shows textarea for feedback.
+
+**Done:**
+- Created `features/story-detail/proposals-section.tsx`:
+  - `ProposalsSection` — fetches proposals for story via `useProposals(story.id)`, filters to pending only, returns `null` when none pending
+  - Wrapped in amber-themed `Card` (amber border, subtle amber background) for visual prominence
+  - Section header with AlertTriangle icon, pending count, "Approve all" bulk action button (only when >1 pending)
+  - `ProposalCard` — individual proposal display:
+    - Collapsible (ChevronUp/Down toggle)
+    - Shows proposal type label (e.g., "3 proposed tasks") with amber "pending" badge
+    - `ProposedTask` renders each proposed task (title + description) from `proposal.payload.tasks`
+    - Green "Approve" button → calls `useUpdateProposal` with `status: "approved"`
+    - Red outlined "Reject" button → toggles reject form
+    - Reject form: autofocus Textarea for feedback, Escape cancels, "Confirm Reject" button (disabled when empty) → calls with `status: "rejected"` + feedback
+  - Placed ABOVE child tasks in story-detail page per spec ("at top of detail")
+- Updated `pages/story-detail.tsx`:
+  - Added `ProposalsSection` import, placed before `ChildTasksSection`
+  - Removed proposals placeholder
+
+**Files created:**
+- `packages/frontend/src/features/story-detail/proposals-section.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/story-detail.tsx` (added ProposalsSection, removed placeholder)
+
+**Notes for next agent:**
+- T2.3.5 is next: comment stream component
+- Mock data: Story 1 has approved proposal (hidden since not pending), Story 2 has pending proposal with 3 proposed tasks — so navigating to Story 2 shows the amber proposals section
+- `useUpdateProposal` invalidates both `["proposals"]` and `dashboardStats` query keys
+- "Approve all" iterates over pending proposals and mutates each — works for mock data; batch endpoint could optimize later
+
+---
+
 ## 2026-03-28 — Review: T2.3.3 (approved)
 
 **Reviewed:** Child tasks section — `child-tasks-section.tsx` and story-detail page integration.
