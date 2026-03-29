@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-03-28 — Review: T2.2.6 (approved)
+
+**Reviewed:** Inline story creation — `inline-story-form.tsx`, updated `kanban-column.tsx` and `kanban-board.tsx`.
+
+**Verdict:** Approved. All requirements met: "+" button only on Backlog (initial state) column, inline form with autofocus title input + priority select (P0-P3, default P2), Enter/Escape keyboard shortcuts, disabled when empty/pending. `useCreateStory` mutation creates in Backlog state automatically. Smooth slide-in animation. Board passes projectId/workflowId from hooks. Build clean. Story Board section complete (T2.2.1–T2.2.6).
+
+---
+
 ## 2026-03-28 — T2.2.6: Build inline story creation
 
 **Task:** "+" button in Backlog column header, inline form with title + priority, creates story via mock API, smooth animation.
