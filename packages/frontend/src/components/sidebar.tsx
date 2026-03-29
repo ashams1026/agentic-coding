@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
+import { useExecutions } from "@/hooks";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -47,6 +48,8 @@ const themeLabel = { system: "System", light: "Light", dark: "Dark" } as const;
 
 export function Sidebar() {
   const { sidebarCollapsed, toggleSidebar, theme, setTheme } = useUIStore();
+  const { data: executions } = useExecutions();
+  const activeAgentCount = executions?.filter((e) => e.status === "running").length ?? 0;
 
   return (
     <aside
@@ -97,8 +100,24 @@ export function Sidebar() {
                   )
                 }
               >
-                <Icon className="h-4 w-4 shrink-0" />
-                {!sidebarCollapsed && <span>{label}</span>}
+                <span className="relative">
+                  <Icon className="h-4 w-4 shrink-0" />
+                  {to === "/agents" && activeAgentCount > 0 && sidebarCollapsed && (
+                    <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-500 text-[8px] font-bold text-white">
+                      {activeAgentCount}
+                    </span>
+                  )}
+                </span>
+                {!sidebarCollapsed && (
+                  <>
+                    <span className="flex-1">{label}</span>
+                    {to === "/agents" && activeAgentCount > 0 && (
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1.5 text-[10px] font-bold text-white">
+                        {activeAgentCount}
+                      </span>
+                    )}
+                  </>
+                )}
               </NavLink>
             </TooltipTrigger>
             {sidebarCollapsed && (

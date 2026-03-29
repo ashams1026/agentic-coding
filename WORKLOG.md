@@ -5,6 +5,42 @@
 
 ---
 
+## 2026-03-29 — T2.5.2: Build active agent sidebar list
+
+**Task:** Enhanced sidebar entries with persona avatar, name, task name, live elapsed time counter, live cost ticker, pulsing status dot. Click selects agent. Sorted by start time. Badge count in sidebar nav updates.
+
+**Done:**
+- Created `features/agent-monitor/active-agent-sidebar.tsx`:
+  - `ActiveAgentSidebar` — extracted and enhanced from T2.5.1 inline sidebar
+  - `AgentEntry` — persona avatar with pulsing green status dot (positioned top-right), persona name, task/story name (truncated), live elapsed time counter (`useEffect` interval, 1s updates, tabular-nums), live cost ticker (DollarSign icon + `$X.XX`)
+  - Props: `selectedId` + `onSelect` for controlled selection
+  - Sorted by start time, ScrollArea for overflow
+  - `formatElapsed` — same pattern as dashboard (Xs, Xm Ys, Xh Xm)
+  - `formatCost` — `$X.XX` format
+- Updated `features/agent-monitor/agent-monitor-layout.tsx`:
+  - Replaced inline sidebar with `<ActiveAgentSidebar>` component
+  - Removed duplicate lookup maps and data fetching (sidebar owns its own data)
+  - Layout still handles empty state and auto-selection logic
+- Updated `components/sidebar.tsx`:
+  - Added `useExecutions` hook to count running agents
+  - Badge on Agent Monitor nav item: emerald pill with count (expanded sidebar) or small circle overlay (collapsed sidebar)
+  - Only shown when `activeAgentCount > 0`
+
+**Files created:**
+- `packages/frontend/src/features/agent-monitor/active-agent-sidebar.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx` (use ActiveAgentSidebar)
+- `packages/frontend/src/components/sidebar.tsx` (badge on Agent Monitor nav)
+
+**Notes for next agent:**
+- T2.5.3 is next: terminal-style output renderer (replaces `SelectedAgentPlaceholder`)
+- The sidebar entries now have live counters — `formatElapsed` pattern reused from dashboard
+- Badge in main sidebar nav shows active agent count in emerald pill
+- Mock data: EXEC_4 is the only running execution (Engineer on TASK_1_2)
+
+---
+
 ## 2026-03-29 — Review: T2.5.1 (approved)
 
 **Reviewed:** Agent monitor page layout — `features/agent-monitor/agent-monitor-layout.tsx` and page integration.
