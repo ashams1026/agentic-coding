@@ -5,6 +5,39 @@
 
 ---
 
+## 2026-03-28 — T2.3.2: Build description and context section
+
+**Task:** Rich text area for story description (markdown textarea + rendered preview) and acceptance criteria section, both editable inline with save/cancel.
+
+**Done:**
+- Created `features/story-detail/story-description.tsx`:
+  - `StoryDescription` component with two `EditableSection` blocks: Description and Acceptance Criteria
+  - `EditableSection` — reusable component with view/edit modes:
+    - View mode: renders content via `MarkdownPreview`, "Edit" button
+    - Edit mode: Write/Preview tabs, monospace `Textarea`, Save/Cancel buttons
+    - Escape cancels editing
+  - `MarkdownPreview` — lightweight inline markdown renderer:
+    - Paragraphs, bullet lists (`-` and `*` prefixes), empty lines as spacing
+    - `formatInline` handles `**bold**` and `` `code` `` formatting
+    - "No description yet." italic placeholder for empty content
+  - Saves via `useUpdateStory` — description saves to `story.description`, acceptance criteria saves to `story.context.acceptanceCriteria`
+- Updated `pages/story-detail.tsx`:
+  - Replaced description placeholder with `<StoryDescription story={story} />`
+
+**Files created:**
+- `packages/frontend/src/features/story-detail/story-description.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/story-detail.tsx` (replaced placeholder, added import)
+
+**Notes for next agent:**
+- T2.3.3 is next: child tasks section
+- The `EditableSection` pattern could be reused if other sections need edit/preview toggle
+- Markdown rendering is intentionally minimal — a full markdown lib could replace `MarkdownPreview` later
+- Mock data has rich acceptance criteria with bullet lists that render properly
+
+---
+
 ## 2026-03-28 — Review: T2.3.1 (approved)
 
 **Reviewed:** Story detail panel — `story-detail-header.tsx` and `story-detail.tsx` page.

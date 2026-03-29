@@ -3,6 +3,7 @@ import { Separator } from "@/components/ui/separator";
 import { useStory } from "@/hooks";
 import type { StoryId } from "@agentops/shared";
 import { StoryDetailHeader } from "@/features/story-detail/story-detail-header";
+import { StoryDescription } from "@/features/story-detail/story-description";
 
 export function StoryDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -34,13 +35,9 @@ export function StoryDetailPage() {
         />
         <Separator />
 
-        {/* Placeholder sections for T2.3.2–T2.3.7 */}
+        {/* Content sections */}
         <div className="space-y-6">
-          <div className="rounded-lg border border-dashed p-6">
-            <p className="text-sm text-muted-foreground">
-              Description &amp; context section — T2.3.2
-            </p>
-          </div>
+          <StoryDescription story={story} />
           <div className="rounded-lg border border-dashed p-6">
             <p className="text-sm text-muted-foreground">
               Child tasks section — T2.3.3
