@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-29 — Review: T2.11.1 (approved)
+
+**Reviewed:** Command palette — `command-palette.tsx` + root layout integration.
+- All 7 requirements met: modal overlay with search, quick navigation (7 screens), story/task search via hooks, quick actions (Create story, View agents), grouped by 4 categories, keyboard nav (↑↓ + Enter + Escape with wrapping), Escape dismiss
+- Cmd+K / Ctrl+K global shortcut via document keydown listener
+- `useMemo` on all derived data (items, filtered, grouped, flatItems) — good perf
+- `flatIndex` mutable counter in render — works correctly for synchronous render
+- `scrollIntoView({ block: "nearest" })` for keyboard navigation visibility
+- Mouse hover updates selection, Enter kbd hint on selected item
+- Footer with keyboard shortcut hints — good discoverability
+- Dialog close button hidden via CSS selector — clean approach
+- Root layout: `<CommandPalette />` inside TooltipProvider — available globally
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T2.11.1: Build command palette (Cmd+K)
 
 **Task:** Modal overlay with search, quick navigation, story/task search, quick actions, grouped results, keyboard navigation, Escape dismiss.
