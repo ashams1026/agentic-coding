@@ -237,3 +237,11 @@
 - Story/task detail pages use `useParams` for `:id`
 - All routes are nested under RootLayout with `<Outlet />`
 - React Router v7 uses `react-router` package (not `react-router-dom`)
+
+---
+
+## 2026-03-28 — Review: T1.2.4 (approved)
+
+**Reviewed:** React Router setup with 9 route stubs.
+
+**Verdict:** Approved. All 9 routes present and correctly structured. Router uses `createBrowserRouter` with nested layout pattern. Page components use named exports, kebab-case files, proper TypeScript. `useParams` correctly typed on detail pages. Build and typecheck pass clean.
