@@ -416,3 +416,40 @@
 **Reviewed:** Shared entity types, ID utilities, and type exports.
 
 **Verdict:** Approved. All 11 entity interfaces match PLANNING.md T1.4 spec precisely. Branded template literal ID types provide type safety. createId factory is clean with consistent 7-char nanoid. Proper use of `import type` for verbatimModuleSyntax. Full project build passes.
+
+---
+
+## 2026-03-28 — T1.3.2: Define API contract types
+
+**Task:** Request/response types for all CRUD endpoints, WebSocket event types, aggregate stat types.
+
+**Done:**
+- Created `src/api.ts` — API contract types:
+  - Generic wrappers: ApiResponse<T>, ApiListResponse<T>, ApiErrorResponse
+  - CRUD request/response types for: Project, Story, Task, TaskEdge, Workflow, Persona, Comment, Proposal
+  - Update requests use optional fields (Partial-style)
+  - ReadyWorkItem type for ready-work query (task + story + persona)
+  - Aggregate types: DashboardStats, CostSummary, ExecutionStats
+  - Route param types for all entities
+- Created `src/ws-events.ts` — WebSocket event types:
+  - 9 event types: state_change, comment_created, agent_output_chunk, agent_started, agent_completed, proposal_created, proposal_updated, cost_update, execution_update
+  - Individual event interfaces with typed payloads
+  - Discriminated union `WsEvent` for type-safe handling
+  - `WsEventMap` for typed subscribe API
+  - `WsEventHandler<T>` generic callback type
+- Updated barrel export in `src/index.ts`
+- Verified: full project `tsc --build` clean, lint clean
+
+**Files created:**
+- `packages/shared/src/api.ts`
+- `packages/shared/src/ws-events.ts`
+
+**Files modified:**
+- `packages/shared/src/index.ts` (added exports)
+
+**Notes for next agent:**
+- T1.4.1 is next: create mock data fixtures
+- API types can be imported from `@agentops/shared`: `import type { CreateStoryRequest, StoryResponse } from "@agentops/shared"`
+- WsEvent is a discriminated union — use `event.type` to narrow: `if (event.type === "agent_output_chunk") { event.chunk }`
+- WsEventMap enables typed subscriptions: `subscribe<K extends WsEventType>(type: K, handler: (e: WsEventMap[K]) => void)`
+- All Shared Types tasks (T1.3.x) are now complete
