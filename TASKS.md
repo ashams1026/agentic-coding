@@ -5,47 +5,82 @@
 
 ---
 
-## Sprint 5: Backend API & Data Layer (Phase 3)
+## Sprint 6: Data Model & UI Overhaul
 
-> Connect the mocked UI to real data. Implements T3.1–T3.10 from PLANNING.md.
-> Backend: Fastify, better-sqlite3, Drizzle ORM. All in `packages/backend/`.
+> Major refactor: unified WorkItem model, multi-view UI, hardcoded workflow, Router agent.
+> See PLANNING.md "Core Concepts" for the full design.
+> The existing frontend code uses Story + Task entities — these must be unified into WorkItem.
 
-### Database & Server Foundation
+### Shared Types Refactor
 
-- [x] **T3.1.1** — Install backend dependencies and scaffold Fastify server. Install `fastify`, `@fastify/cors`, `@fastify/websocket`, `better-sqlite3`, `drizzle-orm`, `drizzle-kit`, and dev deps (`@types/better-sqlite3`, `tsx`). Create `packages/backend/src/server.ts` with Fastify instance, CORS config (allow frontend origin), and health check route `GET /health`. Update `src/index.ts` to start the server on port 3001. Verify `pnpm dev` starts and `/health` responds.
+- [ ] **O.1** — Refactor shared entity types. In `packages/shared/src/entities.ts`: replace `Story` and `Task` interfaces with a single `WorkItem` interface (`id`, `parentId`, `projectId`, `title`, `description`, `context`, `currentState`, `priority`, `labels[]`, `assignedPersonaId`, `executionContext[]`, `createdAt`, `updatedAt`). Replace `TaskEdge` with `WorkItemEdge`. Remove `Workflow` type (now a hardcoded constant). Remove `Trigger` type (replaced by `PersonaAssignment`). Add `PersonaAssignment` type (`projectId`, `stateName`, `personaId`). Update `Comment`, `Execution`, `Proposal`, `ProjectMemory` to reference `workItemId` instead of `storyId`/`taskId`. Update ID prefix to `wi-` for work items.
 
-- [ ] **T3.1.2** — Define Drizzle schema for all entities. Create `packages/backend/src/db/schema.ts` with SQLite tables matching the shared types in `packages/shared/src/entities.ts`: `projects`, `stories`, `tasks`, `task_edges`, `workflows`, `personas`, `triggers`, `executions`, `comments`, `project_memories`, `proposals`. Use `text` for IDs (prefixed nanoids), `text` for JSON columns (labels, context, settings, states), `integer` for timestamps stored as epoch ms. Add proper foreign key references. Create `packages/backend/src/db/index.ts` that initializes better-sqlite3 + Drizzle and exports `db`.
+- [ ] **O.2** — Add hardcoded workflow constant. Create `packages/shared/src/workflow.ts`: export `WORKFLOW` constant with `states[]` (Backlog, Planning, Decomposition, Ready, In Progress, In Review, Done, Blocked — each with name and color) and `transitions` map (state → valid next states array). Export helper functions: `getValidTransitions(state)`, `isValidTransition(from, to)`, `getStateByName(name)`. Export `WorkflowState` type.
 
-- [ ] **T3.1.3** — Set up Drizzle migrations and seed script. Configure `drizzle.config.ts` at backend package root. Create initial migration via `drizzle-kit generate`. Create `packages/backend/src/db/seed.ts` that populates the database with the same fixture data from `packages/frontend/src/mocks/fixtures.ts` — import or duplicate the fixture data, insert into all tables. Add `"seed"` script to backend `package.json`. Run migration + seed and verify data is in SQLite file.
+- [ ] **O.3** — Update API contract types. In `packages/shared/src/api-types.ts` (or equivalent): replace all Story/Task request/response types with WorkItem equivalents. Update WebSocket event types to use `workItemId`. Add `PersonaAssignment` CRUD types. Remove workflow CRUD types.
 
-### CRUD API Routes
+### Mock Data Refactor
 
-- [ ] **T3.2.1** — Implement project API routes. Create `packages/backend/src/routes/projects.ts` as a Fastify plugin. Routes: `GET /api/projects` (list all), `GET /api/projects/:id`, `POST /api/projects` (create with name, path, workflowId), `PATCH /api/projects/:id` (update), `DELETE /api/projects/:id`. Use Drizzle queries. Register plugin in server.ts under `/api` prefix. Implements T3.2 from PLANNING.md.
+- [ ] **O.4** — Refactor mock data fixtures. In `packages/frontend/src/mocks/fixtures.ts`: replace `mockStories` and `mockTasks` arrays with a single `mockWorkItems` array. Top-level items have `parentId: null`, children reference parent IDs. Update all cross-references (comments, executions, proposals, edges) to use `workItemId`. Remove mock workflows array — import `WORKFLOW` from shared. Add `mockPersonaAssignments` array mapping states to personas. Ensure fixture data covers: 2-3 top-level items, 5-8 children, 2-3 grandchildren (sub-tasks), items in various states.
 
-- [ ] **T3.2.2** — Implement story API routes. Create `packages/backend/src/routes/stories.ts`. Routes: `GET /api/stories` (list, optional `?projectId=` filter), `GET /api/stories/:id`, `POST /api/stories` (create with projectId, title, workflowId, priority), `PATCH /api/stories/:id` (update title, description, state, priority, labels, context), `DELETE /api/stories/:id`. Generate `StoryId` via `createId.story()`. Implements T3.3 from PLANNING.md (story part).
+- [ ] **O.5** — Refactor mock API layer. In `packages/frontend/src/mocks/api.ts`: replace `getStories()`, `getTasks()` etc. with `getWorkItems(parentId?)`, `getWorkItem(id)`, `createWorkItem()`, `updateWorkItem()`, `deleteWorkItem()`. Add `getPersonaAssignments(projectId)`, `updatePersonaAssignment()`. Remove workflow CRUD functions. Update all other API functions (comments, executions, proposals) to reference workItemId.
 
-- [ ] **T3.2.3** — Implement task API routes. Create `packages/backend/src/routes/tasks.ts`. Routes: `GET /api/tasks` (list, optional `?storyId=` filter), `GET /api/tasks/:id`, `POST /api/tasks` (create with storyId, title, description, personaId), `PATCH /api/tasks/:id` (update), `DELETE /api/tasks/:id`. On create, auto-populate `inheritedContext` from parent story's description + acceptance criteria. Implements T3.3 from PLANNING.md (task part).
+- [ ] **O.6** — Refactor TanStack Query hooks. In `packages/frontend/src/hooks/`: replace `useStories()`, `useStory()`, `useTasks()`, `useTask()` with `useWorkItems(parentId?)`, `useWorkItem(id)`. Add `usePersonaAssignments(projectId)`. Remove `useWorkflows()`, `useTriggers()`. Update all consumers of old hooks throughout the frontend.
 
-- [ ] **T3.2.4** — Implement task edge (dependency) API routes. Create `packages/backend/src/routes/task-edges.ts`. Routes: `POST /api/edges` (create edge with sourceId, targetId, type), `DELETE /api/edges/:id`, `GET /api/tasks/:id/edges` (get all edges for a task). On create, run cycle detection: BFS/DFS from target following edges — if source is reachable, reject with 409. Implements T3.4 from PLANNING.md.
+### Multi-View UI
 
-- [ ] **T3.2.5** — Implement comment API routes. Create `packages/backend/src/routes/comments.ts`. Routes: `GET /api/comments` (list, required `?targetId=` filter), `POST /api/comments` (create with targetId, targetType, content, authorType, authorName, authorId?). Generate `CommentId`. Implements T3.5 from PLANNING.md.
+- [ ] **O.7** — Build work items page with view toggle. Create `packages/frontend/src/pages/work-items.tsx` and `packages/frontend/src/features/work-items/` directory. Page layout: top bar with `[List] [Board] [Tree]` toggle buttons, filter/group/sort controls. View state persisted in URL params (`?view=list`) and Zustand. Shared filter bar: filter by state, priority, persona, labels, parent. Group by: state, parent, priority. Sort by: priority, created, updated. Quick-add "+" button for new top-level work item. Update router: replace `/board` and `/stories` routes with `/items` route.
 
-- [ ] **T3.2.6** — Implement workflow API routes. Create `packages/backend/src/routes/workflows.ts`. Routes: `GET /api/workflows` (list), `GET /api/workflows/:id`, `POST /api/workflows` (create with name, type, states JSON, transitions JSON), `PATCH /api/workflows/:id`, `DELETE /api/workflows/:id`. Add `POST /api/workflows/:id/validate` that checks for: orphan states (no incoming/outgoing transitions except initial), unreachable final states, missing initial state. Return warnings array. Implements T3.6 from PLANNING.md.
+- [ ] **O.8** — Build list view (primary). Create `packages/frontend/src/features/work-items/list-view.tsx`. Tree-indented rows showing WorkItem hierarchy via parentId. Each row: expand/collapse chevron, title, state badge (colored from WORKFLOW), priority badge, progress bar (if has children — count children in Done / total children), assigned persona avatar, active agent pulsing indicator. Collapsible groups when grouped by state/priority. "Done" group collapsed by default. Click row to select → updates selected item in Zustand → detail panel opens. Reuse existing components where possible (badges, avatars).
 
-- [ ] **T3.2.7** — Implement persona API routes. Create `packages/backend/src/routes/personas.ts`. Routes: `GET /api/personas` (list), `GET /api/personas/:id`, `POST /api/personas` (create), `PATCH /api/personas/:id` (update), `DELETE /api/personas/:id`, `POST /api/personas/:id/duplicate` (clone persona with "Copy of" prefix). Implements T3.7 from PLANNING.md.
+- [ ] **O.9** — Build board view. Create `packages/frontend/src/features/work-items/board-view.tsx`. Columns generated from `WORKFLOW.states`. Flat cards — scope selector at top: "Top-level items" or "Children of [item name]" (breadcrumb). Cards show: title, priority badge, progress pill (if has children), persona avatar. Drag-and-drop between columns using existing dnd-kit setup. On drop to state with assigned persona: show prompt "This will trigger [Persona]. Run / Skip / Cancel". Reuse `StoryCard` component as base, refactored to `WorkItemCard`.
 
-- [ ] **T3.2.8** — Implement execution API routes. Create `packages/backend/src/routes/executions.ts`. Routes: `GET /api/executions` (list, optional `?targetId=` filter), `GET /api/executions/:id`, `POST /api/executions` (create — used by agent executor later), `PATCH /api/executions/:id` (update status, outcome, logs, cost). Implements T3.8 from PLANNING.md (execution part).
+- [ ] **O.10** — Build tree view. Create `packages/frontend/src/features/work-items/tree-view.tsx`. Pure hierarchy display — no state grouping. Each node: expand/collapse, title, state badge, priority, progress bar (if has children). Indent levels visually with lines/guides. Click to select → detail panel.
 
-- [ ] **T3.2.9** — Implement proposal API routes. Create `packages/backend/src/routes/proposals.ts`. Routes: `GET /api/proposals` (list, optional `?parentId=` filter), `GET /api/proposals/:id`, `POST /api/proposals` (create), `PATCH /api/proposals/:id` (approve/reject — update status field). Implements T3.8 from PLANNING.md (proposal part).
+- [ ] **O.11** — Build work item detail panel. Create `packages/frontend/src/features/work-items/detail-panel.tsx`. Right-side panel (~50-60% width). Refactor and reuse existing story-detail and task-detail components. Sections: header (title editable, state badge, priority, labels, parent breadcrumb), description (editable), children list (if has children — with state badges, progress, "Add child" button, "Decompose" button), proposals (if pending), comment stream (reuse from features/common), execution timeline (reuse from features/common), flow history (new — chronological state changes for this item), dependency info, execution context viewer, metadata. This is the same panel regardless of depth level — works for stories, tasks, and sub-tasks.
 
-- [ ] **T3.2.10** — Implement aggregate/dashboard API routes. Create `packages/backend/src/routes/dashboard.ts`. Routes: `GET /api/dashboard/stats` (activeAgents count, pendingProposals count, needsAttention count, todayCostUsd sum), `GET /api/dashboard/cost-summary` (monthly total, daily breakdown), `GET /api/dashboard/ready-work` (tasks in triggerable state with all deps resolved). Implements T3.4 ready-work query from PLANNING.md.
+### Sidebar & Navigation Cleanup
 
-### WebSocket & Frontend Integration
+- [ ] **O.12** — Update sidebar navigation. In `packages/frontend/src/components/sidebar.tsx`: replace "Story Board" nav item with "Work Items". Remove "Workflows" nav item (no workflow designer page). Update badge to show pending proposals count on Work Items. Update all route references.
 
-- [ ] **T3.3.1** — Implement real WebSocket server. Register `@fastify/websocket` plugin. Create `packages/backend/src/ws/index.ts` with a WebSocket broadcast system: connected clients set, `broadcast(event: WsEvent)` function, connection/disconnection handling. Route: `GET /ws`. Event types match `packages/shared/src/ws-events.ts`. Add `broadcast()` calls to relevant route handlers (comment create, execution update, state change, proposal update). Implements T3.9 from PLANNING.md.
+- [ ] **O.13** — Update router. In `packages/frontend/src/router.tsx`: remove `/board`, `/stories/:id`, `/tasks/:id` routes. Add `/items` route pointing to new work items page. Remove workflow designer page import. Update dashboard links.
 
-- [ ] **T3.3.2** — Create API client for frontend. Create `packages/frontend/src/lib/api-client.ts` — thin wrapper around `fetch` with base URL config (`http://localhost:3001/api`), JSON request/response helpers, error handling. Export typed functions matching every backend route: `fetchProjects()`, `createStory(req)`, etc. Types come from `@agentops/shared`.
+### Dashboard & Activity Feed Updates
 
-- [ ] **T3.3.3** — Add API mode toggle to frontend. Create `packages/frontend/src/lib/api-mode.ts` — exports `getApiMode(): "mock" | "live"` reading from localStorage or `?api=live` URL param. Update all TanStack Query hooks in `packages/frontend/src/hooks/` to check api mode: if "live", call api-client functions; if "mock", call existing mock API functions. Default to "mock" so existing behavior is preserved. Add a toggle in Settings (appearance section). Implements T3.10 from PLANNING.md.
+- [ ] **O.14** — Update dashboard for WorkItem model. In dashboard components: replace story/task references with work item. Update `useDashboardStats()` hook to count work items. Update "Upcoming work" widget to show ready work items. Update activity feed events to reference work items.
 
-- [ ] **T3.3.4** — Connect WebSocket client to real server. Create `packages/frontend/src/lib/ws-client.ts` — WebSocket client that connects to `ws://localhost:3001/ws`, auto-reconnects on disconnect, and emits events through the same interface as `mockWs`. Update `use-ws-sync.ts` and `use-toast-events.ts` to use real WS client when api mode is "live". Keep `mockWs` as fallback for mock mode. Implements T3.9 from PLANNING.md (frontend side).
+- [ ] **O.15** — Update activity feed for WorkItem model. Replace "story/task" language with "work item" in event descriptions. Add Router decision events (with reasoning). Remove trigger-related event types.
+
+### Settings: Workflow Configuration
+
+- [ ] **O.16** — Build workflow configuration in settings. In the settings page (projects section): add per-project workflow config panel. Auto-routing toggle (ON/OFF switch). Persona-per-state table: rows for each state (from WORKFLOW.states), columns: state name (read-only), persona dropdown (from personas list), model badge. Read-only state machine diagram below the table showing states and transitions visually (simple SVG or canvas rendering of the hardcoded workflow). Remove old workflow-related settings.
+
+### Remove Old Code
+
+- [ ] **O.17** — Remove old story/task/workflow code. Delete: `packages/frontend/src/features/kanban/` (old kanban board), `packages/frontend/src/features/story-detail/` (replaced by detail-panel), `packages/frontend/src/features/task-detail/` (replaced by detail-panel), `packages/frontend/src/features/workflow-designer/` (no longer needed), `packages/frontend/src/pages/story-board.tsx`, `packages/frontend/src/pages/story-detail.tsx`, `packages/frontend/src/pages/task-detail.tsx`, `packages/frontend/src/pages/workflow-designer.tsx`. Keep `packages/frontend/src/features/common/` (CommentStream, ExecutionTimeline — shared components). Keep `packages/frontend/src/features/story-list/` only if parts are reusable for the new list view.
+
+### Backend Schema (Resume with Correct Model)
+
+- [ ] **O.18** — Rewrite Drizzle schema for WorkItem model. In `packages/backend/src/db/schema.ts`: replace `stories` and `tasks` tables with single `work_items` table (id text PK, parentId text nullable FK self-referencing, projectId text FK, title text, description text, context text JSON, currentState text, priority text, labels text JSON, assignedPersonaId text, executionContext text JSON, createdAt integer, updatedAt integer). Replace `task_edges` with `work_item_edges`. Add `persona_assignments` table (projectId text, stateName text, personaId text, PK on projectId+stateName). Remove `workflows` and `triggers` tables. Update `comments`, `executions`, `proposals`, `project_memories` to reference `workItemId`.
+
+- [ ] **O.19** — Update seed script for WorkItem model. In `packages/backend/src/db/seed.ts`: update to insert work items (not stories/tasks), persona assignments, and all related data matching the refactored frontend fixtures.
+
+- [ ] **O.20** — Rewrite CRUD API routes for WorkItem. Replace `routes/stories.ts` and `routes/tasks.ts` with `routes/work-items.ts`. Routes: `GET /api/work-items` (list, optional `?parentId=` and `?projectId=` filters), `GET /api/work-items/:id`, `POST /api/work-items`, `PATCH /api/work-items/:id`, `DELETE /api/work-items/:id`. Add `routes/persona-assignments.ts`: `GET /api/persona-assignments?projectId=`, `PUT /api/persona-assignments` (upsert). Remove `routes/workflows.ts`. Update `routes/task-edges.ts` → `routes/work-item-edges.ts`.
+
+---
+
+## Sprint 5 (remaining): Backend API Completion
+
+> Resume from T3.1.3 onwards, but with the corrected WorkItem-based schema from Sprint 6.
+> These tasks only make sense AFTER Sprint 6 is complete.
+
+- [ ] **T3.1.3** — Set up Drizzle migrations and seed script (using new WorkItem schema from O.18/O.19)
+- [ ] **T3.2.5** — Implement comment API routes (updated for workItemId)
+- [ ] **T3.2.7** — Implement persona API routes
+- [ ] **T3.2.8** — Implement execution API routes (updated for workItemId)
+- [ ] **T3.2.9** — Implement proposal API routes (updated for parentWorkItemId)
+- [ ] **T3.2.10** — Implement aggregate/dashboard API routes (updated for work items)
+- [ ] **T3.3.1** — Implement real WebSocket server
+- [ ] **T3.3.2** — Create API client for frontend (updated for work item endpoints)
+- [ ] **T3.3.3** — Add API mode toggle to frontend
+- [ ] **T3.3.4** — Connect WebSocket client to real server
