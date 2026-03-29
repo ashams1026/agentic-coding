@@ -1,4 +1,5 @@
-import { NavLink } from "react-router";
+import { useEffect } from "react";
+import { NavLink, useLocation } from "react-router";
 import {
   LayoutDashboard,
   Kanban,
@@ -48,12 +49,18 @@ const themeIcon = { system: Monitor, light: Sun, dark: Moon } as const;
 const themeLabel = { system: "System", light: "Light", dark: "Dark" } as const;
 
 export function Sidebar() {
-  const { sidebarCollapsed, toggleSidebar, theme, setTheme } = useUIStore();
+  const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, setMobileSidebarOpen, theme, setTheme } = useUIStore();
   const { data: executions } = useExecutions();
   const activeAgentCount = executions?.filter((e) => e.status === "running").length ?? 0;
   const unreadActivityCount = useActivityStore((s) => s.unreadCount);
+  const location = useLocation();
 
-  return (
+  // Close mobile sidebar on navigation
+  useEffect(() => {
+    setMobileSidebarOpen(false);
+  }, [location.pathname, setMobileSidebarOpen]);
+
+  const sidebarContent = (
     <aside
       className={cn(
         "flex h-screen flex-col border-r border-border bg-card transition-all duration-300 ease-in-out",
@@ -200,5 +207,28 @@ export function Sidebar() {
         </Tooltip>
       </div>
     </aside>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar — always visible */}
+      <div className="hidden md:block">{sidebarContent}</div>
+
+      {/* Mobile overlay */}
+      {mobileSidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
+      <div
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 md:hidden transition-transform duration-300 ease-in-out",
+          mobileSidebarOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
+        {sidebarContent}
+      </div>
+    </>
   );
 }

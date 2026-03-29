@@ -5,6 +5,37 @@
 
 ---
 
+## 2026-03-29 — R.3: Add sidebar mobile responsiveness
+
+**Task:** On screens < 768px: hide sidebar by default, add hamburger menu button, sidebar as overlay with backdrop, slide in from left, close on backdrop click or navigation.
+
+**Done:**
+- **ui-store.ts**: Added `mobileSidebarOpen` boolean + `setMobileSidebarOpen` setter (not persisted — always starts closed)
+- **sidebar.tsx**:
+  - Sidebar content extracted to `sidebarContent` variable (reused in both desktop and mobile renders)
+  - Desktop: wrapped in `<div className="hidden md:block">` — unchanged behavior
+  - Mobile: fixed overlay with `z-50`, slides from left via `translate-x-0` / `-translate-x-full` with `duration-300 ease-in-out`
+  - Backdrop: `fixed inset-0 z-40 bg-black/50 md:hidden`, click to close
+  - Auto-close on navigation via `useEffect` watching `location.pathname`
+  - Added imports: `useEffect` from React, `useLocation` from react-router
+- **root-layout.tsx**:
+  - Added mobile top bar (`h-12`, `md:hidden`) with hamburger button (Menu icon) + "AgentOps" label
+  - Hamburger calls `setMobileSidebarOpen(true)`
+  - Added imports: Menu from lucide, Button from ui, useUIStore
+
+**Files modified:**
+- `packages/frontend/src/stores/ui-store.ts`
+- `packages/frontend/src/components/sidebar.tsx`
+- `packages/frontend/src/layouts/root-layout.tsx`
+
+**Notes for next agent:**
+- R.3 completes the sidebar refinements section (R.1-R.3)
+- Mobile sidebar uses `w-sidebar` width (not collapsed) — full nav labels visible on mobile overlay
+- The `md:` breakpoint (768px) is the dividing line between mobile overlay and desktop inline sidebar
+- Next tasks are R.4-R.6 (Story/Task UX Overhaul) or Sprint 4 settings tasks
+
+---
+
 ## 2026-03-29 — Review: R.2 (approved)
 
 **Reviewed:** Sidebar transition improvements in `sidebar.tsx`.

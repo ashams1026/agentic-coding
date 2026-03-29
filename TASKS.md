@@ -15,7 +15,7 @@
 
 - [x] **R.2** — Improve sidebar transitions. Change from `transition-all duration-200` to `duration-300 ease-in-out`. Smooth badge transitions between collapsed/expanded instead of popping in/out. Consider animating label opacity separately from width. File: `packages/frontend/src/components/sidebar.tsx`.
 
-- [ ] **R.3** — Add sidebar mobile responsiveness. On screens < 768px: hide sidebar by default, add hamburger menu button in the status bar or top bar to toggle sidebar as an overlay with backdrop. Sidebar should slide in from left with animation. Close on backdrop click or navigation. Files: `packages/frontend/src/components/sidebar.tsx`, `packages/frontend/src/layouts/root-layout.tsx`.
+- [review] **R.3** — Add sidebar mobile responsiveness. On screens < 768px: hide sidebar by default, add hamburger menu button in the status bar or top bar to toggle sidebar as an overlay with backdrop. Sidebar should slide in from left with animation. Close on backdrop click or navigation. Files: `packages/frontend/src/components/sidebar.tsx`, `packages/frontend/src/layouts/root-layout.tsx`.
 
 ### Story/Task UX Overhaul
 

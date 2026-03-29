@@ -5,11 +5,13 @@ type Theme = "light" | "dark" | "system";
 
 interface UIState {
   sidebarCollapsed: boolean;
+  mobileSidebarOpen: boolean;
   selectedProjectId: string | null;
   theme: Theme;
 
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
+  setMobileSidebarOpen: (open: boolean) => void;
   setSelectedProjectId: (id: string | null) => void;
   setTheme: (theme: Theme) => void;
 }
@@ -18,11 +20,13 @@ export const useUIStore = create<UIState>()(
   persist(
     (set) => ({
       sidebarCollapsed: false,
+      mobileSidebarOpen: false,
       selectedProjectId: null,
       theme: "system",
 
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+      setMobileSidebarOpen: (open) => set({ mobileSidebarOpen: open }),
       setSelectedProjectId: (id) => set({ selectedProjectId: id }),
       setTheme: (theme) => set({ theme }),
     }),
