@@ -6,6 +6,7 @@ import { Sidebar } from "@/components/sidebar";
 import { StatusBar } from "@/components/status-bar";
 import { useThemeSync } from "@/hooks/use-theme";
 import { useUIStore } from "@/stores/ui-store";
+import { CommandPalette } from "@/features/command-palette/command-palette";
 
 export function RootLayout() {
   useThemeSync();
@@ -34,6 +35,7 @@ export function RootLayout() {
           <StatusBar />
         </div>
       </div>
+      <CommandPalette />
     </TooltipProvider>
   );
 }

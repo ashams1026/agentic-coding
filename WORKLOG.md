@@ -5,6 +5,41 @@
 
 ---
 
+## 2026-03-29 — T2.11.1: Build command palette (Cmd+K)
+
+**Task:** Modal overlay with search, quick navigation, story/task search, quick actions, grouped results, keyboard navigation, Escape dismiss.
+
+**Done:**
+- Created `features/command-palette/command-palette.tsx`:
+  - `CommandPalette` — Dialog-based modal overlay, opens on Cmd+K (or Ctrl+K)
+  - Search input with Search icon, ESC kbd hint, auto-focus on open
+  - 4 result categories: Navigation (7 screens), Stories (from `useStories()`), Tasks (from `useTasks()`), Quick Actions ("Create story", "View active agents")
+  - Results grouped by category with uppercase section labels
+  - Keyboard navigation: ArrowUp/ArrowDown to move, Enter to select, Escape to close
+  - Mouse hover updates selection, click selects
+  - Selected item highlighted with `bg-accent`, shows "Enter" kbd hint
+  - `scrollIntoView({ block: "nearest" })` keeps selection visible
+  - Footer with keyboard shortcut hints (↑↓ navigate, ↵ select, esc close)
+  - Empty state "No results found" when query matches nothing
+  - Dialog close button hidden via `[&>button:last-child]:hidden`
+- Updated `layouts/root-layout.tsx`:
+  - Added `<CommandPalette />` inside TooltipProvider — available on all pages
+
+**Files created:**
+- `packages/frontend/src/features/command-palette/command-palette.tsx`
+
+**Files modified:**
+- `packages/frontend/src/layouts/root-layout.tsx` (import + render CommandPalette)
+
+**Notes for next agent:**
+- Cmd+K opens from anywhere — global keyboard listener in useEffect
+- Uses shadcn Dialog with custom content (no DialogTitle/DialogDescription — just search + results)
+- `flatIndex` counter tracks absolute position across grouped categories for keyboard nav
+- Navigation uses `useNavigate()` from react-router
+- Next: T2.11.2 (toast notification system)
+
+---
+
 ## 2026-03-29 — Review: T2.10.5 (approved)
 
 **Reviewed:** Appearance, service, and data settings sections — `appearance-section.tsx` + settings-layout wiring.
