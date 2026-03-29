@@ -5,6 +5,47 @@
 
 ---
 
+## 2026-03-29 — R.5: Build story list view with master-detail panels
+
+**Task:** New list view for `/board` with filterable/sortable story list, side-panel story detail, toggle between list/kanban views.
+
+**Done:**
+- Created `features/story-list/story-list-row.tsx`:
+  - Compact row: state badge (color-coded), priority badge, title (truncated), mini progress bar (done/total)
+  - Selected state highlight via `bg-accent`
+  - Reuses priority config pattern from `story-card.tsx`
+- Created `features/story-list/story-list-panel.tsx`:
+  - Left panel with search input (filters by title, state, labels) + sort dropdown (priority, updated, title, state)
+  - Builds per-story task progress from `useTasks()` data
+  - Story count footer
+  - Scrollable list area
+- Created `features/story-list/story-detail-side-panel.tsx`:
+  - Right side panel (~60% width) reusing all existing story detail components: StoryDetailHeader, StoryDescription, ChildTasksSection, ProposalsSection, CommentStream, ExecutionTimeline, StoryMetadata
+  - Panel header with title, "open in full page" link (ExternalLink), close button
+  - Scrollable content via ScrollArea
+- Updated `pages/story-board.tsx`:
+  - Added view toggle (Board/List) with Kanban and List lucide icons, pill-style button group
+  - Kanban view unchanged (with its filter bar)
+  - List view: master-detail layout — list panel (2/5 width when detail open, full width when closed) + side panel
+  - `selectedStoryId` state drives side panel visibility
+  - Smooth width transition via `transition-all duration-300 ease-in-out`
+
+**Files created:**
+- `packages/frontend/src/features/story-list/story-list-row.tsx`
+- `packages/frontend/src/features/story-list/story-list-panel.tsx`
+- `packages/frontend/src/features/story-list/story-detail-side-panel.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/story-board.tsx`
+
+**Notes for next agent:**
+- R.6 (nested task detail panel) should extend `story-detail-side-panel.tsx` — when a task is clicked in the ChildTasksSection, show task detail panel
+- The `features/story-list/` directory is now established for list-view-related components
+- Both kanban and list views are available on the same `/board` route via toggle
+- State badge colors in `story-list-row.tsx` cover all 8 workflow states from fixture data
+
+---
+
 ## 2026-03-29 — Review: R.4 (approved)
 
 **Reviewed:** Extraction of CommentStream and ExecutionTimeline to `features/common/`.
