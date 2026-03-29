@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.5.1 (approved)
+
+**Reviewed:** Agent monitor page layout — `features/agent-monitor/agent-monitor-layout.tsx` and page integration.
+- Split-pane: 250px sidebar (border-r, shrink-0) + flex-1 main area — correct layout
+- Sidebar: filters to `status === "running"` executions, sorted by start time, persona avatars with pulsing green dot, selection highlight
+- Empty state: Monitor icon, "No agents running", link to `/board`
+- Auto-select logic handles first agent and stale selection correctly
+- `SelectedAgentPlaceholder` is an appropriate stub for T2.5.3 terminal renderer
+- Mock data driven via hooks, feature directory `agent-monitor/` established
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.5.1: Build agent monitor page layout
 
 **Task:** Split-pane: left sidebar (~250px) lists active agents, main area shows selected agent output. If no agents active, show empty state with "No agents running" and link to story board.
