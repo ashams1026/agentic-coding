@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: T2.11.3 (approved)
+
+**Reviewed:** Loading skeletons and empty states — `loading-skeletons.tsx` + `empty-states.tsx` in features/common/.
+- All requirements met: 6 screen-specific skeletons matching real layouts (dashboard, kanban, detail, agent monitor, activity, settings), 4 required empty states + 2 bonus (no tasks, not found)
+- Skeletons use shadcn `Skeleton` with `animate-pulse`, layout matches actual screen structure (grid cols, sidebar widths, card counts)
+- Empty states: generic `EmptyState` base component with icon circle, title, description, optional CTA via Link+Button
+- Required empty states match spec text exactly: "Create your first story", "All quiet", "Nothing yet", "Set up your team"
+- Files in `features/common/` — correct location
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T2.11.3: Build loading skeletons and empty states
 
 **Task:** Skeleton components matching screen layouts (shimmer animation). Empty states for stories, agents, activity, personas with icons, descriptions, and CTA buttons.
