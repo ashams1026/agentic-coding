@@ -700,3 +700,11 @@
 - `useDashboardStats()` hook returns `{ activeAgents, pendingProposals, needsAttention, todayCostUsd }`
 - Dashboard uses `useNavigate` from react-router for card click navigation
 - lucide-react icons are used throughout — import from "lucide-react"
+
+---
+
+## 2026-03-28 — Review: T2.1.1 (approved)
+
+**Reviewed:** Dashboard page layout with status cards in `packages/frontend/src/pages/dashboard.tsx`.
+
+**Verdict:** Approved. All 4 status cards present with correct navigation targets. Data driven by `useDashboardStats()` hook. Responsive grid (1→2→4 cols). Loading state, dark mode, hover effects all correct. Reusable `StatCard` component cleanly extracted. Placeholder cards for upcoming T2.1.2–T2.1.5 widgets. Build passes clean.
