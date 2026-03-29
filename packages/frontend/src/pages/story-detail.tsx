@@ -7,6 +7,7 @@ import { StoryDescription } from "@/features/story-detail/story-description";
 import { ChildTasksSection } from "@/features/story-detail/child-tasks-section";
 import { ProposalsSection } from "@/features/story-detail/proposals-section";
 import { CommentStream } from "@/features/story-detail/comment-stream";
+import { ExecutionTimeline } from "@/features/story-detail/execution-timeline";
 
 export function StoryDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -44,11 +45,7 @@ export function StoryDetailPage() {
           <ProposalsSection story={story} />
           <ChildTasksSection story={story} />
           <CommentStream targetId={story.id} targetType="story" />
-          <div className="rounded-lg border border-dashed p-6">
-            <p className="text-sm text-muted-foreground">
-              Execution history — T2.3.6
-            </p>
-          </div>
+          <ExecutionTimeline targetId={story.id} />
         </div>
       </div>
     </div>

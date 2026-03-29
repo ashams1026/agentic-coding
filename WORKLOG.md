@@ -5,6 +5,43 @@
 
 ---
 
+## 2026-03-29 — T2.3.6: Build execution history timeline
+
+**Task:** Vertical timeline on story detail. Each entry: persona avatar, "[Name] ran for Xm Ys", cost badge, outcome badge (success/failure/rejected). Click to expand shows logs. Collapsed by default.
+
+**Done:**
+- Created `features/story-detail/execution-timeline.tsx`:
+  - `ExecutionTimeline` — fetches executions for target via `useExecutions(targetId)`, sorted most-recent-first, hidden when empty
+  - `TimelineEntry` — vertical timeline layout:
+    - Persona avatar on timeline track with vertical line connector between entries
+    - Clickable summary: "[Persona Name] ran for Xm Ys" with one-line summary below
+    - `OutcomeBadge` — green success / red failure / amber rejected / green-animated running
+    - Cost badge (DollarSign icon + `$0.42` format)
+    - Timestamp (Clock icon + short date/time)
+    - Collapsed by default, click ChevronRight/Down to expand
+    - Expanded: monospace log output in bordered muted container with `whitespace-pre-wrap`
+  - `formatDuration` helper: converts ms to "Xm Ys" or "Xs" format, "running..." for 0
+  - `formatCost` helper: `$X.XX` format
+  - Returns `null` when no executions (doesn't render empty section)
+- Updated `pages/story-detail.tsx`:
+  - Added `ExecutionTimeline` import, replaced execution history placeholder
+  - All story detail placeholders now replaced — only T2.3.7 (metadata sidebar) remains
+
+**Files created:**
+- `packages/frontend/src/features/story-detail/execution-timeline.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/story-detail.tsx` (replaced placeholder, added import)
+
+**Notes for next agent:**
+- T2.3.7 is next: story metadata sidebar
+- Mock data: Story 1 has 2 executions (PM + Tech Lead, both completed/success), Story 2 has 2 (PM + Tech Lead)
+- The `ExecutionTimeline` is reusable for task detail too (accepts `targetId: StoryId | TaskId`)
+- Task spec mentions "reuse terminal renderer from agent monitor" — for now, logs render as `<pre>` in a monospace container. The agent monitor terminal renderer (T2.5.3) will be built later and could replace this.
+- Story detail page now has no placeholder sections (except T2.3.7 metadata sidebar which was never added as a placeholder)
+
+---
+
 ## 2026-03-29 — Review: T2.3.5 (approved)
 
 **Reviewed:** Comment stream component — `comment-stream.tsx` and story-detail page integration.
