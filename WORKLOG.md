@@ -5,6 +5,36 @@
 
 ---
 
+## 2026-03-28 — T2.3.3: Build child tasks section
+
+**Task:** List of tasks belonging to story, each with checkbox state toggle, title, state badge, persona avatar, dependency indicator. Mini dependency graph. Inline "Add task" form.
+
+**Done:**
+- Created `features/story-detail/child-tasks-section.tsx`:
+  - `ChildTasksSection` — main component fetching tasks, edges, personas, workflows for the story
+  - `TaskRow` — each task: checkbox (toggles Done/Pending via `useUpdateTask`), state icon (animated spinner for Running), title as link to `/tasks/:id`, state badge, persona avatar with tooltip, dependency indicator (amber GitBranch icon)
+  - `AddTaskForm` — inline form with autofocus input, Enter/Escape, uses `useCreateTask` with task workflow ID auto-detected from workflows
+  - `MiniDepGraph` — SVG-based dependency graph with topological BFS layering, state-colored left indicator per node, arrow markers for edges. Only renders when edges exist between story's tasks
+  - Progress bar showing done/total count
+  - Added shadcn Checkbox component
+- Updated `pages/story-detail.tsx`:
+  - Replaced child tasks placeholder with `<ChildTasksSection story={story} />`
+
+**Files created:**
+- `packages/frontend/src/features/story-detail/child-tasks-section.tsx`
+- `packages/frontend/src/components/ui/checkbox.tsx` (shadcn)
+
+**Files modified:**
+- `packages/frontend/src/pages/story-detail.tsx` (replaced placeholder, added import)
+
+**Notes for next agent:**
+- T2.3.4 is next: proposals section
+- Mock data: Story 1 (Auth) has 3 tasks with 2 edges forming a chain (OAuth routes → Login UI → Session persistence) — the dep graph renders for this story
+- Story 2 (Dashboard) has 3 tasks with no edges — no graph shown
+- The `getStateConfig` pattern could be extracted to a shared util if needed elsewhere
+
+---
+
 ## 2026-03-28 — Review: T2.3.2 (approved)
 
 **Reviewed:** Description and context section for story detail page.

@@ -4,6 +4,7 @@ import { useStory } from "@/hooks";
 import type { StoryId } from "@agentops/shared";
 import { StoryDetailHeader } from "@/features/story-detail/story-detail-header";
 import { StoryDescription } from "@/features/story-detail/story-description";
+import { ChildTasksSection } from "@/features/story-detail/child-tasks-section";
 
 export function StoryDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -38,11 +39,7 @@ export function StoryDetailPage() {
         {/* Content sections */}
         <div className="space-y-6">
           <StoryDescription story={story} />
-          <div className="rounded-lg border border-dashed p-6">
-            <p className="text-sm text-muted-foreground">
-              Child tasks section — T2.3.3
-            </p>
-          </div>
+          <ChildTasksSection story={story} />
           <div className="rounded-lg border border-dashed p-6">
             <p className="text-sm text-muted-foreground">
               Proposals section — T2.3.4

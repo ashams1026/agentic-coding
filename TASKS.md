@@ -9,7 +9,7 @@
 
 ### Story Detail (continued)
 
-- [ ] **T2.3.3** — Build child tasks section. List of tasks belonging to this story. Each task row: checkbox (state), title, state badge, assigned persona avatar, dependency indicator (icon if has deps). Mini dependency graph visualization using a simple node-edge layout (tasks as small boxes, arrows for edges). "Add task" button opens inline form.
+- [review] **T2.3.3** — Build child tasks section. List of tasks belonging to this story. Each task row: checkbox (state), title, state badge, assigned persona avatar, dependency indicator (icon if has deps). Mini dependency graph visualization using a simple node-edge layout (tasks as small boxes, arrows for edges). "Add task" button opens inline form.
 
 - [ ] **T2.3.4** — Build proposals section. Only visible when story has pending proposals. Yellow/amber highlight panel at top of detail. Lists proposed tasks from Tech Lead agent. Each: title, description (editable inline), approve button (green), reject button (red). "Approve all" bulk action. Reject shows textarea for feedback. Approved tasks appear in child tasks list.
 
