@@ -362,3 +362,11 @@
 - `.dark` class is toggled on `<html>` — all Tailwind `dark:` variants work
 - System preference is the default and reacts to OS changes in real-time
 - All Frontend Foundation tasks (T1.2.x) are now complete
+
+---
+
+## 2026-03-28 — Review: T1.2.7 (approved)
+
+**Reviewed:** Dark mode implementation — theme sync hook, sidebar toggle, persistence.
+
+**Verdict:** Approved. useThemeSync hook correctly handles all three modes with proper media query listener cleanup for system mode. Theme cycle button cleanly integrated into sidebar footer. Zustand selector isolates re-renders. Build passes.
