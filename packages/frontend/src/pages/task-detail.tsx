@@ -7,6 +7,7 @@ import { useTask, useStories, usePersonas } from "@/hooks";
 import { CommentStream } from "@/features/story-detail/comment-stream";
 import { ExecutionTimeline } from "@/features/story-detail/execution-timeline";
 import { InheritedContext } from "@/features/task-detail/inherited-context";
+import { DependencyInfo } from "@/features/task-detail/dependency-info";
 import type { TaskId } from "@agentops/shared";
 import { useMemo } from "react";
 
@@ -125,11 +126,7 @@ export function TaskDetailPage() {
 
           {/* Inherited context */}
           <InheritedContext task={task} story={story} />
-          <div className="rounded-lg border border-dashed p-6">
-            <p className="text-sm text-muted-foreground">
-              Dependency info — T2.4.3
-            </p>
-          </div>
+          <DependencyInfo task={task} />
           <div className="rounded-lg border border-dashed p-6">
             <p className="text-sm text-muted-foreground">
               Execution context — T2.4.4

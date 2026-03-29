@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-03-29 — T2.4.3: Build dependency info display
+
+**Task:** "Depends on" list with task title + state badge (colored by state). "Blocks" list showing tasks this one blocks. Visual indicator if blocking something.
+
+**Done:**
+- Created `features/task-detail/dependency-info.tsx`:
+  - `DependencyInfo` — fetches edges via `useTaskEdges(task.id)` and sibling tasks via `useTasks(task.storyId)`
+  - "Depends on" section (ArrowDownRight icon): edges where `toId === task.id`
+  - "Blocks" section (ArrowUpRight icon): edges where `fromId === task.id`
+  - `DepRow` — state icon (green CheckCircle2 for Done, animated Loader2 for Running, amber Circle for Review, gray Circle for Pending), task title as Link, state badge
+  - Blocking indicator: amber AlertCircle on "Blocks" rows where blocked task is not Done
+  - Returns null when no dependencies exist
+- Updated `pages/task-detail.tsx`: replaced dependency info placeholder
+
+**Files created:**
+- `packages/frontend/src/features/task-detail/dependency-info.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/task-detail.tsx`
+
+**Notes for next agent:**
+- T2.4.4 is next: execution context viewer
+- Mock data: Task chain tk-au01001 → tk-au01002 → tk-au01003 exercises both "Depends on" and "Blocks" sections
+
+---
+
 ## 2026-03-29 — Review: T2.4.2 (approved)
 
 **Reviewed:** Inherited context section — `features/task-detail/inherited-context.tsx` and task-detail page integration.
