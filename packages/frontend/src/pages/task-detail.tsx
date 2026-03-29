@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useTask, useStories, usePersonas } from "@/hooks";
 import { CommentStream } from "@/features/story-detail/comment-stream";
 import { ExecutionTimeline } from "@/features/story-detail/execution-timeline";
+import { InheritedContext } from "@/features/task-detail/inherited-context";
 import type { TaskId } from "@agentops/shared";
 import { useMemo } from "react";
 
@@ -122,12 +123,8 @@ export function TaskDetailPage() {
             </div>
           )}
 
-          {/* Placeholder sections for T2.4.2–T2.4.5 */}
-          <div className="rounded-lg border border-dashed p-6">
-            <p className="text-sm text-muted-foreground">
-              Inherited context — T2.4.2
-            </p>
-          </div>
+          {/* Inherited context */}
+          <InheritedContext task={task} story={story} />
           <div className="rounded-lg border border-dashed p-6">
             <p className="text-sm text-muted-foreground">
               Dependency info — T2.4.3

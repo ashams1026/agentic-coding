@@ -5,6 +5,39 @@
 
 ---
 
+## 2026-03-29 — T2.4.2: Build inherited context section
+
+**Task:** Collapsible panel showing context from parent story: description excerpt, acceptance criteria, Tech Lead notes. Labeled "Inherited from [Story Name]".
+
+**Done:**
+- Created `features/task-detail/inherited-context.tsx`:
+  - `InheritedContext` — collapsible panel (open by default) with "Inherited from [Story Name]" header
+  - Story name in header is a clickable link to `/stories/:id`
+  - Three content sections, each with FileText icon + uppercase label:
+    - "Context" — task's `inheritedContext` field (notes from Tech Lead / task creation)
+    - "Story Description" — parent story description excerpt (line-clamp-4)
+    - "Acceptance Criteria" — parent story acceptance criteria (line-clamp-6)
+  - "View full story" link at bottom
+  - Returns null when no content available
+  - Reuses shadcn Collapsible with same chevron rotation pattern as StoryMetadata
+- Created `features/task-detail/` directory for task detail feature components
+- Updated `pages/task-detail.tsx`:
+  - Replaced inherited context placeholder with `<InheritedContext task={task} story={story} />`
+
+**Files created:**
+- `packages/frontend/src/features/task-detail/inherited-context.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/task-detail.tsx` (replaced placeholder, added import)
+
+**Notes for next agent:**
+- T2.4.3 is next: dependency info display
+- Task detail feature components live in `features/task-detail/`
+- The `story` prop comes from the parent page which already resolves it via `useStories()` + find
+- Mock tasks have `inheritedContext` populated (e.g., "Implement OAuth2 login flow...")
+
+---
+
 ## 2026-03-29 — Review: T2.4.1 (approved)
 
 **Reviewed:** Task detail page — `task-detail.tsx` rewrite.
