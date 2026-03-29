@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-03-28 — Review: T2.2.1 (approved)
+
+**Reviewed:** Kanban board layout — `features/kanban/kanban-board.tsx`, `kanban-column.tsx`, and `story-board.tsx` page.
+
+**Verdict:** Approved. All requirements met: columns generated from default story workflow states (7 columns), headers with colored dot + state name + count badge, horizontal scroll via ScrollArea, board fills viewport height via flex layout chain. Stories grouped correctly by `currentState`. Loading/empty states handled. Placeholder story cards are functional with links, priority badges, and label pills. Clean board/column component separation. Build clean.
+
+---
+
 ## 2026-03-28 — T2.2.1: Build kanban board layout
 
 **Task:** Kanban board with columns from story workflow states, column headers with state name/count/color, horizontal scroll, full viewport height.
