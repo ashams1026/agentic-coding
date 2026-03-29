@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.9.3 (approved)
+
+**Reviewed:** System prompt editor — `system-prompt-editor.tsx` + persona-editor integration.
+- Edit/Preview toggle (Pencil/Eye buttons, secondary/ghost variant switch)
+- Edit mode: line numbers gutter (scroll-synced via translateY) + monospace textarea
+- Preview mode: minimal markdown renderer (h1-h3, bold, inline code, bullets, code blocks, empty state)
+- Footer: character count, ~token estimate, line count
+- Placeholder with structured example prompt
+- Standalone component (value/onChange props), integrated into persona editor replacing basic Textarea
+- Build passes, conventions followed
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.9.3: Build system prompt editor
 
 **Task:** Large textarea with monospace font. Markdown preview toggle. Line numbers. Character/token count estimate. Placeholder text.
