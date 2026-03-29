@@ -5,6 +5,35 @@
 
 ---
 
+## 2026-03-29 — T2.10.1: Build settings page layout
+
+**Task:** Vertical sections with clear headings, separated by dividers. Sidebar or tab nav for sections: Projects, API Keys, Concurrency, Costs, Appearance, Service, Data.
+
+**Done:**
+- Created `features/settings/settings-layout.tsx`:
+  - Left sidebar nav (200px) with 7 sections: Projects (FolderOpen), API Keys (Key), Concurrency (Gauge), Costs (DollarSign), Appearance (Palette), Service (Server), Data (Database)
+  - Active section highlight with bg-accent, hover states, icon + label
+  - Content area: max-w-2xl centered, section header with Separator
+  - `SECTIONS` array with id, label, icon — easy to extend
+  - `SectionPlaceholder` for each section — T2.10.2-T2.10.5 will replace these with real content
+  - `activeSection` state for switching between sections
+- Updated `pages/settings.tsx` — replaced placeholder with `<SettingsLayout />`
+
+**Files created:**
+- `packages/frontend/src/features/settings/settings-layout.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/settings.tsx`
+
+**Notes for next agent:**
+- Settings section started — T2.10.2 is projects section
+- The layout uses a sidebar nav (not tabs) for better vertical section support
+- Each section will be a component rendered conditionally based on `activeSection`
+- The `SectionPlaceholder` should be replaced with real section components as they're built
+- Content area is scrollable, sidebar is fixed — standard settings page pattern
+
+---
+
 ## 2026-03-29 — Review: T2.9.5 (approved)
 
 **Reviewed:** Test run panel — `test-run-panel.tsx` + persona-editor integration.
