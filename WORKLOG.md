@@ -5,6 +5,42 @@
 
 ---
 
+## 2026-03-29 — T2.5.3: Build terminal-style output renderer
+
+**Task:** Monospace font display area. Renders agent output as it streams (via mock WebSocket). Text blocks: normal style. Code blocks: syntax highlighted. Thinking/reasoning: italic, muted color. Auto-scrolls to bottom. "Scroll lock" toggle.
+
+**Done:**
+- Created `features/agent-monitor/terminal-renderer.tsx`:
+  - `TerminalRenderer` — subscribes to `agent_output_chunk` WebSocket events for the selected execution, loads initial logs from `useExecution(id)`
+  - Dark terminal background (`bg-zinc-950`), monospace font, light text (`text-zinc-200`)
+  - `ChunkRenderer` — routes chunks by `chunkType`:
+    - `text` — normal `<pre>` with `whitespace-pre-wrap`
+    - `code` — dark code block with keyword highlighting (purple for JS/TS keywords), `text-emerald-300`, `overflow-x-auto`
+    - `thinking` — italic, muted, left border indent
+    - `tool_call` / `tool_result` — render as code blocks (T2.5.4 will add proper collapsible display)
+  - Auto-scroll: `bottomRef.scrollIntoView({ behavior: "smooth" })` on new chunks when not locked
+  - Scroll lock toggle: button in toolbar (`Lock`/`Unlock` icons), auto-detects user scroll-up (40px threshold), "New output below ↓" indicator button when locked and new chunks arrive
+  - Toolbar: execution ID badge, chunk count, scroll lock toggle
+  - Initial logs loaded from `execution.logs` (split by `\n`), live chunks appended via WebSocket subscription
+- Updated `features/agent-monitor/agent-monitor-layout.tsx`:
+  - Replaced `SelectedAgentPlaceholder` with `<TerminalRenderer executionId={effectiveSelectedId} />`
+  - Removed unused `usePersonas`, `personaMap`, `selectedExecution`
+  - Added `relative` class to main area for absolute-positioned "new output" indicator
+
+**Files created:**
+- `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`
+
+**Notes for next agent:**
+- T2.5.4 is next: tool call display sections (collapsible, replaces the code block fallback for tool_call/tool_result)
+- The terminal renderer subscribes to `mockWs.subscribe("agent_output_chunk", ...)` — to test live streaming, use `mockWs.simulateAgentStream()` from browser console or demo mode
+- Code highlighting is intentionally lightweight (regex keyword match) — a full syntax highlighter lib could replace it later
+- `dangerouslySetInnerHTML` used for code highlighting — safe here since content comes from mock data only
+
+---
+
 ## 2026-03-29 — Review: T2.5.2 (approved)
 
 **Reviewed:** Active agent sidebar list — `features/agent-monitor/active-agent-sidebar.tsx`, layout update, and sidebar nav badge.

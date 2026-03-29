@@ -2,9 +2,10 @@ import { useState, useMemo } from "react";
 import { Link } from "react-router";
 import { Monitor, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useExecutions, usePersonas } from "@/hooks";
+import { useExecutions } from "@/hooks";
 import { ActiveAgentSidebar } from "./active-agent-sidebar";
-import type { Execution, ExecutionId } from "@agentops/shared";
+import { TerminalRenderer } from "./terminal-renderer";
+import type { ExecutionId } from "@agentops/shared";
 
 // ── Empty state ────────────────────────────────────────────────
 
@@ -32,29 +33,10 @@ function EmptyState() {
   );
 }
 
-// ── Selected agent placeholder ─────────────────────────────────
-
-function SelectedAgentPlaceholder({ execution, personaName }: { execution: Execution; personaName: string }) {
-  return (
-    <div className="flex h-full items-center justify-center">
-      <div className="text-center space-y-2">
-        <p className="text-sm font-medium">{personaName}</p>
-        <p className="text-xs text-muted-foreground">
-          Agent output will stream here.
-        </p>
-        <p className="text-[10px] font-mono text-muted-foreground/70">
-          {execution.id}
-        </p>
-      </div>
-    </div>
-  );
-}
-
 // ── Main layout ────────────────────────────────────────────────
 
 export function AgentMonitorLayout() {
   const { data: executions = [] } = useExecutions();
-  const { data: personas = [] } = usePersonas();
 
   const [selectedId, setSelectedId] = useState<ExecutionId | null>(null);
 
@@ -64,12 +46,6 @@ export function AgentMonitorLayout() {
     [executions],
   );
 
-  // Lookup maps
-  const personaMap = useMemo(
-    () => new Map(personas.map((p) => [p.id as string, p])),
-    [personas],
-  );
-
   // Auto-select first agent if none selected or selection no longer valid
   const effectiveSelectedId = useMemo(() => {
     if (selectedId && activeExecutions.some((e) => e.id === selectedId)) {
@@ -77,11 +53,6 @@ export function AgentMonitorLayout() {
     }
     return activeExecutions.length > 0 ? activeExecutions[0]!.id : null;
   }, [selectedId, activeExecutions]);
-
-  const selectedExecution = useMemo(
-    () => activeExecutions.find((e) => e.id === effectiveSelectedId),
-    [activeExecutions, effectiveSelectedId],
-  );
 
   // No active agents — full empty state
   if (activeExecutions.length === 0) {
@@ -96,15 +67,10 @@ export function AgentMonitorLayout() {
         onSelect={setSelectedId}
       />
 
-      {/* Main area — selected agent output */}
-      <div className="flex-1 min-w-0">
-        {selectedExecution ? (
-          <SelectedAgentPlaceholder
-            execution={selectedExecution}
-            personaName={
-              personaMap.get(selectedExecution.personaId as string)?.name ?? "Agent"
-            }
-          />
+      {/* Main area — terminal output */}
+      <div className="flex-1 min-w-0 relative">
+        {effectiveSelectedId ? (
+          <TerminalRenderer executionId={effectiveSelectedId} />
         ) : (
           <div className="flex h-full items-center justify-center">
             <p className="text-sm text-muted-foreground">
