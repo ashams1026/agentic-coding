@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T2.11.2 (approved)
+
+**Reviewed:** Toast notification system — `toast-store.ts`, `toast-renderer.tsx`, `use-toast-events.ts` + root layout integration.
+- All 6 requirements met: bottom-right positioning, 4 typed colors (green/red/blue/amber + dark), 5s auto-dismiss, max 3 stack, action button support, WS event wiring
+- Store: clean Zustand with `addToast`/`removeToast`, module-level `nextId`, oldest-trimmed on overflow
+- Renderer: slide-in animation, per-type icon/color config, action clicks also dismiss toast
+- WS hook: `subscribeAll()` with cleanup return, maps 5 event types with navigation actions
+- Cost alert only fires above $40 threshold — good filtering
+- `action.onClick()` then `removeToast()` — correct order
+- Root layout: hook + renderer placed correctly
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T2.11.2: Build toast notification system
 
 **Task:** Non-blocking toasts in bottom-right, 4 types, auto-dismiss 5s, stack up to 3, action buttons, mock WS events.
