@@ -1,12 +1,68 @@
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
+import { Separator } from "@/components/ui/separator";
+import { useStory } from "@/hooks";
+import type { StoryId } from "@agentops/shared";
+import { StoryDetailHeader } from "@/features/story-detail/story-detail-header";
 
 export function StoryDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { data: story, isLoading } = useStory(id as StoryId);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-sm text-muted-foreground">Loading story...</p>
+      </div>
+    );
+  }
+
+  if (!story) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <p className="text-sm text-muted-foreground">Story not found.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold">Story Detail</h1>
-      <p className="text-muted-foreground mt-2">Story {id} — description, child tasks, proposals, comments.</p>
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto max-w-4xl p-6 space-y-6">
+        <StoryDetailHeader
+          story={story}
+          onClose={() => navigate("/board")}
+        />
+        <Separator />
+
+        {/* Placeholder sections for T2.3.2–T2.3.7 */}
+        <div className="space-y-6">
+          <div className="rounded-lg border border-dashed p-6">
+            <p className="text-sm text-muted-foreground">
+              Description &amp; context section — T2.3.2
+            </p>
+          </div>
+          <div className="rounded-lg border border-dashed p-6">
+            <p className="text-sm text-muted-foreground">
+              Child tasks section — T2.3.3
+            </p>
+          </div>
+          <div className="rounded-lg border border-dashed p-6">
+            <p className="text-sm text-muted-foreground">
+              Proposals section — T2.3.4
+            </p>
+          </div>
+          <div className="rounded-lg border border-dashed p-6">
+            <p className="text-sm text-muted-foreground">
+              Comment stream — T2.3.5
+            </p>
+          </div>
+          <div className="rounded-lg border border-dashed p-6">
+            <p className="text-sm text-muted-foreground">
+              Execution history — T2.3.6
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

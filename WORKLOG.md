@@ -5,6 +5,39 @@
 
 ---
 
+## 2026-03-28 — T2.3.1: Build story detail panel
+
+**Task:** Story detail page with editable header (inline title, state badge, priority selector, label pills), close button, full-page layout.
+
+**Done:**
+- Created `features/story-detail/story-detail-header.tsx`:
+  - `EditableTitle` — click title to edit inline, Enter saves, Escape cancels, uses `useUpdateStory`
+  - `EditableLabels` — click labels to edit (comma-separated input), Enter saves, Escape cancels
+  - State badge (outline, shows `currentState`)
+  - Priority selector — shadcn Select with P0-P3, colored border/text matching `priorityConfig`
+  - Close button (X icon) in top-right, calls `onClose`
+- Updated `pages/story-detail.tsx`:
+  - Full-page view at `/stories/:id` (route already existed)
+  - Fetches story via `useStory(id)` with loading + not-found states
+  - Close button navigates back to `/board`
+  - Max-width 4xl centered layout with scrollable content area
+  - Placeholder sections for T2.3.2–T2.3.6 (dashed border boxes)
+- Decision: built as full-page view (not Sheet) since the route already exists. Sheet overlay could be added later as a toggle. The full-page approach is cleaner for the amount of content this page will hold.
+
+**Files created:**
+- `packages/frontend/src/features/story-detail/story-detail-header.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/story-detail.tsx` (replaced placeholder with full implementation)
+
+**Notes for next agent:**
+- T2.3.2 is next: description and context section (markdown textarea + acceptance criteria)
+- Story detail feature components live in `src/features/story-detail/`
+- The `StoryDetailHeader` is reusable — could be placed inside a Sheet wrapper for board-overlay mode later
+- `priorityConfig` is duplicated between `story-card.tsx` and `story-detail-header.tsx` — consider extracting to shared util if a third usage appears
+
+---
+
 ## 2026-03-28 — Review: T2.2.6 (approved)
 
 **Reviewed:** Inline story creation — `inline-story-form.tsx`, updated `kanban-column.tsx` and `kanban-board.tsx`.

@@ -29,7 +29,7 @@
 
 ### Story Detail
 
-- [ ] **T2.3.1** — Build story detail panel. Slide-out sheet (shadcn Sheet) from the right, ~60% viewport width. Or full-page view (toggle). Header: title (click to edit inline), state badge, priority selector, label pills (editable). Close button returns to board.
+- [review] **T2.3.1** — Build story detail panel. Slide-out sheet (shadcn Sheet) from the right, ~60% viewport width. Or full-page view (toggle). Header: title (click to edit inline), state badge, priority selector, label pills (editable). Close button returns to board.
 
 - [ ] **T2.3.2** — Build description and context section. Rich text area for story description (markdown support via textarea, rendered preview). Acceptance criteria section below. Both editable inline with save/cancel.
 
