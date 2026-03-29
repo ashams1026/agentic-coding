@@ -461,3 +461,41 @@
 **Reviewed:** API contract types and WebSocket event types.
 
 **Verdict:** Approved. Comprehensive CRUD request/response types for all endpoints. WsEvent discriminated union with 9 event types enables type-safe handling. WsEventMap provides typed subscription API. Aggregate stat types (DashboardStats, CostSummary, ExecutionStats) cover UI needs. All types properly reference entities via `import type`. Build passes.
+
+---
+
+## 2026-03-28 — T1.4.1: Create mock data fixtures
+
+**Task:** Realistic dataset with all entity types for mock-driven UI development.
+
+**Done:**
+- Created `packages/frontend/src/mocks/fixtures.ts` with:
+  - 1 project ("AgentOps")
+  - 2 workflows (story: 7 states, task: 5 states — with transitions)
+  - 5 personas (PM purple, Tech Lead blue, Engineer green, Reviewer amber, QA red — each with model, tools, budget)
+  - 4 triggers (auto/propose dispatch modes on story workflow transitions)
+  - 3 stories in different states (In Progress, Decomposing, Backlog)
+  - 10 tasks across stories (Done, Running, Pending states)
+  - 4 task edges (blocks + depends_on)
+  - 6 executions (5 completed, 1 running — with realistic costs and durations)
+  - 15 comments (agent, user, system types — across stories and tasks)
+  - 2 proposals (1 approved, 1 pending)
+  - 2 project memory entries
+  - Aggregate `fixtures` export object
+- Added `@agentops/shared` as workspace dependency to frontend
+- All IDs use branded template literal types (no `as any` casts)
+- Verified: typecheck clean, vite build clean, lint clean
+
+**Files created:**
+- `packages/frontend/src/mocks/fixtures.ts`
+
+**Files modified:**
+- `packages/frontend/package.json` (@agentops/shared workspace dep)
+
+**Notes for next agent:**
+- T1.4.2 is next: mock API service layer
+- Import fixtures: `import { fixtures } from "@/mocks/fixtures"` or individual arrays
+- Fixed IDs at top of file for easy cross-referencing (e.g., STORY_1, PERSONA_PM)
+- Story 1 "Auth" has a running execution (EXEC_4) — good for agent monitor testing
+- Story 2 "Dashboard" has a pending proposal (pp-prop002) — good for proposals UI testing
+- Frontend now depends on @agentops/shared as workspace package
