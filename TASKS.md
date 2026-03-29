@@ -13,7 +13,7 @@
 
 - [x] **T2.5.2** — Build active agent sidebar list. Each entry: persona avatar, persona name, task name (truncated), elapsed time (live counter), cost ticker (live), status dot (pulsing green = running). Click selects agent and shows output in main pane. Sort by start time. Badge count in sidebar nav updates.
 
-- [review] **T2.5.3** — Build terminal-style output renderer. Monospace font display area. Renders agent output as it streams (via mock WebSocket). Text blocks: normal style. Code blocks: syntax highlighted (use a lightweight highlighter). Thinking/reasoning: italic, muted color. Auto-scrolls to bottom. "Scroll lock" toggle: when user scrolls up, pause auto-scroll, show "New output below ↓" indicator.
+- [x] **T2.5.3** — Build terminal-style output renderer. Monospace font display area. Renders agent output as it streams (via mock WebSocket). Text blocks: normal style. Code blocks: syntax highlighted (use a lightweight highlighter). Thinking/reasoning: italic, muted color. Auto-scrolls to bottom. "Scroll lock" toggle: when user scrolls up, pause auto-scroll, show "New output below ↓" indicator.
 
 - [ ] **T2.5.4** — Build tool call display sections. When agent makes tool calls, show as collapsible sections in the output stream. Header: tool icon + tool name + status (running spinner / success check / error x). Collapsed: one-line summary. Expanded: tool input (formatted JSON or code) + tool output (formatted). File edits show mini diff view.
 

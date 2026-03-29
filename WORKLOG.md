@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.5.3 (approved)
+
+**Reviewed:** Terminal-style output renderer — `features/agent-monitor/terminal-renderer.tsx` and layout integration.
+- Monospace terminal display with dark bg (`bg-zinc-950`), `font-mono`, `text-zinc-200`
+- Chunk-type rendering: text (`<pre>` wrap), code (keyword regex highlighting, emerald, overflow-x), thinking (italic, muted, border-l), tool_call/tool_result fallback to code (T2.5.4 will enhance)
+- WebSocket subscription filters by executionId, initial logs loaded from useExecution
+- Auto-scroll via bottomRef.scrollIntoView, scroll lock toggle (Lock/Unlock), 40px threshold auto-detect
+- "New output below" absolute button when locked + new output
+- Execution switch handled correctly: initial logs effect re-runs on execution change, WS subscription re-subscribes
+- Build passes
+- **Verdict: approved**
+
+---
+
 ## 2026-03-29 — T2.5.3: Build terminal-style output renderer
 
 **Task:** Monospace font display area. Renders agent output as it streams (via mock WebSocket). Text blocks: normal style. Code blocks: syntax highlighted. Thinking/reasoning: italic, muted color. Auto-scrolls to bottom. "Scroll lock" toggle.
