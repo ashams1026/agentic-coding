@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: T2.10.2 (approved)
+
+**Reviewed:** Projects settings section — `projects-section.tsx` + settings-layout integration.
+- All 4 requirements met: project list with name/path/workflow, add form with 3 inputs, edit/remove actions, path validation indicator
+- `ProjectForm` reusable for add and edit via `initial` prop — clean pattern
+- `ProjectRow` with hover-to-reveal actions, workflow badge, truncated text
+- Path validation: green check for absolute paths, red alert otherwise
+- Workflow selector correctly filtered to story-type workflows
+- Empty state with CTA button
+- Mock data driven via TanStack Query hooks
+- Settings layout integration via conditional rendering
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T2.10.2: Build projects section
 
 **Task:** Build the projects settings section with list of registered projects, add/edit/remove forms, workflow selector, and path validation.
