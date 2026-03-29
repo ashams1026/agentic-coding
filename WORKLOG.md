@@ -746,3 +746,40 @@
 **Reviewed:** Active agents strip in `packages/frontend/src/features/dashboard/active-agents-strip.tsx`.
 
 **Verdict:** Approved. Horizontal scrollable row of agent cards via shadcn ScrollArea. Each card: persona-colored avatar with Bot icon, pulsing green dot (animate-ping), truncated summary, live elapsed time (1s interval with cleanup). Empty state when no running executions. Data from useExecutions() + usePersonas() hooks. Properly integrated into dashboard replacing placeholder. First use of features/dashboard/ convention. Build passes clean.
+
+---
+
+## 2026-03-28 — T2.1.3: Build recent activity feed component
+
+**Task:** Compact list of last ~10 events on dashboard. Each entry: event icon (color-coded), persona avatar, description, relative timestamp. Click navigates to source. "View all" link.
+
+**Done:**
+- Created `packages/frontend/src/features/dashboard/recent-activity.tsx`
+- Unified `ActivityEvent` type derived from 3 data sources:
+  - Completed executions → "agent_completed" events
+  - Fixture comments → "comment_posted" (user/agent) or "state_change" (system)
+  - Proposals → "proposal_created" events
+- Custom `useActivityEvents()` hook aggregates, sorts by timestamp, takes last 10
+- 4 event types with color-coded icons:
+  - state_change: blue ArrowRightLeft
+  - agent_completed: green CheckCircle2
+  - comment_posted: violet MessageSquare
+  - proposal_created: amber FileCheck
+- Persona avatar shown when event has a personaId (colored circle + Bot icon)
+- Each row: icon, optional persona avatar, truncated description, relative time
+- Click navigates to source entity (story or task detail via Link)
+- "View all" link navigates to /activity
+- Empty state: "Nothing yet"
+- `relativeTime()` helper: "just now", "Xm ago", "Xh ago", "Xd ago"
+- Integrated into dashboard, replacing "Recent Activity" placeholder
+
+**Files created:**
+- `packages/frontend/src/features/dashboard/recent-activity.tsx`
+
+**Files modified:**
+- `packages/frontend/src/pages/dashboard.tsx` (added import + replaced placeholder)
+
+**Notes for next agent:**
+- T2.1.4 is next: upcoming work widget
+- Remaining dashboard placeholders: Upcoming Work (T2.1.4), Cost Summary (T2.1.5)
+- The `useActivityEvents()` pattern can be reused/extended for the full Activity Feed page (T2.7.1)

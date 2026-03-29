@@ -35,7 +35,7 @@
 
 - [x] **T2.1.2** — Build active agents strip component. Horizontal scrollable row of agent cards below status row. Each card: persona avatar (colored circle + icon), task name truncated, elapsed time (live-updating), pulsing status dot. Click navigates to agent monitor with that agent selected. Shows "No active agents" empty state.
 
-- [ ] **T2.1.3** — Build recent activity feed component for dashboard. Compact list of last ~10 events. Each entry: event icon (color-coded by type), persona avatar (if agent), short description, relative timestamp. Event types: state change, agent completed, comment posted, proposal created. Click navigates to source. "View all" link to full activity feed.
+- [review] **T2.1.3** — Build recent activity feed component for dashboard. Compact list of last ~10 events. Each entry: event icon (color-coded by type), persona avatar (if agent), short description, relative timestamp. Event types: state change, agent completed, comment posted, proposal created. Click navigates to source. "View all" link to full activity feed.
 
 - [ ] **T2.1.4** — Build upcoming work widget. Shows next 5 tasks ready for dispatch (from mock ready-work data). Each entry: task title, parent story name, persona that would handle it, dependency status. Helps user see what will fire next.
 

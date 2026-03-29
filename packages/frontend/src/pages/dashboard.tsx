@@ -3,6 +3,7 @@ import { Bot, FileCheck, AlertTriangle, DollarSign } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useDashboardStats } from "@/hooks";
 import { ActiveAgentsStrip } from "@/features/dashboard/active-agents-strip";
+import { RecentActivity } from "@/features/dashboard/recent-activity";
 
 interface StatCardProps {
   title: string;
@@ -84,16 +85,9 @@ export function DashboardPage() {
 
       <ActiveAgentsStrip />
 
-      {/* Placeholder sections for T2.1.3-T2.1.5 widgets */}
+      {/* Placeholder sections for T2.1.4-T2.1.5 widgets */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm font-medium text-muted-foreground">Recent Activity</p>
-            <p className="mt-2 text-sm text-muted-foreground/60">
-              Activity feed will be built in T2.1.3
-            </p>
-          </CardContent>
-        </Card>
+        <RecentActivity />
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm font-medium text-muted-foreground">Upcoming Work</p>
