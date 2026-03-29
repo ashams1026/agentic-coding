@@ -5,6 +5,47 @@
 
 ---
 
+## 2026-03-28 — T2.2.3: Implement drag-and-drop between columns
+
+**Task:** Drag-and-drop story cards between kanban columns with smooth animations, drop placeholder, and state transition via mock API.
+
+**Done:**
+- Installed `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`
+- Created `features/kanban/draggable-story-card.tsx`:
+  - Wraps `StoryCard` with `useDraggable` hook
+  - Passes story ID + data for drag context
+  - Card goes semi-transparent (opacity 0.4) while dragging
+  - Uses `CSS.Translate.toString(transform)` for smooth movement
+- Updated `kanban-column.tsx`:
+  - Columns are droppable via `useDroppable` with `id: column:${stateName}`
+  - Drop target highlight: `bg-accent/40 ring-2 ring-primary/30` when `isOver`
+  - Empty column text changes to "Drop here" when hovering
+  - Uses `DraggableStoryCard` instead of `StoryCard`
+- Updated `kanban-board.tsx`:
+  - `DndContext` wraps the board with `closestCorners` collision detection
+  - `PointerSensor` with 8px activation distance (prevents accidental drags on click)
+  - `DragOverlay` shows rotated (2deg) semi-transparent card clone during drag
+  - `onDragEnd` extracts target column from droppable data, calls `useUpdateStory` mutation with new `currentState`
+  - `onDragCancel` cleans up drag state
+  - No-op if dropped on same column
+
+**Files created:**
+- `packages/frontend/src/features/kanban/draggable-story-card.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/kanban/kanban-board.tsx` (DndContext, DragOverlay, onDragEnd)
+- `packages/frontend/src/features/kanban/kanban-column.tsx` (useDroppable, DraggableStoryCard)
+- `packages/frontend/package.json` (@dnd-kit dependencies)
+- `pnpm-lock.yaml`
+
+**Notes for next agent:**
+- T2.2.4 is next: transition prompt modal (when drop triggers a workflow trigger)
+- The `onDragEnd` handler currently transitions silently — T2.2.4 should intercept drops that have triggers configured and show a confirmation modal
+- `DragOverlay` is at board level with a styled card clone — looks good during drag
+- @dnd-kit/sortable was installed but not used yet — could be used for within-column reordering later
+
+---
+
 ## 2026-03-28 — Review: T2.2.2 (approved)
 
 **Reviewed:** Story card component — `features/kanban/story-card.tsx`, updated `kanban-board.tsx` and `kanban-column.tsx`.

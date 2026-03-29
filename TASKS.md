@@ -19,7 +19,7 @@
 
 - [x] **T2.2.2** — Build story card component. Compact card showing: title (truncated), priority badge (P0-P3 with colors), label pills, task progress bar ("3/5 tasks"), proposal badge (amber dot with count if pending), active agent indicator (pulsing persona avatar if agent running). Card has subtle hover state and click handler.
 
-- [ ] **T2.2.3** — Implement drag-and-drop between columns. Use @dnd-kit or react-beautiful-dnd. Smooth animations on drag. Card placeholder shows in target column during drag. Drop triggers state transition via mock API.
+- [review] **T2.2.3** — Implement drag-and-drop between columns. Use @dnd-kit or react-beautiful-dnd. Smooth animations on drag. Card placeholder shows in target column during drag. Drop triggers state transition via mock API.
 
 - [ ] **T2.2.4** — Build transition prompt modal. When dropping a story on a column that has a trigger configured: show modal with "This will trigger [Persona Name] agent." Three buttons: "Run trigger", "Skip trigger", "Cancel". If no trigger, transition happens silently. Show persona avatar in the modal.
 
