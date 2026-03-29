@@ -328,3 +328,37 @@
 **Reviewed:** App shell layout — sidebar, status bar, root layout.
 
 **Verdict:** Approved. Sidebar correctly uses NavLink with active state, conditional tooltips when collapsed, project switcher. Status bar has appropriate placeholder content. Root layout flex structure is sound with proper overflow handling. Zustand integration clean. Build passes.
+
+---
+
+## 2026-03-28 — T1.2.7: Implement dark mode
+
+**Task:** Dark mode toggle in sidebar, Tailwind dark: variant, persisted via Zustand, system preference default.
+
+**Done:**
+- Created `src/hooks/use-theme.ts` — `useThemeSync()` hook that:
+  - Reads `theme` from Zustand store
+  - Toggles `.dark` class on `<html>` element
+  - For "system": listens to `prefers-color-scheme` media query and updates reactively
+  - Cleans up event listener on unmount/theme change
+- Added theme cycle button to sidebar footer (next to collapse toggle):
+  - Cycles: system (Monitor icon) → light (Sun icon) → dark (Moon icon)
+  - Tooltip shows current theme name
+  - Uses `setTheme()` from Zustand — persisted to localStorage automatically
+- Called `useThemeSync()` in RootLayout to activate theme syncing
+- Dark mode CSS variables were already set up in T1.2.2 (`.dark` class in index.css)
+- Verified: typecheck clean, vite build (434 KB JS), lint clean
+
+**Files created:**
+- `packages/frontend/src/hooks/use-theme.ts`
+
+**Files modified:**
+- `packages/frontend/src/components/sidebar.tsx` (theme toggle button, icons)
+- `packages/frontend/src/layouts/root-layout.tsx` (useThemeSync hook call)
+
+**Notes for next agent:**
+- T1.3.1 is next: define shared entity types
+- Theme persists to localStorage via Zustand (`agentops-ui` key)
+- `.dark` class is toggled on `<html>` — all Tailwind `dark:` variants work
+- System preference is the default and reacts to OS changes in real-time
+- All Frontend Foundation tasks (T1.2.x) are now complete

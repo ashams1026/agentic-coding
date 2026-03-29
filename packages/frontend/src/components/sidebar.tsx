@@ -10,6 +10,9 @@ import {
   PanelLeftClose,
   PanelLeft,
   FolderOpen,
+  Sun,
+  Moon,
+  Monitor,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
@@ -38,8 +41,12 @@ const navItems = [
   { to: "/settings", icon: Settings, label: "Settings" },
 ] as const;
 
+const themeOrder = ["system", "light", "dark"] as const;
+const themeIcon = { system: Monitor, light: Sun, dark: Moon } as const;
+const themeLabel = { system: "System", light: "Light", dark: "Dark" } as const;
+
 export function Sidebar() {
-  const { sidebarCollapsed, toggleSidebar } = useUIStore();
+  const { sidebarCollapsed, toggleSidebar, theme, setTheme } = useUIStore();
 
   return (
     <aside
@@ -103,8 +110,29 @@ export function Sidebar() {
 
       <Separator />
 
-      {/* Collapse toggle */}
-      <div className="flex items-center justify-center p-2">
+      {/* Theme toggle + Collapse toggle */}
+      <div className="flex items-center justify-center gap-1 p-2">
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => {
+                const idx = themeOrder.indexOf(theme);
+                setTheme(themeOrder[(idx + 1) % themeOrder.length]!);
+              }}
+            >
+              {(() => {
+                const ThemeIcon = themeIcon[theme];
+                return <ThemeIcon className="h-4 w-4" />;
+              })()}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            Theme: {themeLabel[theme]}
+          </TooltipContent>
+        </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
