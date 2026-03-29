@@ -29,7 +29,7 @@
 
 - [x] **T2.9.2** — Build persona editor. Full-page or large sheet. Sections: Identity (name, description, avatar picker — choose color + icon), Model (selector with cost/capability info per model), System Prompt (large editor), Tools (checklists), Budget (max per run input).
 
-- [ ] **T2.9.3** — Build system prompt editor. Large textarea with monospace font. Markdown preview toggle (side-by-side or switch). Line numbers. Character/token count estimate in footer. Placeholder text showing a good example prompt for the persona type.
+- [review] **T2.9.3** — Build system prompt editor. Large textarea with monospace font. Markdown preview toggle (side-by-side or switch). Line numbers. Character/token count estimate in footer. Placeholder text showing a good example prompt for the persona type.
 
 - [ ] **T2.9.4** — Build tool configuration section. Two groups: "SDK Tools" (Read, Edit, Glob, Grep, Bash, Write, WebFetch, WebSearch — checkboxes) and "AgentOps Tools" (create_tasks, transition_state, request_review, flag_blocked, post_comment, list_tasks, get_context — checkboxes). Each tool has a tooltip describing what it does. Presets button: "Tech Lead preset", "Engineer preset", etc.
 

@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/tooltip";
 import { usePersona, useUpdatePersona } from "@/hooks";
 import { cn } from "@/lib/utils";
+import { SystemPromptEditor } from "./system-prompt-editor";
 import type { PersonaId, PersonaModel } from "@agentops/shared";
 
 // ── Icon options for avatar picker ──────────────────────────────
@@ -375,16 +376,7 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
           {/* ── System Prompt ────────────────────────────────── */}
           <section>
             <h3 className="text-sm font-semibold mb-3">System Prompt</h3>
-            <Textarea
-              value={systemPrompt}
-              onChange={(e) => setSystemPrompt(e.target.value)}
-              placeholder="You are a ..."
-              className="min-h-[120px] font-mono text-xs resize-y"
-              rows={6}
-            />
-            <p className="text-[10px] text-muted-foreground mt-1">
-              {systemPrompt.length} characters
-            </p>
+            <SystemPromptEditor value={systemPrompt} onChange={setSystemPrompt} />
           </section>
 
           <Separator />

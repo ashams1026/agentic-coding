@@ -5,6 +5,38 @@
 
 ---
 
+## 2026-03-29 — T2.9.3: Build system prompt editor
+
+**Task:** Large textarea with monospace font. Markdown preview toggle. Line numbers. Character/token count estimate. Placeholder text.
+
+**Done:**
+- Created `features/persona-manager/system-prompt-editor.tsx`:
+  - Edit/Preview toggle buttons (Pencil/Eye icons)
+  - **Edit mode**: side-by-side line numbers gutter (synced scroll) + monospace textarea with placeholder example prompt
+  - **Preview mode**: minimal markdown renderer (headers, bold, inline code, bullet lists, code blocks)
+  - **Footer stats**: character count, ~token estimate (chars/4 heuristic), line count
+  - `LineNumbers` component with scroll-synced transform
+  - `MarkdownPreview` with `renderInline` for bold/code
+  - `PLACEHOLDER` constant showing a good example prompt structure
+- Updated `persona-editor.tsx`:
+  - Replaced basic Textarea + character count with `<SystemPromptEditor />`
+  - Added import for SystemPromptEditor
+
+**Files created:**
+- `packages/frontend/src/features/persona-manager/system-prompt-editor.tsx`
+
+**Files modified:**
+- `packages/frontend/src/features/persona-manager/persona-editor.tsx`
+
+**Notes for next agent:**
+- T2.9.4 is next: tool configuration with presets
+- The system prompt editor is a standalone component (`value`/`onChange` props) — easy to reuse
+- Line numbers sync via scroll event + translateY transform
+- Token estimate is a rough heuristic (~4 chars/token) — not a real tokenizer
+- Preview renders minimal markdown: h1-h3, bold, inline code, bullets, code blocks
+
+---
+
 ## 2026-03-29 — Review: T2.9.2 (approved)
 
 **Reviewed:** Persona editor — `persona-editor.tsx` + page wiring.
