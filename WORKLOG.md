@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T2.10.5 (approved)
+
+**Reviewed:** Appearance, service, and data settings sections — `appearance-section.tsx` + settings-layout wiring.
+- All 6 requirements met: theme toggle (3 card buttons wired to useUIStore), density (comfortable/compact with preview), pm2 status grid (4 metrics + PID/Node), restart button (animate-spin + 2s delay), db info (size/rows/badge), export/clear buttons (mock feedback)
+- Theme uses existing Zustand store with persist — changes apply immediately and survive refresh
+- Service grid uses clever `gap-px bg-border` technique for cell borders
+- Data actions: success feedback via CheckCircle2 + 3s auto-reset, clear button styled destructive
+- Settings layout: all 7 sections now have real components — SectionPlaceholder only reachable as fallback
+- Conventions: cn(), named exports, shadcn/ui, dark mode, mock data
+- Build passes
+- Verdict: **approved** — Settings page (T2.10.1-T2.10.5) complete!
+
+---
+
 ## 2026-03-29 — T2.10.5: Build appearance and service section
 
 **Task:** Theme toggle (light/dark/system), density (comfortable/compact), service status (mock pm2), restart button, database info, export/clear buttons.
