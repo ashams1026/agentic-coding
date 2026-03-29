@@ -507,3 +507,29 @@
 **Reviewed:** Mock data fixtures for all entity types.
 
 **Verdict:** Approved. All requirements met: 1 project, 2 workflows (story 7-state + task 5-state), 5 personas with distinct colors/icons, 3 stories in different states, 10 tasks, 4 dependency edges, 6 executions (including 1 running), 15 comments across entities, 2 proposals (1 approved + 1 pending — good for testing both states), 2 project memories. Strongly typed with no `as any`. Build passes.
+
+---
+
+## 2026-03-28 — T1.4.2: Build mock API service layer
+
+**Task:** Build mock API service layer with in-memory store, simulated latency, and functions matching real API shape.
+
+**Done:**
+- Created `packages/frontend/src/mocks/api.ts` with full CRUD mock API
+- In-memory store initialized from fixtures (shallow copy of each array)
+- `delay()` helper adds 50-150ms random latency for realistic loading states
+- CRUD functions for: Projects, Stories, Tasks, TaskEdges, Workflows, Personas, Triggers, Executions, Comments, Proposals, ProjectMemory
+- Aggregate query functions: `getDashboardStats()`, `getCostSummary()`, `getExecutionStats()`, `getReadyWork()`
+- `resetStore()` utility to restore initial fixture state (for demo/test reset)
+- Bundled `mockApi` object that exports all functions as a single namespace
+- All functions use shared types from `@agentops/shared` for request/response shapes
+- Create functions use `createId` from shared to generate proper prefixed IDs
+
+**Files created:**
+- `packages/frontend/src/mocks/api.ts`
+
+**Notes for next agent:**
+- T1.4.3 is next: TanStack Query hooks. Each hook should call the corresponding mock API function from this file.
+- The `mockApi` export can be imported as a namespace: `import { mockApi } from "@/mocks/api"`
+- Individual functions are also exported for direct import: `import { getStories } from "@/mocks/api"`
+- Mutations (create/update/delete) mutate the in-memory store directly — TanStack Query hooks should invalidate queries after mutations
