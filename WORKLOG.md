@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: A.9 (approved)
+
+**Reviewed:** Execution lifecycle — `packages/backend/src/agent/execution-manager.ts`.
+- runExecution: DB lookups (persona/item/project), creates execution record, broadcasts agent_started ✓
+- buildAgentTask: parent chain walk with unshift, null safety ✓
+- Entity serialization: branded ID casts, model cast, ISO date conversion ✓
+- Non-blocking execution: runExecutionStream fires in background with .catch() ✓
+- Event streaming: broadcasts agent_output_chunk per event, maps chunkType correctly ✓
+- Completion: updates DB (status, cost as cents, duration, summary, outcome, logs), broadcasts agent_completed ✓
+- Error handling: status "failed", partial logs preserved, FATAL prefix, broadcasts failure ✓
+- eventToChunk: exhaustive switch covering all 6 AgentEvent types ✓
+- Backend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.9: Implement execution lifecycle and streaming
 
 **Task:** Create execution-manager.ts with runExecution() lifecycle.

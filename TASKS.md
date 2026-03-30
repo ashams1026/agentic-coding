@@ -29,7 +29,7 @@
 
 - [x] **A.8** — Implement system prompt assembly. In `claude-executor.ts`: build the layered system prompt: (1) persona.systemPrompt (role identity), (2) project context summary (project name, description, key patterns), (3) work item context (title, description, parent chain, inherited context), (4) execution history from executionContext array (previous attempts, rejections). Export `buildSystemPrompt(persona, workItem, project)` function.
 
-- [review] **A.9** — Implement execution lifecycle and streaming. Create `packages/backend/src/agent/execution-manager.ts`. `runExecution(workItemId, personaId)`: creates execution record (status: "running"), spawns executor, streams AgentEvent to WebSocket via `broadcast()` (as `agent_output_chunk` events), updates execution on completion (status, costUsd, durationMs, summary, outcome). On error: sets status "failed", preserves partial output in logs.
+- [x] **A.9** — Implement execution lifecycle and streaming. Create `packages/backend/src/agent/execution-manager.ts`. `runExecution(workItemId, personaId)`: creates execution record (status: "running"), spawns executor, streams AgentEvent to WebSocket via `broadcast()` (as `agent_output_chunk` events), updates execution on completion (status, costUsd, durationMs, summary, outcome). On error: sets status "failed", preserves partial output in logs.
 
 ### Workflow Dispatch & Router (T4.2 + T4.3)
 
