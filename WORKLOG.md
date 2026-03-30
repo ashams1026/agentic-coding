@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-29 — Review: O.14 (approved)
+
+**Reviewed:** Dashboard components — `upcoming-work.tsx`, `recent-activity.tsx`, `active-agents-strip.tsx`.
+- All 5 requirements met: story/task refs removed, stats hook works, upcoming work uses ReadyWorkItem.workItem, activity feed uses workItemId, all compile
+- Confirmed zero remaining Story/Task/targetType/targetId references in dashboard features
+- WS event handlers correctly use new field names (workItemId, workItemTitle)
+- No type errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.14: Update dashboard for WorkItem model
 
 **Task:** Replace story/task references in dashboard with work item, update upcoming work and activity feed.
