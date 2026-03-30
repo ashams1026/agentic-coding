@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: O.5 (approved)
+
+**Reviewed:** Mock API layer — `mocks/api.ts`.
+- All requirements met: WorkItem CRUD replaces Story+Task functions, persona assignments added, workflow/trigger functions removed
+- getWorkItems supports parentId and projectId filters
+- deleteWorkItem recursively removes children — good design
+- createWorkItem uses WORKFLOW.initialState for default state
+- getDashboardStats correctly counts Blocked items for needsAttention
+- getReadyWork correctly filters "Ready" state items
+- No type errors in api.ts
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.5: Refactor mock API layer
 
 **Task:** Replace Story/Task/Workflow/Trigger API functions with WorkItem equivalents.
