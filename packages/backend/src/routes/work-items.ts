@@ -6,7 +6,8 @@ import { createId } from "@agentops/shared";
 import { dispatchForState } from "../agent/dispatch.js";
 import { checkParentCoordination } from "../agent/coordination.js";
 import { checkMemoryGeneration } from "../agent/memory.js";
-import { WORKFLOW } from "@agentops/shared";
+import { WORKFLOW, isValidTransition } from "@agentops/shared";
+import { broadcast } from "../ws.js";
 import type {
   WorkItemId,
   ProjectId,
@@ -115,6 +116,30 @@ export async function workItemRoutes(app: FastifyInstance) {
     const { id } = request.params;
     const body = request.body;
 
+    // Validate state transition if currentState is being changed
+    let previousState: string | undefined;
+    if (body.currentState !== undefined) {
+      const [existing] = await db
+        .select({ currentState: workItems.currentState })
+        .from(workItems)
+        .where(eq(workItems.id, id));
+
+      if (!existing) {
+        return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Work item ${id} not found` } });
+      }
+
+      if (!isValidTransition(existing.currentState, body.currentState)) {
+        return reply.status(400).send({
+          error: {
+            code: "INVALID_TRANSITION",
+            message: `Cannot transition from "${existing.currentState}" to "${body.currentState}"`,
+          },
+        });
+      }
+
+      previousState = existing.currentState;
+    }
+
     // Build update object with only provided fields
     const updates: Record<string, unknown> = { updatedAt: new Date() };
     if (body.title !== undefined) updates["title"] = body.title;
@@ -136,7 +161,16 @@ export async function workItemRoutes(app: FastifyInstance) {
     }
 
     // Dispatch persona execution if state changed
-    if (body.currentState !== undefined) {
+    if (body.currentState !== undefined && previousState !== undefined) {
+      broadcast({
+        type: "state_change",
+        workItemId: id as WorkItemId,
+        fromState: previousState,
+        toState: body.currentState,
+        triggeredBy: "user",
+        timestamp: new Date().toISOString(),
+      });
+
       dispatchForState(id, body.currentState).catch((err) => {
         app.log.error({ err, workItemId: id, state: body.currentState }, "Dispatch failed");
       });

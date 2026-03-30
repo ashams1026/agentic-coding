@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-03-30 — E.6: Manual pipeline walkthrough and fix
+
+**Task:** Walk a work item through the full lifecycle via API, fix integration bugs found.
+
+**Walkthrough results:**
+1. **Seed runs**: 1 project, 5 personas, 16 items, 5 assignments — all data loads correctly via API
+2. **Create work item**: `POST /api/work-items` → created in Backlog ✓
+3. **Move to Planning**: `PATCH` with `currentState: "Planning"` → dispatch fires, PM persona execution created (status: completed/failure — expected, no Claude SDK configured) ✓
+4. **Move Ready → In Progress**: Engineer persona dispatched correctly ✓
+5. **Work item stays in state after failed execution**: Execution failure doesn't advance state ✓
+6. **Dashboard stats**: Returns correct counts from seeded data ✓
+7. **Persona assignments**: All 5 state→persona mappings return correctly ✓
+
+**Bugs found and fixed:**
+- **Bug #1: No state transition validation** — PATCH route accepted any `currentState` value (e.g., Backlog → Done). Fixed by adding `isValidTransition()` check before update. Returns 400 `INVALID_TRANSITION` for invalid transitions.
+- **Bug #2: No `state_change` WS broadcast** — PATCH route didn't broadcast `state_change` events when state changed. Frontend WS sync (E.2) relies on this to invalidate queries. Fixed by adding `broadcast({ type: "state_change", ... })` after successful state update.
+- **Test updated**: Changed `"allows invalid state transition"` test to `"rejects invalid state transition"` — now expects 400 with INVALID_TRANSITION code.
+
+**Files modified:** `packages/backend/src/routes/work-items.ts`, `packages/backend/src/routes/__tests__/work-items.test.ts`
+
+**Notes:** Build: 0 errors. Tests: 145/145 passing. The Claude executor fails without a real API key — expected. The dispatch pipeline (route → dispatch → concurrency check → execution record creation) works end-to-end.
+
+---
+
 ## 2026-03-30 — Review: E.5 (approved)
 
 **Reviewed:** Realistic pipeline seed — `seed.ts`, `router.ts`, `execution-manager.ts`.
