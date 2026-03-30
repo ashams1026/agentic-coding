@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: A.17 (approved)
+
+**Reviewed:** Project memory creation — `memory.ts`, `mcp-server.ts`, `work-items.ts`.
+- checkMemoryGeneration: early return for non-Done/non-top-level, background generation ✓
+- generateMemory: gathers executions/children/comments, builds context, calls haiku, inserts to DB ✓
+- callHaikuSummarizer: query() with haiku model, maxTurns:1, JSON prompt, regex parse, safe fallbacks ✓
+- Wired into route_to_state and PATCH route (non-blocking .catch()) ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.17: Implement project memory creation
 
 **Task:** Generate compressed summary when top-level work item reaches Done.
