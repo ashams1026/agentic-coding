@@ -5,42 +5,9 @@
 
 ---
 
-## Sprint 10: UI Polish & UX Refinements (continued)
+## Sprint 11: End-to-End Integration (continued)
 
-> P.1–P.10 completed and archived. Remaining tasks below.
-
-### Tooltips & Micro-Interactions
-
-- [x] **P.11** — Add loading and empty states. Add skeleton loading states to: work items list (5 shimmer rows), detail panel (header + content skeleton), flow view (node placeholders), dashboard cards (number placeholder shimmer). Add empty states with helpful messaging to: work items list when no items exist ("No work items yet. Click + to create one."), filtered list with no matches ("No items match your filters."), detail panel children section ("No children. Click 'Add child' or 'Decompose'."), comment stream when empty ("No comments yet.").
-
-- [x] **P.12** — Polish hover states and transitions. Audit all interactive elements for hover feedback. List view rows: subtle `bg-muted/50` hover with `transition-colors duration-150`. Cards: slight scale or shadow lift on hover. Buttons: ensure all variants have visible hover state change. Badges that are clickable (priority, state in detail panel): add `cursor-pointer` and subtle hover. Active/selected states: use `ring-2 ring-primary/50` consistently. Focus-visible: ensure all interactive elements show focus ring for keyboard navigation.
-
----
-
-## Sprint 11: End-to-End Integration
-
-> Make the whole system work together. Run real work items through the full pipeline, fix integration seams, verify live updates.
-> Prerequisite: Sprint 8 complete (agent engine), Sprint 9 complete (tests catch regressions).
-
-### Frontend ↔ Backend Wiring
-
-- [x] **E.1** — Fix API client response parsing. Audit `packages/frontend/src/api/client.ts`: verify every function's response shape matches what the backend actually returns (field names, casing, nested JSON fields like `labels`, `executionContext`, `settings`). The mock API and real API may have diverged — compare mock fixtures against actual DB seed output. Fix any mismatches. Add error handling for non-200 responses (toast notification on failure).
-
-- [x] **E.2** — Wire TanStack Query cache invalidation to WebSocket events. In `packages/frontend/src/api/ws-client.ts` or a new `packages/frontend/src/hooks/use-ws-invalidation.ts`: subscribe to WebSocket events and invalidate the correct TanStack Query cache keys. `state_change` → invalidate `workItems` + `dashboardStats`. `comment_created` → invalidate `comments`. `agent_started` / `agent_completed` → invalidate `executions` + `dashboardStats`. `proposal_created` → invalidate `proposals`. `cost_update` → invalidate `dashboardStats` + `costSummary`. This replaces polling and makes the UI reactive.
-
-- [x] **E.3** — Wire agent monitor to real WebSocket streaming. In `packages/frontend/src/features/agent-monitor/`: connect the terminal renderer to real `agent_output_chunk` WebSocket events (not mock). Map real event payloads (`{ chunkType, content, toolName, toolInput, toolResult }`) to the existing `DisplayItem` types the renderer expects. Verify live streaming works: start an execution, see output appear in real-time. Handle reconnection — re-fetch active executions on WS reconnect.
-
-- [x] **E.4** — Wire activity feed to real WebSocket events. In `packages/frontend/src/features/activity-feed/`: replace `useBaseActivityEvents()` (which builds from mock data) with a real API call to fetch recent events. Subscribe to all WS event types and convert to activity feed entries using the existing `wsEventToActivity()` converter. Verify live events slide in at the top.
-
-### Pipeline Smoke Test
-
-- [x] **E.5** — Create development seed with realistic pipeline data. Update `packages/backend/src/db/seed.ts`: seed a project with `autoRouting: true`, all 5 personas with real system prompts (Product Manager, Tech Lead, Engineer, Code Reviewer, Router), persona assignments for each workflow state, a mix of work items in various states (some in Backlog ready to start, some in progress, some done with execution history and comments). This seed should represent a realistic in-flight project, not just empty scaffolding.
-
-- [x] **E.6** — Manual pipeline walkthrough and fix. With backend running (`pnpm --filter backend dev`) and frontend in API mode: manually walk a work item through the full lifecycle. Create a top-level item → move to Planning (verify persona dispatches) → move through Decomposition (verify children created) → children to Ready → In Progress (verify engineer persona runs) → In Review (verify reviewer runs) → Done. Fix every integration bug found. Document the walkthrough steps and any fixes in the WORKLOG.
-
-- [x] **E.7** — Fix dispatch trigger on state change. Verify that `PATCH /api/work-items/:id` with a `currentState` change actually calls `dispatchForState()`. Verify the dispatch checks persona assignments, concurrency limits, and cost caps. Verify that when auto-routing is ON, the router fires after each persona completes. Verify that when auto-routing is OFF, items stay in their current state after persona completion. Fix any gaps in the wiring between routes → dispatch → execution-manager → router.
-
-- [x] **E.8** — Fix parent-child coordination in real flow. Test with real DB: create a parent with 3 children, move children to Done one by one. Verify parent auto-advances to "In Review" only when ALL children are Done. Verify that blocking a child posts a system comment on the parent. Verify the detail panel updates reactively (via WS invalidation from E.2).
+> Sprints 1-10 complete and archived. E.1-E.8 complete and archived. Remaining tasks below.
 
 ### Error Handling & Recovery
 

@@ -120,3 +120,17 @@
 *Q.12 (work + review approved):* MCP tool tests — 10 tests via MCP Client + InMemoryTransport (post_comment, create_children, route_to_state, flag_blocked, list_items, get_context). 135 tests pass.
 
 *Q.13 (work + rejected + rework + approved):* Execution manager lifecycle tests — 10 tests (runExecution create/success/failure, canTransition rate limiting, handleRejection retry/blocked/payload). Initially rejected for no-op rate-limiting test; fixed by exporting `recordTransition` + `clearTransitionLog`. 145 tests pass.
+
+---
+
+## Sprint 10: P.1–P.10 (UI polish, design system, filtering, detail panel) — archived 2026-03-30
+
+*Design system (P.1–P.4, all approved):* P.1: Semantic typography scale via Tailwind `@utility` (text-page-title, text-section-title, text-body, text-label, text-caption). P.2: Button/badge sizing convergence (sm/default), CVA sm variant for badge. P.3: Spacing alignment (p-6 pages, p-4 cards, gap-3 filters, mb-6 headers). P.4: 5-layer dark mode surface depth, WCAG AA 600-level colors, card/bg distinction in light mode.
+
+*Filtering & sorting (P.5–P.7, all approved):* P.5: Debounced text search (200ms), regex highlight, URL sync (?q=). P.6: Multi-select persona and label filters (DropdownMenu with toggles), deterministic label coloring, URL sync. P.7: Sort direction toggle (ArrowUp/Down), secondary sort logic, URL sync (?sortDir=).
+
+*Detail panel (P.8–P.9, all approved):* P.8: Draggable resize handle (4px), percentage-based width (30-70%), persisted to localStorage via Zustand. P.9: transition-all duration-200 on open/close, disabled during resize, always-rendered DOM for CSS transitions.
+
+*Tooltips (P.10, approved):* Radix tooltips on state/priority badges, truncated titles, persona avatars, progress bars, view toggles, icon buttons. Global delay 300ms, sideOffset 4.
+
+**Key patterns:** Tailwind `@utility` for semantic scales. CVA for component variants. Zustand persist for UI preferences (panel width, density). URL params for filter state. DropdownMenuCheckboxItem for multi-select. Transition-disable during resize via ref flag.

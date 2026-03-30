@@ -16,54 +16,15 @@
 
 ---
 
-## Sprint 6: Data Model & UI Overhaul (partial) — completed 2026-03-29
+## Sprint 6: Data Model & UI Overhaul (O.1–O.20) — completed 2026-03-29
 
-### Shared Types Refactor
+**Types & data (O.1–O.6):** 6 tasks. Replaced Story+Task with unified WorkItem, WORKFLOW constant (8 states), mock fixtures (16 items), mock API (WorkItem CRUD), refactored hooks.
 
-- [x] **O.1** — Refactor shared entity types. Replaced Story+Task with unified WorkItem, added PersonaAssignment, updated all cross-references to workItemId. *(completed 2026-03-29)*
-- [x] **O.2** — Add hardcoded workflow constant. WORKFLOW with 8 states, transitions, helpers in workflow.ts. *(completed 2026-03-29)*
-- [x] **O.3** — Update API contract types. Already done by O.1 (api.ts + ws-events.ts updated). *(completed 2026-03-29)*
+**Multi-view UI (O.7–O.11):** 5 tasks. Work items page with List/Board/Tree toggle, list view (tree-indented rows, badges, progress), board view (dnd-kit columns), tree view (hierarchy), detail panel (header, breadcrumb, children, proposals, comments, executions, metadata).
 
-### Mock Data Refactor
+**Nav, dashboard, settings (O.12–O.16):** 5 tasks. Sidebar/router cleanup ("Story Board"→"Work Items"), dashboard updated for WorkItem model, activity feed with router_decision events, workflow configuration section (auto-routing toggle, persona-per-state table, SVG diagram).
 
-- [x] **O.4** — Refactor mock data fixtures. 3 top-level + 10 children + 3 grandchildren, personaAssignments, all workItemId refs. *(completed 2026-03-29)*
-- [x] **O.5** — Refactor mock API layer. WorkItem CRUD, persona assignments, removed workflow/trigger functions. *(completed 2026-03-29)*
-- [x] **O.6** — Refactor TanStack Query hooks. use-work-items.ts, use-persona-assignments.ts, deleted old story/task/workflow hooks. *(completed 2026-03-29)*
-
-### Multi-View UI
-
-- [x] **O.7** — Build work items page with view toggle. List/Board/Tree toggle, filter bar, Zustand store, /items route. *(completed 2026-03-29)*
-- [x] **O.8** — Build list view. Tree-indented rows, state/priority badges, progress bars, persona avatars, state grouping. *(completed 2026-03-29)*
-- [x] **O.9** — Build board view. WORKFLOW columns, drag-and-drop, scope selector, persona trigger prompt. *(completed 2026-03-29)*
-- [x] **O.10** — Build tree view. Pure hierarchy with indent lines/guides, no state grouping. *(completed 2026-03-29)*
-
-### Multi-View UI (continued)
-
-- [x] **O.11** — Build work item detail panel. Right-side panel with header, breadcrumb, children list, proposals, comment stream, execution timeline, metadata. *(completed 2026-03-29)*
-
-### Sidebar & Navigation Cleanup
-
-- [x] **O.12** — Update sidebar navigation. "Story Board" → "Work Items", removed "Workflows", proposals badge on /items. *(completed 2026-03-29)*
-- [x] **O.13** — Update router. Removed old routes, added /items, updated dashboard links. *(completed 2026-03-29)*
-
-### Dashboard & Activity Feed Updates
-
-- [x] **O.14** — Update dashboard for WorkItem model. Replaced story/task refs with work item across all dashboard components. *(completed 2026-03-29)*
-- [x] **O.15** — Update activity feed for WorkItem model. Replaced story/task language, added Router decision events, removed trigger types. *(completed 2026-03-29)*
-
-### Settings: Workflow Configuration
-
-- [x] **O.16** — Build workflow configuration in settings. Auto-routing toggle, persona-per-state table, SVG state machine diagram. *(completed 2026-03-29)*
-
-### Remove Old Code
-
-- [x] **O.17** — Remove old story/task/workflow code. Deleted 26 files across 5 directories + 4 pages, fixed 7 remaining files. *(completed 2026-03-29)*
-
-### Backend Schema
-
-- [x] **O.18** — Rewrite Drizzle schema for WorkItem model. 9 tables in schema.ts matching shared entities. *(completed 2026-03-29)*
-- [x] **O.19** — Update seed script for WorkItem model. Full seed with all fixture data (16 work items, 5 personas, etc). *(completed 2026-03-29)*
-- [x] **O.20** — Rewrite CRUD API routes for WorkItem. 10 routes across 3 files (work-items, persona-assignments, work-item-edges). *(completed 2026-03-29)*
+**Cleanup & backend (O.17–O.20):** 4 tasks. Deleted 26 old files, Drizzle schema (9 tables), seed script (16 work items, 5 personas), CRUD routes (10 routes across 3 files).
 
 ---
 
@@ -185,3 +146,23 @@
 ### Tooltips & Micro-Interactions
 
 - [x] **P.10** — Add tooltips across the app. Radix tooltips on state/priority badges, truncated titles, persona avatars, progress bars, view toggles, icon buttons. Global delay 300ms, sideOffset 4. *(completed 2026-03-30)*
+- [x] **P.11** — Add loading and empty states. Skeleton loading states (work items list, detail panel, flow view, dashboard cards) and empty states with helpful messaging. *(completed 2026-03-30)*
+- [x] **P.12** — Polish hover states and transitions. Audited all interactive elements for hover feedback, active/selected states, focus-visible rings. *(completed 2026-03-30)*
+
+---
+
+## Sprint 11: End-to-End Integration — completed 2026-03-30
+
+### Frontend ↔ Backend Wiring
+
+- [x] **E.1** — Fix API client response parsing. Audited client.ts response shapes, fixed mismatches with backend, added error handling with toast notifications. *(completed 2026-03-30)*
+- [x] **E.2** — Wire TanStack Query cache invalidation to WebSocket events. state_change→workItems+dashboardStats, comment_created→comments, agent events→executions+dashboardStats. *(completed 2026-03-30)*
+- [x] **E.3** — Wire agent monitor to real WebSocket streaming. Connected terminal renderer to real agent_output_chunk events, mapped payloads to DisplayItem types. *(completed 2026-03-30)*
+- [x] **E.4** — Wire activity feed to real WebSocket events. Replaced mock-based useBaseActivityEvents() with real API call + WS event conversion. *(completed 2026-03-30)*
+
+### Pipeline Smoke Test
+
+- [x] **E.5** — Create development seed with realistic pipeline data. 5 personas with real system prompts, persona assignments for all workflow states, autoRouting:true, Router persona. *(completed 2026-03-30)*
+- [x] **E.6** — Manual pipeline walkthrough and fix. Fixed state transition validation (isValidTransition) and WS state_change broadcast in PATCH route. *(completed 2026-03-30)*
+- [x] **E.7** — Fix dispatch trigger on state change. Fixed settings field name mismatch (maxConcurrentAgents→maxConcurrent, monthlyCostCap→monthCap). Monthly cost cap was never enforced. Added router auto-routing tests. *(completed 2026-03-30)*
+- [x] **E.8** — Fix parent-child coordination in real flow. Added dispatchForState() call after parent auto-advances to "In Review" so reviewer persona actually gets dispatched. *(completed 2026-03-30)*
