@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — O.20 (rework): Fix recursive delete bug
+
+**Task:** Address review feedback — replace `and()` with `inArray()` in DELETE handler.
+
+**Done:**
+- Imported `inArray` from "drizzle-orm" in `routes/work-items.ts`
+- Replaced the broken ternary `frontier.length === 1 ? eq(...) : and(...)` with simple `inArray(workItems.parentId, frontier)`
+- `inArray` correctly handles both single and multi-item arrays, so the ternary was removed entirely
+
+**Files modified:** `routes/work-items.ts` (2 lines changed)
+
+**Notes:** Backend typecheck: 0 errors. The fix ensures recursive delete correctly finds all descendants at every level, not just direct children.
+
+---
+
 ## 2026-03-29 — Review: O.20 (rejected)
 
 **Reviewed:** CRUD routes — `routes/work-items.ts`, `routes/persona-assignments.ts`, `routes/work-item-edges.ts`, `server.ts`.

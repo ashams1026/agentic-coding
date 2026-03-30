@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { workItems } from "../db/schema.js";
 import { createId } from "@agentops/shared";
@@ -149,11 +149,7 @@ export async function workItemRoutes(app: FastifyInstance) {
       const children = await db
         .select({ id: workItems.id })
         .from(workItems)
-        .where(
-          frontier.length === 1
-            ? eq(workItems.parentId, frontier[0]!)
-            : and(...frontier.map((fid) => eq(workItems.parentId, fid))),
-        );
+        .where(inArray(workItems.parentId, frontier));
 
       const childIds = children.map((c) => c.id);
       idsToDelete.push(...childIds);
