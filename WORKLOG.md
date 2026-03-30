@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: PS.2 (approved)
+
+**Reviewed:** useSelectedProject hook and useProject null-safety update.
+- Hook reads `selectedProjectId` from UI store via selector, casts to `ProjectId | null` ✓
+- Fetches full project via `useProject(selectedProjectId)` — passes nullable ID ✓
+- Returns `{ project, projectId, isLoading }` — correct shape, `project ?? null` normalizes undefined ✓
+- `useProject` updated: `ProjectId | null` param, `enabled: !!id`, non-null assertions safe behind guard ✓
+- No existing callers broken: grep confirms only `useSelectedProject` consumes `useProject()` ✓
+- Exported from `hooks/index.ts` barrel ✓
+- Build: 0 errors ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — PS.2: Create useSelectedProject hook
 
 **Task:** Create `use-selected-project.ts` hook as single source of truth for the selected project.
