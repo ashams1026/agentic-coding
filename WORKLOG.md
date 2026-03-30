@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: W.7 (approved)
+
+**Reviewed:** Density setting wiring — Zustand store, localStorage persistence, CSS overrides.
+- `Density` type ("comfortable" | "compact") added to store with `setDensity` action ✓
+- Persisted to localStorage via `partialize` ✓
+- `data-density` attribute synced on `documentElement` via `useEffect` in `use-theme.ts` ✓
+- CSS `[data-density="compact"]` overrides: page padding 1rem (p-4), card padding 0.75rem (p-3), font-size 0.75rem (text-xs), reduced space-y gaps, compact table rows ✓
+- `DensitySection` wired to store (replaces local useState) ✓
+- Theme toggle unchanged and still functional ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — W.7: Wire appearance settings
 
 **Task:** Add density setting (comfortable/compact) to Zustand store, persist to localStorage, apply via `data-density` CSS attribute on root element with compact overrides.
