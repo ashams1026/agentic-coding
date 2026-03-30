@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — AI.1: Create test plan directory structure and template
+
+**Task:** Create test plan directory structure, README, and template file.
+
+**Done:**
+- Created `tests/e2e/plans/` and `tests/e2e/results/` directories
+- Created `tests/e2e/README.md`: explains the AI-based E2E test framework, prerequisites (backend :3001, frontend :5173, API mode, seeded DB, chrome-devtools MCP), how to run a test plan (6 key MCP tools listed), test plan format overview, directory structure
+- Created `tests/e2e/plans/_template.md`: standard format with `## Objective`, `## Prerequisites`, `## Steps` (numbered actions with target/expected patterns for navigate, verify, click, type, screenshot), `## Expected Results`, `## Failure Criteria`. Steps reference UI elements by visible text, aria labels, or semantic selectors.
+
+**Files created:** `tests/e2e/README.md`, `tests/e2e/plans/_template.md`
+
+**Notes:** Build: 0 errors. Non-code files only — no source changes.
+
+---
+
 ## 2026-03-30 — Review: PS.9 (approved)
 
 **Reviewed:** Backend routes project scoping audit.
