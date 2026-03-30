@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: A.6 (approved)
+
+**Reviewed:** Agent executor types — `packages/backend/src/agent/types.ts`.
+- AgentEvent: 6-variant discriminated union (thinking, tool_use, tool_result, text, error, result) ✓
+- ToolUseEvent/ToolResultEvent correlation via toolCallId ✓
+- ResultEvent: summary, outcome, costUsd, durationMs ✓
+- AgentTask: workItemId, context with parentChain, executionHistory ✓
+- SpawnOptions: model, maxBudget, tools ✓
+- AgentExecutor: spawn(task, persona, project, options) → AsyncIterable<AgentEvent> ✓
+- Imports: only used types from @agentops/shared ✓
+- Backend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.6: Create agent executor interface and types
 
 **Task:** Define TypeScript types for agent execution system.
