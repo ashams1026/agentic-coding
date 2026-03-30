@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-03-30 — Q.12: Test MCP tool implementations
+
+**Task:** Integration tests for all 7 MCP tools using real MCP Client + InMemoryTransport.
+
+**Done:**
+- Created `packages/backend/src/agent/__tests__/mcp-tools.test.ts` with 10 tests:
+  - `post_comment`: inserts comment, verifies DB record (authorType=agent, content) + returns id
+  - `create_children`: creates 2 children with parentId, verifies state=Backlog + projectId inherited
+  - `create_children`: creates edges for dependsOn index references
+  - `route_to_state`: valid transition (Backlog→Planning), verifies DB state change
+  - `route_to_state`: rejects invalid transition (Backlog→Done), verifies state unchanged + isError
+  - `flag_blocked`: sets state to Blocked, verifies system comment with reason
+  - `list_items`: filters by state, returns summary format (id/title/state, no description)
+  - `list_items`: verifies default summary format
+  - `get_context`: returns work item with executionContext
+  - `get_context`: returns error for non-existent item
+- Uses MCP Client + InMemoryTransport.createLinkedPair() for proper protocol-level tool invocation
+- Mocked: broadcast, coordination, memory, handleRejection (side-effects)
+- Helper: `callTool()` wraps client.callTool + JSON parse
+
+**Files created:** `packages/backend/src/agent/__tests__/mcp-tools.test.ts`
+
+**Notes:** Build: 0 errors, 135 tests pass. Testing via real MCP protocol (not direct function calls) — validates Zod schemas, error handling, and response format alongside DB operations.
+
+---
+
 ## 2026-03-30 — Review: Q.11 (approved)
 
 **Reviewed:** Dispatch logic tests — `packages/backend/src/agent/__tests__/dispatch.test.ts`.
