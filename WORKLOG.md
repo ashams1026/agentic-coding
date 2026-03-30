@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T3.1.3 (approved)
+
+**Reviewed:** Drizzle migrations setup — `drizzle.config.ts`, `src/db/migrate.ts`, `src/index.ts`, `src/db/seed.ts`, `package.json`, `drizzle/0000_secret_magneto.sql`.
+- Config: correct SQLite dialect, schema path, output dir
+- Migrator: `runMigrations()` exported, standalone mode via import.meta.url
+- Server startup: migrations run before server starts
+- Seed: inline SQL removed, uses `runMigrations()` instead
+- Generated migration: all 9 tables with columns, PKs, FKs matching schema.ts
+- 5 npm scripts present (db:generate, db:migrate, db:push, db:seed, db:studio)
+- End-to-end verified: in-memory seed succeeds
+- Backend typecheck: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T3.1.3: Set up Drizzle migrations and seed script
 
 **Task:** Configure drizzle-kit for migration generation, create runtime migration runner, wire into server startup and seed.
