@@ -139,7 +139,7 @@
 
 - [x] **AI.V1** — Update test plan template. In `tests/e2e/plans/_template.md`: update the `## Steps` section format to include screenshot checkpoints. After each navigation or UI interaction step, add: "Take a screenshot. Examine the screenshot visually — note any layout issues, misalignment, clipping, broken styling, or elements that look wrong." Update `## Expected Results` to include a "Visual Quality" section: "No layout issues, text is readable, elements are properly aligned, colors are correct in both light and dark mode." Update `## Failure Criteria` to include: "Any visual defect (clipping, overlap, misalignment, invisible text, broken colors) counts as a visual failure even if the functional test passes."
 
-- [review] **AI.V2** — Update `dashboard-stats.md` and `dashboard-navigation.md` with visual inspection steps. Add screenshot + examine after: initial page load, each stat card render, active agents strip, cost widget, and after each navigation action. Note layout, spacing, card alignment, text readability.
+- [x] **AI.V2** — Update `dashboard-stats.md` and `dashboard-navigation.md` with visual inspection steps. Add screenshot + examine after: initial page load, each stat card render, active agents strip, cost widget, and after each navigation action. Note layout, spacing, card alignment, text readability.
 
 - [ ] **AI.V3** — Update `work-items-list-view.md` and `work-items-create.md` with visual inspection steps. Add screenshot + examine after: list renders, expanding a parent, opening detail panel, creating a new item. Check: row alignment, badge sizing, indentation, panel transition.
 
