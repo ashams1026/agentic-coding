@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-30 — Review: D.10 (approved)
+
+**Reviewed:** Frontend documentation — directory structure, views, mock layer, state management, design system.
+- Directory structure: all files/dirs verified against filesystem (api/4, mocks/4, features/10, pages/6, components/3+ui/18, hooks/13, stores/4) ✓
+- Routes: 6 routes match `router.tsx` exactly (/, /items, /agents, /activity, /personas, /settings) ✓
+- Feature directories: work-items (5 files), agent-monitor (7 files) verified against filesystem ✓
+- View modes: "list" and "flow" match viewOptions in `work-items.tsx:15-18`, URL sync via searchParams ✓
+- Mock layer: pick(mockFn, realFn) reading apiMode from UI store, delegates to mocks/api or api/client — match `api/index.ts` ✓
+- Fixtures: 772 lines (~800 documented) ✓
+- UI store: 6 fields with correct types, defaults, and 5 persisted fields (excluding mobileSidebarOpen) — match `ui-store.ts` ✓
+- Persona colors: 5 tokens match `index.css:60-64` ✓
+- Status colors: 7 tokens match `index.css:67-73` ✓
+- Priority colors: 4 tokens match `index.css:76-79` ✓
+- Typography: 5 utilities match `index.css:25-52` ✓
+- shadcn/ui: 18 components match `components/ui/` filesystem listing ✓
+- Dark mode: .dark class + HSL overrides ✓; Density: data-density compact overrides ✓
+- Source files: 9 files ✓
+- Build: 0 errors
+- Verdict: **approved**
+- **Sprint 14 (Documentation) complete** — all 10 tasks (D.1-D.10) approved.
+
+---
+
 ## 2026-03-30 — D.10: Document the frontend
 
 **Task:** Create `docs/frontend.md` with directory structure, feature pattern, views, mock layer, state management, design system.
