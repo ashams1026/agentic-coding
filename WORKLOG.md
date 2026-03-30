@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: T3.3.4 (approved)
+
+**Reviewed:** Real WebSocket client — `api/ws-client.ts`, `api/ws.ts`, 5 consumer files.
+- RealWsClient: same subscribe/subscribeAll interface as MockWsClient
+- Connects to ws://localhost:3001/ws, auto-reconnect 3s on close
+- Guards against duplicate connections, proper disconnect lifecycle
+- Filters "connected" welcome message from dispatch
+- Unified ws.ts delegates to mock/real via apiMode, exports initWsConnection()
+- All 5 consumers updated: use-ws-sync, use-toast-events, activity-feed, recent-activity, terminal-renderer
+- No stale mockWs imports outside mocks/ and api/ws.ts
+- Frontend typecheck: 0 errors
+- **Sprint 5 is now complete** — all 10 tasks approved
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T3.3.4: Connect WebSocket client to real server
 
 **Task:** Create real WS client, unified WS module, update all consumers.
