@@ -11,31 +11,7 @@
 > T4.1 (hardcoded workflow) already done in Sprint 6 (O.2). T4.6 (user intervention UI) partially done in Sprint 7 (U.7).
 > Order: MCP tools → executor interface → SDK executor → dispatch → router → coordination → rejection → concurrency → memory.
 
-### Agent MCP Server (T5.1)
-
-- [x] **A.2** — Implement `post_comment` MCP tool. In `mcp-server.ts`: implement the `post_comment` tool that inserts a comment into the database via the existing comments table. Input: `{ workItemId, content, metadata? }`. Auto-sets `authorType: "agent"`, `authorName` from the persona context. Broadcasts `comment_created` WS event via `broadcast()`.
-
-- [x] **A.3** — Implement `create_children` MCP tool. Input: `{ parentId, children: [{ title, description?, dependsOn[]? }] }`. Creates work items in Backlog state with parent reference. Creates work_item_edges for any dependsOn references. Returns created IDs. Broadcasts `state_change` WS events.
-
-- [x] **A.4** — Implement `route_to_state` MCP tool. Router-only tool. Input: `{ workItemId, targetState, reasoning }`. Validates against `isValidTransition()`. Updates work item's `currentState`. Posts reasoning as a system comment. Broadcasts `state_change` WS event. Returns success/error.
-
-- [x] **A.5** — Implement read-only MCP tools. Implement `list_items` (query work items with optional parentId/state filter, verbosity control: "summary" returns id+title+state, "detail" includes description+context), `get_context` (returns work item's executionContext + optional project memories), `flag_blocked` (sets state to Blocked, posts reason as comment), `request_review` (posts a system comment flagging human attention needed).
-
-### Agent Executor (T5.2 + T5.3)
-
-- [x] **A.6** — Create agent executor interface and types. Create `packages/backend/src/agent/types.ts`. Define `AgentEvent` union type (thinking, tool_use, tool_result, text, error, result). Define `AgentExecutor` interface: `spawn(task, persona, project) → AsyncIterable<AgentEvent>`. Define `AgentTask` (workItemId, context, executionHistory) and `SpawnOptions` (model, maxBudget, tools).
-
-- [x] **A.7** — Install Claude Agent SDK and create executor. Run `pnpm --filter backend add @anthropic-ai/claude-agent-sdk`. Create `packages/backend/src/agent/claude-executor.ts` implementing `AgentExecutor`. Use `query()` from the SDK. Map persona config to SDK options (model, permissionMode: "bypassPermissions", maxTurns). Set `cwd` to project path. Register AgentOps MCP server with persona-scoped tool allowlist. Return async iterable that yields `AgentEvent` from SDK stream.
-
-- [x] **A.8** — Implement system prompt assembly. In `claude-executor.ts`: build the layered system prompt: (1) persona.systemPrompt (role identity), (2) project context summary (project name, description, key patterns), (3) work item context (title, description, parent chain, inherited context), (4) execution history from executionContext array (previous attempts, rejections). Export `buildSystemPrompt(persona, workItem, project)` function.
-
-- [x] **A.9** — Implement execution lifecycle and streaming. Create `packages/backend/src/agent/execution-manager.ts`. `runExecution(workItemId, personaId)`: creates execution record (status: "running"), spawns executor, streams AgentEvent to WebSocket via `broadcast()` (as `agent_output_chunk` events), updates execution on completion (status, costUsd, durationMs, summary, outcome). On error: sets status "failed", preserves partial output in logs.
-
 ### Workflow Dispatch & Router (T4.2 + T4.3)
-
-- [x] **A.10** — Implement persona dispatch on state entry. Create `packages/backend/src/agent/dispatch.ts`. `dispatchForState(workItemId, stateName)`: looks up PersonaAssignment for the state, if found spawns execution via `runExecution()`. Called from the work-items PATCH route when `currentState` changes. No-op for states without assigned personas (Backlog, Done).
-
-- [x] **A.11** — Implement Router agent. Create `packages/backend/src/agent/router.ts`. `runRouter(workItemId)`: spawns a haiku-model agent with read-only tools + `route_to_state`. System prompt: "You are a routing agent. Given the current state and work item context, decide the next workflow state." Called after any persona execution completes (from execution-manager on success). If auto-routing is disabled (check project settings), skip.
 
 - [ ] **A.12** — Wire dispatch and routing into execution lifecycle. In `execution-manager.ts`: after successful execution completion, call `runRouter(workItemId)`. In `dispatch.ts`: after router changes state, call `dispatchForState()` for the new state. Add guard against infinite loops (max 10 transitions per work item per hour). Wire `dispatchForState` into the PATCH /api/work-items/:id route when currentState changes.
 

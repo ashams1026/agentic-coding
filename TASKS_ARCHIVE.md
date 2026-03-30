@@ -101,3 +101,19 @@
 ### Agent MCP Server (T5.1)
 
 - [x] **A.1** — Create AgentOps MCP server skeleton. mcp-server.ts with createMcpServer factory, 7 tool stubs with Zod v4 schemas, standalone stdio entry point. *(completed 2026-03-29)*
+- [x] **A.2** — Implement post_comment MCP tool. DB insert with agent authorType, WS broadcast. *(completed 2026-03-29)*
+- [x] **A.3** — Implement create_children MCP tool. Child work items in Backlog, depends_on edges. *(completed 2026-03-29)*
+- [x] **A.4** — Implement route_to_state MCP tool. Transition validation, state update, system comment. *(completed 2026-03-29)*
+- [x] **A.5** — Implement read-only MCP tools. list_items, get_context, flag_blocked, request_review. *(completed 2026-03-29)*
+
+### Agent Executor (T5.2 + T5.3)
+
+- [x] **A.6** — Create agent executor interface and types. AgentEvent union (6 variants), AgentTask, SpawnOptions, AgentExecutor interface. *(completed 2026-03-29)*
+- [x] **A.7** — Install Claude Agent SDK and create executor. ClaudeExecutor with model mapping, MCP subprocess, SDKMessage→AgentEvent mapping. *(completed 2026-03-29)*
+- [x] **A.8** — Implement system prompt assembly. 4-layer buildSystemPrompt (persona, project, work item, execution history). *(completed 2026-03-29)*
+- [x] **A.9** — Implement execution lifecycle and streaming. execution-manager.ts with runExecution, DB records, WS streaming, completion/failure handling. *(completed 2026-03-29)*
+
+### Workflow Dispatch & Router (T4.2 + T4.3)
+
+- [x] **A.10** — Implement persona dispatch on state entry. dispatch.ts with dispatchForState, wired into PATCH route. *(completed 2026-03-29)*
+- [x] **A.11** — Implement Router agent. router.ts with runRouter, haiku model, lazy __router__ persona, autoRouting check. *(completed 2026-03-29)*

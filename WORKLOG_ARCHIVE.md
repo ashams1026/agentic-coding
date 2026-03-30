@@ -49,6 +49,12 @@
 
 ---
 
-## Sprint 7: U.1 (tree view removal) — archived 2026-03-29
+## Sprint 7: U.1–U.9 + Sprint 5 backend + Sprint 8 A.1 — archived 2026-03-29
 
-*U.1:* Deleted tree-view.tsx, removed TreeView import/render/option from work-items.tsx, updated WorkItemView type to `"list" | "board"` in work-items-store.ts. Cleaned up unused GitBranch import. Reviewed and approved — no stale tree references remaining.
+*Sprint 5 backend (T3.1.3–T3.3.4):* Drizzle migrations/seed script, comment/persona/execution/proposal/dashboard API routes (24 routes total), real WebSocket server, API client for frontend (32 functions), API mode toggle (Zustand apiMode, unified API layer), WebSocket client connection to real server.
+
+*Sprint 7 UI refinements (U.1–U.9):* Removed tree view, built Flow view (state machine graph with bezier arrows, colored nodes, click-to-filter, ~497 lines), updated view toggle (Board→Flow, GitBranch icon), inline title editing (click-to-edit), description editing (Write/Preview tabs), priority dropdown + label pill editor, state transition control (valid-next-state dropdown, persona trigger prompt), softened agent monitor chrome (zinc→app tokens), fixed bottom padding (pb-8).
+
+*Sprint 8 decomposition + A.1:* Decomposed Phase 4+5 into 18 tasks (A.1–A.18). Created MCP server skeleton (mcp-server.ts, createMcpServer factory, 7 tool stubs with Zod v4 schemas, stdio entry point). Installed @modelcontextprotocol/sdk@1.28.0 + zod@4.3.6.
+
+**Key patterns:** MCP server uses `@modelcontextprotocol/sdk/server/mcp.js` subpath import. Zod v4 requires 2-arg `z.record()`. CallToolResult with isError for stubs. Standalone stdio entry point reads context from env vars.
