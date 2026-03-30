@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { ChevronRight, Bot } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useWorkItems, usePersonas, useExecutions } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
@@ -30,11 +31,11 @@ function HighlightedText({ text, query }: { text: string; query: string }) {
 
 // ── Priority config ─────────────────────────────────────────────
 
-const priorityConfig: Record<Priority, { label: string; className: string }> = {
-  p0: { label: "P0", className: "border-red-500 text-red-600 dark:text-red-400" },
-  p1: { label: "P1", className: "border-amber-500 text-amber-600 dark:text-amber-400" },
-  p2: { label: "P2", className: "border-blue-500 text-blue-600 dark:text-blue-400" },
-  p3: { label: "P3", className: "border-slate-400 text-slate-500 dark:text-slate-400" },
+const priorityConfig: Record<Priority, { label: string; fullName: string; className: string }> = {
+  p0: { label: "P0", fullName: "Critical", className: "border-red-500 text-red-600 dark:text-red-400" },
+  p1: { label: "P1", fullName: "High", className: "border-amber-500 text-amber-600 dark:text-amber-400" },
+  p2: { label: "P2", fullName: "Medium", className: "border-blue-500 text-blue-600 dark:text-blue-400" },
+  p3: { label: "P3", fullName: "Low", className: "border-slate-400 text-slate-500 dark:text-slate-400" },
 };
 
 // ── Progress bar ────────────────────────────────────────────────
@@ -193,43 +194,68 @@ function ListRow({
       )}
 
       {/* State badge */}
-      <Badge
-        variant="secondary"
-        className="text-xs px-1.5 py-0 shrink-0 font-medium"
-        style={{
-          backgroundColor: stateInfo ? `${stateInfo.color}20` : undefined,
-          color: stateInfo?.color,
-          borderColor: stateInfo ? `${stateInfo.color}40` : undefined,
-        }}
-      >
-        {item.currentState}
-      </Badge>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge
+            variant="secondary"
+            className="text-xs px-1.5 py-0 shrink-0 font-medium"
+            style={{
+              backgroundColor: stateInfo ? `${stateInfo.color}20` : undefined,
+              color: stateInfo?.color,
+              borderColor: stateInfo ? `${stateInfo.color}40` : undefined,
+            }}
+          >
+            {item.currentState}
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent>State: {item.currentState}</TooltipContent>
+      </Tooltip>
 
       {/* Priority */}
-      <Badge
-        variant="outline"
-        className={cn("text-xs px-1.5 py-0 font-semibold shrink-0", pCfg.className)}
-      >
-        {pCfg.label}
-      </Badge>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge
+            variant="outline"
+            className={cn("text-xs px-1.5 py-0 font-semibold shrink-0", pCfg.className)}
+          >
+            {pCfg.label}
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent>Priority: {pCfg.fullName}</TooltipContent>
+      </Tooltip>
 
       {/* Title */}
-      <span className="flex-1 truncate text-sm">
-        <HighlightedText text={item.title} query={searchQuery} />
-      </span>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="flex-1 truncate text-sm">
+            <HighlightedText text={item.title} query={searchQuery} />
+          </span>
+        </TooltipTrigger>
+        <TooltipContent>{item.title}</TooltipContent>
+      </Tooltip>
 
       {/* Progress (if has children) */}
       {childrenTotal > 0 && (
-        <div className="shrink-0">
-          <MiniProgress done={childrenDone} total={childrenTotal} />
-        </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="shrink-0">
+              <MiniProgress done={childrenDone} total={childrenTotal} />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>{childrenDone} of {childrenTotal} children done</TooltipContent>
+        </Tooltip>
       )}
 
       {/* Persona avatar */}
       {persona && (
-        <div className="shrink-0">
-          <PersonaAvatar persona={persona} />
-        </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="shrink-0">
+              <PersonaAvatar persona={persona} />
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>{persona.name} ({persona.model})</TooltipContent>
+        </Tooltip>
       )}
 
       {/* Active agent indicator */}

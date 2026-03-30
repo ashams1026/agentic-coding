@@ -19,7 +19,7 @@ export function RootLayout() {
   const setMobileSidebarOpen = useUIStore((s) => s.setMobileSidebarOpen);
 
   return (
-    <TooltipProvider delayDuration={0}>
+    <TooltipProvider delayDuration={300}>
       <div className="flex h-screen overflow-hidden bg-background text-foreground">
         <Sidebar />
         <div className="flex flex-1 flex-col overflow-hidden">

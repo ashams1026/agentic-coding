@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — P.10: Add tooltips across the app
+
+**Task:** Add tooltips to truncated titles, priority/state badges, persona avatars, progress bars, view toggles, and icon buttons. Consistent sideOffset={4}, delay 300ms.
+
+**Done:**
+- **Global config**: Updated `TooltipProvider` in `root-layout.tsx` from `delayDuration={0}` to `delayDuration={300}`. Updated tooltip default `sideOffset` from 0 to 4 in `tooltip.tsx`.
+- **List view**: Added tooltips to state badge ("State: X"), priority badge ("Priority: Critical/High/Medium/Low"), truncated titles (full title text), progress bars ("N of M children done"), persona avatars ("Name (model)"). Added `fullName` to `priorityConfig`.
+- **Work items page**: Added tooltips to view toggle buttons ("List view" / "Flow view") and quick add button ("Create new work item").
+- **Detail panel**: Added tooltip to close panel button ("Close panel").
+- **Filter bar**: Added tooltip to sort direction toggle ("Ascending"/"Descending") — replaced `title` attribute with proper Tooltip component. Added tooltip to clear filters button ("Clear all filters").
+
+**Files modified:** `root-layout.tsx`, `tooltip.tsx`, `list-view.tsx`, `work-items.tsx`, `detail-panel.tsx`, `filter-bar.tsx`
+
+**Notes:** Build: 0 errors. All tooltips use `asChild` pattern for proper event forwarding. Persona tooltip shows model name (e.g. "Engineer (claude-sonnet-4-6)").
+
+---
+
 ## 2026-03-30 — Review: P.9 (approved)
 
 **Reviewed:** Visual divider and panel transition — `work-items.tsx`.

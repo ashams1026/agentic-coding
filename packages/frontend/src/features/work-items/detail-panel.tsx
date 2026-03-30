@@ -2,6 +2,7 @@ import { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import { X, ChevronRight, Plus, GitBranch, Bot } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
@@ -718,9 +719,14 @@ export function DetailPanel() {
               onSave={(newTitle) => updateWorkItem.mutate({ id: item.id, title: newTitle })}
             />
           </div>
-          <Button variant="ghost" size="icon-sm" className="shrink-0" onClick={handleClose}>
-            <X className="h-4 w-4" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon-sm" className="shrink-0" onClick={handleClose}>
+                <X className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Close panel</TooltipContent>
+          </Tooltip>
         </div>
 
         {/* Badges row */}

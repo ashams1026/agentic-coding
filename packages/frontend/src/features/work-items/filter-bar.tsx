@@ -3,6 +3,7 @@ import { Search, X, Bot, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import {
   Select,
   SelectContent,
@@ -277,32 +278,41 @@ export function FilterBar() {
             <SelectItem value="updated">Sort by updated</SelectItem>
           </SelectContent>
         </Select>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 shrink-0"
-          onClick={toggleSortDir}
-          title={sortDir === "asc" ? "Ascending" : "Descending"}
-        >
-          {sortDir === "asc" ? (
-            <ArrowUp className="h-3.5 w-3.5" />
-          ) : (
-            <ArrowDown className="h-3.5 w-3.5" />
-          )}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 p-0 shrink-0"
+              onClick={toggleSortDir}
+            >
+              {sortDir === "asc" ? (
+                <ArrowUp className="h-3.5 w-3.5" />
+              ) : (
+                <ArrowDown className="h-3.5 w-3.5" />
+              )}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{sortDir === "asc" ? "Ascending" : "Descending"}</TooltipContent>
+        </Tooltip>
       </div>
 
       {/* Clear filters */}
       {hasFilters && (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 px-2 text-xs text-muted-foreground"
-          onClick={clearFilters}
-        >
-          <X className="h-3 w-3 mr-1" />
-          Clear
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 px-2 text-xs text-muted-foreground"
+              onClick={clearFilters}
+            >
+              <X className="h-3 w-3 mr-1" />
+              Clear
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Clear all filters</TooltipContent>
+        </Tooltip>
       )}
     </div>
   );

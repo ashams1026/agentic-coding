@@ -36,7 +36,7 @@
 
 ### Tooltips & Micro-Interactions
 
-- [ ] **P.10** — Add tooltips across the app. Add tooltips to: truncated work item titles in list view (show full title), priority badges (show "Priority: Critical/High/Medium/Low"), state badges (show "State: [name]"), persona avatars (show persona name + model), progress bars (show "X of Y children done"), view toggle buttons (show "List view" / "Flow view"), all icon-only buttons (quick add, close panel, filter clear). Use consistent tooltip styling: `sideOffset={4}`, delay 300ms.
+- [review] **P.10** — Add tooltips across the app. Add tooltips to: truncated work item titles in list view (show full title), priority badges (show "Priority: Critical/High/Medium/Low"), state badges (show "State: [name]"), persona avatars (show persona name + model), progress bars (show "X of Y children done"), view toggle buttons (show "List view" / "Flow view"), all icon-only buttons (quick add, close panel, filter clear). Use consistent tooltip styling: `sideOffset={4}`, delay 300ms.
 
 - [ ] **P.11** — Add loading and empty states. Add skeleton loading states to: work items list (5 shimmer rows), detail panel (header + content skeleton), flow view (node placeholders), dashboard cards (number placeholder shimmer). Add empty states with helpful messaging to: work items list when no items exist ("No work items yet. Click + to create one."), filtered list with no matches ("No items match your filters."), detail panel children section ("No children. Click 'Add child' or 'Decompose'."), comment stream when empty ("No comments yet.").
 

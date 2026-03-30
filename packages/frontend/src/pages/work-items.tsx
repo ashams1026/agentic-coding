@@ -2,6 +2,7 @@ import { useEffect, useCallback, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { List, GitBranch, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { FilterBar } from "@/features/work-items/filter-bar";
 import { ListView } from "@/features/work-items/list-view";
@@ -130,28 +131,37 @@ export function WorkItemsPage() {
             {/* View toggle */}
             <div className="flex rounded-lg border bg-muted p-0.5">
               {viewOptions.map(({ value, label, icon: Icon }) => (
-                <Button
-                  key={value}
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "h-7 px-3 text-xs gap-1.5 rounded-md",
-                    view === value && "bg-background shadow-sm text-foreground",
-                    view !== value && "text-muted-foreground hover:text-foreground",
-                  )}
-                  onClick={() => handleViewChange(value)}
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  {label}
-                </Button>
+                <Tooltip key={value}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "h-7 px-3 text-xs gap-1.5 rounded-md",
+                        view === value && "bg-background shadow-sm text-foreground",
+                        view !== value && "text-muted-foreground hover:text-foreground",
+                      )}
+                      onClick={() => handleViewChange(value)}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {label}
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{label} view</TooltipContent>
+                </Tooltip>
               ))}
             </div>
 
             {/* Quick add */}
-            <Button size="sm" className="gap-1.5" onClick={handleQuickAdd}>
-              <Plus className="h-3.5 w-3.5" />
-              Add
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button size="sm" className="gap-1.5" onClick={handleQuickAdd}>
+                  <Plus className="h-3.5 w-3.5" />
+                  Add
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Create new work item</TooltipContent>
+            </Tooltip>
           </div>
         </div>
 
