@@ -17,7 +17,7 @@
 
 - [x] **O.2** — Add hardcoded workflow constant. Create `packages/shared/src/workflow.ts`: export `WORKFLOW` constant with `states[]` (Backlog, Planning, Decomposition, Ready, In Progress, In Review, Done, Blocked — each with name and color) and `transitions` map (state → valid next states array). Export helper functions: `getValidTransitions(state)`, `isValidTransition(from, to)`, `getStateByName(name)`. Export `WorkflowState` type.
 
-- [ ] **O.3** — Update API contract types. In `packages/shared/src/api-types.ts` (or equivalent): replace all Story/Task request/response types with WorkItem equivalents. Update WebSocket event types to use `workItemId`. Add `PersonaAssignment` CRUD types. Remove workflow CRUD types.
+- [review] **O.3** — Update API contract types. In `packages/shared/src/api-types.ts` (or equivalent): replace all Story/Task request/response types with WorkItem equivalents. Update WebSocket event types to use `workItemId`. Add `PersonaAssignment` CRUD types. Remove workflow CRUD types.
 
 ### Mock Data Refactor
 
