@@ -33,7 +33,7 @@
 
 ### Remove Old Code
 
-- [review] **O.17** — Remove old story/task/workflow code. Delete: `packages/frontend/src/features/kanban/` (old kanban board), `packages/frontend/src/features/story-detail/` (replaced by detail-panel), `packages/frontend/src/features/task-detail/` (replaced by detail-panel), `packages/frontend/src/features/workflow-designer/` (no longer needed), `packages/frontend/src/pages/story-board.tsx`, `packages/frontend/src/pages/story-detail.tsx`, `packages/frontend/src/pages/task-detail.tsx`, `packages/frontend/src/pages/workflow-designer.tsx`. Keep `packages/frontend/src/features/common/` (CommentStream, ExecutionTimeline — shared components). Keep `packages/frontend/src/features/story-list/` only if parts are reusable for the new list view.
+- [x] **O.17** — Remove old story/task/workflow code. Delete: `packages/frontend/src/features/kanban/` (old kanban board), `packages/frontend/src/features/story-detail/` (replaced by detail-panel), `packages/frontend/src/features/task-detail/` (replaced by detail-panel), `packages/frontend/src/features/workflow-designer/` (no longer needed), `packages/frontend/src/pages/story-board.tsx`, `packages/frontend/src/pages/story-detail.tsx`, `packages/frontend/src/pages/task-detail.tsx`, `packages/frontend/src/pages/workflow-designer.tsx`. Keep `packages/frontend/src/features/common/` (CommentStream, ExecutionTimeline — shared components). Keep `packages/frontend/src/features/story-list/` only if parts are reusable for the new list view.
 
 ### Backend Schema (Resume with Correct Model)
 

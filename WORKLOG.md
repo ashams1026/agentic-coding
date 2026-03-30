@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: O.17 (approved)
+
+**Reviewed:** Old code removal — 26 files deleted, 7 files fixed.
+- All 5 directories deleted: kanban/, story-detail/, task-detail/, workflow-designer/, story-list/
+- All 4 old pages deleted: story-board, story-detail, task-detail, workflow-designer
+- features/common/ preserved with 4 files
+- 7 remaining files fixed for WorkItem types (agent-monitor, command-palette, mocks)
+- Frontend typecheck: 0 errors confirmed
+- Frontend build: passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.17: Remove old story/task/workflow code
 
 **Task:** Delete old feature directories and pages, fix remaining type errors to achieve clean build.
