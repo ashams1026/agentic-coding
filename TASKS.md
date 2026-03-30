@@ -13,7 +13,7 @@
 
 ### Agent MCP Server (T5.1)
 
-- [review] **A.2** — Implement `post_comment` MCP tool. In `mcp-server.ts`: implement the `post_comment` tool that inserts a comment into the database via the existing comments table. Input: `{ workItemId, content, metadata? }`. Auto-sets `authorType: "agent"`, `authorName` from the persona context. Broadcasts `comment_created` WS event via `broadcast()`.
+- [x] **A.2** — Implement `post_comment` MCP tool. In `mcp-server.ts`: implement the `post_comment` tool that inserts a comment into the database via the existing comments table. Input: `{ workItemId, content, metadata? }`. Auto-sets `authorType: "agent"`, `authorName` from the persona context. Broadcasts `comment_created` WS event via `broadcast()`.
 
 - [ ] **A.3** — Implement `create_children` MCP tool. Input: `{ parentId, children: [{ title, description?, dependsOn[]? }] }`. Creates work items in Backlog state with parent reference. Creates work_item_edges for any dependsOn references. Returns created IDs. Broadcasts `state_change` WS events.
 

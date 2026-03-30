@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-29 — Review: A.2 (approved)
+
+**Reviewed:** post_comment MCP tool — `packages/backend/src/agent/mcp-server.ts`.
+- DB insert: all 8 `comments` schema fields populated correctly ✓
+- authorType auto-set to "agent", authorName from persona context ✓
+- authorId: personaId with empty-string→null fallback ✓
+- Broadcast: comment_created event with all required fields ✓
+- contentPreview truncated to 100 chars ✓
+- Success response: JSON with id, workItemId, authorName, createdAt ✓
+- Error handling: try/catch with descriptive isError response ✓
+- Imports: db, comments, createId, branded types, broadcast — all correct ✓
+- Pattern consistent with routes/comments.ts POST handler ✓
+- Backend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.2: Implement post_comment MCP tool
 
 **Task:** Replace post_comment stub with real DB insert + WS broadcast.
