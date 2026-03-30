@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: O.7 (approved)
+
+**Reviewed:** Work items page — `work-items.tsx`, `filter-bar.tsx`, `work-items-store.ts`, `router.tsx`.
+- All 13 requirements met: page layout, view toggle with 3 modes, filter bar with state/priority/group/sort, Zustand store with persist, URL param sync, quick-add button, /items route
+- Good Zustand pattern: partialize only persists view preferences, not ephemeral state
+- View toggle has clean active/inactive styling with cn()
+- FilterBar uses WORKFLOW.states for state dropdown with color indicators
+- Placeholder slots ready for O.8-O.10
+- No type errors in new files
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.7: Build work items page with view toggle
 
 **Task:** Create work items page with List/Board/Tree toggle, filter bar, Zustand store, and route.
