@@ -24,7 +24,7 @@
 
 ### CLI Foundation
 
-- [review] **S.1** — Create CLI entry point. Create `packages/backend/src/cli.ts` with a simple command parser (no heavy CLI framework needed — use `process.argv` or `commander` if complexity warrants). Commands: `agentops start` (start server as foreground process), `agentops stop` (send SIGTERM to running process), `agentops status` (show running/stopped, uptime, port, active agents count, today's cost), `agentops dev` (alias for current dev mode with watch). Add `"bin": { "agentops": "./dist/cli.js" }` to `packages/backend/package.json`. Add shebang `#!/usr/bin/env node` to cli.ts.
+- [x] **S.1** — Create CLI entry point. Create `packages/backend/src/cli.ts` with a simple command parser (no heavy CLI framework needed — use `process.argv` or `commander` if complexity warrants). Commands: `agentops start` (start server as foreground process), `agentops stop` (send SIGTERM to running process), `agentops status` (show running/stopped, uptime, port, active agents count, today's cost), `agentops dev` (alias for current dev mode with watch). Add `"bin": { "agentops": "./dist/cli.js" }` to `packages/backend/package.json`. Add shebang `#!/usr/bin/env node` to cli.ts.
 
 - [ ] **S.2** — Add graceful shutdown handling. In `packages/backend/src/server.ts` or `index.ts`: handle SIGTERM and SIGINT signals. On shutdown: stop accepting new HTTP/WS connections, wait for active agent executions to complete (30s timeout, then force-kill), close database connection, close WebSocket connections with 1001 code, log shutdown reason and duration. Add a `/api/health` endpoint that returns `{ status: "ok", uptime, activeExecutions, version }`.
 

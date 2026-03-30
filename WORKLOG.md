@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: S.1 (approved)
+
+**Reviewed:** CLI entry point — `cli.ts`, `start.ts`, `index.ts`, `package.json`.
+- All 4 commands implemented: start (PID + startServer), stop (SIGTERM), status (PID + health/dashboard fetch), dev (tsx watch) ✓
+- `start.ts` cleanly extracted from `index.ts` — reusable `startServer(options)` with orphan cleanup ✓
+- `index.ts` simplified to one-liner ✓
+- PID file lifecycle correct: write on start, cleanup on exit/SIGINT/SIGTERM, stale detection ✓
+- ESM-compatible path resolution via `import.meta.url` ✓
+- `bin` entry and shebang present ✓
+- Status command degrades gracefully when enhanced endpoints aren't available yet ✓
+- Build: 0 errors, Tests: 156/156
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — S.1: Create CLI entry point
 
 **Task:** Create `packages/backend/src/cli.ts` with command parser, 4 commands (start, stop, status, dev), bin entry, shebang.
