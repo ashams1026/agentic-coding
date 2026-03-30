@@ -1,5 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import { lt } from "drizzle-orm";
+import { readdirSync } from "node:fs";
+import { homedir } from "node:os";
+import { resolve } from "node:path";
 import { loadConfig, setConfigValue } from "../config.js";
 import { logger } from "../logger.js";
 import { getActiveCount, getQueueLength } from "../agent/concurrency.js";
@@ -152,6 +155,32 @@ export async function settingsRoutes(app: FastifyInstance) {
       personas: allPersonas,
       personaAssignments: allAssignments,
     };
+  });
+
+  // POST /api/settings/browse-directory — list directories for folder picker
+  app.post<{
+    Body: { startPath?: string };
+  }>("/api/settings/browse-directory", async (request, reply) => {
+    const startPath = request.body?.startPath || homedir();
+    const dirPath = resolve(startPath);
+
+    try {
+      const entries = readdirSync(dirPath, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory() && !entry.name.startsWith("."))
+        .map((entry) => ({
+          name: entry.name,
+          path: resolve(dirPath, entry.name),
+          isDirectory: true,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      return { currentPath: dirPath, entries };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return reply.status(400).send({
+        error: { code: "BROWSE_ERROR", message: `Cannot read directory: ${message}` },
+      });
+    }
   });
 
   // POST /api/settings/import — import projects, personas, persona-assignments

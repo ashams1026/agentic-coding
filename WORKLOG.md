@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — PS.10: Add folder browser to project creation form
+
+**Task:** Replace text input for project path with a folder picker (text input + "Browse..." button + modal folder browser).
+
+**Done:**
+- **Backend**: Added `POST /api/settings/browse-directory` route to `packages/backend/src/routes/settings.ts`. Accepts `{ startPath?: string }`, defaults to `os.homedir()`. Returns `{ currentPath, entries: [{ name, path, isDirectory }] }`. Uses `readdirSync` with `withFileTypes`, filters to directories only, hides dotfiles, sorts alphabetically. Returns 400 on unreadable directories.
+- **Frontend API**: Added `browseDirectory()`, `DirectoryEntry`, and `BrowseDirectoryResult` types to `packages/frontend/src/api/client.ts`.
+- **Frontend UI**: Rewrote `ProjectForm` in `packages/frontend/src/features/settings/projects-section.tsx`:
+  - Text input preserved with FolderOpen icon (for accessibility/direct typing)
+  - Added "Browse..." button next to the input
+  - Added `FolderBrowser` modal component: Dialog with breadcrumb path bar (clickable segments), scrollable directory listing, ".." parent navigation, "Select" button to confirm. Prepopulates at current path or home directory.
+  - Uses shadcn Dialog, ScrollArea, Button components. Dark mode compatible.
+
+**Files modified:** `packages/backend/src/routes/settings.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/features/settings/projects-section.tsx`
+
+**Notes:** Build: 0 errors after removing unused `statSync` import. The `browseDirectory` call is made directly from the component (not through the mock/real pick layer) since it's only meaningful with a real backend — mock mode has no filesystem to browse.
+
+---
+
 ## 2026-03-30 — Review: PS.8 (approved)
 
 **Reviewed:** Auto-seed default personas on project creation.

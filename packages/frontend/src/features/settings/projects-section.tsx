@@ -1,22 +1,181 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   Plus,
   Pencil,
   Trash2,
   FolderOpen,
+  Folder,
   Check,
   AlertCircle,
+  ChevronRight,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   useProjects,
   useCreateProject,
   useUpdateProject,
   useDeleteProject,
 } from "@/hooks";
+import { browseDirectory } from "@/api/client";
+import type { BrowseDirectoryResult } from "@/api/client";
 import type { Project, ProjectId } from "@agentops/shared";
+
+// ── Folder Browser Modal ──────────────────────────────────────────
+
+interface FolderBrowserProps {
+  open: boolean;
+  onClose: () => void;
+  onSelect: (path: string) => void;
+  initialPath?: string;
+}
+
+function FolderBrowser({ open, onClose, onSelect, initialPath }: FolderBrowserProps) {
+  const [currentPath, setCurrentPath] = useState(initialPath || "");
+  const [entries, setEntries] = useState<BrowseDirectoryResult["entries"]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const browse = useCallback(async (path?: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await browseDirectory(path);
+      setCurrentPath(result.currentPath);
+      setEntries(result.entries);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to browse directory");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Load initial directory when dialog opens
+  const handleOpenChange = useCallback(
+    (isOpen: boolean) => {
+      if (isOpen) {
+        browse(initialPath || undefined);
+      } else {
+        onClose();
+      }
+    },
+    [browse, initialPath, onClose],
+  );
+
+  // Navigate to parent
+  const goUp = () => {
+    const parent = currentPath.split("/").slice(0, -1).join("/") || "/";
+    browse(parent);
+  };
+
+  // Breadcrumb segments
+  const pathSegments = currentPath.split("/").filter(Boolean);
+
+  return (
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Browse Folders</DialogTitle>
+        </DialogHeader>
+
+        {/* Breadcrumb path bar */}
+        <div className="flex items-center gap-0.5 text-xs text-muted-foreground overflow-x-auto py-1 px-1 rounded bg-muted/50">
+          <button
+            className="shrink-0 px-1 py-0.5 rounded hover:bg-accent hover:text-foreground transition-colors"
+            onClick={() => browse("/")}
+          >
+            /
+          </button>
+          {pathSegments.map((segment, i) => {
+            const fullPath = "/" + pathSegments.slice(0, i + 1).join("/");
+            return (
+              <span key={fullPath} className="flex items-center gap-0.5">
+                <ChevronRight className="h-3 w-3 shrink-0" />
+                <button
+                  className="px-1 py-0.5 rounded hover:bg-accent hover:text-foreground transition-colors truncate max-w-[120px]"
+                  onClick={() => browse(fullPath)}
+                >
+                  {segment}
+                </button>
+              </span>
+            );
+          })}
+        </div>
+
+        {/* Directory listing */}
+        <ScrollArea className="h-[300px] rounded border">
+          {loading ? (
+            <div className="flex items-center justify-center h-full">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center h-full text-sm text-destructive p-4 text-center">
+              {error}
+            </div>
+          ) : (
+            <div className="p-1">
+              {/* Go up entry */}
+              {currentPath !== "/" && (
+                <button
+                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-accent transition-colors"
+                  onClick={goUp}
+                >
+                  <Folder className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-muted-foreground">..</span>
+                </button>
+              )}
+              {entries.length === 0 && (
+                <p className="text-xs text-muted-foreground text-center py-4">
+                  No subdirectories
+                </p>
+              )}
+              {entries.map((entry) => (
+                <button
+                  key={entry.path}
+                  className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-accent transition-colors"
+                  onClick={() => browse(entry.path)}
+                >
+                  <Folder className="h-4 w-4 text-blue-500" />
+                  <span className="truncate">{entry.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </ScrollArea>
+
+        {/* Current selection */}
+        <div className="text-xs text-muted-foreground truncate">
+          Selected: <span className="font-medium text-foreground">{currentPath}</span>
+        </div>
+
+        <DialogFooter>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => {
+              onSelect(currentPath);
+              onClose();
+            }}
+          >
+            Select
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 // ── Add / Edit form ────────────────────────────────────────────────
 
@@ -30,6 +189,7 @@ interface ProjectFormProps {
 function ProjectForm({ initial, onSubmit, onCancel, submitLabel }: ProjectFormProps) {
   const [name, setName] = useState(initial?.name ?? "");
   const [path, setPath] = useState(initial?.path ?? "");
+  const [showBrowser, setShowBrowser] = useState(false);
 
   // Simple path validation — non-empty and starts with /
   const pathValid = path.length > 0 && path.startsWith("/");
@@ -42,56 +202,76 @@ function ProjectForm({ initial, onSubmit, onCancel, submitLabel }: ProjectFormPr
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border p-4">
-      <div className="space-y-2">
-        <label className="text-sm font-medium" htmlFor="project-name">Project name</label>
-        <Input
-          id="project-name"
-          placeholder="My Project"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          autoFocus
-        />
-      </div>
-
-      <div className="space-y-2">
-        <label className="text-sm font-medium" htmlFor="project-path">Project path</label>
-        <div className="relative">
-          <FolderOpen className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+    <>
+      <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border p-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium" htmlFor="project-name">Project name</label>
           <Input
-            id="project-path"
-            className="pl-9"
-            placeholder="/Users/you/projects/my-project"
-            value={path}
-            onChange={(e) => setPath(e.target.value)}
+            id="project-name"
+            placeholder="My Project"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            autoFocus
           />
         </div>
-        {path.length > 0 && (
-          <div className="flex items-center gap-1.5 text-xs">
-            {pathValid ? (
-              <>
-                <Check className="h-3 w-3 text-green-500" />
-                <span className="text-green-600 dark:text-green-400">Valid path format</span>
-              </>
-            ) : (
-              <>
-                <AlertCircle className="h-3 w-3 text-destructive" />
-                <span className="text-destructive">Path should be absolute (start with /)</span>
-              </>
-            )}
-          </div>
-        )}
-      </div>
 
-      <div className="flex items-center gap-2 pt-1">
-        <Button type="submit" size="sm" disabled={!canSubmit}>
-          {submitLabel}
-        </Button>
-        <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
-          Cancel
-        </Button>
-      </div>
-    </form>
+        <div className="space-y-2">
+          <label className="text-sm font-medium" htmlFor="project-path">Project path</label>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <FolderOpen className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="project-path"
+                className="pl-9"
+                placeholder="/Users/you/projects/my-project"
+                value={path}
+                onChange={(e) => setPath(e.target.value)}
+              />
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="shrink-0"
+              onClick={() => setShowBrowser(true)}
+            >
+              Browse...
+            </Button>
+          </div>
+          {path.length > 0 && (
+            <div className="flex items-center gap-1.5 text-xs">
+              {pathValid ? (
+                <>
+                  <Check className="h-3 w-3 text-green-500" />
+                  <span className="text-green-600 dark:text-green-400">Valid path format</span>
+                </>
+              ) : (
+                <>
+                  <AlertCircle className="h-3 w-3 text-destructive" />
+                  <span className="text-destructive">Path should be absolute (start with /)</span>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 pt-1">
+          <Button type="submit" size="sm" disabled={!canSubmit}>
+            {submitLabel}
+          </Button>
+          <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
+            Cancel
+          </Button>
+        </div>
+      </form>
+
+      <FolderBrowser
+        open={showBrowser}
+        onClose={() => setShowBrowser(false)}
+        onSelect={(selectedPath) => setPath(selectedPath)}
+        initialPath={path || undefined}
+      />
+    </>
   );
 }
 

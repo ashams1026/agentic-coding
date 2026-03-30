@@ -407,6 +407,21 @@ export async function clearExecutionHistory(): Promise<{ deleted: number }> {
   return res.json();
 }
 
+export interface DirectoryEntry {
+  name: string;
+  path: string;
+  isDirectory: boolean;
+}
+
+export interface BrowseDirectoryResult {
+  currentPath: string;
+  entries: DirectoryEntry[];
+}
+
+export async function browseDirectory(startPath?: string): Promise<BrowseDirectoryResult> {
+  return post<BrowseDirectoryResult>("/api/settings/browse-directory", { startPath });
+}
+
 export async function exportSettings(): Promise<Record<string, unknown>> {
   return get<Record<string, unknown>>("/api/settings/export");
 }
