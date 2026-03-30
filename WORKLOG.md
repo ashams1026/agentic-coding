@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: S.3 (approved)
+
+**Reviewed:** Production-grade crash recovery — `start.ts`, `startup-cleanup.test.ts`.
+- Exported `recoverOrphanedState()` with typed `RecoveryReport` ✓
+- Recovers both "running" and "pending" orphaned executions via `or()` ✓
+- Per-execution logging with ID, status, workItemId, personaId ✓
+- Affected work items logged with current state (informational, no changes) ✓
+- Error resilience: try/catch wraps DB ops, in-memory clear always runs ✓
+- 6 tests: orphaned reset, pending recovery, work items unchanged, empty report, clearAll, clearTransitionLog ✓
+- Build: 0 errors, Tests: 159/159
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — S.3: Add crash recovery on startup (production-grade)
 
 **Task:** Upgrade the E.10 orphan cleanup to a production-grade recovery system with structured reporting, per-execution logging, pending execution recovery, and error resilience.

@@ -28,7 +28,7 @@
 
 - [x] **S.2** — Add graceful shutdown handling. In `packages/backend/src/server.ts` or `index.ts`: handle SIGTERM and SIGINT signals. On shutdown: stop accepting new HTTP/WS connections, wait for active agent executions to complete (30s timeout, then force-kill), close database connection, close WebSocket connections with 1001 code, log shutdown reason and duration. Add a `/api/health` endpoint that returns `{ status: "ok", uptime, activeExecutions, version }`.
 
-- [review] **S.3** — Add crash recovery on startup. In `packages/backend/src/index.ts` (after migrations): check for orphaned state — executions with status `running` (from a previous crash), work items stuck in transient states. Reset orphaned executions to `failed`. For work items that were mid-dispatch: leave them in their current state (the user or auto-routing can re-trigger). Log recovery actions. This overlaps with E.10 but is the permanent, production-grade version.
+- [x] **S.3** — Add crash recovery on startup. In `packages/backend/src/index.ts` (after migrations): check for orphaned state — executions with status `running` (from a previous crash), work items stuck in transient states. Reset orphaned executions to `failed`. For work items that were mid-dispatch: leave them in their current state (the user or auto-routing can re-trigger). Log recovery actions. This overlaps with E.10 but is the permanent, production-grade version.
 
 ### pm2 Service Management
 
