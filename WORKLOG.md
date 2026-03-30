@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — AI.8: Write test plans for Activity Feed
+
+**Task:** Create test plan for the activity feed page.
+
+**Done:**
+- **`tests/e2e/plans/activity-feed.md`** — 14 steps: navigate to `/activity`, verify event rows (colored icon circle, description, timestamp, event type badge, target label), verify date grouping headers ("Today"/"Yesterday"/full date — sticky, uppercase), verify filter bar ("Types" button expanding to 11 event type checkboxes with Select all/Deselect all, persona "All personas" dropdown, date "All time" dropdown), uncheck event type → events filtered out + Types badge count, Select all restores, filter by persona, filter by date range ("Today"), verify "Clear" button appears when filters active, click Clear → resets all + disappears, empty state "No activity yet" / filter empty "No events match the current filters."
+
+**Files created:** `tests/e2e/plans/activity-feed.md`
+
+**Notes:** Plan references actual `activity-feed.tsx`: `eventConfig` with 11 types (state_transition, agent_started, agent_completed, agent_failed, comment_posted, proposal_created, proposal_approved, proposal_rejected, router_decision, manual_override, cost_alert), `FeedFilterBar` (Types button, persona Select, datePreset Select, Clear button via `hasActiveFilters`), `EventRow` (icon circle, description, timestamp via `formatTimestamp`, type badge, target label, LIVE badge), `formatDateGroup` ("Today"/"Yesterday"/full date), grouped rendering with sticky headers. Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: AI.7 (approved)
 
 **Reviewed:** Agent Monitor layout and history test plans.
