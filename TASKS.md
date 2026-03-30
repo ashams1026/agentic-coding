@@ -13,7 +13,7 @@
 - [x] **T3.1.3** — Set up Drizzle migrations and seed script (using new WorkItem schema from O.18/O.19)
 - [x] **T3.2.5** — Implement comment API routes (updated for workItemId)
 - [x] **T3.2.7** — Implement persona API routes
-- [ ] **T3.2.8** — Implement execution API routes (updated for workItemId)
+- [review] **T3.2.8** — Implement execution API routes (updated for workItemId)
 - [ ] **T3.2.9** — Implement proposal API routes (updated for parentWorkItemId)
 - [ ] **T3.2.10** — Implement aggregate/dashboard API routes (updated for work items)
 - [ ] **T3.3.1** — Implement real WebSocket server

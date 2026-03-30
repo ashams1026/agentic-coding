@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-29 — T3.2.8: Implement execution API routes
+
+**Task:** Create execution CRUD routes with workItemId filtering.
+
+**Done:**
+- Added `CreateExecutionRequest` and `UpdateExecutionRequest` to `packages/shared/src/api.ts`
+  - CreateExecutionRequest: workItemId, personaId (required)
+  - UpdateExecutionRequest: status?, completedAt?, costUsd?, durationMs?, summary?, outcome?, rejectionPayload?, logs?
+- Created `routes/executions.ts`: 5 routes
+  - `GET /api/executions?workItemId=` — list (optional filter by workItemId)
+  - `GET /api/executions/:id` — get single execution
+  - `POST /api/executions` — create (defaults: status=pending, startedAt=now, zeros/empty for cost/duration/summary/logs)
+  - `PATCH /api/executions/:id` — partial update (all UpdateExecutionRequest fields, 400 if empty)
+  - `DELETE /api/executions/:id` — delete
+- Serializer converts Date→ISO for startedAt/completedAt, casts branded IDs
+- completedAt in PATCH: accepts ISO string, converts to Date for DB storage
+- Registered in `server.ts`
+
+**Files created:** `packages/backend/src/routes/executions.ts`
+**Files modified:** `packages/backend/src/server.ts`, `packages/shared/src/api.ts`
+
+**Notes:** Backend typecheck: 0 errors. Added missing ExecutionStatus, ExecutionOutcome, RejectionPayload imports to api.ts for the request types.
+
+---
+
 ## 2026-03-29 — Review: T3.2.7 (approved)
 
 **Reviewed:** Persona CRUD routes — `routes/personas.ts`, `server.ts`.

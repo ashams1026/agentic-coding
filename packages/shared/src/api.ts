@@ -20,6 +20,9 @@ import type {
   WorkItemEdgeType,
   CommentAuthorType,
   ProposalStatus,
+  ExecutionStatus,
+  ExecutionOutcome,
+  RejectionPayload,
 } from "./entities.js";
 
 // ── Generic response wrappers ──────────────────────────────────────
@@ -132,6 +135,22 @@ export type PersonaResponse = ApiResponse<Persona>;
 export type PersonaListResponse = ApiListResponse<Persona>;
 
 // ── Execution endpoints ────────────────────────────────────────────
+
+export interface CreateExecutionRequest {
+  workItemId: WorkItemId;
+  personaId: PersonaId;
+}
+
+export interface UpdateExecutionRequest {
+  status?: ExecutionStatus;
+  completedAt?: string;
+  costUsd?: number;
+  durationMs?: number;
+  summary?: string;
+  outcome?: ExecutionOutcome | null;
+  rejectionPayload?: RejectionPayload | null;
+  logs?: string;
+}
 
 export type ExecutionResponse = ApiResponse<Execution>;
 export type ExecutionListResponse = ApiListResponse<Execution>;
