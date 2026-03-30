@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: Q.5 (approved)
+
+**Reviewed:** Persona and persona-assignment route tests.
+- `personas.test.ts`: 11 tests — full CRUD (list, get, create, update, delete), 404/400 edge cases ✓
+- `persona-assignments.test.ts`: 6 tests — list/filter, upsert create, upsert conflict, valid linkage ✓
+- Route fix: double-encoding removed from personas.ts PATCH (avatar, allowedTools, mcpTools) ✓
+- Mock pattern consistent with Q.4 ✓
+- Build: 0 errors
+- Tests: 64 pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — Q.5: Test persona and persona-assignment routes
 
 **Task:** Integration tests for persona CRUD and persona-assignment upsert routes.
