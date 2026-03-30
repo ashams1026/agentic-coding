@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-03-29 — O.9: Build board view
+
+**Task:** Create kanban board with WORKFLOW columns, drag-and-drop, scope selector, persona trigger prompt.
+
+**Done:**
+- Created `packages/frontend/src/features/work-items/board-view.tsx` (~350 lines):
+  - Columns generated from WORKFLOW.states with color dots and count badges
+  - WorkItemCard: title, priority badge, progress pill (children done/total), persona avatar
+  - Drag-and-drop via @dnd-kit/core (DndContext, useDraggable, useDroppable, DragOverlay, PointerSensor)
+  - On drop to state with assigned persona: TransitionPrompt dialog ("Run / Skip / Cancel")
+  - Scope selector breadcrumb at top: "Top-level items" → click children to scope into them
+  - PersonaAssignment lookup via usePersonaAssignments for trigger detection
+  - Click card → selectedItemId in Zustand
+  - Loading skeleton columns
+  - ScrollArea with horizontal scrollbar for overflow
+- Updated `pages/work-items.tsx`: replaced board placeholder with `<BoardView />`, removed placeholder component
+
+**Files created:** `features/work-items/board-view.tsx`
+**Files modified:** `pages/work-items.tsx`
+
+**Notes:** Reuses established dnd-kit patterns from old kanban board. TransitionPrompt dialog follows same pattern as old TransitionPromptModal. All new files compile clean.
+
+---
+
 ## 2026-03-29 — Review: O.8 (approved)
 
 **Reviewed:** List view — `list-view.tsx`, `work-items.tsx` update.
