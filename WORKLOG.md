@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-30 — S.5: Create install/setup script
+
+**Task:** Create setup script that checks prereqs, installs, builds, creates data dirs, runs migrations, seeds personas.
+
+**Done:**
+- **`scripts/setup.sh`** — Bash script with 7 steps:
+  1. Check Node >= 22 (parses `node -v`, compares major version)
+  2. Check pnpm installed
+  3. `pnpm install --frozen-lockfile`
+  4. `pnpm build`
+  5. Create `~/.agentops/{config,logs,data}` directories
+  6. Run migrations against `AGENTOPS_DB_PATH` (sets `DATABASE_URL` env var, which `connection.ts` reads)
+  7. Seed default personas via `db:seed`
+  8. Print setup summary with next steps
+- DB path configurable via `AGENTOPS_DB_PATH` env var (default `~/.agentops/data/agentops.db`)
+- Colored output with info/ok/warn/fail helpers
+- `set -euo pipefail` for strict error handling
+- Made executable (`chmod +x`)
+
+**Files created:** `scripts/setup.sh`
+
+**Notes:** Build: 0 errors. Tests: 159/159. Shell syntax verified via `bash -n`. Uses `DATABASE_URL` env var to point `connection.ts` at the custom path. Seed runs the full seed (includes demo data) — gives new users something to see in the UI.
+
+---
+
 ## 2026-03-30 — Review: S.4 (approved)
 
 **Reviewed:** pm2 ecosystem config — `ecosystem.config.cjs`, `package.json`.
