@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-03-30 — W.8: Wire data management settings
+
+**Task:** Wire the Settings Data section with real backend endpoints for DB stats, execution cleanup, settings export/import.
+
+**Done:**
+- **Backend `packages/backend/src/routes/settings.ts`** — Added 4 new endpoints:
+  - `GET /api/settings/db-stats` — queries SQLite `page_count * page_size` for DB size, counts executions/projects/personas
+  - `DELETE /api/settings/executions` — deletes executions older than 30 days using `lt(executions.startedAt, cutoff)`
+  - `GET /api/settings/export` — returns JSON dump of projects, personas, persona-assignments
+  - `POST /api/settings/import` — accepts same JSON format, inserts with `onConflictDoNothing()`
+- **Frontend `packages/frontend/src/api/client.ts`** — Added `getDbStats()`, `clearExecutionHistory()`, `exportSettings()`, `importSettings()` with typed interfaces
+- **Frontend `packages/frontend/src/mocks/api.ts`** — Added mock implementations for all 4 functions
+- **Frontend `packages/frontend/src/api/index.ts`** — Added unified wrappers for all 4 functions
+- **Frontend `packages/frontend/src/features/settings/appearance-section.tsx`** — Rewired `DataSection`:
+  - `DatabaseInfo`: fetches real DB stats on mount, shows size + counts with loading skeleton
+  - `DataActionsSection`: Export downloads JSON file via blob URL, Import uses file input for `.json` upload, Clear has 2-click confirmation dialog with 5s timeout
+  - Import shows result message (success with counts or error)
+
+**Files modified:** `settings.ts` (backend), `client.ts`, `mocks/api.ts`, `api/index.ts`, `appearance-section.tsx`, `TASKS.md`, `WORKLOG.md`
+
+**Notes:** Build: 0 errors. Import uses `onConflictDoNothing()` so re-importing the same data is safe. Clear only deletes executions > 30 days old (not all). Confirmation dialog auto-dismisses after 5 seconds.
+
+---
+
 ## 2026-03-30 — Review: W.7 (approved)
 
 **Reviewed:** Density setting wiring — Zustand store, localStorage persistence, CSS overrides.

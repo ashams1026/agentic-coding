@@ -153,3 +153,15 @@ export const deleteApiKey = (...args: Parameters<typeof mock.deleteApiKey>) =>
 
 export const getConcurrencyStats = (...args: Parameters<typeof mock.getConcurrencyStats>) =>
   pick(mock.getConcurrencyStats, real.getConcurrencyStats)(...args);
+
+export const getDbStats = (...args: Parameters<typeof mock.getDbStats>) =>
+  pick(mock.getDbStats, real.getDbStats)(...args);
+
+export const clearExecutionHistory = (...args: Parameters<typeof mock.clearExecutionHistory>) =>
+  pick(mock.clearExecutionHistory, real.clearExecutionHistory)(...args);
+
+export const exportSettings = (...args: Parameters<typeof mock.exportSettings>) =>
+  pick(mock.exportSettings, real.exportSettings)(...args);
+
+export const importSettings = (...args: Parameters<typeof mock.importSettings>) =>
+  pick(mock.importSettings, real.importSettings)(...args);

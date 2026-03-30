@@ -375,6 +375,44 @@ export async function getConcurrencyStats(): Promise<ConcurrencyStats> {
   return get<ConcurrencyStats>("/api/settings/concurrency");
 }
 
+export interface DbStats {
+  sizeBytes: number;
+  sizeMB: number;
+  executionCount: number;
+  projectCount: number;
+  personaCount: number;
+}
+
+export async function getDbStats(): Promise<DbStats> {
+  return get<DbStats>("/api/settings/db-stats");
+}
+
+export async function clearExecutionHistory(): Promise<{ deleted: number }> {
+  const res = await fetch(`${BASE_URL}/api/settings/executions`, { method: "DELETE" });
+  if (!res.ok) {
+    showErrorToast("DELETE", "/api/settings/executions", res.status);
+    throw new Error(`DELETE /api/settings/executions failed: ${res.status}`);
+  }
+  return res.json();
+}
+
+export async function exportSettings(): Promise<Record<string, unknown>> {
+  return get<Record<string, unknown>>("/api/settings/export");
+}
+
+export async function importSettings(data: Record<string, unknown>): Promise<{ imported: Record<string, number> }> {
+  const res = await fetch(`${BASE_URL}/api/settings/import`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    showErrorToast("POST", "/api/settings/import", res.status);
+    throw new Error(`POST /api/settings/import failed: ${res.status}`);
+  }
+  return res.json();
+}
+
 // ── Bundled API (mirrors mockApi shape) ──────────────────────────
 
 export const apiClient = {
@@ -426,4 +464,8 @@ export const apiClient = {
   setApiKey,
   deleteApiKey,
   getConcurrencyStats,
+  getDbStats,
+  clearExecutionHistory,
+  exportSettings,
+  importSettings,
 };

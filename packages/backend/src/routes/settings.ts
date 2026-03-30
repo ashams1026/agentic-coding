@@ -1,7 +1,10 @@
 import type { FastifyInstance } from "fastify";
+import { lt } from "drizzle-orm";
 import { loadConfig, setConfigValue } from "../config.js";
 import { logger } from "../logger.js";
 import { getActiveCount, getQueueLength } from "../agent/concurrency.js";
+import { db, sqlite } from "../db/connection.js";
+import { projects, personas, personaAssignments, executions } from "../db/schema.js";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
@@ -103,5 +106,121 @@ export async function settingsRoutes(app: FastifyInstance) {
       active: getActiveCount(),
       queued: getQueueLength(),
     };
+  });
+
+  // GET /api/settings/db-stats — database size info
+  app.get("/api/settings/db-stats", async () => {
+    const row = sqlite.pragma("page_count") as { page_count: number }[];
+    const row2 = sqlite.pragma("page_size") as { page_size: number }[];
+    const pageCount = row[0]?.page_count ?? 0;
+    const pageSize = row2[0]?.page_size ?? 4096;
+    const sizeBytes = pageCount * pageSize;
+
+    const allExecutions = await db.select().from(executions);
+    const allProjects = await db.select().from(projects);
+    const allPersonas = await db.select().from(personas);
+
+    return {
+      sizeBytes,
+      sizeMB: +(sizeBytes / (1024 * 1024)).toFixed(1),
+      executionCount: allExecutions.length,
+      projectCount: allProjects.length,
+      personaCount: allPersonas.length,
+    };
+  });
+
+  // DELETE /api/settings/executions — clear executions older than 30 days
+  app.delete("/api/settings/executions", async () => {
+    const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const result = await db
+      .delete(executions)
+      .where(lt(executions.startedAt, cutoff));
+
+    logger.info({ cutoff: cutoff.toISOString() }, "Cleared old execution history");
+    return { deleted: result.changes };
+  });
+
+  // GET /api/settings/export — export projects, personas, persona-assignments
+  app.get("/api/settings/export", async () => {
+    const allProjects = await db.select().from(projects);
+    const allPersonas = await db.select().from(personas);
+    const allAssignments = await db.select().from(personaAssignments);
+
+    return {
+      exportedAt: new Date().toISOString(),
+      projects: allProjects,
+      personas: allPersonas,
+      personaAssignments: allAssignments,
+    };
+  });
+
+  // POST /api/settings/import — import projects, personas, persona-assignments
+  app.post<{
+    Body: {
+      projects?: unknown[];
+      personas?: unknown[];
+      personaAssignments?: unknown[];
+    };
+  }>("/api/settings/import", async (request, reply) => {
+    const body = request.body;
+    if (!body || typeof body !== "object") {
+      return reply.status(400).send({ error: "Invalid import payload" });
+    }
+
+    let imported = { projects: 0, personas: 0, personaAssignments: 0 };
+
+    try {
+      if (Array.isArray(body.projects)) {
+        for (const p of body.projects) {
+          const proj = p as Record<string, unknown>;
+          await db.insert(projects).values({
+            id: proj.id as string,
+            name: proj.name as string,
+            path: proj.path as string,
+            settings: (proj.settings ?? {}) as Record<string, unknown>,
+            createdAt: new Date(proj.createdAt as string),
+          }).onConflictDoNothing();
+          imported.projects++;
+        }
+      }
+
+      if (Array.isArray(body.personas)) {
+        for (const p of body.personas) {
+          const per = p as Record<string, unknown>;
+          await db.insert(personas).values({
+            id: per.id as string,
+            name: per.name as string,
+            description: per.description as string,
+            avatar: per.avatar as { color: string; icon: string },
+            systemPrompt: per.systemPrompt as string,
+            model: per.model as string,
+            allowedTools: (per.allowedTools ?? []) as string[],
+            mcpTools: (per.mcpTools ?? []) as string[],
+            maxBudgetPerRun: (per.maxBudgetPerRun ?? 0) as number,
+            settings: (per.settings ?? {}) as Record<string, unknown>,
+          }).onConflictDoNothing();
+          imported.personas++;
+        }
+      }
+
+      if (Array.isArray(body.personaAssignments)) {
+        for (const a of body.personaAssignments) {
+          const assign = a as Record<string, unknown>;
+          await db.insert(personaAssignments).values({
+            projectId: assign.projectId as string,
+            stateName: assign.stateName as string,
+            personaId: assign.personaId as string,
+          }).onConflictDoNothing();
+          imported.personaAssignments++;
+        }
+      }
+
+      logger.info({ imported }, "Settings imported");
+      return { imported };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      logger.error({ err }, "Settings import failed");
+      return reply.status(400).send({ error: `Import failed: ${message}` });
+    }
   });
 }

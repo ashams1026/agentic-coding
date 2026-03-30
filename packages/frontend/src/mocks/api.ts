@@ -471,6 +471,45 @@ export async function getConcurrencyStats(): Promise<{ active: number; queued: n
   return { active: 1, queued: 0 };
 }
 
+export async function getDbStats(): Promise<{
+  sizeBytes: number;
+  sizeMB: number;
+  executionCount: number;
+  projectCount: number;
+  personaCount: number;
+}> {
+  await delay();
+  return {
+    sizeBytes: 25_480_396,
+    sizeMB: 24.3,
+    executionCount: store.executions.length,
+    projectCount: store.projects.length,
+    personaCount: store.personas.length,
+  };
+}
+
+export async function clearExecutionHistory(): Promise<{ deleted: number }> {
+  await delay();
+  const count = store.executions.length;
+  store.executions = [];
+  return { deleted: count };
+}
+
+export async function exportSettings(): Promise<Record<string, unknown>> {
+  await delay();
+  return {
+    exportedAt: new Date().toISOString(),
+    projects: store.projects,
+    personas: store.personas,
+    personaAssignments: store.personaAssignments,
+  };
+}
+
+export async function importSettings(_data: Record<string, unknown>): Promise<{ imported: Record<string, number> }> {
+  await delay();
+  return { imported: { projects: 0, personas: 0, personaAssignments: 0 } };
+}
+
 // ── Bundled mock API ──────────────────────────────────────────────
 
 export const mockApi = {
@@ -523,6 +562,10 @@ export const mockApi = {
   setApiKey,
   deleteApiKey,
   getConcurrencyStats,
+  getDbStats,
+  clearExecutionHistory,
+  exportSettings,
+  importSettings,
   // Utility
   resetStore,
 };

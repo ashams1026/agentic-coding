@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Sun,
   Moon,
   Monitor,
   RotateCcw,
   Download,
+  Upload,
   Trash2,
   CheckCircle2,
   HardDrive,
@@ -14,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useUIStore, type Density } from "@/stores/ui-store";
 import { cn } from "@/lib/utils";
+import { getDbStats, clearExecutionHistory, exportSettings, importSettings } from "@/api";
 
 // ── Theme toggle ───────────────────────────────────────────────────
 
@@ -208,12 +210,23 @@ export function ServiceSection() {
 // ── Data section ───────────────────────────────────────────────────
 
 function DatabaseInfo() {
+  const [stats, setStats] = useState<{
+    sizeMB: number;
+    executionCount: number;
+    projectCount: number;
+    personaCount: number;
+  } | null>(null);
+
+  useEffect(() => {
+    getDbStats().then(setStats).catch(() => {});
+  }, []);
+
   return (
     <div className="space-y-3">
       <div>
         <p className="text-sm font-medium mb-1">Database</p>
         <p className="text-xs text-muted-foreground mb-3">
-          SQLite storage for stories, tasks, executions, and project data.
+          SQLite storage for work items, executions, and project data.
         </p>
       </div>
 
@@ -221,7 +234,13 @@ function DatabaseInfo() {
         <HardDrive className="h-5 w-5 text-muted-foreground shrink-0" />
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium">agentops.db</p>
-          <p className="text-xs text-muted-foreground">24.3 MB · 1,847 rows</p>
+          {stats ? (
+            <p className="text-xs text-muted-foreground">
+              {stats.sizeMB} MB · {stats.executionCount} executions · {stats.projectCount} projects · {stats.personaCount} personas
+            </p>
+          ) : (
+            <div className="h-3 w-40 bg-muted animate-pulse rounded mt-1" />
+          )}
         </div>
         <Badge variant="secondary" className="text-xs shrink-0">SQLite</Badge>
       </div>
@@ -232,19 +251,65 @@ function DatabaseInfo() {
 function DataActionsSection() {
   const [exported, setExported] = useState(false);
   const [cleared, setCleared] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = async () => {
-    // Mock export action
-    await new Promise((r) => setTimeout(r, 800));
-    setExported(true);
-    setTimeout(() => setExported(false), 3000);
+    try {
+      const data = await exportSettings();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `agentops-settings-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setExported(true);
+      setTimeout(() => setExported(false), 3000);
+    } catch {
+      // Error toast handled by API layer
+    }
   };
 
   const handleClear = async () => {
-    // Mock clear action
-    await new Promise((r) => setTimeout(r, 600));
-    setCleared(true);
-    setTimeout(() => setCleared(false), 3000);
+    if (!confirmClear) {
+      setConfirmClear(true);
+      setTimeout(() => setConfirmClear(false), 5000);
+      return;
+    }
+    try {
+      await clearExecutionHistory();
+      setCleared(true);
+      setConfirmClear(false);
+      setTimeout(() => setCleared(false), 3000);
+    } catch {
+      // Error toast handled by API layer
+    }
+  };
+
+  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    setImportResult(null);
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      const result = await importSettings(data);
+      const counts = result.imported;
+      setImportResult(
+        `Imported: ${counts.projects} projects, ${counts.personas} personas, ${counts.personaAssignments} assignments`,
+      );
+      setTimeout(() => setImportResult(null), 5000);
+    } catch {
+      setImportResult("Import failed — check file format.");
+      setTimeout(() => setImportResult(null), 5000);
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -252,7 +317,7 @@ function DataActionsSection() {
       <div>
         <p className="text-sm font-medium mb-1">Actions</p>
         <p className="text-xs text-muted-foreground mb-3">
-          Export or clear data from the application.
+          Export, import, or clear data from the application.
         </p>
       </div>
 
@@ -275,7 +340,30 @@ function DataActionsSection() {
         <Button
           variant="outline"
           size="sm"
-          className="gap-1.5 text-destructive hover:text-destructive"
+          className="gap-1.5"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={importing}
+        >
+          <Upload className="h-3.5 w-3.5" />
+          {importing ? "Importing..." : "Import settings"}
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          className="hidden"
+          onChange={handleImport}
+        />
+
+        <Button
+          variant="outline"
+          size="sm"
+          className={cn(
+            "gap-1.5",
+            confirmClear
+              ? "text-destructive border-destructive hover:text-destructive"
+              : "text-destructive hover:text-destructive",
+          )}
           onClick={handleClear}
           disabled={cleared}
         >
@@ -284,9 +372,28 @@ function DataActionsSection() {
           ) : (
             <Trash2 className="h-3.5 w-3.5" />
           )}
-          {cleared ? "Cleared!" : "Clear execution history"}
+          {cleared
+            ? "Cleared!"
+            : confirmClear
+              ? "Click again to confirm"
+              : "Clear execution history"}
         </Button>
       </div>
+
+      {confirmClear && !cleared && (
+        <p className="text-xs text-destructive">
+          This will delete all execution records older than 30 days. Click the button again to confirm.
+        </p>
+      )}
+
+      {importResult && (
+        <p className={cn(
+          "text-xs",
+          importResult.startsWith("Import failed") ? "text-destructive" : "text-green-600 dark:text-green-400",
+        )}>
+          {importResult}
+        </p>
+      )}
     </div>
   );
 }
