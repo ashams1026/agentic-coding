@@ -192,3 +192,27 @@
 ## Sprint 15: Project Scoping (PS.1–PS.10) — archived 2026-03-30
 
 *PS.1:* Wire project switcher — Select in sidebar wired to useUIStore. *PS.2:* useSelectedProject hook + useProject null-safety. *PS.3:* Scope useWorkItems() to selected project (10 call sites). *PS.4:* Scope dashboard queries (4 backend routes + hooks + call sites). *PS.5:* Scope executions/comments/proposals (3 backend routes + hooks + 9 call sites). *PS.6:* Scope persona assignments, remove hardcoded project IDs. *PS.7:* Empty states for new projects. *PS.8:* Auto-seed 5 default personas on project creation. *PS.9:* Audit all 8 backend routes — all had projectId filtering, no fixes needed. *PS.10:* Folder browser modal for project path. All 10 approved.
+
+---
+
+## Sprint 16: E2E Test Plans — QF.1 + AI.1–AI.9 (work + reviews) — archived 2026-03-30
+
+*QF.1 (work + approved):* API mode toggle — Mock/Live button in status bar (amber/green dots), Settings → Appearance card selector, health check on Live switch, toast + revert on failure. Files: `status-bar.tsx`, `appearance-section.tsx`.
+
+*AI.1 (work + approved):* Test plan infrastructure — `tests/e2e/plans/` + `tests/e2e/results/` directories, README (framework overview, 5 prerequisites, 6 MCP tools), `_template.md` (5 sections: Objective, Prerequisites, Steps, Expected Results, Failure Criteria).
+
+*AI.2 (work + approved):* Dashboard test plans — `dashboard-stats.md` (11 steps: 4 stat cards, agent strip, cost chart, activity, upcoming work), `dashboard-navigation.md` (12 steps: card clicks → target pages, back-nav, "View all" link).
+
+*AI.3 (work + approved):* Work Items test plans — `work-items-list-view.md` (14 steps: list view, filter bar, badges, expand/collapse, detail panel), `work-items-create.md` (9 steps: "Add" button, defaults, detail panel).
+
+*AI.4 (work + approved):* Flow View test plan — `work-items-flow-view.md` (13 steps: 8 state nodes, SVG arrows, counts, node click filtering, empty state).
+
+*AI.5 (work + approved):* Detail Panel test plans — `detail-panel-view.md` (16 steps: all 11 sections), `detail-panel-edit.md` (17 steps: 5 edit types + persistence).
+
+*AI.6 (work + approved):* Filtering test plans — `work-items-filtering.md` (14 steps: search, highlight, state/priority filters, clear), `work-items-sorting.md` (12 steps: sort field/direction).
+
+*AI.7 (work + approved):* Agent Monitor test plans — `agent-monitor-layout.md` (9 steps: tabs, empty state), `agent-monitor-history.md` (14 steps: stats, filters, table, expand).
+
+*AI.8 (work + approved):* Activity Feed test plan — `activity-feed.md` (14 steps: events, date groups, 11-type filter, persona/date filters).
+
+*AI.9 (work + approved):* Settings test plans — `settings-projects.md` (11 steps), `settings-workflow.md` (12 steps), `settings-appearance.md` (11 steps).

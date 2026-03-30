@@ -190,3 +190,23 @@
 - [x] **AI.7** — Agent Monitor test plans (`agent-monitor-layout.md`, `agent-monitor-history.md`). *(completed 2026-03-30)*
 - [x] **AI.8** — Activity Feed test plan (`activity-feed.md`). *(completed 2026-03-30)*
 - [x] **AI.9** — Settings test plans (`settings-projects.md`, `settings-workflow.md`, `settings-appearance.md`). *(completed 2026-03-30)*
+
+---
+
+## Sprint 16 (continued): Phase 1 (AI.10–AI.11) + Phase 1.5 (AI.V1–AI.V2) + Phase 2 (AI.12–AI.17) — archived 2026-03-30
+
+### Phase 1: Generate Test Plans (AI.10–AI.11)
+- [x] **AI.10** — Persona Manager test plan (`persona-manager.md`). *(completed 2026-03-30)*
+- [x] **AI.11** — Cross-cutting concerns test plans (`navigation.md`, `dark-mode.md`, `keyboard-shortcuts.md`). *(completed 2026-03-30)*
+
+### Phase 1.5: Visual Inspection Updates (AI.V1–AI.V2)
+- [x] **AI.V1** — Updated test plan template with visual inspection protocol (screenshot checkpoints, Visual Quality/Failure sections). *(completed 2026-03-30)*
+- [x] **AI.V2** — Updated `dashboard-stats.md` and `dashboard-navigation.md` with 6+7 visual inspection checkpoints. *(completed 2026-03-30)*
+
+### Phase 2: Execute Test Plans (AI.12–AI.17)
+- [x] **AI.12** — Execute `dashboard-stats.md` — 11/11 PASS. *(completed 2026-03-30)*
+- [x] **AI.13** — Execute `dashboard-navigation.md` — 12/12 PASS. *(completed 2026-03-30)*
+- [x] **AI.14** — Execute `work-items-list-view.md` — 14/14 PASS. *(completed 2026-03-30)*
+- [x] **AI.15** — Execute `work-items-create.md` — 9/9 PASS. *(completed 2026-03-30)*
+- [x] **AI.16** — Execute `work-items-flow-view.md` — 13/13 PASS. *(completed 2026-03-30)*
+- [x] **AI.17** — Execute `detail-panel-view.md` — 16/16 PASS. *(completed 2026-03-30)*

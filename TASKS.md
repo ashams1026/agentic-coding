@@ -14,6 +14,18 @@
 > Critical fixes from first real-world test run. Router loop, cost display, agent monitor readability, activity feed descriptions.
 > Also includes persona audit, skills system, and UX improvements.
 
+### Settings Navigation Fix
+
+- [ ] **FX.SET1** — Remove duplicate settings nav item and rename section. In `packages/frontend/src/features/settings/settings-layout.tsx`: the "API Keys" and "Concurrency" sidebar links both render the same `ApiKeysSection` component (which contains both the API key input and the concurrency slider). Remove the "Concurrency" nav entry. Rename the remaining section from "API Keys" to "API & Execution" (or "Agent Configuration") to better reflect that it covers both API key management and concurrency/execution settings. Update the section `id` and any references. Verify only one link appears in the settings sidebar and it renders the combined content.
+
+- [ ] **FX.SET2** — Remove workflow state machine diagram from settings. In the Settings → Workflow section: remove the SVG state machine diagram. It's redundant with the Flow view on the Work Items page and doesn't look good. The Workflow settings section should only contain the auto-routing toggle and the persona-per-state assignment table. Delete the diagram component and any related layout code.
+
+- [ ] **FX.SET3** — Replace auto-routing toggle with play/pause button. Replace the current ON/OFF toggle switch for auto-routing with a prominent play/pause button. In the **status bar** (bottom of the app): add a play/pause icon button next to the project name — Play (triangle) when auto-routing is active (green tint), Pause (two bars) when paused (amber tint). Tooltip: "Auto-routing: active — agents automatically transition work items" or "Auto-routing: paused — manual transitions only". Clicking toggles `autoRouting` via `PATCH /api/projects/:id`. In **Settings → Workflow**: replace the toggle switch with the same play/pause button (larger, with descriptive text beside it). In the **Work Items page header**: show a small play/pause indicator next to the page title so the user always knows the current mode. The play/pause metaphor should feel like controlling a pipeline — play means work flows automatically, pause means you're driving manually.
+
+### Graceful Restart Modal
+
+- [ ] **FX.RST1** — Add graceful restart flow with active agent modal. In Settings → Service section (or wherever the restart button lives): when the user clicks "Restart Service", hit `GET /api/settings/concurrency` (or a new `GET /api/service/status`) to check for active executions. If zero active agents: restart immediately (existing behavior). If one or more active agents: show a modal dialog with: "Waiting for N agent(s) to finish..." header, a list of active executions (persona name, work item title, elapsed time for each), a live countdown/spinner that polls every 3 seconds and auto-closes when all agents complete, a "Force Restart" button (red, with confirmation: "This will kill N running agent(s). Their work will be lost."), a "Cancel" button to abort the restart. On force restart: hit `POST /api/service/restart?force=true` which sends SIGTERM to active executions immediately then restarts. On graceful completion: hit `POST /api/service/restart` after all agents finish. Backend routes needed: `GET /api/service/status` returns `{ activeExecutions: [{ executionId, personaName, workItemTitle, elapsedMs }] }`, `POST /api/service/restart` with optional `?force=true` query param.
+
 ### Flow View Redesign
 
 - [ ] **FX.FLOW1** — Redesign Flow view as a vertical state machine. Replace the current horizontal BFS-layout SVG graph in `packages/frontend/src/features/work-items/flow-view.tsx` with a clean vertical layout. No charting library needed — this is static HTML/CSS with Tailwind, not an interactive graph. Structure: a vertical column of state nodes connected by arrows, flowing top to bottom in workflow order (Backlog → Planning → Decomposition → Ready → In Progress → In Review → Done, with Blocked branching off to the side). Between each state pair, show a small Router node (diamond or pill shape, Pico-sized, with the Router's indigo color) indicating that the Router agent decides this transition. Each state node is a card showing: state name with colored dot, item count badge, active agent count + pulsing indicator, persona avatar stack (who's assigned to this state), progress indicator (items done / total). Arrows are simple CSS borders or SVG lines (straight down, no bezier curves needed). Blocked state branches off to the right from any state that can transition to it, connected with a dashed line. The whole layout should be centered in the content area, scrollable vertically if needed. Click a state node to filter the detail panel to items in that state (existing behavior). Remove the old `computeLayout` and `computeArrowPath` SVG logic — replace entirely with flex/grid CSS layout.
@@ -125,21 +137,11 @@
 > All test plans live in `tests/e2e/plans/`. Each plan is a markdown file with step-by-step instructions, expected outcomes, and pass/fail criteria.
 > Test execution requires: backend running on :3001, frontend on :5173/:5174, API mode set to "api", chrome-devtools MCP connected.
 
-> QF.1 and AI.1–AI.9 complete and archived.
-
-### Phase 1: Generate Test Plans (continued)
-
-- [x] **AI.10** — Write test plans for Persona Manager. Create `tests/e2e/plans/persona-manager.md`: navigate to `/personas`, verify persona cards render (5 built-in), click a persona to open editor, verify name/description/model/tools fields render, edit a field and save, verify change persists.
-
-- [x] **AI.11** — Write test plans for cross-cutting concerns. Create `tests/e2e/plans/navigation.md`: verify sidebar nav items link to correct pages, verify active nav item is highlighted, collapse sidebar and verify icon-only mode, test mobile hamburger menu. Create `tests/e2e/plans/dark-mode.md`: toggle theme in each page, verify no broken colors or invisible text. Create `tests/e2e/plans/keyboard-shortcuts.md`: open command palette with Cmd+K, search for a work item, navigate to it.
+> QF.1, AI.1–AI.9, AI.10–AI.11, AI.V1–AI.V2, AI.12–AI.17 complete and archived.
 
 ### Phase 1.5: Update Test Plans for Visual Inspection
 
-> Current test plans only take one screenshot at the end and never look at it. Update every plan to: (1) take a screenshot after each major step, (2) have the agent visually examine each screenshot using the Read tool, (3) note any visual issues (misalignment, clipping, bad spacing, broken layout, invisible text, wrong colors, etc.) in the results alongside the functional pass/fail.
-
-- [x] **AI.V1** — Update test plan template. In `tests/e2e/plans/_template.md`: update the `## Steps` section format to include screenshot checkpoints. After each navigation or UI interaction step, add: "Take a screenshot. Examine the screenshot visually — note any layout issues, misalignment, clipping, broken styling, or elements that look wrong." Update `## Expected Results` to include a "Visual Quality" section: "No layout issues, text is readable, elements are properly aligned, colors are correct in both light and dark mode." Update `## Failure Criteria` to include: "Any visual defect (clipping, overlap, misalignment, invisible text, broken colors) counts as a visual failure even if the functional test passes."
-
-- [x] **AI.V2** — Update `dashboard-stats.md` and `dashboard-navigation.md` with visual inspection steps. Add screenshot + examine after: initial page load, each stat card render, active agents strip, cost widget, and after each navigation action. Note layout, spacing, card alignment, text readability.
+> Update remaining test plans with visual inspection protocol (screenshot checkpoints, visual quality/failure criteria).
 
 - [ ] **AI.V3** — Update `work-items-list-view.md` and `work-items-create.md` with visual inspection steps. Add screenshot + examine after: list renders, expanding a parent, opening detail panel, creating a new item. Check: row alignment, badge sizing, indentation, panel transition.
 
@@ -164,18 +166,6 @@
 > One test plan per task. Agent reads the plan, launches the app in a browser via chrome-devtools MCP, follows every step, takes screenshots, records pass/fail.
 > Prerequisites for every execution task: backend running on :3001, frontend on :5173 or :5174, API mode set to "api", seeded data, chrome-devtools MCP connected.
 > Results go to `tests/e2e/results/{plan-name}.md` — same name as the plan file.
-
-- [x] **AI.12** — Execute `dashboard-stats.md`. Read `tests/e2e/plans/dashboard-stats.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/dashboard-stats.md`.
-
-- [x] **AI.13** — Execute `dashboard-navigation.md`. Read `tests/e2e/plans/dashboard-navigation.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/dashboard-navigation.md`.
-
-- [x] **AI.14** — Execute `work-items-list-view.md`. Read `tests/e2e/plans/work-items-list-view.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/work-items-list-view.md`.
-
-- [x] **AI.15** — Execute `work-items-create.md`. Read `tests/e2e/plans/work-items-create.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/work-items-create.md`.
-
-- [x] **AI.16** — Execute `work-items-flow-view.md`. Read `tests/e2e/plans/work-items-flow-view.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/work-items-flow-view.md`.
-
-- [x] **AI.17** — Execute `detail-panel-view.md`. Read `tests/e2e/plans/detail-panel-view.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/detail-panel-view.md`.
 
 - [ ] **AI.18** — Execute `detail-panel-edit.md`. Read `tests/e2e/plans/detail-panel-edit.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/detail-panel-edit.md`.
 
