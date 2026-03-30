@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-30 — D.6: Document the agent personas
+
+**Task:** Create `docs/personas.md` with persona definition, 5 built-in personas, custom personas, prompt layering, MCP allowlists, Router as special persona.
+
+**Done:**
+- **`docs/personas.md`** (new) — Persona documentation with:
+  - Persona TypeScript interface with field descriptions
+  - 5 built-in personas with full detail tables: Product Manager (sonnet, $50, Planning), Tech Lead (opus, $100, Decomposition), Engineer (sonnet, $200, In Progress), Code Reviewer (sonnet, $50, In Review), Router (haiku, $10, automatic)
+  - Each persona includes: ID, model, avatar (color+icon), budget, workflow state, Claude tools, MCP tools, role description, system prompt guidelines
+  - Creating/editing custom personas (UI and API with curl examples)
+  - Persona assignment to workflow states (composite key `projectId, stateName`)
+  - 4-layer system prompt assembly: persona identity → project context → work item context → execution history, with ASCII layer diagram
+  - Per-persona tool allowlists: `allowedTools` (Claude Code tools) and `mcpTools` (AgentOps MCP tools) with tables showing which personas use which tools
+  - Router as special persona: comparison table (trigger, model, tools, budget, settings, creation), lazy creation via `getOrCreateRouterPersona()`
+  - Source files table (6 files)
+
+**Files created:** `docs/personas.md`
+
+**Notes:** Build: 0 errors. All persona details verified against `seed.ts` (IDs, models, budgets, tools, system prompts). Prompt layering verified against `buildSystemPrompt()` in `claude-executor.ts`. Router configuration verified against `router.ts`. MCP tool names verified against `TOOL_NAMES` in `mcp-server.ts`.
+
+---
+
 ## 2026-03-30 — Review: D.5 (approved)
 
 **Reviewed:** Workflow system documentation — state machine, routing, coordination, rejection.
