@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — AI.V1: Update test plan template with visual inspection
+
+**Task:** Update `tests/e2e/plans/_template.md` to include visual inspection protocol.
+
+**Done:**
+- Added visual inspection protocol note at top of Steps section: screenshot after each major step, examine with Read tool, note visual issues
+- Added "Screenshot checkpoint" annotations to each step type (Navigate, Verify, Click, final)
+- Added "Visual Quality" subsection to Expected Results: layout alignment, text readability, element sizing, spacing consistency, color correctness, responsive, dark mode
+- Added "Visual Failure Criteria" subsection: overlap/clipping, invisible text, broken layout, inconsistent spacing, broken colors, content truncation
+- Updated Prerequisites to mention port 5174 alternative and chrome-devtools MCP
+
+**Files changed:** `tests/e2e/plans/_template.md`
+
+**Notes:** Build passes (no code changes, only markdown template). This template guides AI.V2-V11 tasks for updating each existing test plan.
+
+---
+
 ## 2026-03-30 — Review: AI.17 (approved)
 
 **Reviewed:** Detail panel view E2E test execution results.

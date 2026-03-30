@@ -133,6 +133,32 @@
 
 - [x] **AI.11** — Write test plans for cross-cutting concerns. Create `tests/e2e/plans/navigation.md`: verify sidebar nav items link to correct pages, verify active nav item is highlighted, collapse sidebar and verify icon-only mode, test mobile hamburger menu. Create `tests/e2e/plans/dark-mode.md`: toggle theme in each page, verify no broken colors or invisible text. Create `tests/e2e/plans/keyboard-shortcuts.md`: open command palette with Cmd+K, search for a work item, navigate to it.
 
+### Phase 1.5: Update Test Plans for Visual Inspection
+
+> Current test plans only take one screenshot at the end and never look at it. Update every plan to: (1) take a screenshot after each major step, (2) have the agent visually examine each screenshot using the Read tool, (3) note any visual issues (misalignment, clipping, bad spacing, broken layout, invisible text, wrong colors, etc.) in the results alongside the functional pass/fail.
+
+- [review] **AI.V1** — Update test plan template. In `tests/e2e/plans/_template.md`: update the `## Steps` section format to include screenshot checkpoints. After each navigation or UI interaction step, add: "Take a screenshot. Examine the screenshot visually — note any layout issues, misalignment, clipping, broken styling, or elements that look wrong." Update `## Expected Results` to include a "Visual Quality" section: "No layout issues, text is readable, elements are properly aligned, colors are correct in both light and dark mode." Update `## Failure Criteria` to include: "Any visual defect (clipping, overlap, misalignment, invisible text, broken colors) counts as a visual failure even if the functional test passes."
+
+- [ ] **AI.V2** — Update `dashboard-stats.md` and `dashboard-navigation.md` with visual inspection steps. Add screenshot + examine after: initial page load, each stat card render, active agents strip, cost widget, and after each navigation action. Note layout, spacing, card alignment, text readability.
+
+- [ ] **AI.V3** — Update `work-items-list-view.md` and `work-items-create.md` with visual inspection steps. Add screenshot + examine after: list renders, expanding a parent, opening detail panel, creating a new item. Check: row alignment, badge sizing, indentation, panel transition.
+
+- [ ] **AI.V4** — Update `work-items-flow-view.md` with visual inspection steps. Add screenshot + examine after: flow view renders, clicking a state node. Check: node layout, arrow rendering, label readability, no clipping or overflow.
+
+- [ ] **AI.V5** — Update `detail-panel-view.md` and `detail-panel-edit.md` with visual inspection steps. Add screenshot + examine after: panel opens, each section renders, each edit interaction (title edit, description edit, priority change, label add, state change). Check: panel sizing, input alignment, button placement, markdown preview rendering.
+
+- [ ] **AI.V6** — Update `work-items-filtering.md` and `work-items-sorting.md` with visual inspection steps. Add screenshot + examine after: search input, each filter applied, filter cleared, sort changed, sort direction toggled. Check: filter bar layout, dropdown rendering, result list updates.
+
+- [ ] **AI.V7** — Update `agent-monitor-layout.md` and `agent-monitor-history.md` with visual inspection steps. Add screenshot + examine after: page load, tab switch, selecting an agent, expanding a history row. Check: terminal rendering, sidebar layout, table alignment, control bar.
+
+- [ ] **AI.V8** — Update `activity-feed.md` with visual inspection steps. Add screenshot + examine after: feed loads, filter applied, filter cleared. Check: event card layout, icon alignment, date grouping headers, spacing.
+
+- [ ] **AI.V9** — Update `settings-projects.md`, `settings-workflow.md`, and `settings-appearance.md` with visual inspection steps. Add screenshot + examine after: settings page loads, each section renders, form interactions. Check: form alignment, toggle rendering, table layout, section spacing.
+
+- [ ] **AI.V10** — Update `persona-manager.md` with visual inspection steps. Add screenshot + examine after: persona grid loads, opening editor, each field section. Check: card grid alignment, editor layout, field spacing.
+
+- [ ] **AI.V11** — Update `navigation.md`, `dark-mode.md`, and `keyboard-shortcuts.md` with visual inspection steps. Add screenshot + examine after: each nav click, sidebar collapse/expand, theme toggle on each page, command palette open. Check: sidebar layout, active state highlighting, theme color transitions, palette rendering.
+
 ### Phase 2: Execute Test Plans
 
 > One test plan per task. Agent reads the plan, launches the app in a browser via chrome-devtools MCP, follows every step, takes screenshots, records pass/fail.
