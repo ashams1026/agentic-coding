@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-03-29 — O.17: Remove old story/task/workflow code
+
+**Task:** Delete old feature directories and pages, fix remaining type errors to achieve clean build.
+
+**Done:**
+- Deleted directories: `features/kanban/` (7 files), `features/story-detail/` (5 files), `features/task-detail/` (4 files), `features/workflow-designer/` (6 files), `features/story-list/` (4 files)
+- Deleted pages: `pages/story-board.tsx`, `pages/story-detail.tsx`, `pages/task-detail.tsx`, `pages/workflow-designer.tsx`
+- Kept: `features/common/` (CommentStream, ExecutionTimeline, empty-states, loading-skeletons)
+- Fixed remaining type errors in 7 files that still used old Story/Task types:
+  - `features/agent-monitor/active-agent-sidebar.tsx`: useTasks/useStories → useWorkItems, exec.targetId → exec.workItemId
+  - `features/agent-monitor/agent-control-bar.tsx`: same pattern + navigation links to /work-items/
+  - `features/agent-monitor/agent-history.tsx`: same pattern
+  - `features/agent-monitor/split-view.tsx`: same pattern
+  - `features/command-palette/command-palette.tsx`: merged stories/tasks into single work-items category
+  - `mocks/demo.ts`: StoryId/TaskId → WorkItemId, all WS events use workItemId/workItemTitle
+  - `mocks/ws.ts`: StoryId/TaskId → WorkItemId in simulateAgentRun
+
+**Result:** Frontend typecheck: 0 errors. Full `pnpm build`: passes (1,119 KB bundle).
+
+**Files deleted:** 26 files across 5 directories + 4 pages
+**Files modified:** 7 files (agent-monitor, command-palette, mocks)
+
+---
+
 ## 2026-03-29 — Review: O.16 (approved)
 
 **Reviewed:** Workflow configuration — `workflow-config-section.tsx`, `settings-layout.tsx`, `projects-section.tsx`.

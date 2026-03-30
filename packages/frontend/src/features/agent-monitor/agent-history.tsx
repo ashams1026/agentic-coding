@@ -35,7 +35,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useExecutions, usePersonas, useTasks, useStories } from "@/hooks";
+import { useExecutions, usePersonas, useWorkItems } from "@/hooks";
 import { TerminalRenderer } from "./terminal-renderer";
 import type { Execution, ExecutionId } from "@agentops/shared";
 
@@ -342,8 +342,7 @@ function HistoryRow({
 export function AgentHistory() {
   const { data: executions = [] } = useExecutions();
   const { data: personas = [] } = usePersonas();
-  const { data: tasks = [] } = useTasks();
-  const { data: stories = [] } = useStories();
+  const { data: allItems = [] } = useWorkItems();
 
   const [sortField, setSortField] = useState<SortField>("startedAt");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
@@ -411,12 +410,11 @@ export function AgentHistory() {
     [personas],
   );
 
-  const targetNameMap = useMemo(() => {
+  const workItemNameMap = useMemo(() => {
     const map = new Map<string, string>();
-    for (const t of tasks) map.set(t.id as string, t.title);
-    for (const s of stories) map.set(s.id as string, s.title);
+    for (const item of allItems) map.set(item.id as string, item.title);
     return map;
-  }, [tasks, stories]);
+  }, [allItems]);
 
   // Unique personas that appear in history (for filter dropdown)
   const historyPersonas = useMemo(() => {
@@ -518,7 +516,7 @@ export function AgentHistory() {
                     personaName={persona?.name ?? "Agent"}
                     personaColor={persona?.avatar.color ?? "#6b7280"}
                     targetName={
-                      targetNameMap.get(exec.targetId as string) ?? exec.targetId
+                      workItemNameMap.get(exec.workItemId as string) ?? exec.workItemId
                     }
                     isExpanded={expandedId === exec.id}
                     onToggle={() =>

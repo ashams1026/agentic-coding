@@ -1,6 +1,5 @@
 import type {
-  StoryId,
-  TaskId,
+  WorkItemId,
   PersonaId,
   ExecutionId,
   CommentId,
@@ -16,10 +15,10 @@ import {
 
 // ── Demo IDs ──────────────────────────────────────────────────────
 
-const DEMO_STORY = "st-demo001" as StoryId;
-const DEMO_TASK_1 = "tk-demo001" as TaskId;
-const DEMO_TASK_2 = "tk-demo002" as TaskId;
-const DEMO_TASK_3 = "tk-demo003" as TaskId;
+const DEMO_STORY = "wi-demo001" as WorkItemId;
+const DEMO_TASK_1 = "wi-demo002" as WorkItemId;
+const DEMO_TASK_2 = "wi-demo003" as WorkItemId;
+const DEMO_TASK_3 = "wi-demo004" as WorkItemId;
 
 const PM = "ps-pm00001" as PersonaId;
 const TECH_LEAD = "ps-tl00001" as PersonaId;
@@ -144,8 +143,7 @@ export function startDemo(): void {
   // ── 0s: Story created ────────────────────────────────────────
   mockWs.emit(
     createStateChangeEvent({
-      targetId: DEMO_STORY,
-      targetType: "story",
+      workItemId: DEMO_STORY,
       fromState: "",
       toState: "Backlog",
       triggeredBy: "user",
@@ -156,8 +154,7 @@ export function startDemo(): void {
   schedule(2000, () => {
     mockWs.emit(
       createStateChangeEvent({
-        targetId: DEMO_STORY,
-        targetType: "story",
+        workItemId: DEMO_STORY,
         fromState: "Backlog",
         toState: "Defining",
         triggeredBy: PM,
@@ -167,9 +164,8 @@ export function startDemo(): void {
     const cancelRun = mockWs.simulateAgentRun({
       executionId: EXEC_PM,
       personaId: PM,
-      targetId: DEMO_STORY,
-      targetType: "story",
-      taskTitle: "Write acceptance criteria",
+      workItemId: DEMO_STORY,
+      workItemTitle: "Write acceptance criteria",
       chunks: PM_CHUNKS,
       chunkIntervalMs: 800,
       costUsd: 0.18,
@@ -182,8 +178,7 @@ export function startDemo(): void {
     mockWs.emit(
       createCommentCreatedEvent({
         commentId: "cm-demo001" as CommentId,
-        targetId: DEMO_STORY,
-        targetType: "story",
+        workItemId: DEMO_STORY,
         authorName: "PM",
         contentPreview: "Acceptance criteria: file upload with validation, progress indicator...",
       }),
@@ -191,8 +186,7 @@ export function startDemo(): void {
 
     mockWs.emit(
       createStateChangeEvent({
-        targetId: DEMO_STORY,
-        targetType: "story",
+        workItemId: DEMO_STORY,
         fromState: "Defining",
         toState: "Decomposing",
         triggeredBy: TECH_LEAD,
@@ -205,9 +199,8 @@ export function startDemo(): void {
     const cancelRun = mockWs.simulateAgentRun({
       executionId: EXEC_TL,
       personaId: TECH_LEAD,
-      targetId: DEMO_STORY,
-      targetType: "story",
-      taskTitle: "Decompose into tasks",
+      workItemId: DEMO_STORY,
+      workItemTitle: "Decompose into tasks",
       chunks: TL_CHUNKS,
       chunkIntervalMs: 800,
       costUsd: 0.85,
@@ -220,8 +213,7 @@ export function startDemo(): void {
     mockWs.emit(
       createCommentCreatedEvent({
         commentId: "cm-demo002" as CommentId,
-        targetId: DEMO_STORY,
-        targetType: "story",
+        workItemId: DEMO_STORY,
         authorName: "Tech Lead",
         contentPreview: "Decomposed into 3 tasks: upload API, upload UI, storage service",
       }),
@@ -231,8 +223,7 @@ export function startDemo(): void {
       createProposalCreatedEvent({
         proposalId: "pp-demo001" as ProposalId,
         executionId: EXEC_TL,
-        parentId: DEMO_STORY,
-        parentType: "story",
+        workItemId: DEMO_STORY,
         proposalType: "task_creation",
       }),
     );
@@ -249,8 +240,7 @@ export function startDemo(): void {
 
     mockWs.emit(
       createStateChangeEvent({
-        targetId: DEMO_STORY,
-        targetType: "story",
+        workItemId: DEMO_STORY,
         fromState: "Decomposing",
         toState: "In Progress",
         triggeredBy: "user",
@@ -261,8 +251,7 @@ export function startDemo(): void {
     for (const taskId of [DEMO_TASK_1, DEMO_TASK_2, DEMO_TASK_3]) {
       mockWs.emit(
         createStateChangeEvent({
-          targetId: taskId,
-          targetType: "task",
+          workItemId: taskId,
           fromState: "",
           toState: "Pending",
           triggeredBy: "system",
@@ -275,8 +264,7 @@ export function startDemo(): void {
   schedule(31000, () => {
     mockWs.emit(
       createStateChangeEvent({
-        targetId: DEMO_TASK_1,
-        targetType: "task",
+        workItemId: DEMO_TASK_1,
         fromState: "Pending",
         toState: "Running",
         triggeredBy: ENGINEER,
@@ -286,9 +274,8 @@ export function startDemo(): void {
     const cancelRun = mockWs.simulateAgentRun({
       executionId: EXEC_ENG,
       personaId: ENGINEER,
-      targetId: DEMO_TASK_1,
-      targetType: "task",
-      taskTitle: "Build file upload API endpoint",
+      workItemId: DEMO_TASK_1,
+      workItemTitle: "Build file upload API endpoint",
       chunks: ENG_CHUNKS,
       chunkIntervalMs: 600,
       costUsd: 1.20,
@@ -300,8 +287,7 @@ export function startDemo(): void {
   schedule(42000, () => {
     mockWs.emit(
       createStateChangeEvent({
-        targetId: DEMO_TASK_1,
-        targetType: "task",
+        workItemId: DEMO_TASK_1,
         fromState: "Running",
         toState: "Review",
         triggeredBy: ENGINEER,
@@ -311,8 +297,7 @@ export function startDemo(): void {
     mockWs.emit(
       createCommentCreatedEvent({
         commentId: "cm-demo003" as CommentId,
-        targetId: DEMO_TASK_1,
-        targetType: "task",
+        workItemId: DEMO_TASK_1,
         authorName: "Engineer",
         contentPreview: "Upload endpoint implemented with validation and tests.",
       }),
@@ -320,8 +305,7 @@ export function startDemo(): void {
 
     mockWs.emit(
       createStateChangeEvent({
-        targetId: DEMO_STORY,
-        targetType: "story",
+        workItemId: DEMO_STORY,
         fromState: "In Progress",
         toState: "In Review",
         triggeredBy: REVIEWER,
@@ -334,9 +318,8 @@ export function startDemo(): void {
     const cancelRun = mockWs.simulateAgentRun({
       executionId: EXEC_REV,
       personaId: REVIEWER,
-      targetId: DEMO_TASK_1,
-      targetType: "task",
-      taskTitle: "Review upload endpoint",
+      workItemId: DEMO_TASK_1,
+      workItemTitle: "Review upload endpoint",
       chunks: REV_CHUNKS,
       chunkIntervalMs: 700,
       costUsd: 0.25,
@@ -348,8 +331,7 @@ export function startDemo(): void {
   schedule(51000, () => {
     mockWs.emit(
       createStateChangeEvent({
-        targetId: DEMO_TASK_1,
-        targetType: "task",
+        workItemId: DEMO_TASK_1,
         fromState: "Review",
         toState: "Done",
         triggeredBy: REVIEWER,
@@ -359,8 +341,7 @@ export function startDemo(): void {
     mockWs.emit(
       createCommentCreatedEvent({
         commentId: "cm-demo004" as CommentId,
-        targetId: DEMO_TASK_1,
-        targetType: "task",
+        workItemId: DEMO_TASK_1,
         authorName: "Reviewer",
         contentPreview: "Code review passed. All checks OK.",
       }),
@@ -368,8 +349,7 @@ export function startDemo(): void {
 
     mockWs.emit(
       createStateChangeEvent({
-        targetId: DEMO_STORY,
-        targetType: "story",
+        workItemId: DEMO_STORY,
         fromState: "In Review",
         toState: "QA",
         triggeredBy: QA,
@@ -382,9 +362,8 @@ export function startDemo(): void {
     const cancelRun = mockWs.simulateAgentRun({
       executionId: EXEC_QA,
       personaId: QA,
-      targetId: DEMO_STORY,
-      targetType: "story",
-      taskTitle: "Verify acceptance criteria",
+      workItemId: DEMO_STORY,
+      workItemTitle: "Verify acceptance criteria",
       chunks: QA_CHUNKS,
       chunkIntervalMs: 600,
       costUsd: 0.15,
@@ -397,8 +376,7 @@ export function startDemo(): void {
     mockWs.emit(
       createCommentCreatedEvent({
         commentId: "cm-demo005" as CommentId,
-        targetId: DEMO_STORY,
-        targetType: "story",
+        workItemId: DEMO_STORY,
         authorName: "QA",
         contentPreview: "All acceptance criteria verified. 6/6 tests passing.",
       }),
@@ -406,8 +384,7 @@ export function startDemo(): void {
 
     mockWs.emit(
       createStateChangeEvent({
-        targetId: DEMO_STORY,
-        targetType: "story",
+        workItemId: DEMO_STORY,
         fromState: "QA",
         toState: "Done",
         triggeredBy: QA,

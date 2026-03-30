@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Bot, DollarSign } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { useExecutions, usePersonas, useTasks, useStories } from "@/hooks";
+import { useExecutions, usePersonas, useWorkItems } from "@/hooks";
 import type { Execution, ExecutionId } from "@agentops/shared";
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -106,8 +106,7 @@ interface ActiveAgentSidebarProps {
 export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarProps) {
   const { data: executions = [] } = useExecutions();
   const { data: personas = [] } = usePersonas();
-  const { data: tasks = [] } = useTasks();
-  const { data: stories = [] } = useStories();
+  const { data: allItems = [] } = useWorkItems();
 
   // Active (running) executions, sorted by start time
   const activeExecutions = useMemo(
@@ -124,12 +123,11 @@ export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarP
     [personas],
   );
 
-  const targetNameMap = useMemo(() => {
+  const workItemNameMap = useMemo(() => {
     const map = new Map<string, string>();
-    for (const t of tasks) map.set(t.id as string, t.title);
-    for (const s of stories) map.set(s.id as string, s.title);
+    for (const item of allItems) map.set(item.id as string, item.title);
     return map;
-  }, [tasks, stories]);
+  }, [allItems]);
 
   return (
     <div className="w-[250px] shrink-0 border-r flex flex-col">
@@ -152,7 +150,7 @@ export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarP
                 execution={exec}
                 personaName={persona?.name ?? "Agent"}
                 personaColor={persona?.avatar.color ?? "#6b7280"}
-                targetName={targetNameMap.get(exec.targetId as string) ?? exec.targetId}
+                targetName={workItemNameMap.get(exec.workItemId as string) ?? exec.workItemId}
                 isSelected={exec.id === selectedId}
                 onSelect={() => onSelect(exec.id)}
               />

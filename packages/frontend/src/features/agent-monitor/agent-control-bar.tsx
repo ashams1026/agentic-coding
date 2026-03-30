@@ -21,7 +21,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useExecution, usePersonas, useTasks, useStories } from "@/hooks";
+import { useExecution, usePersonas, useWorkItems } from "@/hooks";
 import type { ExecutionId } from "@agentops/shared";
 
 // ── Helpers ───────────────────────────────────────────────────────
@@ -52,8 +52,7 @@ interface AgentControlBarProps {
 export function AgentControlBar({ executionId }: AgentControlBarProps) {
   const { data: execution } = useExecution(executionId);
   const { data: personas = [] } = usePersonas();
-  const { data: tasks = [] } = useTasks();
-  const { data: stories = [] } = useStories();
+  const { data: allItems = [] } = useWorkItems();
 
   const [elapsed, setElapsed] = useState("");
 
@@ -61,19 +60,14 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
     ? personas.find((p) => p.id === execution.personaId)
     : null;
 
-  const targetName = execution
-    ? tasks.find((t) => t.id === execution.targetId)?.title ??
-      stories.find((s) => s.id === execution.targetId)?.title ??
-      execution.targetId
-    : "";
+  const workItem = execution
+    ? allItems.find((item) => item.id === execution.workItemId)
+    : null;
 
-  const targetType = execution?.targetType ?? "task";
+  const targetName = workItem?.title ?? execution?.workItemId ?? "";
 
-  // Find parent story for tasks
-  const parentStoryId =
-    targetType === "task"
-      ? tasks.find((t) => t.id === execution?.targetId)?.storyId
-      : execution?.targetId;
+  // Find parent work item
+  const parentWorkItemId = workItem?.parentId ?? null;
 
   // Live elapsed timer
   useEffect(() => {
@@ -126,18 +120,18 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
       <div className="flex-1" />
 
       {/* Navigation links */}
-      {targetType === "task" && execution.targetId && (
+      {execution.workItemId && (
         <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1" asChild>
-          <Link to={`/tasks/${execution.targetId}`}>
-            Task
+          <Link to={`/work-items/${execution.workItemId}`}>
+            Work Item
             <ExternalLink className="h-2.5 w-2.5" />
           </Link>
         </Button>
       )}
-      {parentStoryId && (
+      {parentWorkItemId && (
         <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1" asChild>
-          <Link to={`/stories/${parentStoryId}`}>
-            Story
+          <Link to={`/work-items/${parentWorkItemId}`}>
+            Parent
             <ExternalLink className="h-2.5 w-2.5" />
           </Link>
         </Button>
@@ -183,7 +177,7 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
             <AlertDialogDescription>
               This will immediately terminate{" "}
               <span className="font-medium text-foreground">{persona.name}</span>.
-              Any in-progress work will be lost. The task will be marked as failed
+              Any in-progress work will be lost. The work item will be marked as failed
               and may need to be re-run.
             </AlertDialogDescription>
           </AlertDialogHeader>

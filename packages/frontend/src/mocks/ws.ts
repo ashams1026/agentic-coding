@@ -13,8 +13,7 @@ import type {
   CostUpdateEvent,
   ExecutionUpdateEvent,
   PersonaId,
-  StoryId,
-  TaskId,
+  WorkItemId,
   ExecutionId,
 } from "@agentops/shared";
 
@@ -180,9 +179,8 @@ class MockWsClient {
   simulateAgentRun(opts: {
     executionId: ExecutionId;
     personaId: PersonaId;
-    targetId: StoryId | TaskId;
-    targetType: "story" | "task";
-    taskTitle: string;
+    workItemId: WorkItemId;
+    workItemTitle: string;
     chunks: (string | { content: string; chunkType: AgentOutputChunkEvent["chunkType"] })[];
     chunkIntervalMs?: number;
     costUsd?: number;
@@ -190,9 +188,8 @@ class MockWsClient {
     const {
       executionId,
       personaId,
-      targetId,
-      targetType,
-      taskTitle,
+      workItemId,
+      workItemTitle,
       chunks,
       chunkIntervalMs = 200,
       costUsd = 0.42,
@@ -205,9 +202,8 @@ class MockWsClient {
       type: "agent_started",
       executionId,
       personaId,
-      targetId,
-      targetType,
-      taskTitle,
+      workItemId,
+      workItemTitle,
       timestamp: new Date().toISOString(),
     });
 
@@ -235,8 +231,7 @@ class MockWsClient {
         type: "agent_completed",
         executionId,
         personaId,
-        targetId,
-        targetType,
+        workItemId,
         outcome: "success",
         durationMs: totalDuration,
         costUsd,

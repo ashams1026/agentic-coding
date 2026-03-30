@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useExecutions, usePersonas, useTasks, useStories } from "@/hooks";
+import { useExecutions, usePersonas, useWorkItems } from "@/hooks";
 import { TerminalRenderer } from "./terminal-renderer";
 import type { ExecutionId } from "@agentops/shared";
 
@@ -21,8 +21,7 @@ interface AgentSelectorProps {
 function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
   const { data: executions = [] } = useExecutions();
   const { data: personas = [] } = usePersonas();
-  const { data: tasks = [] } = useTasks();
-  const { data: stories = [] } = useStories();
+  const { data: allItems = [] } = useWorkItems();
 
   const activeExecutions = useMemo(
     () => executions.filter((e) => e.status === "running"),
@@ -34,19 +33,18 @@ function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
     [personas],
   );
 
-  const targetNameMap = useMemo(() => {
+  const workItemNameMap = useMemo(() => {
     const map = new Map<string, string>();
-    for (const t of tasks) map.set(t.id as string, t.title);
-    for (const s of stories) map.set(s.id as string, s.title);
+    for (const item of allItems) map.set(item.id as string, item.title);
     return map;
-  }, [tasks, stories]);
+  }, [allItems]);
 
   const selected = activeExecutions.find((e) => e.id === selectedId);
   const selectedPersona = selected
     ? personaMap.get(selected.personaId as string)
     : null;
   const selectedTarget = selected
-    ? targetNameMap.get(selected.targetId as string) ?? selected.targetId
+    ? workItemNameMap.get(selected.workItemId as string) ?? selected.workItemId
     : null;
 
   return (
@@ -82,7 +80,7 @@ function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
         {activeExecutions.map((exec) => {
           const persona = personaMap.get(exec.personaId as string);
           const target =
-            targetNameMap.get(exec.targetId as string) ?? exec.targetId;
+            workItemNameMap.get(exec.workItemId as string) ?? exec.workItemId;
           return (
             <DropdownMenuItem
               key={exec.id}

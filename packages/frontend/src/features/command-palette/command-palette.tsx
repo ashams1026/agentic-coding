@@ -15,7 +15,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useStories, useTasks } from "@/hooks";
+import { useWorkItems } from "@/hooks";
 import { cn } from "@/lib/utils";
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 interface CommandItem {
   id: string;
   label: string;
-  category: "navigation" | "stories" | "tasks" | "actions";
+  category: "navigation" | "work-items" | "actions";
   icon: React.ReactNode;
   onSelect: () => void;
 }
@@ -49,8 +49,7 @@ const ACTION_ITEMS = [
 
 const CATEGORY_LABELS: Record<string, string> = {
   navigation: "Navigation",
-  stories: "Stories",
-  tasks: "Tasks",
+  "work-items": "Work Items",
   actions: "Quick Actions",
 };
 
@@ -64,8 +63,7 @@ export function CommandPalette() {
   const listRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const { data: stories = [] } = useStories();
-  const { data: tasks = [] } = useTasks();
+  const { data: workItems = [] } = useWorkItems();
 
   // ── Keyboard shortcut to open ────────────────────────────────
   useEffect(() => {
@@ -106,29 +104,15 @@ export function CommandPalette() {
       });
     }
 
-    // Stories
-    for (const story of stories) {
+    // Work Items
+    for (const wi of workItems) {
       items.push({
-        id: `story-${story.id}`,
-        label: story.title,
-        category: "stories",
-        icon: <FileText className="h-4 w-4" />,
+        id: `work-item-${wi.id}`,
+        label: wi.title,
+        category: "work-items",
+        icon: wi.parentId ? <CheckSquare className="h-4 w-4" /> : <FileText className="h-4 w-4" />,
         onSelect: () => {
-          navigate(`/stories/${story.id}`);
-          setOpen(false);
-        },
-      });
-    }
-
-    // Tasks
-    for (const task of tasks) {
-      items.push({
-        id: `task-${task.id}`,
-        label: task.title,
-        category: "tasks",
-        icon: <CheckSquare className="h-4 w-4" />,
-        onSelect: () => {
-          navigate(`/tasks/${task.id}`);
+          navigate(`/work-items/${wi.id}`);
           setOpen(false);
         },
       });
@@ -150,7 +134,7 @@ export function CommandPalette() {
     }
 
     return items;
-  }, [stories, tasks, navigate]);
+  }, [workItems, navigate]);
 
   // ── Filter ───────────────────────────────────────────────────
   const filtered = useMemo(() => {
@@ -162,7 +146,7 @@ export function CommandPalette() {
   // ── Group by category ────────────────────────────────────────
   const grouped = useMemo(() => {
     const groups: { category: string; items: CommandItem[] }[] = [];
-    const categoryOrder = ["navigation", "actions", "stories", "tasks"];
+    const categoryOrder = ["navigation", "actions", "work-items"];
 
     for (const cat of categoryOrder) {
       const items = filtered.filter((i) => i.category === cat);
