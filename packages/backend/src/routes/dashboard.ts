@@ -66,7 +66,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
 
     const allProjects = await db.select().from(projects);
     const project = allProjects[0];
-    const monthCap = (project?.settings as Record<string, unknown>)?.monthlyCostCap as number ?? 50;
+    const monthCap = (project?.settings as Record<string, unknown>)?.monthCap as number ?? 50;
 
     return { dailySpend, monthTotal, monthCap };
   });

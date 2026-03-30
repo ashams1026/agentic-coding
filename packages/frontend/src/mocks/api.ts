@@ -409,7 +409,7 @@ export async function getCostSummary(): Promise<CostSummary> {
     .filter((e) => e.startedAt.startsWith(monthStart))
     .reduce((sum, e) => sum + e.costUsd, 0);
   const project = store.projects[0];
-  const monthCap = (project?.settings?.monthlyCostCap as number) ?? 50;
+  const monthCap = (project?.settings?.monthCap as number) ?? 50;
   return { dailySpend, monthTotal, monthCap };
 }
 

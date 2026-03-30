@@ -5,6 +5,40 @@
 
 ---
 
+## 2026-03-30 — E.7: Fix dispatch trigger on state change
+
+**Task:** Verify and fix the full dispatch pipeline: routes → dispatch → execution-manager → router.
+
+**Bugs found and fixed:**
+
+- **Bug: Settings field name mismatch** — The seed (`seed.ts`) and frontend fixtures used `maxConcurrentAgents` and `monthlyCostCap`, but the runtime code (`concurrency.ts`) reads `maxConcurrent` and `monthCap`. This meant the monthly cost cap was **never enforced** (returned 0 = no cap). Concurrency limit coincidentally worked because both the fallback default and the seed value were 3.
+- **Fixed in seed.ts**: `{ maxConcurrentAgents: 3, monthlyCostCap: 50 }` → `{ maxConcurrent: 3, monthCap: 50 }`
+- **Fixed in dashboard.ts**: `settings.monthlyCostCap` → `settings.monthCap`
+- **Fixed in frontend fixtures.ts**: Same field name fix + added `autoRouting: true`
+- **Fixed in frontend mocks/api.ts**: `settings.monthlyCostCap` → `settings.monthCap`
+
+**Verification (pipeline trace):**
+1. PATCH `/api/work-items/:id` with `currentState` → validates transition → calls `dispatchForState()` ✓
+2. `dispatchForState()` → looks up persona assignment → checks monthly cost cap → checks concurrency → calls `runExecution()` ✓
+3. `runExecution()` → creates DB record → streams execution → on success calls `runRouter()` (for non-Router personas) ✓
+4. `runRouter()` → checks `autoRouting === false` → if OFF, returns false (no routing) ✓
+5. Router completes → `dispatchForState()` for new state → next persona fires ✓
+6. Rate limiter (`canTransition`, 10/hr per item) prevents infinite loops ✓
+
+**New tests added:**
+- `dispatch.test.ts`: "blocks dispatch when monthly cost cap is exceeded" — sets monthCap to $0.01, verifies execution blocked and system comment posted
+- `dispatch.test.ts`: "allows dispatch when cost is under monthly cap" — verifies normal dispatch works
+- `router.test.ts`: "routes when autoRouting is true" — verifies router spawns
+- `router.test.ts`: "skips routing when autoRouting is false" — verifies no execution
+- `router.test.ts`: "routes by default when autoRouting is not set" — verifies default ON behavior
+- `router.test.ts`: "returns false for non-existent work item"
+
+**Files modified:** `packages/backend/src/db/seed.ts`, `packages/backend/src/routes/dashboard.ts`, `packages/frontend/src/mocks/fixtures.ts`, `packages/frontend/src/mocks/api.ts`, `packages/backend/src/agent/__tests__/dispatch.test.ts`, `packages/backend/src/agent/__tests__/router.test.ts` (new)
+
+**Notes:** Build: 0 errors. Tests: 151/151 passing (was 145). The one gap not fixed here: `coordination.ts` auto-advances parent to "In Review" but doesn't call `dispatchForState()` — that's E.8's scope.
+
+---
+
 ## 2026-03-30 — Review: E.6 (approved)
 
 **Reviewed:** Pipeline walkthrough fixes — `work-items.ts`, `work-items.test.ts`.

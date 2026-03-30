@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { eq } from "drizzle-orm";
 import { createTestDb, seedTestDb, TEST_IDS, type TestDatabase } from "../../test/setup.js";
+import * as schema from "../../db/schema.js";
 
 const mockDb = { db: null as unknown };
 vi.mock("../../db/connection.js", () => ({
@@ -21,6 +23,9 @@ vi.mock("../../ws.js", () => ({
 
 import { dispatchForState } from "../dispatch.js";
 import { trackExecution, onComplete, getActiveCount } from "../concurrency.js";
+import { broadcast } from "../../ws.js";
+
+const mockBroadcast = broadcast as ReturnType<typeof vi.fn>;
 
 let testDb: TestDatabase;
 let trackedIds: string[] = [];
@@ -97,6 +102,43 @@ describe("dispatch logic", () => {
     // 2 of 3 slots used — still room
     expect(getActiveCount()).toBe(2);
 
+    await dispatchForState(TEST_IDS.WI_TOP_1, "Planning");
+    expect(mockRunExecution).toHaveBeenCalledOnce();
+  });
+
+  // ── Respects monthly cost cap ─────────────────────────────────────
+
+  it("blocks dispatch when monthly cost cap is exceeded", async () => {
+    // Set monthCap very low ($0.01) so the existing execution costs ($1.76) exceed it
+    await testDb.db
+      .update(schema.projects)
+      .set({ settings: { maxConcurrent: 3, monthCap: 0.01 } })
+      .where(eq(schema.projects.id, TEST_IDS.PROJECT_ID));
+
+    mockBroadcast.mockClear();
+    await dispatchForState(TEST_IDS.WI_TOP_1, "Planning");
+
+    // Should NOT have spawned an execution
+    expect(mockRunExecution).not.toHaveBeenCalled();
+
+    // Should have created a system comment about cost cap
+    const comments = await testDb.db
+      .select()
+      .from(schema.comments)
+      .where(eq(schema.comments.workItemId, TEST_IDS.WI_TOP_1));
+    const costComment = comments.find((c) =>
+      c.content.includes("Monthly cost cap exceeded"),
+    );
+    expect(costComment).toBeDefined();
+
+    // Should have broadcast comment_created
+    expect(mockBroadcast).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "comment_created" }),
+    );
+  });
+
+  it("allows dispatch when cost is under monthly cap", async () => {
+    // monthCap: 50 (from seed) and total cost is ~$1.76 — well under
     await dispatchForState(TEST_IDS.WI_TOP_1, "Planning");
     expect(mockRunExecution).toHaveBeenCalledOnce();
   });

@@ -82,7 +82,7 @@ export async function seed() {
     id: PROJECT_ID,
     name: "AgentOps",
     path: "/Users/dev/projects/agentops",
-    settings: { maxConcurrentAgents: 3, monthlyCostCap: 50, autoRouting: true },
+    settings: { maxConcurrent: 3, monthCap: 50, autoRouting: true },
     createdAt: d("2026-03-20T10:00:00Z"),
   });
 
