@@ -217,6 +217,40 @@ function restartCommand(): void {
   console.log("AgentOps restarted.");
 }
 
+// ── config commands ─────────────────────────────────────────────
+
+async function configCommand(): Promise<void> {
+  const { loadConfig, getConfigPath } = await import("./config.js");
+  const config = loadConfig();
+  const configPath = getConfigPath();
+
+  console.log(`Config file: ${configPath}\n`);
+  console.log("Resolved configuration (defaults <- file <- env vars):\n");
+  console.log(`  port             ${config.port}`);
+  console.log(`  dbPath           ${config.dbPath}`);
+  console.log(`  logLevel         ${config.logLevel}`);
+  console.log(`  anthropicApiKey  ${config.anthropicApiKey ? "****" + config.anthropicApiKey.slice(-4) : "(not set)"}`);
+}
+
+async function configSetCommand(key: string | undefined, value: string | undefined): Promise<void> {
+  if (!key || value === undefined) {
+    console.error("Usage: agentops config set <key> <value>");
+    console.error("Keys: port, dbPath, logLevel, anthropicApiKey");
+    process.exit(1);
+  }
+
+  const { setConfigValue, getConfigPath } = await import("./config.js");
+
+  try {
+    setConfigValue(key, value);
+    console.log(`Set ${key} = ${key === "anthropicApiKey" ? "****" : value}`);
+    console.log(`Saved to ${getConfigPath()}`);
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  }
+}
+
 // ── Usage ───────────────────────────────────────────────────────
 
 function printUsage(): void {
@@ -227,14 +261,16 @@ AgentOps — AI agent orchestration platform
 Usage: agentops <command>
 
 Commands:
-  start      Start the server (foreground)
-  stop       Stop the running server
-  status     Show server status
-  dev        Start in development mode (with watch)
-  restart    Restart the pm2 service
-  logs       Tail pm2 service logs
-  install    Register as a boot service (pm2 startup)
-  uninstall  Remove the boot service
+  start              Start the server (foreground)
+  stop               Stop the running server
+  status             Show server status
+  dev                Start in development mode (with watch)
+  config             Show resolved configuration
+  config set <k> <v> Set a configuration value
+  restart            Restart the pm2 service
+  logs               Tail pm2 service logs
+  install            Register as a boot service (pm2 startup)
+  uninstall          Remove the boot service
 
 Options:
   --help     Show this help message
@@ -258,6 +294,13 @@ switch (command) {
     break;
   case "dev":
     devCommand();
+    break;
+  case "config":
+    if (process.argv[3] === "set") {
+      await configSetCommand(process.argv[4], process.argv[5]);
+    } else {
+      await configCommand();
+    }
     break;
   case "install":
     installCommand();

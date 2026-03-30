@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-30 — S.9: Implement configuration file
+
+**Task:** Create config loader from `~/.agentops/config.json` with env var overrides. Add `agentops config` and `agentops config set` CLI commands.
+
+**Done:**
+- **`packages/backend/src/config.ts`** (new) — Configuration module:
+  - `loadConfig()` — resolves config with precedence: defaults <- config file <- env vars
+  - `setConfigValue(key, value)` — validates and persists a single key to config.json
+  - `getConfigPath()` — returns `~/.agentops/config.json` path
+  - Config fields: `port` (1-65535), `dbPath`, `logLevel` (trace/debug/info/warn/error/fatal), `anthropicApiKey`
+  - Env var mappings: `PORT`, `AGENTOPS_DB_PATH`/`DATABASE_URL`, `LOG_LEVEL`, `ANTHROPIC_API_KEY`
+  - Validation on set: port range, log level enum, key existence check
+- **`packages/backend/src/cli.ts`** — Added 2 new commands:
+  - `config` — prints resolved config (masks API key to last 4 chars)
+  - `config set <key> <value>` — validates and saves to config.json, masks API key in output
+  - Uses dynamic `import("./config.js")` (ESM-compatible)
+  - `--help` updated with both config commands
+
+**Files created:** `packages/backend/src/config.ts`
+**Files modified:** `packages/backend/src/cli.ts`
+
+**Notes:** Build: 0 errors. Tests: 159/159. Config file created lazily on first `set` (mkdirSync + writeFileSync). Existing `DATABASE_URL` env var support in `connection.ts` is preserved — `loadConfig()` also reads `DATABASE_URL` as a fallback for `dbPath`.
+
+---
+
 ## 2026-03-30 — Review: S.8 (approved)
 
 **Reviewed:** Execution audit trail — `audit.ts`, `routes/audit.ts`, and all consumer files.
