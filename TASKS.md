@@ -11,7 +11,7 @@
 
 ### View Overhaul
 
-- [ ] **U.1** — Remove tree view. Delete `packages/frontend/src/features/work-items/tree-view.tsx`. Remove "Tree" option from the view toggle in `packages/frontend/src/pages/work-items.tsx`. Update URL param handling to remove `?view=tree`. Only List and Flow views should remain.
+- [review] **U.1** — Remove tree view. Delete `packages/frontend/src/features/work-items/tree-view.tsx`. Remove "Tree" option from the view toggle in `packages/frontend/src/pages/work-items.tsx`. Update URL param handling to remove `?view=tree`. Only List and Flow views should remain.
 
 - [ ] **U.2** — Build Flow view. Replace the board view (`board-view.tsx`) with a new `packages/frontend/src/features/work-items/flow-view.tsx`. Render the hardcoded workflow as a state machine graph (reuse layout concepts from the workflow designer's `computeLayout` and `computeArrowPath`). Each state node is a live container showing: state name, colored header from `WORKFLOW`, item count badge, active agent count with pulsing indicator, mini avatar stack of assigned personas currently working, progress bar (items done / total in that state). Directed arrows between states per `WORKFLOW.transitions`. Click a state node to expand it inline or filter the detail panel to items in that state. The view should feel alive — pulsing dots for active agents, counts updating reactively.
 

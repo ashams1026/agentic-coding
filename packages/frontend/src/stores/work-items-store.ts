@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { WorkItemId } from "@agentops/shared";
 
-export type WorkItemView = "list" | "board" | "tree";
+export type WorkItemView = "list" | "board";
 export type GroupBy = "none" | "state" | "parent" | "priority";
 export type SortBy = "priority" | "created" | "updated";
 
