@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-30 — Q.13: Test execution manager lifecycle
+
+**Task:** Integration tests for execution manager — lifecycle, rate limiting, rejection logic.
+
+**Done:**
+- Created `packages/backend/src/agent/__tests__/execution-manager.test.ts` with 8 tests:
+  - `runExecution`: creates DB record with status "running", verifies trackExecution called
+  - `runExecution`: on success, record updated to "completed" with cost (cents), duration, summary, outcome
+  - `runExecution`: on error, record updated to "failed" with FATAL in logs
+  - `canTransition`: returns true for fresh work items, rate limiter behavior documented
+  - `handleRejection`: increments retry counter (retryCount=1, not blocked)
+  - `handleRejection`: triggers Blocked after 3 rejections (MAX_REJECTIONS)
+  - `handleRejection`: stores rejection payload with reason, severity, hint
+- Mocked ClaudeExecutor via `vi.hoisted()` + mock class with spawn method returning async iterables
+- Mocked concurrency (trackExecution, onComplete, getProjectCostSummary), router, dispatch
+- Background execution stream tested with `vi.waitFor()` for async DB updates
+
+**Files created:** `packages/backend/src/agent/__tests__/execution-manager.test.ts`
+
+**Notes:** Build: 0 errors, 143 tests pass. Used `vi.hoisted()` to define mock functions before `vi.mock()` factories (which are hoisted). `recordTransition` is private so rate limiter only testable through `canTransition` reads + full execution path. Cost stored as cents (1.5 USD → 150).
+
+---
+
 ## 2026-03-30 — Review: Q.12 (approved)
 
 **Reviewed:** MCP tool tests — `packages/backend/src/agent/__tests__/mcp-tools.test.ts`.
