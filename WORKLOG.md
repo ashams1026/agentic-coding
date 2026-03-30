@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: AI.11 (approved)
+
+**Reviewed:** Cross-cutting concerns test plans (navigation, dark mode, keyboard shortcuts).
+- `navigation.md`: 19 steps — 6 nav items verified against `sidebar.tsx:37-43` `navItems` (Dashboard `/`, Work Items `/items`, Agent Monitor `/agents`, Activity Feed `/activity`, Personas `/personas`, Settings `/settings`), active highlight `bg-accent text-accent-foreground` matching `NavLink` `isActive` ✓, project switcher `Select`/`SelectValue` at top ✓, collapse tooltip "Collapse sidebar"/"Expand sidebar" matching source `:238-239` ✓, collapsed icon-only with `FolderOpen` for project ✓, tooltip `side="right"` ✓, mobile hamburger `Menu` icon + "AgentOps" from `root-layout.tsx:27-37` ✓, auto-close `setMobileSidebarOpen(false)` on `location.pathname` ✓, backdrop dismiss ✓
+- `dark-mode.md`: 19 steps — theme toggle cycles `themeOrder = ["system", "light", "dark"]` matching `sidebar.tsx:45` ✓, icons Monitor/Sun/Moon matching `themeIcon` ✓, tooltip "Theme: {label}" matching `:220-221` ✓, `dark` class toggle via `use-theme.ts:11` ✓, system mode `matchMedia` ✓, dark mode verified across 5 pages (Dashboard/Work Items/Agent Monitor/Activity Feed/Personas/Settings) ✓, Settings → Appearance bidirectional sync ✓
+- `keyboard-shortcuts.md`: 17 steps — Cmd+K `(metaKey || ctrlKey) && "k"` matching `command-palette.tsx:72` ✓, placeholder "Type a command or search..." matching `:213` ✓, "ESC" kbd badge ✓, 3 categories: NAVIGATION (7 `NAV_ITEMS`), QUICK ACTIONS (2 `ACTION_ITEMS`), WORK ITEMS (`useWorkItems`) ✓, uppercase `tracking-wider` headers ✓, first item highlighted `selectedIndex(0)` ✓, footer ↑↓/↵/esc hints ✓, "No results found." ✓, keyboard ArrowUp/Down/Enter/Escape handler ✓, reopen resets `setQuery("")` ✓
+- Template format ✓, UI references match source ✓
+- Build: no code changes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.11: Write test plans for cross-cutting concerns
 
 **Task:** Create test plans for sidebar navigation, dark mode/theme switching, and keyboard shortcuts/command palette.
