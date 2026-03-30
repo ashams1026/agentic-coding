@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — AI.15: Execute work-items-create.md
+
+**Task:** Execute the work items create test plan in a real browser via chrome-devtools MCP.
+
+**Done:**
+- Navigated to `http://localhost:5174/items`, executed all 9 steps
+- **Result: ✅ PASS (9/9)** — "Add" button creates item instantly, correct defaults, detail panel works
+- Clicked "Add" → "New work item" appeared immediately in Backlog group (count 1→2), P2 default priority
+- Detail panel showed all defaults: title "New work item", state "Backlog", priority "P2 — Medium", empty description/children/comments, metadata with current timestamp (ID: wi-vDZ5fN2)
+- Minor UX note: detail panel required second click to open (first click selected row)
+
+**Files created:** `tests/e2e/results/work-items-create.md`, `tests/e2e/results/work-items-create.png`
+
+**Notes:** Frontend on port 5174. Build: 0 errors (no code changes).
+
+---
+
 ## 2026-03-30 — Review: AI.14 (approved)
 
 **Reviewed:** Work Items list view E2E test execution results.
