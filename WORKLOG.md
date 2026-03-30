@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — U.9: Fix bottom padding for status bar
+
+**Task:** Add bottom padding to `<main>` so content doesn't get clipped behind the StatusBar.
+
+**Done:**
+- Added `pb-8` (32px bottom padding) to the `<main>` element in `root-layout.tsx`
+- Changed: `className="flex-1 overflow-y-auto"` → `className="flex-1 overflow-y-auto pb-8"`
+
+**Files modified:** `packages/frontend/src/layouts/root-layout.tsx`
+
+**Notes:** Frontend build: 0 errors. Single-line change. This is the last task in Sprint 7.
+
+---
+
 ## 2026-03-29 — Review: U.8 (approved)
 
 **Reviewed:** Agent monitor chrome softening — `split-view.tsx`, `agent-control-bar.tsx`, `agent-history.tsx`.

@@ -35,7 +35,7 @@ export function RootLayout() {
             </Button>
             <span className="ml-2 text-sm font-semibold">AgentOps</span>
           </div>
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto pb-8">
             <Outlet />
           </main>
           <StatusBar />

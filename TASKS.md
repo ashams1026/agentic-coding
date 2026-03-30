@@ -33,4 +33,4 @@
 
 ### Layout Fix
 
-- [ ] **U.9** — Fix bottom padding for status bar. In `packages/frontend/src/layouts/root-layout.tsx`: add `pb-8` (or equivalent 32px bottom padding) to the `<main>` element so page content doesn't get clipped behind the StatusBar.
+- [review] **U.9** — Fix bottom padding for status bar. In `packages/frontend/src/layouts/root-layout.tsx`: add `pb-8` (or equivalent 32px bottom padding) to the `<main>` element so page content doesn't get clipped behind the StatusBar.
