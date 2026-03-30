@@ -1,0 +1,340 @@
+import { useMemo } from "react";
+import { X, ChevronRight, Plus, GitBranch } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { useWorkItem, useWorkItems, useProposals, usePersonas, useCreateWorkItem } from "@/hooks";
+import { useWorkItemsStore } from "@/stores/work-items-store";
+import { CommentStream } from "@/features/common/comment-stream";
+import { ExecutionTimeline } from "@/features/common/execution-timeline";
+import { getStateByName } from "@agentops/shared";
+import type { WorkItem, WorkItemId, Priority } from "@agentops/shared";
+
+// ── Priority config ─────────────────────────────────────────────
+
+const priorityConfig: Record<Priority, { label: string; className: string }> = {
+  p0: { label: "P0 — Critical", className: "border-red-500 text-red-600 dark:text-red-400" },
+  p1: { label: "P1 — High", className: "border-amber-500 text-amber-600 dark:text-amber-400" },
+  p2: { label: "P2 — Medium", className: "border-blue-500 text-blue-600 dark:text-blue-400" },
+  p3: { label: "P3 — Low", className: "border-slate-400 text-slate-500 dark:text-slate-400" },
+};
+
+// ── Parent breadcrumb ───────────────────────────────────────────
+
+function ParentBreadcrumb({
+  item,
+  allItems,
+  onNavigate,
+}: {
+  item: WorkItem;
+  allItems: WorkItem[];
+  onNavigate: (id: WorkItemId) => void;
+}) {
+  const chain: WorkItem[] = [];
+  let current: WorkItem | undefined = item.parentId
+    ? allItems.find((w) => w.id === item.parentId)
+    : undefined;
+  while (current) {
+    chain.unshift(current);
+    current = current.parentId ? allItems.find((w) => w.id === current!.parentId) : undefined;
+  }
+
+  if (chain.length === 0) return null;
+
+  return (
+    <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2 flex-wrap">
+      {chain.map((ancestor, i) => (
+        <span key={ancestor.id} className="flex items-center gap-1">
+          {i > 0 && <ChevronRight className="h-3 w-3" />}
+          <button
+            onClick={() => onNavigate(ancestor.id)}
+            className="hover:text-foreground transition-colors truncate max-w-[150px]"
+          >
+            {ancestor.title}
+          </button>
+        </span>
+      ))}
+      <ChevronRight className="h-3 w-3" />
+      <span className="text-foreground font-medium truncate max-w-[200px]">{item.title}</span>
+    </div>
+  );
+}
+
+// ── Children list ───────────────────────────────────────────────
+
+function ChildrenList({
+  children,
+  onNavigate,
+}: {
+  children: WorkItem[];
+  onNavigate: (id: WorkItemId) => void;
+}) {
+  if (children.length === 0) return null;
+
+  const done = children.filter((c) => c.currentState === "Done").length;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-medium">Children</h3>
+        <span className="text-xs text-muted-foreground">
+          {done}/{children.length} done
+        </span>
+      </div>
+      <div className="space-y-1">
+        {children.map((child) => {
+          const stateInfo = getStateByName(child.currentState);
+          return (
+            <button
+              key={child.id}
+              onClick={() => onNavigate(child.id)}
+              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-accent/50 transition-colors"
+            >
+              <Badge
+                variant="secondary"
+                className="text-[10px] px-1.5 py-0 shrink-0 font-medium"
+                style={{
+                  backgroundColor: stateInfo ? `${stateInfo.color}20` : undefined,
+                  color: stateInfo?.color,
+                }}
+              >
+                {child.currentState}
+              </Badge>
+              <span className="flex-1 truncate text-sm">{child.title}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── Proposals section ───────────────────────────────────────────
+
+function ProposalsSection({ workItemId }: { workItemId: WorkItemId }) {
+  const { data: proposals = [] } = useProposals(workItemId);
+  const pending = proposals.filter((p) => p.status === "pending");
+
+  if (pending.length === 0) return null;
+
+  return (
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium">Pending Proposals</h3>
+      <div className="space-y-2">
+        {pending.map((proposal) => (
+          <div key={proposal.id} className="rounded-lg border p-3 bg-amber-50/50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800">
+            <div className="flex items-center gap-2 mb-1">
+              <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-amber-500 text-amber-600">
+                {proposal.type.replace(/_/g, " ")}
+              </Badge>
+            </div>
+            <pre className="text-xs text-muted-foreground whitespace-pre-wrap">
+              {JSON.stringify(proposal.payload, null, 2).slice(0, 200)}
+            </pre>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Execution context viewer ────────────────────────────────────
+
+function ExecutionContextSection({ item }: { item: WorkItem }) {
+  if (item.executionContext.length === 0) return null;
+
+  return (
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium">Execution Context</h3>
+      <div className="space-y-2">
+        {item.executionContext.map((entry, i) => (
+          <div
+            key={i}
+            className={cn(
+              "rounded-md border p-2 text-xs",
+              entry.outcome === "success" && "border-emerald-200 dark:border-emerald-800",
+              entry.outcome === "rejected" && "border-red-200 dark:border-red-800",
+              entry.outcome === "failure" && "border-red-200 dark:border-red-800",
+            )}
+          >
+            <p className="font-medium">{entry.summary}</p>
+            {entry.rejectionPayload && (
+              <div className="mt-1 text-muted-foreground">
+                <p>Reason: {entry.rejectionPayload.reason}</p>
+                <p>Hint: {entry.rejectionPayload.hint}</p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Metadata section ────────────────────────────────────────────
+
+function MetadataSection({ item }: { item: WorkItem }) {
+  return (
+    <div className="space-y-1 text-xs text-muted-foreground">
+      <div className="flex justify-between">
+        <span>ID</span>
+        <span className="font-mono">{item.id}</span>
+      </div>
+      <div className="flex justify-between">
+        <span>Created</span>
+        <span>{new Date(item.createdAt).toLocaleString()}</span>
+      </div>
+      <div className="flex justify-between">
+        <span>Updated</span>
+        <span>{new Date(item.updatedAt).toLocaleString()}</span>
+      </div>
+    </div>
+  );
+}
+
+// ── Main detail panel ───────────────────────────────────────────
+
+export function DetailPanel() {
+  const { selectedItemId, setSelectedItemId } = useWorkItemsStore();
+  const { data: item } = useWorkItem(selectedItemId!);
+  const { data: allItems = [] } = useWorkItems();
+  const { data: personas = [] } = usePersonas();
+  const createWorkItem = useCreateWorkItem();
+
+  const children = useMemo(
+    () => allItems.filter((w) => w.parentId === selectedItemId),
+    [allItems, selectedItemId],
+  );
+
+  const persona = useMemo(() => {
+    if (!item?.assignedPersonaId) return null;
+    return personas.find((p) => p.id === item.assignedPersonaId) ?? null;
+  }, [item, personas]);
+
+  if (!selectedItemId || !item) return null;
+
+  const stateInfo = getStateByName(item.currentState);
+  const pCfg = priorityConfig[item.priority];
+
+  const handleClose = () => setSelectedItemId(null);
+  const handleNavigate = (id: WorkItemId) => setSelectedItemId(id);
+  const handleAddChild = () => {
+    createWorkItem.mutate({
+      projectId: item.projectId,
+      parentId: item.id,
+      title: "New child item",
+    });
+  };
+
+  return (
+    <div className="h-full border-l bg-background flex flex-col">
+      {/* Header */}
+      <div className="shrink-0 p-4 border-b">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <ParentBreadcrumb item={item} allItems={allItems} onNavigate={handleNavigate} />
+            <h2 className="text-lg font-semibold leading-tight">{item.title}</h2>
+          </div>
+          <Button variant="ghost" size="sm" className="shrink-0 h-7 w-7 p-0" onClick={handleClose}>
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* Badges row */}
+        <div className="flex items-center gap-2 mt-2 flex-wrap">
+          <Badge
+            variant="secondary"
+            className="text-xs px-2 py-0.5 font-medium"
+            style={{
+              backgroundColor: stateInfo ? `${stateInfo.color}20` : undefined,
+              color: stateInfo?.color,
+              borderColor: stateInfo ? `${stateInfo.color}40` : undefined,
+            }}
+          >
+            {item.currentState}
+          </Badge>
+          <Badge variant="outline" className={cn("text-xs px-2 py-0.5 font-semibold", pCfg.className)}>
+            {pCfg.label}
+          </Badge>
+          {item.labels.map((label) => (
+            <Badge key={label} variant="secondary" className="text-[10px] px-1.5 py-0">
+              {label}
+            </Badge>
+          ))}
+          {persona && (
+            <div className="flex items-center gap-1 ml-auto">
+              <div
+                className="h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-medium text-white"
+                style={{ backgroundColor: persona.avatar.color }}
+              >
+                {persona.name.charAt(0)}
+              </div>
+              <span className="text-xs text-muted-foreground">{persona.name}</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Scrollable content */}
+      <ScrollArea className="flex-1">
+        <div className="p-4 space-y-6">
+          {/* Description */}
+          {item.description && (
+            <div>
+              <h3 className="text-sm font-medium mb-1">Description</h3>
+              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{item.description}</p>
+            </div>
+          )}
+
+          {/* Children */}
+          <div>
+            <ChildrenList children={children} onNavigate={handleNavigate} />
+            <div className="flex gap-2 mt-2">
+              <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={handleAddChild}>
+                <Plus className="h-3 w-3" />
+                Add child
+              </Button>
+              {children.length === 0 && (
+                <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
+                  <GitBranch className="h-3 w-3" />
+                  Decompose
+                </Button>
+              )}
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Proposals */}
+          <ProposalsSection workItemId={item.id} />
+
+          {/* Execution Context */}
+          <ExecutionContextSection item={item} />
+
+          <Separator />
+
+          {/* Comments */}
+          <div>
+            <h3 className="text-sm font-medium mb-2">Comments</h3>
+            <CommentStream workItemId={item.id} />
+          </div>
+
+          <Separator />
+
+          {/* Execution Timeline */}
+          <div>
+            <h3 className="text-sm font-medium mb-2">Execution History</h3>
+            <ExecutionTimeline workItemId={item.id} />
+          </div>
+
+          <Separator />
+
+          {/* Metadata */}
+          <MetadataSection item={item} />
+        </div>
+      </ScrollArea>
+    </div>
+  );
+}

@@ -19,8 +19,7 @@ import { useComments, useCreateComment, usePersonas } from "@/hooks";
 import type {
   Comment,
   Persona,
-  StoryId,
-  TaskId,
+  WorkItemId,
 } from "@agentops/shared";
 
 // ── Time formatting ─────────────────────────────────────────────
@@ -150,11 +149,10 @@ function SystemComment({ comment }: { comment: Comment }) {
 // ── Comment input ───────────────────────────────────────────────
 
 interface CommentInputProps {
-  targetId: StoryId | TaskId;
-  targetType: "story" | "task";
+  workItemId: WorkItemId;
 }
 
-function CommentInput({ targetId, targetType }: CommentInputProps) {
+function CommentInput({ workItemId }: CommentInputProps) {
   const [content, setContent] = useState("");
   const createComment = useCreateComment();
 
@@ -163,8 +161,7 @@ function CommentInput({ targetId, targetType }: CommentInputProps) {
     if (!trimmed) return;
     createComment.mutate(
       {
-        targetId,
-        targetType,
+        workItemId,
         authorType: "user",
         authorName: "You",
         content: trimmed,
@@ -204,12 +201,11 @@ function CommentInput({ targetId, targetType }: CommentInputProps) {
 // ── Main component ──────────────────────────────────────────────
 
 interface CommentStreamProps {
-  targetId: StoryId | TaskId;
-  targetType: "story" | "task";
+  workItemId: WorkItemId;
 }
 
-export function CommentStream({ targetId, targetType }: CommentStreamProps) {
-  const { data: comments = [] } = useComments(targetId);
+export function CommentStream({ workItemId }: CommentStreamProps) {
+  const { data: comments = [] } = useComments(workItemId);
   const { data: personas = [] } = usePersonas();
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -277,7 +273,7 @@ export function CommentStream({ targetId, targetType }: CommentStreamProps) {
       </div>
 
       {/* Input */}
-      <CommentInput targetId={targetId} targetType={targetType} />
+      <CommentInput workItemId={workItemId} />
     </div>
   );
 }

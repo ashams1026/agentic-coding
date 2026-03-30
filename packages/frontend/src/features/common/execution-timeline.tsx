@@ -20,8 +20,7 @@ import { useExecutions, usePersonas } from "@/hooks";
 import type {
   Execution,
   Persona,
-  StoryId,
-  TaskId,
+  WorkItemId,
 } from "@agentops/shared";
 
 // ── Duration formatting ─────────────────────────────────────────
@@ -180,11 +179,11 @@ function TimelineEntry({ execution, persona, isLast }: TimelineEntryProps) {
 // ── Main component ──────────────────────────────────────────────
 
 interface ExecutionTimelineProps {
-  targetId: StoryId | TaskId;
+  workItemId: WorkItemId;
 }
 
-export function ExecutionTimeline({ targetId }: ExecutionTimelineProps) {
-  const { data: executions = [] } = useExecutions(targetId);
+export function ExecutionTimeline({ workItemId }: ExecutionTimelineProps) {
+  const { data: executions = [] } = useExecutions(workItemId);
   const { data: personas = [] } = usePersonas();
 
   const personaMap = useMemo(

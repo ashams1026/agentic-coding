@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-29 — O.11: Build work item detail panel
+
+**Task:** Create right-side detail panel with header, description, children, proposals, comments, executions, metadata.
+
+**Done:**
+- Created `packages/frontend/src/features/work-items/detail-panel.tsx` (~280 lines):
+  - Header: title, parent breadcrumb (clickable navigation), state badge (WORKFLOW-colored), priority badge, labels, persona avatar
+  - Description section (whitespace-pre-wrap)
+  - Children list with state badges, done/total progress, click-to-navigate
+  - "Add child" and "Decompose" buttons
+  - Proposals section showing pending proposals with type badge and payload preview
+  - Execution context viewer showing all execution entries with success/rejection styling
+  - CommentStream (reused from features/common)
+  - ExecutionTimeline (reused from features/common)
+  - Metadata section (ID, created, updated timestamps)
+  - Close button to deselect
+  - Scrollable content area
+- Updated `packages/frontend/src/features/common/comment-stream.tsx`: replaced StoryId|TaskId with WorkItemId, removed targetType prop
+- Updated `packages/frontend/src/features/common/execution-timeline.tsx`: replaced StoryId|TaskId with WorkItemId, renamed targetId → workItemId prop
+- Updated `pages/work-items.tsx`: added DetailPanel with master-detail layout (w-2/5 list + w-3/5 detail when selected)
+
+**Files created:** `features/work-items/detail-panel.tsx`
+**Files modified:** `features/common/comment-stream.tsx`, `features/common/execution-timeline.tsx`, `pages/work-items.tsx`
+
+**Notes:** All files compile clean. Panel works at any depth — same component for top-level items, children, and grandchildren. Parent breadcrumb enables navigation up the hierarchy.
+
+---
+
 ## 2026-03-29 — Review: O.10 (approved)
 
 **Reviewed:** Tree view — `tree-view.tsx`, `work-items.tsx` update.

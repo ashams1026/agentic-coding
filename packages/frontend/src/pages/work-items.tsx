@@ -7,6 +7,7 @@ import { FilterBar } from "@/features/work-items/filter-bar";
 import { ListView } from "@/features/work-items/list-view";
 import { BoardView } from "@/features/work-items/board-view";
 import { TreeView } from "@/features/work-items/tree-view";
+import { DetailPanel } from "@/features/work-items/detail-panel";
 import { useWorkItemsStore, type WorkItemView } from "@/stores/work-items-store";
 import { useCreateWorkItem } from "@/hooks";
 import type { ProjectId } from "@agentops/shared";
@@ -19,7 +20,7 @@ const viewOptions: { value: WorkItemView; label: string; icon: typeof List }[] =
 
 export function WorkItemsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { view, setView } = useWorkItemsStore();
+  const { view, setView, selectedItemId } = useWorkItemsStore();
   const createWorkItem = useCreateWorkItem();
 
   // Sync view from URL params on mount
@@ -88,13 +89,20 @@ export function WorkItemsPage() {
         <FilterBar />
       </div>
 
-      {/* View content */}
-      <div className="flex-1 overflow-hidden p-6">
-        {view === "list" && <ListView />}
-        {view === "board" && <BoardView />}
-        {view === "tree" && <TreeView />}
+      {/* Content: view + detail panel */}
+      <div className="flex flex-1 overflow-hidden">
+        <div className={cn("flex-1 overflow-hidden p-6", selectedItemId && "w-2/5")}>
+          {view === "list" && <ListView />}
+          {view === "board" && <BoardView />}
+          {view === "tree" && <TreeView />}
+        </div>
+
+        {selectedItemId && (
+          <div className="w-3/5 shrink-0">
+            <DetailPanel />
+          </div>
+        )}
       </div>
     </div>
   );
 }
-

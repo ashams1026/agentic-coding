@@ -13,7 +13,7 @@
 
 ### Multi-View UI (continued)
 
-- [ ] **O.11** — Build work item detail panel. Create `packages/frontend/src/features/work-items/detail-panel.tsx`. Right-side panel (~50-60% width). Refactor and reuse existing story-detail and task-detail components. Sections: header (title editable, state badge, priority, labels, parent breadcrumb), description (editable), children list (if has children — with state badges, progress, "Add child" button, "Decompose" button), proposals (if pending), comment stream (reuse from features/common), execution timeline (reuse from features/common), flow history (new — chronological state changes for this item), dependency info, execution context viewer, metadata. This is the same panel regardless of depth level — works for stories, tasks, and sub-tasks.
+- [review] **O.11** — Build work item detail panel. Create `packages/frontend/src/features/work-items/detail-panel.tsx`. Right-side panel (~50-60% width). Refactor and reuse existing story-detail and task-detail components. Sections: header (title editable, state badge, priority, labels, parent breadcrumb), description (editable), children list (if has children — with state badges, progress, "Add child" button, "Decompose" button), proposals (if pending), comment stream (reuse from features/common), execution timeline (reuse from features/common), flow history (new — chronological state changes for this item), dependency info, execution context viewer, metadata. This is the same panel regardless of depth level — works for stories, tasks, and sub-tasks.
 
 ### Sidebar & Navigation Cleanup
 
