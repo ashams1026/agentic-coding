@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — AI.5: Write test plans for Work Items — Detail Panel
+
+**Task:** Create test plans for detail panel viewing and editing.
+
+**Done:**
+- **`tests/e2e/plans/detail-panel-view.md`** — 16 steps: click work item → detail panel opens, verify title (editable heading), state badge (colored), "Move to…" transition dropdown, priority selector (colored dot), persona avatar, labels row (badges + "+ label" button), Description section ("Edit" button, text or "No description" empty state), Children section (child items with state badges or "No children" + "Add child" button), Comments section (stream + input), Execution History section, Metadata (ID/Created/Updated), close via X button, select different item → panel updates.
+- **`tests/e2e/plans/detail-panel-edit.md`** — 17 steps: click title → inline edit → type "Updated Test Title" → Enter saves, Edit description → Write/Preview tabs → type text → Preview tab → Save, change priority via dropdown (e.g. P0 Critical), add label via "+ label" button → type "test-label" → Enter, change state via "Move to…" dropdown (handles Trigger Agent dialog with Skip), full page reload → reopen same item → verify all 5 mutations persisted (title, description, priority, labels, state).
+
+**Files created:** `tests/e2e/plans/detail-panel-view.md`, `tests/e2e/plans/detail-panel-edit.md`
+
+**Notes:** Plans reference actual components from `detail-panel.tsx`: EditableTitle (click→input, Enter saves, Escape cancels), EditableDescription (Write/Preview tabs, Save/Cancel buttons), PrioritySelector (Select with colored dots), LabelEditor (badges + "+ label" inline input), StateTransitionControl ("Move to…" Select), TransitionPrompt dialog (Run/Skip/Cancel), ChildrenList, CommentStream, ExecutionTimeline, MetadataSection. Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: AI.4 (approved)
 
 **Reviewed:** Work Items flow view test plan.
