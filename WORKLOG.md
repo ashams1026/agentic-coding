@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: Q.13 (rejected)
+
+**Reviewed:** Execution manager tests — `packages/backend/src/agent/__tests__/execution-manager.test.ts`.
+- 8 tests: runExecution lifecycle (create/success/failure), canTransition, handleRejection (retry/blocked/payload) ✓
+- ClaudeExecutor properly stubbed via `vi.hoisted()` ✓
+- Background stream tested with `vi.waitFor()` ✓
+- **Issue:** `canTransition` rate-limiting test is a no-op. `canTransition()` only reads the `transitionLog` Map, never writes to it. Since `recordTransition()` is never called, calling `canTransition` 10+ times always returns true — the blocking behavior (>10 transitions returns false) is never verified.
+- Feedback: export `recordTransition`, add test that records 10 transitions then asserts `canTransition` returns false.
+- Build: 0 errors, 143 tests pass
+- Verdict: **rejected** — rate-limiting blocking test missing
+
+---
+
 ## 2026-03-30 — Q.13: Test execution manager lifecycle
 
 **Task:** Integration tests for execution manager — lifecycle, rate limiting, rejection logic.
