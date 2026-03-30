@@ -3,6 +3,7 @@ import { useUIStore } from "@/stores/ui-store";
 
 export function useThemeSync() {
   const theme = useUIStore((s) => s.theme);
+  const density = useUIStore((s) => s.density);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -21,4 +22,8 @@ export function useThemeSync() {
 
     apply(theme === "dark");
   }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-density", density);
+  }, [density]);
 }

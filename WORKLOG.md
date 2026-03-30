@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — W.7: Wire appearance settings
+
+**Task:** Add density setting (comfortable/compact) to Zustand store, persist to localStorage, apply via `data-density` CSS attribute on root element with compact overrides.
+
+**Done:**
+- **`packages/frontend/src/stores/ui-store.ts`** — Added `density: Density` state ("comfortable" | "compact"), `setDensity` action, persisted to localStorage via `partialize`
+- **`packages/frontend/src/hooks/use-theme.ts`** — Added density sync: `useEffect` sets `data-density` attribute on `document.documentElement` when density changes
+- **`packages/frontend/src/index.css`** — Added `[data-density="compact"]` CSS overrides: reduced page padding (`1rem`), tighter card padding (`0.75rem`), smaller body text (`0.75rem`), reduced `space-y-6`/`space-y-4` gaps, compact table row padding
+- **`packages/frontend/src/features/settings/appearance-section.tsx`** — Rewired `DensitySection`: reads/writes from Zustand store instead of local `useState`. Imported `Density` type from store.
+
+**Files modified:** `ui-store.ts`, `use-theme.ts`, `index.css`, `appearance-section.tsx`, `TASKS.md`, `WORKLOG.md`
+
+**Notes:** Build: 0 errors. Theme toggle already worked (unchanged). Density follows same pattern as theme: Zustand + localStorage + DOM sync hook. The `data-density` attribute approach allows CSS-only overrides without JS class toggling on individual components.
+
+---
+
 ## 2026-03-30 — Review: W.6 (approved)
 
 **Reviewed:** Auto-routing toggle wiring in workflow settings.

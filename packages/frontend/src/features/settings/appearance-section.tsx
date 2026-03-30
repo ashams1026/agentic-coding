@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { useUIStore } from "@/stores/ui-store";
+import { useUIStore, type Density } from "@/stores/ui-store";
 import { cn } from "@/lib/utils";
 
 // ── Theme toggle ───────────────────────────────────────────────────
@@ -63,10 +63,9 @@ function ThemeSection() {
 
 // ── Density toggle ─────────────────────────────────────────────────
 
-type Density = "comfortable" | "compact";
-
 function DensitySection() {
-  const [density, setDensity] = useState<Density>("comfortable");
+  const density = useUIStore((s) => s.density);
+  const setDensity = useUIStore((s) => s.setDensity);
 
   return (
     <div className="space-y-3">

@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 
 type Theme = "light" | "dark" | "system";
 export type ApiMode = "mock" | "api";
+export type Density = "comfortable" | "compact";
 
 interface UIState {
   sidebarCollapsed: boolean;
@@ -10,6 +11,7 @@ interface UIState {
   selectedProjectId: string | null;
   theme: Theme;
   apiMode: ApiMode;
+  density: Density;
 
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
@@ -17,6 +19,7 @@ interface UIState {
   setSelectedProjectId: (id: string | null) => void;
   setTheme: (theme: Theme) => void;
   setApiMode: (mode: ApiMode) => void;
+  setDensity: (density: Density) => void;
 }
 
 export const useUIStore = create<UIState>()(
@@ -27,6 +30,7 @@ export const useUIStore = create<UIState>()(
       selectedProjectId: null,
       theme: "system",
       apiMode: "mock",
+      density: "comfortable",
 
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
@@ -34,6 +38,7 @@ export const useUIStore = create<UIState>()(
       setSelectedProjectId: (id) => set({ selectedProjectId: id }),
       setTheme: (theme) => set({ theme }),
       setApiMode: (mode) => set({ apiMode: mode }),
+      setDensity: (density) => set({ density }),
     }),
     {
       name: "agentops-ui",
@@ -42,6 +47,7 @@ export const useUIStore = create<UIState>()(
         selectedProjectId: state.selectedProjectId,
         theme: state.theme,
         apiMode: state.apiMode,
+        density: state.density,
       }),
     },
   ),
