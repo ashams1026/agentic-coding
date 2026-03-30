@@ -1,19 +1,15 @@
 import type {
   Project,
-  Story,
-  Task,
-  TaskEdge,
-  Workflow,
+  WorkItem,
+  WorkItemEdge,
   Persona,
-  Trigger,
+  PersonaAssignment,
   Execution,
   Comment,
   ProjectMemory,
   Proposal,
   ProjectId,
-  StoryId,
-  TaskId,
-  WorkflowId,
+  WorkItemId,
   PersonaId,
   ExecutionId,
 } from "@agentops/shared";
@@ -21,8 +17,6 @@ import type {
 // ── Fixed IDs for cross-referencing ────────────────────────────────
 
 const PROJECT_ID = "pj-agntops" as ProjectId;
-const STORY_WF_ID = "wf-strywf1" as WorkflowId;
-const TASK_WF_ID = "wf-tskwf01" as WorkflowId;
 
 const PERSONA_PM = "ps-pm00001" as PersonaId;
 const PERSONA_TECH_LEAD = "ps-tl00001" as PersonaId;
@@ -30,21 +24,33 @@ const PERSONA_ENGINEER = "ps-en00001" as PersonaId;
 const PERSONA_REVIEWER = "ps-rv00001" as PersonaId;
 const PERSONA_QA = "ps-qa00001" as PersonaId;
 
-const STORY_1 = "st-auth001" as StoryId;
-const STORY_2 = "st-dash002" as StoryId;
-const STORY_3 = "st-noti003" as StoryId;
+// Top-level work items (formerly stories)
+const WI_AUTH = "wi-auth001" as WorkItemId;
+const WI_DASH = "wi-dash002" as WorkItemId;
+const WI_NOTI = "wi-noti003" as WorkItemId;
 
-const TASK_1_1 = "tk-au01001" as TaskId;
-const TASK_1_2 = "tk-au01002" as TaskId;
-const TASK_1_3 = "tk-au01003" as TaskId;
-const TASK_2_1 = "tk-da02001" as TaskId;
-const TASK_2_2 = "tk-da02002" as TaskId;
-const TASK_2_3 = "tk-da02003" as TaskId;
-const TASK_3_1 = "tk-no03001" as TaskId;
-const TASK_3_2 = "tk-no03002" as TaskId;
-const TASK_3_3 = "tk-no03003" as TaskId;
-const TASK_3_4 = "tk-no03004" as TaskId;
+// Children of WI_AUTH
+const WI_AUTH_1 = "wi-au01001" as WorkItemId;
+const WI_AUTH_2 = "wi-au01002" as WorkItemId;
+const WI_AUTH_3 = "wi-au01003" as WorkItemId;
 
+// Children of WI_DASH
+const WI_DASH_1 = "wi-da02001" as WorkItemId;
+const WI_DASH_2 = "wi-da02002" as WorkItemId;
+const WI_DASH_3 = "wi-da02003" as WorkItemId;
+
+// Children of WI_NOTI
+const WI_NOTI_1 = "wi-no03001" as WorkItemId;
+const WI_NOTI_2 = "wi-no03002" as WorkItemId;
+const WI_NOTI_3 = "wi-no03003" as WorkItemId;
+const WI_NOTI_4 = "wi-no03004" as WorkItemId;
+
+// Grandchildren (sub-tasks of WI_AUTH_1 and WI_AUTH_2)
+const WI_AUTH_1_A = "wi-au1a001" as WorkItemId;
+const WI_AUTH_1_B = "wi-au1b001" as WorkItemId;
+const WI_AUTH_2_A = "wi-au2a001" as WorkItemId;
+
+// Executions
 const EXEC_1 = "ex-exec001" as ExecutionId;
 const EXEC_2 = "ex-exec002" as ExecutionId;
 const EXEC_3 = "ex-exec003" as ExecutionId;
@@ -54,69 +60,15 @@ const EXEC_6 = "ex-exec006" as ExecutionId;
 const EXEC_7 = "ex-exec007" as ExecutionId;
 const EXEC_8 = "ex-exec008" as ExecutionId;
 
-// ── Workflows ──────────────────────────────────────────────────────
-
-export const workflows: Workflow[] = [
-  {
-    id: STORY_WF_ID,
-    name: "Default Story Workflow",
-    type: "story",
-    states: [
-      { name: "Backlog", color: "#94a3b8", isInitial: true, isFinal: false },
-      { name: "Defining", color: "#8b5cf6", isInitial: false, isFinal: false },
-      { name: "Decomposing", color: "#3b82f6", isInitial: false, isFinal: false },
-      { name: "In Progress", color: "#10b981", isInitial: false, isFinal: false },
-      { name: "In Review", color: "#f59e0b", isInitial: false, isFinal: false },
-      { name: "QA", color: "#ef4444", isInitial: false, isFinal: false },
-      { name: "Done", color: "#22c55e", isInitial: false, isFinal: true },
-    ],
-    transitions: [
-      { from: "Backlog", to: "Defining", name: "Start defining" },
-      { from: "Defining", to: "Decomposing", name: "Define complete" },
-      { from: "Decomposing", to: "In Progress", name: "Tasks approved" },
-      { from: "In Progress", to: "In Review", name: "Submit for review" },
-      { from: "In Review", to: "QA", name: "Review passed" },
-      { from: "In Review", to: "In Progress", name: "Review rejected" },
-      { from: "QA", to: "Done", name: "QA passed" },
-      { from: "QA", to: "In Progress", name: "QA failed" },
-    ],
-    initialState: "Backlog",
-    finalStates: ["Done"],
-    isDefault: true,
-  },
-  {
-    id: TASK_WF_ID,
-    name: "Default Task Workflow",
-    type: "task",
-    states: [
-      { name: "Pending", color: "#94a3b8", isInitial: true, isFinal: false },
-      { name: "Running", color: "#10b981", isInitial: false, isFinal: false },
-      { name: "Review", color: "#f59e0b", isInitial: false, isFinal: false },
-      { name: "Done", color: "#22c55e", isInitial: false, isFinal: true },
-      { name: "Failed", color: "#ef4444", isInitial: false, isFinal: true },
-    ],
-    transitions: [
-      { from: "Pending", to: "Running", name: "Start" },
-      { from: "Running", to: "Review", name: "Complete" },
-      { from: "Running", to: "Failed", name: "Fail" },
-      { from: "Review", to: "Done", name: "Approve" },
-      { from: "Review", to: "Pending", name: "Reject" },
-    ],
-    initialState: "Pending",
-    finalStates: ["Done", "Failed"],
-    isDefault: true,
-  },
-];
-
 // ── Personas ───────────────────────────────────────────────────────
 
 export const personas: Persona[] = [
   {
     id: PERSONA_PM,
     name: "PM",
-    description: "Writes acceptance criteria and defines story scope.",
+    description: "Writes acceptance criteria and defines scope.",
     avatar: { color: "#8b5cf6", icon: "clipboard-list" },
-    systemPrompt: "You are a product manager. Write clear acceptance criteria and define story scope.",
+    systemPrompt: "You are a product manager. Write clear acceptance criteria and define scope.",
     model: "sonnet",
     allowedTools: ["Read", "Glob", "Grep", "WebSearch"],
     mcpTools: ["post_comment", "transition_state"],
@@ -126,9 +78,9 @@ export const personas: Persona[] = [
   {
     id: PERSONA_TECH_LEAD,
     name: "Tech Lead",
-    description: "Decomposes stories into tasks with dependency graphs.",
+    description: "Decomposes work items into children with dependency graphs.",
     avatar: { color: "#3b82f6", icon: "git-branch" },
-    systemPrompt: "You are a tech lead. Break stories into well-scoped tasks with clear dependencies.",
+    systemPrompt: "You are a tech lead. Break work items into well-scoped children with clear dependencies.",
     model: "opus",
     allowedTools: ["Read", "Glob", "Grep", "WebSearch", "Bash"],
     mcpTools: ["create_tasks", "post_comment", "request_review"],
@@ -138,9 +90,9 @@ export const personas: Persona[] = [
   {
     id: PERSONA_ENGINEER,
     name: "Engineer",
-    description: "Implements tasks by writing and modifying code.",
+    description: "Implements work items by writing and modifying code.",
     avatar: { color: "#10b981", icon: "code" },
-    systemPrompt: "You are a software engineer. Implement the assigned task following project conventions.",
+    systemPrompt: "You are a software engineer. Implement the assigned work item following project conventions.",
     model: "sonnet",
     allowedTools: ["Read", "Edit", "Write", "Glob", "Grep", "Bash", "WebFetch"],
     mcpTools: ["post_comment", "flag_blocked", "transition_state"],
@@ -173,6 +125,15 @@ export const personas: Persona[] = [
   },
 ];
 
+// ── Persona Assignments (state → persona mapping) ──────────────────
+
+export const personaAssignments: PersonaAssignment[] = [
+  { projectId: PROJECT_ID, stateName: "Planning", personaId: PERSONA_PM },
+  { projectId: PROJECT_ID, stateName: "Decomposition", personaId: PERSONA_TECH_LEAD },
+  { projectId: PROJECT_ID, stateName: "In Progress", personaId: PERSONA_ENGINEER },
+  { projectId: PROJECT_ID, stateName: "In Review", personaId: PERSONA_REVIEWER },
+];
+
 // ── Project ────────────────────────────────────────────────────────
 
 export const projects: Project[] = [
@@ -180,79 +141,82 @@ export const projects: Project[] = [
     id: PROJECT_ID,
     name: "AgentOps",
     path: "/Users/dev/projects/agentops",
-    defaultWorkflowId: STORY_WF_ID,
     settings: { maxConcurrentAgents: 3, monthlyCostCap: 50 },
     createdAt: "2026-03-20T10:00:00Z",
   },
 ];
 
-// ── Stories ─────────────────────────────────────────────────────────
+// ── Work Items ─────────────────────────────────────────────────────
 
-export const stories: Story[] = [
+export const workItems: WorkItem[] = [
+  // ── Top-level items (formerly stories) ───────────────────────────
   {
-    id: STORY_1,
+    id: WI_AUTH,
+    parentId: null,
     projectId: PROJECT_ID,
     title: "User authentication with OAuth2",
     description: "Implement OAuth2 login flow with Google and GitHub providers. Users should be able to sign in, sign out, and have their session persisted.",
-    workflowId: STORY_WF_ID,
-    currentState: "In Progress",
-    priority: "p0",
-    labels: ["auth", "security"],
     context: {
       acceptanceCriteria: "- Google OAuth login works\n- GitHub OAuth login works\n- Session persists across page reloads\n- Logout clears session\n- Protected routes redirect to login",
       notes: "Use passport.js for the backend implementation.",
     },
+    currentState: "In Progress",
+    priority: "p0",
+    labels: ["auth", "security"],
+    assignedPersonaId: null,
+    executionContext: [],
     createdAt: "2026-03-21T09:00:00Z",
     updatedAt: "2026-03-27T14:30:00Z",
   },
   {
-    id: STORY_2,
+    id: WI_DASH,
+    parentId: null,
     projectId: PROJECT_ID,
     title: "Dashboard analytics widgets",
     description: "Build the main dashboard with cost tracking, agent activity charts, and project health indicators.",
-    workflowId: STORY_WF_ID,
-    currentState: "Decomposing",
-    priority: "p1",
-    labels: ["dashboard", "ui"],
     context: {
       acceptanceCriteria: "- Cost chart shows last 7 days\n- Active agent count is live\n- Project health shows red/green indicators\n- Responsive layout",
       notes: "Use recharts for charts. Mock data for now.",
     },
+    currentState: "Decomposition",
+    priority: "p1",
+    labels: ["dashboard", "ui"],
+    assignedPersonaId: null,
+    executionContext: [],
     createdAt: "2026-03-22T11:00:00Z",
     updatedAt: "2026-03-26T16:00:00Z",
   },
   {
-    id: STORY_3,
+    id: WI_NOTI,
+    parentId: null,
     projectId: PROJECT_ID,
     title: "Real-time notification system",
     description: "Implement toast notifications and an activity feed that update in real-time via WebSocket.",
-    workflowId: STORY_WF_ID,
-    currentState: "Backlog",
-    priority: "p2",
-    labels: ["notifications", "websocket"],
     context: {
       acceptanceCriteria: "- Toast notifications appear for key events\n- Activity feed updates without refresh\n- Unread count badge on nav\n- Notification preferences in settings",
       notes: "",
     },
+    currentState: "Backlog",
+    priority: "p2",
+    labels: ["notifications", "websocket"],
+    assignedPersonaId: null,
+    executionContext: [],
     createdAt: "2026-03-23T08:30:00Z",
     updatedAt: "2026-03-23T08:30:00Z",
   },
-];
 
-// ── Tasks ───────────────────────────────────────────────────────────
-
-export const tasks: Task[] = [
-  // Story 1: Auth — 3 tasks, various states
+  // ── Children of WI_AUTH ──────────────────────────────────────────
   {
-    id: TASK_1_1,
-    storyId: STORY_1,
+    id: WI_AUTH_1,
+    parentId: WI_AUTH,
+    projectId: PROJECT_ID,
     title: "Set up OAuth2 backend routes",
     description: "Create /auth/google and /auth/github routes with passport strategies.",
-    workflowId: TASK_WF_ID,
+    context: { inheritedContext: "Implement OAuth2 login flow with Google and GitHub providers." },
     currentState: "Done",
+    priority: "p0",
+    labels: ["auth"],
     assignedPersonaId: PERSONA_ENGINEER,
-    parentTaskId: null,
-    inheritedContext: "Implement OAuth2 login flow with Google and GitHub providers.",
     executionContext: [
       { executionId: EXEC_4, summary: "Initial attempt at OAuth routes — used express-session directly without passport.", outcome: "rejected", rejectionPayload: { reason: "Session handling bypasses passport.js integration. Routes lack CSRF protection.", severity: "high", hint: "Use passport.js strategies for OAuth providers. Add csurf middleware.", retryCount: 1 } },
       { executionId: EXEC_1, summary: "Implemented OAuth routes with passport.js. Added CSRF protection via csurf middleware. Google and GitHub strategies configured.", outcome: "success", rejectionPayload: null },
@@ -261,15 +225,16 @@ export const tasks: Task[] = [
     updatedAt: "2026-03-25T11:30:00Z",
   },
   {
-    id: TASK_1_2,
-    storyId: STORY_1,
+    id: WI_AUTH_2,
+    parentId: WI_AUTH,
+    projectId: PROJECT_ID,
     title: "Build login UI component",
     description: "Create login page with Google and GitHub sign-in buttons.",
-    workflowId: TASK_WF_ID,
-    currentState: "Running",
+    context: { inheritedContext: "Implement OAuth2 login flow with Google and GitHub providers." },
+    currentState: "In Progress",
+    priority: "p0",
+    labels: ["auth", "ui"],
     assignedPersonaId: PERSONA_ENGINEER,
-    parentTaskId: null,
-    inheritedContext: "Implement OAuth2 login flow with Google and GitHub providers.",
     executionContext: [
       { executionId: EXEC_5, summary: "Building login page with social sign-in buttons. Implementing Google and GitHub OAuth flows.", outcome: "success", rejectionPayload: null },
     ],
@@ -277,181 +242,187 @@ export const tasks: Task[] = [
     updatedAt: "2026-03-27T14:30:00Z",
   },
   {
-    id: TASK_1_3,
-    storyId: STORY_1,
+    id: WI_AUTH_3,
+    parentId: WI_AUTH,
+    projectId: PROJECT_ID,
     title: "Add session persistence and protected routes",
     description: "Implement session storage and route guards for authenticated pages.",
-    workflowId: TASK_WF_ID,
-    currentState: "Pending",
+    context: { inheritedContext: "Implement OAuth2 login flow with Google and GitHub providers." },
+    currentState: "Ready",
+    priority: "p0",
+    labels: ["auth"],
     assignedPersonaId: PERSONA_ENGINEER,
-    parentTaskId: null,
-    inheritedContext: "Implement OAuth2 login flow with Google and GitHub providers.",
     executionContext: [],
     createdAt: "2026-03-24T10:10:00Z",
     updatedAt: "2026-03-24T10:10:00Z",
   },
-  // Story 2: Dashboard — 3 tasks, all pending/early
+
+  // ── Children of WI_DASH ──────────────────────────────────────────
   {
-    id: TASK_2_1,
-    storyId: STORY_2,
+    id: WI_DASH_1,
+    parentId: WI_DASH,
+    projectId: PROJECT_ID,
     title: "Create cost tracking chart component",
     description: "Build a recharts-based sparkline chart showing 7-day cost history.",
-    workflowId: TASK_WF_ID,
-    currentState: "Pending",
-    assignedPersonaId: PERSONA_ENGINEER,
-    parentTaskId: null,
-    inheritedContext: "Build the main dashboard with cost tracking widgets.",
+    context: { inheritedContext: "Build the main dashboard with cost tracking widgets." },
+    currentState: "Backlog",
+    priority: "p1",
+    labels: ["dashboard"],
+    assignedPersonaId: null,
     executionContext: [],
     createdAt: "2026-03-25T09:00:00Z",
     updatedAt: "2026-03-25T09:00:00Z",
   },
   {
-    id: TASK_2_2,
-    storyId: STORY_2,
+    id: WI_DASH_2,
+    parentId: WI_DASH,
+    projectId: PROJECT_ID,
     title: "Build active agents display strip",
     description: "Horizontal scrollable row of agent cards with live status indicators.",
-    workflowId: TASK_WF_ID,
-    currentState: "Pending",
-    assignedPersonaId: PERSONA_ENGINEER,
-    parentTaskId: null,
-    inheritedContext: "Build the main dashboard with agent activity charts.",
+    context: { inheritedContext: "Build the main dashboard with agent activity charts." },
+    currentState: "Backlog",
+    priority: "p1",
+    labels: ["dashboard"],
+    assignedPersonaId: null,
     executionContext: [],
     createdAt: "2026-03-25T09:05:00Z",
     updatedAt: "2026-03-25T09:05:00Z",
   },
   {
-    id: TASK_2_3,
-    storyId: STORY_2,
+    id: WI_DASH_3,
+    parentId: WI_DASH,
+    projectId: PROJECT_ID,
     title: "Build project health indicator widget",
     description: "Red/green health indicators for build status, test coverage, and uptime.",
-    workflowId: TASK_WF_ID,
-    currentState: "Pending",
+    context: { inheritedContext: "Build the main dashboard with project health indicators." },
+    currentState: "Backlog",
+    priority: "p1",
+    labels: ["dashboard"],
     assignedPersonaId: null,
-    parentTaskId: null,
-    inheritedContext: "Build the main dashboard with project health indicators.",
     executionContext: [],
     createdAt: "2026-03-25T09:10:00Z",
     updatedAt: "2026-03-25T09:10:00Z",
   },
-  // Story 3: Notifications — 4 tasks, all backlog
+
+  // ── Children of WI_NOTI ──────────────────────────────────────────
   {
-    id: TASK_3_1,
-    storyId: STORY_3,
+    id: WI_NOTI_1,
+    parentId: WI_NOTI,
+    projectId: PROJECT_ID,
     title: "Create toast notification component",
     description: "Non-blocking toast notifications with success/error/info/warning variants.",
-    workflowId: TASK_WF_ID,
-    currentState: "Pending",
+    context: { inheritedContext: "Implement toast notifications that update in real-time." },
+    currentState: "Backlog",
+    priority: "p2",
+    labels: ["notifications"],
     assignedPersonaId: null,
-    parentTaskId: null,
-    inheritedContext: "Implement toast notifications that update in real-time.",
     executionContext: [],
     createdAt: "2026-03-26T08:00:00Z",
     updatedAt: "2026-03-26T08:00:00Z",
   },
   {
-    id: TASK_3_2,
-    storyId: STORY_3,
+    id: WI_NOTI_2,
+    parentId: WI_NOTI,
+    projectId: PROJECT_ID,
     title: "Build activity feed component",
     description: "Chronological event stream with filtering and real-time updates.",
-    workflowId: TASK_WF_ID,
-    currentState: "Pending",
+    context: { inheritedContext: "Implement an activity feed that updates in real-time via WebSocket." },
+    currentState: "Backlog",
+    priority: "p2",
+    labels: ["notifications"],
     assignedPersonaId: null,
-    parentTaskId: null,
-    inheritedContext: "Implement an activity feed that updates in real-time via WebSocket.",
     executionContext: [],
     createdAt: "2026-03-26T08:05:00Z",
     updatedAt: "2026-03-26T08:05:00Z",
   },
   {
-    id: TASK_3_3,
-    storyId: STORY_3,
+    id: WI_NOTI_3,
+    parentId: WI_NOTI,
+    projectId: PROJECT_ID,
     title: "Wire WebSocket events to notifications",
     description: "Connect WS events to toast triggers and activity feed updates.",
-    workflowId: TASK_WF_ID,
-    currentState: "Pending",
+    context: { inheritedContext: "Implement real-time notification system." },
+    currentState: "Backlog",
+    priority: "p2",
+    labels: ["notifications", "websocket"],
     assignedPersonaId: null,
-    parentTaskId: null,
-    inheritedContext: "Implement real-time notification system.",
     executionContext: [],
     createdAt: "2026-03-26T08:10:00Z",
     updatedAt: "2026-03-26T08:10:00Z",
   },
   {
-    id: TASK_3_4,
-    storyId: STORY_3,
+    id: WI_NOTI_4,
+    parentId: WI_NOTI,
+    projectId: PROJECT_ID,
     title: "Add notification preferences to settings",
     description: "Settings panel for enabling/disabling notification types and sounds.",
-    workflowId: TASK_WF_ID,
-    currentState: "Pending",
+    context: { inheritedContext: "Notification preferences in settings." },
+    currentState: "Backlog",
+    priority: "p2",
+    labels: ["notifications", "settings"],
     assignedPersonaId: null,
-    parentTaskId: null,
-    inheritedContext: "Notification preferences in settings.",
     executionContext: [],
     createdAt: "2026-03-26T08:15:00Z",
     updatedAt: "2026-03-26T08:15:00Z",
   },
+
+  // ── Grandchildren (sub-tasks of WI_AUTH_1) ───────────────────────
+  {
+    id: WI_AUTH_1_A,
+    parentId: WI_AUTH_1,
+    projectId: PROJECT_ID,
+    title: "Configure Google OAuth strategy",
+    description: "Set up passport-google-oauth20 strategy with client credentials and callback handler.",
+    context: { inheritedContext: "Set up OAuth2 backend routes with passport strategies." },
+    currentState: "Done",
+    priority: "p0",
+    labels: ["auth"],
+    assignedPersonaId: PERSONA_ENGINEER,
+    executionContext: [],
+    createdAt: "2026-03-24T10:15:00Z",
+    updatedAt: "2026-03-25T10:00:00Z",
+  },
+  {
+    id: WI_AUTH_1_B,
+    parentId: WI_AUTH_1,
+    projectId: PROJECT_ID,
+    title: "Configure GitHub OAuth strategy",
+    description: "Set up passport-github2 strategy with client credentials and callback handler.",
+    context: { inheritedContext: "Set up OAuth2 backend routes with passport strategies." },
+    currentState: "Done",
+    priority: "p0",
+    labels: ["auth"],
+    assignedPersonaId: PERSONA_ENGINEER,
+    executionContext: [],
+    createdAt: "2026-03-24T10:20:00Z",
+    updatedAt: "2026-03-25T10:30:00Z",
+  },
+
+  // ── Grandchild (sub-task of WI_AUTH_2) ───────────────────────────
+  {
+    id: WI_AUTH_2_A,
+    parentId: WI_AUTH_2,
+    projectId: PROJECT_ID,
+    title: "Design login page layout",
+    description: "Create responsive login page layout with centered card and social button placement.",
+    context: { inheritedContext: "Build login UI component with social sign-in buttons." },
+    currentState: "Done",
+    priority: "p0",
+    labels: ["auth", "ui"],
+    assignedPersonaId: PERSONA_ENGINEER,
+    executionContext: [],
+    createdAt: "2026-03-27T14:00:00Z",
+    updatedAt: "2026-03-27T14:20:00Z",
+  },
 ];
 
-// ── Task Edges (Dependencies) ──────────────────────────────────────
+// ── Work Item Edges (Dependencies) ─────────────────────────────────
 
-export const taskEdges: TaskEdge[] = [
-  { id: "te-edge001", fromId: TASK_1_1, toId: TASK_1_2, type: "blocks" },
-  { id: "te-edge002", fromId: TASK_1_2, toId: TASK_1_3, type: "blocks" },
-  { id: "te-edge003", fromId: TASK_3_1, toId: TASK_3_3, type: "depends_on" },
-  { id: "te-edge004", fromId: TASK_3_2, toId: TASK_3_3, type: "depends_on" },
-];
-
-// ── Triggers ───────────────────────────────────────────────────────
-
-export const triggers: Trigger[] = [
-  {
-    id: "tr-trig001",
-    workflowId: STORY_WF_ID,
-    fromState: "Backlog",
-    toState: "Defining",
-    personaId: PERSONA_PM,
-    dispatchMode: "auto",
-    advancementMode: "auto",
-    possibleTargets: [],
-    maxRetries: 3,
-    config: {},
-  },
-  {
-    id: "tr-trig002",
-    workflowId: STORY_WF_ID,
-    fromState: "Defining",
-    toState: "Decomposing",
-    personaId: PERSONA_TECH_LEAD,
-    dispatchMode: "propose",
-    advancementMode: "approval",
-    possibleTargets: [],
-    maxRetries: 3,
-    config: {},
-  },
-  {
-    id: "tr-trig003",
-    workflowId: STORY_WF_ID,
-    fromState: "In Progress",
-    toState: "In Review",
-    personaId: PERSONA_REVIEWER,
-    dispatchMode: "auto",
-    advancementMode: "agent",
-    possibleTargets: [],
-    maxRetries: 2,
-    config: {},
-  },
-  {
-    id: "tr-trig004",
-    workflowId: STORY_WF_ID,
-    fromState: "In Review",
-    toState: "QA",
-    personaId: PERSONA_QA,
-    dispatchMode: "auto",
-    advancementMode: "auto",
-    possibleTargets: [],
-    maxRetries: 2,
-    config: {},
-  },
+export const workItemEdges: WorkItemEdge[] = [
+  { id: "we-edge001", fromId: WI_AUTH_1, toId: WI_AUTH_2, type: "blocks" },
+  { id: "we-edge002", fromId: WI_AUTH_2, toId: WI_AUTH_3, type: "blocks" },
+  { id: "we-edge003", fromId: WI_NOTI_1, toId: WI_NOTI_3, type: "depends_on" },
+  { id: "we-edge004", fromId: WI_NOTI_2, toId: WI_NOTI_3, type: "depends_on" },
 ];
 
 // ── Executions ─────────────────────────────────────────────────────
@@ -459,8 +430,7 @@ export const triggers: Trigger[] = [
 export const executions: Execution[] = [
   {
     id: EXEC_7,
-    targetId: TASK_1_1,
-    targetType: "task",
+    workItemId: WI_AUTH_1,
     personaId: PERSONA_REVIEWER,
     status: "completed",
     startedAt: "2026-03-25T08:00:00Z",
@@ -474,8 +444,7 @@ export const executions: Execution[] = [
   },
   {
     id: EXEC_1,
-    targetId: TASK_1_1,
-    targetType: "task",
+    workItemId: WI_AUTH_1,
     personaId: PERSONA_ENGINEER,
     status: "completed",
     startedAt: "2026-03-25T10:00:00Z",
@@ -489,38 +458,35 @@ export const executions: Execution[] = [
   },
   {
     id: EXEC_2,
-    targetId: STORY_1,
-    targetType: "story",
+    workItemId: WI_AUTH,
     personaId: PERSONA_PM,
     status: "completed",
     startedAt: "2026-03-24T09:15:00Z",
     completedAt: "2026-03-24T09:17:45Z",
     costUsd: 0.18,
     durationMs: 165000,
-    summary: "Wrote acceptance criteria for OAuth2 authentication story.",
+    summary: "Wrote acceptance criteria for OAuth2 authentication.",
     outcome: "success",
     rejectionPayload: null,
-    logs: "Analyzing story requirements...\nWriting acceptance criteria...\nPosting criteria as comment.",
+    logs: "Analyzing requirements...\nWriting acceptance criteria...\nPosting criteria as comment.",
   },
   {
     id: EXEC_3,
-    targetId: STORY_1,
-    targetType: "story",
+    workItemId: WI_AUTH,
     personaId: PERSONA_TECH_LEAD,
     status: "completed",
     startedAt: "2026-03-24T09:30:00Z",
     completedAt: "2026-03-24T09:35:12Z",
     costUsd: 0.85,
     durationMs: 312000,
-    summary: "Decomposed auth story into 3 tasks with dependency graph.",
+    summary: "Decomposed auth item into 3 children with dependency graph.",
     outcome: "success",
     rejectionPayload: null,
-    logs: "Reading story and acceptance criteria...\nDesigning task breakdown...\nCreating 3 tasks...\nSetting up dependency edges.",
+    logs: "Reading item and acceptance criteria...\nDesigning breakdown...\nCreating 3 children...\nSetting up dependency edges.",
   },
   {
     id: EXEC_4,
-    targetId: TASK_1_2,
-    targetType: "task",
+    workItemId: WI_AUTH_2,
     personaId: PERSONA_ENGINEER,
     status: "running",
     startedAt: "2026-03-27T14:25:00Z",
@@ -530,42 +496,39 @@ export const executions: Execution[] = [
     summary: "",
     outcome: null,
     rejectionPayload: null,
-    logs: "Reading task context...\nScanning existing components...\nCreating login page component...",
+    logs: "Reading context...\nScanning existing components...\nCreating login page component...",
   },
   {
     id: EXEC_5,
-    targetId: STORY_2,
-    targetType: "story",
+    workItemId: WI_DASH,
     personaId: PERSONA_PM,
     status: "completed",
     startedAt: "2026-03-25T11:00:00Z",
     completedAt: "2026-03-25T11:02:30Z",
     costUsd: 0.15,
     durationMs: 150000,
-    summary: "Wrote acceptance criteria for dashboard analytics story.",
+    summary: "Wrote acceptance criteria for dashboard analytics.",
     outcome: "success",
     rejectionPayload: null,
     logs: "Analyzing dashboard requirements...\nWriting acceptance criteria...\nDone.",
   },
   {
     id: EXEC_6,
-    targetId: STORY_2,
-    targetType: "story",
+    workItemId: WI_DASH,
     personaId: PERSONA_TECH_LEAD,
     status: "completed",
     startedAt: "2026-03-26T10:00:00Z",
     completedAt: "2026-03-26T10:06:15Z",
     costUsd: 0.92,
     durationMs: 375000,
-    summary: "Decomposed dashboard story into 3 tasks.",
+    summary: "Decomposed dashboard item into 3 children.",
     outcome: "success",
     rejectionPayload: null,
-    logs: "Reading story...\nDesigning component breakdown...\nCreating tasks with descriptions...\nDone.",
+    logs: "Reading item...\nDesigning component breakdown...\nCreating children with descriptions...\nDone.",
   },
   {
     id: EXEC_8,
-    targetId: TASK_1_3,
-    targetType: "task",
+    workItemId: WI_AUTH_3,
     personaId: PERSONA_REVIEWER,
     status: "running",
     startedAt: "2026-03-27T14:30:00Z",
@@ -582,11 +545,9 @@ export const executions: Execution[] = [
 // ── Comments ───────────────────────────────────────────────────────
 
 export const comments: Comment[] = [
-  // Story 1 comments
   {
     id: "cm-cmt0001",
-    targetId: STORY_1,
-    targetType: "story",
+    workItemId: WI_AUTH,
     authorType: "user",
     authorId: null,
     authorName: "Amin",
@@ -596,8 +557,7 @@ export const comments: Comment[] = [
   },
   {
     id: "cm-cmt0002",
-    targetId: STORY_1,
-    targetType: "story",
+    workItemId: WI_AUTH,
     authorType: "agent",
     authorId: PERSONA_PM,
     authorName: "PM",
@@ -607,19 +567,17 @@ export const comments: Comment[] = [
   },
   {
     id: "cm-cmt0003",
-    targetId: STORY_1,
-    targetType: "story",
+    workItemId: WI_AUTH,
     authorType: "agent",
     authorId: PERSONA_TECH_LEAD,
     authorName: "Tech Lead",
-    content: "Decomposed into 3 tasks:\n1. OAuth backend routes (passport.js)\n2. Login UI component\n3. Session persistence + protected routes\n\nTasks are ordered by dependency — each blocks the next.",
-    metadata: { tasksCreated: 3, toolsUsed: ["create_tasks"] },
+    content: "Decomposed into 3 children:\n1. OAuth backend routes (passport.js)\n2. Login UI component\n3. Session persistence + protected routes\n\nItems are ordered by dependency — each blocks the next.",
+    metadata: { childrenCreated: 3, toolsUsed: ["create_tasks"] },
     createdAt: "2026-03-24T09:35:12Z",
   },
   {
     id: "cm-cmt0004",
-    targetId: TASK_1_1,
-    targetType: "task",
+    workItemId: WI_AUTH_1,
     authorType: "agent",
     authorId: PERSONA_ENGINEER,
     authorName: "Engineer",
@@ -629,20 +587,17 @@ export const comments: Comment[] = [
   },
   {
     id: "cm-cmt0005",
-    targetId: TASK_1_1,
-    targetType: "task",
+    workItemId: WI_AUTH_1,
     authorType: "system",
     authorId: null,
     authorName: "System",
-    content: "Task moved to Done",
+    content: "Work item moved to Done",
     metadata: {},
     createdAt: "2026-03-25T11:30:00Z",
   },
-  // Story 2 comments
   {
     id: "cm-cmt0006",
-    targetId: STORY_2,
-    targetType: "story",
+    workItemId: WI_DASH,
     authorType: "agent",
     authorId: PERSONA_PM,
     authorName: "PM",
@@ -652,43 +607,37 @@ export const comments: Comment[] = [
   },
   {
     id: "cm-cmt0007",
-    targetId: STORY_2,
-    targetType: "story",
+    workItemId: WI_DASH,
     authorType: "agent",
     authorId: PERSONA_TECH_LEAD,
     authorName: "Tech Lead",
-    content: "Decomposed into 3 tasks: cost chart, agents strip, health widget. No hard dependencies between them — can be worked in parallel.",
-    metadata: { tasksCreated: 3, toolsUsed: ["create_tasks"] },
+    content: "Decomposed into 3 children: cost chart, agents strip, health widget. No hard dependencies between them — can be worked in parallel.",
+    metadata: { childrenCreated: 3, toolsUsed: ["create_tasks"] },
     createdAt: "2026-03-26T10:06:15Z",
   },
-  // Story 3 comments
   {
     id: "cm-cmt0008",
-    targetId: STORY_3,
-    targetType: "story",
+    workItemId: WI_NOTI,
     authorType: "user",
     authorId: null,
     authorName: "Amin",
-    content: "Let's tackle this after the dashboard is done. Good to have the tasks scoped though.",
+    content: "Let's tackle this after the dashboard is done. Good to have the items scoped though.",
     metadata: {},
     createdAt: "2026-03-23T09:00:00Z",
   },
-  // Task-level comments
   {
     id: "cm-cmt0009",
-    targetId: TASK_1_2,
-    targetType: "task",
+    workItemId: WI_AUTH_2,
     authorType: "system",
     authorId: null,
     authorName: "System",
-    content: "Task started — Engineer agent running",
+    content: "Work item started — Engineer agent running",
     metadata: {},
     createdAt: "2026-03-27T14:25:00Z",
   },
   {
     id: "cm-cmt0010",
-    targetId: TASK_2_1,
-    targetType: "task",
+    workItemId: WI_DASH_1,
     authorType: "user",
     authorId: null,
     authorName: "Amin",
@@ -696,33 +645,29 @@ export const comments: Comment[] = [
     metadata: {},
     createdAt: "2026-03-25T09:30:00Z",
   },
-  // More story-level
   {
     id: "cm-cmt0011",
-    targetId: STORY_1,
-    targetType: "story",
+    workItemId: WI_AUTH,
     authorType: "system",
     authorId: null,
     authorName: "System",
-    content: "Story moved to In Progress",
+    content: "Work item moved to In Progress",
     metadata: {},
     createdAt: "2026-03-25T10:00:00Z",
   },
   {
     id: "cm-cmt0012",
-    targetId: STORY_2,
-    targetType: "story",
+    workItemId: WI_DASH,
     authorType: "system",
     authorId: null,
     authorName: "System",
-    content: "Story moved to Decomposing",
+    content: "Work item moved to Decomposition",
     metadata: {},
     createdAt: "2026-03-26T10:00:00Z",
   },
   {
     id: "cm-cmt0013",
-    targetId: TASK_1_2,
-    targetType: "task",
+    workItemId: WI_AUTH_2,
     authorType: "agent",
     authorId: PERSONA_ENGINEER,
     authorName: "Engineer",
@@ -732,8 +677,7 @@ export const comments: Comment[] = [
   },
   {
     id: "cm-cmt0014",
-    targetId: STORY_1,
-    targetType: "story",
+    workItemId: WI_AUTH,
     authorType: "user",
     authorId: null,
     authorName: "Amin",
@@ -743,8 +687,7 @@ export const comments: Comment[] = [
   },
   {
     id: "cm-cmt0015",
-    targetId: TASK_3_1,
-    targetType: "task",
+    workItemId: WI_NOTI_1,
     authorType: "user",
     authorId: null,
     authorName: "Amin",
@@ -760,11 +703,10 @@ export const proposals: Proposal[] = [
   {
     id: "pp-prop001",
     executionId: EXEC_3,
-    parentId: STORY_1,
-    parentType: "story",
+    workItemId: WI_AUTH,
     type: "task_creation",
     payload: {
-      tasks: [
+      children: [
         { title: "Set up OAuth2 backend routes", description: "Create /auth/google and /auth/github routes" },
         { title: "Build login UI component", description: "Login page with social buttons" },
         { title: "Add session persistence", description: "Session storage and route guards" },
@@ -776,11 +718,10 @@ export const proposals: Proposal[] = [
   {
     id: "pp-prop002",
     executionId: EXEC_6,
-    parentId: STORY_2,
-    parentType: "story",
+    workItemId: WI_DASH,
     type: "task_creation",
     payload: {
-      tasks: [
+      children: [
         { title: "Create cost tracking chart", description: "Recharts sparkline for 7-day history" },
         { title: "Build active agents strip", description: "Horizontal agent cards with status" },
         { title: "Build health indicator widget", description: "Red/green project health" },
@@ -797,7 +738,7 @@ export const projectMemories: ProjectMemory[] = [
   {
     id: "pm-mem0001",
     projectId: PROJECT_ID,
-    storyId: STORY_1,
+    workItemId: WI_AUTH,
     summary: "OAuth2 authentication implemented with passport.js. Backend routes created for Google and GitHub providers.",
     filesChanged: ["src/routes/auth.ts", "src/middleware/session.ts", "src/config/passport.ts"],
     keyDecisions: ["Used passport.js over custom OAuth implementation", "Session stored in SQLite via better-sqlite3-session-store"],
@@ -807,10 +748,10 @@ export const projectMemories: ProjectMemory[] = [
   {
     id: "pm-mem0002",
     projectId: PROJECT_ID,
-    storyId: STORY_2,
-    summary: "Dashboard story decomposed into 3 parallel tasks: cost chart, agent strip, health widget.",
+    workItemId: WI_DASH,
+    summary: "Dashboard item decomposed into 3 parallel children: cost chart, agent strip, health widget.",
     filesChanged: [],
-    keyDecisions: ["Tasks can be worked in parallel — no dependencies", "Using recharts for chart components"],
+    keyDecisions: ["Children can be worked in parallel — no dependencies", "Using recharts for chart components"],
     createdAt: "2026-03-26T10:06:15Z",
     consolidatedInto: null,
   },
@@ -820,12 +761,10 @@ export const projectMemories: ProjectMemory[] = [
 
 export const fixtures = {
   projects,
-  workflows,
   personas,
-  stories,
-  tasks,
-  taskEdges,
-  triggers,
+  personaAssignments,
+  workItems,
+  workItemEdges,
   executions,
   comments,
   proposals,

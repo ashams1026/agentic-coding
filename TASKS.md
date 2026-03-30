@@ -21,7 +21,7 @@
 
 ### Mock Data Refactor
 
-- [ ] **O.4** — Refactor mock data fixtures. In `packages/frontend/src/mocks/fixtures.ts`: replace `mockStories` and `mockTasks` arrays with a single `mockWorkItems` array. Top-level items have `parentId: null`, children reference parent IDs. Update all cross-references (comments, executions, proposals, edges) to use `workItemId`. Remove mock workflows array — import `WORKFLOW` from shared. Add `mockPersonaAssignments` array mapping states to personas. Ensure fixture data covers: 2-3 top-level items, 5-8 children, 2-3 grandchildren (sub-tasks), items in various states.
+- [review] **O.4** — Refactor mock data fixtures. In `packages/frontend/src/mocks/fixtures.ts`: replace `mockStories` and `mockTasks` arrays with a single `mockWorkItems` array. Top-level items have `parentId: null`, children reference parent IDs. Update all cross-references (comments, executions, proposals, edges) to use `workItemId`. Remove mock workflows array — import `WORKFLOW` from shared. Add `mockPersonaAssignments` array mapping states to personas. Ensure fixture data covers: 2-3 top-level items, 5-8 children, 2-3 grandchildren (sub-tasks), items in various states.
 
 - [ ] **O.5** — Refactor mock API layer. In `packages/frontend/src/mocks/api.ts`: replace `getStories()`, `getTasks()` etc. with `getWorkItems(parentId?)`, `getWorkItem(id)`, `createWorkItem()`, `updateWorkItem()`, `deleteWorkItem()`. Add `getPersonaAssignments(projectId)`, `updatePersonaAssignment()`. Remove workflow CRUD functions. Update all other API functions (comments, executions, proposals) to reference workItemId.
 

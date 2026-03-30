@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-29 — O.4: Refactor mock data fixtures
+
+**Task:** Replace mockStories/mockTasks with unified mockWorkItems array, update all cross-references.
+
+**Done:**
+- Rewrote `packages/frontend/src/mocks/fixtures.ts` with WorkItem model:
+  - 3 top-level items: Auth (In Progress), Dashboard (Decomposition), Notifications (Backlog)
+  - 10 children across the 3 parents (same content as old tasks, mapped to new states)
+  - 3 grandchildren: Google OAuth strategy, GitHub OAuth strategy (children of Auth backend routes), Login page layout (child of Login UI)
+  - Items in various states: Backlog, Ready, In Progress, In Review, Decomposition, Done
+- Added `personaAssignments` array: Planning→PM, Decomposition→TechLead, InProgress→Engineer, InReview→Reviewer
+- Removed `workflows` and `triggers` exports
+- Updated all cross-references: `workItemEdges` (was taskEdges), executions use `workItemId`, comments use `workItemId`, proposals use `workItemId`, projectMemories use `workItemId`
+- Updated `fixtures` aggregate export with new shape
+- All IDs use `wi-` prefix for work items, `we-` for edges
+- Project no longer has `defaultWorkflowId`
+
+**Files changed:** `packages/frontend/src/mocks/fixtures.ts`
+
+**Notes:** fixtures.ts compiles clean. Other frontend files have expected type errors from the O.1 shared type changes — those will be fixed by O.5 (api.ts), O.6 (hooks), and O.7+ (UI components).
+
+---
+
 ## 2026-03-29 — Review: O.3 (approved)
 
 **Reviewed:** API contract types — confirmed all requirements already satisfied by O.1 commit.
