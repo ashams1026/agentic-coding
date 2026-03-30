@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: P.2 (approved)
+
+**Reviewed:** Button and badge sizing standardization — `button.tsx`, `badge.tsx` + 8 consumer files.
+- Button sizes match spec: default h-8 text-sm, sm h-7 text-xs ✓
+- Badge size variant added: default (px-2 py-0.5), sm (px-1.5 py-0.5) ✓
+- Icon sizes proportional: icon size-8, icon-sm size-7 ✓
+- Redundant overrides cleaned: zero `size="sm" className="h-7"` patterns remaining ✓
+- Build: 0 errors, 145 tests pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — P.2: Standardize button and badge sizing
 
 **Task:** Converge on two button sizes (sm h-7, default h-8) and two badge sizes (sm, default). Clean up redundant overrides.
