@@ -23,7 +23,7 @@
 
 ### Agent Executor (T5.2 + T5.3)
 
-- [ ] **A.6** — Create agent executor interface and types. Create `packages/backend/src/agent/types.ts`. Define `AgentEvent` union type (thinking, tool_use, tool_result, text, error, result). Define `AgentExecutor` interface: `spawn(task, persona, project) → AsyncIterable<AgentEvent>`. Define `AgentTask` (workItemId, context, executionHistory) and `SpawnOptions` (model, maxBudget, tools).
+- [review] **A.6** — Create agent executor interface and types. Create `packages/backend/src/agent/types.ts`. Define `AgentEvent` union type (thinking, tool_use, tool_result, text, error, result). Define `AgentExecutor` interface: `spawn(task, persona, project) → AsyncIterable<AgentEvent>`. Define `AgentTask` (workItemId, context, executionHistory) and `SpawnOptions` (model, maxBudget, tools).
 
 - [ ] **A.7** — Install Claude Agent SDK and create executor. Run `pnpm --filter backend add @anthropic-ai/claude-agent-sdk`. Create `packages/backend/src/agent/claude-executor.ts` implementing `AgentExecutor`. Use `query()` from the SDK. Map persona config to SDK options (model, permissionMode: "bypassPermissions", maxTurns). Set `cwd` to project path. Register AgentOps MCP server with persona-scoped tool allowlist. Return async iterable that yields `AgentEvent` from SDK stream.
 

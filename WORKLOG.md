@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-29 — A.6: Create agent executor interface and types
+
+**Task:** Define TypeScript types for agent execution system.
+
+**Done:**
+- Created `packages/backend/src/agent/types.ts` with:
+  - **AgentEvent** union type (6 variants): ThinkingEvent, ToolUseEvent, ToolResultEvent, TextEvent, ErrorEvent, ResultEvent
+  - **AgentTask** interface: workItemId, context (title, description, currentState, parentChain, inheritedContext), executionHistory
+  - **SpawnOptions** interface: model (PersonaModel), maxBudget (USD), tools (string[])
+  - **AgentExecutor** interface: `spawn(task, persona, project, options) → AsyncIterable<AgentEvent>`
+- Each event type has discriminated `type` field for easy pattern matching
+- ResultEvent includes summary, outcome, costUsd, durationMs
+- ToolUseEvent includes toolCallId for correlating with ToolResultEvent
+- All types reference shared entity types (WorkItemId, PersonaModel, ExecutionOutcome, etc.)
+
+**Files created:** `packages/backend/src/agent/types.ts`
+
+**Notes:** Backend build: 0 errors. Initial build had 4 unused import warnings — removed PersonaId, ProjectId, ExecutionId, WorkItem (only needed when executor is implemented in A.7).
+
+---
+
 ## 2026-03-29 — Review: A.5 (approved)
 
 **Reviewed:** 4 remaining MCP tools — `packages/backend/src/agent/mcp-server.ts`.
