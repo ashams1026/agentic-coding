@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: O.9 (approved)
+
+**Reviewed:** Board view — `board-view.tsx`, `work-items.tsx` update.
+- All 10 requirements met: WORKFLOW columns, flat cards with scope selector, drag-and-drop via @dnd-kit, persona trigger prompt, WorkItemCard with title/priority/progress/avatar
+- assignmentMap correctly derived from personaAssignments + personaMap for trigger detection
+- Scope selector builds breadcrumb by walking parentId chain
+- DragOverlay renders card copy correctly
+- PointerSensor with 5px activation distance prevents accidental drags
+- No type errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.9: Build board view
 
 **Task:** Create kanban board with WORKFLOW columns, drag-and-drop, scope selector, persona trigger prompt.
