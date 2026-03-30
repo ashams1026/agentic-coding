@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: E.9 (approved)
+
+**Reviewed:** Execution error handling and retry button — `work-items.ts`, `work-items.test.ts`, `execution-timeline.tsx`, `client.ts`, `api.ts`, `index.ts`.
+- Retry route: POST `/api/work-items/:id/retry` — lookup + 404 + fire-and-forget dispatch ✓
+- `retryWorkItem()` wired through client → mock → unified index ✓
+- Retry button: RotateCcw icon, `outcome === "failure"` guard, toast feedback ✓
+- Existing error pipeline verified: DB update, WS broadcast, toast, no state advance ✓
+- Tests: 2 new retry route tests (200, 404) ✓
+- Build: 0 errors, Tests: 153/153
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — E.9: Add execution error handling and UI feedback
 
 **Task:** Verify error handling pipeline, add toast on failure, add retry button in detail panel.
