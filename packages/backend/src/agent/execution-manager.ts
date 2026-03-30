@@ -21,6 +21,7 @@ import { broadcast } from "../ws.js";
 import { ClaudeExecutor } from "./claude-executor.js";
 import { runRouter } from "./router.js";
 import { dispatchForState } from "./dispatch.js";
+import { trackExecution, onComplete } from "./concurrency.js";
 import type { AgentTask, AgentEvent } from "./types.js";
 
 // ── Singleton executor ────────────────────────────────────────────
@@ -217,7 +218,7 @@ export async function runExecution(
     throw new Error(`Project ${item.projectId} not found`);
   }
 
-  // Create execution record
+  // Create execution record and track concurrency
   await db.insert(executions).values({
     id: executionId,
     workItemId,
@@ -231,6 +232,8 @@ export async function runExecution(
     rejectionPayload: null,
     logs: "",
   });
+
+  trackExecution(executionId);
 
   // Broadcast agent_started
   broadcast({
@@ -371,6 +374,14 @@ async function runExecutionStream(
       timestamp: new Date().toISOString(),
     });
 
+    // Release concurrency slot and dequeue next task
+    const nextTask = onComplete(executionId);
+    if (nextTask) {
+      runExecution(nextTask.workItemId, nextTask.personaId).catch((err) => {
+        console.error(`Dequeued execution failed for ${nextTask.workItemId}:`, err);
+      });
+    }
+
     // After successful completion, chain the next step
     if (finalOutcome === "success" && canTransition(task.workItemId)) {
       recordTransition(task.workItemId);
@@ -419,5 +430,13 @@ async function runExecutionStream(
       costUsd: 0,
       timestamp: new Date().toISOString(),
     });
+
+    // Release concurrency slot on failure too
+    const nextTask = onComplete(executionId);
+    if (nextTask) {
+      runExecution(nextTask.workItemId, nextTask.personaId).catch((e) => {
+        console.error(`Dequeued execution failed for ${nextTask.workItemId}:`, e);
+      });
+    }
   }
 }

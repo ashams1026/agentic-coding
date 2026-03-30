@@ -1,16 +1,19 @@
 /**
  * Persona dispatch — triggers agent execution when a work item
  * enters a state that has an assigned persona.
+ *
+ * Respects concurrency limits: if at capacity, the task is enqueued.
  */
 
 import { eq, and } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { personaAssignments, workItems } from "../db/schema.js";
 import { runExecution } from "./execution-manager.js";
+import { canSpawn, enqueue } from "./concurrency.js";
 
 /**
  * Check if the given state has an assigned persona for the work item's project,
- * and if so, spawn an execution.
+ * and if so, spawn an execution (or enqueue if at capacity).
  *
  * No-op for states without assigned personas (e.g., Backlog, Done).
  */
@@ -38,6 +41,13 @@ export async function dispatchForState(
     );
 
   if (!assignment) return; // No persona assigned to this state
+
+  // Check concurrency before spawning
+  const allowed = await canSpawn(item.projectId);
+  if (!allowed) {
+    await enqueue(workItemId, assignment.personaId);
+    return;
+  }
 
   // Spawn execution
   await runExecution(workItemId, assignment.personaId);

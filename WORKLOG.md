@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-29 — A.15: Implement concurrency limiter
+
+**Task:** Track active executions, cap concurrency, queue overflow tasks.
+
+**Done:**
+- Created `packages/backend/src/agent/concurrency.ts`:
+  - `activeExecutions` Set tracks running execution IDs
+  - `canSpawn(projectId)`: checks active count against project's `maxConcurrent` setting (default 3)
+  - `trackExecution(executionId)`: registers execution as active
+  - `enqueue(workItemId, personaId)`: adds to priority-ordered queue (p0 first, FIFO within same priority)
+  - `onComplete(executionId)`: removes from active set, dequeues next task (returns QueueEntry or null)
+  - `getActiveCount()` / `getQueueLength()`: observability helpers
+- Modified `packages/backend/src/agent/dispatch.ts`:
+  - Before `runExecution`: checks `canSpawn(projectId)`. If at capacity, calls `enqueue()` instead
+- Modified `packages/backend/src/agent/execution-manager.ts`:
+  - On execution start: calls `trackExecution(executionId)`
+  - On completion (success or failure): calls `onComplete(executionId)`, spawns dequeued task if any
+
+**Files created:** `packages/backend/src/agent/concurrency.ts`
+**Files modified:** `packages/backend/src/agent/dispatch.ts`, `packages/backend/src/agent/execution-manager.ts`
+
+**Notes:** Build: 0 errors. Priority queue uses sorted insertion (not re-sort). Queue dequeue spawns via `runExecution` which itself calls `trackExecution`. Project setting: `settings.maxConcurrent`.
+
+---
+
 ## 2026-03-29 — Review: A.14 (approved)
 
 **Reviewed:** Rejection and retry logic — `execution-manager.ts` + `mcp-server.ts`.
