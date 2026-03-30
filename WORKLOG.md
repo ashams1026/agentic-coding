@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: U.1 (approved)
+
+**Reviewed:** Tree view removal — `tree-view.tsx` deleted, `work-items.tsx`, `work-items-store.ts` updated.
+- tree-view.tsx confirmed deleted (glob returns nothing)
+- viewOptions: only List/Board remain, no "Tree" entry
+- TreeView import and render block both removed
+- URL param check: only "list" || "board" accepted
+- WorkItemView type: `"list" | "board"` — no "tree"
+- No stale tree/TreeView references anywhere in frontend/src
+- Unused GitBranch import cleaned up
+- Frontend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — U.1: Remove tree view
 
 **Task:** Delete tree view component, remove from page and store.
