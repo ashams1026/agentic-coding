@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { mockWs } from "@/mocks/ws";
+import { subscribeAll } from "@/api/ws";
 import type { WsEvent } from "@agentops/shared";
 
 /**
@@ -15,7 +15,7 @@ export function useWsQuerySync() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const unsub = mockWs.subscribeAll((event: WsEvent) => {
+    const unsub = subscribeAll((event: WsEvent) => {
       switch (event.type) {
         case "agent_started":
         case "agent_completed":

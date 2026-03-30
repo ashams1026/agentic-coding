@@ -5,6 +5,35 @@
 
 ---
 
+## 2026-03-29 — T3.3.4: Connect WebSocket client to real server
+
+**Task:** Create real WS client, unified WS module, update all consumers.
+
+**Done:**
+- Created `src/api/ws-client.ts` — `RealWsClient` class:
+  - Connects to `ws://localhost:3001/ws` (derived from API_BASE_URL)
+  - Same `subscribe(eventType, handler)` and `subscribeAll(handler)` interface as MockWsClient
+  - Auto-reconnect with 3s backoff on disconnect
+  - Filters out "connected" welcome message from dispatch
+  - `connect()` / `disconnect()` lifecycle methods
+- Created `src/api/ws.ts` — unified WS module:
+  - Exports `subscribe()` and `subscribeAll()` that delegate to mock or real based on apiMode
+  - Exports `initWsConnection()` to start/stop real WS based on mode
+- Updated 5 consumers from `mockWs` to unified WS:
+  - `hooks/use-ws-sync.ts` — `subscribeAll`
+  - `features/toasts/use-toast-events.ts` — `subscribeAll`
+  - `features/activity-feed/activity-feed.tsx` — `subscribeAll`
+  - `features/dashboard/recent-activity.tsx` — `subscribeAll`
+  - `features/agent-monitor/terminal-renderer.tsx` — `subscribe("agent_output_chunk")`
+- `mockWs` only referenced in `mocks/` and the unified `api/ws.ts` layer
+
+**Files created:** `src/api/ws-client.ts`, `src/api/ws.ts`
+**Files modified:** 5 consumer files (import path + usage changes)
+
+**Notes:** Frontend typecheck: 0 errors. The `demo.ts` mock simulation still uses `mockWs` directly — this is intentional as it's mock-only functionality. Sprint 5 is now complete with this task.
+
+---
+
 ## 2026-03-29 — Review: T3.3.3 (approved)
 
 **Reviewed:** API mode toggle — `src/api/index.ts`, `stores/ui-store.ts`, 8 hook files.

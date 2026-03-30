@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowDown, Lock, Unlock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { mockWs } from "@/mocks/ws";
+import { subscribe } from "@/api/ws";
 import { useExecution } from "@/hooks";
 import {
   ToolCallSection,
@@ -150,7 +150,7 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
 
   // Subscribe to live chunks from WebSocket
   useEffect(() => {
-    const unsubscribe = mockWs.subscribe("agent_output_chunk", (event) => {
+    const unsubscribe = subscribe("agent_output_chunk", (event) => {
       if (event.executionId !== executionId) return;
 
       const newChunk: OutputChunk = {

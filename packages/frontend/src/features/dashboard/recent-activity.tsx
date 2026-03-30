@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useExecutions, useProposals, usePersonas } from "@/hooks";
-import { mockWs } from "@/mocks/ws";
+import { subscribeAll } from "@/api/ws";
 import type { Persona } from "@agentops/shared";
 import type {
   WsEvent,
@@ -220,7 +220,7 @@ function useLiveActivityEvents(): ActivityEvent[] {
   const [liveEvents, setLiveEvents] = useState<ActivityEvent[]>([]);
 
   useEffect(() => {
-    const unsub = mockWs.subscribeAll((event: WsEvent) => {
+    const unsub = subscribeAll((event: WsEvent) => {
       const activityEvent = wsToActivityEvent(event);
       if (activityEvent) {
         setLiveEvents((prev) => [activityEvent, ...prev].slice(0, 10));

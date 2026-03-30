@@ -19,7 +19,7 @@
 - [x] **T3.3.1** — Implement real WebSocket server
 - [x] **T3.3.2** — Create API client for frontend (updated for work item endpoints)
 - [x] **T3.3.3** — Add API mode toggle to frontend
-- [ ] **T3.3.4** — Connect WebSocket client to real server
+- [review] **T3.3.4** — Connect WebSocket client to real server
 
 ---
 

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
-import { mockWs } from "@/mocks/ws";
+import { subscribeAll } from "@/api/ws";
 import { useToastStore } from "@/stores/toast-store";
 import type { WsEvent } from "@agentops/shared";
 
@@ -9,7 +9,7 @@ export function useToastEvents() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsub = mockWs.subscribeAll((event: WsEvent) => {
+    const unsub = subscribeAll((event: WsEvent) => {
       switch (event.type) {
         case "agent_completed": {
           const e = event;

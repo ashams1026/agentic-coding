@@ -34,7 +34,7 @@ import {
   usePersonas,
 } from "@/hooks";
 import { fixtures } from "@/mocks/fixtures";
-import { mockWs } from "@/mocks/ws";
+import { subscribeAll } from "@/api/ws";
 import { useActivityStore } from "@/stores/activity-store";
 import type { Persona } from "@agentops/shared";
 import type {
@@ -429,7 +429,7 @@ function useLiveActivityEvents(): ActivityEvent[] {
   const incrementUnread = useActivityStore((s) => s.increment);
 
   useEffect(() => {
-    const unsub = mockWs.subscribeAll((event: WsEvent) => {
+    const unsub = subscribeAll((event: WsEvent) => {
       const activityEvent = wsEventToActivity(event);
       if (activityEvent) {
         setLiveEvents((prev) => [activityEvent, ...prev]);
