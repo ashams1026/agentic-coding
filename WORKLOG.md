@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-29 — T3.3.2: Create API client for frontend
+
+**Task:** Create a real HTTP API client that mirrors the mock API function signatures.
+
+**Done:**
+- Created `packages/frontend/src/api/client.ts`:
+  - fetch-based HTTP helpers: `get`, `post`, `patch`, `put`, `del`
+  - All functions match mock API signatures exactly (same params, same return types)
+  - Unwraps backend's `{ data }` / `{ data, total }` response envelopes
+  - 404s return `null` for get-by-id functions (matching mock behavior)
+  - Deletes return `boolean` (matching mock behavior)
+  - Query string construction for list filters (parentId, projectId, workItemId)
+  - Dashboard aggregate routes return unwrapped types directly
+  - `getProjectMemories` returns `[]` (backend route not yet implemented)
+  - `apiClient` bundled export mirrors `mockApi` shape exactly
+  - `API_BASE_URL` exported as constant (default: `http://localhost:3001`)
+
+**Files created:** `packages/frontend/src/api/client.ts`
+
+**Notes:** Frontend typecheck: 0 errors. The hooks currently import from `@/mocks/api`. T3.3.3 (API mode toggle) will add the switching logic. Project CRUD routes (`/api/projects`) don't exist in the backend yet — the client includes them for completeness but they'll 404 until project routes are added.
+
+---
+
 ## 2026-03-29 — Review: T3.3.1 (approved)
 
 **Reviewed:** WebSocket server — `ws.ts`, `server.ts`.
