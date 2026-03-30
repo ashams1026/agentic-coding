@@ -113,7 +113,7 @@ export async function executionRoutes(app: FastifyInstance) {
     if (body.durationMs !== undefined) updates["durationMs"] = body.durationMs;
     if (body.summary !== undefined) updates["summary"] = body.summary;
     if (body.outcome !== undefined) updates["outcome"] = body.outcome;
-    if (body.rejectionPayload !== undefined) updates["rejectionPayload"] = JSON.stringify(body.rejectionPayload);
+    if (body.rejectionPayload !== undefined) updates["rejectionPayload"] = body.rejectionPayload;
     if (body.logs !== undefined) updates["logs"] = body.logs;
 
     if (Object.keys(updates).length === 0) {

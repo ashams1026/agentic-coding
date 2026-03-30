@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-03-30 — Q.6: Test comments, executions, and proposals routes
+
+**Task:** Integration tests for comments, executions, and proposals CRUD routes.
+
+**Done:**
+- Created `packages/backend/src/routes/__tests__/comments.test.ts` with 6 tests:
+  - GET list all, filter by workItemId, empty for no comments
+  - POST user comment, agent comment with authorId, system comment with metadata
+- Created `packages/backend/src/routes/__tests__/executions.test.ts` with 7 tests:
+  - GET list all, filter by workItemId
+  - POST creates pending execution with defaults
+  - PATCH update status/outcome to completed, update to failed, 404 for non-existent
+  - Response shape: dates as ISO strings
+- Created `packages/backend/src/routes/__tests__/proposals.test.ts` with 7 tests:
+  - GET list all, filter by workItemId, empty for no proposals
+  - POST create proposal with payload
+  - PATCH approve, reject, 404 for non-existent
+- **Bug fix in `executions.ts`**: Removed `JSON.stringify()` for `rejectionPayload` in PATCH — same double-encoding pattern
+
+**Files created:** `comments.test.ts`, `executions.test.ts`, `proposals.test.ts` (all in `routes/__tests__/`)
+**Files modified:** `packages/backend/src/routes/executions.ts` (fix double-encoding)
+
+**Notes:** Build: 0 errors, 84 tests pass. Proposal approve/reject tests create fresh pending proposals first (seeded one is already approved). All three author types tested for comments.
+
+---
+
 ## 2026-03-30 — Review: Q.5 (approved)
 
 **Reviewed:** Persona and persona-assignment route tests.
