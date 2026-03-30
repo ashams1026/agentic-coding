@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: P.12 (approved)
+
+**Reviewed:** Hover states and transitions — `list-view.tsx`, `card.tsx`, `detail-panel.tsx`.
+- List rows: `hover:bg-muted/50` + `duration-150`, selected `ring-2 ring-primary/50`, `focus-visible:ring-2` ✓
+- Group headers: `duration-150`, `rounded-md`, `focus-visible:ring-2` ✓
+- Expand chevron: `transition-colors duration-150`, `focus-visible:ring-2` ✓
+- Card: `transition-shadow duration-150 hover:shadow-md` applied globally ✓
+- Detail panel children: `hover:bg-muted/50 duration-150 focus-visible:ring-2` ✓
+- Buttons correctly left unchanged (CVA already handles hover+focus) ✓
+- Consistent `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring` pattern on all non-button interactive elements ✓
+- Build: 0 errors
+- Verdict: **approved** — Sprint 10 complete!
+
+---
+
 ## 2026-03-30 — P.12: Polish hover states and transitions
 
 **Task:** Audit all interactive elements for hover feedback, add consistent transitions, focus-visible rings, and selected state styling.

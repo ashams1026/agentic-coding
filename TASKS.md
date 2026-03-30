@@ -13,7 +13,7 @@
 
 - [x] **P.11** — Add loading and empty states. Add skeleton loading states to: work items list (5 shimmer rows), detail panel (header + content skeleton), flow view (node placeholders), dashboard cards (number placeholder shimmer). Add empty states with helpful messaging to: work items list when no items exist ("No work items yet. Click + to create one."), filtered list with no matches ("No items match your filters."), detail panel children section ("No children. Click 'Add child' or 'Decompose'."), comment stream when empty ("No comments yet.").
 
-- [review] **P.12** — Polish hover states and transitions. Audit all interactive elements for hover feedback. List view rows: subtle `bg-muted/50` hover with `transition-colors duration-150`. Cards: slight scale or shadow lift on hover. Buttons: ensure all variants have visible hover state change. Badges that are clickable (priority, state in detail panel): add `cursor-pointer` and subtle hover. Active/selected states: use `ring-2 ring-primary/50` consistently. Focus-visible: ensure all interactive elements show focus ring for keyboard navigation.
+- [x] **P.12** — Polish hover states and transitions. Audit all interactive elements for hover feedback. List view rows: subtle `bg-muted/50` hover with `transition-colors duration-150`. Cards: slight scale or shadow lift on hover. Buttons: ensure all variants have visible hover state change. Badges that are clickable (priority, state in detail panel): add `cursor-pointer` and subtle hover. Active/selected states: use `ring-2 ring-primary/50` consistently. Focus-visible: ensure all interactive elements show focus ring for keyboard navigation.
 
 ---
 
