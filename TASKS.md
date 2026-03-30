@@ -34,7 +34,7 @@
 
 - [x] **W.5** — Wire cost management settings. In the Settings Costs section: read `monthCap` from project settings. Dollar input updates via `PATCH /api/projects/:id` with `settings.monthCap`. Add `warningThreshold` (percentage, default 80%) and `dailyLimit` fields to project settings schema. Wire the cost chart to real `GET /api/dashboard/cost-summary` data. Show real monthly spend vs cap progress bar.
 
-- [review] **W.6** — Wire auto-routing toggle. In the Settings Workflow section: read `autoRouting` from project settings. Toggle switch updates via `PATCH /api/projects/:id` with `settings.autoRouting`. When toggled OFF: router stops firing after persona completions. When toggled ON: router resumes. Show current state clearly: "Auto-routing: ON — Router agent will automatically transition work items" / "OFF — Manual transitions only".
+- [x] **W.6** — Wire auto-routing toggle. In the Settings Workflow section: read `autoRouting` from project settings. Toggle switch updates via `PATCH /api/projects/:id` with `settings.autoRouting`. When toggled OFF: router stops firing after persona completions. When toggled ON: router resumes. Show current state clearly: "Auto-routing: ON — Router agent will automatically transition work items" / "OFF — Manual transitions only".
 
 ### Appearance & Data
 

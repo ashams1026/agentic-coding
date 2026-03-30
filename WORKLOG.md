@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: W.6 (approved)
+
+**Reviewed:** Auto-routing toggle wiring in workflow settings.
+- Reads `autoRouting` from project settings, defaults ON (`!== false`) — matches backend `router.ts` line 64 ✓
+- Toggle persists via `PATCH /api/projects/:id` with `settings.autoRouting` ✓
+- Descriptive state text: ON message / OFF message per spec ✓
+- Visual toggle: emerald-500 ON, muted OFF, knob translate-x, `aria-checked` ✓
+- Disabled when no project configured ✓
+- No backend changes needed — `router.ts` already checks this setting ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — W.6: Wire auto-routing toggle
 
 **Task:** Wire the Settings Workflow auto-routing toggle to read/write `autoRouting` from project settings. Show current state clearly with descriptive text.
