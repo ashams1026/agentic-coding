@@ -231,6 +231,20 @@ describe("work-items routes", () => {
       expect(res.json().data.currentState).toBe("Planning");
     });
 
+    it("allows invalid state transition (no server-side validation)", async () => {
+      // WI_TOP_3 is in "Backlog" — transition to "Done" is not valid per workflow.
+      // The route does NOT validate transitions; it accepts any state value.
+      // Transition validation happens in the workflow module and MCP tools, not here.
+      const res = await app.inject({
+        method: "PATCH",
+        url: `/api/work-items/${TEST_IDS.WI_TOP_3}`,
+        payload: { currentState: "Done" },
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.json().data.currentState).toBe("Done");
+    });
+
     it("returns 404 for non-existent id", async () => {
       const res = await app.inject({
         method: "PATCH",

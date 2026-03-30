@@ -14,14 +14,7 @@
 
 ### Backend API Integration Tests
 
-- [ ] **Q.4** — Test work items CRUD routes. In `packages/backend/src/routes/__tests__/work-items.test.ts`: spin up Fastify with test DB via `app.inject()`. Test: create top-level item, create child item with parentId, get item by id, list items with `?parentId=` filter, list items with `?projectId=` filter, update item fields (title, description, priority), update `currentState` (valid transition), reject invalid state transition, delete item. Verify response shapes and status codes.
-> [feedback: Missing test for "reject invalid state transition" — the task description explicitly
->  requires it. Add a test in the PATCH describe block that attempts an invalid transition
->  (e.g., PATCH WI_TOP_3 with currentState: "Done" — Backlog cannot go directly to Done).
->  The current route does NOT validate transitions (it accepts any state), so the test should
->  document this behavior: expect 200 and the state to be set. Add a comment noting that
->  transition validation is missing from the route. File: work-items.test.ts, add after the
->  "updates currentState (valid transition)" test around line 232.]
+- [review] **Q.4** — Test work items CRUD routes. In `packages/backend/src/routes/__tests__/work-items.test.ts`: spin up Fastify with test DB via `app.inject()`. Test: create top-level item, create child item with parentId, get item by id, list items with `?parentId=` filter, list items with `?projectId=` filter, update item fields (title, description, priority), update `currentState` (valid transition), reject invalid state transition, delete item. Verify response shapes and status codes.
 
 - [ ] **Q.5** — Test persona and persona-assignment routes. In `packages/backend/src/routes/__tests__/personas.test.ts`: test persona CRUD (create, get, list, update, delete). In `packages/backend/src/routes/__tests__/persona-assignments.test.ts`: test upsert assignment, get assignments by project, verify assignment links valid persona to valid state.
 

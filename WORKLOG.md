@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Q.4 (rework): Add missing invalid state transition test
+
+**Task:** Address review feedback — add test for invalid state transition.
+
+**Done:**
+- Added test "allows invalid state transition (no server-side validation)" after the valid transition test
+- Test attempts Backlog → Done (invalid per workflow), verifies route accepts it (200, state set)
+- Comment documents that transition validation happens in workflow module/MCP tools, not in the PATCH route
+- Build: 0 errors, 47 tests pass (19 work-items route tests now)
+
+**Files modified:** `packages/backend/src/routes/__tests__/work-items.test.ts`
+
+---
+
 ## 2026-03-30 — Review: Q.4 (rejected)
 
 **Reviewed:** Work items CRUD route tests — `packages/backend/src/routes/__tests__/work-items.test.ts`.
