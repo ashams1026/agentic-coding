@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: O.20 (approved after rework)
+
+**Reviewed:** Reworked DELETE handler in `routes/work-items.ts`.
+- `and()` correctly replaced with `inArray(workItems.parentId, frontier)`
+- `inArray` properly imported from drizzle-orm
+- Ternary simplified — single `inArray()` handles both single and multi-item frontiers
+- All 10 routes across 3 files still correct (verified in prior review)
+- Backend typecheck: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.20 (rework): Fix recursive delete bug
 
 **Task:** Address review feedback — replace `and()` with `inArray()` in DELETE handler.
