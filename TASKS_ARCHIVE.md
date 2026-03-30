@@ -151,7 +151,33 @@
 
 ---
 
+## Sprint 12: System Service & CLI (S.1–S.8) — completed 2026-03-30
+
+### CLI Foundation
+
+- [x] **S.1** — Create CLI entry point. `cli.ts` with command parser, PID file at `~/.agentops/`, 4 commands (start/stop/status/dev), bin entry in package.json. *(completed 2026-03-30)*
+- [x] **S.2** — Add graceful shutdown handling. SIGTERM/SIGINT handlers, 30s execution drain, WS close(1001), DB close, `/api/health` endpoint. *(completed 2026-03-30)*
+- [x] **S.3** — Add crash recovery on startup. Production-grade `recoverOrphanedState()` resets running+pending executions, typed RecoveryReport, try/catch wrapped. *(completed 2026-03-30)*
+
+### pm2 Service Management
+
+- [x] **S.4** — Create pm2 ecosystem config. `ecosystem.config.cjs` with restart policy, kill_timeout 35s, log paths, service:* scripts in root package.json. *(completed 2026-03-30)*
+- [x] **S.5** — Create install/setup script. `scripts/setup.sh` — Node/pnpm checks, install, build, create `~/.agentops/`, migrations, seed, `AGENTOPS_DB_PATH` env var. *(completed 2026-03-30)*
+- [x] **S.6** — Add pm2 startup integration. CLI install/uninstall/logs/restart commands wrapping pm2, ecosystem config validation. *(completed 2026-03-30)*
+
+### Logging & Observability
+
+- [x] **S.7** — Set up structured logging. Global pino logger (`logger.ts`), dev pino-pretty, prod daily-rotated file via pino-roll (7-day retention), replaced 18 console calls across 5 files. *(completed 2026-03-30)*
+- [x] **S.8** — Add execution audit trail. `audit.ts` with 4 typed emitters, pino writing to `~/.agentops/logs/audit.log`, `GET /api/audit` endpoint, wired in 5 files. *(completed 2026-03-30)*
+
+---
+
 ## Sprint 11: End-to-End Integration — completed 2026-03-30
+
+### Error Handling & Recovery
+
+- [x] **E.9** — Add execution error handling and UI feedback. Toast on failure, retry button, execution DB/WS/UI verification. *(completed 2026-03-30)*
+- [x] **E.10** — Handle stale execution cleanup on server restart. Orphaned running executions → failed, clear concurrency tracker. *(completed 2026-03-30)*
 
 ### Frontend ↔ Backend Wiring
 

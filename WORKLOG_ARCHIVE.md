@@ -134,3 +134,25 @@
 *Tooltips (P.10, approved):* Radix tooltips on state/priority badges, truncated titles, persona avatars, progress bars, view toggles, icon buttons. Global delay 300ms, sideOffset 4.
 
 **Key patterns:** Tailwind `@utility` for semantic scales. CVA for component variants. Zustand persist for UI preferences (panel width, density). URL params for filter state. DropdownMenuCheckboxItem for multi-select. Transition-disable during resize via ref flag.
+
+---
+
+## Sprint 10: P.11–P.12 + Sprint 11: E.1–E.8 (reviews + work) — archived 2026-03-30
+
+*P.11–P.12 (work + reviews approved):* Loading skeletons (list view 5-row shimmer, detail panel, dashboard cards) and empty states (filter-aware messaging). Hover polish: `hover:bg-muted/50 duration-150`, `focus-visible:ring-2` on all non-button interactive elements, card `hover:shadow-md`. Sprint 10 completed.
+
+*E.1 (work + review approved):* API client response audit — all shapes match backend. Added `showErrorToast()` via Zustand `getState()` to all HTTP helpers. No shape fixes needed (double-encoding fixed in Sprint 9).
+
+*E.2 (review approved):* WS→Query cache invalidation — fixed stale `["stories"]`/`["tasks"]` keys → `["workItems"]`. 8 of 9 event types mapped. Hook wired in RootLayout.
+
+*E.3 (work + review approved):* Agent monitor already wired to real WS events. Added `onReconnect()` callback to RealWsClient, wired `useWsQuerySync` to invalidate queries on reconnect.
+
+*E.4 (work + review approved):* Activity feed wired to real API — `getRecentComments()` added to client/mock/hooks, removed hardcoded mock events. `["comments"]` prefix covers `["comments", "recent"]`.
+
+*E.5 (work + review approved):* Realistic seed — 5 personas with detailed system prompts, persona assignments for 5 states, `autoRouting: true`, Router persona. `"__router__"` → `"Router"` rename.
+
+*E.6 (work + review approved):* Pipeline walkthrough — found 2 bugs: no state transition validation (added `isValidTransition()` check, 400 on invalid), no WS `state_change` broadcast (added after state update). 7-step walkthrough documented.
+
+*E.7 (work + review approved):* Settings field name fix — `maxConcurrentAgents`→`maxConcurrent`, `monthlyCostCap`→`monthCap`. Monthly cost cap was silently never enforced. 6 new tests (cost cap, auto-routing). Pipeline trace verified.
+
+*E.8 (work + review approved):* Parent-child coordination fix — `dispatchForState()` call added after parent auto-advances to "In Review". Without it, reviewer persona was never dispatched. 3 new test assertions.

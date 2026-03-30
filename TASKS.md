@@ -5,44 +5,9 @@
 
 ---
 
-## Sprint 11: End-to-End Integration (continued)
+## Sprint 12: System Service & CLI (continued)
 
-> Sprints 1-10 complete and archived. E.1-E.8 complete and archived. Remaining tasks below.
-
-### Error Handling & Recovery
-
-- [x] **E.9** — Add execution error handling and UI feedback. When an agent execution fails: verify the execution record is updated to `failed` in DB, verify the failure is broadcast via WS, verify the agent monitor shows the error state, verify the work item does NOT advance state. Add a toast notification on execution failure visible from any page. Add a "retry" button in the detail panel for failed executions.
-
-- [x] **E.10** — Handle stale execution cleanup on server restart. In `packages/backend/src/index.ts` (after migrations, before server start): query for any executions with status `running` — these are orphaned from a previous crash. Update them to `failed` with summary "Interrupted by server restart". Reset any work items that were mid-transition. Clear the in-memory concurrency tracker. Log the cleanup count.
-
----
-
-## Sprint 12: System Service & CLI
-
-> Make AgentOps installable and runnable as a background service. Phase 6 from PLANNING.md.
-> After this sprint, users can `agentops start` and access the UI without running `pnpm dev`.
-
-### CLI Foundation
-
-- [x] **S.1** — Create CLI entry point. Create `packages/backend/src/cli.ts` with a simple command parser (no heavy CLI framework needed — use `process.argv` or `commander` if complexity warrants). Commands: `agentops start` (start server as foreground process), `agentops stop` (send SIGTERM to running process), `agentops status` (show running/stopped, uptime, port, active agents count, today's cost), `agentops dev` (alias for current dev mode with watch). Add `"bin": { "agentops": "./dist/cli.js" }` to `packages/backend/package.json`. Add shebang `#!/usr/bin/env node` to cli.ts.
-
-- [x] **S.2** — Add graceful shutdown handling. In `packages/backend/src/server.ts` or `index.ts`: handle SIGTERM and SIGINT signals. On shutdown: stop accepting new HTTP/WS connections, wait for active agent executions to complete (30s timeout, then force-kill), close database connection, close WebSocket connections with 1001 code, log shutdown reason and duration. Add a `/api/health` endpoint that returns `{ status: "ok", uptime, activeExecutions, version }`.
-
-- [x] **S.3** — Add crash recovery on startup. In `packages/backend/src/index.ts` (after migrations): check for orphaned state — executions with status `running` (from a previous crash), work items stuck in transient states. Reset orphaned executions to `failed`. For work items that were mid-dispatch: leave them in their current state (the user or auto-routing can re-trigger). Log recovery actions. This overlaps with E.10 but is the permanent, production-grade version.
-
-### pm2 Service Management
-
-- [x] **S.4** — Create pm2 ecosystem config. Create `ecosystem.config.cjs` at monorepo root: app name "agentops", script points to compiled backend (`packages/backend/dist/index.js`), `cwd` set to monorepo root, env vars (NODE_ENV=production, PORT=3001), log file paths (`~/.agentops/logs/`), restart policy (max 3 restarts in 60s, then stop), `watch: false`. Add `"service:start"`, `"service:stop"`, `"service:status"`, `"service:logs"` scripts to root `package.json` wrapping pm2 commands.
-
-- [x] **S.5** — Create install/setup script. Create `scripts/setup.sh` (or `packages/backend/src/cli-setup.ts`): check Node >= 22, check pnpm installed, run `pnpm install`, run `pnpm build`, create `~/.agentops/` directory (config, logs, data), initialize SQLite database at `~/.agentops/data/agentops.db`, run migrations, seed with default personas (PM, Tech Lead, Engineer, Reviewer, Router). Print setup summary and next steps. Make the DB path configurable via env var `AGENTOPS_DB_PATH` (default `~/.agentops/data/agentops.db`).
-
-- [x] **S.6** — Add pm2 startup integration. In the CLI: `agentops install` command that runs `pm2 startup` to register the OS-level boot daemon (launchd on macOS, systemd on Linux). `agentops uninstall` to remove it. `agentops logs` to tail pm2 logs. `agentops restart` to restart the service. Document the commands in a `--help` output.
-
-### Logging & Observability
-
-- [x] **S.7** — Set up structured logging. Replace all `console.log` in the backend with pino logger (already a Fastify default — expose it globally). Log levels: `info` for lifecycle events (server start, execution start/complete, state transitions), `warn` for rate limits hit and cost cap blocks, `error` for execution failures and unhandled errors. Add request logging via Fastify's built-in pino integration. Write logs to `~/.agentops/logs/agentops.log` with daily rotation (keep 7 days). In dev mode: pretty-print to stdout via `pino-pretty`.
-
-- [x] **S.8** — Add execution audit trail. Create a lightweight audit log: every state transition, every agent dispatch, every cost event gets a one-line structured log entry with timestamp, workItemId, action, actor (persona or user), and outcome. Store in a separate `~/.agentops/logs/audit.log` file. Add `GET /api/audit?workItemId=&limit=` endpoint for querying. This is the "what happened and when" trail for debugging agent behavior.
+> Sprints 1-11 complete and archived. S.1-S.8 complete and archived. Remaining task below.
 
 ### Configuration
 
