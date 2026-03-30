@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: U.8 (approved)
+
+**Reviewed:** Agent monitor chrome softening — `split-view.tsx`, `agent-control-bar.tsx`, `agent-history.tsx`.
+- split-view: all zinc pane chrome replaced with app tokens (border, bg-muted, text-muted-foreground) ✓
+- agent-control-bar: model badges use light/dark variants (bg-*-100/dark:bg-*-900) ✓
+- agent-history: outcome badges use light/dark variants ✓
+- No zinc classes remaining in any of the 3 modified files ✓
+- Terminal output pane (terminal-renderer.tsx, tool-call-display.tsx) preserved with zinc/font-mono styling ✓
+- Sidebar, tab bar, layout already used standard styling — correctly left unchanged ✓
+- Frontend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — U.8: Soften agent monitor page chrome
 
 **Task:** Keep terminal styling only for output pane, soften surrounding chrome to standard app styling.
