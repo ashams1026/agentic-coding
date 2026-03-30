@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — S.6: Add pm2 startup integration
+
+**Task:** Add `agentops install`, `uninstall`, `logs`, `restart` commands to the CLI for pm2 service management.
+
+**Done:**
+- **`cli.ts`** — Added 4 new commands:
+  - `install` — starts pm2 with ecosystem.config.cjs, runs `pm2 save` + `pm2 startup`. Notes that startup may need sudo.
+  - `uninstall` — stops + deletes agentops from pm2, runs `pm2 unstartup`, saves. Notes sudo requirement.
+  - `logs` — spawns `pm2 logs agentops --lines 100` with inherited stdio (streams live).
+  - `restart` — runs `pm2 restart` with ecosystem config.
+- Helper `getEcosystemConfig()` resolves `ecosystem.config.cjs` from `MONOREPO_ROOT` (two levels up from `dist/`), fails with clear error if not found.
+- Helper `runPm2()` wraps `execSync` with `npx pm2` for sync commands.
+- Updated `--help` output to show all 8 commands with aligned descriptions.
+- Added `execSync` import from `node:child_process`.
+
+**Files modified:** `packages/backend/src/cli.ts`
+
+**Notes:** Build: 0 errors. Tests: 159/159. CLI help verified manually. `MONOREPO_ROOT` = `PACKAGE_ROOT/..` which resolves `packages/backend/..` = monorepo root.
+
+---
+
 ## 2026-03-30 — Review: S.5 (approved)
 
 **Reviewed:** Install/setup script — `scripts/setup.sh`.

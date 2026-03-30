@@ -36,7 +36,7 @@
 
 - [x] **S.5** — Create install/setup script. Create `scripts/setup.sh` (or `packages/backend/src/cli-setup.ts`): check Node >= 22, check pnpm installed, run `pnpm install`, run `pnpm build`, create `~/.agentops/` directory (config, logs, data), initialize SQLite database at `~/.agentops/data/agentops.db`, run migrations, seed with default personas (PM, Tech Lead, Engineer, Reviewer, Router). Print setup summary and next steps. Make the DB path configurable via env var `AGENTOPS_DB_PATH` (default `~/.agentops/data/agentops.db`).
 
-- [ ] **S.6** — Add pm2 startup integration. In the CLI: `agentops install` command that runs `pm2 startup` to register the OS-level boot daemon (launchd on macOS, systemd on Linux). `agentops uninstall` to remove it. `agentops logs` to tail pm2 logs. `agentops restart` to restart the service. Document the commands in a `--help` output.
+- [review] **S.6** — Add pm2 startup integration. In the CLI: `agentops install` command that runs `pm2 startup` to register the OS-level boot daemon (launchd on macOS, systemd on Linux). `agentops uninstall` to remove it. `agentops logs` to tail pm2 logs. `agentops restart` to restart the service. Document the commands in a `--help` output.
 
 ### Logging & Observability
 

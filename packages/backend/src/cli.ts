@@ -9,7 +9,7 @@ import {
   unlinkSync,
 } from "node:fs";
 import { homedir } from "node:os";
-import { spawn } from "node:child_process";
+import { spawn, execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 // ── Paths ───────────────────────────────────────────────────────
@@ -18,6 +18,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const PACKAGE_ROOT = resolve(__dirname, "..");
 
+const MONOREPO_ROOT = resolve(PACKAGE_ROOT, "..");
 const AGENTOPS_DIR = resolve(homedir(), ".agentops");
 const PID_FILE = resolve(AGENTOPS_DIR, "agentops.pid");
 const DEFAULT_PORT = Number(process.env["PORT"] ?? 3001);
@@ -147,6 +148,77 @@ function devCommand(): void {
   child.on("exit", (code) => process.exit(code ?? 0));
 }
 
+// ── pm2 service commands ────────────────────────────────────────
+
+function getEcosystemConfig(): string {
+  const configPath = resolve(MONOREPO_ROOT, "ecosystem.config.cjs");
+  if (!existsSync(configPath)) {
+    console.error(
+      "ecosystem.config.cjs not found. Run from the AgentOps monorepo root.",
+    );
+    process.exit(1);
+  }
+  return configPath;
+}
+
+function runPm2(args: string[]): void {
+  try {
+    execSync(`npx pm2 ${args.join(" ")}`, {
+      stdio: "inherit",
+      cwd: MONOREPO_ROOT,
+    });
+  } catch {
+    // pm2 already printed its error to stderr
+    process.exit(1);
+  }
+}
+
+function installCommand(): void {
+  console.log("Registering AgentOps as a boot service...");
+  const configPath = getEcosystemConfig();
+  runPm2(["start", configPath]);
+  runPm2(["save"]);
+  try {
+    execSync("npx pm2 startup", { stdio: "inherit", cwd: MONOREPO_ROOT });
+  } catch {
+    console.log(
+      "\nNote: pm2 startup may require sudo. Run the command it prints above.",
+    );
+  }
+  console.log("AgentOps registered. It will start automatically on boot.");
+}
+
+function uninstallCommand(): void {
+  console.log("Removing AgentOps boot service...");
+  runPm2(["stop", "agentops"]);
+  runPm2(["delete", "agentops"]);
+  try {
+    execSync("npx pm2 unstartup", { stdio: "inherit", cwd: MONOREPO_ROOT });
+  } catch {
+    console.log(
+      "\nNote: pm2 unstartup may require sudo. Run the command it prints above.",
+    );
+  }
+  runPm2(["save"]);
+  console.log("AgentOps boot service removed.");
+}
+
+function logsCommand(): void {
+  const child = spawn("npx", ["pm2", "logs", "agentops", "--lines", "100"], {
+    stdio: "inherit",
+    cwd: MONOREPO_ROOT,
+  });
+  child.on("exit", (code) => process.exit(code ?? 0));
+}
+
+function restartCommand(): void {
+  const configPath = getEcosystemConfig();
+  runPm2(["restart", configPath]);
+  console.log("AgentOps restarted.");
+}
+
+// ── Usage ───────────────────────────────────────────────────────
+
 function printUsage(): void {
   console.log(
     `
@@ -155,13 +227,17 @@ AgentOps — AI agent orchestration platform
 Usage: agentops <command>
 
 Commands:
-  start    Start the server (foreground)
-  stop     Stop the running server
-  status   Show server status
-  dev      Start in development mode (with watch)
+  start      Start the server (foreground)
+  stop       Stop the running server
+  status     Show server status
+  dev        Start in development mode (with watch)
+  restart    Restart the pm2 service
+  logs       Tail pm2 service logs
+  install    Register as a boot service (pm2 startup)
+  uninstall  Remove the boot service
 
 Options:
-  --help   Show this help message
+  --help     Show this help message
 `.trim(),
   );
 }
@@ -182,6 +258,18 @@ switch (command) {
     break;
   case "dev":
     devCommand();
+    break;
+  case "install":
+    installCommand();
+    break;
+  case "uninstall":
+    uninstallCommand();
+    break;
+  case "logs":
+    logsCommand();
+    break;
+  case "restart":
+    restartCommand();
     break;
   case "--help":
   case "-h":
