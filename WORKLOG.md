@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — AI.3: Write test plans for Work Items — List View
+
+**Task:** Create test plans for work items list view and work item creation.
+
+**Done:**
+- **`tests/e2e/plans/work-items-list-view.md`** — 14 steps: navigate to `/items`, verify "Work Items" heading, verify list view is default (List button active vs Flow), verify filter bar (search, state, priority, persona, group by, sort), verify work items render with state badges (colored), priority badges (P0-P3), and titles, expand parent item chevron to see indented children, collapse children, click item to open detail panel, verify panel shows title/state/priority/"Move to…"/description/children/comments/execution history/metadata, close panel via X button.
+- **`tests/e2e/plans/work-items-create.md`** — 9 steps: click "Add" button (Plus icon + "Add" text in header), verify new "New work item" appears in list, verify state is "Backlog", verify default priority, click to open detail panel, verify panel shows defaults ("No description", "No children", metadata).
+
+**Files created:** `tests/e2e/plans/work-items-list-view.md`, `tests/e2e/plans/work-items-create.md`
+
+**Notes:** Plans reference actual UI elements verified against `work-items.tsx` (page layout, "Add" button with `handleQuickAdd`), `list-view.tsx` (ListRow with state/priority badges, expand/collapse chevron, GroupHeader), `detail-panel.tsx` (EditableTitle, StateTransitionControl, PrioritySelector, LabelEditor, Description, Children, Comments, Execution History, Metadata sections), and `filter-bar.tsx` (search input, state/priority/persona/label filters, group by, sort by). Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: AI.2 (approved)
 
 **Reviewed:** Dashboard test plans (dashboard-stats.md, dashboard-navigation.md).
