@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — AI.16: Execute work-items-flow-view.md
+
+**Task:** Execute the work items flow view test plan in a real browser via chrome-devtools MCP.
+
+**Done:**
+- Navigated to `http://localhost:5174/items?view=flow`, executed all 13 steps
+- **Result: PASS (13/13)** — all 8 state nodes, item counts, arrows, node click filtering, detail panel, deselect, empty state message
+- 8 state nodes rendered with correct counts: Backlog=8, Planning=0, Decomposition=1, Ready=1, In Progress=2, In Review=0, Done=4, Blocked=0 (total 16)
+- Agent status indicators: Ready "1 active R", In Progress "1 active E", all others "idle"
+- 16 SVG arrow paths with arrowhead markers connecting states
+- Item count verification: expanded all items in list view (parents + children + grandchildren) = 16, matches flow total
+- Clicked "In Progress" node → filtered panel with 2 items, clicked item → detail panel opened, clicked node again → deselected
+- Clicked "Planning" (0 items) → "No items in this state." message
+
+**Files created:** `tests/e2e/results/work-items-flow-view.md`, `tests/e2e/results/work-items-flow-view.png`
+
+**Notes:** Frontend on port 5174. App in mock mode. Build: 0 errors (no code changes).
+
+---
+
 ## 2026-03-30 — Review: AI.15 (approved)
 
 **Reviewed:** Work Items create E2E test execution results.

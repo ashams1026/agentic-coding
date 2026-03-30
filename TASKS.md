@@ -14,6 +14,10 @@
 > Critical fixes from first real-world test run. Router loop, cost display, agent monitor readability, activity feed descriptions.
 > Also includes persona audit, skills system, and UX improvements.
 
+### Sidebar Navigation Fix
+
+- [ ] **FX.NAV1** — Fix sidebar nav item layout and interaction states. In `packages/frontend/src/components/sidebar.tsx`: the nav items currently render with icon stacked above the label instead of inline beside it (visible in e2e test screenshots). Fix the layout so icon and label are on the same row (`flex items-center gap-3`) in expanded mode. Investigate what's causing the vertical stacking — likely a CSS conflict, missing width constraint, or the collapsed-mode styles leaking into expanded mode. Also fix interaction states: add a visible `hover:bg-accent` background on hover (currently not appearing), add a distinct active/selected state with a left border accent or stronger background (`bg-accent/80` + `font-semibold`), add `rounded-lg` for softer corners, ensure the active page is clearly distinguishable at a glance. Reference modern sidebar patterns (e.g., Linear, Notion) — icon left, label right, subtle hover, bold active.
+
 ### Persona Manager UX
 
 - [ ] **FX.PM1** — Add inline system prompt preview to persona cards. In `packages/frontend/src/features/persona-manager/`: add an expand/collapse interaction to each persona card in the grid. At the bottom of each card, add a "View prompt" button with a chevron icon. Clicking it expands the card inline (spans the full grid width, pushes cards below it down) to reveal the persona's system prompt rendered as markdown (reuse MarkdownPreview component). The expanded view shows: rendered system prompt (scrollable, max-height ~400px), MCP tools list as badges, SDK tools list as badges, skills list (if any) as file path pills, model badge, budget. A "Collapse" button or clicking the chevron again closes it. Only one card can be expanded at a time — expanding another collapses the current one. Smooth height animation with `transition-all duration-200`.
@@ -139,7 +143,7 @@
 
 - [x] **AI.15** — Execute `work-items-create.md`. Read `tests/e2e/plans/work-items-create.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/work-items-create.md`.
 
-- [ ] **AI.16** — Execute `work-items-flow-view.md`. Read `tests/e2e/plans/work-items-flow-view.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/work-items-flow-view.md`.
+- [review] **AI.16** — Execute `work-items-flow-view.md`. Read `tests/e2e/plans/work-items-flow-view.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/work-items-flow-view.md`.
 
 - [ ] **AI.17** — Execute `detail-panel-view.md`. Read `tests/e2e/plans/detail-panel-view.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/detail-panel-view.md`.
 
