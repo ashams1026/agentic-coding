@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-29 — Review: O.12 (approved)
+
+**Reviewed:** Sidebar navigation — `sidebar.tsx`.
+- All 4 requirements met: "Story Board" → "Work Items" with ListTodo icon, "Workflows" removed, proposals badge on /items, all old route references gone
+- Confirmed no remaining references to /board, /workflows, Kanban, GitBranch, or "Story Board"
+- 6 nav items (down from 7)
+- No type errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.12: Update sidebar navigation
 
 **Task:** Replace "Story Board" with "Work Items", remove "Workflows", update badges and routes.
