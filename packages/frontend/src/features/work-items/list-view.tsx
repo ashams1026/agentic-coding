@@ -3,7 +3,7 @@ import { ChevronRight, Bot } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { useWorkItems, usePersonas, useExecutions } from "@/hooks";
+import { useWorkItems, usePersonas, useExecutions, useSelectedProject } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { WORKFLOW, getStateByName } from "@agentops/shared";
 import type { WorkItem, WorkItemId, Priority, Persona } from "@agentops/shared";
@@ -271,7 +271,8 @@ function ListRow({
 // ── Main list view ──────────────────────────────────────────────
 
 export function ListView() {
-  const { data: allItems, isLoading } = useWorkItems();
+  const { projectId } = useSelectedProject();
+  const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined);
   const { data: personas } = usePersonas();
   const { data: executions } = useExecutions();
   const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterPersonas, filterLabels, selectedItemId, setSelectedItemId } =

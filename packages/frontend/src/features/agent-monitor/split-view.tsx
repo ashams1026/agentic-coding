@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useExecutions, usePersonas, useWorkItems } from "@/hooks";
+import { useExecutions, usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
 import { TerminalRenderer } from "./terminal-renderer";
 import type { ExecutionId } from "@agentops/shared";
 
@@ -19,9 +19,10 @@ interface AgentSelectorProps {
 }
 
 function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
+  const { projectId } = useSelectedProject();
   const { data: executions = [] } = useExecutions();
   const { data: personas = [] } = usePersonas();
-  const { data: allItems = [] } = useWorkItems();
+  const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
 
   const activeExecutions = useMemo(
     () => executions.filter((e) => e.status === "running"),

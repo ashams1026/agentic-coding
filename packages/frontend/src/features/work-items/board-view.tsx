@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { useWorkItems, usePersonas, useUpdateWorkItem, usePersonaAssignments } from "@/hooks";
+import { useWorkItems, usePersonas, useUpdateWorkItem, usePersonaAssignments, useSelectedProject } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { WORKFLOW } from "@agentops/shared";
 import type { WorkItem, WorkItemId, Priority, Persona, ProjectId } from "@agentops/shared";
@@ -288,7 +288,8 @@ function ScopeSelector({
 // ── Main board view ─────────────────────────────────────────────
 
 export function BoardView() {
-  const { data: allItems, isLoading } = useWorkItems();
+  const { projectId } = useSelectedProject();
+  const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined);
   const { data: personas } = usePersonas();
   const { data: assignments } = usePersonaAssignments("pj-agntops" as ProjectId);
   const updateWorkItem = useUpdateWorkItem();

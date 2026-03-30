@@ -20,7 +20,7 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { WORKFLOW } from "@agentops/shared";
-import { usePersonas, useWorkItems } from "@/hooks";
+import { usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
 import {
   useWorkItemsStore,
   type GroupBy,
@@ -70,8 +70,9 @@ export function FilterBar() {
     clearFilters,
   } = useWorkItemsStore();
 
+  const { projectId } = useSelectedProject();
   const { data: personas } = usePersonas();
-  const { data: allItems } = useWorkItems();
+  const { data: allItems } = useWorkItems(undefined, projectId ?? undefined);
 
   // Local input state for debounce
   const [inputValue, setInputValue] = useState(searchQuery);

@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-03-30 — PS.3: Scope work items queries to selected project
+
+**Task:** Update all `useWorkItems()` call sites to pass `projectId` from `useSelectedProject()`.
+
+**Done:**
+- Updated 10 files to import `useSelectedProject` and pass `projectId` to `useWorkItems(undefined, projectId ?? undefined)`
+- Call sites: list-view, filter-bar, board-view, flow-view, detail-panel, command-palette, active-agent-sidebar, agent-control-bar, split-view, agent-history
+
+**Files modified:**
+- `packages/frontend/src/features/work-items/list-view.tsx`
+- `packages/frontend/src/features/work-items/filter-bar.tsx`
+- `packages/frontend/src/features/work-items/board-view.tsx`
+- `packages/frontend/src/features/work-items/flow-view.tsx`
+- `packages/frontend/src/features/work-items/detail-panel.tsx`
+- `packages/frontend/src/features/command-palette/command-palette.tsx`
+- `packages/frontend/src/features/agent-monitor/active-agent-sidebar.tsx`
+- `packages/frontend/src/features/agent-monitor/agent-control-bar.tsx`
+- `packages/frontend/src/features/agent-monitor/split-view.tsx`
+- `packages/frontend/src/features/agent-monitor/agent-history.tsx`
+
+**Notes:** The `useWorkItems` hook already accepted `projectId` as second param — callers just weren't passing it. Used `projectId ?? undefined` to convert null→undefined matching the optional param type. Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: PS.2 (approved)
 
 **Reviewed:** useSelectedProject hook and useProject null-safety update.

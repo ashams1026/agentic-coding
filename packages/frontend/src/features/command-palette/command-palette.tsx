@@ -15,7 +15,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useWorkItems } from "@/hooks";
+import { useWorkItems, useSelectedProject } from "@/hooks";
 import { cn } from "@/lib/utils";
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -63,7 +63,8 @@ export function CommandPalette() {
   const listRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const { data: workItems = [] } = useWorkItems();
+  const { projectId } = useSelectedProject();
+  const { data: workItems = [] } = useWorkItems(undefined, projectId ?? undefined);
 
   // ── Keyboard shortcut to open ────────────────────────────────
   useEffect(() => {

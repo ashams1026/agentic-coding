@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Bot, DollarSign } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { useExecutions, usePersonas, useWorkItems } from "@/hooks";
+import { useExecutions, usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
 import type { Execution, ExecutionId } from "@agentops/shared";
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -104,9 +104,10 @@ interface ActiveAgentSidebarProps {
 }
 
 export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarProps) {
+  const { projectId } = useSelectedProject();
   const { data: executions = [] } = useExecutions();
   const { data: personas = [] } = usePersonas();
-  const { data: allItems = [] } = useWorkItems();
+  const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
 
   // Active (running) executions, sorted by start time
   const activeExecutions = useMemo(

@@ -2,7 +2,7 @@ import { useMemo, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { useWorkItems, usePersonas, useExecutions } from "@/hooks";
+import { useWorkItems, usePersonas, useExecutions, useSelectedProject } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { WORKFLOW } from "@agentops/shared";
 import type { WorkItem, Persona, WorkItemId, Priority } from "@agentops/shared";
@@ -291,7 +291,8 @@ function FilteredItemsList({
 // ── Main flow view ───────────────────────────────────────────────
 
 export function FlowView() {
-  const { data: allItems, isLoading } = useWorkItems();
+  const { projectId } = useSelectedProject();
+  const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined);
   const { data: personas } = usePersonas();
   const { data: executions } = useExecutions();
   const { filterState, setFilterState, selectedItemId, setSelectedItemId } =

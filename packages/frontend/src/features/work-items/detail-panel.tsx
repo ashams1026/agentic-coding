@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { useWorkItem, useWorkItems, useProposals, usePersonas, usePersonaAssignments, useCreateWorkItem, useUpdateWorkItem } from "@/hooks";
+import { useWorkItem, useWorkItems, useProposals, usePersonas, usePersonaAssignments, useCreateWorkItem, useUpdateWorkItem, useSelectedProject } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { CommentStream } from "@/features/common/comment-stream";
 import { ExecutionTimeline } from "@/features/common/execution-timeline";
@@ -628,9 +628,10 @@ function MetadataSection({ item }: { item: WorkItem }) {
 // ── Main detail panel ───────────────────────────────────────────
 
 export function DetailPanel() {
+  const { projectId } = useSelectedProject();
   const { selectedItemId, setSelectedItemId } = useWorkItemsStore();
   const { data: item } = useWorkItem(selectedItemId!);
-  const { data: allItems = [] } = useWorkItems();
+  const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
   const { data: personas = [] } = usePersonas();
   const { data: assignments = [] } = usePersonaAssignments("pj-agntops" as ProjectId);
   const createWorkItem = useCreateWorkItem();

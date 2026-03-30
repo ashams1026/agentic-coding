@@ -35,7 +35,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useExecutions, usePersonas, useWorkItems } from "@/hooks";
+import { useExecutions, usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
 import { TerminalRenderer } from "./terminal-renderer";
 import type { Execution, ExecutionId } from "@agentops/shared";
 
@@ -340,9 +340,10 @@ function HistoryRow({
 // ── Main component ────────────────────────────────────────────────
 
 export function AgentHistory() {
+  const { projectId } = useSelectedProject();
   const { data: executions = [] } = useExecutions();
   const { data: personas = [] } = usePersonas();
-  const { data: allItems = [] } = useWorkItems();
+  const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
 
   const [sortField, setSortField] = useState<SortField>("startedAt");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
