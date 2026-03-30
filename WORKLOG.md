@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Q.2 (rework): Fix TS2532 build error in test file
+
+**Task:** Address review feedback — `projects[0].id` access fails strict mode TypeScript.
+
+**Done:**
+- Changed `projects[0].id` to `projects[0]!.id` in `setup.test.ts:54` (non-null assertion after length check)
+- Build: 0 errors, all 4 tests pass
+
+**Files modified:** `packages/backend/src/test/setup.test.ts`
+
+---
+
 ## 2026-03-29 — Review: Q.2 (rejected)
 
 **Reviewed:** Test database helper — `packages/backend/src/test/setup.ts`, `packages/backend/src/test/setup.test.ts`.

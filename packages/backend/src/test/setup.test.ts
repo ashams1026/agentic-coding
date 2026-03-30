@@ -51,7 +51,7 @@ describe("seedTestDb", () => {
 
     const projects = await testDb.db.select().from(schema.projects);
     expect(projects).toHaveLength(1);
-    expect(projects[0].id).toBe(TEST_IDS.PROJECT_ID);
+    expect(projects[0]!.id).toBe(TEST_IDS.PROJECT_ID);
 
     const personas = await testDb.db.select().from(schema.personas);
     expect(personas).toHaveLength(5);
