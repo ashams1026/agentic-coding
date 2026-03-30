@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: O.11 (approved)
+
+**Reviewed:** Detail panel — `detail-panel.tsx`, `comment-stream.tsx`, `execution-timeline.tsx`, `work-items.tsx`.
+- All 15 requirements met: header with breadcrumb/state/priority/labels/persona, description, children list with progress, add child/decompose, proposals, comments, executions, execution context, metadata
+- CommentStream and ExecutionTimeline correctly updated to WorkItemId (removed targetType, renamed props)
+- Master-detail layout: w-2/5 view + w-3/5 panel when item selected
+- Panel works at any hierarchy depth — same component for all levels
+- Parent breadcrumb enables upward navigation through hierarchy
+- No type errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.11: Build work item detail panel
 
 **Task:** Create right-side detail panel with header, description, children, proposals, comments, executions, metadata.
