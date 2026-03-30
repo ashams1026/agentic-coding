@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — AI.2: Write test plans for Dashboard
+
+**Task:** Create test plans for dashboard stats verification and dashboard navigation.
+
+**Done:**
+- **`tests/e2e/plans/dashboard-stats.md`** — 11 steps: navigate to `/`, verify 4 stat cards (Active Agents, Pending Proposals, Needs Attention, Today's Cost) render with valid numeric values (not NaN/undefined), verify Today's Cost starts with "$", verify active agents strip renders, verify cost summary chart renders, verify recent activity and upcoming work widgets.
+- **`tests/e2e/plans/dashboard-navigation.md`** — 12 steps: click each of the 4 stat cards, verify navigation to correct pages (Active Agents→`/agents`, Pending Proposals→`/items`, Needs Attention→`/activity`, Today's Cost→`/settings`), navigate back after each, verify dashboard restores. Also tests "View all" link in Recent Activity widget.
+
+**Files created:** `tests/e2e/plans/dashboard-stats.md`, `tests/e2e/plans/dashboard-navigation.md`
+
+**Notes:** Plans reference actual stat card titles and navigation targets verified against `dashboard.tsx`. Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: AI.1 (approved)
 
 **Reviewed:** Test plan directory structure and template.
