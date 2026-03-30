@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — Review: D.2 (approved)
+
+**Reviewed:** Getting started guide — 8-section walkthrough from install to auto-routing.
+- Prerequisites: Node 22, pnpm 9 with verify commands ✓
+- Installation: clone + pnpm install with workspace note ✓
+- First run: pnpm dev, expected output, mock mode explanation ✓
+- API key config: both UI (Settings > API Keys, 5 steps) and CLI paths, verify output ✓
+- Create project: UI form + curl API example, path validation note ✓
+- Create work item: Board view, inline form, Backlog column ✓
+- Manual state walk: detail panel dropdown, workflow transition diagram ✓
+- Auto-routing: toggle, persona assignments, 5 built-in personas, pipeline watch ✓
+- "What's Next" links to 5 other docs ✓
+- All UI paths, CLI commands, ports, persona names verified against codebase ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — D.2: Write getting started guide
 
 **Task:** Create `docs/getting-started.md` with step-by-step setup, first project, manual workflow, and auto-routing.
