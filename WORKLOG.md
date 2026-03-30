@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — E.5: Create development seed with realistic pipeline data
+
+**Task:** Update seed.ts with autoRouting, 5 personas with real system prompts, persona assignments for all workflow states, and realistic pipeline data.
+
+**Done:**
+- **Project settings**: Added `autoRouting: true` to project settings
+- **Replaced QA with Router persona**: New `ps-rt00001` persona named "Router" with proper system prompt matching the router agent's behavior. Removed QA persona.
+- **Real system prompts**: All 5 personas (Product Manager, Tech Lead, Engineer, Code Reviewer, Router) now have detailed, multi-paragraph system prompts with responsibilities, guidelines, and available tools
+- **Persona assignments for 5 states**: Planning→PM, Decomposition→Tech Lead, Ready→Router, In Progress→Engineer, In Review→Code Reviewer
+- **Router executions seeded**: Added EXEC_9 (router routes auth task to Done) and EXEC_10 (router routes auth from Planning→Decomposition) to show routing in action
+- **Router comments seeded**: Added cm-cmt0016 (reviewer comment) and cm-cmt0017 (router state transition comment)
+- **Backend router name fix**: Changed `"__router__"` → `"Router"` in `router.ts` and `execution-manager.ts` so the seeded persona is recognized by the backend
+- **Persona names updated**: "PM" → "Product Manager", "Reviewer" → "Code Reviewer" in seed comments
+
+**Files modified:** `packages/backend/src/db/seed.ts`, `packages/backend/src/agent/router.ts`, `packages/backend/src/agent/execution-manager.ts`
+
+**Notes:** Build: 0 errors. Tests: 145/145 passing. Seed now has: 1 project, 5 personas, 16 work items, 4 edges, 5 assignments, 10 executions, 17 comments, 2 proposals, 2 memories. Frontend mock fixtures (QA persona) left unchanged — they're independent mock-mode data.
+
+---
+
 ## 2026-03-30 — Review: E.4 (approved)
 
 **Reviewed:** Wire activity feed to real WebSocket events — `activity-feed.tsx`, `recent-activity.tsx`, `client.ts`, `mocks/api.ts`, `api/index.ts`, `query-keys.ts`, `use-comments.ts`, `hooks/index.ts`.

@@ -20,7 +20,7 @@ const PERSONA_PM = "ps-pm00001";
 const PERSONA_TECH_LEAD = "ps-tl00001";
 const PERSONA_ENGINEER = "ps-en00001";
 const PERSONA_REVIEWER = "ps-rv00001";
-const PERSONA_QA = "ps-qa00001";
+const PERSONA_ROUTER = "ps-rt00001";
 
 const WI_AUTH = "wi-auth001";
 const WI_DASH = "wi-dash002";
@@ -51,6 +51,8 @@ const EXEC_5 = "ex-exec005";
 const EXEC_6 = "ex-exec006";
 const EXEC_7 = "ex-exec007";
 const EXEC_8 = "ex-exec008";
+const EXEC_9 = "ex-exec009";
+const EXEC_10 = "ex-exec010";
 
 // ── Helper ────────────────────────────────────────────────────────
 
@@ -58,7 +60,7 @@ function d(iso: string): Date {
   return new Date(iso);
 }
 
-// ── Seed ─────────���────────────────────────────────────────────────
+// ── Seed ──────────────────────────────────────────────────────────
 
 export async function seed() {
   // Ensure tables exist via migrations
@@ -75,27 +77,44 @@ export async function seed() {
   await db.delete(personas);
   await db.delete(projects);
 
-  // ── Projects ���─────────────────────────────────────────────────────
+  // ── Projects ──────────────────────────────────────────────────────
   await db.insert(projects).values({
     id: PROJECT_ID,
     name: "AgentOps",
     path: "/Users/dev/projects/agentops",
-    settings: { maxConcurrentAgents: 3, monthlyCostCap: 50 },
+    settings: { maxConcurrentAgents: 3, monthlyCostCap: 50, autoRouting: true },
     createdAt: d("2026-03-20T10:00:00Z"),
   });
 
-  // ��─ Personas ───────────────────���───────────────────────────────���──
+  // ── Personas ──────────────────────────────────────────────────────
   await db.insert(personas).values([
     {
       id: PERSONA_PM,
-      name: "PM",
-      description: "Writes acceptance criteria and defines scope.",
+      name: "Product Manager",
+      description: "Writes acceptance criteria, defines scope, and prioritizes work items.",
       avatar: { color: "#7c3aed", icon: "clipboard-list" },
-      systemPrompt: "You are a product manager. Write clear acceptance criteria and define scope.",
+      systemPrompt: `You are a Product Manager agent for the AgentOps project.
+
+Your responsibilities:
+1. Read the work item description and any user comments to understand intent.
+2. Write clear, testable acceptance criteria as a checklist.
+3. Define the scope — what's in and what's explicitly out.
+4. Set priority based on user signals and dependency analysis.
+5. Post your criteria as a comment on the work item.
+
+Guidelines:
+- Each acceptance criterion must be independently verifiable.
+- Include edge cases and error scenarios in your criteria.
+- If the description is vague, make reasonable assumptions and document them.
+- Keep criteria focused on behavior ("user can...") not implementation ("use library X").
+- Flag any open questions that need user input before engineering can start.
+
+Tools available: Read (codebase), Glob, Grep, WebSearch.
+Output: Post acceptance criteria as a structured comment, then signal completion.`,
       model: "sonnet",
       allowedTools: ["Read", "Glob", "Grep", "WebSearch"],
       mcpTools: ["post_comment", "transition_state"],
-      maxBudgetPerRun: 50, // cents
+      maxBudgetPerRun: 50,
       settings: {},
     },
     {
@@ -103,7 +122,25 @@ export async function seed() {
       name: "Tech Lead",
       description: "Decomposes work items into children with dependency graphs.",
       avatar: { color: "#2563eb", icon: "git-branch" },
-      systemPrompt: "You are a tech lead. Break work items into well-scoped children with clear dependencies.",
+      systemPrompt: `You are a Tech Lead agent for the AgentOps project.
+
+Your responsibilities:
+1. Read the work item and its acceptance criteria.
+2. Analyze the existing codebase to understand current architecture and patterns.
+3. Decompose the work item into 2-5 well-scoped child tasks.
+4. Define dependency edges between children (which blocks which).
+5. Create a proposal with the decomposition plan.
+
+Guidelines:
+- Each child should be completable in a single agent session (one commit).
+- Include file paths and component names in child descriptions.
+- Order children by dependency — earlier tasks are prerequisites for later ones.
+- Consider existing code patterns and conventions (check CLAUDE.md).
+- If a work item is already small enough, skip decomposition and flag it as ready.
+- Document architectural decisions in your comment.
+
+Tools available: Read, Glob, Grep, WebSearch, Bash.
+Output: Create child tasks via proposal, post architectural rationale as comment.`,
       model: "opus",
       allowedTools: ["Read", "Glob", "Grep", "WebSearch", "Bash"],
       mcpTools: ["create_tasks", "post_comment", "request_review"],
@@ -115,7 +152,26 @@ export async function seed() {
       name: "Engineer",
       description: "Implements work items by writing and modifying code.",
       avatar: { color: "#059669", icon: "code" },
-      systemPrompt: "You are a software engineer. Implement the assigned work item following project conventions.",
+      systemPrompt: `You are a Software Engineer agent for the AgentOps project.
+
+Your responsibilities:
+1. Read the work item description, acceptance criteria, and any parent context.
+2. Check for feedback from previous review cycles — address every point.
+3. Read the relevant codebase sections to understand existing patterns.
+4. Implement the work item following project conventions (see CLAUDE.md).
+5. Verify your changes build and don't break existing functionality.
+
+Guidelines:
+- Follow existing code patterns — check similar files for structure and naming.
+- Use TypeScript strict mode. All types should be explicit at module boundaries.
+- Use shadcn/ui components and Tailwind CSS for any UI work.
+- Dark mode support is required on all new components.
+- Write minimal, focused changes — don't refactor surrounding code.
+- If blocked by a missing dependency or unclear requirement, flag it immediately.
+- Test your changes: ensure \`pnpm build\` passes with zero errors.
+
+Tools available: Read, Edit, Write, Glob, Grep, Bash, WebFetch.
+Output: Modified/created files, build verification, completion comment.`,
       model: "sonnet",
       allowedTools: ["Read", "Edit", "Write", "Glob", "Grep", "Bash", "WebFetch"],
       mcpTools: ["post_comment", "flag_blocked", "transition_state"],
@@ -124,10 +180,33 @@ export async function seed() {
     },
     {
       id: PERSONA_REVIEWER,
-      name: "Reviewer",
-      description: "Reviews code changes and provides feedback.",
+      name: "Code Reviewer",
+      description: "Reviews code changes for correctness, style, and completeness.",
       avatar: { color: "#d97706", icon: "eye" },
-      systemPrompt: "You are a code reviewer. Check for bugs, style issues, and correctness.",
+      systemPrompt: `You are a Code Reviewer agent for the AgentOps project.
+
+Your responsibilities:
+1. Read the work item description and acceptance criteria.
+2. Read all files modified in the most recent execution.
+3. Verify the implementation matches the acceptance criteria.
+4. Check for bugs, missing edge cases, and security issues.
+5. Verify conventions from CLAUDE.md are followed.
+6. Run \`pnpm build\` to ensure zero errors.
+
+Review checklist:
+- Does the code do what the task description says?
+- Are there obvious bugs or logic errors?
+- Are TypeScript types correct and complete?
+- Does it follow existing naming conventions and file structure?
+- Are there hardcoded values that should be configurable?
+- Is error handling appropriate?
+- Does the build pass?
+
+If issues found: reject with specific, actionable feedback (file names, line numbers, what to fix).
+If code is correct: approve and summarize what was verified.
+
+Tools available: Read, Glob, Grep, Bash.
+Output: Approve or reject with detailed reasoning.`,
       model: "sonnet",
       allowedTools: ["Read", "Glob", "Grep", "Bash"],
       mcpTools: ["post_comment", "request_review", "transition_state"],
@@ -135,20 +214,38 @@ export async function seed() {
       settings: {},
     },
     {
-      id: PERSONA_QA,
-      name: "QA",
-      description: "Tests functionality and verifies acceptance criteria.",
-      avatar: { color: "#dc2626", icon: "test-tube" },
-      systemPrompt: "You are a QA tester. Verify that acceptance criteria are met and there are no regressions.",
+      id: PERSONA_ROUTER,
+      name: "Router",
+      description: "Routes work items between workflow states based on execution outcomes.",
+      avatar: { color: "#6366f1", icon: "route" },
+      systemPrompt: `You are a routing agent for the AgentOps workflow system.
+
+Your job is to decide the next workflow state for a work item after a persona has completed work on it.
+
+Available states: Backlog, Planning, Decomposition, Ready, In Progress, In Review, Done, Blocked.
+
+Use the get_context tool to understand the work item's current state and execution history.
+Use the list_items tool to check the status of child work items if relevant.
+Then use route_to_state to transition the work item to the appropriate next state.
+
+Guidelines:
+- After Planning completes with acceptance criteria → route to "Decomposition" or "Ready" (if no decomposition needed)
+- After Decomposition completes → route to "Ready" (children will be dispatched separately)
+- After "In Progress" work completes → route to "In Review"
+- After successful review → route to "Done"
+- If review finds issues → route back to "In Progress" (rejection)
+- If all children of a parent are Done → route parent to "In Review"
+- If a work item has unresolvable issues → route to "Blocked"
+- Consider the execution outcome and summary when making your decision`,
       model: "haiku",
-      allowedTools: ["Read", "Bash", "Glob", "Grep"],
-      mcpTools: ["post_comment", "transition_state"],
-      maxBudgetPerRun: 30,
-      settings: {},
+      allowedTools: ["list_items", "get_context", "route_to_state"],
+      mcpTools: [],
+      maxBudgetPerRun: 10,
+      settings: { isSystem: true },
     },
   ]);
 
-  // ── Work Items ──────────���─────────────────────────────────────────
+  // ── Work Items ────────────────────────────────────────────────────
   // Top-level
   await db.insert(workItems).values([
     {
@@ -328,15 +425,16 @@ export async function seed() {
     { id: "we-edge004", fromId: WI_NOTI_2, toId: WI_NOTI_3, type: "depends_on" },
   ]);
 
-  // ── Persona Assignments ───────���───────────────────────────────────
+  // ── Persona Assignments ───────────────────────────────────────────
   await db.insert(personaAssignments).values([
     { projectId: PROJECT_ID, stateName: "Planning", personaId: PERSONA_PM },
     { projectId: PROJECT_ID, stateName: "Decomposition", personaId: PERSONA_TECH_LEAD },
+    { projectId: PROJECT_ID, stateName: "Ready", personaId: PERSONA_ROUTER },
     { projectId: PROJECT_ID, stateName: "In Progress", personaId: PERSONA_ENGINEER },
     { projectId: PROJECT_ID, stateName: "In Review", personaId: PERSONA_REVIEWER },
   ]);
 
-  // ── Executions ──────────────────────────────────────���─────────────
+  // ── Executions ────────────────────────────────────────────────────
   await db.insert(executions).values([
     {
       id: EXEC_7, workItemId: WI_AUTH_1, personaId: PERSONA_REVIEWER,
@@ -401,16 +499,32 @@ export async function seed() {
       summary: "", outcome: null, rejectionPayload: null,
       logs: "Reading submitted code changes...\nChecking OAuth token handling...\nVerifying CSRF middleware integration...",
     },
+    {
+      id: EXEC_9, workItemId: WI_AUTH_1, personaId: PERSONA_ROUTER,
+      status: "completed", startedAt: d("2026-03-25T10:05:00Z"), completedAt: d("2026-03-25T10:05:08Z"),
+      costUsd: 2, durationMs: 8000,
+      summary: "Routed wi-au01001 from In Review → Done after successful review.",
+      outcome: "success", rejectionPayload: null,
+      logs: "Reading work item context...\nExecution outcome: success. Review passed.\nRouting to Done.",
+    },
+    {
+      id: EXEC_10, workItemId: WI_AUTH, personaId: PERSONA_ROUTER,
+      status: "completed", startedAt: d("2026-03-24T09:36:00Z"), completedAt: d("2026-03-24T09:36:05Z"),
+      costUsd: 1, durationMs: 5000,
+      summary: "Routed wi-auth001 from Planning → Decomposition after PM wrote criteria.",
+      outcome: "success", rejectionPayload: null,
+      logs: "Reading work item context...\nPM completed planning. Acceptance criteria written.\nRouting to Decomposition.",
+    },
   ]);
 
-  // ── Comments ───────��────────────────────────────────���─────────────
+  // ── Comments ──────────────────────────────────────────────────────
   await db.insert(comments).values([
     { id: "cm-cmt0001", workItemId: WI_AUTH, authorType: "user", authorId: null, authorName: "Amin", content: "This is our highest priority. We need auth before we can build any user-facing features.", metadata: {}, createdAt: d("2026-03-21T09:05:00Z") },
-    { id: "cm-cmt0002", workItemId: WI_AUTH, authorType: "agent", authorId: PERSONA_PM, authorName: "PM", content: "I've written the acceptance criteria. Key requirements: Google + GitHub OAuth, session persistence, protected routes, and clean logout flow.", metadata: { filesReferenced: ["src/routes/auth.ts"] }, createdAt: d("2026-03-24T09:17:45Z") },
+    { id: "cm-cmt0002", workItemId: WI_AUTH, authorType: "agent", authorId: PERSONA_PM, authorName: "Product Manager", content: "I've written the acceptance criteria. Key requirements: Google + GitHub OAuth, session persistence, protected routes, and clean logout flow.", metadata: { filesReferenced: ["src/routes/auth.ts"] }, createdAt: d("2026-03-24T09:17:45Z") },
     { id: "cm-cmt0003", workItemId: WI_AUTH, authorType: "agent", authorId: PERSONA_TECH_LEAD, authorName: "Tech Lead", content: "Decomposed into 3 children:\n1. OAuth backend routes (passport.js)\n2. Login UI component\n3. Session persistence + protected routes\n\nItems are ordered by dependency — each blocks the next.", metadata: { childrenCreated: 3, toolsUsed: ["create_tasks"] }, createdAt: d("2026-03-24T09:35:12Z") },
     { id: "cm-cmt0004", workItemId: WI_AUTH_1, authorType: "agent", authorId: PERSONA_ENGINEER, authorName: "Engineer", content: "OAuth routes implemented. Created `/auth/google` and `/auth/github` endpoints with passport strategies. Added callback handlers and session middleware.", metadata: { filesChanged: ["src/routes/auth.ts", "src/middleware/session.ts", "src/config/passport.ts"], toolsUsed: ["Edit", "Write", "Bash"] }, createdAt: d("2026-03-25T10:04:32Z") },
     { id: "cm-cmt0005", workItemId: WI_AUTH_1, authorType: "system", authorId: null, authorName: "System", content: "Work item moved to Done", metadata: {}, createdAt: d("2026-03-25T11:30:00Z") },
-    { id: "cm-cmt0006", workItemId: WI_DASH, authorType: "agent", authorId: PERSONA_PM, authorName: "PM", content: "Acceptance criteria defined. Focus on cost chart (recharts sparkline), live agent count, and project health indicators.", metadata: {}, createdAt: d("2026-03-25T11:02:30Z") },
+    { id: "cm-cmt0006", workItemId: WI_DASH, authorType: "agent", authorId: PERSONA_PM, authorName: "Product Manager", content: "Acceptance criteria defined. Focus on cost chart (recharts sparkline), live agent count, and project health indicators.", metadata: {}, createdAt: d("2026-03-25T11:02:30Z") },
     { id: "cm-cmt0007", workItemId: WI_DASH, authorType: "agent", authorId: PERSONA_TECH_LEAD, authorName: "Tech Lead", content: "Decomposed into 3 children: cost chart, agents strip, health widget. No hard dependencies between them — can be worked in parallel.", metadata: { childrenCreated: 3, toolsUsed: ["create_tasks"] }, createdAt: d("2026-03-26T10:06:15Z") },
     { id: "cm-cmt0008", workItemId: WI_NOTI, authorType: "user", authorId: null, authorName: "Amin", content: "Let's tackle this after the dashboard is done. Good to have the items scoped though.", metadata: {}, createdAt: d("2026-03-23T09:00:00Z") },
     { id: "cm-cmt0009", workItemId: WI_AUTH_2, authorType: "system", authorId: null, authorName: "System", content: "Work item started — Engineer agent running", metadata: {}, createdAt: d("2026-03-27T14:25:00Z") },
@@ -420,9 +534,11 @@ export async function seed() {
     { id: "cm-cmt0013", workItemId: WI_AUTH_2, authorType: "agent", authorId: PERSONA_ENGINEER, authorName: "Engineer", content: "Starting work on the login UI. Will create a clean login page with social sign-in buttons matching our design system.", metadata: { toolsUsed: ["Read", "Glob"] }, createdAt: d("2026-03-27T14:26:00Z") },
     { id: "cm-cmt0014", workItemId: WI_AUTH, authorType: "user", authorId: null, authorName: "Amin", content: "Looking good so far. Make sure the login page has a nice loading state while OAuth redirects.", metadata: {}, createdAt: d("2026-03-27T15:00:00Z") },
     { id: "cm-cmt0015", workItemId: WI_NOTI_1, authorType: "user", authorId: null, authorName: "Amin", content: "For the toast component, use shadcn/ui's Sonner integration.", metadata: {}, createdAt: d("2026-03-26T08:30:00Z") },
+    { id: "cm-cmt0016", workItemId: WI_AUTH_1, authorType: "agent", authorId: PERSONA_REVIEWER, authorName: "Code Reviewer", content: "Review passed. OAuth routes are correctly implemented with passport strategies. CSRF protection via csurf middleware is in place. Session handling uses passport serialize/deserialize.", metadata: { filesReviewed: ["src/routes/auth.ts", "src/middleware/session.ts", "src/config/passport.ts"] }, createdAt: d("2026-03-25T10:04:00Z") },
+    { id: "cm-cmt0017", workItemId: WI_AUTH, authorType: "agent", authorId: PERSONA_ROUTER, authorName: "Router", content: "State transition: Planning → Decomposition\n\nPM has completed acceptance criteria. Moving to Decomposition for Tech Lead breakdown.", metadata: {}, createdAt: d("2026-03-24T09:36:05Z") },
   ]);
 
-  // ── Proposals ──��───────────────────────────────��──────────────────
+  // ── Proposals ─────────────────────────────────────────────────────
   await db.insert(proposals).values([
     {
       id: "pp-prop001", executionId: EXEC_3, workItemId: WI_AUTH, type: "task_creation",
@@ -444,7 +560,7 @@ export async function seed() {
     },
   ]);
 
-  // ── Project Memories ─────────��────────────────────────────────────
+  // ── Project Memories ──────────────────────────────────────────────
   await db.insert(projectMemories).values([
     {
       id: "pm-mem0001", projectId: PROJECT_ID, workItemId: WI_AUTH,
@@ -462,7 +578,7 @@ export async function seed() {
     },
   ]);
 
-  console.log("Seed complete: 1 project, 5 personas, 16 work items, 4 edges, 4 assignments, 8 executions, 15 comments, 2 proposals, 2 memories");
+  console.log("Seed complete: 1 project, 5 personas, 16 work items, 4 edges, 5 assignments, 10 executions, 17 comments, 2 proposals, 2 memories");
 }
 
 // Run if executed directly

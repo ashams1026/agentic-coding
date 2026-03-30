@@ -81,7 +81,7 @@ async function getOrCreateRouterPersona(): Promise<string> {
   const [existing] = await db
     .select({ id: personas.id })
     .from(personas)
-    .where(eq(personas.name, "__router__"));
+    .where(eq(personas.name, "Router"));
 
   if (existing) return existing.id;
 
@@ -89,7 +89,7 @@ async function getOrCreateRouterPersona(): Promise<string> {
   const id = createId.persona();
   await db.insert(personas).values({
     id,
-    name: "__router__",
+    name: "Router",
     description: "Built-in routing agent that decides workflow state transitions",
     avatar: { color: "#6366f1", icon: "route" },
     systemPrompt: ROUTER_SYSTEM_PROMPT,

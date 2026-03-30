@@ -358,7 +358,7 @@ async function runExecutionStream(
       .where(eq(executions.id, executionId));
 
     // Append to work item's executionContext (skip for router)
-    if (persona.name !== "__router__") {
+    if (persona.name !== "Router") {
       await appendExecutionContext(task.workItemId, {
         executionId: executionId as ExecutionId,
         summary: finalSummary,
@@ -403,7 +403,7 @@ async function runExecutionStream(
     if (finalOutcome === "success" && canTransition(task.workItemId)) {
       recordTransition(task.workItemId);
 
-      if (persona.name === "__router__") {
+      if (persona.name === "Router") {
         // Router just completed — dispatch for the (potentially changed) state
         const [updated] = await db
           .select({ currentState: workItems.currentState })

@@ -34,7 +34,7 @@
 
 ### Pipeline Smoke Test
 
-- [ ] **E.5** — Create development seed with realistic pipeline data. Update `packages/backend/src/db/seed.ts`: seed a project with `autoRouting: true`, all 5 personas with real system prompts (Product Manager, Tech Lead, Engineer, Code Reviewer, Router), persona assignments for each workflow state, a mix of work items in various states (some in Backlog ready to start, some in progress, some done with execution history and comments). This seed should represent a realistic in-flight project, not just empty scaffolding.
+- [review] **E.5** — Create development seed with realistic pipeline data. Update `packages/backend/src/db/seed.ts`: seed a project with `autoRouting: true`, all 5 personas with real system prompts (Product Manager, Tech Lead, Engineer, Code Reviewer, Router), persona assignments for each workflow state, a mix of work items in various states (some in Backlog ready to start, some in progress, some done with execution history and comments). This seed should represent a realistic in-flight project, not just empty scaffolding.
 
 - [ ] **E.6** — Manual pipeline walkthrough and fix. With backend running (`pnpm --filter backend dev`) and frontend in API mode: manually walk a work item through the full lifecycle. Create a top-level item → move to Planning (verify persona dispatches) → move through Decomposition (verify children created) → children to Ready → In Progress (verify engineer persona runs) → In Review (verify reviewer runs) → Done. Fix every integration bug found. Document the walkthrough steps and any fixes in the WORKLOG.
 
