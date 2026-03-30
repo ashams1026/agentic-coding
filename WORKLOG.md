@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: P.10 (approved)
+
+**Reviewed:** Tooltips across the app — `tooltip.tsx`, `root-layout.tsx`, `list-view.tsx`, `work-items.tsx`, `detail-panel.tsx`, `filter-bar.tsx`.
+- Global: sideOffset default 4, delayDuration 300ms ✓
+- List view: state badge, priority badge (with fullName), truncated titles, progress bars, persona avatars ✓
+- Work items page: view toggle buttons ("List view"/"Flow view"), quick add ("Create new work item") ✓
+- Detail panel: close button ("Close panel") ✓
+- Filter bar: sort direction toggle (dynamic), clear filters ✓
+- All use `asChild` pattern, `key` correctly on Tooltip in map ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — P.10: Add tooltips across the app
 
 **Task:** Add tooltips to truncated titles, priority/state badges, persona avatars, progress bars, view toggles, and icon buttons. Consistent sideOffset={4}, delay 300ms.
