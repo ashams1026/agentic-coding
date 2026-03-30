@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: Q.1 (approved)
+
+**Reviewed:** Vitest setup — `vitest.config.ts`, package.json scripts.
+- vitest@^4.1.2 installed as root devDependency ✓
+- Root config: globals true, include pattern covers all packages ✓
+- Scripts in root, backend, shared package.json (test + test:watch) ✓
+- `pnpm test` runs, finds zero tests (expected) ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — Q.1: Set up Vitest in the monorepo
 
 **Task:** Install Vitest, configure for monorepo, add test scripts.
