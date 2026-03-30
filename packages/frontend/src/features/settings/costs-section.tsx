@@ -1,4 +1,3 @@
-import { useState, useMemo } from "react";
 import { AlertTriangle } from "lucide-react";
 import {
   BarChart,
@@ -12,24 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-
-// ── Mock 30-day cost data ──────────────────────────────────────────
-
-function generate30DayData(): { date: string; day: string; cost: number }[] {
-  const now = new Date();
-  const data: { date: string; day: string; cost: number }[] = [];
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().slice(0, 10);
-    const dayLabel = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    // Pseudo-random cost based on date for stable mock
-    const seed = d.getDate() + d.getMonth() * 31;
-    const cost = i === 0 ? 1.23 : +(((seed * 17 + 7) % 500) / 100).toFixed(2);
-    data.push({ date: dateStr, day: dayLabel, cost });
-  }
-  return data;
-}
+import { useProjects, useUpdateProject, useCostSummary } from "@/hooks";
 
 // ── Chart tooltip ──────────────────────────────────────────────────
 
@@ -53,14 +35,20 @@ function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
 // ── Cost cap section ───────────────────────────────────────────────
 
 function CostCapSection() {
-  const [monthlyCap, setMonthlyCap] = useState(50);
-  const [warningThreshold, setWarningThreshold] = useState(80);
-  const [dailyLimit, setDailyLimit] = useState<number | null>(null);
-  const [dailyEnabled, setDailyEnabled] = useState(false);
+  const { data: projectsList } = useProjects();
+  const updateProject = useUpdateProject();
+  const { data: costData } = useCostSummary();
 
-  // Mock current spend
-  const currentMonthSpend = 32.47;
-  const pct = monthlyCap > 0 ? Math.min((currentMonthSpend / monthlyCap) * 100, 100) : 0;
+  const project = projectsList?.[0];
+  const settings = project?.settings as Record<string, unknown> | undefined;
+
+  const monthCap = typeof settings?.monthCap === "number" ? settings.monthCap as number : 50;
+  const warningThreshold = typeof settings?.warningThreshold === "number" ? settings.warningThreshold as number : 80;
+  const dailyLimit = typeof settings?.dailyLimit === "number" ? settings.dailyLimit as number : 0;
+  const dailyEnabled = dailyLimit > 0;
+
+  const currentMonthSpend = costData?.monthTotal ?? 0;
+  const pct = monthCap > 0 ? Math.min((currentMonthSpend / monthCap) * 100, 100) : 0;
   const isWarning = pct >= warningThreshold;
   const isDanger = pct >= 95;
 
@@ -69,6 +57,14 @@ function CostCapSection() {
     : isWarning
       ? "bg-amber-500"
       : "bg-emerald-500";
+
+  const handleUpdate = (field: string, value: number) => {
+    if (!project) return;
+    updateProject.mutate({
+      id: project.id,
+      settings: { ...project.settings, [field]: value },
+    });
+  };
 
   return (
     <div className="space-y-5">
@@ -87,8 +83,9 @@ function CostCapSection() {
             <Input
               type="number"
               min={0}
-              value={monthlyCap}
-              onChange={(e) => setMonthlyCap(Number(e.target.value))}
+              value={monthCap}
+              onChange={(e) => handleUpdate("monthCap", Number(e.target.value))}
+              disabled={!project}
               className="pl-7 text-sm"
             />
           </div>
@@ -102,7 +99,7 @@ function CostCapSection() {
               Current: <span className="font-medium text-foreground">${currentMonthSpend.toFixed(2)}</span>
             </span>
             <span className="text-muted-foreground">
-              {pct.toFixed(0)}% of ${monthlyCap.toFixed(2)}
+              {pct.toFixed(0)}% of ${monthCap.toFixed(2)}
             </span>
           </div>
           <div className="h-2.5 w-full overflow-hidden rounded-full bg-muted">
@@ -137,7 +134,8 @@ function CostCapSection() {
             min={0}
             max={100}
             value={warningThreshold}
-            onChange={(e) => setWarningThreshold(Math.min(100, Math.max(0, Number(e.target.value))))}
+            onChange={(e) => handleUpdate("warningThreshold", Math.min(100, Math.max(0, Number(e.target.value))))}
+            disabled={!project}
             className="w-[100px] text-sm"
           />
           <span className="text-xs text-muted-foreground">% of monthly cap</span>
@@ -158,10 +156,8 @@ function CostCapSection() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              setDailyEnabled(!dailyEnabled);
-              if (!dailyEnabled) setDailyLimit(10);
-            }}
+            disabled={!project}
+            onClick={() => handleUpdate("dailyLimit", dailyEnabled ? 0 : 10)}
           >
             {dailyEnabled ? "Disable" : "Enable"}
           </Button>
@@ -174,8 +170,9 @@ function CostCapSection() {
               <Input
                 type="number"
                 min={0}
-                value={dailyLimit ?? ""}
-                onChange={(e) => setDailyLimit(Number(e.target.value))}
+                value={dailyLimit}
+                onChange={(e) => handleUpdate("dailyLimit", Number(e.target.value))}
+                disabled={!project}
                 className="pl-7 text-sm"
               />
             </div>
@@ -183,6 +180,10 @@ function CostCapSection() {
           </div>
         )}
       </div>
+
+      {!project && (
+        <p className="text-xs text-muted-foreground">No project configured. Add a project first.</p>
+      )}
     </div>
   );
 }
@@ -190,9 +191,27 @@ function CostCapSection() {
 // ── Cost history chart ─────────────────────────────────────────────
 
 function CostHistoryChart() {
-  const data = useMemo(() => generate30DayData(), []);
+  const { data: costData, isLoading } = useCostSummary();
 
-  const totalSpend = data.reduce((sum, d) => sum + d.cost, 0);
+  const chartData = (costData?.dailySpend ?? []).map((entry) => {
+    const d = new Date(entry.date);
+    return {
+      date: entry.date,
+      day: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      cost: entry.costUsd,
+    };
+  });
+
+  const totalSpend = chartData.reduce((sum, d) => sum + d.cost, 0);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+        <div className="h-[180px] bg-muted animate-pulse rounded" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -200,43 +219,48 @@ function CostHistoryChart() {
         <div>
           <p className="text-sm font-medium mb-1">Cost History</p>
           <p className="text-xs text-muted-foreground">
-            Daily spend over the last 30 days.
+            Daily spend over the last 7 days.
           </p>
         </div>
         <div className="text-right">
           <p className="text-sm font-semibold">${totalSpend.toFixed(2)}</p>
-          <p className="text-xs text-muted-foreground">30-day total</p>
+          <p className="text-xs text-muted-foreground">7-day total</p>
         </div>
       </div>
 
-      <div className="h-[180px] -mx-2">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
-            <XAxis
-              dataKey="day"
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
-              interval={4}
-              dy={4}
-            />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
-              tickFormatter={(v: number) => `$${v}`}
-              width={36}
-            />
-            <Tooltip content={<ChartTooltip />} cursor={{ fill: "hsl(var(--accent))", opacity: 0.5 }} />
-            <Bar
-              dataKey="cost"
-              radius={[2, 2, 0, 0]}
-              fill="hsl(217, 91%, 60%)"
-              maxBarSize={14}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+      {chartData.length > 0 ? (
+        <div className="h-[180px] -mx-2">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+              <XAxis
+                dataKey="day"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
+                dy={4}
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 9, fill: "hsl(var(--muted-foreground))" }}
+                tickFormatter={(v: number) => `$${v}`}
+                width={36}
+              />
+              <Tooltip content={<ChartTooltip />} cursor={{ fill: "hsl(var(--accent))", opacity: 0.5 }} />
+              <Bar
+                dataKey="cost"
+                radius={[2, 2, 0, 0]}
+                fill="hsl(217, 91%, 60%)"
+                maxBarSize={14}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      ) : (
+        <div className="h-[180px] flex items-center justify-center text-xs text-muted-foreground">
+          No cost data yet.
+        </div>
+      )}
     </div>
   );
 }

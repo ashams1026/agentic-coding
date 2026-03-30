@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-30 — W.5: Wire cost management settings
+
+**Task:** Wire the Settings Costs section to read/write `monthCap`, `warningThreshold`, `dailyLimit` from project settings. Wire cost chart to real `GET /api/dashboard/cost-summary` data. Show real monthly spend vs cap progress bar.
+
+**Done:**
+- **`packages/frontend/src/features/settings/costs-section.tsx`** — Rewired completely:
+  - `CostCapSection`: reads `monthCap` (default 50), `warningThreshold` (default 80%), `dailyLimit` (default 0) from first project's settings via `useProjects()`
+  - All three fields update via `useUpdateProject()` with `PATCH /api/projects/:id` — immediate effect
+  - Progress bar uses real `monthTotal` from `useCostSummary()` hook (backed by `GET /api/dashboard/cost-summary`)
+  - Daily limit enable/disable toggles between 0 and 10
+  - Disabled state when no project configured
+  - `CostHistoryChart`: replaced 30-day mock `generate30DayData()` with real 7-day data from `useCostSummary()`
+  - Loading skeleton while data fetches, empty state when no cost data
+  - Removed all local `useState` for settings — all values are now derived from project settings API
+
+**No backend changes needed** — `GET /api/dashboard/cost-summary` already reads `monthCap` from project settings. `warningThreshold` and `dailyLimit` are stored in the freeform `settings` JSON column (no schema migration required).
+
+**Files modified:** `costs-section.tsx`, `TASKS.md`, `WORKLOG.md`
+
+**Notes:** Build: 0 errors. The `useMemo` import and `generate30DayData` mock function were removed. Recharts chart now shows 7 days (matching backend's `cost-summary` response) instead of 30 days of fake data.
+
+---
+
 ## 2026-03-30 — Review: W.4 (approved)
 
 **Reviewed:** Concurrency settings wiring — backend endpoint, frontend slider, live stats polling.
