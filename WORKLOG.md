@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: Q.2 (approved)
+
+**Reviewed:** Test database helper — `packages/backend/src/test/setup.ts`, `packages/backend/src/test/setup.test.ts`.
+- `createTestDb()`: in-memory SQLite, Drizzle migrations, `{ db, cleanup }` return ✓
+- `seedTestDb()`: 1 project, 5 personas, 4 assignments, 9 work items, 2 edges, 4 executions, 5 comments, 1 proposal, 1 memory ✓
+- Database isolation verified by test (insert in db1 not visible in db2) ✓
+- `TEST_IDS` exported with all fixed IDs for assertion use ✓
+- TS2532 fix from rework: `projects[0]!.id` after `toHaveLength(1)` — correct ✓
+- Build: 0 errors
+- Tests: 4 pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — Q.2 (rework): Fix TS2532 build error in test file
 
 **Task:** Address review feedback — `projects[0].id` access fails strict mode TypeScript.
