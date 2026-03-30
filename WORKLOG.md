@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: PS.1 (approved)
+
+**Reviewed:** Sidebar project switcher wiring to selectedProjectId.
+- Controlled Select: `value={selectedProjectId ?? undefined}` + `onValueChange` → `setSelectedProjectId` ✓
+- Auto-select useEffect: correct guard (`!selectedProjectId && projectsList?.length > 0`), non-null assertion safe after length check ✓
+- Collapsed tooltip: `.find()` lookup by selectedProjectId with fallback ✓
+- Persistence: `selectedProjectId` already in Zustand `partialize` (ui-store.ts:47) ✓
+- Conventions: named export, cn(), shadcn/ui Select, no hardcoded text ✓
+- Build: 0 errors ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — PS.1: Wire project switcher to selectedProjectId
 
 **Task:** Wire the sidebar project switcher to read/write `selectedProjectId` from the UI store, auto-select first project on load, persist selection.

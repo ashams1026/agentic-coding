@@ -16,7 +16,7 @@
 
 ### Core Wiring
 
-- [review] **PS.1** — Wire project switcher to selectedProjectId. In the sidebar project switcher component: read projects from `useProjects()`, display as dropdown, call `useUIStore.getState().setSelectedProjectId(id)` on selection. Auto-select the first project on initial load if `selectedProjectId` is null. Show the selected project name in the sidebar. Persist selection via the existing Zustand persist config.
+- [x] **PS.1** — Wire project switcher to selectedProjectId. In the sidebar project switcher component: read projects from `useProjects()`, display as dropdown, call `useUIStore.getState().setSelectedProjectId(id)` on selection. Auto-select the first project on initial load if `selectedProjectId` is null. Show the selected project name in the sidebar. Persist selection via the existing Zustand persist config.
 
 - [ ] **PS.2** — Create a useSelectedProject hook. Create `packages/frontend/src/hooks/use-selected-project.ts`: reads `selectedProjectId` from `useUIStore`, fetches the full project via `useProject(id)`, returns `{ project, projectId, isLoading }`. This becomes the single source of truth for "which project am I looking at" — all other hooks consume it.
 
