@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-03-29 — Review: O.4 (approved)
+
+**Reviewed:** Mock data fixtures — `fixtures.ts`.
+- All 6 requirements met: unified workItems array, parent/child hierarchy, workItemId cross-refs, workflows removed, personaAssignments added, data coverage (3 top-level, 10 children, 3 grandchildren, multiple states)
+- IDs correctly use wi-/we- prefixes
+- fixtures.ts compiles clean — no type errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.4: Refactor mock data fixtures
 
 **Task:** Replace mockStories/mockTasks with unified mockWorkItems array, update all cross-references.
