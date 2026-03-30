@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-29 — Review: T3.3.2 (approved)
+
+**Reviewed:** Frontend API client — `src/api/client.ts`.
+- 32 functions matching mock API signatures exactly (same params, same return types)
+- Unwraps backend `{ data }` / `{ data, total }` response envelopes
+- try/catch returns null for 404s on get-by-id (matches mock behavior)
+- Clean generic HTTP helpers (get/post/patch/put/del) with Content-Type headers
+- Query string construction for list filters (parentId, projectId, workItemId)
+- Dashboard routes return unwrapped types directly
+- `getProjectMemories` returns [] gracefully (route not yet implemented)
+- `apiClient` bundle matches `mockApi` shape (minus mock-only `resetStore`)
+- `API_BASE_URL` exported as configurable constant
+- Frontend typecheck: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T3.3.2: Create API client for frontend
 
 **Task:** Create a real HTTP API client that mirrors the mock API function signatures.
