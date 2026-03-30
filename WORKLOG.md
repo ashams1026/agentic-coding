@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-29 — Review: O.13 (approved)
+
+**Reviewed:** Router cleanup — `router.tsx`, `dashboard.tsx`, `upcoming-work.tsx`.
+- All 5 requirements met: old routes removed, /items present, workflow designer import removed, dashboard links updated
+- Clean 6-route router with no legacy references
+- Dashboard links correctly point to /items
+- No new type errors in changed files
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.13: Update router
 
 **Task:** Remove old routes, remove workflow designer import, update dashboard links.
