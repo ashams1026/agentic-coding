@@ -148,3 +148,25 @@
 - [x] **D.8** — MCP tools (`docs/mcp-tools.md`). 7 tools with Zod schemas, output formats, side effects, persona access matrix, MCP server attachment mechanism. *(completed 2026-03-30)*
 - [x] **D.9** — Configuration & deployment (`docs/deployment.md`). ~/.agentops/ structure, 4 config fields, 5 env vars, 10 CLI commands, pm2, logging, database, graceful shutdown, crash recovery. *(completed 2026-03-30)*
 - [x] **D.10** — Frontend (`docs/frontend.md`). Directory structure, feature pattern, list/flow views, mock data layer, TanStack Query + Zustand, design system (color tokens, typography, 18 shadcn/ui components). *(completed 2026-03-30)*
+
+---
+
+## Sprint 15: Project Scoping (PS.1–PS.10) — completed 2026-03-30
+
+> Fixed critical bug: all queries returned data from all projects. Scoped every data-fetching hook and backend route to the selected project.
+
+### Core Wiring (PS.1–PS.6)
+- [x] **PS.1** — Wire project switcher to selectedProjectId (sidebar.tsx). *(completed 2026-03-30)*
+- [x] **PS.2** — Create useSelectedProject hook (use-selected-project.ts). *(completed 2026-03-30)*
+- [x] **PS.3** — Scope useWorkItems() to selected project (10 call sites). *(completed 2026-03-30)*
+- [x] **PS.4** — Scope dashboard queries (4 backend routes + hooks + call sites). *(completed 2026-03-30)*
+- [x] **PS.5** — Scope executions/comments/proposals (3 backend routes + hooks + 9 call sites). *(completed 2026-03-30)*
+- [x] **PS.6** — Scope persona assignments, remove all hardcoded `pj-agntops`. *(completed 2026-03-30)*
+
+### New Project Experience (PS.7–PS.8, PS.10)
+- [x] **PS.7** — Empty states for new projects (work items, activity feed, dashboard). *(completed 2026-03-30)*
+- [x] **PS.8** — Auto-seed 5 default personas + assignments on project creation. *(completed 2026-03-30)*
+- [x] **PS.10** — Folder browser modal for project path in Settings. *(completed 2026-03-30)*
+
+### Backend Scoping Audit (PS.9)
+- [x] **PS.9** — Verified all 8 list routes have ?projectId= filtering. No fixes needed. *(completed 2026-03-30)*

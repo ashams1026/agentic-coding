@@ -5,40 +5,7 @@
 
 ---
 
-> Sprints 1-14 complete and archived.
-
----
-
-## Sprint 15: Project Scoping
-
-> Critical bug: all queries return data from all projects. Creating a new project shows the same items as every other project.
-> Every data-fetching hook and component must be scoped to the selected project.
-
-### Core Wiring
-
-- [x] **PS.1** — Wire project switcher to selectedProjectId. In the sidebar project switcher component: read projects from `useProjects()`, display as dropdown, call `useUIStore.getState().setSelectedProjectId(id)` on selection. Auto-select the first project on initial load if `selectedProjectId` is null. Show the selected project name in the sidebar. Persist selection via the existing Zustand persist config.
-
-- [x] **PS.2** — Create a useSelectedProject hook. Create `packages/frontend/src/hooks/use-selected-project.ts`: reads `selectedProjectId` from `useUIStore`, fetches the full project via `useProject(id)`, returns `{ project, projectId, isLoading }`. This becomes the single source of truth for "which project am I looking at" — all other hooks consume it.
-
-- [x] **PS.3** — Scope work items queries to selected project. Update all `useWorkItems()` call sites (list-view, board-view, flow-view, filter-bar, detail-panel, command-palette, agent-monitor components — ~10 files) to pass `projectId` from `useSelectedProject()`. The hook already accepts `projectId` as a parameter — callers just aren't passing it.
-
-- [x] **PS.4** — Scope dashboard queries to selected project. Update `useDashboardStats()`, `useCostSummary()`, `useExecutionStats()`, `useReadyWork()` to accept and pass `projectId`. Update the backend dashboard routes to filter by `projectId` if not already. Update dashboard page components to pass the selected project ID.
-
-- [x] **PS.5** — Scope executions, comments, and proposals to selected project. These are already scoped by `workItemId` in most places, but any top-level listing (agent monitor history, activity feed) should filter to work items belonging to the selected project. Update `useExecutions()` and the agent monitor history/sidebar to pass a `projectId` filter. Update the activity feed to only show events for the selected project.
-
-- [x] **PS.6** — Scope persona assignments to selected project. The `usePersonaAssignments()` hook already takes `projectId` — verify all call sites pass the selected project ID. The settings workflow section should read/write assignments for the selected project only.
-
-### New Project Experience
-
-- [x] **PS.7** — Show empty state for new projects. When a project has zero work items: show a friendly empty state on the Work Items page ("No work items yet. Create your first one to get started.") with a prominent "Create work item" button. Dashboard should show zeroed-out stats gracefully (not errors or loading spinners). Activity feed should show "No activity yet."
-
-- [x] **PS.8** — Auto-seed default personas on project creation. When creating a new project via the API: if no personas exist in the DB yet, seed the 5 built-in personas (PM, Tech Lead, Engineer, Code Reviewer, Router). Create default persona assignments for the new project mapping states to the built-in personas. This ensures a new project is immediately usable with the agent pipeline.
-
-- [x] **PS.10** — Add folder browser to project creation form. In the project creation/edit form in Settings: replace the text input for project path with a folder picker. Add a `POST /api/settings/browse-directory` backend route that accepts `{ startPath?: string }` and returns a directory listing `{ entries: [{ name, path, isDirectory }] }` using `fs.readdirSync`. The frontend shows a modal folder browser: breadcrumb path bar at top, list of folders (no files), click to navigate into, "Select" button to confirm. Falls back to a text input with a "Browse..." button next to it for accessibility. Prepopulate the browser starting at the user's home directory (`os.homedir()`).
-
-### Backend Scoping Audit
-
-- [x] **PS.9** — Audit and fix backend routes for project scoping. Review all routes that return lists: `GET /api/work-items`, `GET /api/executions`, `GET /api/comments`, `GET /api/proposals`, `GET /api/dashboard/*`. Ensure each accepts an optional `?projectId=` query param and filters results when provided. For work items this likely already works — verify the others. Add `projectId` filtering to any route that's missing it.
+> Sprints 1-15 complete and archived.
 
 ---
 

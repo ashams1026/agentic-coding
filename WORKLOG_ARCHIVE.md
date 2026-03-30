@@ -21,31 +21,13 @@
 
 ---
 
-## Sprint 6: O.1–O.10 — archived 2026-03-29
+## Sprint 6: O.1–O.20 (data model overhaul + backend) — archived 2026-03-29
 
-*Data layer (O.1–O.6):* Replaced Story/Task/Workflow/Trigger types with WorkItem/PersonaAssignment across shared types, mock fixtures (3 top-level + 10 children + 3 grandchildren), mock API (WorkItem CRUD, persona assignments), TanStack Query hooks (use-work-items.ts, use-persona-assignments.ts). Added WORKFLOW constant (8 states, transitions, helpers). All IDs use wi- prefix.
+*Data layer + UI (O.1–O.10):* Story/Task → WorkItem model. 3-mode view toggle (list/board/flow), filter bar, Zustand store. List view with tree-indent, board with dnd-kit, detail panel.
 
-*Multi-view UI (O.7–O.10):* Work items page at /items with 3-mode view toggle, filter bar, Zustand store. List view: tree-indented rows with state/priority badges, progress bars, persona avatars, state grouping. Board view: WORKFLOW columns with dnd-kit drag-and-drop, scope selector, persona trigger prompt. Tree view: pure hierarchy with indent guide lines.
+*Nav + dashboard + cleanup (O.11–O.17):* Sidebar/router/dashboard/activity feed updated for WorkItem model. Workflow config section. 26 old files deleted.
 
-*Detail panel + nav cleanup (O.11–O.17):* O.11: detail-panel.tsx (~280 lines) with header/breadcrumb/children/proposals/comments/executions/metadata, master-detail layout (w-2/5 + w-3/5). O.12: sidebar nav updated ("Work Items" replaces "Story Board", "Workflows" removed). O.13: router cleaned (6 routes, /items added, old routes removed). O.14: dashboard updated for WorkItem model. O.15: activity feed updated with router_decision event type. O.16: workflow-config-section.tsx with auto-routing toggle, persona-per-state table, SVG state machine diagram. O.17: deleted 26 files + 4 old pages, fixed 7 remaining files for WorkItem types — 0 errors.
-
-**Key patterns:** State badges use `${color}20` bg / `${color}40` border from WORKFLOW. priorityConfig record reused across views. WorkItemsStore: view/groupBy/sortBy persisted, filters ephemeral. childStats Map for progress. assignmentMap from personaAssignments + personaMap for triggers.
-
----
-
-## Sprint 6: O.12–O.20 (nav, routes, backend schema) — archived 2026-03-29
-
-*Navigation & routing (O.12–O.13):* Sidebar "Story Board" → "Work Items" with ListTodo icon, "Workflows" removed, proposals badge on /items. Router: removed 4 old routes, kept 6 clean routes, dashboard links updated to /items.
-
-*Dashboard & activity feed (O.14–O.15):* All story/task references replaced with work item across dashboard (upcoming-work, recent-activity, active-agents-strip) and activity feed. Added router_decision event type. WS events use workItemId/workItemTitle fields.
-
-*Settings & cleanup (O.16–O.17):* Workflow configuration section added to settings (auto-routing toggle, persona-per-state table, SVG state machine diagram). Old code removed: 26 files across 5 directories + 4 pages deleted, 7 remaining files fixed. Frontend typecheck: 0 errors.
-
-*Backend schema & seed (O.18–O.19):* Drizzle schema with 9 tables matching shared entities. Seed script: all 9 entity types matching frontend fixtures (1 project, 5 personas, 16 work items, 4 edges, 4 assignments, 8 executions, 15 comments, 2 proposals, 2 memories). DB connection: WAL mode, FK enforcement.
-
-*Backend CRUD routes (O.20):* 3 route files with 10 routes total: work-items (5 routes with recursive delete), persona-assignments (2 routes with upsert), work-item-edges (3 routes). One review rejection for recursive delete bug (`and()` → `inArray()`), fixed on rework. All routes return `{ data, total }` list / `{ data }` single format.
-
-**Key patterns:** Serializer functions for DB→entity (Date→ISO, branded ID casts). JSON.stringify for JSON-mode columns in PATCH. `createId.*()` for ID generation. PUT to CORS methods for upsert. Dependency-ordered seed inserts.
+*Backend (O.18–O.20):* Drizzle schema (9 tables), seed script (all entity types), 10 CRUD routes across 3 files. Recursive delete bug fixed on rework.
 
 ---
 
@@ -183,14 +165,30 @@
 
 ---
 
-## Sprint 14: Documentation D.1–D.5 (work + reviews) — archived 2026-03-30
+## Sprint 14: Documentation D.1–D.10 (work + reviews) — archived 2026-03-30
 
-*D.1 (work + review approved):* README.md — one-paragraph overview, 8 features, ASCII package tree, quick start (Node 22, pnpm 9, dev + production), config path, 9-doc table. 101 lines.
+*D.1 (approved):* README.md — overview, 8 features, package tree, quick start, config, 9-doc table.
 
-*D.2 (work + review approved):* `docs/getting-started.md` — 8 sections: prerequisites, install, first run, API key (UI+CLI), create project (UI+curl), create work item, manual state walk, enable auto-routing with persona assignments.
+*D.2 (approved):* `docs/getting-started.md` — 8 sections: prerequisites, install, first run, API key, project setup, work items, state walk, auto-routing.
 
-*D.3 (work + review approved):* `docs/architecture.md` — ASCII system diagram (browser↔backend↔SQLite/Claude/MCP), 3 package tables, agent engine 9 modules, request lifecycle, agent execution lifecycle, 9 WS events table.
+*D.3 (approved):* `docs/architecture.md` — ASCII system diagram, 3 package tables, agent engine 9 modules, request/agent lifecycles, 9 WS events.
 
-*D.4 (work + review approved):* `docs/data-model.md` — ASCII ER diagram, 9 entity field tables, WorkItem hierarchy, executionContext, dependency graph, RejectionPayload, ID format, storage details.
+*D.4 (approved):* `docs/data-model.md` — ASCII ER diagram, 9 entity tables, WorkItem hierarchy, executionContext, dependency graph, IDs, storage.
 
-*D.5 (work + review approved):* `docs/workflow.md` — 8 states with colors, transition map, rate limiting (10/hour), manual vs auto transitions, Router agent, auto-routing toggle, persona assignments, parent-child coordination, rejection/retry (3-max escalation), dispatch checks.
+*D.5 (approved):* `docs/workflow.md` — 8 states, transitions, rate limiting, Router agent, coordination, rejection/retry, dispatch checks.
+
+*D.6 (approved):* `docs/personas.md` — 5 built-in personas (PM/TL/Eng/Rev/Router), 4-layer prompt assembly, tool allowlists, Router comparison.
+
+*D.7 (approved):* `docs/api.md` — 48 REST endpoints across 11 route files, 9 WS event types, TypeScript interfaces, curl examples.
+
+*D.8 (approved):* `docs/mcp-tools.md` — 7 tools (post_comment, create_children, route_to_state, list_items, get_context, flag_blocked, request_review), Zod schemas, side effects, persona access matrix.
+
+*D.9 (approved):* `docs/deployment.md` — ~/.agentops/ structure, config file, 5 env vars, 10 CLI commands, pm2 ecosystem, logging, graceful shutdown, crash recovery.
+
+*D.10 (approved):* `docs/frontend.md` — directory structure, 6 routes, feature pattern, mock layer, TanStack Query + Zustand state, design system (colors, typography, 18 shadcn/ui components, dark mode, density).
+
+---
+
+## Sprint 15: PS.1 (early entry) — archived 2026-03-30
+
+*PS.1 (work + review approved):* Wire project switcher — controlled Select in sidebar wired to `selectedProjectId`/`setSelectedProjectId` from `useUIStore`, auto-select first project on load via useEffect, collapsed sidebar tooltip shows selected project. Persistence via existing Zustand persist config. Files: `sidebar.tsx`.
