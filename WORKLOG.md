@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: AI.3 (approved)
+
+**Reviewed:** Work Items list view and creation test plans.
+- `work-items-list-view.md`: 14 steps — navigates to `/items`, verifies list view default (List button active), filter bar (search/state/priority/persona/group by/sort), work item rows with state badges (colored) + priority badges (P0-P3) + titles, parent expand/collapse via chevron, indented children, item click → detail panel with title/state/priority/"Move to…"/description/children/comments/execution history/metadata, close panel ✓
+- `work-items-create.md`: 9 steps — clicks "Add" button (Plus icon + "Add" text matching source), verifies "New work item" appears (matches `handleQuickAdd` default title), Backlog state (correct default), default priority, detail panel defaults ("No description", "No children") ✓
+- Both files follow template format (Objective/Prerequisites/Steps/Expected Results/Failure Criteria) ✓
+- References UI by visible text, not implementation details ✓
+- Build: no code changes, no impact ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.3: Write test plans for Work Items — List View
 
 **Task:** Create test plans for work items list view and work item creation.
