@@ -1,9 +1,8 @@
 export { queryKeys } from "./query-keys";
 export { useThemeSync } from "./use-theme";
 export { useProjects, useProject, useCreateProject, useUpdateProject, useDeleteProject } from "./use-projects";
-export { useStories, useStory, useCreateStory, useUpdateStory, useDeleteStory } from "./use-stories";
-export { useTasks, useTask, useCreateTask, useUpdateTask, useDeleteTask, useTaskEdges, useCreateTaskEdge, useDeleteTaskEdge } from "./use-tasks";
-export { useWorkflows, useWorkflow, useCreateWorkflow, useUpdateWorkflow, useDeleteWorkflow, useTriggers } from "./use-workflows";
+export { useWorkItems, useWorkItem, useCreateWorkItem, useUpdateWorkItem, useDeleteWorkItem, useWorkItemEdges, useCreateWorkItemEdge, useDeleteWorkItemEdge } from "./use-work-items";
+export { usePersonaAssignments, useUpdatePersonaAssignment } from "./use-persona-assignments";
 export { usePersonas, usePersona, useCreatePersona, useUpdatePersona, useDeletePersona } from "./use-personas";
 export { useExecutions, useExecution } from "./use-executions";
 export { useComments, useCreateComment } from "./use-comments";

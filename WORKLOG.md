@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-29 — O.6: Refactor TanStack Query hooks
+
+**Task:** Replace useStories/useTasks/useWorkflows/useTriggers with WorkItem hooks.
+
+**Done:**
+- Rewrote `query-keys.ts`: replaced stories/tasks/taskEdges/workflows/triggers keys with workItems/workItemEdges/personaAssignments; updated executions/comments/proposals to use workItemId
+- Created `use-work-items.ts`: useWorkItems(parentId?, projectId?), useWorkItem(id), useCreateWorkItem, useUpdateWorkItem (with optimistic update), useDeleteWorkItem, useWorkItemEdges, useCreateWorkItemEdge, useDeleteWorkItemEdge
+- Created `use-persona-assignments.ts`: usePersonaAssignments(projectId), useUpdatePersonaAssignment
+- Updated `use-comments.ts`: useComments(workItemId), useCreateComment with workItemId invalidation
+- Updated `use-executions.ts`: useExecutions(workItemId?)
+- Updated `use-proposals.ts`: useProposals(workItemId?)
+- Deleted `use-stories.ts`, `use-tasks.ts`, `use-workflows.ts`
+- Updated `index.ts` exports: removed old hook exports, added new WorkItem and PersonaAssignment hooks
+
+**Files changed:** `query-keys.ts`, `use-work-items.ts` (new), `use-persona-assignments.ts` (new), `use-comments.ts`, `use-executions.ts`, `use-proposals.ts`, `index.ts`
+**Files deleted:** `use-stories.ts`, `use-tasks.ts`, `use-workflows.ts`
+
+**Notes:** All hook files compile clean. Frontend consumers (components) still import old hooks — they will be updated by O.7+ (UI tasks) and O.17 (old code removal).
+
+---
+
 ## 2026-03-29 — Review: O.5 (approved)
 
 **Reviewed:** Mock API layer — `mocks/api.ts`.

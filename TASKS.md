@@ -25,7 +25,7 @@
 
 - [x] **O.5** — Refactor mock API layer. In `packages/frontend/src/mocks/api.ts`: replace `getStories()`, `getTasks()` etc. with `getWorkItems(parentId?)`, `getWorkItem(id)`, `createWorkItem()`, `updateWorkItem()`, `deleteWorkItem()`. Add `getPersonaAssignments(projectId)`, `updatePersonaAssignment()`. Remove workflow CRUD functions. Update all other API functions (comments, executions, proposals) to reference workItemId.
 
-- [ ] **O.6** — Refactor TanStack Query hooks. In `packages/frontend/src/hooks/`: replace `useStories()`, `useStory()`, `useTasks()`, `useTask()` with `useWorkItems(parentId?)`, `useWorkItem(id)`. Add `usePersonaAssignments(projectId)`. Remove `useWorkflows()`, `useTriggers()`. Update all consumers of old hooks throughout the frontend.
+- [review] **O.6** — Refactor TanStack Query hooks. In `packages/frontend/src/hooks/`: replace `useStories()`, `useStory()`, `useTasks()`, `useTask()` with `useWorkItems(parentId?)`, `useWorkItem(id)`. Add `usePersonaAssignments(projectId)`. Remove `useWorkflows()`, `useTriggers()`. Update all consumers of old hooks throughout the frontend.
 
 ### Multi-View UI
 

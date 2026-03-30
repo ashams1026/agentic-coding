@@ -1,57 +1,43 @@
-import type { ProjectId, StoryId, TaskId, WorkflowId, PersonaId, ExecutionId, ProposalId } from "@agentops/shared";
+import type { ProjectId, WorkItemId, PersonaId, ExecutionId, ProposalId } from "@agentops/shared";
 
 export const queryKeys = {
   // Projects
   projects: ["projects"] as const,
   project: (id: ProjectId) => ["projects", id] as const,
 
-  // Stories
-  stories: (projectId?: ProjectId) => {
-    if (projectId) return ["stories", { projectId }] as const;
-    return ["stories"] as const;
+  // Work Items
+  workItems: (parentId?: WorkItemId | null, projectId?: ProjectId) => {
+    if (parentId !== undefined || projectId) return ["workItems", { parentId, projectId }] as const;
+    return ["workItems"] as const;
   },
-  story: (id: StoryId) => ["stories", id] as const,
+  workItem: (id: WorkItemId) => ["workItems", id] as const,
 
-  // Tasks
-  tasks: (storyId?: StoryId) => {
-    if (storyId) return ["tasks", { storyId }] as const;
-    return ["tasks"] as const;
-  },
-  task: (id: TaskId) => ["tasks", id] as const,
-
-  // Task Edges
-  taskEdges: (taskId?: TaskId) => {
-    if (taskId) return ["taskEdges", { taskId }] as const;
-    return ["taskEdges"] as const;
+  // Work Item Edges
+  workItemEdges: (workItemId?: WorkItemId) => {
+    if (workItemId) return ["workItemEdges", { workItemId }] as const;
+    return ["workItemEdges"] as const;
   },
 
-  // Workflows
-  workflows: ["workflows"] as const,
-  workflow: (id: WorkflowId) => ["workflows", id] as const,
+  // Persona Assignments
+  personaAssignments: (projectId: ProjectId) => ["personaAssignments", { projectId }] as const,
 
   // Personas
   personas: ["personas"] as const,
   persona: (id: PersonaId) => ["personas", id] as const,
 
-  // Triggers
-  triggers: (workflowId?: WorkflowId) => {
-    if (workflowId) return ["triggers", { workflowId }] as const;
-    return ["triggers"] as const;
-  },
-
   // Executions
-  executions: (targetId?: StoryId | TaskId) => {
-    if (targetId) return ["executions", { targetId }] as const;
+  executions: (workItemId?: WorkItemId) => {
+    if (workItemId) return ["executions", { workItemId }] as const;
     return ["executions"] as const;
   },
   execution: (id: ExecutionId) => ["executions", id] as const,
 
   // Comments
-  comments: (targetId: StoryId | TaskId) => ["comments", { targetId }] as const,
+  comments: (workItemId: WorkItemId) => ["comments", { workItemId }] as const,
 
   // Proposals
-  proposals: (parentId?: StoryId | TaskId) => {
-    if (parentId) return ["proposals", { parentId }] as const;
+  proposals: (workItemId?: WorkItemId) => {
+    if (workItemId) return ["proposals", { workItemId }] as const;
     return ["proposals"] as const;
   },
   proposal: (id: ProposalId) => ["proposals", id] as const,
