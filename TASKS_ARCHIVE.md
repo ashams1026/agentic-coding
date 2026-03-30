@@ -36,3 +36,31 @@
 - [x] **O.8** — Build list view. Tree-indented rows, state/priority badges, progress bars, persona avatars, state grouping. *(completed 2026-03-29)*
 - [x] **O.9** — Build board view. WORKFLOW columns, drag-and-drop, scope selector, persona trigger prompt. *(completed 2026-03-29)*
 - [x] **O.10** — Build tree view. Pure hierarchy with indent lines/guides, no state grouping. *(completed 2026-03-29)*
+
+### Multi-View UI (continued)
+
+- [x] **O.11** — Build work item detail panel. Right-side panel with header, breadcrumb, children list, proposals, comment stream, execution timeline, metadata. *(completed 2026-03-29)*
+
+### Sidebar & Navigation Cleanup
+
+- [x] **O.12** — Update sidebar navigation. "Story Board" → "Work Items", removed "Workflows", proposals badge on /items. *(completed 2026-03-29)*
+- [x] **O.13** — Update router. Removed old routes, added /items, updated dashboard links. *(completed 2026-03-29)*
+
+### Dashboard & Activity Feed Updates
+
+- [x] **O.14** — Update dashboard for WorkItem model. Replaced story/task refs with work item across all dashboard components. *(completed 2026-03-29)*
+- [x] **O.15** — Update activity feed for WorkItem model. Replaced story/task language, added Router decision events, removed trigger types. *(completed 2026-03-29)*
+
+### Settings: Workflow Configuration
+
+- [x] **O.16** — Build workflow configuration in settings. Auto-routing toggle, persona-per-state table, SVG state machine diagram. *(completed 2026-03-29)*
+
+### Remove Old Code
+
+- [x] **O.17** — Remove old story/task/workflow code. Deleted 26 files across 5 directories + 4 pages, fixed 7 remaining files. *(completed 2026-03-29)*
+
+### Backend Schema
+
+- [x] **O.18** — Rewrite Drizzle schema for WorkItem model. 9 tables in schema.ts matching shared entities. *(completed 2026-03-29)*
+- [x] **O.19** — Update seed script for WorkItem model. Full seed with all fixture data (16 work items, 5 personas, etc). *(completed 2026-03-29)*
+- [x] **O.20** — Rewrite CRUD API routes for WorkItem. 10 routes across 3 files (work-items, persona-assignments, work-item-edges). *(completed 2026-03-29)*
