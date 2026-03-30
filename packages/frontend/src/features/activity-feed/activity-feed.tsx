@@ -495,7 +495,7 @@ function FeedFilterBar({ filters, onFiltersChange, personas }: FilterBarProps) {
 
   return (
     <div className="space-y-3 rounded-lg border border-border bg-card p-3">
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center gap-3 flex-wrap">
         <Filter className="h-4 w-4 text-muted-foreground shrink-0" />
 
         {/* Event type toggle */}
@@ -761,7 +761,7 @@ export function ActivityFeed() {
 
   return (
     <div className="h-full overflow-auto" ref={scrollRef} onScroll={handleScroll}>
-      <div className="max-w-3xl mx-auto py-4 px-4">
+      <div className="max-w-3xl mx-auto py-6 px-6">
         <FeedFilterBar
           filters={filters}
           onFiltersChange={setFilters}

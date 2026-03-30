@@ -22,7 +22,7 @@ function StatCard({ title, value, icon, iconBgClass, onClick }: StatCardProps) {
       className="cursor-pointer transition-colors hover:bg-accent/50"
       onClick={onClick}
     >
-      <CardContent className="flex items-center gap-4 pt-6">
+      <CardContent className="flex items-center gap-4">
         <div
           className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${iconBgClass}`}
         >

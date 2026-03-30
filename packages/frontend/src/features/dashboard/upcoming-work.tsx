@@ -64,7 +64,7 @@ export function UpcomingWork() {
 
   return (
     <Card>
-      <CardContent className="pt-4 pb-4">
+      <CardContent>
         <div className="mb-3 flex items-center justify-between">
           <p className="text-sm font-medium text-muted-foreground">
             Upcoming Work

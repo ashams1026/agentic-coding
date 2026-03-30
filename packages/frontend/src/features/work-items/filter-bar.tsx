@@ -37,7 +37,7 @@ export function FilterBar() {
   const hasFilters = filterState !== null || filterPriority !== null;
 
   return (
-    <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex items-center gap-3 flex-wrap">
       {/* Filter by state */}
       <Select
         value={filterState ?? "all"}

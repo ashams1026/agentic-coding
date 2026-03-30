@@ -40,7 +40,7 @@ function AgentCard({ execution, persona, onClick }: AgentCardProps) {
       className="shrink-0 w-56 cursor-pointer transition-colors hover:bg-accent/50"
       onClick={onClick}
     >
-      <CardContent className="flex items-center gap-3 pt-4 pb-4">
+      <CardContent className="flex items-center gap-3">
         <div
           className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
           style={{ backgroundColor: avatarColor + "20" }}
@@ -91,7 +91,7 @@ export function ActiveAgentsStrip() {
 
   return (
     <Card>
-      <CardContent className="pt-4 pb-4">
+      <CardContent>
         <p className="mb-3 text-sm font-medium text-muted-foreground">
           Active Agents ({runningExecutions.length})
         </p>

@@ -86,7 +86,7 @@ function WorkItemCard({ item, childrenDone, childrenTotal, persona, isSelected, 
       )}
       onClick={onClick}
     >
-      <CardContent className="p-3 space-y-2">
+      <CardContent className="space-y-2">
         <p className="text-sm font-medium leading-tight line-clamp-2">{item.title}</p>
         <div className="flex items-center gap-1.5 flex-wrap">
           <Badge

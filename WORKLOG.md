@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — P.3: Audit and fix spacing alignment
+
+**Task:** Standardize page padding, section spacing, card padding, filter bar gaps, and header-to-content spacing across all pages.
+
+**Done:**
+- Card component (`card.tsx`): standardized from `py-6/px-6/gap-6` → `py-4/px-4/gap-4` for consistent `p-4` card padding
+- Dashboard StatCard: removed redundant `pt-6` from CardContent (Card py-4 handles it)
+- Dashboard widgets (RecentActivity, UpcomingWork, CostSummary, ActiveAgentsStrip): removed redundant `pt-4 pb-4` from CardContent
+- Board view kanban cards: removed `p-3` override from CardContent (now gets standard p-4)
+- Activity Feed page: fixed page padding from `py-4 px-4` → `py-6 px-6` to match all other pages
+- Work Items page: header-to-content spacing `mb-4` → `mb-6` for consistency with Dashboard/Persona Manager
+- Filter bar gap: `gap-2` → `gap-3` in both work items filter bar and activity feed filter bar
+
+**Files modified:** `card.tsx`, `dashboard.tsx`, `recent-activity.tsx`, `upcoming-work.tsx`, `cost-summary.tsx`, `active-agents-strip.tsx`, `board-view.tsx`, `activity-feed.tsx`, `work-items.tsx`, `filter-bar.tsx`
+
+**Notes:** Build: 0 errors, 145 tests pass. Dashboard uses `p-6 space-y-6` ✓, Work Items `p-6` ✓, Persona Manager `p-6` ✓, Settings content `p-6` ✓, Activity Feed `p-6` ✓. Agent Monitor stays full-bleed (terminal UI, by design). All Card components now default to p-4 padding via CardContent px-4 + Card py-4.
+
+---
+
 ## 2026-03-30 — Review: P.2 (approved)
 
 **Reviewed:** Button and badge sizing standardization — `button.tsx`, `badge.tsx` + 8 consumer files.
