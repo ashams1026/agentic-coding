@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: A.1 (approved)
+
+**Reviewed:** MCP server skeleton — `packages/backend/src/agent/mcp-server.ts`.
+- createMcpServer(context) factory returns McpServer instance ✓
+- All 7 tools registered with Zod v4 input schemas matching PLANNING.md T5.1 ✓
+- Tool descriptions are agent-friendly (explain when/why to use) ✓
+- Stub handlers return error CallToolResult (isError: true) ✓
+- TOOL_NAMES const + ToolName type exported for reuse ✓
+- McpContext interface: personaName, personaId, projectId, allowedTools ✓
+- Standalone stdio entry point with env var context ✓
+- Dependencies: @modelcontextprotocol/sdk@^1.28.0, zod@^4.3.6 ✓
+- Backend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.1: Create AgentOps MCP server skeleton
 
 **Task:** Set up MCP server with tool definitions and factory function.

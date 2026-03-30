@@ -27,7 +27,7 @@
 
 ### Agent MCP Server (T5.1)
 
-- [review] **A.1** — Create AgentOps MCP server skeleton. Create `packages/backend/src/agent/mcp-server.ts`. Set up an MCP server using `@modelcontextprotocol/sdk` (or equivalent) that registers tool definitions. Export a `createMcpServer(context)` factory that takes project/workItem context and returns a configured server instance. No tool implementations yet — just the server scaffold and type-safe tool registration pattern.
+- [x] **A.1** — Create AgentOps MCP server skeleton. Create `packages/backend/src/agent/mcp-server.ts`. Set up an MCP server using `@modelcontextprotocol/sdk` (or equivalent) that registers tool definitions. Export a `createMcpServer(context)` factory that takes project/workItem context and returns a configured server instance. No tool implementations yet — just the server scaffold and type-safe tool registration pattern.
 
 - [ ] **A.2** — Implement `post_comment` MCP tool. In `mcp-server.ts`: implement the `post_comment` tool that inserts a comment into the database via the existing comments table. Input: `{ workItemId, content, metadata? }`. Auto-sets `authorType: "agent"`, `authorName` from the persona context. Broadcasts `comment_created` WS event via `broadcast()`.
 
