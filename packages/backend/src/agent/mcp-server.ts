@@ -12,6 +12,11 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { db } from "../db/connection.js";
+import { comments } from "../db/schema.js";
+import { createId } from "@agentops/shared";
+import type { CommentId, WorkItemId } from "@agentops/shared";
+import { broadcast } from "../ws.js";
 
 // ── Context passed to the MCP server ────────────────────────────
 
@@ -56,7 +61,7 @@ function stub(toolName: string): CallToolResult {
 
 // ── Factory ─────────────────────────────────────────────────────
 
-export function createMcpServer(_context: McpContext): McpServer {
+export function createMcpServer(context: McpContext): McpServer {
   const server = new McpServer(
     { name: "agentops", version: "1.0.0" },
     { capabilities: { logging: {} } },
@@ -77,7 +82,58 @@ export function createMcpServer(_context: McpContext): McpServer {
           .describe("Optional metadata object"),
       }),
     },
-    async () => stub("post_comment"),
+    async ({ workItemId, content, metadata }) => {
+      try {
+        const id = createId.comment();
+        const now = new Date();
+
+        await db.insert(comments).values({
+          id,
+          workItemId,
+          authorType: "agent",
+          authorId: context.personaId || null,
+          authorName: context.personaName,
+          content,
+          metadata: metadata ?? {},
+          createdAt: now,
+        });
+
+        broadcast({
+          type: "comment_created",
+          commentId: id as CommentId,
+          workItemId: workItemId as WorkItemId,
+          authorName: context.personaName,
+          contentPreview: content.slice(0, 100),
+          timestamp: now.toISOString(),
+        });
+
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify({
+                id,
+                workItemId,
+                authorName: context.personaName,
+                createdAt: now.toISOString(),
+              }),
+            },
+          ],
+        };
+      } catch (err) {
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: JSON.stringify({
+                error: `Failed to post comment: ${err instanceof Error ? err.message : String(err)}`,
+              }),
+            },
+          ],
+          isError: true,
+        };
+      }
+    },
   );
 
   // ── create_children ─────────────────────────────────────────

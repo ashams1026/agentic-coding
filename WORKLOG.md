@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-29 — A.2: Implement post_comment MCP tool
+
+**Task:** Replace post_comment stub with real DB insert + WS broadcast.
+
+**Done:**
+- In `mcp-server.ts`: replaced stub handler for `post_comment` with real implementation:
+  - Generates CommentId via `createId.comment()`
+  - Inserts into `comments` table with `authorType: "agent"`, `authorName` from persona context
+  - Broadcasts `comment_created` WS event with commentId, workItemId, authorName, contentPreview (truncated to 100 chars)
+  - Returns JSON with id, workItemId, authorName, createdAt on success
+  - Returns error JSON with `isError: true` on failure
+- Added imports: `db` from connection, `comments` from schema, `createId` + branded ID types from shared, `broadcast` from ws
+- Changed `_context` → `context` (now used by post_comment handler)
+
+**Files modified:** `packages/backend/src/agent/mcp-server.ts`
+
+**Notes:** Backend build: 0 errors. The handler follows the same insert pattern as `routes/comments.ts` POST route. Other tool stubs remain unchanged — will be implemented in A.3–A.5.
+
+---
+
 ## 2026-03-29 — Review: A.1 (approved)
 
 **Reviewed:** MCP server skeleton — `packages/backend/src/agent/mcp-server.ts`.
