@@ -21,6 +21,7 @@ import { checkParentCoordination } from "./coordination.js";
 import { checkMemoryGeneration, getRecentMemories } from "./memory.js";
 import { handleRejection } from "./execution-manager.js";
 import { logger } from "../logger.js";
+import { auditStateTransition } from "../audit.js";
 
 // ── Context passed to the MCP server ────────────────────────────
 
@@ -340,6 +341,15 @@ export function createMcpServer(context: McpContext): McpServer {
           timestamp: now.toISOString(),
         });
 
+        // Audit: state transition
+        auditStateTransition({
+          workItemId,
+          fromState,
+          toState: finalTargetState,
+          actor: context.personaName || "Router",
+          actorType: "persona",
+        });
+
         // Parent-child coordination (non-blocking)
         checkParentCoordination(workItemId, finalTargetState).catch((err) => {
           logger.error({ err, workItemId }, "Coordination failed");
@@ -528,6 +538,15 @@ export function createMcpServer(context: McpContext): McpServer {
           toState: "Blocked",
           triggeredBy: (context.personaId as PersonaId) || "system",
           timestamp: now.toISOString(),
+        });
+
+        // Audit: state transition to Blocked
+        auditStateTransition({
+          workItemId,
+          fromState,
+          toState: "Blocked",
+          actor: context.personaName,
+          actorType: "persona",
         });
 
         // Parent-child coordination (non-blocking)

@@ -8,6 +8,7 @@ import { checkParentCoordination } from "../agent/coordination.js";
 import { checkMemoryGeneration } from "../agent/memory.js";
 import { WORKFLOW, isValidTransition } from "@agentops/shared";
 import { broadcast } from "../ws.js";
+import { auditStateTransition } from "../audit.js";
 import type {
   WorkItemId,
   ProjectId,
@@ -169,6 +170,15 @@ export async function workItemRoutes(app: FastifyInstance) {
         toState: body.currentState,
         triggeredBy: "user",
         timestamp: new Date().toISOString(),
+      });
+
+      // Audit: user-driven state transition
+      auditStateTransition({
+        workItemId: id,
+        fromState: previousState,
+        toState: body.currentState,
+        actor: "user",
+        actorType: "user",
       });
 
       dispatchForState(id, body.currentState).catch((err) => {

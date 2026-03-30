@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-30 — S.8: Add execution audit trail
+
+**Task:** Create audit log for state transitions, agent dispatches, and cost events. Store in `~/.agentops/logs/audit.log`. Add `GET /api/audit` endpoint.
+
+**Done:**
+- **`packages/backend/src/audit.ts`** (new) — Audit module with:
+  - Separate pino instance writing to `~/.agentops/logs/audit.log` (ISO timestamps, no base fields)
+  - 4 typed emitters: `auditStateTransition()`, `auditAgentDispatch()`, `auditAgentComplete()`, `auditCostEvent()`
+  - `queryAuditLog()` — reads file, parses JSON lines, filters by workItemId, returns newest-first with limit
+- **`packages/backend/src/routes/audit.ts`** (new) — `GET /api/audit?workItemId=&limit=` endpoint. Max limit 500, default 50.
+- **`packages/backend/src/server.ts`** — Registered `auditRoutes`
+- **`packages/backend/src/agent/execution-manager.ts`** — Added `auditAgentDispatch` (on dispatch), `auditAgentComplete` + `auditCostEvent` (on completion)
+- **`packages/backend/src/agent/mcp-server.ts`** — Added `auditStateTransition` in `route_to_state` and `flag_blocked` tools
+- **`packages/backend/src/agent/coordination.ts`** — Added `auditStateTransition` for parent auto-advance
+- **`packages/backend/src/routes/work-items.ts`** — Added `auditStateTransition` for user-driven state changes
+
+**Files created:** `audit.ts`, `routes/audit.ts`
+**Files modified:** `server.ts`, `agent/execution-manager.ts`, `agent/mcp-server.ts`, `agent/coordination.ts`, `routes/work-items.ts`
+
+**Notes:** Build: 0 errors. Tests: 159/159. Audit log uses `pino.destination()` (not transport worker thread) for simplicity. Each audit entry is one JSON line with: timestamp, workItemId, action, actor, outcome, plus event-specific fields.
+
+---
+
 ## 2026-03-30 — Review: S.7 (approved)
 
 **Reviewed:** Structured logging — `logger.ts` and all consumer files.

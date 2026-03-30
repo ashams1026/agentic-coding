@@ -24,6 +24,7 @@ import { dispatchForState } from "./dispatch.js";
 import { trackExecution, onComplete, getProjectCostSummary } from "./concurrency.js";
 import type { AgentTask, AgentEvent } from "./types.js";
 import { logger } from "../logger.js";
+import { auditAgentDispatch, auditAgentComplete, auditCostEvent } from "../audit.js";
 
 // ── Singleton executor ────────────────────────────────────────────
 
@@ -251,6 +252,14 @@ export async function runExecution(
     timestamp: now.toISOString(),
   });
 
+  // Audit: agent dispatch
+  auditAgentDispatch({
+    workItemId,
+    executionId,
+    personaId,
+    personaName: persona.name,
+  });
+
   // Build task and spawn executor (async — don't await completion)
   const task = await buildAgentTask(workItemId);
   if (!task) {
@@ -379,6 +388,25 @@ async function runExecutionStream(
       costUsd: finalCostUsd,
       timestamp: new Date().toISOString(),
     });
+
+    // Audit: agent completion + cost
+    auditAgentComplete({
+      workItemId: task.workItemId,
+      executionId,
+      personaName: persona.name,
+      outcome: finalOutcome,
+      costUsd: finalCostUsd,
+      durationMs: finalDurationMs,
+    });
+
+    if (finalCostUsd > 0) {
+      auditCostEvent({
+        workItemId: task.workItemId,
+        executionId,
+        costUsd: finalCostUsd,
+        actor: persona.name,
+      });
+    }
 
     // Broadcast cost_update after each execution
     getProjectCostSummary(project.id as string).then((costSummary) => {

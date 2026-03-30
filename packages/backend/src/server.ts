@@ -8,6 +8,7 @@ import { personaRoutes } from "./routes/personas.js";
 import { executionRoutes } from "./routes/executions.js";
 import { proposalRoutes } from "./routes/proposals.js";
 import { dashboardRoutes } from "./routes/dashboard.js";
+import { auditRoutes } from "./routes/audit.js";
 import { registerWebSocket } from "./ws.js";
 import { getActiveCount } from "./agent/concurrency.js";
 import { loggerConfig } from "./logger.js";
@@ -55,6 +56,7 @@ export async function buildServer() {
   await executionRoutes(server);
   await proposalRoutes(server);
   await dashboardRoutes(server);
+  await auditRoutes(server);
 
   return server;
 }

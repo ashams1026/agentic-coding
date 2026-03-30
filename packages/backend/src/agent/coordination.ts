@@ -16,6 +16,7 @@ import type { WorkItemId, CommentId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 import { dispatchForState } from "./dispatch.js";
 import { logger } from "../logger.js";
+import { auditStateTransition } from "../audit.js";
 
 /** The state to advance parent to when all children complete. */
 const PARENT_ADVANCE_STATE = "In Review";
@@ -104,6 +105,15 @@ async function handleChildDone(parentId: string): Promise<void> {
     toState: PARENT_ADVANCE_STATE,
     triggeredBy: "system",
     timestamp: now.toISOString(),
+  });
+
+  // Audit: auto-advance parent
+  auditStateTransition({
+    workItemId: parentId,
+    fromState,
+    toState: PARENT_ADVANCE_STATE,
+    actor: "System",
+    actorType: "system",
   });
 
   // Broadcast comment
