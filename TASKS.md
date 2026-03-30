@@ -37,7 +37,7 @@
 
 - [x] **AI.6** — Write test plans for Work Items — Filtering and Search. Create `tests/e2e/plans/work-items-filtering.md`: type in the search box, verify list filters to matching items, select a state filter, verify only items in that state appear, select a priority filter, combine multiple filters, click "Clear filters" and verify all items return. Create `tests/e2e/plans/work-items-sorting.md`: change sort to "Created date", verify order changes, toggle sort direction, verify order reverses.
 
-- [review] **AI.7** — Write test plans for Agent Monitor. Create `tests/e2e/plans/agent-monitor-layout.md`: navigate to `/agents`, verify Live/History tabs exist, verify empty state message when no agents running. Create `tests/e2e/plans/agent-monitor-history.md`: click History tab, verify past executions table renders with persona, duration, cost, outcome columns, click a row to expand output, verify terminal renderer displays content.
+- [x] **AI.7** — Write test plans for Agent Monitor. Create `tests/e2e/plans/agent-monitor-layout.md`: navigate to `/agents`, verify Live/History tabs exist, verify empty state message when no agents running. Create `tests/e2e/plans/agent-monitor-history.md`: click History tab, verify past executions table renders with persona, duration, cost, outcome columns, click a row to expand output, verify terminal renderer displays content.
 
 - [ ] **AI.8** — Write test plans for Activity Feed. Create `tests/e2e/plans/activity-feed.md`: navigate to `/activity`, verify events render with icons, timestamps, descriptions, verify date grouping headers, apply a filter (e.g., by event type), verify list updates, clear filters.
 

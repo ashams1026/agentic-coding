@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-30 — Review: AI.7 (approved)
+
+**Reviewed:** Agent Monitor layout and history test plans.
+- `agent-monitor-layout.md`: 9 steps — Live/History tabs (matches TabsList/TabsTrigger, Live default via `useState("live")`), active count badge (green, `activeExecutions.length`), empty state text matches EmptyState component verbatim ("No agents running" / "Agents start when stories move through workflow states." / "Go to Story Board" → `/board`), tab switching ✓
+- `agent-monitor-history.md`: 14 steps — column headers match source ("Agent"/"Target"/"Started"/"Duration"/"Cost"/"Outcome"), row data verified (persona avatar+name, date via `formatDate`, duration via `formatDuration`, $amount, outcome badges emerald/red/amber matching `outcomeBadge`), expand via Collapsible/TerminalRenderer in `h-[300px]` div, stats bar (4 stats matching `StatsBar`), filter bar (persona/outcome/cost matching `FilterBar`), sortable columns (3 fields), empty state "No execution history" ✓
+- Template format ✓, UI references match source text ✓
+- Build: no code changes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.7: Write test plans for Agent Monitor
 
 **Task:** Create test plans for agent monitor layout and history.
