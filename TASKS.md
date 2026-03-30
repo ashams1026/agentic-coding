@@ -11,7 +11,7 @@
 
 ## Backlog: Quick Fixes
 
-- [review] **QF.1** — Add API mode toggle to the UI. Add a toggle switch to the status bar (bottom of the app) showing "Mock" / "Live" with a colored indicator (amber for mock, green for live). Clicking switches `apiMode` in `useUIStore` and calls `initWsConnection()` to connect/disconnect the real WebSocket. Also add the same toggle in Settings → Appearance section with a description: "Mock mode uses demo data. Live mode connects to the backend API at localhost:3001." On switch to Live: verify backend is reachable (`GET /api/health`) — if it fails, show a toast "Backend not running. Start it with `pnpm --filter backend dev`" and revert to Mock.
+- [x] **QF.1** — Add API mode toggle to the UI. Add a toggle switch to the status bar (bottom of the app) showing "Mock" / "Live" with a colored indicator (amber for mock, green for live). Clicking switches `apiMode` in `useUIStore` and calls `initWsConnection()` to connect/disconnect the real WebSocket. Also add the same toggle in Settings → Appearance section with a description: "Mock mode uses demo data. Live mode connects to the backend API at localhost:3001." On switch to Live: verify backend is reachable (`GET /api/health`) — if it fails, show a toast "Backend not running. Start it with `pnpm --filter backend dev`" and revert to Mock.
 
 ---
 

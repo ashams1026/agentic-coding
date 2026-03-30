@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — Review: QF.1 (approved)
+
+**Reviewed:** API mode toggle in status bar and Settings → Appearance.
+- Status bar: clickable button with amber dot "Mock" / green dot "Live" ✓
+- Settings → Appearance: `ApiModeSection` card-style selector at top, description matches requirement verbatim ✓
+- Health check: `fetch(API_BASE_URL + "/api/health")` before switching to Live ✓
+- Toast on failure: "Backend not running" / "Start it with `pnpm --filter backend dev`" ✓
+- Revert on failure: `return` before `setApiMode` — mode stays on Mock ✓
+- `initWsConnection()` called after `setApiMode` — Zustand sync update ensures correct mode read ✓
+- No health check when switching Live→Mock (correct) ✓
+- `useCallback` with proper deps, clean imports ✓
+- Build: 0 errors ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — QF.1: Add API mode toggle to the UI
 
 **Task:** Add Mock/Live toggle to status bar and Settings → Appearance, with health check on switch to Live.
