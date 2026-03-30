@@ -2,10 +2,9 @@ import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router";
 import {
   LayoutDashboard,
-  Kanban,
+  ListTodo,
   Bot,
   Activity,
-  GitBranch,
   Users,
   Settings,
   PanelLeftClose,
@@ -36,10 +35,9 @@ import { Separator } from "@/components/ui/separator";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/board", icon: Kanban, label: "Story Board" },
+  { to: "/items", icon: ListTodo, label: "Work Items" },
   { to: "/agents", icon: Bot, label: "Agent Monitor" },
   { to: "/activity", icon: Activity, label: "Activity Feed" },
-  { to: "/workflows", icon: GitBranch, label: "Workflows" },
   { to: "/personas", icon: Users, label: "Personas" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ] as const;
@@ -114,7 +112,7 @@ export function Sidebar() {
                 <span className="relative">
                   <Icon className="h-4 w-4 shrink-0" />
                   {/* Collapsed badges — fade in/out with transition */}
-                  {to === "/board" && pendingProposalCount > 0 && (
+                  {to === "/items" && pendingProposalCount > 0 && (
                     <span
                       className={cn(
                         "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-0.5 text-[9px] font-bold text-white transition-all duration-300 ease-in-out",
@@ -153,7 +151,7 @@ export function Sidebar() {
                   )}
                 >
                   <span className="flex-1 truncate">{label}</span>
-                  {to === "/board" && pendingProposalCount > 0 && (
+                  {to === "/items" && pendingProposalCount > 0 && (
                     <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white shrink-0">
                       {pendingProposalCount}
                     </span>

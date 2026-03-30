@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-29 — O.12: Update sidebar navigation
+
+**Task:** Replace "Story Board" with "Work Items", remove "Workflows", update badges and routes.
+
+**Done:**
+- Updated `packages/frontend/src/components/sidebar.tsx`:
+  - Replaced "Story Board" (`/board`, Kanban icon) with "Work Items" (`/items`, ListTodo icon)
+  - Removed "Workflows" nav item entirely (no workflow designer page)
+  - Updated pending proposals badge from `/board` to `/items` (both collapsed and expanded badges)
+  - Replaced `Kanban` and `GitBranch` lucide imports with `ListTodo`
+
+**Files modified:** `components/sidebar.tsx`
+
+**Notes:** sidebar.tsx compiles clean. Nav now has 6 items (Dashboard, Work Items, Agent Monitor, Activity Feed, Personas, Settings) instead of 7.
+
+---
+
 ## 2026-03-29 — Review: O.11 (approved)
 
 **Reviewed:** Detail panel — `detail-panel.tsx`, `comment-stream.tsx`, `execution-timeline.tsx`, `work-items.tsx`.
