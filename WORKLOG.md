@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: U.4 (approved)
+
+**Reviewed:** Inline title editing — `detail-panel.tsx`, `EditableTitle` component.
+- Click-to-edit with cursor hint and tooltip ✓
+- Input field: same font styling, transparent bg, border-b indicator ✓
+- Enter → save, Escape → cancel, blur → save ✓
+- Empty/unchanged titles don't trigger mutation ✓
+- Draft syncs on external item changes ✓
+- Auto-focus + select on edit start ✓
+- Wired to `useUpdateWorkItem.mutate({ id, title })` ✓
+- useCallback on handlers, no unnecessary re-renders ✓
+- Frontend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — U.4: Add inline title editing to detail panel
 
 **Task:** Make the work item title click-to-edit in the detail panel.
