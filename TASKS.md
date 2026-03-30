@@ -16,7 +16,7 @@
 - [x] **T3.2.8** — Implement execution API routes (updated for workItemId)
 - [x] **T3.2.9** — Implement proposal API routes (updated for parentWorkItemId)
 - [x] **T3.2.10** — Implement aggregate/dashboard API routes (updated for work items)
-- [review] **T3.3.1** — Implement real WebSocket server
+- [x] **T3.3.1** — Implement real WebSocket server
 - [ ] **T3.3.2** — Create API client for frontend (updated for work item endpoints)
 - [ ] **T3.3.3** — Add API mode toggle to frontend
 - [ ] **T3.3.4** — Connect WebSocket client to real server

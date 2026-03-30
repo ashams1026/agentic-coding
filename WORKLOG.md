@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: T3.3.1 (approved)
+
+**Reviewed:** WebSocket server — `ws.ts`, `server.ts`.
+- @fastify/websocket plugin registered correctly with async pattern
+- `/ws` route with `{ websocket: true }` option per docs
+- Module-level Set<WebSocket> for client tracking — add on connect, delete on close/error
+- `broadcast(WsEvent)` typed with shared WsEvent, checks readyState before send
+- `getClientCount()` utility exported for monitoring
+- Welcome message on connect for client handshake
+- Registered before API routes in server.ts
+- @types/ws added as devDep
+- Backend typecheck: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T3.3.1: Implement real WebSocket server
 
 **Task:** Set up @fastify/websocket with broadcast capability for real-time events.
