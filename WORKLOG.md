@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-29 — U.5: Add description editing to detail panel
+
+**Task:** Add Write/Preview tabs for the description field with Save/Cancel buttons.
+
+**Done:**
+- Added `EditableDescription` component to `detail-panel.tsx` (~105 lines):
+  - Read mode: shows description text or "No description" placeholder with Edit button
+  - Edit mode: Write/Preview tab bar with underline indicator
+  - Write tab: auto-focused textarea with resize-y, placeholder text
+  - Preview tab: renders draft as whitespace-pre-wrap text
+  - Save button: calls onSave if changed, exits edit mode
+  - Cancel button: reverts draft, exits edit mode
+  - Draft syncs with external value changes when not editing
+- Replaced static `{item.description && <p>...}` with `<EditableDescription>` — now always visible (shows placeholder when empty)
+- Wired to `updateWorkItem.mutate({ id: item.id, description: desc })`
+
+**Files modified:** `packages/frontend/src/features/work-items/detail-panel.tsx`
+
+**Notes:** Frontend build: 0 errors. No markdown library added — preview renders plain text with whitespace-pre-wrap. A markdown renderer could be added later as a polish step.
+
+---
+
 ## 2026-03-29 — Review: U.4 (approved)
 
 **Reviewed:** Inline title editing — `detail-panel.tsx`, `EditableTitle` component.

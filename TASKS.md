@@ -21,7 +21,7 @@
 
 - [x] **U.4** — Add inline title editing to detail panel. In `packages/frontend/src/features/work-items/detail-panel.tsx`: make the title click-to-edit (input field on click, Enter to save, Escape to cancel). Wire to `useUpdateWorkItem` mutation.
 
-- [ ] **U.5** — Add description editing to detail panel. Below the title: add Write/Preview tabs for the description field. Write tab shows a textarea, Preview tab renders markdown. Save/Cancel buttons. Wire to `useUpdateWorkItem` mutation. Reuse the `EditableSection` pattern from the old story-detail if applicable.
+- [review] **U.5** — Add description editing to detail panel. Below the title: add Write/Preview tabs for the description field. Write tab shows a textarea, Preview tab renders markdown. Save/Cancel buttons. Wire to `useUpdateWorkItem` mutation. Reuse the `EditableSection` pattern from the old story-detail if applicable.
 
 - [ ] **U.6** — Add priority and label editing to detail panel. Priority: replace static badge with a dropdown selector (P0-P3 with colors). Labels: add an inline pill editor (click to add/remove labels). Both wire to `useUpdateWorkItem` mutation.
 

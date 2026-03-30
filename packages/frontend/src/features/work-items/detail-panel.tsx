@@ -87,6 +87,122 @@ function EditableTitle({
   );
 }
 
+// ── Editable description ────────────────────────────────────────
+
+function EditableDescription({
+  value,
+  onSave,
+}: {
+  value: string;
+  onSave: (newDescription: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [tab, setTab] = useState<"write" | "preview">("write");
+  const [draft, setDraft] = useState(value);
+
+  useEffect(() => {
+    if (!editing) setDraft(value);
+  }, [value, editing]);
+
+  const handleSave = useCallback(() => {
+    if (draft !== value) {
+      onSave(draft);
+    }
+    setEditing(false);
+    setTab("write");
+  }, [draft, value, onSave]);
+
+  const handleCancel = useCallback(() => {
+    setDraft(value);
+    setEditing(false);
+    setTab("write");
+  }, [value]);
+
+  if (!editing) {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <h3 className="text-sm font-medium">Description</h3>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 text-xs text-muted-foreground"
+            onClick={() => setEditing(true)}
+          >
+            Edit
+          </Button>
+        </div>
+        {value ? (
+          <p className="text-sm text-muted-foreground whitespace-pre-wrap">{value}</p>
+        ) : (
+          <p className="text-sm text-muted-foreground italic">
+            No description. Click Edit to add one.
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <h3 className="text-sm font-medium mb-1">Description</h3>
+      {/* Write / Preview tabs */}
+      <div className="flex gap-1 mb-2 border-b">
+        <button
+          className={cn(
+            "text-xs px-2 py-1 -mb-px border-b-2 transition-colors",
+            tab === "write"
+              ? "border-primary text-foreground font-medium"
+              : "border-transparent text-muted-foreground hover:text-foreground",
+          )}
+          onClick={() => setTab("write")}
+        >
+          Write
+        </button>
+        <button
+          className={cn(
+            "text-xs px-2 py-1 -mb-px border-b-2 transition-colors",
+            tab === "preview"
+              ? "border-primary text-foreground font-medium"
+              : "border-transparent text-muted-foreground hover:text-foreground",
+          )}
+          onClick={() => setTab("preview")}
+        >
+          Preview
+        </button>
+      </div>
+
+      {tab === "write" ? (
+        <textarea
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          className="w-full min-h-[120px] rounded-md border bg-transparent px-3 py-2 text-sm resize-y focus:outline-none focus:ring-1 focus:ring-primary"
+          placeholder="Add a description..."
+          autoFocus
+        />
+      ) : (
+        <div className="min-h-[120px] rounded-md border px-3 py-2">
+          {draft ? (
+            <p className="text-sm whitespace-pre-wrap">{draft}</p>
+          ) : (
+            <p className="text-sm text-muted-foreground italic">Nothing to preview.</p>
+          )}
+        </div>
+      )}
+
+      {/* Save / Cancel */}
+      <div className="flex gap-2 mt-2">
+        <Button size="sm" className="h-7 text-xs" onClick={handleSave}>
+          Save
+        </Button>
+        <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={handleCancel}>
+          Cancel
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 // ── Priority config ─────────────────────────────────────────────
 
 const priorityConfig: Record<Priority, { label: string; className: string }> = {
@@ -360,12 +476,10 @@ export function DetailPanel() {
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-6">
           {/* Description */}
-          {item.description && (
-            <div>
-              <h3 className="text-sm font-medium mb-1">Description</h3>
-              <p className="text-sm text-muted-foreground whitespace-pre-wrap">{item.description}</p>
-            </div>
-          )}
+          <EditableDescription
+            value={item.description}
+            onSave={(desc) => updateWorkItem.mutate({ id: item.id, description: desc })}
+          />
 
           {/* Children */}
           <div>
