@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — PS.8: Auto-seed default personas on project creation
+
+**Task:** When creating a new project via the API, seed built-in personas if none exist, and create default persona assignments for the new project.
+
+**Done:**
+- Created `packages/backend/src/db/default-personas.ts` with:
+  - `BUILT_IN_PERSONAS` array: 5 personas (Product Manager, Tech Lead, Engineer, Code Reviewer, Router) with same config as seed.ts
+  - `DEFAULT_STATE_ASSIGNMENTS` mapping: Planning→PM, Decomposition→Tech Lead, Ready→Router, In Progress→Engineer, In Review→Code Reviewer
+  - `seedDefaultPersonasForProject(projectId)` function: checks if any personas exist; if not, inserts the 5 built-ins. Then creates persona assignments for the given project using the default mapping.
+- Updated `packages/backend/src/routes/projects.ts`: POST /api/projects now calls `seedDefaultPersonasForProject(id)` after inserting the project row.
+
+**Files created:** `packages/backend/src/db/default-personas.ts`
+**Files modified:** `packages/backend/src/routes/projects.ts`
+
+**Notes:** Persona definitions are intentionally without full system prompts (empty string) — the seed.ts has detailed prompts but those are fixture-specific. The personas table defaults `systemPrompt` to `""`. Build: 0 errors after removing unused `PersonaId` import.
+
+---
+
 ## 2026-03-30 — Review: PS.7 (approved)
 
 **Reviewed:** Empty states for new projects.

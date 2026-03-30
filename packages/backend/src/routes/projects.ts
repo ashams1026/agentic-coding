@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { existsSync } from "node:fs";
 import { db } from "../db/connection.js";
 import { projects } from "../db/schema.js";
+import { seedDefaultPersonasForProject } from "../db/default-personas.js";
 import { createId } from "@agentops/shared";
 import type {
   ProjectId,
@@ -79,6 +80,9 @@ export async function projectRoutes(app: FastifyInstance) {
         createdAt: now,
       })
       .returning();
+
+    // Seed default personas (if none exist) and create assignments for this project
+    await seedDefaultPersonasForProject(id);
 
     return reply.status(201).send({ data: serializeProject(row!) });
   });
