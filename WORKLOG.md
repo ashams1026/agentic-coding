@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — AI.7: Write test plans for Agent Monitor
+
+**Task:** Create test plans for agent monitor layout and history.
+
+**Done:**
+- **`tests/e2e/plans/agent-monitor-layout.md`** — 9 steps: navigate to `/agents`, verify Live/History tabs (Live default), verify active agent count badge on Live tab, verify empty state ("No agents running" + "Agents start when stories move through workflow states." + "Go to Story Board" link), switch between tabs, test "Go to Story Board" navigation.
+- **`tests/e2e/plans/agent-monitor-history.md`** — 14 steps: click History tab, verify stats bar (Runs/Total Cost/Success %/Avg Duration), verify filter bar (persona "All agents" dropdown, outcome "All outcomes" dropdown, cost range Min/Max inputs), verify table columns (Agent/Target/Started/Duration/Cost/Outcome), verify row data (persona avatar+name, date, duration, $amount, outcome badge — Success green/Failed red/Rejected amber), click row to expand → terminal renderer (300px area), click to collapse, filter by outcome → table filters + stats update, "Clear" button resets, sort by Cost column header + reverse direction. Empty state: "No execution history" / "Past agent runs will appear here once completed."
+
+**Files created:** `tests/e2e/plans/agent-monitor-layout.md`, `tests/e2e/plans/agent-monitor-history.md`
+
+**Notes:** Plans reference actual source: `agent-monitor-layout.tsx` (Tabs with TabsList/TabsTrigger, EmptyState component, LiveView with ActiveAgentSidebar/SplitView), `agent-history.tsx` (StatsBar with 4 stats, FilterBar with persona/outcome/cost filters, Table with 6 columns, HistoryRow with Collapsible/TerminalRenderer, outcomeBadge colors, sortable columns). Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: QF.1 (approved)
 
 **Reviewed:** API mode toggle in status bar and Settings → Appearance.
