@@ -12,10 +12,11 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { eq } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { comments } from "../db/schema.js";
-import { createId } from "@agentops/shared";
-import type { CommentId, WorkItemId } from "@agentops/shared";
+import { comments, workItems, workItemEdges } from "../db/schema.js";
+import { createId, WORKFLOW } from "@agentops/shared";
+import type { CommentId, WorkItemId, PersonaId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 
 // ── Context passed to the MCP server ────────────────────────────
@@ -163,7 +164,85 @@ export function createMcpServer(context: McpContext): McpServer {
           .describe("Array of children to create"),
       }),
     },
-    async () => stub("create_children"),
+    async ({ parentId, children }) => {
+      try {
+        // Look up parent to get projectId
+        const [parent] = await db
+          .select({ projectId: workItems.projectId })
+          .from(workItems)
+          .where(eq(workItems.id, parentId));
+
+        if (!parent) {
+          return {
+            content: [{ type: "text" as const, text: JSON.stringify({ error: `Parent work item ${parentId} not found` }) }],
+            isError: true,
+          };
+        }
+
+        const now = new Date();
+        const createdIds: string[] = [];
+
+        // Create each child work item
+        for (const child of children) {
+          const id = createId.workItem();
+          createdIds.push(id);
+
+          await db.insert(workItems).values({
+            id,
+            parentId,
+            projectId: parent.projectId,
+            title: child.title,
+            description: child.description ?? "",
+            context: {},
+            currentState: WORKFLOW.initialState,
+            priority: "p2",
+            labels: [],
+            assignedPersonaId: null,
+            executionContext: [],
+            createdAt: now,
+            updatedAt: now,
+          });
+
+          broadcast({
+            type: "state_change",
+            workItemId: id as WorkItemId,
+            fromState: "",
+            toState: WORKFLOW.initialState,
+            triggeredBy: (context.personaId as PersonaId) || "system",
+            timestamp: now.toISOString(),
+          });
+        }
+
+        // Create work_item_edges for dependsOn references
+        for (let i = 0; i < children.length; i++) {
+          const deps = children[i]!.dependsOn;
+          if (!deps || deps.length === 0) continue;
+
+          for (const dep of deps) {
+            // dep can be an index (e.g., "0", "1") referring to a sibling in this batch, or an existing ID
+            const fromId = /^\d+$/.test(dep) ? createdIds[parseInt(dep, 10)] : dep;
+            if (!fromId) continue;
+
+            const edgeId = createId.workItemEdge();
+            await db.insert(workItemEdges).values({
+              id: edgeId,
+              fromId,
+              toId: createdIds[i]!,
+              type: "depends_on",
+            });
+          }
+        }
+
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ createdIds, parentId }) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: `Failed to create children: ${err instanceof Error ? err.message : String(err)}` }) }],
+          isError: true,
+        };
+      }
+    },
   );
 
   // ── route_to_state ──────────────────────────────────────────

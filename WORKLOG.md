@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-29 — A.3: Implement create_children MCP tool
+
+**Task:** Replace create_children stub with real DB inserts for child work items + dependency edges.
+
+**Done:**
+- In `mcp-server.ts`: replaced stub handler for `create_children` with real implementation:
+  - Looks up parent work item to inherit `projectId`
+  - Returns error if parent not found
+  - Creates each child in Backlog state (`WORKFLOW.initialState`) with default priority p2
+  - Broadcasts `state_change` event for each created child (fromState: "", toState: "Backlog")
+  - Creates `depends_on` edges for `dependsOn` references — supports both numeric index refs (e.g., "0" for first sibling in batch) and existing work item IDs
+  - Returns `{ createdIds, parentId }` on success
+  - Error handling with try/catch and `isError: true`
+- Added imports: `eq` from drizzle-orm, `workItems`/`workItemEdges` from schema, `WORKFLOW` from shared, `PersonaId` type
+- Removed unused `WorkItemEdgeId` import
+
+**Files modified:** `packages/backend/src/agent/mcp-server.ts`
+
+**Notes:** Backend build: 0 errors. Initial build had 2 type errors (unused import, wrong branded ID cast for triggeredBy) — fixed before marking review.
+
+---
+
 ## 2026-03-29 — Review: A.2 (approved)
 
 **Reviewed:** post_comment MCP tool — `packages/backend/src/agent/mcp-server.ts`.
