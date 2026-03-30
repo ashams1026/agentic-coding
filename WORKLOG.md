@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — Review: D.8 (approved)
+
+**Reviewed:** MCP tools documentation — 7 tools, Zod schemas, side effects, persona access, attachment mechanism.
+- 7 tool names match `TOOL_NAMES` array in mcp-server.ts ✓
+- `post_comment`: Zod schema (workItemId, content, metadata?), output (id, workItemId, authorName, createdAt), side effects (insert agent comment, broadcast comment_created) — all match ✓
+- `create_children`: Zod schema (parentId, children[{title, description?, dependsOn?}]), batch index reference via regex, creates in WORKFLOW.initialState, creates depends_on edges, broadcasts state_change per child — all match ✓
+- `route_to_state`: Zod schema (workItemId, targetState, reasoning), validates transition, rejection detection (In Review→In Progress→handleRejection), escalation to Blocked after 3, Router comment, audit, coordination, memory — all match ✓
+- `list_items`: Zod schema (parentId?, state?, verbosity default "summary"), scoped to project, summary vs detail output fields — match ✓
+- `get_context`: Zod schema (workItemId, includeMemory default false), 1000-token memory budget — match ✓
+- `flag_blocked`: Zod schema (workItemId, reason), "Blocked: {reason}" comment, state_change broadcast, audit, coordination — match ✓
+- `request_review`: Zod schema (workItemId, message), "Review requested: {message}" comment, comment_created broadcast — match ✓
+- McpContext: 4 fields match mcp-server.ts:28-37 ✓
+- MCP attachment: mcpServers.agentops config with 4 env vars in claude-executor.ts — match ✓
+- Tool access matrix: matches seed.ts mcpTools arrays ✓
+- Seed name discrepancy note: correctly documents transition_state/create_tasks vs TOOL_NAMES ✓
+- Source files: 6 files, all correct ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — D.8: Document the MCP tools
 
 **Task:** Create `docs/mcp-tools.md` with the AgentOps MCP server and its 7 tools, Zod schemas, output formats, persona access, examples.
