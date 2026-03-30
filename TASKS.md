@@ -5,20 +5,6 @@
 
 ---
 
-## Sprint 7: UI Refinements & Flow View
-
-- [x] **U.1** — Remove tree view.
-- [x] **U.2** — Build Flow view.
-- [x] **U.3** — Update view toggle.
-- [x] **U.4** — Add inline title editing to detail panel.
-- [x] **U.5** — Add description editing to detail panel.
-- [x] **U.6** — Add priority and label editing to detail panel.
-- [x] **U.7** — Add state transition control to detail panel.
-- [x] **U.8** — Soften agent monitor page chrome.
-- [x] **U.9** — Fix bottom padding for status bar.
-
----
-
 ## Sprint 8: Agent Execution Engine (Phase 4 + 5)
 
 > Core agent infrastructure. Implements Phase 4 (Workflow & Router) and Phase 5 (Agent Persona & Execution) from PLANNING.md.
@@ -26,8 +12,6 @@
 > Order: MCP tools → executor interface → SDK executor → dispatch → router → coordination → rejection → concurrency → memory.
 
 ### Agent MCP Server (T5.1)
-
-- [x] **A.1** — Create AgentOps MCP server skeleton. Create `packages/backend/src/agent/mcp-server.ts`. Set up an MCP server using `@modelcontextprotocol/sdk` (or equivalent) that registers tool definitions. Export a `createMcpServer(context)` factory that takes project/workItem context and returns a configured server instance. No tool implementations yet — just the server scaffold and type-safe tool registration pattern.
 
 - [ ] **A.2** — Implement `post_comment` MCP tool. In `mcp-server.ts`: implement the `post_comment` tool that inserts a comment into the database via the existing comments table. Input: `{ workItemId, content, metadata? }`. Auto-sets `authorType: "agent"`, `authorName` from the persona context. Broadcasts `comment_created` WS event via `broadcast()`.
 

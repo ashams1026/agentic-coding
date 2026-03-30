@@ -79,3 +79,25 @@
 - [x] **T3.3.2** — Create API client for frontend (32 functions mirroring mock API, fetch-based). *(completed 2026-03-29)*
 - [x] **T3.3.3** — Add API mode toggle to frontend (Zustand apiMode, unified API layer, 8 hooks updated). *(completed 2026-03-29)*
 - [x] **T3.3.4** — Connect WebSocket client to real server (RealWsClient, unified WS module, 5 consumers updated). *(completed 2026-03-29)*
+
+---
+
+## Sprint 7: UI Refinements & Flow View — completed 2026-03-29
+
+- [x] **U.1** — Remove tree view. Deleted tree-view.tsx, removed from page/store. *(completed 2026-03-29)*
+- [x] **U.2** — Build Flow view. State machine graph with colored nodes, bezier arrows, click-to-filter, avatar stacks, progress bars (~497 lines). *(completed 2026-03-29)*
+- [x] **U.3** — Update view toggle. Board→Flow swap, GitBranch icon, URL params, store type. *(completed 2026-03-29)*
+- [x] **U.4** — Add inline title editing to detail panel. Click-to-edit h2→input, Enter/blur save, Escape cancel. *(completed 2026-03-29)*
+- [x] **U.5** — Add description editing to detail panel. Write/Preview tabs, textarea, Save/Cancel. *(completed 2026-03-29)*
+- [x] **U.6** — Add priority and label editing to detail panel. shadcn Select dropdown, pill editor with inline input. *(completed 2026-03-29)*
+- [x] **U.7** — Add state transition control to detail panel. Valid-next-state dropdown, persona trigger prompt dialog. *(completed 2026-03-29)*
+- [x] **U.8** — Soften agent monitor page chrome. Replaced zinc colors with app tokens in split-view, control-bar, history. *(completed 2026-03-29)*
+- [x] **U.9** — Fix bottom padding for status bar. Added pb-8 to main element. *(completed 2026-03-29)*
+
+---
+
+## Sprint 8: Agent Execution Engine (Phase 4 + 5) — in progress
+
+### Agent MCP Server (T5.1)
+
+- [x] **A.1** — Create AgentOps MCP server skeleton. mcp-server.ts with createMcpServer factory, 7 tool stubs with Zod v4 schemas, standalone stdio entry point. *(completed 2026-03-29)*

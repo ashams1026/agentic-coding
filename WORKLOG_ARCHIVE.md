@@ -46,3 +46,9 @@
 *Backend CRUD routes (O.20):* 3 route files with 10 routes total: work-items (5 routes with recursive delete), persona-assignments (2 routes with upsert), work-item-edges (3 routes). One review rejection for recursive delete bug (`and()` → `inArray()`), fixed on rework. All routes return `{ data, total }` list / `{ data }` single format.
 
 **Key patterns:** Serializer functions for DB→entity (Date→ISO, branded ID casts). JSON.stringify for JSON-mode columns in PATCH. `createId.*()` for ID generation. PUT to CORS methods for upsert. Dependency-ordered seed inserts.
+
+---
+
+## Sprint 7: U.1 (tree view removal) — archived 2026-03-29
+
+*U.1:* Deleted tree-view.tsx, removed TreeView import/render/option from work-items.tsx, updated WorkItemView type to `"list" | "board"` in work-items-store.ts. Cleaned up unused GitBranch import. Reviewed and approved — no stale tree references remaining.

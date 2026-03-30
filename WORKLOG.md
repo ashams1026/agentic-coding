@@ -378,24 +378,6 @@
 - Frontend build: 0 errors
 - Verdict: **approved**
 
----
-
-## 2026-03-29 — U.1: Remove tree view
-
-**Task:** Delete tree view component, remove from page and store.
-
-**Done:**
-- Deleted `packages/frontend/src/features/work-items/tree-view.tsx`
-- Updated `packages/frontend/src/pages/work-items.tsx`:
-  - Removed TreeView import and `{view === "tree" && <TreeView />}` render
-  - Removed "tree" option from viewOptions array (was List/Board/Tree, now List/Board)
-  - Removed "tree" from URL param validation
-  - Removed unused `GitBranch` import from lucide-react
-- Updated `packages/frontend/src/stores/work-items-store.ts`:
-  - Changed `WorkItemView` type from `"list" | "board" | "tree"` to `"list" | "board"`
-
-**Files deleted:** `features/work-items/tree-view.tsx`
-**Files modified:** `pages/work-items.tsx`, `stores/work-items-store.ts`
 
 **Notes:** Frontend build: 0 errors. Only List and Board views remain. U.2 will replace Board with Flow view, and U.3 will rename the toggle options.
 
