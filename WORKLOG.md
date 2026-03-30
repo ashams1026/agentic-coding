@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-30 — Review: AI.6 (approved)
+
+**Reviewed:** Work Items filtering/search and sorting test plans.
+- `work-items-filtering.md`: 14 steps — search input ("Search items..." matches source), debounced filtering, `HighlightedText` yellow highlighting, clear via X icon, state filter ("All states" dropdown matches source), priority filter ("All priorities"), combined filters (state AND priority), "Clear" button (matches source text, hidden via `hasFilters`), zero-results "No items match your filters." (matches list-view.tsx empty state) ✓
+- `work-items-sorting.md`: 12 steps — "Sort by priority" default, "Sort by created"/"Sort by updated" (match source dropdown texts), sort direction ArrowUp/ArrowDown toggle, order reversal verification ✓
+- Template format ✓, UI references match actual source text ✓
+- Build: no code changes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.6: Write test plans for Work Items — Filtering and Search
 
 **Task:** Create test plans for work items filtering/search and sorting.
