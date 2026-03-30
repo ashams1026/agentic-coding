@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: Q.2 (rejected)
+
+**Reviewed:** Test database helper — `packages/backend/src/test/setup.ts`, `packages/backend/src/test/setup.test.ts`.
+- `createTestDb()`: in-memory SQLite, migrations, isolation — correct ✓
+- `seedTestDb()`: realistic data, all entity types seeded — correct ✓
+- `TEST_IDS` export: fixed IDs for assertions — correct ✓
+- Smoke tests: 4 tests, good coverage of isolation and seed correctness ✓
+- Build: **FAILS** — `TS2532: Object is possibly 'undefined'` at `setup.test.ts:54`
+  - `projects[0].id` accessed without null guard under TypeScript strict mode
+- Verdict: **rejected** — build must pass
+
+---
+
 ## 2026-03-29 — Q.2: Create test database helper
 
 **Task:** Create `createTestDb()` and `seedTestDb()` helpers for integration tests.

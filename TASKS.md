@@ -45,7 +45,12 @@
 
 - [x] **Q.1** — Set up Vitest in the monorepo. Install `vitest` as a root devDependency. Create `vitest.config.ts` at root (or per-package configs if needed) with TypeScript support, path aliases matching tsconfig. Add `"test"` script to root `package.json` (`vitest run`) and `"test:watch"` (`vitest`). Add `"test"` scripts to `packages/backend/package.json` and `packages/shared/package.json`. Verify `pnpm test` runs and finds zero tests.
 
-- [review] **Q.2** — Create test database helper. In `packages/backend/src/test/setup.ts`: helper that creates a fresh in-memory SQLite database (`:memory:`), runs Drizzle migrations, and optionally seeds with fixture data. Export `createTestDb()` that returns `{ db, cleanup }`. Export `seedTestDb(db)` that inserts a minimal but realistic dataset (1 project, 5 personas, persona assignments, 3 top-level work items with children, comments, executions). Each test file gets its own database — no shared state between tests.
+- [ ] **Q.2** — Create test database helper.
+  > [feedback: Build fails — `pnpm build` error: `src/test/setup.test.ts(54,12): error TS2532: Object is possibly 'undefined'`.
+  > Line 54: `expect(projects[0].id).toBe(TEST_IDS.PROJECT_ID)` — `projects[0]` may be `undefined` under strict mode.
+  > Fix: add a guard assertion before accessing the element, e.g. `expect(projects).toHaveLength(1)` (already there),
+  > then use `projects[0]!.id` or add `if (!projects[0]) throw ...` before the access. The non-null assertion `!` is
+  > acceptable in test code. Verify `pnpm build` passes after the fix.] In `packages/backend/src/test/setup.ts`: helper that creates a fresh in-memory SQLite database (`:memory:`), runs Drizzle migrations, and optionally seeds with fixture data. Export `createTestDb()` that returns `{ db, cleanup }`. Export `seedTestDb(db)` that inserts a minimal but realistic dataset (1 project, 5 personas, persona assignments, 3 top-level work items with children, comments, executions). Each test file gets its own database — no shared state between tests.
 
 ### Shared Package Tests (Pure Logic)
 
