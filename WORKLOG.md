@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: A.11 (approved)
+
+**Reviewed:** Router agent — `packages/backend/src/agent/router.ts`.
+- runRouter: projectId lookup, autoRouting check (skip if false), persona get/create, runExecution ✓
+- getOrCreateRouterPersona: lazy creation of __router__ persona, haiku model, idempotent ✓
+- ROUTER_TOOLS: list_items + get_context (read-only) + route_to_state ✓
+- ROUTER_SYSTEM_PROMPT: clear guidelines for state transitions ✓
+- settings.isSystem distinguishes from user personas ✓
+- Backend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.11: Implement Router agent
 
 **Task:** Create router.ts with runRouter() that spawns haiku-model routing agent.

@@ -35,7 +35,7 @@
 
 - [x] **A.10** — Implement persona dispatch on state entry. Create `packages/backend/src/agent/dispatch.ts`. `dispatchForState(workItemId, stateName)`: looks up PersonaAssignment for the state, if found spawns execution via `runExecution()`. Called from the work-items PATCH route when `currentState` changes. No-op for states without assigned personas (Backlog, Done).
 
-- [review] **A.11** — Implement Router agent. Create `packages/backend/src/agent/router.ts`. `runRouter(workItemId)`: spawns a haiku-model agent with read-only tools + `route_to_state`. System prompt: "You are a routing agent. Given the current state and work item context, decide the next workflow state." Called after any persona execution completes (from execution-manager on success). If auto-routing is disabled (check project settings), skip.
+- [x] **A.11** — Implement Router agent. Create `packages/backend/src/agent/router.ts`. `runRouter(workItemId)`: spawns a haiku-model agent with read-only tools + `route_to_state`. System prompt: "You are a routing agent. Given the current state and work item context, decide the next workflow state." Called after any persona execution completes (from execution-manager on success). If auto-routing is disabled (check project settings), skip.
 
 - [ ] **A.12** — Wire dispatch and routing into execution lifecycle. In `execution-manager.ts`: after successful execution completion, call `runRouter(workItemId)`. In `dispatch.ts`: after router changes state, call `dispatchForState()` for the new state. Add guard against infinite loops (max 10 transitions per work item per hour). Wire `dispatchForState` into the PATCH /api/work-items/:id route when currentState changes.
 
