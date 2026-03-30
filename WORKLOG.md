@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-30 — Review: D.7 (approved)
+
+**Reviewed:** REST API and WebSocket protocol documentation — 48 endpoints, 9 WS events.
+- Endpoint count: 48 total across 11 route files — verified by grep ✓
+- Projects (5): CRUD + path validation (existsSync), matches `projects.ts` ✓
+- Work Items (6): CRUD + retry + recursive delete, state transition validation + 5 side effects, matches `work-items.ts` ✓
+- Work Item Edges (3): GET (or-filter fromId/toId), POST, DELETE, matches `work-item-edges.ts` ✓
+- Personas (5): CRUD with defaults (gray icon, 0 budget), matches `personas.ts` ✓
+- Persona Assignments (2): GET + PUT upsert (onConflictDoUpdate), matches `persona-assignments.ts` ✓
+- Comments (4): CRUD, matches `comments.ts` ✓
+- Executions (5): CRUD with 8 updatable fields, matches `executions.ts` ✓
+- Proposals (5): CRUD, status-only PATCH, matches `proposals.ts` ✓
+- Dashboard (4): stats/cost-summary/execution-stats/ready-work, response types match `api.ts` ✓
+- Settings (8): API key CRUD, concurrency, db-stats, clear executions, export, import, matches `settings.ts` ✓
+- Audit (1): workItemId + limit (default 50, max 500), matches `audit.ts` ✓
+- All 13 request types match `packages/shared/src/api.ts` exactly ✓
+- All 4 dashboard response types match `api.ts` ✓
+- WebSocket: 9 event types match `ws-events.ts` field-by-field ✓
+- WS connection URL `/ws`, welcome message, broadcast model match `ws.ts` ✓
+- Source files: 14 files ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — D.7: Document the API
 
 **Task:** Create `docs/api.md` with every REST endpoint, request/response types, curl examples, and WebSocket protocol.
