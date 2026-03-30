@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: E.6 (approved)
+
+**Reviewed:** Pipeline walkthrough fixes — `work-items.ts`, `work-items.test.ts`.
+- State transition validation: `isValidTransition()` check before DB update, 400 for invalid ✓
+- `previousState` scoping: `let` declaration outside block, assigned inside, guarded in dispatch ✓
+- WS broadcast: `state_change` event with correct fields, fires after DB update, before dispatch ✓
+- Test updated: expects 400 + `INVALID_TRANSITION` for Backlog→Done ✓
+- Walkthrough: 7 steps documented, 2 bugs found and fixed ✓
+- Build: 0 errors, Tests: 145/145
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — E.6: Manual pipeline walkthrough and fix
 
 **Task:** Walk a work item through the full lifecycle via API, fix integration bugs found.
