@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: O.10 (approved)
+
+**Reviewed:** Tree view — `tree-view.tsx`, `work-items.tsx` update.
+- All 9 requirements met: pure hierarchy, expand/collapse, state/priority badges, progress bars, indent lines/guides, click-to-select
+- parentGuides array correctly propagates vertical guide lines through recursion
+- isLast flag properly controls guide line continuation (no trailing line for last sibling)
+- renderChildren as render prop keeps TreeNode pure
+- Keyboard accessible, loading skeletons, empty state
+- All placeholders removed from work-items page
+- No type errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.10: Build tree view
 
 **Task:** Create pure hierarchy tree view with indent lines/guides, no state grouping.
