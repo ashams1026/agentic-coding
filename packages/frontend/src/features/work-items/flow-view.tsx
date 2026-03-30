@@ -141,7 +141,7 @@ function ProgressBar({ done, total }: { done: number; total: number }) {
           className="h-full rounded-full transition-all duration-500"
           style={{
             width: `${pct}%`,
-            backgroundColor: pct === 100 ? "#22c55e" : "#3b82f6",
+            backgroundColor: pct === 100 ? "#16a34a" : "#2563eb",
           }}
         />
       </div>

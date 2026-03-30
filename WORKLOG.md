@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-30 — P.4: Refine color palette for modern feel
+
+**Task:** Improve card/surface layering, darken badge colors for WCAG AA contrast, add softer ring focus token.
+
+**Done:**
+- **Light mode**: Card now `220 10% 98.5%` (subtle off-white, distinct from pure white background). Ring softened from near-black to medium gray-blue (`240 5% 65%`).
+- **Dark mode**: Full surface layering — background 3.9% → card 6% → secondary/accent 14% → muted/input 16% → border 20%. Popover 8% for dropdown elevation. Ring softened to `240 5% 45%`.
+- **State badge colors**: All workflow states shifted from 500-level → 600-level Tailwind colors for WCAG AA Large Text compliance on light card backgrounds:
+  - Planning: `#8b5cf6` → `#7c3aed` (violet)
+  - Decomposition: `#6366f1` → `#4f46e5` (indigo)
+  - Ready: `#3b82f6` → `#2563eb` (blue)
+  - In Progress: `#f59e0b` → `#d97706` (amber)
+  - In Review: `#f97316` → `#ea580c` (orange)
+  - Done: `#22c55e` → `#16a34a` (green)
+  - Blocked: `#ef4444` → `#dc2626` (red)
+- **Theme tokens** in index.css: status, persona, priority, and proposal colors all updated to 600-level variants
+- **Mock data**: persona avatar colors updated in frontend fixtures, backend seed, and backend test setup
+- **Hardcoded colors**: updated in flow-view progress bars, detail-panel priority dots, persona-editor color picker
+
+**Files modified:** `index.css`, `workflow.ts`, `fixtures.ts`, `seed.ts`, `setup.ts`, `flow-view.tsx`, `detail-panel.tsx`, `persona-editor.tsx`
+
+**Notes:** Build: 0 errors, 145 tests pass. Zero old 500-level colors remain in codebase (verified via grep). Colors are still recognizably the same hue family, just one step darker for better readability.
+
+---
+
 ## 2026-03-30 — Review: P.3 (approved)
 
 **Reviewed:** Spacing alignment standardization — `card.tsx` + 9 consumer files.

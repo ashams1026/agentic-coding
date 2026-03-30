@@ -227,9 +227,9 @@ const priorityOptions: {
   className: string;
   dotColor: string;
 }[] = [
-  { value: "p0", label: "P0 — Critical", shortLabel: "P0", className: "border-red-500 text-red-600 dark:text-red-400", dotColor: "#ef4444" },
-  { value: "p1", label: "P1 — High", shortLabel: "P1", className: "border-amber-500 text-amber-600 dark:text-amber-400", dotColor: "#f59e0b" },
-  { value: "p2", label: "P2 — Medium", shortLabel: "P2", className: "border-blue-500 text-blue-600 dark:text-blue-400", dotColor: "#3b82f6" },
+  { value: "p0", label: "P0 — Critical", shortLabel: "P0", className: "border-red-500 text-red-600 dark:text-red-400", dotColor: "#dc2626" },
+  { value: "p1", label: "P1 — High", shortLabel: "P1", className: "border-amber-500 text-amber-600 dark:text-amber-400", dotColor: "#d97706" },
+  { value: "p2", label: "P2 — Medium", shortLabel: "P2", className: "border-blue-500 text-blue-600 dark:text-blue-400", dotColor: "#2563eb" },
   { value: "p3", label: "P3 — Low", shortLabel: "P3", className: "border-slate-400 text-slate-500 dark:text-slate-400", dotColor: "#94a3b8" },
 ];
 

@@ -56,31 +56,31 @@
  * Tailwind v4 CSS-first configuration via @theme
  */
 @theme {
-  /* Persona colors — each agent role gets a distinct color */
-  --color-persona-pm: #8b5cf6;
-  --color-persona-tech-lead: #3b82f6;
-  --color-persona-engineer: #10b981;
-  --color-persona-reviewer: #f59e0b;
-  --color-persona-qa: #ef4444;
+  /* Persona colors — each agent role gets a distinct color (600-level) */
+  --color-persona-pm: #7c3aed;
+  --color-persona-tech-lead: #2563eb;
+  --color-persona-engineer: #059669;
+  --color-persona-reviewer: #d97706;
+  --color-persona-qa: #dc2626;
 
-  /* Status colors */
+  /* Status colors (600-level for WCAG AA contrast on light backgrounds) */
   --color-status-pending: #94a3b8;
-  --color-status-in-progress: #3b82f6;
-  --color-status-running: #10b981;
-  --color-status-success: #22c55e;
-  --color-status-failure: #ef4444;
-  --color-status-rejected: #f59e0b;
-  --color-status-blocked: #f97316;
+  --color-status-in-progress: #2563eb;
+  --color-status-running: #059669;
+  --color-status-success: #16a34a;
+  --color-status-failure: #dc2626;
+  --color-status-rejected: #d97706;
+  --color-status-blocked: #ea580c;
 
-  /* Priority colors */
-  --color-priority-p0: #ef4444;
-  --color-priority-p1: #f97316;
-  --color-priority-p2: #eab308;
+  /* Priority colors (600-level for contrast) */
+  --color-priority-p0: #dc2626;
+  --color-priority-p1: #ea580c;
+  --color-priority-p2: #ca8a04;
   --color-priority-p3: #94a3b8;
 
-  /* Proposal/attention colors */
-  --color-proposal: #f59e0b;
-  --color-attention: #ef4444;
+  /* Proposal/attention colors (600-level for contrast) */
+  --color-proposal: #d97706;
+  --color-attention: #dc2626;
 
   /* Sidebar width */
   --spacing-sidebar: 16rem;
@@ -125,7 +125,7 @@
 :root {
   --background: 0 0% 100%;
   --foreground: 240 10% 3.9%;
-  --card: 0 0% 100%;
+  --card: 220 10% 98.5%;
   --card-foreground: 240 10% 3.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 240 10% 3.9%;
@@ -141,30 +141,30 @@
   --destructive-foreground: 0 0% 98%;
   --border: 240 5.9% 90%;
   --input: 240 5.9% 90%;
-  --ring: 240 5.9% 10%;
+  --ring: 240 5% 65%;
   --radius: 0.5rem;
 }
 
 .dark {
   --background: 240 10% 3.9%;
   --foreground: 0 0% 98%;
-  --card: 240 10% 3.9%;
+  --card: 240 6% 6%;
   --card-foreground: 0 0% 98%;
-  --popover: 240 10% 3.9%;
+  --popover: 240 6% 8%;
   --popover-foreground: 0 0% 98%;
   --primary: 0 0% 98%;
   --primary-foreground: 240 5.9% 10%;
-  --secondary: 240 3.7% 15.9%;
+  --secondary: 240 4% 14%;
   --secondary-foreground: 0 0% 98%;
-  --muted: 240 3.7% 15.9%;
+  --muted: 240 4% 16%;
   --muted-foreground: 240 5% 64.9%;
-  --accent: 240 3.7% 15.9%;
+  --accent: 240 4% 14%;
   --accent-foreground: 0 0% 98%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --ring: 240 4.9% 83.9%;
+  --border: 240 4% 20%;
+  --input: 240 4% 16%;
+  --ring: 240 5% 45%;
 }
 
 /*

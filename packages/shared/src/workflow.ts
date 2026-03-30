@@ -10,13 +10,13 @@ export interface WorkflowState {
 export const WORKFLOW = {
   states: [
     { name: "Backlog", color: "#6b7280" },
-    { name: "Planning", color: "#8b5cf6" },
-    { name: "Decomposition", color: "#6366f1" },
-    { name: "Ready", color: "#3b82f6" },
-    { name: "In Progress", color: "#f59e0b" },
-    { name: "In Review", color: "#f97316" },
-    { name: "Done", color: "#22c55e" },
-    { name: "Blocked", color: "#ef4444" },
+    { name: "Planning", color: "#7c3aed" },
+    { name: "Decomposition", color: "#4f46e5" },
+    { name: "Ready", color: "#2563eb" },
+    { name: "In Progress", color: "#d97706" },
+    { name: "In Review", color: "#ea580c" },
+    { name: "Done", color: "#16a34a" },
+    { name: "Blocked", color: "#dc2626" },
   ] as const satisfies readonly WorkflowState[],
 
   transitions: {
