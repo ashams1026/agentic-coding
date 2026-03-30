@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: E.7 (approved)
+
+**Reviewed:** Settings field name standardization and dispatch pipeline verification.
+- `maxConcurrentAgents`→`maxConcurrent`, `monthlyCostCap`→`monthCap` in seed, dashboard, fixtures, mock API ✓
+- No stale references to old field names remain ✓
+- Critical bug: monthly cost cap was silently never enforced (returned 0 = no cap) ✓
+- Pipeline trace: route → dispatch → cost cap → concurrency → execution → router chain verified ✓
+- Auto-routing ON/OFF: router.ts `autoRouting === false` guard tested with 3 cases ✓
+- 6 new tests (cost cap block/allow, routing on/off/default/nonexistent) ✓
+- Coordination gap correctly scoped to E.8 ✓
+- Build: 0 errors, Tests: 151/151
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — E.7: Fix dispatch trigger on state change
 
 **Task:** Verify and fix the full dispatch pipeline: routes → dispatch → execution-manager → router.
