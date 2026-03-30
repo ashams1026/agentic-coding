@@ -29,7 +29,7 @@
 
 ### Agent Monitor Polish
 
-- [ ] **U.8** — Soften agent monitor page chrome. In `packages/frontend/src/features/agent-monitor/`: keep the terminal-style rendering (`bg-zinc-950`, `font-mono`, emerald code text) for the output stream pane only. Soften the surrounding chrome (sidebar list, tab bar, control bar, history table) to use standard app styling (`bg-background`, `text-foreground`, normal font). The output pane should feel like an embedded terminal, not the whole page.
+- [review] **U.8** — Soften agent monitor page chrome. In `packages/frontend/src/features/agent-monitor/`: keep the terminal-style rendering (`bg-zinc-950`, `font-mono`, emerald code text) for the output stream pane only. Soften the surrounding chrome (sidebar list, tab bar, control bar, history table) to use standard app styling (`bg-background`, `text-foreground`, normal font). The output pane should feel like an embedded terminal, not the whole page.
 
 ### Layout Fix
 

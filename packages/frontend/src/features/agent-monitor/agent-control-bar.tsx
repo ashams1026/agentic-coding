@@ -38,9 +38,9 @@ function formatElapsed(startedAt: string): string {
 }
 
 const modelConfig: Record<string, { label: string; color: string }> = {
-  opus: { label: "Opus", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
-  sonnet: { label: "Sonnet", color: "bg-blue-500/20 text-blue-400 border-blue-500/30" },
-  haiku: { label: "Haiku", color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" },
+  opus: { label: "Opus", color: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300" },
+  sonnet: { label: "Sonnet", color: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300" },
+  haiku: { label: "Haiku", color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300" },
 };
 
 // ── Main component ────────────────────────────────────────────────

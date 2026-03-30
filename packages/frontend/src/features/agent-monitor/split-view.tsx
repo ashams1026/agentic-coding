@@ -132,9 +132,9 @@ function Pane({ defaultExecutionId }: PaneProps) {
   const effectiveId = selectedId ?? defaultExecutionId;
 
   return (
-    <div className="flex flex-col min-w-0 min-h-0 border-r last:border-r-0 border-zinc-700">
+    <div className="flex flex-col min-w-0 min-h-0 border-r last:border-r-0">
       {/* Pane header with agent selector */}
-      <div className="flex items-center px-2 py-1.5 border-b border-zinc-700 bg-zinc-900/50">
+      <div className="flex items-center px-2 py-1.5 border-b bg-muted/30">
         <AgentSelector
           selectedId={effectiveId}
           onSelect={setSelectedId}
@@ -146,8 +146,8 @@ function Pane({ defaultExecutionId }: PaneProps) {
         {effectiveId ? (
           <TerminalRenderer executionId={effectiveId} />
         ) : (
-          <div className="flex h-full items-center justify-center bg-zinc-950">
-            <p className="text-xs text-zinc-500">Select an agent above</p>
+          <div className="flex h-full items-center justify-center bg-muted/10">
+            <p className="text-xs text-muted-foreground">Select an agent above</p>
           </div>
         )}
       </div>

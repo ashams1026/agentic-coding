@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-29 — U.8: Soften agent monitor page chrome
+
+**Task:** Keep terminal styling only for output pane, soften surrounding chrome to standard app styling.
+
+**Done:**
+- **split-view.tsx**: Replaced terminal-style zinc colors with app tokens:
+  - Pane borders: `border-zinc-700` → `border` (theme border)
+  - Pane header: `bg-zinc-900/50` → `bg-muted/30`
+  - Empty state: `bg-zinc-950` → `bg-muted/10`, `text-zinc-500` → `text-muted-foreground`
+- **agent-control-bar.tsx**: Updated model badge colors for light/dark mode:
+  - `bg-purple-500/20 text-purple-400` → `bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300` (and same for sonnet/haiku)
+- **agent-history.tsx**: Updated outcome badge colors for light/dark mode:
+  - `bg-emerald-500/20 text-emerald-400` → `bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300` (and same for failure/rejected)
+- **Preserved**: terminal-renderer.tsx `bg-zinc-950 font-mono text-zinc-200` output area unchanged
+
+**Files modified:** `split-view.tsx`, `agent-control-bar.tsx`, `agent-history.tsx`
+
+**Notes:** Frontend build: 0 errors. The sidebar, tab bar, and main layout already used standard app styling (bg-background, text-foreground). Only split-view panes and badge colors needed softening.
+
+---
+
 ## 2026-03-29 — Review: U.7 (approved)
 
 **Reviewed:** State transition control — `detail-panel.tsx`.
