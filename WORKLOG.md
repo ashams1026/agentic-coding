@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — W.6: Wire auto-routing toggle
+
+**Task:** Wire the Settings Workflow auto-routing toggle to read/write `autoRouting` from project settings. Show current state clearly with descriptive text.
+
+**Done:**
+- **`packages/frontend/src/features/settings/workflow-config-section.tsx`** — Rewired `AutoRoutingToggle`:
+  - Reads `autoRouting` from first project's settings via `useProjects()` (defaults to ON when not set, matching backend behavior in `router.ts` line 64: `if (autoRouting === false) return false`)
+  - Toggle switch calls `useUpdateProject()` with `settings.autoRouting` — persists via `PATCH /api/projects/:id`
+  - Descriptive text changes based on state: "Auto-routing: ON — Router agent will automatically transition work items" / "Auto-routing: OFF — Manual transitions only"
+  - Toggle visually reflects state: emerald-500 when ON, muted when OFF, translate-x for knob position
+  - Disabled state when no project configured
+  - Added `useProjects`, `useUpdateProject` imports
+
+**No backend changes needed** — `router.ts` already reads `autoRouting` from project settings and skips when `false`.
+
+**Files modified:** `workflow-config-section.tsx`, `TASKS.md`, `WORKLOG.md`
+
+**Notes:** Build: 0 errors. The toggle default is `true` (ON) to match the backend's behavior where `autoRouting` is only disabled when explicitly set to `false`.
+
+---
+
 ## 2026-03-30 — Review: W.5 (approved)
 
 **Reviewed:** Cost management settings wiring — monthCap, warningThreshold, dailyLimit, cost chart, progress bar.

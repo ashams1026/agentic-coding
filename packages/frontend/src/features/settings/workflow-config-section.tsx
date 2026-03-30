@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { usePersonas, usePersonaAssignments, useUpdatePersonaAssignment } from "@/hooks";
+import { useProjects, useUpdateProject, usePersonas, usePersonaAssignments, useUpdatePersonaAssignment } from "@/hooks";
 import { WORKFLOW } from "@agentops/shared";
 import type { ProjectId, PersonaId, Persona } from "@agentops/shared";
 
@@ -17,20 +17,45 @@ const PROJECT_ID = "pj-agntops" as ProjectId;
 // ── Auto-routing toggle ─────────────────────────────────────────
 
 function AutoRoutingToggle() {
+  const { data: projectsList } = useProjects();
+  const updateProject = useUpdateProject();
+
+  const project = projectsList?.[0];
+  const settings = project?.settings as Record<string, unknown> | undefined;
+  const autoRouting = settings?.autoRouting !== false; // default ON
+
+  const handleToggle = () => {
+    if (!project) return;
+    updateProject.mutate({
+      id: project.id,
+      settings: { ...project.settings, autoRouting: !autoRouting },
+    });
+  };
+
   return (
     <div className="flex items-center justify-between rounded-lg border p-4">
-      <div>
+      <div className="flex-1 mr-4">
         <p className="text-sm font-medium">Auto-routing</p>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Router agent automatically transitions work items between states after each persona completes.
+          {autoRouting
+            ? "Auto-routing: ON \u2014 Router agent will automatically transition work items"
+            : "Auto-routing: OFF \u2014 Manual transitions only"}
         </p>
       </div>
       <button
-        className="relative inline-flex h-6 w-11 items-center rounded-full bg-emerald-500 transition-colors"
+        onClick={handleToggle}
+        disabled={!project}
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-50 ${
+          autoRouting ? "bg-emerald-500" : "bg-muted-foreground/30"
+        }`}
         role="switch"
-        aria-checked="true"
+        aria-checked={autoRouting}
       >
-        <span className="inline-block h-4 w-4 transform rounded-full bg-white transition-transform translate-x-6" />
+        <span
+          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+            autoRouting ? "translate-x-6" : "translate-x-1"
+          }`}
+        />
       </button>
     </div>
   );
