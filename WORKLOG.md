@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-29 — U.4: Add inline title editing to detail panel
+
+**Task:** Make the work item title click-to-edit in the detail panel.
+
+**Done:**
+- Added `EditableTitle` component to `detail-panel.tsx`:
+  - Click title → switches to input field with current value selected
+  - Enter → saves (calls `useUpdateWorkItem.mutate({ id, title })`)
+  - Escape → cancels, reverts to original value
+  - Blur → saves (same as Enter)
+  - Empty/whitespace-only → reverts without saving
+  - External value changes sync when not editing
+  - Styled: same `text-lg font-semibold` as static title, subtle `border-b border-primary/40` when editing, `hover:text-primary/80` hint when idle
+- Added `useUpdateWorkItem` hook import and instance in `DetailPanel`
+- Replaced static `<h2>{item.title}</h2>` with `<EditableTitle value={item.title} onSave={...} />`
+
+**Files modified:** `packages/frontend/src/features/work-items/detail-panel.tsx`
+
+**Notes:** Frontend build: 0 errors. The EditableTitle component is self-contained (~65 lines). Uses useCallback for handlers to avoid unnecessary re-renders.
+
+---
+
 ## 2026-03-29 — Review: U.3 (approved)
 
 **Reviewed:** View toggle update — `work-items.tsx`, `work-items-store.ts`.

@@ -1,16 +1,91 @@
-import { useMemo } from "react";
+import { useMemo, useState, useRef, useEffect, useCallback } from "react";
 import { X, ChevronRight, Plus, GitBranch } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { useWorkItem, useWorkItems, useProposals, usePersonas, useCreateWorkItem } from "@/hooks";
+import { useWorkItem, useWorkItems, useProposals, usePersonas, useCreateWorkItem, useUpdateWorkItem } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { CommentStream } from "@/features/common/comment-stream";
 import { ExecutionTimeline } from "@/features/common/execution-timeline";
 import { getStateByName } from "@agentops/shared";
 import type { WorkItem, WorkItemId, Priority } from "@agentops/shared";
+
+// ── Editable title ──────────────────────────────────────────────
+
+function EditableTitle({
+  value,
+  onSave,
+}: {
+  value: string;
+  onSave: (newTitle: string) => void;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (editing && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [editing]);
+
+  // Sync draft when item changes externally
+  useEffect(() => {
+    if (!editing) setDraft(value);
+  }, [value, editing]);
+
+  const handleSave = useCallback(() => {
+    const trimmed = draft.trim();
+    if (trimmed && trimmed !== value) {
+      onSave(trimmed);
+    }
+    setEditing(false);
+  }, [draft, value, onSave]);
+
+  const handleCancel = useCallback(() => {
+    setDraft(value);
+    setEditing(false);
+  }, [value]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleSave();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        handleCancel();
+      }
+    },
+    [handleSave, handleCancel],
+  );
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={handleSave}
+        onKeyDown={handleKeyDown}
+        className="text-lg font-semibold leading-tight w-full bg-transparent border-b border-primary/40 outline-none py-0.5"
+      />
+    );
+  }
+
+  return (
+    <h2
+      className="text-lg font-semibold leading-tight cursor-pointer hover:text-primary/80 transition-colors"
+      onClick={() => setEditing(true)}
+      title="Click to edit"
+    >
+      {value}
+    </h2>
+  );
+}
 
 // ── Priority config ─────────────────────────────────────────────
 
@@ -202,6 +277,7 @@ export function DetailPanel() {
   const { data: allItems = [] } = useWorkItems();
   const { data: personas = [] } = usePersonas();
   const createWorkItem = useCreateWorkItem();
+  const updateWorkItem = useUpdateWorkItem();
 
   const children = useMemo(
     () => allItems.filter((w) => w.parentId === selectedItemId),
@@ -235,7 +311,10 @@ export function DetailPanel() {
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <ParentBreadcrumb item={item} allItems={allItems} onNavigate={handleNavigate} />
-            <h2 className="text-lg font-semibold leading-tight">{item.title}</h2>
+            <EditableTitle
+              value={item.title}
+              onSave={(newTitle) => updateWorkItem.mutate({ id: item.id, title: newTitle })}
+            />
           </div>
           <Button variant="ghost" size="sm" className="shrink-0 h-7 w-7 p-0" onClick={handleClose}>
             <X className="h-4 w-4" />

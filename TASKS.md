@@ -19,7 +19,7 @@
 
 ### Detail Panel Editability
 
-- [ ] **U.4** — Add inline title editing to detail panel. In `packages/frontend/src/features/work-items/detail-panel.tsx`: make the title click-to-edit (input field on click, Enter to save, Escape to cancel). Wire to `useUpdateWorkItem` mutation.
+- [review] **U.4** — Add inline title editing to detail panel. In `packages/frontend/src/features/work-items/detail-panel.tsx`: make the title click-to-edit (input field on click, Enter to save, Escape to cancel). Wire to `useUpdateWorkItem` mutation.
 
 - [ ] **U.5** — Add description editing to detail panel. Below the title: add Write/Preview tabs for the description field. Write tab shows a textarea, Preview tab renders markdown. Save/Cancel buttons. Wire to `useUpdateWorkItem` mutation. Reuse the `EditableSection` pattern from the old story-detail if applicable.
 
