@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: PS.8 (approved)
+
+**Reviewed:** Auto-seed default personas on project creation.
+- 5 built-in personas with correct configs (names, colors, icons, models, tools, budgets) matching seed.ts ✓
+- Router has `{ isSystem: true }` settings ✓
+- Conditional seeding: only inserts personas if none exist in DB ✓
+- Falls back to DB lookup if personas already exist ✓
+- Default state→persona assignments match seed.ts mapping (5 states) ✓
+- Called from POST /api/projects after project insert ✓
+- System prompts intentionally empty (user-customizable via Persona Manager) — acceptable ✓
+- Build: 0 errors ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — PS.8: Auto-seed default personas on project creation
 
 **Task:** When creating a new project via the API, seed built-in personas if none exist, and create default persona assignments for the new project.
