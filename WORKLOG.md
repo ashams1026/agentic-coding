@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: Q.12 (approved)
+
+**Reviewed:** MCP tool tests — `packages/backend/src/agent/__tests__/mcp-tools.test.ts`.
+- 10 tests: post_comment (DB verify), create_children (parentId + edges), route_to_state (valid + invalid), flag_blocked (state + comment), list_items (filter + summary), get_context (execution history + error) ✓
+- Protocol-level testing via MCP Client + InMemoryTransport — validates Zod schemas + response format ✓
+- DB state verified after each tool call (not just response checking) ✓
+- Side-effects properly mocked (broadcast, coordination, memory, handleRejection) ✓
+- Build: 0 errors
+- Tests: 135 pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — Q.12: Test MCP tool implementations
 
 **Task:** Integration tests for all 7 MCP tools using real MCP Client + InMemoryTransport.
