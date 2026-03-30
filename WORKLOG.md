@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-29 — O.2: Add hardcoded workflow constant
+
+**Task:** Create `packages/shared/src/workflow.ts` with WORKFLOW constant, helpers, and types.
+
+**Done:**
+- Created `packages/shared/src/workflow.ts` with:
+  - `WorkflowState` interface (name + color)
+  - `WORKFLOW` constant: 8 states (Backlog, Planning, Decomposition, Ready, In Progress, In Review, Done, Blocked) with hex colors, transitions map matching PLANNING.md exactly, initialState/finalStates
+  - `WorkflowStateName` derived type from const states
+  - `getValidTransitions(state)`, `isValidTransition(from, to)`, `getStateByName(name)` helpers
+  - Used `as const satisfies` for type-safe const assertions
+- Added `export * from "./workflow.js"` to `packages/shared/src/index.ts`
+- Transitions from PLANNING.md: Backlog→Planning, Planning→Ready/Blocked, Decomposition→InProgress/Blocked, Ready→InProgress/Decomposition/Blocked, InProgress→InReview/Blocked, InReview→Done/InProgress, Blocked→Planning/Decomposition/Ready/InProgress, Done→(terminal)
+
+**Files changed:** `packages/shared/src/workflow.ts` (new), `packages/shared/src/index.ts`
+
+**Notes:** Shared package typecheck and build both pass. Blocked transitions allow returning to any state that can transition to Blocked (per PLANNING.md "previous state" pattern).
+
+---
+
 ## 2026-03-29 — Review: O.1 (approved)
 
 **Reviewed:** Shared entity types refactor — `ids.ts`, `entities.ts`, `api.ts`, `ws-events.ts`.
