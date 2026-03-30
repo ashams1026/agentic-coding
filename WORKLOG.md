@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — E.2: Wire TanStack Query cache invalidation to WebSocket events
+
+**Task:** Subscribe to WS events and invalidate the correct TanStack Query cache keys for reactive UI updates.
+
+**Done:**
+- **Fixed stale query keys**: `state_change` was invalidating `["stories"]` and `["tasks"]` (old Sprint 1 names) — replaced with `["workItems"]` to match current query-keys.ts.
+- **Verified all event→key mappings** against query-keys.ts:
+  - `state_change` → `["workItems"]` + `["dashboardStats"]`
+  - `comment_created` → `["comments"]`
+  - `agent_started` / `agent_completed` / `execution_update` → `["executions"]` + `["dashboardStats"]`
+  - `proposal_created` / `proposal_updated` → `["proposals"]` + `["dashboardStats"]`
+  - `cost_update` → `["dashboardStats"]` + `["costSummary"]`
+- **Cleaned up comments**: Removed stale references to "stories/tasks" and "mock WebSocket".
+- **Already wired**: Hook is called once in RootLayout via `useWsQuerySync()` — no additional wiring needed.
+
+**Files modified:** `use-ws-sync.ts`
+
+**Notes:** Build: 0 errors. The `subscribeAll` function from `@/api/ws` works with both mock and real WS clients (unified module). TanStack Query's prefix matching ensures `["workItems"]` invalidates all workItem queries (list, single, filtered).
+
+---
+
 ## 2026-03-30 — Review: E.1 (approved)
 
 **Reviewed:** API client response parsing and error handling — `client.ts`.
