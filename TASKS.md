@@ -20,7 +20,7 @@
 
 - [x] **PS.2** — Create a useSelectedProject hook. Create `packages/frontend/src/hooks/use-selected-project.ts`: reads `selectedProjectId` from `useUIStore`, fetches the full project via `useProject(id)`, returns `{ project, projectId, isLoading }`. This becomes the single source of truth for "which project am I looking at" — all other hooks consume it.
 
-- [review] **PS.3** — Scope work items queries to selected project. Update all `useWorkItems()` call sites (list-view, board-view, flow-view, filter-bar, detail-panel, command-palette, agent-monitor components — ~10 files) to pass `projectId` from `useSelectedProject()`. The hook already accepts `projectId` as a parameter — callers just aren't passing it.
+- [x] **PS.3** — Scope work items queries to selected project. Update all `useWorkItems()` call sites (list-view, board-view, flow-view, filter-bar, detail-panel, command-palette, agent-monitor components — ~10 files) to pass `projectId` from `useSelectedProject()`. The hook already accepts `projectId` as a parameter — callers just aren't passing it.
 
 - [ ] **PS.4** — Scope dashboard queries to selected project. Update `useDashboardStats()`, `useCostSummary()`, `useExecutionStats()`, `useReadyWork()` to accept and pass `projectId`. Update the backend dashboard routes to filter by `projectId` if not already. Update dashboard page components to pass the selected project ID.
 

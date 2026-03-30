@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: PS.3 (approved)
+
+**Reviewed:** Scoping all useWorkItems() call sites to selected project.
+- Zero bare `useWorkItems()` calls remain — grep confirms all scoped ✓
+- 10 files updated: 10 imports + 10 destructures of `useSelectedProject` (20 occurrences) ✓
+- Correct pattern: `useWorkItems(undefined, projectId ?? undefined)` — null→undefined conversion for optional param ✓
+- Hook chain: `useWorkItems(parentId?, projectId?)` → `queryKeys.workItems` → `getWorkItems` passes projectId through ✓
+- All files listed in task description covered (list-view, board-view, flow-view, filter-bar, detail-panel, command-palette, 4 agent-monitor components) ✓
+- Build: 0 errors ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — PS.3: Scope work items queries to selected project
 
 **Task:** Update all `useWorkItems()` call sites to pass `projectId` from `useSelectedProject()`.
