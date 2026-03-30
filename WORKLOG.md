@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-03-30 — D.9: Document configuration and deployment
+
+**Task:** Create `docs/deployment.md` with directory structure, config file, env vars, pm2, CLI commands, logging, database, dev vs prod.
+
+**Done:**
+- **`docs/deployment.md`** (new) — Configuration and deployment documentation with:
+  - `~/.agentops/` directory structure (config.json, PID file, data/, logs/)
+  - Config file format: 4 fields (port, dbPath, logLevel, anthropicApiKey) with types and defaults
+  - Resolution order: env vars > config file > defaults
+  - 5 environment variable overrides (PORT, AGENTOPS_DB_PATH, DATABASE_URL, LOG_LEVEL, ANTHROPIC_API_KEY)
+  - CLI commands: 10 commands (start, stop, status, dev, config, config set, restart, logs, install, uninstall) with details
+  - pm2 ecosystem config: script, env, log files, restart policy (max 3 in 60s), kill_timeout (35s)
+  - Logging: dev (pino-pretty) vs prod (pino-roll daily rotation, 7-day retention + stdout), 6 log levels
+  - Database: location, WAL mode, better-sqlite3 + Drizzle, 9 tables, auto-migrations, backup strategy
+  - Cleanup: API endpoint for 30-day old executions + UI path
+  - Dev vs prod comparison table (6 aspects)
+  - Graceful shutdown sequence (5 steps, 30s drain)
+  - Crash recovery (4 steps: find orphaned, reset to failed, log, clear in-memory state)
+  - Source files table (5 files)
+
+**Files created:** `docs/deployment.md`
+
+**Notes:** Build: 0 errors. All config fields and defaults verified against `config.ts`. CLI commands verified against `cli.ts`. Logging config verified against `logger.ts`. pm2 config verified against `ecosystem.config.cjs`. Crash recovery verified against `start.ts`.
+
+---
+
 ## 2026-03-30 — Review: D.8 (approved)
 
 **Reviewed:** MCP tools documentation — 7 tools, Zod schemas, side effects, persona access, attachment mechanism.
