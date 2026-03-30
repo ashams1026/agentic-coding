@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: AI.9 (approved)
+
+**Reviewed:** Settings projects, workflow, and appearance test plans.
+- `settings-projects.md`: 11 steps — Projects default section (matching `useState("projects")`), project rows (name+path matching `ProjectRow`), hover edit/delete icons, "Add project" form with name/path/Browse/validation ("Valid path format"), create + delete flow ✓
+- `settings-workflow.md`: 12 steps — auto-routing toggle (`role="switch"`, ON/OFF descriptions match source, green/gray), persona-per-state table (5 configurable states matching `configurableStates` filter, columns State/Persona/Model, persona dropdowns, model badges opus/sonnet/haiku with correct colors, footer note verbatim), workflow SVG diagram ✓. Note: task says "all 8 states" but source correctly excludes Backlog/Done/Blocked — plan accurately documents this.
+- `settings-appearance.md`: 11 steps — Data Source (Mock/Live cards from QF.1 `ApiModeSection`), Theme (Light/Dark/System matching `THEME_OPTIONS`), Density (Comfortable/Compact with preview bars) ✓
+- Template format ✓, UI references match source ✓
+- Build: no code changes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.9: Write test plans for Settings
 
 **Task:** Create test plans for settings projects, workflow, and appearance sections.
