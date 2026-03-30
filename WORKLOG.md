@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-03-30 — D.5: Document the workflow system
+
+**Task:** Create `docs/workflow.md` with state machine, transitions, routing, coordination, rejection logic.
+
+**Done:**
+- **`docs/workflow.md`** (new) — Workflow documentation with:
+  - 8 states table with colors and descriptions
+  - ASCII transition diagram + exact transition map table
+  - Rate limiting (10/hour per work item)
+  - Manual vs automatic transitions explanation
+  - Auto-routing cycle (8-step sequence)
+  - Persona-per-state assignments table with typical personas
+  - Router agent: how it works (5-step), configuration (haiku model, 3 tools), auto-routing toggle
+  - Parent-child coordination: all-children-Done auto-advance, child-Blocked notification
+  - Rejection/retry: structured RejectionPayload, 3-retry max, escalation to Blocked, retry visibility
+  - Dispatch checks (persona assigned, concurrency, cost cap)
+  - Source files table (5 files)
+
+**Files created:** `docs/workflow.md`
+
+**Notes:** Build: 0 errors. All transitions verified against `workflow.ts`. MAX_REJECTIONS=3 and rate limit=10/hour verified against `execution-manager.ts`. Coordination logic verified against `coordination.ts`.
+
+---
+
 ## 2026-03-30 — Review: D.4 (approved)
 
 **Reviewed:** Data model documentation — entities, relationships, hierarchy, edges, executionContext.
