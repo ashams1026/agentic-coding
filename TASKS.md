@@ -15,7 +15,7 @@
 
 - [x] **A.2** — Implement `post_comment` MCP tool. In `mcp-server.ts`: implement the `post_comment` tool that inserts a comment into the database via the existing comments table. Input: `{ workItemId, content, metadata? }`. Auto-sets `authorType: "agent"`, `authorName` from the persona context. Broadcasts `comment_created` WS event via `broadcast()`.
 
-- [review] **A.3** — Implement `create_children` MCP tool. Input: `{ parentId, children: [{ title, description?, dependsOn[]? }] }`. Creates work items in Backlog state with parent reference. Creates work_item_edges for any dependsOn references. Returns created IDs. Broadcasts `state_change` WS events.
+- [x] **A.3** — Implement `create_children` MCP tool. Input: `{ parentId, children: [{ title, description?, dependsOn[]? }] }`. Creates work items in Backlog state with parent reference. Creates work_item_edges for any dependsOn references. Returns created IDs. Broadcasts `state_change` WS events.
 
 - [ ] **A.4** — Implement `route_to_state` MCP tool. Router-only tool. Input: `{ workItemId, targetState, reasoning }`. Validates against `isValidTransition()`. Updates work item's `currentState`. Posts reasoning as a system comment. Broadcasts `state_change` WS event. Returns success/error.
 

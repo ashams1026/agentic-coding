@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: A.3 (approved)
+
+**Reviewed:** create_children MCP tool — `packages/backend/src/agent/mcp-server.ts`.
+- Parent lookup to inherit projectId, error if not found ✓
+- Child creation in Backlog state with correct defaults (p2, empty desc) ✓
+- state_change broadcast per child (fromState: "" for creation) ✓
+- Edge creation for dependsOn: numeric index refs + existing IDs supported ✓
+- Edge direction correct: fromId=dependency, toId=child ✓
+- Invalid index guarded with `if (!fromId) continue` ✓
+- Return: { createdIds, parentId } ✓
+- Error handling with try/catch + isError ✓
+- Backend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.3: Implement create_children MCP tool
 
 **Task:** Replace create_children stub with real DB inserts for child work items + dependency edges.
