@@ -5,24 +5,6 @@
 
 ---
 
-## Sprint 5 (remaining): Backend API Completion
-
-> Resume from T3.1.3 onwards, but with the corrected WorkItem-based schema from Sprint 6.
-> These tasks only make sense AFTER Sprint 6 is complete.
-
-- [x] **T3.1.3** — Set up Drizzle migrations and seed script (using new WorkItem schema from O.18/O.19)
-- [x] **T3.2.5** — Implement comment API routes (updated for workItemId)
-- [x] **T3.2.7** — Implement persona API routes
-- [x] **T3.2.8** — Implement execution API routes (updated for workItemId)
-- [x] **T3.2.9** — Implement proposal API routes (updated for parentWorkItemId)
-- [x] **T3.2.10** — Implement aggregate/dashboard API routes (updated for work items)
-- [x] **T3.3.1** — Implement real WebSocket server
-- [x] **T3.3.2** — Create API client for frontend (updated for work item endpoints)
-- [x] **T3.3.3** — Add API mode toggle to frontend
-- [x] **T3.3.4** — Connect WebSocket client to real server
-
----
-
 ## Sprint 7: UI Refinements & Flow View
 
 > Post-backend sprint. Addresses UX feedback from manual review of the Sprint 6 UI refactor.

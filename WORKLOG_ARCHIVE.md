@@ -30,3 +30,19 @@
 *Detail panel + nav cleanup (O.11–O.17):* O.11: detail-panel.tsx (~280 lines) with header/breadcrumb/children/proposals/comments/executions/metadata, master-detail layout (w-2/5 + w-3/5). O.12: sidebar nav updated ("Work Items" replaces "Story Board", "Workflows" removed). O.13: router cleaned (6 routes, /items added, old routes removed). O.14: dashboard updated for WorkItem model. O.15: activity feed updated with router_decision event type. O.16: workflow-config-section.tsx with auto-routing toggle, persona-per-state table, SVG state machine diagram. O.17: deleted 26 files + 4 old pages, fixed 7 remaining files for WorkItem types — 0 errors.
 
 **Key patterns:** State badges use `${color}20` bg / `${color}40` border from WORKFLOW. priorityConfig record reused across views. WorkItemsStore: view/groupBy/sortBy persisted, filters ephemeral. childStats Map for progress. assignmentMap from personaAssignments + personaMap for triggers.
+
+---
+
+## Sprint 6: O.12–O.20 (nav, routes, backend schema) — archived 2026-03-29
+
+*Navigation & routing (O.12–O.13):* Sidebar "Story Board" → "Work Items" with ListTodo icon, "Workflows" removed, proposals badge on /items. Router: removed 4 old routes, kept 6 clean routes, dashboard links updated to /items.
+
+*Dashboard & activity feed (O.14–O.15):* All story/task references replaced with work item across dashboard (upcoming-work, recent-activity, active-agents-strip) and activity feed. Added router_decision event type. WS events use workItemId/workItemTitle fields.
+
+*Settings & cleanup (O.16–O.17):* Workflow configuration section added to settings (auto-routing toggle, persona-per-state table, SVG state machine diagram). Old code removed: 26 files across 5 directories + 4 pages deleted, 7 remaining files fixed. Frontend typecheck: 0 errors.
+
+*Backend schema & seed (O.18–O.19):* Drizzle schema with 9 tables matching shared entities. Seed script: all 9 entity types matching frontend fixtures (1 project, 5 personas, 16 work items, 4 edges, 4 assignments, 8 executions, 15 comments, 2 proposals, 2 memories). DB connection: WAL mode, FK enforcement.
+
+*Backend CRUD routes (O.20):* 3 route files with 10 routes total: work-items (5 routes with recursive delete), persona-assignments (2 routes with upsert), work-item-edges (3 routes). One review rejection for recursive delete bug (`and()` → `inArray()`), fixed on rework. All routes return `{ data, total }` list / `{ data }` single format.
+
+**Key patterns:** Serializer functions for DB→entity (Date→ISO, branded ID casts). JSON.stringify for JSON-mode columns in PATCH. `createId.*()` for ID generation. PUT to CORS methods for upsert. Dependency-ordered seed inserts.

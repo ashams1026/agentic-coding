@@ -64,3 +64,18 @@
 - [x] **O.18** — Rewrite Drizzle schema for WorkItem model. 9 tables in schema.ts matching shared entities. *(completed 2026-03-29)*
 - [x] **O.19** — Update seed script for WorkItem model. Full seed with all fixture data (16 work items, 5 personas, etc). *(completed 2026-03-29)*
 - [x] **O.20** — Rewrite CRUD API routes for WorkItem. 10 routes across 3 files (work-items, persona-assignments, work-item-edges). *(completed 2026-03-29)*
+
+---
+
+## Sprint 5: Backend API Completion — completed 2026-03-29
+
+- [x] **T3.1.3** — Set up Drizzle migrations and seed script (drizzle.config.ts, migrate.ts, generated SQL, 5 npm scripts). *(completed 2026-03-29)*
+- [x] **T3.2.5** — Implement comment API routes (4 routes: GET list, GET by id, POST, DELETE). *(completed 2026-03-29)*
+- [x] **T3.2.7** — Implement persona API routes (5 routes: GET list, GET by id, POST, PATCH, DELETE). *(completed 2026-03-29)*
+- [x] **T3.2.8** — Implement execution API routes (5 routes: GET list, GET by id, POST, PATCH, DELETE). *(completed 2026-03-29)*
+- [x] **T3.2.9** — Implement proposal API routes (5 routes: GET list, GET by id, POST, PATCH, DELETE). *(completed 2026-03-29)*
+- [x] **T3.2.10** — Implement aggregate/dashboard API routes (4 routes: stats, cost-summary, execution-stats, ready-work). *(completed 2026-03-29)*
+- [x] **T3.3.1** — Implement real WebSocket server (@fastify/websocket, broadcast, client tracking). *(completed 2026-03-29)*
+- [x] **T3.3.2** — Create API client for frontend (32 functions mirroring mock API, fetch-based). *(completed 2026-03-29)*
+- [x] **T3.3.3** — Add API mode toggle to frontend (Zustand apiMode, unified API layer, 8 hooks updated). *(completed 2026-03-29)*
+- [x] **T3.3.4** — Connect WebSocket client to real server (RealWsClient, unified WS module, 5 consumers updated). *(completed 2026-03-29)*
