@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: P.9 (approved)
+
+**Reviewed:** Visual divider and panel transition — `work-items.tsx`.
+- Divider: `border-l border-border` on resize handle, `border-l-0` when closed ✓
+- Transition: `transition-all duration-200` on list pane, handle, and panel ✓
+- Jank prevention: transitions gated by `!isResizing` on list and panel, not applied during drag ✓
+- Always-rendered: handle and panel wrapper always in DOM for CSS transitions, `DetailPanel` conditionally rendered inside ✓
+- Open: list shrinks + panel expands simultaneously. Close: panel collapses + list expands ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — P.9: Add visual divider and panel transition
 
 **Task:** Add border-l between list pane and detail panel. Animate panel open/close with slide-in transition. Smooth expand-back on close.
