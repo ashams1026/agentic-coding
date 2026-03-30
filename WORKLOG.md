@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: O.1 (approved)
+
+**Reviewed:** Shared entity types refactor — `ids.ts`, `entities.ts`, `api.ts`, `ws-events.ts`.
+- All 7 task requirements met: WorkItem replaces Story+Task, WorkItemEdge replaces TaskEdge, Workflow/Trigger removed, PersonaAssignment added, Comment/Execution/Proposal/ProjectMemory updated to workItemId, wi- prefix correct
+- Conventions followed: branded IDs, `import type`, `.js` extensions, named exports
+- Worker proactively updated api.ts and ws-events.ts to keep shared package compiling — effectively covers O.3 scope
+- Shared package typecheck and build both pass
+- Note: O.3 (API contract types) is largely already done by this task
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.1: Refactor shared entity types
 
 **Task:** Replace Story/Task/Workflow/Trigger types with unified WorkItem model.
