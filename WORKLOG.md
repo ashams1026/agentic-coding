@@ -5,6 +5,33 @@
 
 ---
 
+## 2026-03-29 — O.18: Rewrite Drizzle schema for WorkItem model
+
+**Task:** Create `packages/backend/src/db/schema.ts` with Drizzle ORM schema matching the WorkItem-based entity model from `@agentops/shared`.
+
+**Done:**
+- Created `packages/backend/src/db/schema.ts` with 9 tables:
+  - `projects` — id, name, path, settings (JSON), createdAt
+  - `work_items` — id, parentId (self-referencing), projectId FK, title, description, context (JSON), currentState, priority, labels (JSON), assignedPersonaId FK, executionContext (JSON array), createdAt, updatedAt
+  - `work_item_edges` — id, fromId FK, toId FK, type (blocks/depends_on/related_to)
+  - `persona_assignments` — composite PK (projectId + stateName), personaId FK
+  - `personas` — id, name, description, avatar (JSON), systemPrompt, model, allowedTools (JSON), mcpTools (JSON), maxBudgetPerRun, settings (JSON)
+  - `executions` — id, workItemId FK, personaId FK, status, startedAt, completedAt, costUsd, durationMs, summary, outcome, rejectionPayload (JSON), logs
+  - `comments` — id, workItemId FK, authorType, authorId, authorName, content, metadata (JSON), createdAt
+  - `proposals` — id, executionId FK, workItemId FK, type, payload (JSON), status, createdAt
+  - `project_memories` — id, projectId FK, workItemId FK, summary, filesChanged (JSON), keyDecisions (JSON), createdAt, consolidatedInto
+- All relations defined (parent/child self-referencing on work_items, FKs for all cross-table refs)
+- No `workflows` or `triggers` tables — hardcoded WORKFLOW from shared replaces them
+- JSON columns use `$type<>()` for type safety matching shared entity interfaces
+- Timestamps use `integer("...", { mode: "timestamp_ms" })` for SQLite compatibility
+
+**Files created:** `packages/backend/src/db/schema.ts`
+**Files modified:** none (new file only)
+
+**Notes:** Backend typecheck + build: 0 errors. Full monorepo build: passes. Schema aligns 1:1 with entities in `packages/shared/src/entities.ts`.
+
+---
+
 ## 2026-03-29 — Review: O.17 (approved)
 
 **Reviewed:** Old code removal — 26 files deleted, 7 files fixed.
