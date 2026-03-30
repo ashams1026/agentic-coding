@@ -10,10 +10,10 @@ export function useComments(workItemId: WorkItemId) {
   });
 }
 
-export function useRecentComments() {
+export function useRecentComments(projectId?: string) {
   return useQuery({
-    queryKey: queryKeys.recentComments,
-    queryFn: () => getRecentComments(),
+    queryKey: queryKeys.recentComments(projectId),
+    queryFn: () => getRecentComments(projectId),
   });
 }
 

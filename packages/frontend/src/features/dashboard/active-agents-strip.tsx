@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { Bot } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useExecutions, usePersonas } from "@/hooks";
+import { useExecutions, usePersonas, useSelectedProject } from "@/hooks";
 import type { Execution, Persona } from "@agentops/shared";
 
 function formatElapsed(startedAt: string): string {
@@ -69,7 +69,8 @@ function AgentCard({ execution, persona, onClick }: AgentCardProps) {
 
 export function ActiveAgentsStrip() {
   const navigate = useNavigate();
-  const { data: executions } = useExecutions();
+  const { projectId } = useSelectedProject();
+  const { data: executions } = useExecutions(undefined, projectId ?? undefined);
   const { data: personas } = usePersonas();
 
   const runningExecutions = executions?.filter((e) => e.status === "running") ?? [];

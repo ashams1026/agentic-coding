@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { useExecutions, useProposals, usePersonas, useRecentComments } from "@/hooks";
+import { useExecutions, useProposals, usePersonas, useRecentComments, useSelectedProject } from "@/hooks";
 import { subscribeAll } from "@/api/ws";
 import type { Persona } from "@agentops/shared";
 import type {
@@ -80,9 +80,10 @@ function relativeTime(timestamp: string): string {
 // ── Build events from data ────────────────────────────────────────
 
 function useActivityEvents(): ActivityEvent[] {
-  const { data: executions } = useExecutions();
-  const { data: proposals } = useProposals();
-  const { data: comments } = useRecentComments();
+  const { projectId } = useSelectedProject();
+  const { data: executions } = useExecutions(undefined, projectId ?? undefined);
+  const { data: proposals } = useProposals(undefined, projectId ?? undefined);
+  const { data: comments } = useRecentComments(projectId ?? undefined);
 
   return useMemo(() => {
     const events: ActivityEvent[] = [];

@@ -294,7 +294,7 @@ export function FlowView() {
   const { projectId } = useSelectedProject();
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined);
   const { data: personas } = usePersonas();
-  const { data: executions } = useExecutions();
+  const { data: executions } = useExecutions(undefined, projectId ?? undefined);
   const { filterState, setFilterState, selectedItemId, setSelectedItemId } =
     useWorkItemsStore();
 

@@ -3,10 +3,10 @@ import type { WorkItemId, ProposalId, UpdateProposalRequest } from "@agentops/sh
 import { getProposals, getProposal, updateProposal } from "@/api";
 import { queryKeys } from "./query-keys";
 
-export function useProposals(workItemId?: WorkItemId) {
+export function useProposals(workItemId?: WorkItemId, projectId?: string) {
   return useQuery({
-    queryKey: queryKeys.proposals(workItemId),
-    queryFn: () => getProposals(workItemId),
+    queryKey: queryKeys.proposals(workItemId, projectId),
+    queryFn: () => getProposals(workItemId, projectId),
   });
 }
 

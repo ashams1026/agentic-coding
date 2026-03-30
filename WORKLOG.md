@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — PS.5: Scope executions, comments, and proposals to selected project
+
+**Task:** Scope top-level execution, proposal, and comment listings to the selected project.
+
+**Done:**
+- **Backend**: Added `?projectId=` support to `GET /api/executions`, `GET /api/proposals`, `GET /api/comments` — filters by workItem membership in project
+- **API client** (`client.ts`): `getExecutions`, `getProposals`, `getRecentComments` accept optional `projectId`
+- **Mock API** (`mocks/api.ts`): All 3 mock functions filter by project when `projectId` provided
+- **API index** (`api/index.ts`): Fixed `getRecentComments` to forward args (was zero-arg)
+- **Query keys**: `executions`, `proposals`, `recentComments` updated to include `projectId`
+- **Hooks**: `useExecutions`, `useProposals`, `useRecentComments` accept optional `projectId`
+- **Call sites** (9 files): sidebar, list-view, flow-view, active-agent-sidebar, split-view, agent-history, agent-monitor-layout, active-agents-strip, recent-activity, activity-feed — all pass `projectId ?? undefined`
+
+**Files modified:** `packages/backend/src/routes/executions.ts`, `packages/backend/src/routes/proposals.ts`, `packages/backend/src/routes/comments.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`, `packages/frontend/src/mocks/api.ts`, `packages/frontend/src/hooks/query-keys.ts`, `packages/frontend/src/hooks/use-executions.ts`, `packages/frontend/src/hooks/use-proposals.ts`, `packages/frontend/src/hooks/use-comments.ts`, `packages/frontend/src/components/sidebar.tsx`, `packages/frontend/src/features/work-items/list-view.tsx`, `packages/frontend/src/features/work-items/flow-view.tsx`, `packages/frontend/src/features/agent-monitor/active-agent-sidebar.tsx`, `packages/frontend/src/features/agent-monitor/split-view.tsx`, `packages/frontend/src/features/agent-monitor/agent-history.tsx`, `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`, `packages/frontend/src/features/dashboard/recent-activity.tsx`, `packages/frontend/src/features/dashboard/active-agents-strip.tsx`, `packages/frontend/src/features/activity-feed/activity-feed.tsx`
+
+**Notes:** Initial build failure — `getRecentComments` in api/index.ts was a zero-arg wrapper, fixed to forward args. Build: 0 errors after fix.
+
+---
+
 ## 2026-03-30 — Review: PS.4 (approved)
 
 **Reviewed:** Dashboard query scoping — full stack from backend to call sites.

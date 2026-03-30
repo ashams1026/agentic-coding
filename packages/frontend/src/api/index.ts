@@ -104,8 +104,8 @@ export const getExecution = (...args: Parameters<typeof mock.getExecution>) =>
 export const getComments = (...args: Parameters<typeof mock.getComments>) =>
   pick(mock.getComments, real.getComments)(...args);
 
-export const getRecentComments = () =>
-  pick(mock.getRecentComments, real.getRecentComments)();
+export const getRecentComments = (...args: Parameters<typeof mock.getRecentComments>) =>
+  pick(mock.getRecentComments, real.getRecentComments)(...args);
 
 export const createComment = (...args: Parameters<typeof mock.createComment>) =>
   pick(mock.createComment, real.createComment)(...args);

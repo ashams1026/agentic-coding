@@ -309,9 +309,13 @@ export async function deletePersona(id: PersonaId): Promise<boolean> {
 
 // ── Executions ────────────────────────────────────────────────────
 
-export async function getExecutions(workItemId?: WorkItemId): Promise<Execution[]> {
+export async function getExecutions(workItemId?: WorkItemId, projectId?: string): Promise<Execution[]> {
   await delay();
   if (workItemId) return store.executions.filter((e) => e.workItemId === workItemId);
+  if (projectId) {
+    const itemIds = new Set(store.workItems.filter((w) => w.projectId === projectId).map((w) => w.id));
+    return store.executions.filter((e) => itemIds.has(e.workItemId));
+  }
   return store.executions;
 }
 
@@ -327,9 +331,14 @@ export async function getComments(workItemId: WorkItemId): Promise<Comment[]> {
   return store.comments.filter((c) => c.workItemId === workItemId);
 }
 
-export async function getRecentComments(): Promise<Comment[]> {
+export async function getRecentComments(projectId?: string): Promise<Comment[]> {
   await delay();
-  return [...store.comments].sort(
+  let result = store.comments;
+  if (projectId) {
+    const itemIds = new Set(store.workItems.filter((w) => w.projectId === projectId).map((w) => w.id));
+    result = result.filter((c) => itemIds.has(c.workItemId));
+  }
+  return [...result].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 }
@@ -352,9 +361,13 @@ export async function createComment(req: CreateCommentRequest): Promise<Comment>
 
 // ── Proposals ─────────────────────────────────────────────────────
 
-export async function getProposals(workItemId?: WorkItemId): Promise<Proposal[]> {
+export async function getProposals(workItemId?: WorkItemId, projectId?: string): Promise<Proposal[]> {
   await delay();
   if (workItemId) return store.proposals.filter((p) => p.workItemId === workItemId);
+  if (projectId) {
+    const itemIds = new Set(store.workItems.filter((w) => w.projectId === projectId).map((w) => w.id));
+    return store.proposals.filter((p) => itemIds.has(p.workItemId));
+  }
   return store.proposals;
 }
 

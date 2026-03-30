@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { eq } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { executions } from "../db/schema.js";
+import { executions, workItems } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import type {
   ExecutionId,
@@ -33,11 +33,11 @@ function serializeExecution(row: typeof executions.$inferSelect) {
 }
 
 export async function executionRoutes(app: FastifyInstance) {
-  // GET /api/executions — list with optional workItemId filter
+  // GET /api/executions — list with optional workItemId or projectId filter
   app.get<{
-    Querystring: { workItemId?: string };
+    Querystring: { workItemId?: string; projectId?: string };
   }>("/api/executions", async (request) => {
-    const { workItemId } = request.query;
+    const { workItemId, projectId } = request.query;
 
     let rows;
     if (workItemId) {
@@ -47,6 +47,12 @@ export async function executionRoutes(app: FastifyInstance) {
         .where(eq(executions.workItemId, workItemId));
     } else {
       rows = await db.select().from(executions);
+    }
+
+    if (projectId && !workItemId) {
+      const projectWorkItems = await db.select().from(workItems).where(eq(workItems.projectId, projectId));
+      const workItemIds = new Set(projectWorkItems.map((w) => w.id));
+      rows = rows.filter((r) => workItemIds.has(r.workItemId));
     }
 
     return { data: rows.map(serializeExecution), total: rows.length };

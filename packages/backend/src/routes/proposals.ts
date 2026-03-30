@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { eq } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { proposals } from "../db/schema.js";
+import { proposals, workItems } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import type {
   ProposalId,
@@ -28,11 +28,11 @@ function serializeProposal(row: typeof proposals.$inferSelect) {
 }
 
 export async function proposalRoutes(app: FastifyInstance) {
-  // GET /api/proposals — list with optional workItemId filter
+  // GET /api/proposals — list with optional workItemId or projectId filter
   app.get<{
-    Querystring: { workItemId?: string };
+    Querystring: { workItemId?: string; projectId?: string };
   }>("/api/proposals", async (request) => {
-    const { workItemId } = request.query;
+    const { workItemId, projectId } = request.query;
 
     let rows;
     if (workItemId) {
@@ -42,6 +42,12 @@ export async function proposalRoutes(app: FastifyInstance) {
         .where(eq(proposals.workItemId, workItemId));
     } else {
       rows = await db.select().from(proposals);
+    }
+
+    if (projectId && !workItemId) {
+      const projectWorkItems = await db.select().from(workItems).where(eq(workItems.projectId, projectId));
+      const workItemIds = new Set(projectWorkItems.map((w) => w.id));
+      rows = rows.filter((r) => workItemIds.has(r.workItemId));
     }
 
     return { data: rows.map(serializeProposal), total: rows.length };

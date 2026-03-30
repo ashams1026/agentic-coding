@@ -274,7 +274,7 @@ export function ListView() {
   const { projectId } = useSelectedProject();
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined);
   const { data: personas } = usePersonas();
-  const { data: executions } = useExecutions();
+  const { data: executions } = useExecutions(undefined, projectId ?? undefined);
   const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterPersonas, filterLabels, selectedItemId, setSelectedItemId } =
     useWorkItemsStore();
 

@@ -48,7 +48,7 @@ const themeLabel = { system: "System", light: "Light", dark: "Dark" } as const;
 
 export function Sidebar() {
   const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, setMobileSidebarOpen, theme, setTheme, selectedProjectId, setSelectedProjectId } = useUIStore();
-  const { data: executions } = useExecutions();
+  const { data: executions } = useExecutions(undefined, selectedProjectId ?? undefined);
   const { data: dashboardStats } = useDashboardStats(selectedProjectId ?? undefined);
   const { data: projectsList } = useProjects();
   const activeAgentCount = executions?.filter((e) => e.status === "running").length ?? 0;

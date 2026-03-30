@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { Monitor, ArrowRight, Columns2, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useExecutions } from "@/hooks";
+import { useExecutions, useSelectedProject } from "@/hooks";
 import { ActiveAgentSidebar } from "./active-agent-sidebar";
 import { AgentControlBar } from "./agent-control-bar";
 import { AgentHistory } from "./agent-history";
@@ -123,7 +123,8 @@ function LiveView({
 // ── Main layout ────────────────────────────────────────────────
 
 export function AgentMonitorLayout() {
-  const { data: executions = [] } = useExecutions();
+  const { projectId } = useSelectedProject();
+  const { data: executions = [] } = useExecutions(undefined, projectId ?? undefined);
 
   const [selectedId, setSelectedId] = useState<ExecutionId | null>(null);
   const [splitMode, setSplitMode] = useState(false);

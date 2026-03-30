@@ -20,7 +20,7 @@ interface AgentSelectorProps {
 
 function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
   const { projectId } = useSelectedProject();
-  const { data: executions = [] } = useExecutions();
+  const { data: executions = [] } = useExecutions(undefined, projectId ?? undefined);
   const { data: personas = [] } = usePersonas();
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
 

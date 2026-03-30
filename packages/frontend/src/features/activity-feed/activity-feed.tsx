@@ -33,6 +33,7 @@ import {
   useProposals,
   usePersonas,
   useRecentComments,
+  useSelectedProject,
 } from "@/hooks";
 import { subscribeAll } from "@/api/ws";
 import { useActivityStore } from "@/stores/activity-store";
@@ -191,9 +192,10 @@ function getDateCutoff(preset: DatePreset): Date | null {
 // ── Build events from mock data ──────────────────────────────────
 
 function useBaseActivityEvents(): ActivityEvent[] {
-  const { data: executions } = useExecutions();
-  const { data: proposals } = useProposals();
-  const { data: comments } = useRecentComments();
+  const { projectId } = useSelectedProject();
+  const { data: executions } = useExecutions(undefined, projectId ?? undefined);
+  const { data: proposals } = useProposals(undefined, projectId ?? undefined);
+  const { data: comments } = useRecentComments(projectId ?? undefined);
 
   return useMemo(() => {
     const events: ActivityEvent[] = [];

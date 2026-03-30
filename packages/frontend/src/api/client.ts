@@ -252,8 +252,11 @@ export async function deletePersona(id: PersonaId): Promise<boolean> {
 
 // ── Executions ───────────────────────────────────────────────────
 
-export async function getExecutions(workItemId?: WorkItemId): Promise<Execution[]> {
-  const qs = workItemId ? `?workItemId=${workItemId}` : "";
+export async function getExecutions(workItemId?: WorkItemId, projectId?: string): Promise<Execution[]> {
+  const params = new URLSearchParams();
+  if (workItemId) params.set("workItemId", workItemId);
+  if (projectId) params.set("projectId", projectId);
+  const qs = params.toString() ? `?${params}` : "";
   const res = await get<{ data: Execution[]; total: number }>(`/api/executions${qs}`);
   return res.data;
 }
@@ -274,8 +277,9 @@ export async function getComments(workItemId: WorkItemId): Promise<Comment[]> {
   return res.data;
 }
 
-export async function getRecentComments(): Promise<Comment[]> {
-  const res = await get<{ data: Comment[]; total: number }>("/api/comments");
+export async function getRecentComments(projectId?: string): Promise<Comment[]> {
+  const q = projectId ? `?projectId=${projectId}` : "";
+  const res = await get<{ data: Comment[]; total: number }>(`/api/comments${q}`);
   return res.data;
 }
 
@@ -286,8 +290,11 @@ export async function createComment(req: CreateCommentRequest): Promise<Comment>
 
 // ── Proposals ────────────────────────────────────────────────────
 
-export async function getProposals(workItemId?: WorkItemId): Promise<Proposal[]> {
-  const qs = workItemId ? `?workItemId=${workItemId}` : "";
+export async function getProposals(workItemId?: WorkItemId, projectId?: string): Promise<Proposal[]> {
+  const params = new URLSearchParams();
+  if (workItemId) params.set("workItemId", workItemId);
+  if (projectId) params.set("projectId", projectId);
+  const qs = params.toString() ? `?${params}` : "";
   const res = await get<{ data: Proposal[]; total: number }>(`/api/proposals${qs}`);
   return res.data;
 }

@@ -3,10 +3,10 @@ import type { WorkItemId, ExecutionId } from "@agentops/shared";
 import { getExecutions, getExecution } from "@/api";
 import { queryKeys } from "./query-keys";
 
-export function useExecutions(workItemId?: WorkItemId) {
+export function useExecutions(workItemId?: WorkItemId, projectId?: string) {
   return useQuery({
-    queryKey: queryKeys.executions(workItemId),
-    queryFn: () => getExecutions(workItemId),
+    queryKey: queryKeys.executions(workItemId, projectId),
+    queryFn: () => getExecutions(workItemId, projectId),
   });
 }
 

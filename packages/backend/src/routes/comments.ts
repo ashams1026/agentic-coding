@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { eq } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { comments } from "../db/schema.js";
+import { comments, workItems } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import type {
   CommentId,
@@ -30,9 +30,9 @@ function serializeComment(row: typeof comments.$inferSelect) {
 export async function commentRoutes(app: FastifyInstance) {
   // GET /api/comments?workItemId= — list comments for a work item
   app.get<{
-    Querystring: { workItemId?: string };
+    Querystring: { workItemId?: string; projectId?: string };
   }>("/api/comments", async (request) => {
-    const { workItemId } = request.query;
+    const { workItemId, projectId } = request.query;
 
     let rows;
     if (workItemId) {
@@ -42,6 +42,12 @@ export async function commentRoutes(app: FastifyInstance) {
         .where(eq(comments.workItemId, workItemId));
     } else {
       rows = await db.select().from(comments);
+    }
+
+    if (projectId && !workItemId) {
+      const projectWorkItems = await db.select().from(workItems).where(eq(workItems.projectId, projectId));
+      const workItemIds = new Set(projectWorkItems.map((w) => w.id));
+      rows = rows.filter((r) => workItemIds.has(r.workItemId));
     }
 
     return { data: rows.map(serializeComment), total: rows.length };
