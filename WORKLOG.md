@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: A.14 (approved)
+
+**Reviewed:** Rejection and retry logic — `execution-manager.ts` + `mcp-server.ts`.
+- handleRejection: counts existing rejections, appends entry, returns finalTargetState ✓
+- appendExecutionContext: reads/appends/writes work item executionContext ✓
+- route_to_state: detects "In Review" → "In Progress", calls handleRejection, uses finalTargetState throughout ✓
+- Max retries (3): overrides to "Blocked" with system comment + broadcast ✓
+- Non-router executions append to executionContext after completion ✓
+- Uses existing RejectionPayload type, buildSystemPrompt already renders history ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.14: Implement rejection and retry logic
 
 **Task:** Detect "In Review" → "In Progress" as rejection, track retries, auto-block on max.
