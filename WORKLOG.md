@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-29 — U.7: Add state transition control to detail panel
+
+**Task:** Add dropdown showing valid next states, with persona prompt modal for auto-routing.
+
+**Done:**
+- Added `StateTransitionControl` component:
+  - Uses `getValidTransitions(currentState)` for available target states
+  - Select dropdown with "Move to…" placeholder
+  - Each option shows state color dot + name, and assigned persona name if present
+  - Hidden when no valid transitions (e.g., "Done" state)
+- Added `TransitionPrompt` modal (reused from board-view pattern):
+  - Dialog with "Trigger Agent" title, persona card (avatar + name + description)
+  - Run / Skip / Cancel buttons
+  - Run and Skip both perform the transition; Cancel aborts
+- Wired into `DetailPanel`:
+  - `usePersonaAssignments` hook added for auto-routing detection
+  - `personaMap` + `assignmentMap` memos for persona-per-state lookup
+  - `handleTransition`: if target state has assigned persona → show prompt, else direct mutate
+  - `handlePromptRun/Skip/Cancel` handlers manage prompt state
+  - `TransitionPrompt` rendered at bottom of panel
+- Placed in badges row between state badge and priority selector
+
+**Files modified:** `packages/frontend/src/features/work-items/detail-panel.tsx`
+
+**Notes:** Frontend build: 0 errors. Dialog, Bot icon, getValidTransitions, usePersonaAssignments imports added. Initial build had TS6133 (unused personaMap prop in StateTransitionControl) — removed the prop.
+
+---
+
 ## 2026-03-29 — Review: U.6 (approved)
 
 **Reviewed:** Priority dropdown + label editor — `detail-panel.tsx`.

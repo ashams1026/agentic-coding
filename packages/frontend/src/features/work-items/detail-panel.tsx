@@ -1,7 +1,15 @@
 import { useMemo, useState, useRef, useEffect, useCallback } from "react";
-import { X, ChevronRight, Plus, GitBranch } from "lucide-react";
+import { X, ChevronRight, Plus, GitBranch, Bot } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -12,12 +20,12 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { useWorkItem, useWorkItems, useProposals, usePersonas, useCreateWorkItem, useUpdateWorkItem } from "@/hooks";
+import { useWorkItem, useWorkItems, useProposals, usePersonas, usePersonaAssignments, useCreateWorkItem, useUpdateWorkItem } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { CommentStream } from "@/features/common/comment-stream";
 import { ExecutionTimeline } from "@/features/common/execution-timeline";
-import { getStateByName } from "@agentops/shared";
-import type { WorkItem, WorkItemId, Priority } from "@agentops/shared";
+import { getStateByName, getValidTransitions } from "@agentops/shared";
+import type { WorkItem, WorkItemId, Priority, Persona, ProjectId } from "@agentops/shared";
 
 // ── Editable title ──────────────────────────────────────────────
 
@@ -334,6 +342,108 @@ function LabelEditor({
   );
 }
 
+// ── Transition prompt modal ─────────────────────────────────────
+
+interface TransitionPromptData {
+  itemTitle: string;
+  fromState: string;
+  toState: string;
+  persona: Persona;
+}
+
+function TransitionPrompt({
+  open,
+  data,
+  onRun,
+  onSkip,
+  onCancel,
+}: {
+  open: boolean;
+  data: TransitionPromptData | null;
+  onRun: () => void;
+  onSkip: () => void;
+  onCancel: () => void;
+}) {
+  if (!data) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => !v && onCancel()}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Trigger Agent</DialogTitle>
+          <DialogDescription>
+            Moving &ldquo;{data.itemTitle}&rdquo; to{" "}
+            <span className="font-medium text-foreground">{data.toState}</span>{" "}
+            will trigger an agent.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex items-center gap-3 rounded-lg border p-4">
+          <div
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+            style={{ backgroundColor: data.persona.avatar.color + "20" }}
+          >
+            <Bot className="h-5 w-5" style={{ color: data.persona.avatar.color }} />
+          </div>
+          <div>
+            <p className="text-sm font-medium">{data.persona.name}</p>
+            <p className="text-xs text-muted-foreground">{data.persona.description}</p>
+          </div>
+        </div>
+        <DialogFooter className="gap-2 sm:gap-0">
+          <Button variant="outline" onClick={onCancel}>Cancel</Button>
+          <Button variant="secondary" onClick={onSkip}>Skip</Button>
+          <Button onClick={onRun}>Run</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ── State transition control ───────────────────────────────────
+
+function StateTransitionControl({
+  item,
+  assignmentMap,
+  onTransition,
+}: {
+  item: WorkItem;
+  assignmentMap: Map<string, Persona>;
+  onTransition: (toState: string) => void;
+}) {
+  const validStates = getValidTransitions(item.currentState);
+  if (validStates.length === 0) return null;
+
+  return (
+    <Select onValueChange={onTransition}>
+      <SelectTrigger className="h-7 w-auto gap-1.5 text-xs px-2 py-0.5">
+        <SelectValue placeholder="Move to…" />
+      </SelectTrigger>
+      <SelectContent>
+        {validStates.map((state) => {
+          const stateInfo = getStateByName(state);
+          const assignedPersona = assignmentMap.get(state);
+          return (
+            <SelectItem key={state} value={state}>
+              <span className="flex items-center gap-1.5">
+                <span
+                  className="h-2 w-2 rounded-full shrink-0"
+                  style={{ backgroundColor: stateInfo?.color ?? "#888" }}
+                />
+                {state}
+                {assignedPersona && (
+                  <span className="text-muted-foreground ml-1">
+                    → {assignedPersona.name}
+                  </span>
+                )}
+              </span>
+            </SelectItem>
+          );
+        })}
+      </SelectContent>
+    </Select>
+  );
+}
+
 // ── Parent breadcrumb ───────────────────────────────────────────
 
 function ParentBreadcrumb({
@@ -514,8 +624,12 @@ export function DetailPanel() {
   const { data: item } = useWorkItem(selectedItemId!);
   const { data: allItems = [] } = useWorkItems();
   const { data: personas = [] } = usePersonas();
+  const { data: assignments = [] } = usePersonaAssignments("pj-agntops" as ProjectId);
   const createWorkItem = useCreateWorkItem();
   const updateWorkItem = useUpdateWorkItem();
+
+  const [promptData, setPromptData] = useState<TransitionPromptData | null>(null);
+  const [pendingState, setPendingState] = useState<string | null>(null);
 
   const children = useMemo(
     () => allItems.filter((w) => w.parentId === selectedItemId),
@@ -526,6 +640,21 @@ export function DetailPanel() {
     if (!item?.assignedPersonaId) return null;
     return personas.find((p) => p.id === item.assignedPersonaId) ?? null;
   }, [item, personas]);
+
+  const personaMap = useMemo(() => {
+    const map = new Map<string, Persona>();
+    personas.forEach((p) => map.set(p.id, p));
+    return map;
+  }, [personas]);
+
+  const assignmentMap = useMemo(() => {
+    const map = new Map<string, Persona>();
+    assignments.forEach((a) => {
+      const p = personaMap.get(a.personaId);
+      if (p) map.set(a.stateName, p);
+    });
+    return map;
+  }, [assignments, personaMap]);
 
   if (!selectedItemId || !item) return null;
 
@@ -539,6 +668,42 @@ export function DetailPanel() {
       parentId: item.id,
       title: "New child item",
     });
+  };
+
+  const handleTransition = (toState: string) => {
+    const assignedPersona = assignmentMap.get(toState);
+    if (assignedPersona) {
+      setPromptData({
+        itemTitle: item.title,
+        fromState: item.currentState,
+        toState,
+        persona: assignedPersona,
+      });
+      setPendingState(toState);
+    } else {
+      updateWorkItem.mutate({ id: item.id, currentState: toState });
+    }
+  };
+
+  const handlePromptRun = () => {
+    if (pendingState) {
+      updateWorkItem.mutate({ id: item.id, currentState: pendingState });
+    }
+    setPromptData(null);
+    setPendingState(null);
+  };
+
+  const handlePromptSkip = () => {
+    if (pendingState) {
+      updateWorkItem.mutate({ id: item.id, currentState: pendingState });
+    }
+    setPromptData(null);
+    setPendingState(null);
+  };
+
+  const handlePromptCancel = () => {
+    setPromptData(null);
+    setPendingState(null);
   };
 
   return (
@@ -571,6 +736,11 @@ export function DetailPanel() {
           >
             {item.currentState}
           </Badge>
+          <StateTransitionControl
+            item={item}
+            assignmentMap={assignmentMap}
+            onTransition={handleTransition}
+          />
           <PrioritySelector
             value={item.priority}
             onChange={(p) => updateWorkItem.mutate({ id: item.id, priority: p })}
@@ -658,6 +828,14 @@ export function DetailPanel() {
           <MetadataSection item={item} />
         </div>
       </ScrollArea>
+
+      <TransitionPrompt
+        open={promptData !== null}
+        data={promptData}
+        onRun={handlePromptRun}
+        onSkip={handlePromptSkip}
+        onCancel={handlePromptCancel}
+      />
     </div>
   );
 }
