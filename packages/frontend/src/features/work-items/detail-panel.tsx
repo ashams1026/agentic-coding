@@ -521,7 +521,7 @@ function ChildrenList({
             <button
               key={child.id}
               onClick={() => onNavigate(child.id)}
-              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-accent/50 transition-colors"
+              className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left hover:bg-muted/50 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <Badge
                 variant="secondary"

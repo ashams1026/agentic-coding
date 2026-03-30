@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — P.12: Polish hover states and transitions
+
+**Task:** Audit all interactive elements for hover feedback, add consistent transitions, focus-visible rings, and selected state styling.
+
+**Done:**
+- **List view rows**: Changed hover from `bg-accent/50` → `bg-muted/50` (subtler). Added `duration-150` for faster transition. Selected state now uses `ring-2 ring-primary/50` alongside `bg-accent`. Added `focus-visible:ring-2 focus-visible:ring-ring`.
+- **List view group headers**: Added `duration-150`, `rounded-md`, and `focus-visible:ring-2 focus-visible:ring-ring`.
+- **List view expand chevron**: Added `transition-colors duration-150` and `focus-visible:ring-2 focus-visible:ring-ring`.
+- **Card component**: Added `transition-shadow duration-150 hover:shadow-md` for subtle lift effect on all cards.
+- **Detail panel children rows**: Changed hover from `bg-accent/50` → `bg-muted/50`, added `duration-150` and `focus-visible:ring-2 focus-visible:ring-ring`.
+- **Buttons**: Already have comprehensive hover states via CVA variants and `focus-visible:ring-[3px]` — no changes needed.
+
+**Files modified:** `list-view.tsx`, `card.tsx`, `detail-panel.tsx`
+
+**Notes:** Build: 0 errors. Buttons already had good hover+focus via shadcn CVA config. PrioritySelector and StateTransitionControl use shadcn Select (already interactive with proper states). The `ring-primary/50` selected ring provides a consistent active indicator.
+
+---
+
 ## 2026-03-30 — Review: P.11 (approved)
 
 **Reviewed:** Loading skeletons and empty states — `list-view.tsx`, `detail-panel.tsx`, `dashboard.tsx`.

@@ -111,7 +111,7 @@ function GroupHeader({
   return (
     <button
       onClick={onToggle}
-      className="flex w-full items-center gap-2 px-2 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+      className="flex w-full items-center gap-2 px-2 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors duration-150 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <ChevronRight
         className={cn("h-3.5 w-3.5 transition-transform", !collapsed && "rotate-90")}
@@ -163,8 +163,8 @@ function ListRow({
     <button
       onClick={onSelect}
       className={cn(
-        "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left transition-colors",
-        isSelected ? "bg-accent text-accent-foreground" : "hover:bg-accent/50",
+        "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        isSelected ? "bg-accent text-accent-foreground ring-2 ring-primary/50" : "hover:bg-muted/50",
       )}
       style={{ paddingLeft: `${12 + depth * 20}px` }}
     >
@@ -173,7 +173,7 @@ function ListRow({
         <span
           role="button"
           tabIndex={0}
-          className="shrink-0 p-0.5 rounded hover:bg-muted"
+          className="shrink-0 p-0.5 rounded hover:bg-muted transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onClick={(e) => {
             e.stopPropagation();
             onToggleExpand();
