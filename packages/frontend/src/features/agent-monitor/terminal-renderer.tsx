@@ -215,8 +215,8 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
         </div>
         <Button
           variant="ghost"
-          size="sm"
-          className="h-6 text-xs gap-1"
+          size="xs"
+          className="gap-1"
           onClick={() => {
             setScrollLocked(!scrollLocked);
             if (scrollLocked) {

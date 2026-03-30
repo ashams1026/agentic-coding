@@ -121,7 +121,7 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
 
       {/* Navigation links */}
       {execution.workItemId && (
-        <Button variant="ghost" size="sm" className="h-6 text-xs gap-1" asChild>
+        <Button variant="ghost" size="xs" className="gap-1" asChild>
           <Link to={`/work-items/${execution.workItemId}`}>
             Work Item
             <ExternalLink className="h-2.5 w-2.5" />
@@ -129,7 +129,7 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
         </Button>
       )}
       {parentWorkItemId && (
-        <Button variant="ghost" size="sm" className="h-6 text-xs gap-1" asChild>
+        <Button variant="ghost" size="xs" className="gap-1" asChild>
           <Link to={`/work-items/${parentWorkItemId}`}>
             Parent
             <ExternalLink className="h-2.5 w-2.5" />
@@ -140,7 +140,7 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
       {/* Stop button — graceful cancel */}
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="outline" size="sm" className="h-7 text-xs gap-1.5">
+          <Button variant="outline" size="sm" className="gap-1.5">
             <StopCircle className="h-3.5 w-3.5" />
             Stop
           </Button>
@@ -166,7 +166,7 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
       {/* Force Stop button — immediate kill */}
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="destructive" size="sm" className="h-7 text-xs gap-1.5">
+          <Button variant="destructive" size="sm" className="gap-1.5">
             <OctagonX className="h-3.5 w-3.5" />
             Force Stop
           </Button>

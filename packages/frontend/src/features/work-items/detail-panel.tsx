@@ -140,8 +140,8 @@ function EditableDescription({
           <h3 className="text-sm font-medium">Description</h3>
           <Button
             variant="ghost"
-            size="sm"
-            className="h-6 text-xs text-muted-foreground"
+            size="xs"
+            className="text-muted-foreground"
             onClick={() => setEditing(true)}
           >
             Edit
@@ -207,10 +207,10 @@ function EditableDescription({
 
       {/* Save / Cancel */}
       <div className="flex gap-2 mt-2">
-        <Button size="sm" className="h-7 text-xs" onClick={handleSave}>
+        <Button size="sm" onClick={handleSave}>
           Save
         </Button>
-        <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={handleCancel}>
+        <Button variant="ghost" size="sm" onClick={handleCancel}>
           Cancel
         </Button>
       </div>
@@ -718,7 +718,7 @@ export function DetailPanel() {
               onSave={(newTitle) => updateWorkItem.mutate({ id: item.id, title: newTitle })}
             />
           </div>
-          <Button variant="ghost" size="sm" className="shrink-0 h-7 w-7 p-0" onClick={handleClose}>
+          <Button variant="ghost" size="icon-sm" className="shrink-0" onClick={handleClose}>
             <X className="h-4 w-4" />
           </Button>
         </div>
@@ -785,12 +785,12 @@ export function DetailPanel() {
           <div>
             <ChildrenList children={children} onNavigate={handleNavigate} />
             <div className="flex gap-2 mt-2">
-              <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={handleAddChild}>
+              <Button variant="outline" size="sm" className="gap-1" onClick={handleAddChild}>
                 <Plus className="h-3 w-3" />
                 Add child
               </Button>
               {children.length === 0 && (
-                <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
+                <Button variant="outline" size="sm" className="gap-1">
                   <GitBranch className="h-3 w-3" />
                   Decompose
                 </Button>

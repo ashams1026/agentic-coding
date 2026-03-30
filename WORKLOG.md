@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — P.2: Standardize button and badge sizing
+
+**Task:** Converge on two button sizes (sm h-7, default h-8) and two badge sizes (sm, default). Clean up redundant overrides.
+
+**Done:**
+- Updated `button.tsx`: default h-9→h-8, sm h-8→h-7 + text-xs, icon size-9→size-8, icon-sm size-8→size-7
+- Updated `badge.tsx`: added `size` variant with `default` (px-2 py-0.5) and `sm` (px-1.5 py-0.5)
+- Cleaned up redundant className overrides across 8 files:
+  - Removed `h-7` overrides from sm buttons (now native)
+  - Changed `h-6 text-xs` overrides to `size="xs"`
+  - Changed `h-7 w-7` icon overrides to `size="icon-sm"`
+  - Changed `h-8 w-8` icon overrides to just `size="icon"` (now native)
+  - Removed redundant `text-xs` from sm button classNames
+
+**Files modified:** `button.tsx`, `badge.tsx`, `work-items.tsx`, `detail-panel.tsx`, `agent-control-bar.tsx`, `terminal-renderer.tsx`, `tool-configuration.tsx`, `projects-section.tsx`, `sidebar.tsx`, `activity-feed.tsx`
+
+**Notes:** Build: 0 errors, 145 tests pass. Badge `size="sm"` available for inline badges — existing inline `px-1.5 py-0` overrides still work alongside it.
+
+---
+
 ## 2026-03-30 — Review: P.1 (approved)
 
 **Reviewed:** Typography scale standardization — `index.css` + 29 component files.

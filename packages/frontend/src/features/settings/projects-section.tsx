@@ -113,10 +113,10 @@ function ProjectRow({ project, onEdit, onDelete }: ProjectRowProps) {
         <p className="text-xs text-muted-foreground truncate mt-0.5">{project.path}</p>
       </div>
       <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={onEdit}>
+        <Button variant="ghost" size="icon-sm" onClick={onEdit}>
           <Pencil className="h-3.5 w-3.5" />
         </Button>
-        <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={onDelete}>
+        <Button variant="ghost" size="icon-sm" className="text-destructive" onClick={onDelete}>
           <Trash2 className="h-3.5 w-3.5" />
         </Button>
       </div>

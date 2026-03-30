@@ -175,7 +175,7 @@ export function ToolConfiguration({
         </Badge>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
+            <Button variant="outline" size="sm" className="gap-1">
               Presets
               <ChevronDown className="h-3 w-3" />
             </Button>

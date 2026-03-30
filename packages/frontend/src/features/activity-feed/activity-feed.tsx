@@ -572,10 +572,10 @@ function FeedFilterBar({ filters, onFiltersChange, personas }: FilterBarProps) {
       {showTypes && (
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Button variant="link" size="sm" className="h-5 px-0 text-xs" onClick={selectAllTypes}>
+            <Button variant="link" size="sm" className="h-5 px-0" onClick={selectAllTypes}>
               Select all
             </Button>
-            <Button variant="link" size="sm" className="h-5 px-0 text-xs" onClick={deselectAllTypes}>
+            <Button variant="link" size="sm" className="h-5 px-0" onClick={deselectAllTypes}>
               Deselect all
             </Button>
           </div>
