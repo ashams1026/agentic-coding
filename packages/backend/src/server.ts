@@ -9,6 +9,7 @@ import { executionRoutes } from "./routes/executions.js";
 import { proposalRoutes } from "./routes/proposals.js";
 import { dashboardRoutes } from "./routes/dashboard.js";
 import { auditRoutes } from "./routes/audit.js";
+import { settingsRoutes } from "./routes/settings.js";
 import { registerWebSocket } from "./ws.js";
 import { getActiveCount } from "./agent/concurrency.js";
 import { loggerConfig } from "./logger.js";
@@ -57,6 +58,7 @@ export async function buildServer() {
   await proposalRoutes(server);
   await dashboardRoutes(server);
   await auditRoutes(server);
+  await settingsRoutes(server);
 
   return server;
 }

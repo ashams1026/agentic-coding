@@ -441,6 +441,31 @@ export async function getReadyWork(): Promise<ReadyWorkItem[]> {
   }));
 }
 
+// ── Settings (mock) ─────────────────────────────────────────────
+
+let mockApiKey = "";
+
+export async function getApiKeyStatus(): Promise<{ configured: boolean; maskedKey: string | null }> {
+  await delay();
+  if (!mockApiKey) return { configured: false, maskedKey: null };
+  return { configured: true, maskedKey: mockApiKey.slice(0, 12) + "...****" };
+}
+
+export async function setApiKey(key: string): Promise<{ valid: boolean; configured: boolean; maskedKey: string }> {
+  await delay();
+  if (!key.startsWith("sk-")) {
+    throw new Error("Invalid API key");
+  }
+  mockApiKey = key;
+  return { valid: true, configured: true, maskedKey: key.slice(0, 12) + "...****" };
+}
+
+export async function deleteApiKey(): Promise<{ configured: boolean; maskedKey: null }> {
+  await delay();
+  mockApiKey = "";
+  return { configured: false, maskedKey: null };
+}
+
 // ── Bundled mock API ──────────────────────────────────────────────
 
 export const mockApi = {
@@ -488,6 +513,10 @@ export const mockApi = {
   getCostSummary,
   getExecutionStats,
   getReadyWork,
+  // Settings
+  getApiKeyStatus,
+  setApiKey,
+  deleteApiKey,
   // Utility
   resetStore,
 };

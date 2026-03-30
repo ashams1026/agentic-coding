@@ -5,6 +5,35 @@
 
 ---
 
+## 2026-03-30 — W.1: Implement API key storage and validation
+
+**Task:** Add backend routes for API key CRUD, validate via Anthropic API test call, wire the Settings API Keys section.
+
+**Done:**
+- **`packages/backend/src/routes/settings.ts`** (new) — 3 routes:
+  - `GET /api/settings/api-key` — returns `{ configured, maskedKey }` from config
+  - `POST /api/settings/api-key` — validates key via real Anthropic API call (minimal messages.create), stores in config.json on success, returns 400 on invalid/401
+  - `DELETE /api/settings/api-key` — clears key from config
+  - `maskKey()` helper: shows first 12 chars + "...****"
+  - `validateAnthropicKey()`: POST to Anthropic API, 401 = invalid, any other = valid
+- **`packages/backend/src/server.ts`** — Registered `settingsRoutes`
+- **`packages/frontend/src/api/client.ts`** — Added `getApiKeyStatus()`, `setApiKey()`, `deleteApiKey()` with typed return interfaces
+- **`packages/frontend/src/mocks/api.ts`** — Added mock implementations (in-memory key, validates starts with "sk-")
+- **`packages/frontend/src/api/index.ts`** — Added unified wrappers for all 3 settings functions
+- **`packages/frontend/src/features/settings/api-keys-section.tsx`** — Rewired `ApiKeySection`:
+  - Fetches status on mount via `getApiKeyStatus()`
+  - When configured: shows masked key with green checkmark + "Remove" button
+  - When not configured: shows input + "Test connection" button
+  - "Test connection" calls `setApiKey()` — validates + stores in one step
+  - Error messages from backend displayed. Loading skeleton on mount.
+
+**Files created:** `packages/backend/src/routes/settings.ts`
+**Files modified:** `server.ts`, `api/client.ts`, `mocks/api.ts`, `api/index.ts`, `api-keys-section.tsx`
+
+**Notes:** Build: 0 errors. Tests: 159/159. Removed unused Eye/EyeOff imports (no longer needed — key is never revealed, only masked). The POST route both validates AND stores, so "Test connection" is a single call.
+
+---
+
 ## 2026-03-30 — Review: S.9 (approved)
 
 **Reviewed:** Configuration file — `config.ts` and CLI commands in `cli.ts`.

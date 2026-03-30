@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
-  Eye,
-  EyeOff,
   Check,
   Loader2,
   Bot,
   Trash2,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,27 +12,67 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { usePersonas } from "@/hooks";
 import { cn } from "@/lib/utils";
+import { getApiKeyStatus, setApiKey, deleteApiKey } from "@/api";
 
 // ── API Key input ──────────────────────────────────────────────────
 
 function ApiKeySection() {
-  const [key, setKey] = useState("sk-ant-api03-xxxxxxxxxxxxxxxxxxxx");
-  const [revealed, setRevealed] = useState(false);
+  const [inputKey, setInputKey] = useState("");
+  const [maskedKey, setMaskedKey] = useState<string | null>(null);
+  const [configured, setConfigured] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<"success" | "error" | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const maskedKey = key
-    ? key.slice(0, 12) + "\u2022".repeat(Math.max(0, key.length - 16)) + key.slice(-4)
-    : "";
+  // Fetch current status on mount
+  useEffect(() => {
+    getApiKeyStatus()
+      .then((status) => {
+        setConfigured(status.configured);
+        setMaskedKey(status.maskedKey);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleTest = async () => {
     setTesting(true);
     setTestResult(null);
-    // Mock: simulate a connection test
-    await new Promise((r) => setTimeout(r, 1200));
-    setTesting(false);
-    setTestResult(key.startsWith("sk-") ? "success" : "error");
+    setErrorMessage(null);
+    try {
+      const result = await setApiKey(inputKey);
+      setTesting(false);
+      if (result.valid) {
+        setTestResult("success");
+        setConfigured(true);
+        setMaskedKey(result.maskedKey);
+        setInputKey("");
+      } else {
+        setTestResult("error");
+      }
+    } catch (err) {
+      setTesting(false);
+      setTestResult("error");
+      setErrorMessage(err instanceof Error ? err.message : "Connection failed");
+    }
   };
+
+  const handleRemove = async () => {
+    const result = await deleteApiKey();
+    setConfigured(result.configured);
+    setMaskedKey(result.maskedKey);
+    setTestResult(null);
+    setErrorMessage(null);
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-3">
+        <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+        <div className="h-9 w-full bg-muted animate-pulse rounded" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
@@ -44,59 +83,67 @@ function ApiKeySection() {
         </p>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Input
-            type={revealed ? "text" : "password"}
-            value={revealed ? key : maskedKey}
-            onChange={(e) => {
-              setKey(e.target.value);
-              setTestResult(null);
-            }}
-            placeholder="sk-ant-api03-..."
-            className="pr-10 font-mono text-sm"
-          />
-          <button
-            type="button"
-            onClick={() => setRevealed(!revealed)}
-            className="absolute right-2.5 top-2.5 text-muted-foreground hover:text-foreground transition-colors"
+      {configured && maskedKey ? (
+        <div className="flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-2 px-3 py-2 rounded-md border bg-muted/50">
+            <Check className="h-4 w-4 text-green-500 shrink-0" />
+            <span className="font-mono text-sm text-muted-foreground">{maskedKey}</span>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRemove}
+            className="gap-1.5 shrink-0 text-destructive hover:text-destructive"
           >
-            {revealed ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </button>
+            <X className="h-3.5 w-3.5" />
+            Remove
+          </Button>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleTest}
-          disabled={testing || !key}
-          className="gap-1.5 shrink-0"
-        >
-          {testing ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          ) : testResult === "success" ? (
-            <Check className="h-3.5 w-3.5 text-green-500" />
-          ) : null}
-          {testing ? "Testing..." : "Test connection"}
-        </Button>
-      </div>
+      ) : (
+        <>
+          <div className="flex items-center gap-2">
+            <Input
+              type="password"
+              value={inputKey}
+              onChange={(e) => {
+                setInputKey(e.target.value);
+                setTestResult(null);
+                setErrorMessage(null);
+              }}
+              placeholder="sk-ant-api03-..."
+              className="font-mono text-sm"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleTest}
+              disabled={testing || !inputKey.trim()}
+              className="gap-1.5 shrink-0"
+            >
+              {testing ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : testResult === "success" ? (
+                <Check className="h-3.5 w-3.5 text-green-500" />
+              ) : null}
+              {testing ? "Testing..." : "Test connection"}
+            </Button>
+          </div>
 
-      {testResult && (
-        <p
-          className={cn(
-            "text-xs",
-            testResult === "success"
-              ? "text-green-600 dark:text-green-400"
-              : "text-destructive",
+          {testResult && (
+            <p
+              className={cn(
+                "text-xs",
+                testResult === "success"
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-destructive",
+              )}
+            >
+              {testResult === "success"
+                ? "Connection successful — API key is valid."
+                : errorMessage ?? "Connection failed — check your API key."}
+            </p>
           )}
-        >
-          {testResult === "success"
-            ? "Connection successful — API key is valid."
-            : "Connection failed — check your API key."}
-        </p>
+        </>
       )}
     </div>
   );

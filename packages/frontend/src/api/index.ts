@@ -139,3 +139,14 @@ export const getExecutionStats = (...args: Parameters<typeof mock.getExecutionSt
 
 export const getReadyWork = (...args: Parameters<typeof mock.getReadyWork>) =>
   pick(mock.getReadyWork, real.getReadyWork)(...args);
+
+// ── Settings ────────────────────────────────────────────────────
+
+export const getApiKeyStatus = (...args: Parameters<typeof mock.getApiKeyStatus>) =>
+  pick(mock.getApiKeyStatus, real.getApiKeyStatus)(...args);
+
+export const setApiKey = (...args: Parameters<typeof mock.setApiKey>) =>
+  pick(mock.setApiKey, real.setApiKey)(...args);
+
+export const deleteApiKey = (...args: Parameters<typeof mock.deleteApiKey>) =>
+  pick(mock.deleteApiKey, real.deleteApiKey)(...args);

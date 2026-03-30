@@ -336,6 +336,36 @@ export async function getReadyWork(): Promise<ReadyWorkItem[]> {
   return res.data;
 }
 
+// ── Settings ─────────────────────────────────────────────────────
+
+export interface ApiKeyStatus {
+  configured: boolean;
+  maskedKey: string | null;
+}
+
+export interface SetApiKeyResult {
+  valid: boolean;
+  configured: boolean;
+  maskedKey: string;
+}
+
+export async function getApiKeyStatus(): Promise<ApiKeyStatus> {
+  return get<ApiKeyStatus>("/api/settings/api-key");
+}
+
+export async function setApiKey(key: string): Promise<SetApiKeyResult> {
+  return post<SetApiKeyResult>("/api/settings/api-key", { key });
+}
+
+export async function deleteApiKey(): Promise<ApiKeyStatus> {
+  const res = await fetch(`${BASE_URL}/api/settings/api-key`, { method: "DELETE" });
+  if (!res.ok) {
+    showErrorToast("DELETE", "/api/settings/api-key", res.status);
+    throw new Error(`DELETE /api/settings/api-key failed: ${res.status}`);
+  }
+  return res.json();
+}
+
 // ── Bundled API (mirrors mockApi shape) ──────────────────────────
 
 export const apiClient = {
@@ -382,4 +412,8 @@ export const apiClient = {
   getCostSummary,
   getExecutionStats,
   getReadyWork,
+  // Settings
+  getApiKeyStatus,
+  setApiKey,
+  deleteApiKey,
 };
