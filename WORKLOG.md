@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — AI.6: Write test plans for Work Items — Filtering and Search
+
+**Task:** Create test plans for work items filtering/search and sorting.
+
+**Done:**
+- **`tests/e2e/plans/work-items-filtering.md`** — 14 steps: type in search box ("Search items..." placeholder) → list filters in real-time with debounce, verify search highlighting (yellow/amber background on matches), clear search via X icon, select state filter ("All states" dropdown → specific state), verify only matching-state items shown, add priority filter on top ("All priorities" → e.g. P1), verify combined filters (state AND priority), click "Clear" button (X icon) to reset all filters and restore full list, verify "Clear" hidden when no filters active, filter to zero results → "No items match your filters." message.
+- **`tests/e2e/plans/work-items-sorting.md`** — 12 steps: verify default "Sort by priority", note current order, change to "Sort by created" → list reorders, verify sort direction arrow button (up/down), toggle direction → list reverses, change to "Sort by updated", toggle back, return to "Sort by priority".
+
+**Files created:** `tests/e2e/plans/work-items-filtering.md`, `tests/e2e/plans/work-items-sorting.md`
+
+**Notes:** Plans reference actual filter-bar.tsx UI: search Input with debounce, state/priority Select dropdowns, "Clear" Button with X (shown when `hasFilters`), sort Select ("Sort by priority"/"Sort by created"/"Sort by updated"), sort direction toggle Button (ArrowUp/ArrowDown). Also references list-view.tsx: HighlightedText component for search highlighting, empty filter state "No items match your filters." Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: AI.5 (approved)
 
 **Reviewed:** Detail panel view and edit test plans.
