@@ -24,7 +24,7 @@
 
 - [x] **D.6** — Document the agent personas. Create `docs/personas.md`: what a persona is (system prompt, model, tools, budget), the 5 built-in personas (Product Manager, Tech Lead, Engineer, Code Reviewer, Router) with their roles and default configurations, how to create and edit custom personas, the system prompt layering (persona identity → project context → work item context → execution history), per-persona MCP tool allowlists, the Router as a special persona.
 
-- [ ] **D.7** — Document the API. Create `docs/api.md`: every REST endpoint grouped by resource (projects, work-items, personas, persona-assignments, comments, executions, proposals, dashboard, settings). For each: method, path, request body (with TypeScript type), response body, query parameters, example curl. Document the WebSocket protocol: connection URL, event types and payloads, subscription model.
+- [review] **D.7** — Document the API. Create `docs/api.md`: every REST endpoint grouped by resource (projects, work-items, personas, persona-assignments, comments, executions, proposals, dashboard, settings). For each: method, path, request body (with TypeScript type), response body, query parameters, example curl. Document the WebSocket protocol: connection URL, event types and payloads, subscription model.
 
 - [ ] **D.8** — Document the MCP tools. Create `docs/mcp-tools.md`: the AgentOps MCP server and its 7 tools (`post_comment`, `create_children`, `route_to_state`, `list_items`, `get_context`, `flag_blocked`, `request_review`). For each tool: description, input schema (Zod), output format, which personas have access, example usage. Explain how the MCP server is attached to agent sessions.
 

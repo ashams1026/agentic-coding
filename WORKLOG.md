@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-30 — D.7: Document the API
+
+**Task:** Create `docs/api.md` with every REST endpoint, request/response types, curl examples, and WebSocket protocol.
+
+**Done:**
+- **`docs/api.md`** (new) — API documentation with:
+  - Response format convention (data wrapper, error format)
+  - **Projects** (5 endpoints): GET list, GET by ID, POST create with path validation, PATCH update, DELETE
+  - **Work Items** (6 endpoints): GET list with parentId/projectId filters, GET by ID, POST create (starts in Backlog), PATCH update with state transition validation + side effects (WS broadcast, dispatch, coordination, memory), POST retry dispatch, DELETE recursive
+  - **Work Item Edges** (3 endpoints): GET list with workItemId filter, POST create, DELETE
+  - **Personas** (5 endpoints): GET list, GET by ID, POST create, PATCH update, DELETE
+  - **Persona Assignments** (2 endpoints): GET list with projectId filter, PUT upsert (onConflictDoUpdate)
+  - **Comments** (4 endpoints): GET list with workItemId filter, GET by ID, POST create, DELETE
+  - **Executions** (5 endpoints): GET list with workItemId filter, GET by ID, POST create, PATCH update, DELETE
+  - **Proposals** (5 endpoints): GET list with workItemId filter, GET by ID, POST create, PATCH update (status), DELETE
+  - **Dashboard** (4 endpoints): stats, cost-summary (7-day), execution-stats, ready-work (top 5)
+  - **Settings** (8 endpoints): API key CRUD, concurrency stats, DB stats, clear old executions, export, import
+  - **Audit** (1 endpoint): query with workItemId filter and limit
+  - **WebSocket**: connection URL, welcome message, broadcast model, 9 event types with full TypeScript payloads
+  - Source files table (14 files)
+  - All request/response types shown as TypeScript interfaces matching `api.ts`
+
+**Files created:** `docs/api.md`
+
+**Notes:** Build: 0 errors. All 48 endpoints verified against route files. Request/response types match `packages/shared/src/api.ts`. WebSocket events match `packages/shared/src/ws-events.ts` (9 event types). Curl examples included for key endpoints.
+
+---
+
 ## 2026-03-30 — Review: D.6 (approved)
 
 **Reviewed:** Agent personas documentation — definition, 5 built-in personas, custom personas, prompt layering, tool allowlists, Router.
