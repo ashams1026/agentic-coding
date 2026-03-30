@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — AI.10: Write test plans for Persona Manager
+
+**Task:** Create test plan for the persona manager page.
+
+**Done:**
+- **`tests/e2e/plans/persona-manager.md`** — 19 steps: navigate to `/personas`, verify persona card grid (avatar, name, "Built-in" badge, model badge Opus/Sonnet/Haiku, description, tool count badge), 5 built-in personas (Product Manager/Tech Lead/Engineer/Code Reviewer/Router), "Create new persona" dashed card, hover → pencil Edit icon → Sheet side panel opens ("Edit persona configuration"), verify 6 editor sections: Identity (Name input, Description textarea, Avatar color swatches + icon grid), Model (Opus/Sonnet/Haiku cards with $$$ cost labels), System Prompt, Tools, Budget ("Max cost per run (USD)"), edit name → Save → card updates, reopen → persisted, revert cleanup.
+
+**Files created:** `tests/e2e/plans/persona-manager.md`
+
+**Notes:** Plan references `persona-list.tsx` (PersonaCard with avatar/name/Built-in badge/model badge/description/tool count, CreateCard, BUILT_IN_IDS, hover edit/duplicate/delete icons) and `persona-editor.tsx` (Sheet with Identity/Model/SystemPrompt/Tools/Budget sections, MODEL_OPTIONS with Opus/Sonnet/Haiku, COLOR_OPTIONS, ICON_OPTIONS, Save/Cancel buttons). Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: AI.9 (approved)
 
 **Reviewed:** Settings projects, workflow, and appearance test plans.
