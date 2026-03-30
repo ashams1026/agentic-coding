@@ -162,36 +162,43 @@ export function WorkItemsPage() {
       {/* Content: view + detail panel */}
       <div ref={containerRef} className="flex flex-1 overflow-hidden">
         <div
-          className="overflow-hidden p-6"
+          className={cn(
+            "overflow-hidden p-6",
+            !isResizing && "transition-all duration-200",
+          )}
           style={{ width: selectedItemId ? `${100 - detailPanelWidth}%` : "100%" }}
         >
           {view === "list" && <ListView />}
           {view === "flow" && <FlowView />}
         </div>
 
-        {selectedItemId && (
-          <>
-            {/* Resize handle */}
-            <div
-              className={cn(
-                "shrink-0 w-1 cursor-col-resize border-l border-border hover:border-primary/50 hover:bg-primary/10 transition-colors relative group",
-                isResizing && "border-primary/50 bg-primary/10",
-              )}
-              onMouseDown={handleMouseDown}
-            >
-              {/* Grip indicator */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span className="block h-0.5 w-0.5 rounded-full bg-muted-foreground" />
-                <span className="block h-0.5 w-0.5 rounded-full bg-muted-foreground" />
-                <span className="block h-0.5 w-0.5 rounded-full bg-muted-foreground" />
-              </div>
-            </div>
+        {/* Resize handle — always rendered when panel is open */}
+        <div
+          className={cn(
+            "shrink-0 cursor-col-resize border-l border-border hover:border-primary/50 hover:bg-primary/10 relative group transition-all duration-200",
+            isResizing && "border-primary/50 bg-primary/10",
+            selectedItemId ? "w-1 opacity-100" : "w-0 opacity-0 border-l-0",
+          )}
+          onMouseDown={handleMouseDown}
+        >
+          {/* Grip indicator */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="block h-0.5 w-0.5 rounded-full bg-muted-foreground" />
+            <span className="block h-0.5 w-0.5 rounded-full bg-muted-foreground" />
+            <span className="block h-0.5 w-0.5 rounded-full bg-muted-foreground" />
+          </div>
+        </div>
 
-            <div className="overflow-hidden shrink-0" style={{ width: `${detailPanelWidth}%` }}>
-              <DetailPanel />
-            </div>
-          </>
-        )}
+        {/* Detail panel — always rendered, animated width */}
+        <div
+          className={cn(
+            "shrink-0 overflow-hidden",
+            !isResizing && "transition-all duration-200",
+          )}
+          style={{ width: selectedItemId ? `${detailPanelWidth}%` : "0%" }}
+        >
+          {selectedItemId && <DetailPanel />}
+        </div>
       </div>
     </div>
   );

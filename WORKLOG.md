@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — P.9: Add visual divider and panel transition
+
+**Task:** Add border-l between list pane and detail panel. Animate panel open/close with slide-in transition. Smooth expand-back on close.
+
+**Done:**
+- **Divider**: Already present from P.8 (`border-l border-border` on resize handle). Now animates open/close — handle transitions from `w-0 opacity-0 border-l-0` to `w-1 opacity-100` with `transition-all duration-200`.
+- **Panel transition**: Detail panel and list pane both get `transition-all duration-200` for smooth width animation on open/close. Panel animates from `width: 0%` to `width: N%`.
+- **Resize drag optimization**: Transitions are disabled during active resize (`!isResizing` guard) to prevent jank — only applied when user is not dragging.
+- **Always-rendered pattern**: Resize handle and panel container are always in the DOM (not conditionally rendered), enabling CSS transitions. `DetailPanel` component still conditionally renders inside the container.
+
+**Files modified:** `work-items.tsx`
+
+**Notes:** Build: 0 errors. Key insight: CSS transitions require elements to exist in the DOM — conditional rendering (React unmount/mount) can't animate. Solved by keeping wrappers always mounted with animated width.
+
+---
+
 ## 2026-03-30 — Review: P.8 (approved)
 
 **Reviewed:** Resizable detail panel — `work-items-store.ts`, `work-items.tsx`.
