@@ -15,6 +15,7 @@ import {
   Filter,
   X,
   ArrowDown,
+  Route,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,6 @@ import {
   useExecutions,
   useProposals,
   usePersonas,
-  useStories,
 } from "@/hooks";
 import { fixtures } from "@/mocks/fixtures";
 import { mockWs } from "@/mocks/ws";
@@ -58,6 +58,7 @@ type ActivityEventType =
   | "proposal_created"
   | "proposal_approved"
   | "proposal_rejected"
+  | "router_decision"
   | "manual_override"
   | "cost_alert";
 
@@ -69,7 +70,6 @@ interface ActivityEvent {
   targetPath: string;
   targetLabel: string;
   timestamp: string;
-  /** True if event arrived via WebSocket (used for animation) */
   isLive?: boolean;
 }
 
@@ -119,6 +119,11 @@ const eventConfig: Record<
     colorClass: "text-red-500 bg-red-100 dark:bg-red-900/30",
     label: "Rejected",
   },
+  router_decision: {
+    icon: <Route className="h-4 w-4" />,
+    colorClass: "text-indigo-500 bg-indigo-100 dark:bg-indigo-900/30",
+    label: "Router Decision",
+  },
   manual_override: {
     icon: <Wrench className="h-4 w-4" />,
     colorClass: "text-orange-500 bg-orange-100 dark:bg-orange-900/30",
@@ -160,7 +165,6 @@ function formatDateGroup(iso: string): string {
   });
 }
 
-/** Date filter presets (date range without a datepicker) */
 type DatePreset = "all" | "today" | "yesterday" | "7d" | "30d";
 
 function getDateCutoff(preset: DatePreset): Date | null {
@@ -179,7 +183,6 @@ function getDateCutoff(preset: DatePreset): Date | null {
     d.setDate(d.getDate() - 7);
     return d;
   }
-  // 30d
   const d = new Date(now);
   d.setDate(d.getDate() - 30);
   return d;
@@ -194,9 +197,6 @@ function useBaseActivityEvents(): ActivityEvent[] {
   return useMemo(() => {
     const events: ActivityEvent[] = [];
 
-    const targetPath = (type: "story" | "task", id: string) =>
-      type === "story" ? `/stories/${id}` : `/tasks/${id}`;
-
     // Agent events from executions
     if (executions) {
       for (const exec of executions) {
@@ -204,10 +204,10 @@ function useBaseActivityEvents(): ActivityEvent[] {
           events.push({
             id: `started-${exec.id}`,
             type: "agent_started",
-            description: `Agent started working on ${exec.targetType}`,
+            description: `Agent started working on work item`,
             personaId: exec.personaId,
-            targetPath: targetPath(exec.targetType, exec.targetId),
-            targetLabel: exec.targetType,
+            targetPath: "/items",
+            targetLabel: "work item",
             timestamp: exec.startedAt,
           });
         }
@@ -215,10 +215,10 @@ function useBaseActivityEvents(): ActivityEvent[] {
           events.push({
             id: `completed-${exec.id}`,
             type: "agent_completed",
-            description: exec.summary || `Agent completed ${exec.targetType}`,
+            description: exec.summary || "Agent completed work item",
             personaId: exec.personaId,
-            targetPath: targetPath(exec.targetType, exec.targetId),
-            targetLabel: exec.targetType,
+            targetPath: "/items",
+            targetLabel: "work item",
             timestamp: exec.completedAt ?? exec.startedAt,
           });
         }
@@ -226,10 +226,10 @@ function useBaseActivityEvents(): ActivityEvent[] {
           events.push({
             id: `failed-${exec.id}`,
             type: "agent_failed",
-            description: exec.rejectionPayload?.reason ?? `Agent work rejected on ${exec.targetType}`,
+            description: exec.rejectionPayload?.reason ?? "Agent work rejected",
             personaId: exec.personaId,
-            targetPath: targetPath(exec.targetType, exec.targetId),
-            targetLabel: exec.targetType,
+            targetPath: "/items",
+            targetLabel: "work item",
             timestamp: exec.completedAt ?? exec.startedAt,
           });
         }
@@ -244,8 +244,8 @@ function useBaseActivityEvents(): ActivityEvent[] {
           type: "state_transition",
           description: comment.content,
           personaId: null,
-          targetPath: targetPath(comment.targetType, comment.targetId),
-          targetLabel: comment.targetType,
+          targetPath: "/items",
+          targetLabel: "work item",
           timestamp: comment.createdAt,
         });
       } else {
@@ -254,8 +254,8 @@ function useBaseActivityEvents(): ActivityEvent[] {
           type: "comment_posted",
           description: `${comment.authorName}: ${comment.content.slice(0, 120)}${comment.content.length > 120 ? "..." : ""}`,
           personaId: comment.authorType === "agent" ? comment.authorId : null,
-          targetPath: targetPath(comment.targetType, comment.targetId),
-          targetLabel: comment.targetType,
+          targetPath: "/items",
+          targetLabel: "work item",
           timestamp: comment.createdAt,
         });
       }
@@ -264,18 +264,13 @@ function useBaseActivityEvents(): ActivityEvent[] {
     // Proposal events
     if (proposals) {
       for (const proposal of proposals) {
-        const path = targetPath(
-          proposal.parentType as "story" | "task",
-          proposal.parentId,
-        );
-
         events.push({
           id: `prop-created-${proposal.id}`,
           type: "proposal_created",
           description: `New ${proposal.type.replace(/_/g, " ")} proposal`,
           personaId: null,
-          targetPath: path,
-          targetLabel: proposal.parentType,
+          targetPath: "/items",
+          targetLabel: "work item",
           timestamp: proposal.createdAt,
         });
 
@@ -285,8 +280,8 @@ function useBaseActivityEvents(): ActivityEvent[] {
             type: "proposal_approved",
             description: `${proposal.type.replace(/_/g, " ")} proposal approved`,
             personaId: null,
-            targetPath: path,
-            targetLabel: proposal.parentType,
+            targetPath: "/items",
+            targetLabel: "work item",
             timestamp: new Date(
               new Date(proposal.createdAt).getTime() + 120000,
             ).toISOString(),
@@ -298,8 +293,8 @@ function useBaseActivityEvents(): ActivityEvent[] {
             type: "proposal_rejected",
             description: `${proposal.type.replace(/_/g, " ")} proposal rejected`,
             personaId: null,
-            targetPath: path,
-            targetLabel: proposal.parentType,
+            targetPath: "/items",
+            targetLabel: "work item",
             timestamp: new Date(
               new Date(proposal.createdAt).getTime() + 120000,
             ).toISOString(),
@@ -307,6 +302,17 @@ function useBaseActivityEvents(): ActivityEvent[] {
         }
       }
     }
+
+    // Mock Router decision event
+    events.push({
+      id: "router-decision-1",
+      type: "router_decision",
+      description: "Router: Moved to Ready — all acceptance criteria defined, ready for implementation",
+      personaId: null,
+      targetPath: "/items",
+      targetLabel: "work item",
+      timestamp: "2026-03-27T14:00:00Z",
+    });
 
     // Mock cost alert event
     events.push({
@@ -326,19 +332,16 @@ function useBaseActivityEvents(): ActivityEvent[] {
 // ── Convert WS events to ActivityEvents ─────────────────────────
 
 function wsEventToActivity(event: WsEvent): ActivityEvent | null {
-  const targetPath = (type: "story" | "task", id: string) =>
-    type === "story" ? `/stories/${id}` : `/tasks/${id}`;
-
   switch (event.type) {
     case "agent_started": {
       const e = event as AgentStartedEvent;
       return {
         id: `live-started-${e.executionId}-${Date.now()}`,
         type: "agent_started",
-        description: `Agent started working on ${e.targetType}: ${e.taskTitle}`,
+        description: `Agent started: ${e.workItemTitle}`,
         personaId: e.personaId,
-        targetPath: targetPath(e.targetType, e.targetId),
-        targetLabel: e.targetType,
+        targetPath: "/items",
+        targetLabel: "work item",
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -350,11 +353,11 @@ function wsEventToActivity(event: WsEvent): ActivityEvent | null {
         id: `live-${isFailed ? "failed" : "completed"}-${e.executionId}-${Date.now()}`,
         type: isFailed ? "agent_failed" : "agent_completed",
         description: isFailed
-          ? `Agent failed on ${e.targetType}`
-          : `Agent completed ${e.targetType} ($${e.costUsd.toFixed(2)})`,
+          ? "Agent work rejected"
+          : `Agent completed work item ($${e.costUsd.toFixed(2)})`,
         personaId: e.personaId,
-        targetPath: targetPath(e.targetType, e.targetId),
-        targetLabel: e.targetType,
+        targetPath: "/items",
+        targetLabel: "work item",
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -362,12 +365,12 @@ function wsEventToActivity(event: WsEvent): ActivityEvent | null {
     case "state_change": {
       const e = event as StateChangeEvent;
       return {
-        id: `live-state-${e.targetId}-${Date.now()}`,
+        id: `live-state-${e.workItemId}-${Date.now()}`,
         type: "state_transition",
-        description: `${e.targetType} moved from ${e.fromState} to ${e.toState}`,
+        description: `Work item moved from ${e.fromState} to ${e.toState}`,
         personaId: typeof e.triggeredBy === "string" && e.triggeredBy.startsWith("ps-") ? e.triggeredBy : null,
-        targetPath: targetPath(e.targetType, e.targetId),
-        targetLabel: e.targetType,
+        targetPath: "/items",
+        targetLabel: "work item",
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -379,8 +382,8 @@ function wsEventToActivity(event: WsEvent): ActivityEvent | null {
         type: "comment_posted",
         description: `${e.authorName}: ${e.contentPreview}`,
         personaId: null,
-        targetPath: targetPath(e.targetType, e.targetId),
-        targetLabel: e.targetType,
+        targetPath: "/items",
+        targetLabel: "work item",
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -392,8 +395,8 @@ function wsEventToActivity(event: WsEvent): ActivityEvent | null {
         type: "proposal_created",
         description: `New ${e.proposalType.replace(/_/g, " ")} proposal`,
         personaId: null,
-        targetPath: targetPath(e.parentType, e.parentId),
-        targetLabel: e.parentType,
+        targetPath: "/items",
+        targetLabel: "work item",
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -406,7 +409,7 @@ function wsEventToActivity(event: WsEvent): ActivityEvent | null {
           type: e.status === "approved" ? "proposal_approved" : "proposal_rejected",
           description: `Proposal ${e.status}`,
           personaId: null,
-          targetPath: "/board",
+          targetPath: "/items",
           targetLabel: "proposal",
           timestamp: e.timestamp,
           isLive: true,
@@ -444,14 +447,12 @@ function useLiveActivityEvents(): ActivityEvent[] {
 interface Filters {
   eventTypes: Set<ActivityEventType>;
   personaId: string | "all";
-  storyId: string | "all";
   datePreset: DatePreset;
 }
 
 const defaultFilters: Filters = {
   eventTypes: new Set(ALL_EVENT_TYPES),
   personaId: "all",
-  storyId: "all",
   datePreset: "all",
 };
 
@@ -459,7 +460,6 @@ function hasActiveFilters(filters: Filters): boolean {
   return (
     filters.eventTypes.size !== ALL_EVENT_TYPES.length ||
     filters.personaId !== "all" ||
-    filters.storyId !== "all" ||
     filters.datePreset !== "all"
   );
 }
@@ -470,10 +470,9 @@ interface FilterBarProps {
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
   personas: Persona[];
-  stories: { id: string; title: string }[];
 }
 
-function FilterBar({ filters, onFiltersChange, personas, stories }: FilterBarProps) {
+function FeedFilterBar({ filters, onFiltersChange, personas }: FilterBarProps) {
   const [showTypes, setShowTypes] = useState(false);
 
   const toggleEventType = (type: ActivityEventType) => {
@@ -538,24 +537,6 @@ function FilterBar({ filters, onFiltersChange, personas, stories }: FilterBarPro
           </SelectContent>
         </Select>
 
-        {/* Story filter */}
-        <Select
-          value={filters.storyId}
-          onValueChange={(v) => onFiltersChange({ ...filters, storyId: v })}
-        >
-          <SelectTrigger className="h-7 w-[160px] text-xs">
-            <SelectValue placeholder="All stories" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All stories</SelectItem>
-            {stories.map((s) => (
-              <SelectItem key={s.id} value={s.id}>
-                {s.title.length > 25 ? s.title.slice(0, 25) + "..." : s.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
         {/* Date range */}
         <Select
           value={filters.datePreset}
@@ -587,7 +568,7 @@ function FilterBar({ filters, onFiltersChange, personas, stories }: FilterBarPro
         )}
       </div>
 
-      {/* Event type checkboxes — expandable */}
+      {/* Event type checkboxes */}
       {showTypes && (
         <div className="space-y-2">
           <div className="flex items-center gap-2">
@@ -598,7 +579,7 @@ function FilterBar({ filters, onFiltersChange, personas, stories }: FilterBarPro
               Deselect all
             </Button>
           </div>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 sm:grid-cols-3 md:grid-cols-5">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 sm:grid-cols-3 md:grid-cols-4">
             {ALL_EVENT_TYPES.map((type) => {
               const cfg = eventConfig[type];
               return (
@@ -643,14 +624,12 @@ function EventRow({ event, personaMap }: EventRowProps) {
         event.isLive ? "animate-slide-down" : ""
       }`}
     >
-      {/* Event type icon */}
       <div
         className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${config.colorClass}`}
       >
         {config.icon}
       </div>
 
-      {/* Persona avatar (if agent-sourced) */}
       {persona && (
         <div
           className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
@@ -660,7 +639,6 @@ function EventRow({ event, personaMap }: EventRowProps) {
         </div>
       )}
 
-      {/* Content */}
       <div className="min-w-0 flex-1">
         <p className="text-sm leading-snug">{event.description}</p>
         <div className="flex items-center gap-2 mt-1">
@@ -690,10 +668,8 @@ export function ActivityFeed() {
   const baseEvents = useBaseActivityEvents();
   const liveEvents = useLiveActivityEvents();
   const { data: personas } = usePersonas();
-  const { data: stories } = useStories();
   const resetUnread = useActivityStore((s) => s.reset);
 
-  // Reset unread count when component mounts
   useEffect(() => {
     resetUnread();
   }, [resetUnread]);
@@ -703,15 +679,8 @@ export function ActivityFeed() {
     [personas],
   );
 
-  const storyOptions = useMemo(
-    () => stories?.map((s) => ({ id: s.id as string, title: s.title })) ?? [],
-    [stories],
-  );
-
-  // Filters
   const [filters, setFilters] = useState<Filters>(defaultFilters);
 
-  // Merge base + live events, deduplicate, sort
   const allEvents = useMemo(() => {
     const merged = [...liveEvents, ...baseEvents];
     merged.sort(
@@ -721,34 +690,21 @@ export function ActivityFeed() {
     return merged;
   }, [baseEvents, liveEvents]);
 
-  // Apply filters
   const filteredEvents = useMemo(() => {
     const dateCutoff = getDateCutoff(filters.datePreset);
 
     return allEvents.filter((event) => {
-      // Event type
       if (!filters.eventTypes.has(event.type)) return false;
-
-      // Persona
       if (filters.personaId !== "all") {
         if (event.personaId !== filters.personaId) return false;
       }
-
-      // Story — match by target path containing story ID
-      if (filters.storyId !== "all") {
-        if (!event.targetPath.includes(filters.storyId)) return false;
-      }
-
-      // Date
       if (dateCutoff) {
         if (new Date(event.timestamp) < dateCutoff) return false;
       }
-
       return true;
     });
   }, [allEvents, filters]);
 
-  // Group events by date
   const grouped = useMemo(() => {
     const groups: { date: string; events: ActivityEvent[] }[] = [];
     let currentDate = "";
@@ -764,12 +720,10 @@ export function ActivityFeed() {
     return groups;
   }, [filteredEvents]);
 
-  // Scroll tracking for "new events" indicator
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isScrolledDown, setIsScrolledDown] = useState(false);
   const [newEventCount, setNewEventCount] = useState(0);
 
-  // Track live event count while scrolled down
   useEffect(() => {
     if (isScrolledDown && liveEvents.length > 0) {
       setNewEventCount(liveEvents.length);
@@ -808,15 +762,12 @@ export function ActivityFeed() {
   return (
     <div className="h-full overflow-auto" ref={scrollRef} onScroll={handleScroll}>
       <div className="max-w-3xl mx-auto py-4 px-4">
-        {/* Filter bar */}
-        <FilterBar
+        <FeedFilterBar
           filters={filters}
           onFiltersChange={setFilters}
           personas={personas ?? []}
-          stories={storyOptions}
         />
 
-        {/* New events indicator */}
         {isScrolledDown && newEventCount > 0 && (
           <div className="sticky top-2 z-20 flex justify-center mb-2">
             <Button
@@ -830,7 +781,6 @@ export function ActivityFeed() {
           </div>
         )}
 
-        {/* Event groups */}
         <div className="mt-3">
           {filteredEvents.length === 0 ? (
             <div className="text-center py-12">
@@ -841,14 +791,11 @@ export function ActivityFeed() {
           ) : (
             grouped.map((group, gi) => (
               <div key={group.date}>
-                {/* Date header */}
                 <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-2">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     {group.date}
                   </p>
                 </div>
-
-                {/* Events */}
                 <div className="space-y-0.5 mb-2">
                   {group.events.map((event) => (
                     <EventRow
@@ -858,7 +805,6 @@ export function ActivityFeed() {
                     />
                   ))}
                 </div>
-
                 {gi < grouped.length - 1 && <Separator className="my-3" />}
               </div>
             ))

@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-29 — O.15: Update activity feed for WorkItem model
+
+**Task:** Replace story/task language with work item, add Router decision events, remove trigger-related types.
+
+**Done:**
+- Rewrote `features/activity-feed/activity-feed.tsx`:
+  - Replaced all `exec.targetType`/`exec.targetId`, `comment.targetType`/`comment.targetId`, `proposal.parentType`/`proposal.parentId` with workItemId-based logic
+  - All target paths → `/items`, all target labels → "work item"
+  - Replaced "story/task" language with "work item" in all event descriptions
+  - Added `router_decision` event type with Route icon and indigo color
+  - Added mock Router decision event ("Router: Moved to Ready")
+  - Removed story filter from FilterBar (was `storyId` filter — replaced by simpler persona + date + type filters)
+  - Updated WS event handlers to use new field names (workItemId, workItemTitle)
+  - Renamed internal FilterBar → FeedFilterBar to avoid conflict with work-items filter-bar
+  - Replaced `useStories` import with clean hooks (useExecutions, useProposals, usePersonas)
+
+**Files modified:** `features/activity-feed/activity-feed.tsx`
+
+**Notes:** Compiles clean. Grid columns for event type checkboxes changed from 5 to 4 (now 11 types with router_decision added).
+
+---
+
 ## 2026-03-29 — Review: O.14 (approved)
 
 **Reviewed:** Dashboard components — `upcoming-work.tsx`, `recent-activity.tsx`, `active-agents-strip.tsx`.
