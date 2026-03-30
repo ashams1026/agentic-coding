@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — AI.12: Execute dashboard-stats.md
+
+**Task:** Execute the dashboard stats test plan in a real browser via chrome-devtools MCP.
+
+**Done:**
+- Opened `http://localhost:5174/` in browser (port 5174 — 5173 was occupied by another app)
+- Executed all 11 steps from `tests/e2e/plans/dashboard-stats.md`
+- **Result: ✅ PASS (11/11)** — all stat cards, widgets, and chart rendered correctly
+- Key findings: "Active Agents" = 2 (Engineer, Reviewer running), "Pending Proposals" = 1, "Needs Attention" = 1, "Today's Cost" = "$0.00", Cost Summary chart with day labels, Recent Activity with 10 events, Upcoming Work with 1 item
+- No NaN, undefined, loading shimmers, or JS errors observed
+- Full-page screenshot captured
+
+**Files created:** `tests/e2e/results/dashboard-stats.md`, `tests/e2e/results/dashboard-stats-full.png`
+
+**Notes:** Frontend on port 5174 (5173 occupied). Status bar shows "Mock" mode but data appears to come from real backend (API mode "api" per health check). Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: AI.11 (approved)
 
 **Reviewed:** Cross-cutting concerns test plans (navigation, dark mode, keyboard shortcuts).

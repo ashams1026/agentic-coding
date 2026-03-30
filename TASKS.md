@@ -12,6 +12,11 @@
 ## Sprint 17: Agent Pipeline Fixes & Monitor UX
 
 > Critical fixes from first real-world test run. Router loop, cost display, agent monitor readability, activity feed descriptions.
+> Also includes persona audit, skills system, and UX improvements.
+
+### Persona Manager UX
+
+- [ ] **FX.PM1** — Add inline system prompt preview to persona cards. In `packages/frontend/src/features/persona-manager/`: add an expand/collapse interaction to each persona card in the grid. At the bottom of each card, add a "View prompt" button with a chevron icon. Clicking it expands the card inline (spans the full grid width, pushes cards below it down) to reveal the persona's system prompt rendered as markdown (reuse MarkdownPreview component). The expanded view shows: rendered system prompt (scrollable, max-height ~400px), MCP tools list as badges, SDK tools list as badges, skills list (if any) as file path pills, model badge, budget. A "Collapse" button or clicking the chevron again closes it. Only one card can be expanded at a time — expanding another collapses the current one. Smooth height animation with `transition-all duration-200`.
 
 ### Bug: MCP Tool Name Mismatch
 
@@ -69,6 +74,41 @@
 
 ---
 
+## Sprint 18: Pico — Project Assistant
+
+> Pico is a friendly dog-persona AI assistant built into AgentOps. Named after the creator's dog.
+> Pico is always available via a floating chat bubble, can answer questions about the project, help manage work items, and search documentation.
+> Pico is a special built-in persona: not editable, not triggered by workflow state changes, only invoked by user chat.
+> Pico's chat supports rich rendering: markdown, collapsible thinking, tool call cards, and a warm conversational tone.
+
+### Backend: Pico Persona & Chat API
+
+- [ ] **PICO.1** — Add Pico as a built-in system persona. In `packages/backend/src/db/seed.ts`: add a Pico persona with `id: "ps-pico"`, `name: "Pico"`, `description: "Your friendly project assistant. Woof!"`, `avatar: { color: "#f59e0b", icon: "dog" }`, `model: "sonnet"`, `settings: { isSystem: true, isAssistant: true }`. The `isAssistant` flag distinguishes Pico from workflow personas. System prompt should establish Pico's personality: friendly, enthusiastic, helpful dog who loves the project. Pico uses casual language, occasionally says "woof" or dog-related expressions, but stays professional and accurate about technical content. Pico knows the project deeply — its architecture, workflow states, personas, and codebase. In `packages/shared/src/entities.ts`: add `isAssistant?: boolean` to Persona settings type. Pico should NOT appear in persona-per-state assignment dropdowns. Pico should NOT be editable or deletable in the Persona Manager (show a "Built-in assistant" badge, disable edit/delete).
+
+- [ ] **PICO.2** — Create chat session API. Add `packages/backend/src/routes/chat.ts` with routes: `POST /api/chat/sessions` — create a new chat session `{ projectId }`, returns `{ sessionId }`. `GET /api/chat/sessions?projectId=` — list sessions (most recent first). `GET /api/chat/sessions/:id/messages` — get message history. `DELETE /api/chat/sessions/:id` — delete session. Add a `chat_sessions` table to schema: `id`, `projectId`, `title` (auto-generated from first message), `createdAt`, `updatedAt`. Add a `chat_messages` table: `id`, `sessionId`, `role` ("user" | "assistant"), `content` (text), `metadata` (JSON — tool calls, thinking blocks, timestamps), `createdAt`.
+
+- [ ] **PICO.3** — Create chat streaming endpoint. Add `POST /api/chat/sessions/:id/messages` route: accepts `{ content: string }`, saves the user message to DB, spawns Pico via the Claude executor with the full conversation history as context, streams the response via Server-Sent Events (SSE) — each chunk includes `{ type: "text" | "thinking" | "tool_use" | "tool_result", content }`. On completion, saves the assistant message (with metadata for thinking/tool calls) to DB. Pico's system prompt is assembled from: base personality + project context (from `get_context`) + conversation history. Pico has access to SDK tools: Read, Glob, Grep, WebSearch, and MCP tools: `list_items`, `get_context`, `post_comment`.
+
+- [ ] **PICO.4** — Author Pico's project knowledge skill. Create `packages/backend/src/agent/pico-skill.md`: a comprehensive skill file that teaches Pico about AgentOps. Include: what AgentOps is (one paragraph), the workflow states and what each means, the 5 workflow personas and their roles, how work items flow through the pipeline, how to interpret execution history and comments, common user questions (how do I create a work item? how do I trigger an agent? why is my item stuck? what does Blocked mean? how do I change the assigned persona?). This file is injected into Pico's system prompt on every chat. Keep it under 1500 tokens. Also give Pico access to the `docs/` directory — the system prompt should instruct Pico to use Read/Glob to search docs when answering architecture or API questions.
+
+### Frontend: Chat Interface
+
+- [ ] **PICO.5** — Build floating chat bubble. Create `packages/frontend/src/features/pico/chat-bubble.tsx`: a circular button (56px) fixed to the bottom-right corner of the viewport (`bottom-6 right-6`), showing a dog icon (or paw print) with Pico's amber color. Subtle bounce animation on first load. Unread message indicator (small dot) when Pico has responded and chat is closed. Click toggles the chat panel open/closed. Render in `root-layout.tsx` so it's available on every page.
+
+- [ ] **PICO.6** — Build chat panel. Create `packages/frontend/src/features/pico/chat-panel.tsx`: a panel that appears above the chat bubble (400px wide, 500px tall, rounded corners, shadow-lg). Header: "Pico" with dog icon, session title, minimize button, new session button. Message area: scrollable, auto-scroll to bottom on new messages. Input area: textarea with send button, Cmd+Enter to send, disabled while Pico is responding. Show a typing indicator (three bouncing dots) while streaming. Panel is dismissible by clicking outside or the minimize button. Animate open/close with scale + opacity transition.
+
+- [ ] **PICO.7** — Build chat message components. Create `packages/frontend/src/features/pico/chat-message.tsx`: user messages render as right-aligned bubbles (primary color background, white text). Pico messages render as left-aligned bubbles (muted background) with Pico's avatar. Pico message content supports: **markdown rendering** (paragraphs, bold, code, lists, links — reuse or extend the existing MarkdownPreview component), **thinking blocks** (collapsible accordion, "Pico is thinking..." label, muted italic text, collapsed by default), **tool call cards** (compact card showing tool icon + name + status, collapsible input/output — reuse ToolCallSection patterns from agent monitor), **code blocks** with syntax highlighting and copy button. Timestamps shown on hover. Group consecutive messages from same role.
+
+- [ ] **PICO.8** — Wire chat panel to streaming API. Create `packages/frontend/src/hooks/use-pico-chat.ts`: manages chat state — current session, message history, streaming state. `sendMessage(content)`: POST to `/api/chat/sessions/:id/messages`, read SSE stream, incrementally update the assistant message as chunks arrive (text appends, thinking blocks build up, tool calls show as in-progress then complete). `createSession()`: POST to create new session. `loadHistory()`: GET messages for current session. Store current session ID in Zustand (persisted to localStorage). On app load: if a session exists, load its history. Handle errors: if streaming fails, show error message in chat with retry button.
+
+- [ ] **PICO.9** — Add session management. In the chat panel header: dropdown showing recent sessions (last 10, sorted by most recent). Click to switch sessions and load that history. "New chat" button clears the panel and creates a fresh session. Session titles auto-generated from the first user message (truncated to 40 chars). "Clear all" option in the dropdown to delete all sessions. Show the current session title in the header (editable on click).
+
+### Pico Personality & Polish
+
+- [ ] **PICO.10** — Polish Pico's personality and onboarding. First-time experience: when the user opens the chat for the first time (no sessions exist), show a welcome message from Pico: "Woof! I'm Pico, your project assistant. I know everything about this project — the architecture, the workflow, all the agents. Ask me anything, or I can help you manage work items. What can I help with?" Add 3-4 suggested quick-action buttons below the welcome message: "What's the project status?", "Explain the workflow", "Show recent activity", "Help me create a work item". Clicking a suggestion sends it as a message. Pico's tone: enthusiastic but not annoying, technically accurate, occasionally uses dog puns ("let me dig into that", "I'll fetch that for you", "good boy status: all tests passing").
+
+---
+
 ## Sprint 16: AI-Based E2E Testing
 
 > AI-driven end-to-end testing via browser automation. Two phases:
@@ -91,7 +131,7 @@
 > Prerequisites for every execution task: backend running on :3001, frontend on :5173 or :5174, API mode set to "api", seeded data, chrome-devtools MCP connected.
 > Results go to `tests/e2e/results/{plan-name}.md` — same name as the plan file.
 
-- [ ] **AI.12** — Execute `dashboard-stats.md`. Read `tests/e2e/plans/dashboard-stats.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/dashboard-stats.md`.
+- [review] **AI.12** — Execute `dashboard-stats.md`. Read `tests/e2e/plans/dashboard-stats.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/dashboard-stats.md`.
 
 - [ ] **AI.13** — Execute `dashboard-navigation.md`. Read `tests/e2e/plans/dashboard-navigation.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/dashboard-navigation.md`.
 
