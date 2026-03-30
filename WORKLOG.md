@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: P.8 (approved)
+
+**Reviewed:** Resizable detail panel — `work-items-store.ts`, `work-items.tsx`.
+- Store: `detailPanelWidth` (default 60) with 30-70% clamping, persisted in `partialize` ✓
+- Resize handle: `w-1 cursor-col-resize` with hover/active highlights, 3-dot grip indicator ✓
+- Mouse logic: `onMouseDown` → document `mousemove`/`mouseup` listeners, calculates % from right edge ✓
+- Body style overrides (`cursor`, `userSelect`) during drag, cleaned up on mouseup ✓
+- Layout: percentage-based widths, list takes full width when no selection ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — P.8: Make detail panel resizable
 
 **Task:** Replace fixed w-2/5 / w-3/5 split with a draggable divider. Track panel width in Zustand (persist to localStorage). Clamp between 30% and 70%.
