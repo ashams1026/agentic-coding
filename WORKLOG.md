@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: Q.13 (approved)
+
+**Reviewed:** Execution manager tests rework — `packages/backend/src/agent/__tests__/execution-manager.test.ts`.
+- All feedback addressed: `recordTransition` exported, `clearTransitionLog` helper added ✓
+- Rate-limiting blocking now properly tested: 10 transitions recorded → `canTransition` returns `false` ✓
+- Under-limit test (9 transitions → true) and isolation test (blocked item doesn't affect others) ✓
+- `clearTransitionLog()` in `afterEach` prevents state leakage ✓
+- Source change minimal — only export + small helper, no unnecessary changes ✓
+- Build: 0 errors, 145 tests pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — Q.13 (rework): Fix rate-limiting test
 
 **Task:** Address reviewer feedback — `canTransition` tests were not verifying blocking behavior.

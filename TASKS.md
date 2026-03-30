@@ -34,7 +34,7 @@
 
 - [x] **Q.12** — Test MCP tool implementations. In `packages/backend/src/agent/__tests__/mcp-tools.test.ts`: use test DB. Test `post_comment` inserts a comment and returns success. Test `create_children` creates child work items with correct parentId and edges. Test `route_to_state` validates transition and updates state. Test `route_to_state` rejects invalid transition. Test `flag_blocked` sets state to Blocked. Test `list_items` returns filtered results. Test `get_context` returns work item with execution history.
 
-- [review] **Q.13** — Test execution manager lifecycle. In `packages/backend/src/agent/__tests__/execution-manager.test.ts`: use test DB, stub ClaudeExecutor. Test: `runExecution()` creates DB record with status "running". Test: on executor success, record updated to "completed" with cost/duration. Test: on executor failure, record updated to "failed". Test: transition rate limiting — more than 10 transitions per item per hour is blocked. Test: rejection increments retry counter, max retries triggers Blocked state.
+- [x] **Q.13** — Test execution manager lifecycle. In `packages/backend/src/agent/__tests__/execution-manager.test.ts`: use test DB, stub ClaudeExecutor. Test: `runExecution()` creates DB record with status "running". Test: on executor success, record updated to "completed" with cost/duration. Test: on executor failure, record updated to "failed". Test: transition rate limiting — more than 10 transitions per item per hour is blocked. Test: rejection increments retry counter, max retries triggers Blocked state.
 
 ---
 
