@@ -18,10 +18,11 @@ const viewOptions: { value: WorkItemView; label: string; icon: typeof List }[] =
 
 export function WorkItemsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { view, setView, searchQuery, setSearchQuery, selectedItemId } = useWorkItemsStore();
+  const store = useWorkItemsStore();
+  const { view, setView, searchQuery, setSearchQuery, filterPersonas, filterLabels, selectedItemId } = store;
   const createWorkItem = useCreateWorkItem();
 
-  // Sync view and search query from URL params on mount
+  // Sync URL params → store on mount
   useEffect(() => {
     const urlView = searchParams.get("view");
     if (urlView && (urlView === "list" || urlView === "flow")) {
@@ -31,21 +32,31 @@ export function WorkItemsPage() {
     if (urlQuery) {
       setSearchQuery(urlQuery);
     }
+    const urlPersonas = searchParams.get("personas");
+    if (urlPersonas) {
+      for (const id of urlPersonas.split(",")) {
+        if (id && !store.filterPersonas.includes(id)) store.toggleFilterPersona(id);
+      }
+    }
+    const urlLabels = searchParams.get("labels");
+    if (urlLabels) {
+      for (const label of urlLabels.split(",")) {
+        if (label && !store.filterLabels.includes(label)) store.toggleFilterLabel(label);
+      }
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Sync search query → URL params
+  // Sync store → URL params
   useEffect(() => {
-    const current = searchParams.get("q") ?? "";
-    if (searchQuery !== current) {
-      const next = new URLSearchParams(searchParams);
-      if (searchQuery) {
-        next.set("q", searchQuery);
-      } else {
-        next.delete("q");
-      }
-      setSearchParams(next, { replace: true });
-    }
-  }, [searchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
+    const next = new URLSearchParams(searchParams);
+    // search query
+    if (searchQuery) next.set("q", searchQuery); else next.delete("q");
+    // personas
+    if (filterPersonas.length > 0) next.set("personas", filterPersonas.join(",")); else next.delete("personas");
+    // labels
+    if (filterLabels.length > 0) next.set("labels", filterLabels.join(",")); else next.delete("labels");
+    setSearchParams(next, { replace: true });
+  }, [searchQuery, filterPersonas, filterLabels]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync URL params when view changes
   const handleViewChange = (newView: WorkItemView) => {

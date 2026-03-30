@@ -248,7 +248,7 @@ export function ListView() {
   const { data: allItems, isLoading } = useWorkItems();
   const { data: personas } = usePersonas();
   const { data: executions } = useExecutions();
-  const { searchQuery, groupBy, sortBy, filterState, filterPriority, selectedItemId, setSelectedItemId } =
+  const { searchQuery, groupBy, sortBy, filterState, filterPriority, filterPersonas, filterLabels, selectedItemId, setSelectedItemId } =
     useWorkItemsStore();
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -293,6 +293,12 @@ export function ListView() {
     let items = [...allItems];
     if (filterState) items = items.filter((w) => w.currentState === filterState);
     if (filterPriority) items = items.filter((w) => w.priority === filterPriority);
+    if (filterPersonas.length > 0) {
+      items = items.filter((w) => w.assignedPersonaId && filterPersonas.includes(w.assignedPersonaId));
+    }
+    if (filterLabels.length > 0) {
+      items = items.filter((w) => filterLabels.some((label) => w.labels.includes(label)));
+    }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       items = items.filter(
@@ -300,7 +306,7 @@ export function ListView() {
       );
     }
     return items;
-  }, [allItems, filterState, filterPriority, searchQuery]);
+  }, [allItems, filterState, filterPriority, filterPersonas, filterLabels, searchQuery]);
 
   // Sort function
   const sortItems = (items: WorkItem[]): WorkItem[] => {

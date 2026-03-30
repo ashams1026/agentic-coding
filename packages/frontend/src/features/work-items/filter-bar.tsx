@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { Search, X } from "lucide-react";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { Search, X, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -9,7 +10,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 import { WORKFLOW } from "@agentops/shared";
+import { usePersonas, useWorkItems } from "@/hooks";
 import {
   useWorkItemsStore,
   type GroupBy,
@@ -23,6 +33,21 @@ const priorities = [
   { value: "p3", label: "P3 — Low" },
 ];
 
+// ── Label color mapping (deterministic based on label string) ──
+
+const LABEL_COLORS = [
+  "#2563eb", "#dc2626", "#16a34a", "#d97706", "#7c3aed",
+  "#0891b2", "#ea580c", "#059669", "#db2777", "#4f46e5",
+];
+
+function getLabelColor(label: string): string {
+  let hash = 0;
+  for (let i = 0; i < label.length; i++) {
+    hash = ((hash << 5) - hash + label.charCodeAt(i)) | 0;
+  }
+  return LABEL_COLORS[Math.abs(hash) % LABEL_COLORS.length]!;
+}
+
 export function FilterBar() {
   const {
     searchQuery,
@@ -30,13 +55,20 @@ export function FilterBar() {
     sortBy,
     filterState,
     filterPriority,
+    filterPersonas,
+    filterLabels,
     setSearchQuery,
     setGroupBy,
     setSortBy,
     setFilterState,
     setFilterPriority,
+    toggleFilterPersona,
+    toggleFilterLabel,
     clearFilters,
   } = useWorkItemsStore();
+
+  const { data: personas } = usePersonas();
+  const { data: allItems } = useWorkItems();
 
   // Local input state for debounce
   const [inputValue, setInputValue] = useState(searchQuery);
@@ -55,7 +87,24 @@ export function FilterBar() {
     return () => clearTimeout(timer);
   }, [inputValue, setSearchQuery]);
 
-  const hasFilters = searchQuery !== "" || filterState !== null || filterPriority !== null;
+  // Collect unique labels from all work items
+  const allLabels = useMemo(() => {
+    if (!allItems) return [];
+    const labelSet = new Set<string>();
+    for (const item of allItems) {
+      for (const label of item.labels) {
+        labelSet.add(label);
+      }
+    }
+    return [...labelSet].sort();
+  }, [allItems]);
+
+  const hasFilters =
+    searchQuery !== "" ||
+    filterState !== null ||
+    filterPriority !== null ||
+    filterPersonas.length > 0 ||
+    filterLabels.length > 0;
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
@@ -123,6 +172,77 @@ export function FilterBar() {
           ))}
         </SelectContent>
       </Select>
+
+      {/* Filter by persona (multi-select) */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
+            <Bot className="h-3.5 w-3.5" />
+            Persona
+            {filterPersonas.length > 0 && (
+              <Badge variant="secondary" size="sm" className="ml-0.5">
+                {filterPersonas.length}
+              </Badge>
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-[180px]">
+          <DropdownMenuLabel className="text-xs">Filter by persona</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {personas?.map((p) => (
+            <DropdownMenuCheckboxItem
+              key={p.id as string}
+              checked={filterPersonas.includes(p.id as string)}
+              onCheckedChange={() => toggleFilterPersona(p.id as string)}
+              className="text-xs"
+            >
+              <span className="flex items-center gap-2">
+                <span
+                  className="inline-block h-2.5 w-2.5 rounded-full shrink-0"
+                  style={{ backgroundColor: p.avatar.color }}
+                />
+                {p.name}
+              </span>
+            </DropdownMenuCheckboxItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Filter by label (multi-select) */}
+      {allLabels.length > 0 && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
+              Labels
+              {filterLabels.length > 0 && (
+                <Badge variant="secondary" size="sm" className="ml-0.5">
+                  {filterLabels.length}
+                </Badge>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-[180px]">
+            <DropdownMenuLabel className="text-xs">Filter by label</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            {allLabels.map((label) => (
+              <DropdownMenuCheckboxItem
+                key={label}
+                checked={filterLabels.includes(label)}
+                onCheckedChange={() => toggleFilterLabel(label)}
+                className="text-xs"
+              >
+                <span className="flex items-center gap-2">
+                  <span
+                    className="inline-block h-2 w-2 rounded-full shrink-0"
+                    style={{ backgroundColor: getLabelColor(label) }}
+                  />
+                  {label}
+                </span>
+              </DropdownMenuCheckboxItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       {/* Group by */}
       <Select

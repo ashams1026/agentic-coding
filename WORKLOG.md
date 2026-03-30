@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — P.6: Add persona and label filters
+
+**Task:** Add multi-select persona and label filter dropdowns to the filter bar. Filter additively (AND) with other filters. Update URL params.
+
+**Done:**
+- **Store**: Changed `filterPersona: string | null` → `filterPersonas: string[]` and `filterLabel: string | null` → `filterLabels: string[]`. Added `toggleFilterPersona` and `toggleFilterLabel` toggle actions. Included both in `clearFilters`.
+- **Filter bar**: Added persona dropdown (DropdownMenu + CheckboxItems) showing avatar color dot + name from mock personas. Added label dropdown showing color dots (deterministic hash-based coloring) + label text from all unique labels across work items. Both show Badge count when active.
+- **List view**: Added `filterPersonas` and `filterLabels` to `filteredItems` memo. Persona filter matches `assignedPersonaId`. Label filter uses OR within labels (item matches if it has ANY selected label).
+- **URL params**: Synced `?personas=id1,id2` and `?labels=auth,ui` (comma-separated). Reads on mount, writes on change. Single unified sync effect replaces the separate search-only effect.
+
+**Files modified:** `work-items-store.ts`, `filter-bar.tsx`, `list-view.tsx`, `work-items.tsx`
+
+**Notes:** Build: 0 errors, 145 tests pass. Label colors use a deterministic hash function over 10 colors from the 600-level palette. Personas and labels are not persisted to localStorage (excluded from `partialize`).
+
+---
+
 ## 2026-03-30 — Review: P.5 (approved)
 
 **Reviewed:** Text search for work items — `filter-bar.tsx`, `list-view.tsx`, `work-items-store.ts`, `work-items.tsx`.

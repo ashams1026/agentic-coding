@@ -16,8 +16,8 @@ interface WorkItemsState {
   searchQuery: string;
   filterState: string | null;
   filterPriority: string | null;
-  filterPersona: string | null;
-  filterLabel: string | null;
+  filterPersonas: string[];
+  filterLabels: string[];
   filterParent: WorkItemId | null;
 
   setView: (view: WorkItemView) => void;
@@ -27,8 +27,8 @@ interface WorkItemsState {
   setSearchQuery: (query: string) => void;
   setFilterState: (state: string | null) => void;
   setFilterPriority: (priority: string | null) => void;
-  setFilterPersona: (persona: string | null) => void;
-  setFilterLabel: (label: string | null) => void;
+  toggleFilterPersona: (personaId: string) => void;
+  toggleFilterLabel: (label: string) => void;
   setFilterParent: (parentId: WorkItemId | null) => void;
   clearFilters: () => void;
 }
@@ -44,8 +44,8 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       searchQuery: "",
       filterState: null,
       filterPriority: null,
-      filterPersona: null,
-      filterLabel: null,
+      filterPersonas: [],
+      filterLabels: [],
       filterParent: null,
 
       setView: (view) => set({ view }),
@@ -55,16 +55,26 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       setSearchQuery: (searchQuery) => set({ searchQuery }),
       setFilterState: (filterState) => set({ filterState }),
       setFilterPriority: (filterPriority) => set({ filterPriority }),
-      setFilterPersona: (filterPersona) => set({ filterPersona }),
-      setFilterLabel: (filterLabel) => set({ filterLabel }),
+      toggleFilterPersona: (personaId) =>
+        set((state) => ({
+          filterPersonas: state.filterPersonas.includes(personaId)
+            ? state.filterPersonas.filter((id) => id !== personaId)
+            : [...state.filterPersonas, personaId],
+        })),
+      toggleFilterLabel: (label) =>
+        set((state) => ({
+          filterLabels: state.filterLabels.includes(label)
+            ? state.filterLabels.filter((l) => l !== label)
+            : [...state.filterLabels, label],
+        })),
       setFilterParent: (filterParent) => set({ filterParent }),
       clearFilters: () =>
         set({
           searchQuery: "",
           filterState: null,
           filterPriority: null,
-          filterPersona: null,
-          filterLabel: null,
+          filterPersonas: [],
+          filterLabels: [],
           filterParent: null,
         }),
     }),
