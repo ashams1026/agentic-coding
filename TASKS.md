@@ -24,7 +24,7 @@
 
 - [x] **PS.4** — Scope dashboard queries to selected project. Update `useDashboardStats()`, `useCostSummary()`, `useExecutionStats()`, `useReadyWork()` to accept and pass `projectId`. Update the backend dashboard routes to filter by `projectId` if not already. Update dashboard page components to pass the selected project ID.
 
-- [review] **PS.5** — Scope executions, comments, and proposals to selected project. These are already scoped by `workItemId` in most places, but any top-level listing (agent monitor history, activity feed) should filter to work items belonging to the selected project. Update `useExecutions()` and the agent monitor history/sidebar to pass a `projectId` filter. Update the activity feed to only show events for the selected project.
+- [x] **PS.5** — Scope executions, comments, and proposals to selected project. These are already scoped by `workItemId` in most places, but any top-level listing (agent monitor history, activity feed) should filter to work items belonging to the selected project. Update `useExecutions()` and the agent monitor history/sidebar to pass a `projectId` filter. Update the activity feed to only show events for the selected project.
 
 - [ ] **PS.6** — Scope persona assignments to selected project. The `usePersonaAssignments()` hook already takes `projectId` — verify all call sites pass the selected project ID. The settings workflow section should read/write assignments for the selected project only.
 

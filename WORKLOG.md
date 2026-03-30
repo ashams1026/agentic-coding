@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — Review: PS.5 (approved)
+
+**Reviewed:** Scoping executions, comments, and proposals to selected project — full stack.
+- Backend: all 3 routes accept `?projectId=`, consistent pattern (`if (projectId && !workItemId)` → filter by workItem membership) ✓
+- API client: `getExecutions`/`getProposals` use URLSearchParams, `getRecentComments` appends query param ✓
+- Mock API: all 3 functions filter by workItem ID set when projectId provided ✓
+- API index: `getRecentComments` fixed from zero-arg to forwarding args ✓
+- Query keys: `executions`, `proposals`, `recentComments` include projectId ✓
+- Hooks: all 3 accept optional projectId ✓
+- Call sites: 0 bare calls remain (grep confirmed) ✓
+- Activity feed + recent-activity: all 3 hooks pass projectId ✓
+- Agent monitor: layout, sidebar, history, split-view all scoped ✓
+- Build: 0 errors ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — PS.5: Scope executions, comments, and proposals to selected project
 
 **Task:** Scope top-level execution, proposal, and comment listings to the selected project.
