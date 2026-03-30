@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import { RootLayout } from "./layouts/root-layout";
 import { DashboardPage } from "./pages/dashboard";
+import { WorkItemsPage } from "./pages/work-items";
 import { StoryBoardPage } from "./pages/story-board";
 import { StoryDetailPage } from "./pages/story-detail";
 import { TaskDetailPage } from "./pages/task-detail";
@@ -15,6 +16,8 @@ export const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <DashboardPage /> },
+      { path: "items", element: <WorkItemsPage /> },
+      // Legacy routes — will be removed in O.13
       { path: "board", element: <StoryBoardPage /> },
       { path: "stories/:id", element: <StoryDetailPage /> },
       { path: "tasks/:id", element: <TaskDetailPage /> },

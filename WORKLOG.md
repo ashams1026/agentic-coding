@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-29 — O.7: Build work items page with view toggle
+
+**Task:** Create work items page with List/Board/Tree toggle, filter bar, Zustand store, and route.
+
+**Done:**
+- Created `packages/frontend/src/stores/work-items-store.ts`: Zustand store with persisted view/groupBy/sortBy, filter state (state/priority/persona/label/parent), selectedItemId, clearFilters action
+- Created `packages/frontend/src/features/work-items/filter-bar.tsx`: dropdowns for state (from WORKFLOW.states with color dots), priority, group by (none/state/parent/priority), sort by (priority/created/updated), clear filters button
+- Created `packages/frontend/src/pages/work-items.tsx`: page layout with view toggle (List/Board/Tree buttons with icons), filter bar, quick-add "+" button, placeholder slots for O.8-O.10 views. View synced with URL params (`?view=list`) and Zustand
+- Updated `packages/frontend/src/router.tsx`: added `/items` route pointing to WorkItemsPage. Legacy routes kept for now (O.13 will clean up)
+
+**Files created:** `stores/work-items-store.ts`, `features/work-items/filter-bar.tsx`, `pages/work-items.tsx`
+**Files modified:** `router.tsx`
+
+**Notes:** All new files compile clean. 321 pre-existing type errors in old Story/Task/Workflow components — to be resolved by O.17 (old code removal). View toggle uses lucide icons (List, Columns3, GitBranch). Filter bar uses shadcn Select components.
+
+---
+
 ## 2026-03-29 — Review: O.6 (approved)
 
 **Reviewed:** TanStack Query hooks — query-keys.ts, use-work-items.ts, use-persona-assignments.ts, use-comments.ts, use-executions.ts, use-proposals.ts, index.ts.
