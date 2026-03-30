@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — AI.14: Execute work-items-list-view.md
+
+**Task:** Execute the work items list view test plan in a real browser via chrome-devtools MCP.
+
+**Done:**
+- Navigated to `http://localhost:5174/items`, executed all 14 steps
+- **Result: ✅ PASS (14/14)** — list view, filter bar, item rows, expand/collapse, detail panel all working
+- 3 parent items visible (grouped by state): Backlog/P2 "Real-time notification system" (0/4), Decomposition/P1 "Dashboard analytics widgets" (0/3), In Progress/P0 "User authentication with OAuth2" (1/3)
+- Expanded "User authentication with OAuth2" → 3 children: Done "Set up OAuth2 backend routes", In Progress "Build login UI component", Ready "Add session persistence and protected routes"
+- Detail panel showed all sections: title, state badge, "Move to…", priority P0, labels (auth, security), description, children (1/3 done), comments (5), execution history (2), metadata (ID, created, updated)
+- Panel closed via X button successfully
+
+**Files created:** `tests/e2e/results/work-items-list-view.md`, `tests/e2e/results/work-items-list-view.png`
+
+**Notes:** Frontend on port 5174. Build: 0 errors (no code changes).
+
+---
+
 ## 2026-03-30 — Review: AI.13 (approved)
 
 **Reviewed:** Dashboard navigation E2E test execution results.
