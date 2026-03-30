@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — Q.3: Test workflow state machine
+
+**Task:** Create comprehensive tests for the shared workflow state machine module.
+
+**Done:**
+- Created `packages/shared/src/__tests__/workflow.test.ts` with 28 tests covering:
+  - `WORKFLOW` constants: initial state, final states, transitions integrity, target validity
+  - `getValidTransitions()`: exact transition sets for all 8 states + unknown state fallback
+  - `isValidTransition()`: valid pairs, invalid pairs, unknown states, self-transitions
+  - `getStateByName()`: existing states, all states, non-existing state
+  - Blocked transitions: which states can/cannot transition to Blocked
+  - Backlog guard: no state can transition to Backlog
+- Initial test had incorrect assumption that In Review → Blocked was valid; fixed to match actual workflow definition
+
+**Files created:** `packages/shared/src/__tests__/workflow.test.ts`
+
+**Notes:** All 28 tests pass. Build: 0 errors. Pure unit tests — no DB or mocking needed.
+
+---
+
 ## 2026-03-30 — Review: Q.2 (approved)
 
 **Reviewed:** Test database helper — `packages/backend/src/test/setup.ts`, `packages/backend/src/test/setup.test.ts`.

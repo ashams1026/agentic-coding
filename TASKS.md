@@ -49,7 +49,7 @@
 
 ### Shared Package Tests (Pure Logic)
 
-- [ ] **Q.3** — Test workflow state machine. In `packages/shared/src/__tests__/workflow.test.ts`: test `getValidTransitions()` for every state (verify exact transition sets), test `isValidTransition()` for valid and invalid pairs, test `getStateByName()` for existing and non-existing states, verify initial state is Backlog, verify Done is a final state, verify Blocked can transition back, verify no state can transition to Backlog (except as defined).
+- [review] **Q.3** — Test workflow state machine. In `packages/shared/src/__tests__/workflow.test.ts`: test `getValidTransitions()` for every state (verify exact transition sets), test `isValidTransition()` for valid and invalid pairs, test `getStateByName()` for existing and non-existing states, verify initial state is Backlog, verify Done is a final state, verify Blocked can transition back, verify no state can transition to Backlog (except as defined).
 
 ### Backend API Integration Tests
 
