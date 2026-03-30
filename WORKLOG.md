@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: U.2 (approved)
+
+**Reviewed:** Flow view — `features/work-items/flow-view.tsx` (~497 lines).
+- All 9 task requirements met: state machine graph, colored headers, item count badges, pulsing active agent indicators, avatar stacks, progress bars, directed bezier arrows, click-to-filter, filtered items panel
+- Static layout computed at module level (positions map + precomputed arrow paths) — efficient, no re-render cost
+- Arrow logic handles forward/backward/vertical transitions correctly (cubic beziers, non-adjacent forward curves up, backward arcs below, Blocked up/down)
+- Data aggregation via useMemo: items grouped by state, active agents from running executions, child progress stats
+- Integrates with Zustand store (filterState, selectedItemId) for cross-view filtering
+- Uses cn(), shadcn components, dark mode, TypeScript strict, named export — follows all conventions
+- Not yet wired into page — correct, U.3 will handle the toggle swap
+- Frontend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — U.2: Build Flow view
 
 **Task:** Create state machine graph view for work items with live containers, directed arrows, and filtered item panel.
