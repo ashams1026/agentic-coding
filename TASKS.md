@@ -41,7 +41,16 @@
 
 - [x] **O.19** — Update seed script for WorkItem model. In `packages/backend/src/db/seed.ts`: update to insert work items (not stories/tasks), persona assignments, and all related data matching the refactored frontend fixtures.
 
-- [review] **O.20** — Rewrite CRUD API routes for WorkItem. Replace `routes/stories.ts` and `routes/tasks.ts` with `routes/work-items.ts`. Routes: `GET /api/work-items` (list, optional `?parentId=` and `?projectId=` filters), `GET /api/work-items/:id`, `POST /api/work-items`, `PATCH /api/work-items/:id`, `DELETE /api/work-items/:id`. Add `routes/persona-assignments.ts`: `GET /api/persona-assignments?projectId=`, `PUT /api/persona-assignments` (upsert). Remove `routes/workflows.ts`. Update `routes/task-edges.ts` → `routes/work-item-edges.ts`.
+- [ ] **O.20** — Rewrite CRUD API routes for WorkItem. Replace `routes/stories.ts` and `routes/tasks.ts` with `routes/work-items.ts`. Routes: `GET /api/work-items` (list, optional `?parentId=` and `?projectId=` filters), `GET /api/work-items/:id`, `POST /api/work-items`, `PATCH /api/work-items/:id`, `DELETE /api/work-items/:id`. Add `routes/persona-assignments.ts`: `GET /api/persona-assignments?projectId=`, `PUT /api/persona-assignments` (upsert). Remove `routes/workflows.ts`. Update `routes/task-edges.ts` → `routes/work-item-edges.ts`.
+  > [feedback: Bug in `routes/work-items.ts` DELETE handler (line ~148-156).
+  > The recursive delete uses `and()` to combine multiple parentId conditions
+  > when frontier has >1 items: `and(...frontier.map((fid) => eq(workItems.parentId, fid)))`.
+  > This is logically wrong — `and(eq(parentId, "a"), eq(parentId, "b"))` requires parentId
+  > to equal BOTH values simultaneously, which is impossible for a single column.
+  > Fix: replace `and()` with `inArray(workItems.parentId, frontier)` from drizzle-orm.
+  > Import `inArray` from "drizzle-orm" and change the where clause to:
+  > `.where(inArray(workItems.parentId, frontier))`
+  > This handles both single and multi-item frontiers, so the ternary can be simplified too.]
 
 ---
 

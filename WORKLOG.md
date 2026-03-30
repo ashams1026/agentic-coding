@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-03-29 — Review: O.20 (rejected)
+
+**Reviewed:** CRUD routes — `routes/work-items.ts`, `routes/persona-assignments.ts`, `routes/work-item-edges.ts`, `server.ts`.
+- 10 routes present, correct HTTP verbs and status codes, serializers working, build passes
+- **Bug found**: Recursive DELETE in work-items.ts uses `and()` instead of `inArray()` for multi-child frontier. When frontier has >1 items, `and(eq(parentId, "a"), eq(parentId, "b"))` returns 0 results (impossible condition), orphaning grandchildren.
+- Feedback: use `inArray(workItems.parentId, frontier)` from drizzle-orm
+- Verdict: **rejected**
+
+---
+
 ## 2026-03-29 — O.20: Rewrite CRUD API routes for WorkItem
 
 **Task:** Create routes/work-items.ts, routes/persona-assignments.ts, routes/work-item-edges.ts. Register in server.ts.
