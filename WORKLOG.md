@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — Q.10: Test parent-child coordination
+
+**Task:** Integration tests for parent-child state coordination using real in-memory SQLite.
+
+**Done:**
+- Created `packages/backend/src/agent/__tests__/coordination.test.ts` with 5 tests:
+  - All children Done → parent advances to "In Review"
+  - 2/3 children Done → parent does NOT advance
+  - Child enters Blocked → system comment posted on parent (verified authorType, content, metadata)
+  - Parent already in "In Review" → no double-advance, no extra comment
+  - Top-level items (no parent) → no-op
+- Mocked `broadcast` from ws.js (coordination fires WS events)
+- Helper functions: setState, getState, getComments for clean test code
+- Uses seed data: TOP_1 with 3 children (CHILD_1A=Done, CHILD_1B=In Progress, CHILD_1C=Ready)
+
+**Files created:** `packages/backend/src/agent/__tests__/coordination.test.ts`
+
+**Notes:** Build: 0 errors, 119 tests pass. Tests call checkParentCoordination directly (not through routes). State changes done via direct DB updates to set up preconditions. The "manual parent state override" test validates the guard clause (parent already in target state).
+
+---
+
 ## 2026-03-30 — Review: Q.9 (approved)
 
 **Reviewed:** Concurrency limiter tests — `packages/backend/src/agent/__tests__/concurrency.test.ts`.
