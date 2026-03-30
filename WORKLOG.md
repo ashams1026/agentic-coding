@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-29 — A.1: Create AgentOps MCP server skeleton
+
+**Task:** Set up MCP server with tool definitions and factory function.
+
+**Done:**
+- Installed `@modelcontextprotocol/sdk@1.28.0` and `zod@4.3.6` as backend dependencies
+- Created `packages/backend/src/agent/mcp-server.ts` (~210 lines):
+  - `McpContext` interface: personaName, personaId, projectId, allowedTools
+  - `TOOL_NAMES` const array + `ToolName` type for all 7 tools
+  - `createMcpServer(context)` factory returns configured `McpServer` instance
+  - 7 tools registered with Zod input schemas and stub handlers:
+    - `post_comment` — workItemId, content, metadata?
+    - `create_children` — parentId, children[{title, description?, dependsOn?[]}]
+    - `route_to_state` — workItemId, targetState, reasoning
+    - `list_items` — parentId?, state?, verbosity (summary|detail)
+    - `get_context` — workItemId, includeMemory
+    - `flag_blocked` — workItemId, reason
+    - `request_review` — workItemId, message
+  - Standalone stdio entry point for subprocess execution (reads context from env vars)
+  - Import pattern: `@modelcontextprotocol/sdk/server/mcp.js` (not top-level server index)
+
+**Files created:** `packages/backend/src/agent/mcp-server.ts`
+**Files modified:** `packages/backend/package.json` (2 new deps)
+
+**Notes:** Backend build: 0 errors. Zod v4 requires `z.record(z.string(), z.unknown())` (2 args), not `z.record(z.unknown())` (1 arg) as in v3. Tool implementations will be added in A.2–A.5.
+
+---
+
 ## 2026-03-29 — Decompose Sprint 8: Agent Execution Engine
 
 **Phase:** Phase 4 (Workflow & Router) + Phase 5 (Agent Persona & Execution) from PLANNING.md.
