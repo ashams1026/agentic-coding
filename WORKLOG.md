@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-29 — O.8: Build list view (primary)
+
+**Task:** Create tree-indented list view with hierarchy, state/priority badges, progress, persona avatars, grouping.
+
+**Done:**
+- Created `packages/frontend/src/features/work-items/list-view.tsx` (~290 lines):
+  - Tree-indented rows with expand/collapse chevrons via parentId hierarchy
+  - State badge colored from WORKFLOW (using getStateByName for color with alpha background)
+  - Priority badge (P0-P3) with established color pattern
+  - Progress bar for items with children (done/total count)
+  - Assigned persona avatar (colored circle with initial)
+  - Active agent pulsing indicator (animated ping dot + bot icon) from running executions
+  - Collapsible groups when groupBy is state/priority/parent, ordered by WORKFLOW state order
+  - "Done" group collapsed by default
+  - Click row → updates selectedItemId in Zustand store
+  - Loading skeleton state
+  - Sort by priority/created/updated
+  - Filter by state/priority from store
+- Updated `pages/work-items.tsx`: replaced list placeholder with `<ListView />`, added import
+- Reuses established patterns: priorityConfig, MiniProgress, Badge component, cn() utility
+
+**Files created:** `features/work-items/list-view.tsx`
+**Files modified:** `pages/work-items.tsx`
+
+**Notes:** List view compiles clean. Uses all data from useWorkItems/usePersonas/useExecutions hooks. Recursive tree rendering supports any depth of nesting (grandchildren, etc.).
+
+---
+
 ## 2026-03-29 — Review: O.7 (approved)
 
 **Reviewed:** Work items page — `work-items.tsx`, `filter-bar.tsx`, `work-items-store.ts`, `router.tsx`.

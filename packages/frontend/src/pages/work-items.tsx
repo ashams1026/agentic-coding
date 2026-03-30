@@ -4,6 +4,7 @@ import { List, Columns3, GitBranch, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { FilterBar } from "@/features/work-items/filter-bar";
+import { ListView } from "@/features/work-items/list-view";
 import { useWorkItemsStore, type WorkItemView } from "@/stores/work-items-store";
 import { useCreateWorkItem } from "@/hooks";
 import type { ProjectId } from "@agentops/shared";
@@ -87,7 +88,7 @@ export function WorkItemsPage() {
 
       {/* View content */}
       <div className="flex-1 overflow-hidden p-6">
-        {view === "list" && <WorkItemsListPlaceholder />}
+        {view === "list" && <ListView />}
         {view === "board" && <WorkItemsBoardPlaceholder />}
         {view === "tree" && <WorkItemsTreePlaceholder />}
       </div>
@@ -95,18 +96,7 @@ export function WorkItemsPage() {
   );
 }
 
-// Placeholder components — will be replaced by O.8, O.9, O.10
-function WorkItemsListPlaceholder() {
-  return (
-    <div className="flex h-full items-center justify-center text-muted-foreground">
-      <div className="text-center">
-        <List className="h-12 w-12 mx-auto mb-3 opacity-20" />
-        <p className="text-sm">List view — coming in O.8</p>
-      </div>
-    </div>
-  );
-}
-
+// Placeholder components — will be replaced by O.9, O.10
 function WorkItemsBoardPlaceholder() {
   return (
     <div className="flex h-full items-center justify-center text-muted-foreground">
