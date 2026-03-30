@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — E.4: Wire activity feed to real WebSocket events
+
+**Task:** Replace mock data (`fixtures.comments`, hardcoded events) in activity feed and dashboard recent activity with real API calls. Keep live WS event streaming.
+
+**Done:**
+- **Added `getRecentComments()`** to both real API client (`/api/comments` without workItemId) and mock API (returns all `store.comments` sorted by date)
+- **Wired through unified API index** (`api/index.ts`) with mock/real delegation
+- **Added `recentComments` query key** to `query-keys.ts` — `["comments", "recent"]`, inherits invalidation from `["comments"]` prefix match
+- **Added `useRecentComments()` hook** in `use-comments.ts`, exported from hooks index
+- **Updated `activity-feed.tsx`**: replaced `fixtures.comments` with `useRecentComments()` data, removed hardcoded router decision and cost alert mock events, removed `fixtures` import
+- **Updated `recent-activity.tsx`**: same fix — replaced `fixtures.comments` with `useRecentComments()`, removed `fixtures` import, wrapped in `useMemo` since it now depends on query data
+- **Live WS events unchanged**: `useLiveActivityEvents()` and `wsEventToActivity()` already work correctly — they subscribe to all WS event types and prepend live events with `isLive: true` flag
+
+**Files modified:** `api/client.ts`, `mocks/api.ts`, `api/index.ts`, `hooks/query-keys.ts`, `hooks/use-comments.ts`, `hooks/index.ts`, `features/activity-feed/activity-feed.tsx`, `features/dashboard/recent-activity.tsx`
+
+**Notes:** Build: 0 errors. The `["comments"]` prefix in WS sync already invalidates both `["comments", { workItemId }]` and `["comments", "recent"]`, so live comment events refresh the activity feed automatically.
+
+---
+
 ## 2026-03-30 — Review: E.3 (approved)
 
 **Reviewed:** Wire agent monitor to real WebSocket streaming — `terminal-renderer.tsx`, `ws-client.ts`, `ws.ts`, `use-ws-sync.ts`.

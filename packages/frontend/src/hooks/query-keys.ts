@@ -34,6 +34,7 @@ export const queryKeys = {
 
   // Comments
   comments: (workItemId: WorkItemId) => ["comments", { workItemId }] as const,
+  recentComments: ["comments", "recent"] as const,
 
   // Proposals
   proposals: (workItemId?: WorkItemId) => {

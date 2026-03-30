@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { useExecutions, useProposals, usePersonas } from "@/hooks";
+import { useExecutions, useProposals, usePersonas, useRecentComments } from "@/hooks";
 import { subscribeAll } from "@/api/ws";
 import type { Persona } from "@agentops/shared";
 import type {
@@ -20,7 +20,6 @@ import type {
   CommentCreatedEvent,
   ProposalCreatedEvent,
 } from "@agentops/shared";
-import { fixtures } from "@/mocks/fixtures";
 
 // ── Unified activity event ────────────────────────────────────────
 
@@ -83,68 +82,73 @@ function relativeTime(timestamp: string): string {
 function useActivityEvents(): ActivityEvent[] {
   const { data: executions } = useExecutions();
   const { data: proposals } = useProposals();
+  const { data: comments } = useRecentComments();
 
-  const events: ActivityEvent[] = [];
+  return useMemo(() => {
+    const events: ActivityEvent[] = [];
 
-  // Agent completed events from executions
-  if (executions) {
-    for (const exec of executions) {
-      if (exec.status === "completed") {
+    // Agent completed events from executions
+    if (executions) {
+      for (const exec of executions) {
+        if (exec.status === "completed") {
+          events.push({
+            id: `exec-${exec.id}`,
+            type: "agent_completed",
+            description: exec.summary || "Agent completed work item",
+            personaId: exec.personaId,
+            targetPath: "/items",
+            timestamp: exec.completedAt ?? exec.startedAt,
+          });
+        }
+      }
+    }
+
+    // Comment events from API
+    if (comments) {
+      for (const comment of comments) {
+        if (comment.authorType === "system") {
+          events.push({
+            id: `sc-${comment.id}`,
+            type: "state_change",
+            description: comment.content,
+            personaId: null,
+            targetPath: "/items",
+            timestamp: comment.createdAt,
+          });
+        } else {
+          events.push({
+            id: `cmt-${comment.id}`,
+            type: "comment_posted",
+            description: `${comment.authorName}: ${comment.content.slice(0, 80)}${comment.content.length > 80 ? "..." : ""}`,
+            personaId: comment.authorId,
+            targetPath: "/items",
+            timestamp: comment.createdAt,
+          });
+        }
+      }
+    }
+
+    // Proposal events
+    if (proposals) {
+      for (const proposal of proposals) {
         events.push({
-          id: `exec-${exec.id}`,
-          type: "agent_completed",
-          description: exec.summary || "Agent completed work item",
-          personaId: exec.personaId,
+          id: `prop-${proposal.id}`,
+          type: "proposal_created",
+          description: `New ${proposal.type.replace(/_/g, " ")} proposal`,
+          personaId: null,
           targetPath: "/items",
-          timestamp: exec.completedAt ?? exec.startedAt,
+          timestamp: proposal.createdAt,
         });
       }
     }
-  }
 
-  // Comment events from fixture comments
-  for (const comment of fixtures.comments) {
-    if (comment.authorType === "system") {
-      events.push({
-        id: `sc-${comment.id}`,
-        type: "state_change",
-        description: comment.content,
-        personaId: null,
-        targetPath: "/items",
-        timestamp: comment.createdAt,
-      });
-    } else {
-      events.push({
-        id: `cmt-${comment.id}`,
-        type: "comment_posted",
-        description: `${comment.authorName}: ${comment.content.slice(0, 80)}${comment.content.length > 80 ? "..." : ""}`,
-        personaId: comment.authorId,
-        targetPath: "/items",
-        timestamp: comment.createdAt,
-      });
-    }
-  }
+    // Sort by timestamp descending, take last 10
+    events.sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
 
-  // Proposal events
-  if (proposals) {
-    for (const proposal of proposals) {
-      events.push({
-        id: `prop-${proposal.id}`,
-        type: "proposal_created",
-        description: `New ${proposal.type.replace(/_/g, " ")} proposal`,
-        personaId: null,
-        targetPath: "/items",
-        timestamp: proposal.createdAt,
-      });
-    }
-  }
-
-  // Sort by timestamp descending, take last 10
-  events.sort(
-    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
-  );
-
-  return events.slice(0, 10);
+    return events.slice(0, 10);
+  }, [executions, proposals, comments]);
 }
 
 // ── Live WS events for dashboard ─────────────────────────────────

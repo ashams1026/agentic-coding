@@ -5,6 +5,6 @@ export { useWorkItems, useWorkItem, useCreateWorkItem, useUpdateWorkItem, useDel
 export { usePersonaAssignments, useUpdatePersonaAssignment } from "./use-persona-assignments";
 export { usePersonas, usePersona, useCreatePersona, useUpdatePersona, useDeletePersona } from "./use-personas";
 export { useExecutions, useExecution } from "./use-executions";
-export { useComments, useCreateComment } from "./use-comments";
+export { useComments, useRecentComments, useCreateComment } from "./use-comments";
 export { useProposals, useProposal, useUpdateProposal } from "./use-proposals";
 export { useDashboardStats, useCostSummary, useExecutionStats, useReadyWork, useProjectMemories } from "./use-dashboard";

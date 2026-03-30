@@ -322,6 +322,13 @@ export async function getComments(workItemId: WorkItemId): Promise<Comment[]> {
   return store.comments.filter((c) => c.workItemId === workItemId);
 }
 
+export async function getRecentComments(): Promise<Comment[]> {
+  await delay();
+  return [...store.comments].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+}
+
 export async function createComment(req: CreateCommentRequest): Promise<Comment> {
   await delay();
   const comment: Comment = {
@@ -462,6 +469,7 @@ export const mockApi = {
   getExecution,
   // Comments
   getComments,
+  getRecentComments,
   createComment,
   // Proposals
   getProposals,

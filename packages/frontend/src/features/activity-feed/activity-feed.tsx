@@ -32,8 +32,8 @@ import {
   useExecutions,
   useProposals,
   usePersonas,
+  useRecentComments,
 } from "@/hooks";
-import { fixtures } from "@/mocks/fixtures";
 import { subscribeAll } from "@/api/ws";
 import { useActivityStore } from "@/stores/activity-store";
 import type { Persona } from "@agentops/shared";
@@ -193,6 +193,7 @@ function getDateCutoff(preset: DatePreset): Date | null {
 function useBaseActivityEvents(): ActivityEvent[] {
   const { data: executions } = useExecutions();
   const { data: proposals } = useProposals();
+  const { data: comments } = useRecentComments();
 
   return useMemo(() => {
     const events: ActivityEvent[] = [];
@@ -236,28 +237,30 @@ function useBaseActivityEvents(): ActivityEvent[] {
       }
     }
 
-    // Comment events
-    for (const comment of fixtures.comments) {
-      if (comment.authorType === "system") {
-        events.push({
-          id: `sc-${comment.id}`,
-          type: "state_transition",
-          description: comment.content,
-          personaId: null,
-          targetPath: "/items",
-          targetLabel: "work item",
-          timestamp: comment.createdAt,
-        });
-      } else {
-        events.push({
-          id: `cmt-${comment.id}`,
-          type: "comment_posted",
-          description: `${comment.authorName}: ${comment.content.slice(0, 120)}${comment.content.length > 120 ? "..." : ""}`,
-          personaId: comment.authorType === "agent" ? comment.authorId : null,
-          targetPath: "/items",
-          targetLabel: "work item",
-          timestamp: comment.createdAt,
-        });
+    // Comment events from API
+    if (comments) {
+      for (const comment of comments) {
+        if (comment.authorType === "system") {
+          events.push({
+            id: `sc-${comment.id}`,
+            type: "state_transition",
+            description: comment.content,
+            personaId: null,
+            targetPath: "/items",
+            targetLabel: "work item",
+            timestamp: comment.createdAt,
+          });
+        } else {
+          events.push({
+            id: `cmt-${comment.id}`,
+            type: "comment_posted",
+            description: `${comment.authorName}: ${comment.content.slice(0, 120)}${comment.content.length > 120 ? "..." : ""}`,
+            personaId: comment.authorType === "agent" ? comment.authorId : null,
+            targetPath: "/items",
+            targetLabel: "work item",
+            timestamp: comment.createdAt,
+          });
+        }
       }
     }
 
@@ -303,30 +306,8 @@ function useBaseActivityEvents(): ActivityEvent[] {
       }
     }
 
-    // Mock Router decision event
-    events.push({
-      id: "router-decision-1",
-      type: "router_decision",
-      description: "Router: Moved to Ready — all acceptance criteria defined, ready for implementation",
-      personaId: null,
-      targetPath: "/items",
-      targetLabel: "work item",
-      timestamp: "2026-03-27T14:00:00Z",
-    });
-
-    // Mock cost alert event
-    events.push({
-      id: "cost-alert-1",
-      type: "cost_alert",
-      description: "Daily spend exceeded $2.50 threshold (current: $2.83)",
-      personaId: null,
-      targetPath: "/settings",
-      targetLabel: "settings",
-      timestamp: "2026-03-27T16:00:00Z",
-    });
-
     return events;
-  }, [executions, proposals]);
+  }, [executions, proposals, comments]);
 }
 
 // ── Convert WS events to ActivityEvents ─────────────────────────

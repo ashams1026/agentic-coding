@@ -270,6 +270,11 @@ export async function getComments(workItemId: WorkItemId): Promise<Comment[]> {
   return res.data;
 }
 
+export async function getRecentComments(): Promise<Comment[]> {
+  const res = await get<{ data: Comment[]; total: number }>("/api/comments");
+  return res.data;
+}
+
 export async function createComment(req: CreateCommentRequest): Promise<Comment> {
   const res = await post<{ data: Comment }>("/api/comments", req);
   return res.data;
@@ -360,6 +365,7 @@ export const apiClient = {
   getExecution,
   // Comments
   getComments,
+  getRecentComments,
   createComment,
   // Proposals
   getProposals,
