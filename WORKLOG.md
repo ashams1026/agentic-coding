@@ -5,6 +5,33 @@
 
 ---
 
+## 2026-03-30 — D.8: Document the MCP tools
+
+**Task:** Create `docs/mcp-tools.md` with the AgentOps MCP server and its 7 tools, Zod schemas, output formats, persona access, examples.
+
+**Done:**
+- **`docs/mcp-tools.md`** (new) — MCP tools documentation with:
+  - Overview table of all 7 tools
+  - How MCP server attaches to agent sessions: child process via `mcpServers` config in `claude-executor.ts`, env vars (PERSONA_NAME, PERSONA_ID, PROJECT_ID, ALLOWED_TOOLS), stdio transport
+  - McpContext interface
+  - 7 tool sections, each with: description, Zod input schema, JSON output format, side effects, persona access, example usage
+    - `post_comment`: inserts comment, broadcasts WS event
+    - `create_children`: creates children in Backlog, creates dependency edges, supports batch index references
+    - `route_to_state`: validates transition, detects rejections (escalates after 3), updates state, posts reasoning comment, audit trail, parent coordination, memory generation
+    - `list_items`: read-only query with summary/detail verbosity, scoped to project
+    - `get_context`: returns work item + execution history + optional project memories (1000-token budget)
+    - `flag_blocked`: sets Blocked state, posts reason comment, audit, parent coordination
+    - `request_review`: posts review request comment, broadcasts WS event
+  - Tool access matrix table (persona x tool)
+  - Note about seed data MCP tool name differences vs actual TOOL_NAMES
+  - Source files table (6 files)
+
+**Files created:** `docs/mcp-tools.md`
+
+**Notes:** Build: 0 errors. All Zod schemas verified against `mcp-server.ts` tool registrations. Side effects verified against tool handler implementations. Persona access verified against `seed.ts` mcpTools arrays.
+
+---
+
 ## 2026-03-30 — Review: D.7 (approved)
 
 **Reviewed:** REST API and WebSocket protocol documentation — 48 endpoints, 9 WS events.
