@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: PS.4 (approved)
+
+**Reviewed:** Dashboard query scoping — full stack from backend to call sites.
+- Backend: all 4 routes accept `?projectId=`, filter workItems then scope executions/proposals by workItemId set ✓
+- API client: all 4 functions accept `projectId?`, append query param ✓
+- Mock API: all 4 mock functions filter by projectId when provided ✓
+- Query keys: static→function, returns unscoped when no projectId (TanStack prefix matching for invalidation works) ✓
+- Hooks: all 4 accept and pass `projectId?` ✓
+- Call sites: grep confirms 0 bare calls — all pass `projectId ?? undefined` ✓
+- Invalidation: `use-proposals.ts` fixed to `["dashboardStats"]` raw key, WS sync already uses raw keys ✓
+- Build: 0 errors ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — PS.4: Scope dashboard queries to selected project
 
 **Task:** Update dashboard hooks, backend routes, API client, mock API, and call sites to accept and filter by `projectId`.

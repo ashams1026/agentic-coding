@@ -22,7 +22,7 @@
 
 - [x] **PS.3** — Scope work items queries to selected project. Update all `useWorkItems()` call sites (list-view, board-view, flow-view, filter-bar, detail-panel, command-palette, agent-monitor components — ~10 files) to pass `projectId` from `useSelectedProject()`. The hook already accepts `projectId` as a parameter — callers just aren't passing it.
 
-- [review] **PS.4** — Scope dashboard queries to selected project. Update `useDashboardStats()`, `useCostSummary()`, `useExecutionStats()`, `useReadyWork()` to accept and pass `projectId`. Update the backend dashboard routes to filter by `projectId` if not already. Update dashboard page components to pass the selected project ID.
+- [x] **PS.4** — Scope dashboard queries to selected project. Update `useDashboardStats()`, `useCostSummary()`, `useExecutionStats()`, `useReadyWork()` to accept and pass `projectId`. Update the backend dashboard routes to filter by `projectId` if not already. Update dashboard page components to pass the selected project ID.
 
 - [ ] **PS.5** — Scope executions, comments, and proposals to selected project. These are already scoped by `workItemId` in most places, but any top-level listing (agent monitor history, activity feed) should filter to work items belonging to the selected project. Update `useExecutions()` and the agent monitor history/sidebar to pass a `projectId` filter. Update the activity feed to only show events for the selected project.
 
