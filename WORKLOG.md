@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: Q.10 (approved)
+
+**Reviewed:** Parent-child coordination tests — `packages/backend/src/agent/__tests__/coordination.test.ts`.
+- 5 tests: all-children-done advance, partial-done no-advance, child-blocked comment, no double-advance, top-level no-op ✓
+- Blocked comment verification: authorType, content substring, metadata.coordination ✓
+- Helper functions (setState, getState, getComments) — clean test structure ✓
+- Uses seed data correctly (TOP_1 + 3 children with known states) ✓
+- Build: 0 errors
+- Tests: 119 pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — Q.10: Test parent-child coordination
 
 **Task:** Integration tests for parent-child state coordination using real in-memory SQLite.
