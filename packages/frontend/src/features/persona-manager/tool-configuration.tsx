@@ -170,7 +170,7 @@ export function ToolConfiguration({
     <div className="space-y-4">
       {/* Header with count and presets */}
       <div className="flex items-center justify-between">
-        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+        <Badge variant="secondary" className="text-xs px-1.5 py-0">
           {totalSelected}/{totalAvailable} selected
         </Badge>
         <DropdownMenu>
@@ -188,7 +188,7 @@ export function ToolConfiguration({
                 className="text-xs"
               >
                 {preset.name}
-                <Badge variant="outline" className="ml-auto text-[9px] px-1 py-0">
+                <Badge variant="outline" className="ml-auto text-xs px-1 py-0">
                   {preset.sdkTools.length + preset.mcpTools.length}
                 </Badge>
               </DropdownMenuItem>
@@ -202,7 +202,7 @@ export function ToolConfiguration({
         <div>
           <span className="text-xs text-muted-foreground mb-2 block">
             SDK Tools
-            <Badge variant="outline" className="ml-2 text-[9px] px-1 py-0">
+            <Badge variant="outline" className="ml-2 text-xs px-1 py-0">
               {allowedTools.length}
             </Badge>
           </span>
@@ -222,7 +222,7 @@ export function ToolConfiguration({
         <div>
           <span className="text-xs text-muted-foreground mb-2 block">
             AgentOps Tools
-            <Badge variant="outline" className="ml-2 text-[9px] px-1 py-0">
+            <Badge variant="outline" className="ml-2 text-xs px-1 py-0">
               {mcpTools.length}
             </Badge>
           </span>

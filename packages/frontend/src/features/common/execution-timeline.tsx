@@ -43,7 +43,7 @@ function formatCost(usd: number): string {
 function OutcomeBadge({ outcome, status }: { outcome: Execution["outcome"]; status: Execution["status"] }) {
   if (status === "running") {
     return (
-      <Badge variant="outline" className="text-[10px] border-emerald-400 text-emerald-600 dark:text-emerald-400">
+      <Badge variant="outline" className="text-xs border-emerald-400 text-emerald-600 dark:text-emerald-400">
         <Loader2 className="mr-1 h-2.5 w-2.5 animate-spin" />
         running
       </Badge>
@@ -52,7 +52,7 @@ function OutcomeBadge({ outcome, status }: { outcome: Execution["outcome"]; stat
 
   if (outcome === "success") {
     return (
-      <Badge variant="outline" className="text-[10px] border-green-400 text-green-600 dark:text-green-400">
+      <Badge variant="outline" className="text-xs border-green-400 text-green-600 dark:text-green-400">
         <CheckCircle2 className="mr-1 h-2.5 w-2.5" />
         success
       </Badge>
@@ -61,7 +61,7 @@ function OutcomeBadge({ outcome, status }: { outcome: Execution["outcome"]; stat
 
   if (outcome === "failure") {
     return (
-      <Badge variant="outline" className="text-[10px] border-red-400 text-red-600 dark:text-red-400">
+      <Badge variant="outline" className="text-xs border-red-400 text-red-600 dark:text-red-400">
         <XCircle className="mr-1 h-2.5 w-2.5" />
         failure
       </Badge>
@@ -70,7 +70,7 @@ function OutcomeBadge({ outcome, status }: { outcome: Execution["outcome"]; stat
 
   if (outcome === "rejected") {
     return (
-      <Badge variant="outline" className="text-[10px] border-amber-400 text-amber-600 dark:text-amber-400">
+      <Badge variant="outline" className="text-xs border-amber-400 text-amber-600 dark:text-amber-400">
         <AlertTriangle className="mr-1 h-2.5 w-2.5" />
         rejected
       </Badge>
@@ -148,11 +148,11 @@ function TimelineEntry({ execution, persona, isLast }: TimelineEntryProps) {
         {/* Badges */}
         <div className="flex items-center gap-2 mt-1.5 ml-6">
           <OutcomeBadge outcome={execution.outcome} status={execution.status} />
-          <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground">
+          <span className="inline-flex items-center gap-0.5 text-xs text-muted-foreground">
             <DollarSign className="h-2.5 w-2.5" />
             {formatCost(execution.costUsd)}
           </span>
-          <span className="inline-flex items-center gap-0.5 text-[10px] text-muted-foreground">
+          <span className="inline-flex items-center gap-0.5 text-xs text-muted-foreground">
             <Clock className="h-2.5 w-2.5" />
             {new Date(execution.startedAt).toLocaleDateString("en-US", {
               month: "short",

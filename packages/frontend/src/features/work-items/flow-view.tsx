@@ -107,7 +107,7 @@ function AvatarStack({ personas }: { personas: Persona[] }) {
       {personas.slice(0, 3).map((p) => (
         <div
           key={p.id}
-          className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-medium text-white ring-1 ring-background"
+          className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium text-white ring-1 ring-background"
           style={{ backgroundColor: p.avatar.color }}
           title={p.name}
         >
@@ -115,7 +115,7 @@ function AvatarStack({ personas }: { personas: Persona[] }) {
         </div>
       ))}
       {personas.length > 3 && (
-        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[9px] text-muted-foreground ring-1 ring-background">
+        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground ring-1 ring-background">
           +{personas.length - 3}
         </div>
       )}
@@ -130,7 +130,7 @@ function ProgressBar({ done, total }: { done: number; total: number }) {
   const pct = Math.round((done / total) * 100);
   return (
     <div className="w-full">
-      <div className="flex justify-between text-[10px] text-muted-foreground mb-0.5">
+      <div className="flex justify-between text-xs text-muted-foreground mb-0.5">
         <span>
           {done}/{total} items
         </span>
@@ -196,9 +196,9 @@ function StateNode({
             className="h-2 w-2 rounded-full shrink-0"
             style={{ backgroundColor: stateColor }}
           />
-          <span className="text-[11px] font-semibold truncate">{stateName}</span>
+          <span className="text-xs font-semibold truncate">{stateName}</span>
         </div>
-        <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 shrink-0">
+        <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4 shrink-0">
           {data.items.length}
         </Badge>
       </div>
@@ -214,12 +214,12 @@ function StateNode({
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
                 </span>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
                   {data.activeAgents} active
                 </span>
               </>
             ) : (
-              <span className="text-[10px] text-muted-foreground">idle</span>
+              <span className="text-xs text-muted-foreground">idle</span>
             )}
           </div>
           <AvatarStack personas={data.activePersonas} />
@@ -269,13 +269,13 @@ function FilteredItemsList({
               selectedItemId === item.id && "bg-accent",
             )}
           >
-            <span className={cn("text-[10px] font-semibold shrink-0", pCfg.color)}>
+            <span className={cn("text-xs font-semibold shrink-0", pCfg.color)}>
               {pCfg.label}
             </span>
             <span className="text-sm truncate flex-1">{item.title}</span>
             {persona && (
               <div
-                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[9px] font-medium text-white"
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-medium text-white"
                 style={{ backgroundColor: persona.avatar.color }}
               >
                 {persona.name.charAt(0)}
@@ -480,7 +480,7 @@ export function FlowView() {
               }}
             />
             <span className="text-sm font-medium">{filterState}</span>
-            <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+            <Badge variant="secondary" className="text-xs px-1.5 py-0">
               {filteredItems.length}
             </Badge>
           </div>

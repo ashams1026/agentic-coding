@@ -183,7 +183,7 @@ export function TestRunPanel({ personaName, model }: TestRunPanelProps) {
             ref={scrollRef}
             className={cn(
               "rounded-md border border-border bg-background",
-              "font-mono text-[11px] leading-relaxed",
+              "font-mono text-xs leading-relaxed",
               "min-h-[100px] max-h-[200px] overflow-y-auto p-2",
             )}
           >

@@ -30,7 +30,7 @@ function MiniProgress({ done, total }: { done: number; total: number }) {
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+      <span className="text-xs text-muted-foreground whitespace-nowrap">
         {done}/{total}
       </span>
     </div>
@@ -62,7 +62,7 @@ function ActiveAgentDot({ persona }: { persona: Persona }) {
 function PersonaAvatar({ persona }: { persona: Persona }) {
   return (
     <div
-      className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-medium text-white"
+      className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium text-white"
       style={{ backgroundColor: persona.avatar.color }}
       title={persona.name}
     >
@@ -98,7 +98,7 @@ function GroupHeader({
         <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
       )}
       <span>{label}</span>
-      <span className="text-[10px] text-muted-foreground/60">({count})</span>
+      <span className="text-xs text-muted-foreground/60">({count})</span>
     </button>
   );
 }
@@ -172,7 +172,7 @@ function ListRow({
       {/* State badge */}
       <Badge
         variant="secondary"
-        className="text-[10px] px-1.5 py-0 shrink-0 font-medium"
+        className="text-xs px-1.5 py-0 shrink-0 font-medium"
         style={{
           backgroundColor: stateInfo ? `${stateInfo.color}20` : undefined,
           color: stateInfo?.color,
@@ -185,7 +185,7 @@ function ListRow({
       {/* Priority */}
       <Badge
         variant="outline"
-        className={cn("text-[10px] px-1.5 py-0 font-semibold shrink-0", pCfg.className)}
+        className={cn("text-xs px-1.5 py-0 font-semibold shrink-0", pCfg.className)}
       >
         {pCfg.label}
       </Badge>

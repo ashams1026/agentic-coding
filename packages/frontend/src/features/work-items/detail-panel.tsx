@@ -310,7 +310,7 @@ function LabelEditor({
   return (
     <div className="flex items-center gap-1.5 flex-wrap">
       {labels.map((label) => (
-        <Badge key={label} variant="secondary" className="text-[10px] px-1.5 py-0 gap-1 group">
+        <Badge key={label} variant="secondary" className="text-xs px-1.5 py-0 gap-1 group">
           {label}
           <button
             onClick={() => onRemove(label)}
@@ -327,13 +327,13 @@ function LabelEditor({
           onChange={(e) => setDraft(e.target.value)}
           onBlur={handleSubmit}
           onKeyDown={handleKeyDown}
-          className="h-5 w-20 text-[10px] bg-transparent border-b border-primary/40 outline-none px-1"
+          className="h-5 w-20 text-xs bg-transparent border-b border-primary/40 outline-none px-1"
           placeholder="label..."
         />
       ) : (
         <button
           onClick={() => setAdding(true)}
-          className="h-5 px-1.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors rounded border border-dashed border-muted-foreground/30 hover:border-muted-foreground/60"
+          className="h-5 px-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors rounded border border-dashed border-muted-foreground/30 hover:border-muted-foreground/60"
         >
           + label
         </button>
@@ -517,7 +517,7 @@ function ChildrenList({
             >
               <Badge
                 variant="secondary"
-                className="text-[10px] px-1.5 py-0 shrink-0 font-medium"
+                className="text-xs px-1.5 py-0 shrink-0 font-medium"
                 style={{
                   backgroundColor: stateInfo ? `${stateInfo.color}20` : undefined,
                   color: stateInfo?.color,
@@ -549,7 +549,7 @@ function ProposalsSection({ workItemId }: { workItemId: WorkItemId }) {
         {pending.map((proposal) => (
           <div key={proposal.id} className="rounded-lg border p-3 bg-amber-50/50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800">
             <div className="flex items-center gap-2 mb-1">
-              <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-amber-500 text-amber-600">
+              <Badge variant="outline" className="text-xs px-1.5 py-0 border-amber-500 text-amber-600">
                 {proposal.type.replace(/_/g, " ")}
               </Badge>
             </div>
@@ -748,7 +748,7 @@ export function DetailPanel() {
           {persona && (
             <div className="flex items-center gap-1 ml-auto">
               <div
-                className="h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-medium text-white"
+                className="h-5 w-5 rounded-full flex items-center justify-center text-xs font-medium text-white"
                 style={{ backgroundColor: persona.avatar.color }}
               >
                 {persona.name.charAt(0)}

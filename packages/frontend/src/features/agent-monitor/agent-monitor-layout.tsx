@@ -157,7 +157,7 @@ export function AgentMonitorLayout() {
             <TabsTrigger value="live" className="text-xs px-3 h-6">
               Live
               {activeExecutions.length > 0 && (
-                <span className="ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-[9px] font-bold text-white">
+                <span className="ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-xs font-bold text-white">
                   {activeExecutions.length}
                 </span>
               )}

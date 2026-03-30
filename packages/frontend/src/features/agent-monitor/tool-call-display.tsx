@@ -182,7 +182,7 @@ export function ToolCallSection({ callData, resultData }: ToolCallSectionProps) 
           {/* Tool input */}
           {callData?.input && (
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">
+              <p className="text-xs uppercase tracking-wider text-zinc-500 mb-1">
                 Input
               </p>
               <FormattedInput input={callData.input} />
@@ -192,7 +192,7 @@ export function ToolCallSection({ callData, resultData }: ToolCallSectionProps) 
           {/* Tool output */}
           {resultData?.output && (
             <div>
-              <p className="text-[10px] uppercase tracking-wider text-zinc-500 mb-1">
+              <p className="text-xs uppercase tracking-wider text-zinc-500 mb-1">
                 Output
               </p>
               <FormattedOutput

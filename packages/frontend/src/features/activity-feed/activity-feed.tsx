@@ -507,7 +507,7 @@ function FeedFilterBar({ filters, onFiltersChange, personas }: FilterBarProps) {
         >
           Types
           {filters.eventTypes.size < ALL_EVENT_TYPES.length && (
-            <Badge variant="secondary" className="ml-1 px-1 py-0 text-[9px]">
+            <Badge variant="secondary" className="ml-1 px-1 py-0 text-xs">
               {filters.eventTypes.size}
             </Badge>
           )}
@@ -572,10 +572,10 @@ function FeedFilterBar({ filters, onFiltersChange, personas }: FilterBarProps) {
       {showTypes && (
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Button variant="link" size="sm" className="h-5 px-0 text-[10px]" onClick={selectAllTypes}>
+            <Button variant="link" size="sm" className="h-5 px-0 text-xs" onClick={selectAllTypes}>
               Select all
             </Button>
-            <Button variant="link" size="sm" className="h-5 px-0 text-[10px]" onClick={deselectAllTypes}>
+            <Button variant="link" size="sm" className="h-5 px-0 text-xs" onClick={deselectAllTypes}>
               Deselect all
             </Button>
           </div>
@@ -642,17 +642,17 @@ function EventRow({ event, personaMap }: EventRowProps) {
       <div className="min-w-0 flex-1">
         <p className="text-sm leading-snug">{event.description}</p>
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-[11px] text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             {formatTimestamp(event.timestamp)}
           </span>
-          <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+          <Badge variant="outline" className="text-xs px-1.5 py-0">
             {config.label}
           </Badge>
-          <span className="text-[10px] text-muted-foreground capitalize">
+          <span className="text-xs text-muted-foreground capitalize">
             {event.targetLabel}
           </span>
           {event.isLive && (
-            <Badge className="bg-sky-500/20 text-sky-600 dark:text-sky-400 text-[8px] px-1 py-0 border-0">
+            <Badge className="bg-sky-500/20 text-sky-600 dark:text-sky-400 text-xs px-1 py-0 border-0">
               LIVE
             </Badge>
           )}

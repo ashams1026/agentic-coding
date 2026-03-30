@@ -255,7 +255,7 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
                   <div className="space-y-2 flex-1">
                     {/* Color swatches */}
                     <div>
-                      <span className="text-[10px] text-muted-foreground mb-1 block">Color</span>
+                      <span className="text-xs text-muted-foreground mb-1 block">Color</span>
                       <div className="flex flex-wrap gap-1.5">
                         {COLOR_OPTIONS.map((color) => (
                           <button
@@ -278,7 +278,7 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
 
                     {/* Icon grid */}
                     <div>
-                      <span className="text-[10px] text-muted-foreground mb-1 block">Icon</span>
+                      <span className="text-xs text-muted-foreground mb-1 block">Icon</span>
                       <div className="flex flex-wrap gap-1">
                         {ICON_OPTIONS.map((opt) => {
                           const Ic = opt.icon;
@@ -322,11 +322,11 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-semibold">{opt.label}</span>
-                    <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                    <Badge variant="outline" className="text-xs px-1.5 py-0">
                       {opt.costLabel}
                     </Badge>
                   </div>
-                  <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {opt.description}
                   </p>
                 </button>

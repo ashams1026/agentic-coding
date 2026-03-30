@@ -155,7 +155,7 @@ function ServiceStatusSection() {
         <div className="grid grid-cols-2 gap-px bg-border">
           {/* Status */}
           <div className="bg-card px-4 py-3">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Status</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Status</p>
             <div className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-sm font-medium capitalize">{serviceData.status}</span>
@@ -164,19 +164,19 @@ function ServiceStatusSection() {
 
           {/* Uptime */}
           <div className="bg-card px-4 py-3">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Uptime</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Uptime</p>
             <p className="text-sm font-medium">{serviceData.uptime}</p>
           </div>
 
           {/* Memory */}
           <div className="bg-card px-4 py-3">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Memory</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Memory</p>
             <p className="text-sm font-medium">{serviceData.memory}</p>
           </div>
 
           {/* Restarts */}
           <div className="bg-card px-4 py-3">
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1">Restarts</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Restarts</p>
             <p className="text-sm font-medium">{serviceData.restarts}</p>
           </div>
         </div>
@@ -224,7 +224,7 @@ function DatabaseInfo() {
           <p className="text-sm font-medium">agentops.db</p>
           <p className="text-xs text-muted-foreground">24.3 MB · 1,847 rows</p>
         </div>
-        <Badge variant="secondary" className="text-[10px] shrink-0">SQLite</Badge>
+        <Badge variant="secondary" className="text-xs shrink-0">SQLite</Badge>
       </div>
     </div>
   );

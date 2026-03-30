@@ -99,7 +99,7 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
       {/* Model badge */}
       <Badge
         variant="outline"
-        className={`text-[10px] shrink-0 ${model.color}`}
+        className={`text-xs shrink-0 ${model.color}`}
       >
         {model.label}
       </Badge>
@@ -121,7 +121,7 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
 
       {/* Navigation links */}
       {execution.workItemId && (
-        <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1" asChild>
+        <Button variant="ghost" size="sm" className="h-6 text-xs gap-1" asChild>
           <Link to={`/work-items/${execution.workItemId}`}>
             Work Item
             <ExternalLink className="h-2.5 w-2.5" />
@@ -129,7 +129,7 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
         </Button>
       )}
       {parentWorkItemId && (
-        <Button variant="ghost" size="sm" className="h-6 text-[10px] gap-1" asChild>
+        <Button variant="ghost" size="sm" className="h-6 text-xs gap-1" asChild>
           <Link to={`/work-items/${parentWorkItemId}`}>
             Parent
             <ExternalLink className="h-2.5 w-2.5" />

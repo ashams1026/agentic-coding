@@ -308,7 +308,7 @@ function HistoryRow({
           </TableCell>
           <TableCell>
             {outcome ? (
-              <Badge variant="outline" className={`text-[10px] ${outcome.className}`}>
+              <Badge variant="outline" className={`text-xs ${outcome.className}`}>
                 {outcome.label}
               </Badge>
             ) : (

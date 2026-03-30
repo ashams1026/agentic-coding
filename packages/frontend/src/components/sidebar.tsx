@@ -115,7 +115,7 @@ export function Sidebar() {
                   {to === "/items" && pendingProposalCount > 0 && (
                     <span
                       className={cn(
-                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-0.5 text-[9px] font-bold text-white transition-all duration-300 ease-in-out",
+                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-0.5 text-xs font-bold text-white transition-all duration-300 ease-in-out",
                         sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
                       )}
                     >
@@ -125,7 +125,7 @@ export function Sidebar() {
                   {to === "/agents" && activeAgentCount > 0 && (
                     <span
                       className={cn(
-                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-0.5 text-[9px] font-bold text-white transition-all duration-300 ease-in-out",
+                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-0.5 text-xs font-bold text-white transition-all duration-300 ease-in-out",
                         sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
                       )}
                     >
@@ -135,7 +135,7 @@ export function Sidebar() {
                   {to === "/activity" && unreadActivityCount > 0 && (
                     <span
                       className={cn(
-                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-500 px-0.5 text-[9px] font-bold text-white transition-all duration-300 ease-in-out",
+                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-500 px-0.5 text-xs font-bold text-white transition-all duration-300 ease-in-out",
                         sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
                       )}
                     >
@@ -152,17 +152,17 @@ export function Sidebar() {
                 >
                   <span className="flex-1 truncate">{label}</span>
                   {to === "/items" && pendingProposalCount > 0 && (
-                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white shrink-0">
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-xs font-bold text-white shrink-0">
                       {pendingProposalCount}
                     </span>
                   )}
                   {to === "/agents" && activeAgentCount > 0 && (
-                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-[10px] font-bold text-white shrink-0">
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-xs font-bold text-white shrink-0">
                       {activeAgentCount}
                     </span>
                   )}
                   {to === "/activity" && unreadActivityCount > 0 && (
-                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1 text-[10px] font-bold text-white shrink-0">
+                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1 text-xs font-bold text-white shrink-0">
                       {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
                     </span>
                   )}

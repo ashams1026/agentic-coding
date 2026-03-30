@@ -65,7 +65,7 @@ function AgentComment({ comment, persona }: AgentCommentProps) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-sm font-medium">{comment.authorName}</span>
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+          <Badge variant="outline" className="text-xs px-1.5 py-0">
             agent
           </Badge>
           <span className="text-xs text-muted-foreground">
@@ -80,7 +80,7 @@ function AgentComment({ comment, persona }: AgentCommentProps) {
             {filesChanged.map((file) => (
               <Tooltip key={file}>
                 <TooltipTrigger asChild>
-                  <span className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+                  <span className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs font-mono text-muted-foreground">
                     <FileCode className="h-2.5 w-2.5" />
                     {file.split("/").pop()}
                   </span>
@@ -93,7 +93,7 @@ function AgentComment({ comment, persona }: AgentCommentProps) {
             {toolsUsed.map((tool) => (
               <span
                 key={tool}
-                className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground"
+                className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground"
               >
                 <Wrench className="h-2.5 w-2.5" />
                 {tool}
@@ -139,7 +139,7 @@ function SystemComment({ comment }: { comment: Comment }) {
       <span className="text-xs text-muted-foreground">
         {comment.content}
       </span>
-      <span className="text-[10px] text-muted-foreground/50">
+      <span className="text-xs text-muted-foreground/50">
         {formatTime(comment.createdAt)}
       </span>
     </div>

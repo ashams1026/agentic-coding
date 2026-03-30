@@ -45,7 +45,7 @@ function WorkItemRow({ item }: WorkItemRowProps) {
       {/* Badges */}
       <div className="flex shrink-0 items-center gap-1.5">
         {item.persona && (
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+          <Badge variant="outline" className="text-xs px-1.5 py-0">
             {item.persona.name}
           </Badge>
         )}

@@ -117,7 +117,7 @@ export function CostSummary() {
             <p className="text-lg font-bold tracking-tight">
               ${todaySpend.toFixed(2)}
             </p>
-            <p className="text-[11px] text-muted-foreground">today</p>
+            <p className="text-xs text-muted-foreground">today</p>
           </div>
         </div>
 

@@ -111,7 +111,7 @@ function renderInline(text: string): React.ReactNode[] {
     }
     if (part.startsWith("`") && part.endsWith("`")) {
       return (
-        <code key={i} className="rounded bg-muted px-1 py-0.5 text-[10px] font-mono">
+        <code key={i} className="rounded bg-muted px-1 py-0.5 text-xs font-mono">
           {part.slice(1, -1)}
         </code>
       );
@@ -125,7 +125,7 @@ function renderInline(text: string): React.ReactNode[] {
 function LineNumbers({ count, scrollTop }: { count: number; scrollTop: number }) {
   return (
     <div
-      className="select-none text-right pr-2 text-[10px] text-muted-foreground/50 font-mono leading-[1.65rem] pt-[9px]"
+      className="select-none text-right pr-2 text-xs text-muted-foreground/50 font-mono leading-[1.65rem] pt-[9px]"
       style={{ transform: `translateY(-${scrollTop}px)` }}
     >
       {Array.from({ length: count }, (_, i) => (
@@ -225,7 +225,7 @@ export function SystemPromptEditor({ value, onChange }: SystemPromptEditorProps)
       </div>
 
       {/* Footer stats */}
-      <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
         <span>{value.length} characters</span>
         <span className="text-muted-foreground/30">|</span>
         <span>~{tokenEstimate.toLocaleString()} tokens</span>

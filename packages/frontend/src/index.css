@@ -1,6 +1,57 @@
 @import "tailwindcss";
 
 /*
+ * ─── Typography Scale ────────────────────────────────────────────
+ *
+ * Semantic text sizes for consistent typography across the app.
+ * Use these instead of arbitrary values like text-[10px] or text-[11px].
+ *
+ *   .text-page-title     → text-2xl font-bold          (headings, page titles)
+ *   .text-section-title   → text-lg font-semibold       (section headers, card titles)
+ *   .text-body            → text-sm                     (default body copy)
+ *   .text-label           → text-xs font-medium         (form labels, badge text, metadata keys)
+ *   .text-caption         → text-xs text-muted-foreground (timestamps, counts, secondary info)
+ *
+ * Standard Tailwind sizes to use:
+ *   text-2xl  (1.5rem / 24px)  — page titles
+ *   text-lg   (1.125rem / 18px) — section titles
+ *   text-sm   (0.875rem / 14px) — body text
+ *   text-xs   (0.75rem / 12px)  — labels, captions, badges, compact UI
+ *
+ * Do NOT use arbitrary pixel sizes (text-[10px], text-[11px], etc.).
+ * Use text-xs for all compact/small text needs.
+ */
+
+@utility text-page-title {
+  font-size: var(--text-2xl);
+  line-height: var(--text-2xl--line-height);
+  font-weight: 700;
+}
+
+@utility text-section-title {
+  font-size: var(--text-lg);
+  line-height: var(--text-lg--line-height);
+  font-weight: 600;
+}
+
+@utility text-body {
+  font-size: var(--text-sm);
+  line-height: var(--text-sm--line-height);
+}
+
+@utility text-label {
+  font-size: var(--text-xs);
+  line-height: var(--text-xs--line-height);
+  font-weight: 500;
+}
+
+@utility text-caption {
+  font-size: var(--text-xs);
+  line-height: var(--text-xs--line-height);
+  color: hsl(var(--muted-foreground));
+}
+
+/*
  * AgentOps theme tokens
  * Tailwind v4 CSS-first configuration via @theme
  */

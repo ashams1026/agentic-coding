@@ -206,17 +206,17 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
       {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2 border-b bg-muted/30">
         <div className="flex items-center gap-2">
-          <Badge variant="outline" className="text-[10px] font-mono">
+          <Badge variant="outline" className="text-xs font-mono">
             {executionId}
           </Badge>
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             {chunks.length} chunks
           </span>
         </div>
         <Button
           variant="ghost"
           size="sm"
-          className="h-6 text-[10px] gap-1"
+          className="h-6 text-xs gap-1"
           onClick={() => {
             setScrollLocked(!scrollLocked);
             if (scrollLocked) {

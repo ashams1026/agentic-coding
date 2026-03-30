@@ -205,7 +205,7 @@ function CostHistoryChart() {
         </div>
         <div className="text-right">
           <p className="text-sm font-semibold">${totalSpend.toFixed(2)}</p>
-          <p className="text-[10px] text-muted-foreground">30-day total</p>
+          <p className="text-xs text-muted-foreground">30-day total</p>
         </div>
       </div>
 

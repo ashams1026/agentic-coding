@@ -142,7 +142,7 @@ function PersonaCard({ persona, isBuiltIn, onEdit, onDuplicate, onDelete }: Pers
       <div className="flex items-center gap-2 mb-1">
         <h3 className="text-sm font-semibold truncate">{persona.name}</h3>
         {isBuiltIn && (
-          <Badge variant="outline" className="text-[9px] px-1.5 py-0 shrink-0">
+          <Badge variant="outline" className="text-xs px-1.5 py-0 shrink-0">
             Built-in
           </Badge>
         )}
@@ -151,7 +151,7 @@ function PersonaCard({ persona, isBuiltIn, onEdit, onDuplicate, onDelete }: Pers
       {/* Model badge */}
       <Badge
         variant="outline"
-        className={cn("text-[9px] px-1.5 py-0 border-0 mb-2", model.className)}
+        className={cn("text-xs px-1.5 py-0 border-0 mb-2", model.className)}
       >
         {model.label}
       </Badge>
@@ -163,7 +163,7 @@ function PersonaCard({ persona, isBuiltIn, onEdit, onDuplicate, onDelete }: Pers
 
       {/* Tool count pill */}
       <div className="mt-3 flex items-center gap-1.5">
-        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+        <Badge variant="secondary" className="text-xs px-1.5 py-0">
           {toolCount} tool{toolCount !== 1 ? "s" : ""}
         </Badge>
       </div>

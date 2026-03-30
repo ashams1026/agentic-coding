@@ -44,7 +44,7 @@ const priorityConfig: Record<Priority, { label: string; className: string }> = {
 function ProgressPill({ done, total }: { done: number; total: number }) {
   if (total === 0) return null;
   return (
-    <span className="text-[10px] text-muted-foreground bg-muted rounded-full px-1.5 py-0.5">
+    <span className="text-xs text-muted-foreground bg-muted rounded-full px-1.5 py-0.5">
       {done}/{total}
     </span>
   );
@@ -55,7 +55,7 @@ function ProgressPill({ done, total }: { done: number; total: number }) {
 function PersonaAvatar({ persona }: { persona: Persona }) {
   return (
     <div
-      className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-medium text-white"
+      className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium text-white"
       style={{ backgroundColor: persona.avatar.color }}
       title={persona.name}
     >
@@ -91,7 +91,7 @@ function WorkItemCard({ item, childrenDone, childrenTotal, persona, isSelected, 
         <div className="flex items-center gap-1.5 flex-wrap">
           <Badge
             variant="outline"
-            className={cn("text-[10px] px-1.5 py-0 font-semibold", pCfg.className)}
+            className={cn("text-xs px-1.5 py-0 font-semibold", pCfg.className)}
           >
             {pCfg.label}
           </Badge>
@@ -154,7 +154,7 @@ function BoardColumn({ stateName, stateColor, items, childStats, personaMap, sel
       <div className="flex items-center gap-2 px-1 pb-3">
         <div className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: stateColor }} />
         <span className="text-sm font-medium">{stateName}</span>
-        <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0">
+        <Badge variant="secondary" className="ml-auto text-xs px-1.5 py-0">
           {items.length}
         </Badge>
       </div>

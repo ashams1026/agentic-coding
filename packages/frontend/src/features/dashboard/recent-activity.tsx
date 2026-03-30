@@ -267,7 +267,7 @@ function ActivityRow({ event, personaMap }: ActivityRowProps) {
         <div className="flex items-center gap-1.5">
           <p className="truncate text-sm">{event.description}</p>
           {event.isLive && (
-            <Badge className="bg-sky-500/20 text-sky-600 dark:text-sky-400 text-[8px] px-1 py-0 border-0 shrink-0">
+            <Badge className="bg-sky-500/20 text-sky-600 dark:text-sky-400 text-xs px-1 py-0 border-0 shrink-0">
               LIVE
             </Badge>
           )}

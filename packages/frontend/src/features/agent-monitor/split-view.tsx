@@ -102,7 +102,7 @@ function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
                 <p className="text-xs font-medium truncate">
                   {persona?.name ?? "Agent"}
                 </p>
-                <p className="text-[10px] text-muted-foreground truncate">
+                <p className="text-xs text-muted-foreground truncate">
                   {target}
                 </p>
               </div>

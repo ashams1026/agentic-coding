@@ -77,15 +77,15 @@ function AgentEntry({
         {/* Content */}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium truncate">{personaName}</p>
-          <p className="text-[11px] text-muted-foreground truncate">
+          <p className="text-xs text-muted-foreground truncate">
             {targetName}
           </p>
           {/* Live counters */}
           <div className="flex items-center gap-2.5 mt-1">
-            <span className="text-[10px] text-muted-foreground tabular-nums">
+            <span className="text-xs text-muted-foreground tabular-nums">
               {elapsed}
             </span>
-            <span className="flex items-center gap-0.5 text-[10px] text-muted-foreground tabular-nums">
+            <span className="flex items-center gap-0.5 text-xs text-muted-foreground tabular-nums">
               <DollarSign className="h-2.5 w-2.5" />
               {formatCost(execution.costUsd)}
             </span>
@@ -135,7 +135,7 @@ export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarP
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
           Active Agents
         </p>
-        <p className="text-[10px] text-muted-foreground mt-0.5">
+        <p className="text-xs text-muted-foreground mt-0.5">
           {activeExecutions.length} running
         </p>
       </div>

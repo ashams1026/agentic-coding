@@ -219,7 +219,7 @@ export function CommandPalette() {
             className="flex-1 bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
             autoFocus
           />
-          <kbd className="hidden sm:inline-flex h-5 items-center gap-0.5 rounded border bg-muted px-1.5 text-[10px] font-medium text-muted-foreground">
+          <kbd className="hidden sm:inline-flex h-5 items-center gap-0.5 rounded border bg-muted px-1.5 text-xs font-medium text-muted-foreground">
             ESC
           </kbd>
         </div>
@@ -233,7 +233,7 @@ export function CommandPalette() {
           ) : (
             grouped.map((group) => (
               <div key={group.category}>
-                <p className="px-3 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                <p className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                   {CATEGORY_LABELS[group.category] ?? group.category}
                 </p>
                 {group.items.map((item) => {
@@ -255,7 +255,7 @@ export function CommandPalette() {
                       <span className="text-muted-foreground shrink-0">{item.icon}</span>
                       <span className="truncate">{item.label}</span>
                       {isSelected && (
-                        <kbd className="ml-auto hidden sm:inline-flex h-5 items-center rounded border bg-muted px-1.5 text-[10px] text-muted-foreground">
+                        <kbd className="ml-auto hidden sm:inline-flex h-5 items-center rounded border bg-muted px-1.5 text-xs text-muted-foreground">
                           Enter
                         </kbd>
                       )}
@@ -268,7 +268,7 @@ export function CommandPalette() {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center gap-3 border-t px-3 py-2 text-[10px] text-muted-foreground">
+        <div className="flex items-center gap-3 border-t px-3 py-2 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <kbd className="rounded border bg-muted px-1 py-0.5">↑↓</kbd> navigate
           </span>

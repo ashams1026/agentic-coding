@@ -45,7 +45,7 @@ function ModelBadge({ model }: { model: string }) {
     haiku: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
   };
   return (
-    <Badge variant="secondary" className={`text-[10px] px-1.5 py-0 ${colors[model] ?? ""}`}>
+    <Badge variant="secondary" className={`text-xs px-1.5 py-0 ${colors[model] ?? ""}`}>
       {model}
     </Badge>
   );
@@ -150,7 +150,7 @@ function PersonaStateTable() {
       </div>
 
       {/* Non-configurable states note */}
-      <div className="px-3 py-2 text-[11px] text-muted-foreground bg-muted/20 border-t">
+      <div className="px-3 py-2 text-xs text-muted-foreground bg-muted/20 border-t">
         Backlog, Done, and Blocked have no assigned personas — they are manual or auto-triggered states.
       </div>
     </div>

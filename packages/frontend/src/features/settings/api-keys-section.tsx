@@ -130,7 +130,7 @@ function ConcurrencySection() {
         </Badge>
       </div>
 
-      <div className="flex justify-between text-[10px] text-muted-foreground px-0.5">
+      <div className="flex justify-between text-xs text-muted-foreground px-0.5">
         <span>1</span>
         <span>5</span>
         <span>10</span>

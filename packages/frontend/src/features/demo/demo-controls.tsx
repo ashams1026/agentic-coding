@@ -23,7 +23,7 @@ export function DemoControls() {
           <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-500" />
         </span>
 
-        <Badge variant="outline" className="text-[10px] font-semibold gap-1">
+        <Badge variant="outline" className="text-xs font-semibold gap-1">
           <Bot className="h-3 w-3" />
           DEMO
         </Badge>

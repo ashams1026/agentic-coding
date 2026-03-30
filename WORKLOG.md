@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — P.1: Standardize typography scale
+
+**Task:** Define semantic typography tokens and eliminate arbitrary pixel text sizes.
+
+**Done:**
+- Added typography scale documentation and 5 `@utility` definitions to `index.css`:
+  - `text-page-title` (text-2xl font-bold), `text-section-title` (text-lg font-semibold)
+  - `text-body` (text-sm), `text-label` (text-xs font-medium), `text-caption` (text-xs text-muted-foreground)
+- Replaced all arbitrary text sizes across 29 frontend files:
+  - `text-[10px]` → `text-xs` (~60 occurrences)
+  - `text-[11px]` → `text-xs` (5 occurrences)
+  - `text-[9px]` → `text-xs` (11 occurrences)
+  - `text-[8px]` → `text-xs` (2 occurrences)
+- Zero arbitrary pixel text sizes remain in code (only in index.css documentation comments)
+
+**Files modified:** `packages/frontend/src/index.css` + 29 component files across features/work-items, features/dashboard, features/agent-monitor, features/persona-manager, features/activity-feed, features/settings, features/common, features/demo, features/command-palette, components/sidebar
+
+**Notes:** Build: 0 errors, 145 tests pass. All sizes converge on `text-xs` (12px). The 5 semantic utility classes (`text-page-title`, `text-section-title`, `text-body`, `text-label`, `text-caption`) are defined via Tailwind v4 `@utility` directive and available for new code.
+
+---
+
 ## 2026-03-30 — Review: Q.13 (approved)
 
 **Reviewed:** Execution manager tests rework — `packages/backend/src/agent/__tests__/execution-manager.test.ts`.
