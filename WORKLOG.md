@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — Review: S.7 (approved)
+
+**Reviewed:** Structured logging — `logger.ts` and all consumer files.
+- `logger.ts`: clean dual-export (`logger` + `loggerConfig`), dev/prod transport split via `NODE_ENV` ✓
+- Dev: pino-pretty to stdout. Prod: pino-roll daily rotation + stdout ✓
+- `server.ts`: uses `loggerConfig` (not `loggerInstance`) — avoids Fastify type incompatibility ✓
+- `start.ts`: 5 console calls → structured `logger.info/error` with context objects ✓
+- `execution-manager.ts`: 5 error calls replaced with structured logger ✓
+- `memory.ts`: 4 error calls replaced ✓
+- `mcp-server.ts`: 3 error calls replaced ✓
+- `coordination.ts`: 1 error call replaced ✓
+- Remaining `console.log` only in CLI scripts (cli.ts, seed.ts, migrate.ts) — correct ✓
+- pino + pino-roll installed as direct dependencies ✓
+- Build: 0 errors, Tests: 159/159
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — S.7: Set up structured logging
 
 **Task:** Replace all `console.log/error` in the backend server code with pino structured logger. Daily rotation to file in production, pino-pretty to stdout in dev.
