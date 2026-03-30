@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: Q.4 (approved)
+
+**Reviewed:** Work items CRUD route tests (rework) — `packages/backend/src/routes/__tests__/work-items.test.ts`.
+- 19 tests now (was 18): added invalid state transition test ✓
+- Test correctly documents that route allows invalid transitions (Backlog→Done returns 200) ✓
+- Comment explains validation lives in workflow module + MCP tools, not PATCH route ✓
+- Bug fix from original: double-encoding in PATCH for labels/context ✓
+- Build: 0 errors
+- Tests: 47 pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — Q.4 (rework): Add missing invalid state transition test
 
 **Task:** Address review feedback — add test for invalid state transition.
