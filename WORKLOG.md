@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: E.3 (approved)
+
+**Reviewed:** Wire agent monitor to real WebSocket streaming — `terminal-renderer.tsx`, `ws-client.ts`, `ws.ts`, `use-ws-sync.ts`.
+- Terminal renderer already correctly subscribed to `agent_output_chunk` events and maps `event.chunk`/`event.chunkType` to `OutputChunk` — no changes needed ✓
+- `onReconnect(callback)` method added to `RealWsClient` with `reconnectCallbacks` Set ✓
+- Exposed through unified `ws.ts` module ✓
+- `useWsQuerySync` registers reconnect handler invalidating `["executions"]`, `["workItems"]`, `["dashboardStats"]` ✓
+- Cleanup returns both `unsub()` and `unsubReconnect()` ✓
+- Minor note: `isReconnect` heuristic on line 52 of ws-client.ts is fragile (can false-positive on first connect) but practical impact is negligible
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — Review: E.2 (approved)
 
 **Reviewed:** WS→Query cache invalidation — `use-ws-sync.ts`.
