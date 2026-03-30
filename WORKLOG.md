@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: T3.2.10 (approved)
+
+**Reviewed:** Dashboard aggregate routes — `routes/dashboard.ts`, `server.ts`.
+- 4 read-only endpoints: stats, cost-summary, execution-stats, ready-work
+- All computations match frontend mock implementations exactly
+- Stats: activeAgents, pendingProposals, needsAttention (blocked+pending), todayCostUsd
+- Cost summary: 7-day dailySpend, monthTotal, monthCap from project settings
+- Execution stats: totalRuns, totalCostUsd, successRate, averageDurationMs
+- Ready work: workItems in "Ready" state joined with personas, limit 5, full entity serialization
+- Proper type casting for all branded/union types in ready-work response
+- Registered in server.ts
+- Backend typecheck: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T3.2.10: Implement aggregate/dashboard API routes
 
 **Task:** Create read-only aggregate endpoints mirroring the frontend mock functions.
