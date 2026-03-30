@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: PS.7 (approved)
+
+**Reviewed:** Empty states for new projects.
+- Work Items list: `EmptyWorkItemsState` component with icon, heading, description, and "Create work item" button ✓
+- Properly distinguishes empty project vs. no filter matches via `hasFilters` check ✓
+- Activity feed: "No activity yet" with project-scoped message ✓
+- Dashboard recent-activity: "No activity yet" ✓
+- Dashboard stats: handles zero gracefully via `?? 0` defaults ✓
+- Build: 0 errors ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — PS.7: Show empty state for new projects
 
 **Task:** Show friendly empty states when a project has zero work items.
