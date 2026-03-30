@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: Q.4 (rejected)
+
+**Reviewed:** Work items CRUD route tests — `packages/backend/src/routes/__tests__/work-items.test.ts`.
+- 18 tests covering POST, GET, GET list, PATCH, DELETE ✓
+- Fastify app.inject() with mocked db connection ✓
+- Agent side-effects (dispatch, coordination, memory) correctly mocked ✓
+- Bug fix: removed JSON.stringify double-encoding in PATCH — good catch ✓
+- Recursive delete tested on TOP_3 (no FK conflicts) — reasonable workaround ✓
+- Response shapes verified (ISO dates, list structure) ✓
+- Build: 0 errors, 46 tests pass ✓
+- **MISSING:** "reject invalid state transition" test — task explicitly requires it
+- Verdict: **rejected** — add the missing invalid transition test
+
+---
+
 ## 2026-03-30 — Q.4: Test work items CRUD routes
 
 **Task:** Integration tests for work items CRUD routes using Fastify `app.inject()` with real in-memory SQLite.
