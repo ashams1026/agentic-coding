@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-30 — S.1: Create CLI entry point
+
+**Task:** Create `packages/backend/src/cli.ts` with command parser, 4 commands (start, stop, status, dev), bin entry, shebang.
+
+**Done:**
+- **`start.ts`** — Extracted startup logic from `index.ts` into reusable `startServer(options)` export. Contains orphaned state cleanup, migrations, server build+listen. Both `index.ts` and `cli.ts` import from here.
+- **`index.ts`** — Simplified to one-liner: `import { startServer } from "./start.js"; startServer();`
+- **`cli.ts`** — CLI entry point with `#!/usr/bin/env node` shebang. Parses `process.argv[2]` via switch. Commands:
+  - `start` — writes PID to `~/.agentops/agentops.pid`, registers SIGINT/SIGTERM cleanup, imports `startServer()`. Detects already-running instance.
+  - `stop` — reads PID file, sends SIGTERM, removes PID file. Handles "not running" gracefully.
+  - `status` — checks PID liveness, hits `/health` and `/api/dashboard/stats` for live metrics (uptime, active agents, cost). Degrades gracefully if endpoints aren't enhanced yet.
+  - `dev` — spawns `npx tsx watch src/index.ts` with inherited stdio. Resolves paths from `import.meta.url`.
+  - `--help` / no args — prints usage summary.
+- **`package.json`** — Added `"bin": { "agentops": "./dist/cli.js" }`.
+
+**Files created:** `packages/backend/src/start.ts`, `packages/backend/src/cli.ts`
+**Files modified:** `packages/backend/src/index.ts`, `packages/backend/package.json`
+
+**Notes:** Build: 0 errors. Tests: 156/156 passing. CLI verified manually (`--help`, `status`). The status command will show richer data once S.2 adds the enhanced `/api/health` endpoint.
+
+---
+
 ## 2026-03-30 — Review: E.10 (approved)
 
 **Reviewed:** Startup cleanup — `index.ts`, `concurrency.ts`, `startup-cleanup.test.ts`.
