@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — Review: D.5 (approved)
+
+**Reviewed:** Workflow system documentation — state machine, routing, coordination, rejection.
+- 8 states: all colors match `workflow.ts` hex values exactly ✓
+- Transition table: all 8 from→to mappings verified against `WORKFLOW.transitions` ✓
+- ASCII transition diagram ✓
+- Rate limiting: 10/hour verified against `MAX_TRANSITIONS_PER_HOUR` in execution-manager.ts ✓
+- Manual + automatic transition modes ✓
+- Auto-routing cycle: 8-step sequence ✓
+- Persona assignments table with typical roles ✓
+- Router: haiku model, 3 tools, lazy creation, autoRouting toggle with code snippet ✓
+- Parent-child: all-children-Done auto-advance to "In Review", child-Blocked comment ✓
+- Rejection: RejectionPayload matches entities.ts, MAX_REJECTIONS=3 verified, escalation diagram ✓
+- Dispatch checks: persona, concurrency, cost cap ✓
+- Source files table ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — D.5: Document the workflow system
 
 **Task:** Create `docs/workflow.md` with state machine, transitions, routing, coordination, rejection logic.
