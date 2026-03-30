@@ -3,6 +3,7 @@ import { eq, and, inArray } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { workItems } from "../db/schema.js";
 import { createId } from "@agentops/shared";
+import { dispatchForState } from "../agent/dispatch.js";
 import { WORKFLOW } from "@agentops/shared";
 import type {
   WorkItemId,
@@ -130,6 +131,13 @@ export async function workItemRoutes(app: FastifyInstance) {
 
     if (!row) {
       return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Work item ${id} not found` } });
+    }
+
+    // Dispatch persona execution if state changed
+    if (body.currentState !== undefined) {
+      dispatchForState(id, body.currentState).catch((err) => {
+        app.log.error({ err, workItemId: id, state: body.currentState }, "Dispatch failed");
+      });
     }
 
     return { data: serializeWorkItem(row) };

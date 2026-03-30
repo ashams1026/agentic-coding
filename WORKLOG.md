@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-29 — A.10: Implement persona dispatch on state entry
+
+**Task:** Create dispatch.ts and wire into PATCH work-items route.
+
+**Done:**
+- Created `packages/backend/src/agent/dispatch.ts`:
+  - `dispatchForState(workItemId, stateName)`: looks up work item's projectId, queries personaAssignments for (projectId, stateName), spawns execution via `runExecution()` if found
+  - No-op if no assignment exists (states without personas like Backlog, Done)
+  - Returns void — fire-and-forget pattern
+- Wired into `packages/backend/src/routes/work-items.ts` PATCH handler:
+  - After successful update, if `body.currentState` was provided, calls `dispatchForState(id, body.currentState)` non-blocking with `.catch()` error logging
+  - Import added: `dispatchForState` from `../agent/dispatch.js`
+
+**Files created:** `packages/backend/src/agent/dispatch.ts`
+**Files modified:** `packages/backend/src/routes/work-items.ts`
+
+**Notes:** Backend build: 0 errors. Dispatch is non-blocking — the PATCH response returns immediately, execution spawns in background. Error in dispatch is logged but doesn't fail the PATCH request.
+
+---
+
 ## 2026-03-29 — Review: A.9 (approved)
 
 **Reviewed:** Execution lifecycle — `packages/backend/src/agent/execution-manager.ts`.
