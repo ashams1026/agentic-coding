@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — Review: E.2 (approved)
+
+**Reviewed:** WS→Query cache invalidation — `use-ws-sync.ts`.
+- `state_change` → `["workItems"]` + `["dashboardStats"]` (fixes stale `["stories"]`/`["tasks"]`) ✓
+- `comment_created` → `["comments"]` ✓
+- `agent_started`/`agent_completed`/`execution_update` → `["executions"]` + `["dashboardStats"]` ✓
+- `proposal_created`/`proposal_updated` → `["proposals"]` + `["dashboardStats"]` ✓
+- `cost_update` → `["dashboardStats"]` + `["costSummary"]` ✓
+- All keys cross-checked against `query-keys.ts` — prefix matching covers all variants ✓
+- 8 of 9 event types handled (`agent_output_chunk` correctly omitted — streaming, not cache) ✓
+- Hook wired in RootLayout, cleanup via `return unsub` ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — E.2: Wire TanStack Query cache invalidation to WebSocket events
 
 **Task:** Subscribe to WS events and invalidate the correct TanStack Query cache keys for reactive UI updates.
