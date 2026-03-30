@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: W.2 (approved)
+
+**Reviewed:** API key wiring in `claude-executor.ts`.
+- `loadConfig()` called fresh at start of every `spawn()` — not cached ✓
+- Empty key guard: yields error event with "Anthropic API key not configured. Go to Settings → API Keys." and returns ✓
+- Error code `"no_api_key"` — specific, identifiable ✓
+- `process.env["ANTHROPIC_API_KEY"]` set before `query()` call ✓
+- Error flows through existing pipeline: execution → failed → WS broadcast → toast ✓
+- Minimal, focused change — import + 11 lines in spawn() ✓
+- Build: 0 errors, Tests: 159/159
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — W.2: Wire API key into agent executor
 
 **Task:** Read API key from config on each execution. Reject with clear error if not configured.
