@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: O.6 (approved)
+
+**Reviewed:** TanStack Query hooks — query-keys.ts, use-work-items.ts, use-persona-assignments.ts, use-comments.ts, use-executions.ts, use-proposals.ts, index.ts.
+- All requirements met: WorkItem hooks replace Story/Task hooks, persona assignments added, workflow/trigger hooks removed
+- useWorkItems supports parentId and projectId filters
+- useUpdateWorkItem has proper optimistic updates with rollback
+- Query keys correctly structured for cache invalidation
+- Old files (use-stories.ts, use-tasks.ts, use-workflows.ts) confirmed deleted
+- No type errors in hooks directory
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.6: Refactor TanStack Query hooks
 
 **Task:** Replace useStories/useTasks/useWorkflows/useTriggers with WorkItem hooks.
