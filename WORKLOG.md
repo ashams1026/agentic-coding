@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-03-30 — Review: D.6 (approved)
+
+**Reviewed:** Agent personas documentation — definition, 5 built-in personas, custom personas, prompt layering, tool allowlists, Router.
+- Persona interface: all 10 fields match `entities.ts:83-97` ✓
+- Product Manager: ID `ps-pm00001`, sonnet, `#7c3aed`, $50, 4 Claude tools, 2 MCP tools — all match seed.ts ✓
+- Tech Lead: ID `ps-tl00001`, opus, `#2563eb`, $100, 5 Claude tools, 3 MCP tools — all match seed.ts ✓
+- Engineer: ID `ps-en00001`, sonnet, `#059669`, $200, 7 Claude tools, 3 MCP tools — all match seed.ts ✓
+- Code Reviewer: ID `ps-rv00001`, sonnet, `#d97706`, $50, 4 Claude tools, 3 MCP tools — all match seed.ts ✓
+- Router: ID `ps-rt00001`, haiku, `#6366f1`, $10, 3 MCP tools (as allowedTools), `isSystem: true` — all match seed.ts ✓
+- System prompt layering: 4 layers match `buildSystemPrompt()` in claude-executor.ts exactly ✓
+- Layer details: project name/path/description/patterns, work item title/id/state/description/parentChain/inheritedContext, execution history with outcome+summary+rejectionPayload ✓
+- Router tools: `ROUTER_TOOLS` in router.ts = `["list_items","get_context","route_to_state"]` ✓
+- Router lazy creation: `getOrCreateRouterPersona()` described correctly ✓
+- MCP tool names: all 7 from `TOOL_NAMES` in mcp-server.ts present ✓
+- ALLOWED_TOOLS env var enforcement documented ✓
+- Router comparison table: trigger, model, tools, budget, settings, creation all accurate ✓
+- Custom persona CRUD: UI and API examples ✓
+- Persona assignment: composite key `(projectId, stateName)` ✓
+- Source files table: 6 files, all correct ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — D.6: Document the agent personas
 
 **Task:** Create `docs/personas.md` with persona definition, 5 built-in personas, custom personas, prompt layering, MCP allowlists, Router as special persona.
