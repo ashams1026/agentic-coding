@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: W.3 (approved)
+
+**Reviewed:** Project CRUD routes, settings UI wiring, sidebar project switcher.
+- Backend: 5 CRUD routes with proper serialization, error codes, 201/204/400/404 ✓
+- POST/PATCH: `existsSync()` path validation, 400 with descriptive message ✓
+- POST: validates name/path non-empty ✓
+- Sidebar: `useProjects()` populates Select, collapsed tooltip, "No projects" fallback ✓
+- Settings form: `formError` state, `onSuccess`/`onError` mutation callbacks, inline error with icon ✓
+- Error cleared on cancel and new submission ✓
+- Build: 0 errors, Tests: 159/159
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — W.3: Wire project CRUD in settings
 
 **Task:** Create backend project CRUD routes with path validation. Wire settings Projects section and sidebar project switcher to real API.
