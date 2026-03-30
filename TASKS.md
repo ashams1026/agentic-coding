@@ -22,7 +22,7 @@
 
 - [x] **Q.7** — Test work-item-edges routes. In `packages/backend/src/routes/__tests__/work-item-edges.test.ts`: test create edge (depends_on, blocks, related_to), list edges for a work item, delete edge. Test cycle detection — creating A→B→C→A should fail.
 
-- [ ] **Q.8** — Test dashboard aggregate routes. In `packages/backend/src/routes/__tests__/dashboard.test.ts`: test stats endpoint returns correct counts (active agents, pending proposals, blocked items, today's cost). Test with empty DB (all zeros). Test with seeded data (verify aggregation logic).
+- [review] **Q.8** — Test dashboard aggregate routes. In `packages/backend/src/routes/__tests__/dashboard.test.ts`: test stats endpoint returns correct counts (active agents, pending proposals, blocked items, today's cost). Test with empty DB (all zeros). Test with seeded data (verify aggregation logic).
 
 ### Agent Logic Unit Tests
 

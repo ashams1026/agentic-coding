@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — Q.8: Test dashboard aggregate routes
+
+**Task:** Integration tests for dashboard stats, cost summary, execution stats, and ready work endpoints.
+
+**Done:**
+- Created `packages/backend/src/routes/__tests__/dashboard.test.ts` with 7 tests:
+  - Empty DB: stats returns all zeros, execution-stats returns all zeros, ready-work returns empty
+  - Seeded DB: stats returns correct counts (1 active agent, 0 pending proposals, 0 blocked, 0 today's cost)
+  - Seeded DB: cost-summary returns 7-day daily spend array with correct shape
+  - Seeded DB: execution-stats returns 3 completed runs, 145 total cost, 100% success rate
+  - Seeded DB: ready-work returns items in Ready state with persona info
+
+**Files created:** `packages/backend/src/routes/__tests__/dashboard.test.ts`
+
+**Notes:** Build: 0 errors, 100 tests pass. Two describe blocks: empty DB (no seed) tests zero baselines, seeded DB verifies aggregation logic against known seed data. Today's cost is 0 because seeded executions are dated March 25-28.
+
+---
+
 ## 2026-03-30 — Review: Q.7 (approved)
 
 **Reviewed:** Work-item-edges route tests — `packages/backend/src/routes/__tests__/work-item-edges.test.ts`.
