@@ -56,7 +56,7 @@ function AgentCard({ execution, persona, onClick }: AgentCardProps) {
             {persona?.name ?? "Agent"}
           </p>
           <p className="truncate text-xs text-muted-foreground">
-            {execution.summary || `Working on ${execution.targetType}...`}
+            {execution.summary || "Working on work item..."}
           </p>
           <p className="text-xs text-muted-foreground/70 mt-0.5">
             {elapsed}

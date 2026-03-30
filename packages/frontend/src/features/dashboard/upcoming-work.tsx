@@ -1,34 +1,20 @@
 import { Link } from "react-router";
-import { Bot, ArrowRight, GitBranch, CheckCircle2 } from "lucide-react";
+import { Bot, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { useReadyWork, useTaskEdges } from "@/hooks";
-import type { ReadyWorkItem, TaskEdge } from "@agentops/shared";
-
-// ── Dependency status helper ─────────────────────────────────────
-
-function getDependencyStatus(
-  taskId: string,
-  edges: TaskEdge[],
-): "none" | "has_deps" {
-  const incoming = edges.filter((e) => e.toId === taskId);
-  if (incoming.length === 0) return "none";
-  return "has_deps";
-}
+import { useReadyWork } from "@/hooks";
+import type { ReadyWorkItem } from "@agentops/shared";
 
 // ── Work item row ────────────────────────────────────────────────
 
 interface WorkItemRowProps {
   item: ReadyWorkItem;
-  edges: TaskEdge[];
 }
 
-function WorkItemRow({ item, edges }: WorkItemRowProps) {
-  const depStatus = getDependencyStatus(item.task.id, edges);
-
+function WorkItemRow({ item }: WorkItemRowProps) {
   return (
     <Link
-      to={`/tasks/${item.task.id}`}
+      to="/items"
       className="flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-accent/50"
     >
       {/* Persona avatar or generic icon */}
@@ -48,11 +34,11 @@ function WorkItemRow({ item, edges }: WorkItemRowProps) {
         />
       </div>
 
-      {/* Task info */}
+      {/* Item info */}
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm">{item.task.title}</p>
+        <p className="truncate text-sm">{item.workItem.title}</p>
         <p className="truncate text-xs text-muted-foreground">
-          {item.story.title}
+          {item.workItem.currentState}
         </p>
       </div>
 
@@ -63,11 +49,7 @@ function WorkItemRow({ item, edges }: WorkItemRowProps) {
             {item.persona.name}
           </Badge>
         )}
-        {depStatus === "has_deps" ? (
-          <GitBranch className="h-3.5 w-3.5 text-amber-500" />
-        ) : (
-          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-        )}
+        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
       </div>
     </Link>
   );
@@ -77,10 +59,8 @@ function WorkItemRow({ item, edges }: WorkItemRowProps) {
 
 export function UpcomingWork() {
   const { data: readyWork } = useReadyWork();
-  const { data: edges } = useTaskEdges();
 
   const items = readyWork ?? [];
-  const allEdges = edges ?? [];
 
   return (
     <Card>
@@ -100,16 +80,15 @@ export function UpcomingWork() {
         {items.length === 0 ? (
           <div className="flex items-center justify-center py-6">
             <p className="text-sm text-muted-foreground">
-              No tasks ready for dispatch
+              No work items ready for dispatch
             </p>
           </div>
         ) : (
           <div className="space-y-1">
             {items.map((item) => (
               <WorkItemRow
-                key={item.task.id}
+                key={item.workItem.id}
                 item={item}
-                edges={allEdges}
               />
             ))}
           </div>

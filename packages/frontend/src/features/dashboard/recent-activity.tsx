@@ -93,31 +93,24 @@ function useActivityEvents(): ActivityEvent[] {
         events.push({
           id: `exec-${exec.id}`,
           type: "agent_completed",
-          description: exec.summary || `Agent completed ${exec.targetType}`,
+          description: exec.summary || "Agent completed work item",
           personaId: exec.personaId,
-          targetPath:
-            exec.targetType === "story"
-              ? `/stories/${exec.targetId}`
-              : `/tasks/${exec.targetId}`,
+          targetPath: "/items",
           timestamp: exec.completedAt ?? exec.startedAt,
         });
       }
     }
   }
 
-  // Comment events from fixture comments (non-system)
+  // Comment events from fixture comments
   for (const comment of fixtures.comments) {
     if (comment.authorType === "system") {
-      // System comments are state changes
       events.push({
         id: `sc-${comment.id}`,
         type: "state_change",
         description: comment.content,
         personaId: null,
-        targetPath:
-          comment.targetType === "story"
-            ? `/stories/${comment.targetId}`
-            : `/tasks/${comment.targetId}`,
+        targetPath: "/items",
         timestamp: comment.createdAt,
       });
     } else {
@@ -126,10 +119,7 @@ function useActivityEvents(): ActivityEvent[] {
         type: "comment_posted",
         description: `${comment.authorName}: ${comment.content.slice(0, 80)}${comment.content.length > 80 ? "..." : ""}`,
         personaId: comment.authorId,
-        targetPath:
-          comment.targetType === "story"
-            ? `/stories/${comment.targetId}`
-            : `/tasks/${comment.targetId}`,
+        targetPath: "/items",
         timestamp: comment.createdAt,
       });
     }
@@ -141,12 +131,9 @@ function useActivityEvents(): ActivityEvent[] {
       events.push({
         id: `prop-${proposal.id}`,
         type: "proposal_created",
-        description: `New ${proposal.type.replace("_", " ")} proposal`,
+        description: `New ${proposal.type.replace(/_/g, " ")} proposal`,
         personaId: null,
-        targetPath:
-          proposal.parentType === "story"
-            ? `/stories/${proposal.parentId}`
-            : `/tasks/${proposal.parentId}`,
+        targetPath: "/items",
         timestamp: proposal.createdAt,
       });
     }
@@ -163,18 +150,15 @@ function useActivityEvents(): ActivityEvent[] {
 // ── Live WS events for dashboard ─────────────────────────────────
 
 function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
-  const targetPath = (type: "story" | "task", id: string) =>
-    type === "story" ? `/stories/${id}` : `/tasks/${id}`;
-
   switch (event.type) {
     case "agent_started": {
       const e = event as AgentStartedEvent;
       return {
         id: `live-started-${e.executionId}-${Date.now()}`,
-        type: "agent_completed", // reuse icon
-        description: `Agent started: ${e.taskTitle}`,
+        type: "agent_completed",
+        description: `Agent started: ${e.workItemTitle}`,
         personaId: e.personaId,
-        targetPath: targetPath(e.targetType, e.targetId),
+        targetPath: "/items",
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -184,9 +168,9 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
       return {
         id: `live-completed-${e.executionId}-${Date.now()}`,
         type: "agent_completed",
-        description: `Agent completed ${e.targetType} ($${e.costUsd.toFixed(2)})`,
+        description: `Agent completed work item ($${e.costUsd.toFixed(2)})`,
         personaId: e.personaId,
-        targetPath: targetPath(e.targetType, e.targetId),
+        targetPath: "/items",
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -194,11 +178,11 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
     case "state_change": {
       const e = event as StateChangeEvent;
       return {
-        id: `live-state-${e.targetId}-${Date.now()}`,
+        id: `live-state-${e.workItemId}-${Date.now()}`,
         type: "state_change",
-        description: `${e.targetType} moved to ${e.toState}`,
+        description: `Work item moved to ${e.toState}`,
         personaId: null,
-        targetPath: targetPath(e.targetType, e.targetId),
+        targetPath: "/items",
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -210,7 +194,7 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
         type: "comment_posted",
         description: `${e.authorName}: ${e.contentPreview}`,
         personaId: null,
-        targetPath: targetPath(e.targetType, e.targetId),
+        targetPath: "/items",
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -222,7 +206,7 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
         type: "proposal_created",
         description: `New ${e.proposalType.replace(/_/g, " ")} proposal`,
         personaId: null,
-        targetPath: targetPath(e.parentType, e.parentId),
+        targetPath: "/items",
         timestamp: e.timestamp,
         isLive: true,
       };

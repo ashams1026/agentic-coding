@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — O.14: Update dashboard for WorkItem model
+
+**Task:** Replace story/task references in dashboard with work item, update upcoming work and activity feed.
+
+**Done:**
+- Rewrote `features/dashboard/upcoming-work.tsx`: replaced `useTaskEdges`/`TaskEdge` with simple ReadyWorkItem, `item.task` → `item.workItem`, `item.story` removed, links point to `/items`, removed dependency status helper
+- Rewrote `features/dashboard/recent-activity.tsx`: replaced all `exec.targetType`/`exec.targetId` with workItemId-based logic, removed `targetType` from WS event handlers, all target paths → `/items`, replaced "story/task" language with "work item" in descriptions
+- Fixed `features/dashboard/active-agents-strip.tsx`: replaced `execution.targetType` with static "work item" text
+
+**Files modified:** `features/dashboard/upcoming-work.tsx`, `features/dashboard/recent-activity.tsx`, `features/dashboard/active-agents-strip.tsx`
+
+**Notes:** All dashboard components compile clean. useDashboardStats hook already works with WorkItem model (updated in O.5). WS event mapping uses new field names (workItemId, workItemTitle).
+
+---
+
 ## 2026-03-29 — Review: O.13 (approved)
 
 **Reviewed:** Router cleanup — `router.tsx`, `dashboard.tsx`, `upcoming-work.tsx`.
