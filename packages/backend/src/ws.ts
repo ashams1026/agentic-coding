@@ -26,6 +26,21 @@ export function getClientCount(): number {
 }
 
 /**
+ * Close all connected WebSocket clients with code 1001 (Going Away).
+ * Used during graceful shutdown.
+ */
+export function closeAllClients(): void {
+  for (const client of clients) {
+    try {
+      client.close(1001, "Server shutting down");
+    } catch {
+      // Client may already be closed
+    }
+  }
+  clients.clear();
+}
+
+/**
  * Register the WebSocket plugin and /ws route on the Fastify instance.
  */
 export async function registerWebSocket(app: FastifyInstance): Promise<void> {

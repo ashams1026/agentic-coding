@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — S.2: Add graceful shutdown handling
+
+**Task:** Handle SIGTERM/SIGINT with graceful shutdown (drain executions, close WS/DB), add enhanced `/api/health` endpoint.
+
+**Done:**
+- **`start.ts`** — Added `gracefulShutdown()` function: closes server (stop accepting connections), closes all WS clients with 1001, waits for active executions to drain (30s timeout, 500ms poll interval), closes SQLite database, logs shutdown reason and duration. Double-shutdown guard via `shuttingDown` flag. Signal handlers registered after server build, before listen.
+- **`ws.ts`** — Added `closeAllClients()` export: iterates all connected clients, calls `client.close(1001, "Server shutting down")`, clears the set.
+- **`server.ts`** — Enhanced health endpoint at `/api/health` returning `{ status, uptime, activeExecutions, version }`. Kept legacy `/health` with same response for backwards compat. Imported `getActiveCount` from concurrency module.
+- **`cli.ts`** — Removed SIGINT/SIGTERM handlers from `startCommand` (start.ts handles signals now for graceful shutdown). CLI keeps only `process.on("exit")` for PID cleanup. Updated status command to hit `/api/health`.
+
+**Files modified:** `packages/backend/src/start.ts`, `packages/backend/src/ws.ts`, `packages/backend/src/server.ts`, `packages/backend/src/cli.ts`
+
+**Notes:** Build: 0 errors. Tests: 156/156. The `waitForExecutions()` helper polls `getActiveCount()` every 500ms until 0 or 30s timeout. On timeout, logs a warning and continues shutdown (force-kill). Version is hardcoded as "0.0.1" — can be made dynamic later.
+
+---
+
 ## 2026-03-30 — Review: S.1 (approved)
 
 **Reviewed:** CLI entry point — `cli.ts`, `start.ts`, `index.ts`, `package.json`.

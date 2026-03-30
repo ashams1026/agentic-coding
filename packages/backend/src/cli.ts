@@ -66,18 +66,11 @@ async function startCommand(): Promise<void> {
   }
   removePid();
 
-  // Write PID and register cleanup
+  // Write PID and register cleanup on exit.
+  // Signal handlers (SIGINT/SIGTERM) are registered by startServer()
+  // for graceful shutdown — the exit event fires after that completes.
   writePid(process.pid);
-  const cleanup = () => removePid();
-  process.on("exit", cleanup);
-  process.on("SIGINT", () => {
-    cleanup();
-    process.exit(0);
-  });
-  process.on("SIGTERM", () => {
-    cleanup();
-    process.exit(0);
-  });
+  process.on("exit", () => removePid());
 
   console.log(`Starting AgentOps on port ${DEFAULT_PORT}...`);
   const { startServer } = await import("./start.js");
@@ -113,7 +106,7 @@ async function statusCommand(): Promise<void> {
 
   // Try to fetch live stats from the health endpoint
   try {
-    const res = await fetch(`http://localhost:${DEFAULT_PORT}/health`);
+    const res = await fetch(`http://localhost:${DEFAULT_PORT}/api/health`);
     if (res.ok) {
       const data = (await res.json()) as Record<string, unknown>;
       if (data["uptime"] !== undefined) console.log(`Uptime: ${data["uptime"]}s`);

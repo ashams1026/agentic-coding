@@ -9,6 +9,7 @@ import { executionRoutes } from "./routes/executions.js";
 import { proposalRoutes } from "./routes/proposals.js";
 import { dashboardRoutes } from "./routes/dashboard.js";
 import { registerWebSocket } from "./ws.js";
+import { getActiveCount } from "./agent/concurrency.js";
 
 export async function buildServer() {
   const server = Fastify({
@@ -27,9 +28,24 @@ export async function buildServer() {
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
   });
 
-  // Health check
+  // Health check — enhanced with uptime, active executions, version
+  server.get("/api/health", async () => {
+    return {
+      status: "ok",
+      uptime: Math.floor(process.uptime()),
+      activeExecutions: getActiveCount(),
+      version: "0.0.1",
+    };
+  });
+
+  // Legacy health check (keep for backwards compat)
   server.get("/health", async () => {
-    return { status: "ok", timestamp: new Date().toISOString() };
+    return {
+      status: "ok",
+      uptime: Math.floor(process.uptime()),
+      activeExecutions: getActiveCount(),
+      version: "0.0.1",
+    };
   });
 
   // WebSocket
