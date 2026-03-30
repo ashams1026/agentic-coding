@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — AI.11: Write test plans for cross-cutting concerns
+
+**Task:** Create test plans for sidebar navigation, dark mode/theme switching, and keyboard shortcuts/command palette.
+
+**Done:**
+- **`tests/e2e/plans/navigation.md`** — 19 steps: navigate to `/`, verify 6 sidebar nav items (Dashboard `/`, Work Items `/items`, Agent Monitor `/agents`, Activity Feed `/activity`, Personas `/personas`, Settings `/settings`), click each → correct page + active highlight (`isActive ? "bg-accent"` from `NavLink`), project switcher dropdown at top, collapse button (tooltip "Collapse sidebar" → `PanelLeftClose`) → icon-only mode with tooltips (`TooltipContent side="right"`), expand back (tooltip "Expand sidebar" → `PanelLeft`), emulate mobile → hamburger `Menu` icon in `md:hidden` top bar with "AgentOps" text, click → sidebar slides in as overlay (`translate-x-0`), nav click auto-closes (`setMobileSidebarOpen(false)` on `location.pathname`), click dark backdrop dismisses.
+- **`tests/e2e/plans/dark-mode.md`** — 19 steps: locate theme toggle in sidebar footer (cycles `themeOrder`: system/Monitor → light/Sun → dark/Moon), tooltip "Theme: {themeLabel}" for each, verify Light mode (light backgrounds, dark text across Dashboard), verify Dark mode (dark backgrounds, light text, `dark` class on `documentElement` via `useThemeSync`), navigate Work Items/Agent Monitor/Activity Feed/Personas/Settings in dark mode checking contrast, switch to System mode (follows OS preference via `matchMedia`), Settings → Appearance Theme section (3 cards Light/Dark/System matching `THEME_OPTIONS`), click card → immediate theme change, verify sidebar toggle syncs with settings.
+- **`tests/e2e/plans/keyboard-shortcuts.md`** — 17 steps: press Cmd+K (`metaKey || ctrlKey` + "k" in global `keydown` listener) → `Dialog` opens, search input with placeholder "Type a command or search..." (auto-focused), "ESC" `kbd` badge, 3 categories (NAVIGATION 7 items from `NAV_ITEMS`, QUICK ACTIONS 2 from `ACTION_ITEMS`, WORK ITEMS from `useWorkItems` query), first item highlighted by default (`selectedIndex: 0`), footer "↑↓ navigate / ↵ select / esc close", type to filter (`query.toLowerCase().includes`), "No results found." for non-matching, ArrowDown/ArrowUp keyboard nav, Enter selects + navigates + closes, click item navigates, Escape closes, reopen resets query.
+
+**Files created:** `tests/e2e/plans/navigation.md`, `tests/e2e/plans/dark-mode.md`, `tests/e2e/plans/keyboard-shortcuts.md`
+
+**Notes:** Plans reference actual source: `sidebar.tsx` (6 `navItems`, `themeOrder`/`themeIcon`/`themeLabel`, `toggleSidebar`, `mobileSidebarOpen`, `PanelLeftClose`/`PanelLeft`, `NavLink` with `isActive`), `use-theme.ts` (`useThemeSync` with `classList.toggle("dark")`, `matchMedia` for system), `command-palette.tsx` (`Dialog`, `NAV_ITEMS` 7 items, `ACTION_ITEMS` 2 items, `CATEGORY_LABELS`, keyboard handler ArrowUp/Down/Enter/Escape, `flatItems` filter by `query.toLowerCase()`), `root-layout.tsx` (mobile `Menu` hamburger in `md:hidden` top bar). Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: AI.10 (approved)
 
 **Reviewed:** Persona Manager test plan.
