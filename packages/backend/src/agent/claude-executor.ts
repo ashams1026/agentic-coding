@@ -13,6 +13,79 @@ import type {
 } from "./types.js";
 import type { Persona, Project } from "@agentops/shared";
 
+// ── System prompt assembly ────────────────────────────────────────
+
+export function buildSystemPrompt(
+  persona: Persona,
+  task: AgentTask,
+  project: Project,
+): string {
+  const sections: string[] = [];
+
+  // (1) Persona identity
+  if (persona.systemPrompt) {
+    sections.push(persona.systemPrompt);
+  }
+
+  // (2) Project context
+  sections.push(
+    [
+      `## Project: ${project.name}`,
+      `Working directory: ${project.path}`,
+      project.settings.description
+        ? `Description: ${project.settings.description}`
+        : null,
+      project.settings.patterns
+        ? `Key patterns: ${project.settings.patterns}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join("\n"),
+  );
+
+  // (3) Work item context
+  const workItemLines = [
+    `## Work Item: ${task.context.title}`,
+    `ID: ${task.workItemId}`,
+    `State: ${task.context.currentState}`,
+  ];
+  if (task.context.description) {
+    workItemLines.push(`Description: ${task.context.description}`);
+  }
+  if (task.context.parentChain.length > 0) {
+    workItemLines.push(
+      `Parent chain: ${task.context.parentChain.map((p) => `${p.title} (${p.id})`).join(" → ")}`,
+    );
+  }
+  if (Object.keys(task.context.inheritedContext).length > 0) {
+    workItemLines.push(
+      `Inherited context: ${JSON.stringify(task.context.inheritedContext)}`,
+    );
+  }
+  sections.push(workItemLines.join("\n"));
+
+  // (4) Execution history
+  if (task.executionHistory.length > 0) {
+    const historyLines = ["## Previous Executions"];
+    for (const entry of task.executionHistory) {
+      historyLines.push(
+        `- [${entry.outcome}] ${entry.summary}`,
+      );
+      if (entry.rejectionPayload) {
+        historyLines.push(
+          `  Rejection: ${entry.rejectionPayload.reason} (severity: ${entry.rejectionPayload.severity})`,
+        );
+        if (entry.rejectionPayload.hint) {
+          historyLines.push(`  Hint: ${entry.rejectionPayload.hint}`);
+        }
+      }
+    }
+    sections.push(historyLines.join("\n"));
+  }
+
+  return sections.join("\n\n");
+}
+
 // ── Model mapping ─────────────────────────────────────────────────
 
 const MODEL_MAP: Record<string, string> = {
@@ -103,7 +176,7 @@ export class ClaudeExecutor implements AgentExecutor {
           abortController,
           cwd: project.path,
           model: resolveModel(options.model),
-          systemPrompt: persona.systemPrompt,
+          systemPrompt: buildSystemPrompt(persona, task, project),
           permissionMode: "bypassPermissions",
           allowDangerouslySkipPermissions: true,
           maxTurns: 30,

@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-29 — A.8: Implement system prompt assembly
+
+**Task:** Build layered system prompt from persona, project, work item context, and execution history.
+
+**Done:**
+- Added `buildSystemPrompt(persona, task, project)` function to `claude-executor.ts`:
+  - Layer 1: persona.systemPrompt (role identity) — included if non-empty
+  - Layer 2: project context — name, path, description/patterns from settings
+  - Layer 3: work item context — title, ID, state, description, parent chain with IDs, inherited context as JSON
+  - Layer 4: execution history — outcome + summary per entry, rejection details (reason, severity, hint) if present
+  - Sections joined with double newlines for readability
+- Wired into `spawn()`: replaced `persona.systemPrompt` with `buildSystemPrompt(persona, task, project)`
+
+**Files modified:** `packages/backend/src/agent/claude-executor.ts`
+
+**Notes:** Backend build: 0 errors. The function is exported for potential reuse (e.g., router agent in A.11). Project settings.description and settings.patterns are optional — only included if set.
+
+---
+
 ## 2026-03-29 — Review: A.7 (approved)
 
 **Reviewed:** Claude Agent SDK executor — `packages/backend/src/agent/claude-executor.ts`.
