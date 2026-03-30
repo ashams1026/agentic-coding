@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — S.4: Create pm2 ecosystem config
+
+**Task:** Create `ecosystem.config.cjs` with pm2 app config and add service management scripts to root package.json.
+
+**Done:**
+- **`ecosystem.config.cjs`** — CJS format (pm2 requires it). App name "agentops", script `packages/backend/dist/index.js`, cwd set to monorepo root via `__dirname`. Env: NODE_ENV=production, PORT=3001. Logs to `~/.agentops/logs/agentops-{out,error}.log` with date format. Restart policy: max 3 restarts, min 60s uptime, 1s delay, autorestart true. `kill_timeout: 35000` (30s graceful shutdown + 5s buffer). `watch: false`.
+- **`package.json`** — Added 5 service scripts: `service:start` (pm2 start), `service:stop` (pm2 stop), `service:restart` (pm2 restart), `service:status` (pm2 show), `service:logs` (pm2 logs --lines 100).
+
+**Files created:** `ecosystem.config.cjs`
+**Files modified:** `package.json`
+
+**Notes:** Build: 0 errors. Tests: 159/159. Config validated via Node require(). Using CJS because pm2 doesn't support ESM config files. The `kill_timeout` of 35s aligns with the 30s graceful shutdown timeout in `start.ts`.
+
+---
+
 ## 2026-03-30 — Review: S.3 (approved)
 
 **Reviewed:** Production-grade crash recovery — `start.ts`, `startup-cleanup.test.ts`.

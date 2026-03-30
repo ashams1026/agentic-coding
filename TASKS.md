@@ -32,7 +32,7 @@
 
 ### pm2 Service Management
 
-- [ ] **S.4** — Create pm2 ecosystem config. Create `ecosystem.config.cjs` at monorepo root: app name "agentops", script points to compiled backend (`packages/backend/dist/index.js`), `cwd` set to monorepo root, env vars (NODE_ENV=production, PORT=3001), log file paths (`~/.agentops/logs/`), restart policy (max 3 restarts in 60s, then stop), `watch: false`. Add `"service:start"`, `"service:stop"`, `"service:status"`, `"service:logs"` scripts to root `package.json` wrapping pm2 commands.
+- [review] **S.4** — Create pm2 ecosystem config. Create `ecosystem.config.cjs` at monorepo root: app name "agentops", script points to compiled backend (`packages/backend/dist/index.js`), `cwd` set to monorepo root, env vars (NODE_ENV=production, PORT=3001), log file paths (`~/.agentops/logs/`), restart policy (max 3 restarts in 60s, then stop), `watch: false`. Add `"service:start"`, `"service:stop"`, `"service:status"`, `"service:logs"` scripts to root `package.json` wrapping pm2 commands.
 
 - [ ] **S.5** — Create install/setup script. Create `scripts/setup.sh` (or `packages/backend/src/cli-setup.ts`): check Node >= 22, check pnpm installed, run `pnpm install`, run `pnpm build`, create `~/.agentops/` directory (config, logs, data), initialize SQLite database at `~/.agentops/data/agentops.db`, run migrations, seed with default personas (PM, Tech Lead, Engineer, Reviewer, Router). Print setup summary and next steps. Make the DB path configurable via env var `AGENTOPS_DB_PATH` (default `~/.agentops/data/agentops.db`).
 

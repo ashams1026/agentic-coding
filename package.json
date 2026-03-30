@@ -16,7 +16,12 @@
     "format:check": "prettier --check \"packages/*/src/**/*.{ts,tsx}\"",
     "typecheck": "pnpm -r typecheck",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "service:start": "pm2 start ecosystem.config.cjs",
+    "service:stop": "pm2 stop agentops",
+    "service:restart": "pm2 restart agentops",
+    "service:status": "pm2 show agentops",
+    "service:logs": "pm2 logs agentops --lines 100"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
