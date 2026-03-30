@@ -170,3 +170,23 @@
 
 ### Backend Scoping Audit (PS.9)
 - [x] **PS.9** — Verified all 8 list routes have ?projectId= filtering. No fixes needed. *(completed 2026-03-30)*
+
+---
+
+## Backlog: Quick Fixes — completed 2026-03-30
+
+- [x] **QF.1** — Add API mode toggle to status bar (Mock/Live with amber/green indicators) and Settings → Appearance. Health check on switch to Live, toast + revert on failure. *(completed 2026-03-30)*
+
+---
+
+## Sprint 16: AI-Based E2E Testing — Phase 1: Generate Test Plans (AI.1–AI.9) — completed 2026-03-30
+
+- [x] **AI.1** — Test plan directory structure and template (`tests/e2e/plans/`, README, `_template.md`). *(completed 2026-03-30)*
+- [x] **AI.2** — Dashboard test plans (`dashboard-stats.md`, `dashboard-navigation.md`). *(completed 2026-03-30)*
+- [x] **AI.3** — Work Items List View test plans (`work-items-list-view.md`, `work-items-create.md`). *(completed 2026-03-30)*
+- [x] **AI.4** — Work Items Flow View test plan (`work-items-flow-view.md`). *(completed 2026-03-30)*
+- [x] **AI.5** — Detail Panel test plans (`detail-panel-view.md`, `detail-panel-edit.md`). *(completed 2026-03-30)*
+- [x] **AI.6** — Filtering and Search test plans (`work-items-filtering.md`, `work-items-sorting.md`). *(completed 2026-03-30)*
+- [x] **AI.7** — Agent Monitor test plans (`agent-monitor-layout.md`, `agent-monitor-history.md`). *(completed 2026-03-30)*
+- [x] **AI.8** — Activity Feed test plan (`activity-feed.md`). *(completed 2026-03-30)*
+- [x] **AI.9** — Settings test plans (`settings-projects.md`, `settings-workflow.md`, `settings-appearance.md`). *(completed 2026-03-30)*

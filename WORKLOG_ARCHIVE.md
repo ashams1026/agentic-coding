@@ -189,6 +189,6 @@
 
 ---
 
-## Sprint 15: PS.1 (early entry) — archived 2026-03-30
+## Sprint 15: Project Scoping (PS.1–PS.10) — archived 2026-03-30
 
-*PS.1 (work + review approved):* Wire project switcher — controlled Select in sidebar wired to `selectedProjectId`/`setSelectedProjectId` from `useUIStore`, auto-select first project on load via useEffect, collapsed sidebar tooltip shows selected project. Persistence via existing Zustand persist config. Files: `sidebar.tsx`.
+*PS.1:* Wire project switcher — Select in sidebar wired to useUIStore. *PS.2:* useSelectedProject hook + useProject null-safety. *PS.3:* Scope useWorkItems() to selected project (10 call sites). *PS.4:* Scope dashboard queries (4 backend routes + hooks + call sites). *PS.5:* Scope executions/comments/proposals (3 backend routes + hooks + 9 call sites). *PS.6:* Scope persona assignments, remove hardcoded project IDs. *PS.7:* Empty states for new projects. *PS.8:* Auto-seed 5 default personas on project creation. *PS.9:* Audit all 8 backend routes — all had projectId filtering, no fixes needed. *PS.10:* Folder browser modal for project path. All 10 approved.
