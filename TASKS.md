@@ -19,7 +19,7 @@
 
 - [x] **O.12** — Update sidebar navigation. In `packages/frontend/src/components/sidebar.tsx`: replace "Story Board" nav item with "Work Items". Remove "Workflows" nav item (no workflow designer page). Update badge to show pending proposals count on Work Items. Update all route references.
 
-- [ ] **O.13** — Update router. In `packages/frontend/src/router.tsx`: remove `/board`, `/stories/:id`, `/tasks/:id` routes. Add `/items` route pointing to new work items page. Remove workflow designer page import. Update dashboard links.
+- [review] **O.13** — Update router. In `packages/frontend/src/router.tsx`: remove `/board`, `/stories/:id`, `/tasks/:id` routes. Add `/items` route pointing to new work items page. Remove workflow designer page import. Update dashboard links.
 
 ### Dashboard & Activity Feed Updates
 

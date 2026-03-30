@@ -90,10 +90,10 @@ export function UpcomingWork() {
             Upcoming Work
           </p>
           <Link
-            to="/board"
+            to="/items"
             className="flex items-center gap-1 text-xs text-primary hover:underline"
           >
-            View board
+            View items
             <ArrowRight className="h-3 w-3" />
           </Link>
         </div>

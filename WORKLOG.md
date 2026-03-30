@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — O.13: Update router
+
+**Task:** Remove old routes, remove workflow designer import, update dashboard links.
+
+**Done:**
+- Rewrote `packages/frontend/src/router.tsx`: removed `/board`, `/stories/:id`, `/tasks/:id`, `/workflows` routes and their imports (StoryBoardPage, StoryDetailPage, TaskDetailPage, WorkflowDesignerPage). Kept: dashboard, /items, /agents, /activity, /personas, /settings (6 routes)
+- Updated `packages/frontend/src/pages/dashboard.tsx`: changed "Pending Proposals" click from `/board` to `/items`
+- Updated `packages/frontend/src/features/dashboard/upcoming-work.tsx`: changed "View board" link to "View items" at `/items`
+
+**Files modified:** `router.tsx`, `pages/dashboard.tsx`, `features/dashboard/upcoming-work.tsx`
+
+**Notes:** router.tsx and dashboard.tsx compile clean. upcoming-work.tsx has pre-existing type errors from the data model refactor (uses old TaskEdge/ReadyWorkItem.task) — O.14 will fix those.
+
+---
+
 ## 2026-03-29 — Review: O.12 (approved)
 
 **Reviewed:** Sidebar navigation — `sidebar.tsx`.

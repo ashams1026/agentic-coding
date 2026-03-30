@@ -71,7 +71,7 @@ export function DashboardPage() {
           value={isLoading ? "—" : String(pendingProposals)}
           icon={<FileCheck className="h-6 w-6 text-amber-600 dark:text-amber-400" />}
           iconBgClass="bg-amber-100 dark:bg-amber-900/30"
-          onClick={() => navigate("/board")}
+          onClick={() => navigate("/items")}
         />
         <StatCard
           title="Needs Attention"
