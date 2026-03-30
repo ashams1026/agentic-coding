@@ -25,7 +25,7 @@
 
 - [x] **O.14** — Update dashboard for WorkItem model. In dashboard components: replace story/task references with work item. Update `useDashboardStats()` hook to count work items. Update "Upcoming work" widget to show ready work items. Update activity feed events to reference work items.
 
-- [review] **O.15** — Update activity feed for WorkItem model. Replace "story/task" language with "work item" in event descriptions. Add Router decision events (with reasoning). Remove trigger-related event types.
+- [x] **O.15** — Update activity feed for WorkItem model. Replace "story/task" language with "work item" in event descriptions. Add Router decision events (with reasoning). Remove trigger-related event types.
 
 ### Settings: Workflow Configuration
 

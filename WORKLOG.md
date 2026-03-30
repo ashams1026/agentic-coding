@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: O.15 (approved)
+
+**Reviewed:** Activity feed — `activity-feed.tsx`.
+- All 5 requirements met: story/task language replaced, router_decision event added with reasoning, trigger refs removed, WS events use new fields
+- Only remaining "trigger" reference is `triggeredBy` on StateChangeEvent — correct field name
+- Router decision event has Route icon + indigo color + descriptive reasoning text
+- Story filter removed from FilterBar (simplified to persona + date + type)
+- No type errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.15: Update activity feed for WorkItem model
 
 **Task:** Replace story/task language with work item, add Router decision events, remove trigger-related types.
