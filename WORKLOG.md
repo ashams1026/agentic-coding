@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: D.1 (approved)
+
+**Reviewed:** Project README — overview, features, quick start, docs links.
+- One-paragraph overview: clear, concise, covers local-first + workflow + autonomous pipeline ✓
+- 8 key features with bold labels: workflow, personas, hierarchy, monitoring, MCP, cost, memory, local-first ✓
+- Architecture: ASCII package tree with tech stacks per package ✓
+- Quick start: prerequisites (Node 22, pnpm 9), dev + production sections with correct commands ✓
+- Configuration: correct path (`~/.agentops/config.json`), CLI syntax matches `cli.ts` ✓
+- Docs table: all 9 docs/* links matching D.2-D.10 filenames ✓
+- Development commands: 5 standard scripts ✓
+- Concise: 101 lines, no bloat ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — D.1: Write project README
 
 **Task:** Create root README.md with project overview, key features, quick start, docs links.
