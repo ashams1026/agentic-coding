@@ -1,4 +1,5 @@
-import { db, sqlite } from "./connection.js";
+import { db } from "./connection.js";
+import { runMigrations } from "./migrate.js";
 import {
   projects,
   personas,
@@ -60,98 +61,8 @@ function d(iso: string): Date {
 // ── Seed ─────────���────────────────────────────────────────────────
 
 export async function seed() {
-  // Create tables (idempotent via IF NOT EXISTS)
-  sqlite.exec(`
-    CREATE TABLE IF NOT EXISTS projects (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      path TEXT NOT NULL,
-      settings TEXT NOT NULL DEFAULT '{}',
-      created_at INTEGER NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS personas (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      description TEXT NOT NULL DEFAULT '',
-      avatar TEXT NOT NULL,
-      system_prompt TEXT NOT NULL DEFAULT '',
-      model TEXT NOT NULL DEFAULT 'sonnet',
-      allowed_tools TEXT NOT NULL DEFAULT '[]',
-      mcp_tools TEXT NOT NULL DEFAULT '[]',
-      max_budget_per_run INTEGER NOT NULL DEFAULT 0,
-      settings TEXT NOT NULL DEFAULT '{}'
-    );
-    CREATE TABLE IF NOT EXISTS work_items (
-      id TEXT PRIMARY KEY,
-      parent_id TEXT,
-      project_id TEXT NOT NULL REFERENCES projects(id),
-      title TEXT NOT NULL,
-      description TEXT NOT NULL DEFAULT '',
-      context TEXT NOT NULL DEFAULT '{}',
-      current_state TEXT NOT NULL,
-      priority TEXT NOT NULL DEFAULT 'p2',
-      labels TEXT NOT NULL DEFAULT '[]',
-      assigned_persona_id TEXT REFERENCES personas(id),
-      execution_context TEXT NOT NULL DEFAULT '[]',
-      created_at INTEGER NOT NULL,
-      updated_at INTEGER NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS work_item_edges (
-      id TEXT PRIMARY KEY,
-      from_id TEXT NOT NULL REFERENCES work_items(id),
-      to_id TEXT NOT NULL REFERENCES work_items(id),
-      type TEXT NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS persona_assignments (
-      project_id TEXT NOT NULL REFERENCES projects(id),
-      state_name TEXT NOT NULL,
-      persona_id TEXT NOT NULL REFERENCES personas(id),
-      PRIMARY KEY (project_id, state_name)
-    );
-    CREATE TABLE IF NOT EXISTS executions (
-      id TEXT PRIMARY KEY,
-      work_item_id TEXT NOT NULL REFERENCES work_items(id),
-      persona_id TEXT NOT NULL REFERENCES personas(id),
-      status TEXT NOT NULL DEFAULT 'pending',
-      started_at INTEGER NOT NULL,
-      completed_at INTEGER,
-      cost_usd INTEGER NOT NULL DEFAULT 0,
-      duration_ms INTEGER NOT NULL DEFAULT 0,
-      summary TEXT NOT NULL DEFAULT '',
-      outcome TEXT,
-      rejection_payload TEXT,
-      logs TEXT NOT NULL DEFAULT ''
-    );
-    CREATE TABLE IF NOT EXISTS comments (
-      id TEXT PRIMARY KEY,
-      work_item_id TEXT NOT NULL REFERENCES work_items(id),
-      author_type TEXT NOT NULL,
-      author_id TEXT,
-      author_name TEXT NOT NULL,
-      content TEXT NOT NULL,
-      metadata TEXT NOT NULL DEFAULT '{}',
-      created_at INTEGER NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS proposals (
-      id TEXT PRIMARY KEY,
-      execution_id TEXT NOT NULL REFERENCES executions(id),
-      work_item_id TEXT NOT NULL REFERENCES work_items(id),
-      type TEXT NOT NULL,
-      payload TEXT NOT NULL DEFAULT '{}',
-      status TEXT NOT NULL DEFAULT 'pending',
-      created_at INTEGER NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS project_memories (
-      id TEXT PRIMARY KEY,
-      project_id TEXT NOT NULL REFERENCES projects(id),
-      work_item_id TEXT NOT NULL REFERENCES work_items(id),
-      summary TEXT NOT NULL,
-      files_changed TEXT NOT NULL DEFAULT '[]',
-      key_decisions TEXT NOT NULL DEFAULT '[]',
-      created_at INTEGER NOT NULL,
-      consolidated_into TEXT
-    );
-  `);
+  // Ensure tables exist via migrations
+  runMigrations();
 
   // Clear existing data (reverse dependency order)
   await db.delete(projectMemories);

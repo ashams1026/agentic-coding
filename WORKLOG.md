@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-29 — T3.1.3: Set up Drizzle migrations and seed script
+
+**Task:** Configure drizzle-kit for migration generation, create runtime migration runner, wire into server startup and seed.
+
+**Done:**
+- Created `drizzle.config.ts`: SQLite dialect, schema from `src/db/schema.ts`, output to `drizzle/`
+- Created `src/db/migrate.ts`: `runMigrations()` using `drizzle-orm/better-sqlite3/migrator`, also runnable standalone
+- Generated initial migration `drizzle/0000_secret_magneto.sql`: all 9 tables with correct columns, PKs, FKs, defaults
+- Updated `src/index.ts`: runs `runMigrations()` before server start
+- Updated `src/db/seed.ts`: replaced 90-line inline CREATE TABLE SQL with `runMigrations()` call
+- Added 5 npm scripts to `package.json`: `db:generate`, `db:migrate`, `db:push`, `db:seed`, `db:studio`
+- Tested: `DATABASE_URL=":memory:" pnpm db:seed` succeeds end-to-end (migrations + seed)
+
+**Files created:** `drizzle.config.ts`, `src/db/migrate.ts`, `drizzle/0000_secret_magneto.sql`, `drizzle/meta/`
+**Files modified:** `src/index.ts`, `src/db/seed.ts`, `package.json`
+
+**Notes:** Backend typecheck: 0 errors. Full monorepo build: passes. Migration + seed verified working with in-memory DB.
+
+---
+
 ## 2026-03-29 — Review: O.20 (approved after rework)
 
 **Reviewed:** Reworked DELETE handler in `routes/work-items.ts`.

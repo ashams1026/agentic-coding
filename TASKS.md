@@ -10,7 +10,7 @@
 > Resume from T3.1.3 onwards, but with the corrected WorkItem-based schema from Sprint 6.
 > These tasks only make sense AFTER Sprint 6 is complete.
 
-- [ ] **T3.1.3** — Set up Drizzle migrations and seed script (using new WorkItem schema from O.18/O.19)
+- [review] **T3.1.3** — Set up Drizzle migrations and seed script (using new WorkItem schema from O.18/O.19)
 - [ ] **T3.2.5** — Implement comment API routes (updated for workItemId)
 - [ ] **T3.2.7** — Implement persona API routes
 - [ ] **T3.2.8** — Implement execution API routes (updated for workItemId)
