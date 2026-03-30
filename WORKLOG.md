@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: U.6 (approved)
+
+**Reviewed:** Priority dropdown + label editor — `detail-panel.tsx`.
+- PrioritySelector: shadcn Select, 4 options with colored dots, wired to mutate ✓
+- LabelEditor: removable pills (group-hover X), dashed "+ label" add button ✓
+- Inline input: Enter/blur submit, Escape cancel, duplicate prevention ✓
+- Both wired to updateWorkItem.mutate with correct payload shapes ✓
+- priorityOptions array + priorityConfig record derived cleanly ✓
+- Unused pCfg removed, Select imports added ✓
+- Frontend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — U.6: Add priority and label editing to detail panel
 
 **Task:** Replace static priority badge with dropdown, add inline label pill editor.

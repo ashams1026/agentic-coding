@@ -23,7 +23,7 @@
 
 - [x] **U.5** — Add description editing to detail panel. Below the title: add Write/Preview tabs for the description field. Write tab shows a textarea, Preview tab renders markdown. Save/Cancel buttons. Wire to `useUpdateWorkItem` mutation. Reuse the `EditableSection` pattern from the old story-detail if applicable.
 
-- [review] **U.6** — Add priority and label editing to detail panel. Priority: replace static badge with a dropdown selector (P0-P3 with colors). Labels: add an inline pill editor (click to add/remove labels). Both wire to `useUpdateWorkItem` mutation.
+- [x] **U.6** — Add priority and label editing to detail panel. Priority: replace static badge with a dropdown selector (P0-P3 with colors). Labels: add an inline pill editor (click to add/remove labels). Both wire to `useUpdateWorkItem` mutation.
 
 - [ ] **U.7** — Add state transition control to detail panel. Below the state badge: add a dropdown showing valid next states from `getValidTransitions(currentState)`. Selecting a state triggers the transition (with persona prompt if auto-routing is on). Reuse transition prompt modal from the old board view.
 
