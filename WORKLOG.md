@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: A.12 (approved)
+
+**Reviewed:** Wire dispatch and routing into execution lifecycle.
+- Transition rate limiter (canTransition/recordTransition, max 10/hour, in-memory Map with self-cleaning) ✓
+- Execution chain: persona→runRouter vs __router__→dispatchForState ✓
+- canTransition gate on both branches prevents infinite loops ✓
+- PATCH route wiring: non-blocking dispatchForState call ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.12: Wire dispatch and routing into execution lifecycle
 
 **Task:** Connect execution completion → router → dispatch chain with loop guard.
