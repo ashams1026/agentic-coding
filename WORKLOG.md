@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: Q.9 (approved)
+
+**Reviewed:** Concurrency limiter tests — `packages/backend/src/agent/__tests__/concurrency.test.ts`.
+- 14 tests: canSpawn (under/at/over limit + recovery), trackExecution/getActiveCount, enqueue/getQueueLength, onComplete dequeue (null, priority ordering, FIFO) ✓
+- Priority test uses seed items with different priorities (p1 CHILD_1A vs p2 TOP_2/TOP_3) ✓
+- Module state cleanup in afterEach (drain tracked IDs + queue) ✓
+- DB mock needed despite task saying "no DB" — canSpawn reads settings, enqueue reads priority ✓
+- Build: 0 errors
+- Tests: 114 pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — Q.9: Test concurrency limiter
 
 **Task:** Unit tests for the concurrency limiter module (in-memory logic).

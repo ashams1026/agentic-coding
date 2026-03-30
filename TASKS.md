@@ -26,7 +26,7 @@
 
 ### Agent Logic Unit Tests
 
-- [review] **Q.9** — Test concurrency limiter. In `packages/backend/src/agent/__tests__/concurrency.test.ts`: test `canSpawn()` returns true when under limit, false when at limit. Test `enqueue()` adds to queue, `onComplete()` dequeues by priority (P0 before P3). Test queue ordering is FIFO within same priority. Test `getActiveCount()` and `getQueueLength()`. No DB needed — this is in-memory logic.
+- [x] **Q.9** — Test concurrency limiter. In `packages/backend/src/agent/__tests__/concurrency.test.ts`: test `canSpawn()` returns true when under limit, false when at limit. Test `enqueue()` adds to queue, `onComplete()` dequeues by priority (P0 before P3). Test queue ordering is FIFO within same priority. Test `getActiveCount()` and `getQueueLength()`. No DB needed — this is in-memory logic.
 
 - [ ] **Q.10** — Test parent-child coordination. In `packages/backend/src/agent/__tests__/coordination.test.ts`: use test DB with a parent + 3 children. Test: when all children are Done, parent advances to "In Review". Test: when 2/3 children are Done, parent does NOT advance. Test: when a child enters Blocked, system comment is posted on parent. Test: manual parent state override is not blocked by children state.
 
