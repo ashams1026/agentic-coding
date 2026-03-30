@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-03-29 — O.19: Update seed script for WorkItem model
+
+**Task:** Create `packages/backend/src/db/seed.ts` with seed data matching frontend fixtures.
+
+**Done:**
+- Created `packages/backend/src/db/connection.ts`: DB connection module using better-sqlite3 + drizzle-orm, WAL mode, FK enforcement, exports `db` and `sqlite`
+- Created `packages/backend/src/db/seed.ts`: Full seed script inserting all data matching `packages/frontend/src/mocks/fixtures.ts`:
+  - 1 project (AgentOps)
+  - 5 personas (PM, Tech Lead, Engineer, Reviewer, QA)
+  - 16 work items (3 top-level, 7 children, 3 grandchildren, 3 more children)
+  - 4 work item edges (2 blocks, 2 depends_on)
+  - 4 persona assignments (Planning, Decomposition, In Progress, In Review)
+  - 8 executions (including 2 running, 1 rejected)
+  - 15 comments (user, agent, system types)
+  - 2 proposals (1 approved, 1 pending)
+  - 2 project memories
+- Creates tables via raw SQL (IF NOT EXISTS) then inserts via Drizzle ORM
+- Clears existing data before inserting (idempotent)
+- Cost values stored as cents (integer), timestamps as Date objects for timestamp_ms mode
+
+**Files created:** `packages/backend/src/db/connection.ts`, `packages/backend/src/db/seed.ts`
+
+**Notes:** Backend typecheck: 0 errors. Full monorepo build: passes. IDs match frontend fixtures exactly for consistency.
+
+---
+
 ## 2026-03-29 — Review: O.18 (approved)
 
 **Reviewed:** Drizzle schema — `packages/backend/src/db/schema.ts`.
