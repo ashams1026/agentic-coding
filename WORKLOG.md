@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: A.18 (approved)
+
+**Reviewed:** Memory consolidation and retrieval — `memory.ts`, `mcp-server.ts`.
+- getRecentMemories: non-consolidated query, char budget accumulation, early exit ✓
+- consolidateIfNeeded: threshold check (50), oldest-half merge, haiku consolidator, consolidatedInto marking ✓
+- callConsolidator: dedicated prompt, same JSON parse pattern, safe fallbacks ✓
+- Triggered after memory generation (non-blocking .catch()) ✓
+- get_context updated to use getRecentMemories(projectId, 1000) ✓
+- Unused imports cleaned from mcp-server.ts ✓
+- Build: 0 errors
+- Note: consolidated entry uses memory ID as workItemId (minor, non-blocking)
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.18: Implement memory consolidation and retrieval
 
 **Task:** Periodic consolidation of old memories, token-budgeted retrieval for MCP tool.
