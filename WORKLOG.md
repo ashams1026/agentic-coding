@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — AI.17: Execute detail-panel-view.md
+
+**Task:** Execute the detail panel view test plan in a real browser via chrome-devtools MCP.
+
+**Done:**
+- Navigated to `http://localhost:5174/items`, switched to list view, executed all 16 steps
+- **Result: PASS (16/16)** — all detail panel sections verified, close works, switching items updates panel
+- Clicked "User authentication with OAuth2" → panel opened with: title (editable h2), state "In Progress", "Move to..." dropdown, priority "P0 — Critical", labels (auth, security) + "+ label", description with Edit button, 3 children (1/3 done) + "Add child", 5 comments with authors/timestamps + comment input, 2 execution history entries (Tech Lead $0.85, PM $0.18), metadata (ID: wi-auth001, Created/Updated timestamps)
+- Closed panel via X button → list restored
+- Clicked "Dashboard analytics widgets" → panel updated: state "Decomposition", priority "P1 — High", labels (dashboard, ui), different description, 3 children (0/3 done), Pending Proposals section, 3 comments, 2 executions, ID: wi-dash002
+
+**Files created:** `tests/e2e/results/detail-panel-view.md`, `tests/e2e/results/detail-panel-view.png`
+
+**Notes:** Frontend on port 5174. Page initially loaded in flow view (switched to list). Second item revealed a "Pending Proposals" section not in test plan — bonus functionality. Build: 0 errors (no code changes).
+
+---
+
 ## 2026-03-30 — Review: AI.16 (approved)
 
 **Reviewed:** Work Items flow view E2E test execution results.

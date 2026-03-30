@@ -14,6 +14,10 @@
 > Critical fixes from first real-world test run. Router loop, cost display, agent monitor readability, activity feed descriptions.
 > Also includes persona audit, skills system, and UX improvements.
 
+### Flow View Redesign
+
+- [ ] **FX.FLOW1** — Redesign Flow view as a vertical state machine. Replace the current horizontal BFS-layout SVG graph in `packages/frontend/src/features/work-items/flow-view.tsx` with a clean vertical layout. No charting library needed — this is static HTML/CSS with Tailwind, not an interactive graph. Structure: a vertical column of state nodes connected by arrows, flowing top to bottom in workflow order (Backlog → Planning → Decomposition → Ready → In Progress → In Review → Done, with Blocked branching off to the side). Between each state pair, show a small Router node (diamond or pill shape, Pico-sized, with the Router's indigo color) indicating that the Router agent decides this transition. Each state node is a card showing: state name with colored dot, item count badge, active agent count + pulsing indicator, persona avatar stack (who's assigned to this state), progress indicator (items done / total). Arrows are simple CSS borders or SVG lines (straight down, no bezier curves needed). Blocked state branches off to the right from any state that can transition to it, connected with a dashed line. The whole layout should be centered in the content area, scrollable vertically if needed. Click a state node to filter the detail panel to items in that state (existing behavior). Remove the old `computeLayout` and `computeArrowPath` SVG logic — replace entirely with flex/grid CSS layout.
+
 ### Sidebar Navigation Fix
 
 - [ ] **FX.NAV1** — Fix sidebar nav item layout and interaction states. In `packages/frontend/src/components/sidebar.tsx`: the nav items currently render with icon stacked above the label instead of inline beside it (visible in e2e test screenshots). Fix the layout so icon and label are on the same row (`flex items-center gap-3`) in expanded mode. Investigate what's causing the vertical stacking — likely a CSS conflict, missing width constraint, or the collapsed-mode styles leaking into expanded mode. Also fix interaction states: add a visible `hover:bg-accent` background on hover (currently not appearing), add a distinct active/selected state with a left border accent or stronger background (`bg-accent/80` + `font-semibold`), add `rounded-lg` for softer corners, ensure the active page is clearly distinguishable at a glance. Reference modern sidebar patterns (e.g., Linear, Notion) — icon left, label right, subtle hover, bold active.
@@ -145,7 +149,7 @@
 
 - [x] **AI.16** — Execute `work-items-flow-view.md`. Read `tests/e2e/plans/work-items-flow-view.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/work-items-flow-view.md`.
 
-- [ ] **AI.17** — Execute `detail-panel-view.md`. Read `tests/e2e/plans/detail-panel-view.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/detail-panel-view.md`.
+- [review] **AI.17** — Execute `detail-panel-view.md`. Read `tests/e2e/plans/detail-panel-view.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/detail-panel-view.md`.
 
 - [ ] **AI.18** — Execute `detail-panel-edit.md`. Read `tests/e2e/plans/detail-panel-edit.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/detail-panel-edit.md`.
 
