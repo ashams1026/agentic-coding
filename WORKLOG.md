@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-29 — T3.2.9: Implement proposal API routes
+
+**Task:** Create proposal CRUD routes with workItemId filtering.
+
+**Done:**
+- Added `CreateProposalRequest` to `packages/shared/src/api.ts` (executionId, workItemId, type, payload?)
+- Added `ProposalType` import to api.ts
+- Created `routes/proposals.ts`: 5 routes
+  - `GET /api/proposals?workItemId=` — list (optional filter by workItemId)
+  - `GET /api/proposals/:id` — get single proposal
+  - `POST /api/proposals` — create (defaults: status=pending, payload={}, createdAt=now)
+  - `PATCH /api/proposals/:id` — update status (UpdateProposalRequest — status field only, feedback field not stored as DB has no column for it)
+  - `DELETE /api/proposals/:id` — delete
+- Serializer converts Date→ISO for createdAt, casts ProposalId/ExecutionId/WorkItemId
+- Registered in `server.ts`
+
+**Files created:** `packages/backend/src/routes/proposals.ts`
+**Files modified:** `packages/backend/src/server.ts`, `packages/shared/src/api.ts`
+
+**Notes:** Backend typecheck: 0 errors. UpdateProposalRequest has `feedback?` field but proposals table has no feedback column — PATCH only updates `status`. Feedback could be added to payload in a future iteration if needed.
+
+---
+
 ## 2026-03-29 — Review: T3.2.8 (approved)
 
 **Reviewed:** Execution CRUD routes — `routes/executions.ts`, `server.ts`, `shared/src/api.ts`.

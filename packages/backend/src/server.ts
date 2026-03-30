@@ -6,6 +6,7 @@ import { workItemEdgeRoutes } from "./routes/work-item-edges.js";
 import { commentRoutes } from "./routes/comments.js";
 import { personaRoutes } from "./routes/personas.js";
 import { executionRoutes } from "./routes/executions.js";
+import { proposalRoutes } from "./routes/proposals.js";
 
 export async function buildServer() {
   const server = Fastify({
@@ -36,6 +37,7 @@ export async function buildServer() {
   await commentRoutes(server);
   await personaRoutes(server);
   await executionRoutes(server);
+  await proposalRoutes(server);
 
   return server;
 }

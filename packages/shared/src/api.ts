@@ -19,6 +19,7 @@ import type {
   Priority,
   WorkItemEdgeType,
   CommentAuthorType,
+  ProposalType,
   ProposalStatus,
   ExecutionStatus,
   ExecutionOutcome,
@@ -170,6 +171,13 @@ export type CommentResponse = ApiResponse<Comment>;
 export type CommentListResponse = ApiListResponse<Comment>;
 
 // ── Proposal endpoints ─────────────────────────────────────────────
+
+export interface CreateProposalRequest {
+  executionId: ExecutionId;
+  workItemId: WorkItemId;
+  type: ProposalType;
+  payload?: Record<string, unknown>;
+}
 
 export interface UpdateProposalRequest {
   status: ProposalStatus;

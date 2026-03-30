@@ -14,7 +14,7 @@
 - [x] **T3.2.5** — Implement comment API routes (updated for workItemId)
 - [x] **T3.2.7** — Implement persona API routes
 - [x] **T3.2.8** — Implement execution API routes (updated for workItemId)
-- [ ] **T3.2.9** — Implement proposal API routes (updated for parentWorkItemId)
+- [review] **T3.2.9** — Implement proposal API routes (updated for parentWorkItemId)
 - [ ] **T3.2.10** — Implement aggregate/dashboard API routes (updated for work items)
 - [ ] **T3.3.1** — Implement real WebSocket server
 - [ ] **T3.3.2** — Create API client for frontend (updated for work item endpoints)
