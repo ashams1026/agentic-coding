@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: T3.2.7 (approved)
+
+**Reviewed:** Persona CRUD routes — `routes/personas.ts`, `server.ts`.
+- 5 routes: GET list, GET by id, POST create, PATCH update, DELETE
+- Serializer correctly casts PersonaId, passes through all persona fields
+- Uses CreatePersonaRequest/UpdatePersonaRequest from shared, createId.persona() for ID generation
+- All UpdatePersonaRequest fields handled in PATCH (8 fields)
+- Proper defaults on POST (avatar, allowedTools, mcpTools, maxBudgetPerRun, settings, description)
+- 404 handling, correct HTTP status codes (201/204/400)
+- JSON.stringify pattern in PATCH consistent with approved work-items.ts
+- Registered in server.ts
+- Backend typecheck: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T3.2.7: Implement persona API routes
 
 **Task:** Create persona CRUD routes.
