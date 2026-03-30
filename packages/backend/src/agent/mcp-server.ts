@@ -11,10 +11,9 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { eq } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { comments, workItems, workItemEdges } from "../db/schema.js";
+import { comments, workItems, workItemEdges, projectMemories } from "../db/schema.js";
 import { createId, WORKFLOW, isValidTransition } from "@agentops/shared";
 import type { CommentId, WorkItemId, PersonaId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
@@ -45,20 +44,6 @@ export const TOOL_NAMES = [
 ] as const;
 
 export type ToolName = (typeof TOOL_NAMES)[number];
-
-// ── Stub result helper ──────────────────────────────────────────
-
-function stub(toolName: string): CallToolResult {
-  return {
-    content: [
-      {
-        type: "text",
-        text: JSON.stringify({ error: `${toolName} not yet implemented` }),
-      },
-    ],
-    isError: true,
-  };
-}
 
 // ── Factory ─────────────────────────────────────────────────────
 
@@ -355,7 +340,33 @@ export function createMcpServer(context: McpContext): McpServer {
           ),
       }),
     },
-    async () => stub("list_items"),
+    async ({ parentId, state, verbosity }) => {
+      try {
+        const conditions = [eq(workItems.projectId, context.projectId)];
+        if (parentId) conditions.push(eq(workItems.parentId, parentId));
+        if (state) conditions.push(eq(workItems.currentState, state));
+
+        const rows = await db
+          .select()
+          .from(workItems)
+          .where(conditions.length === 1 ? conditions[0]! : and(...conditions));
+
+        const items = rows.map((row) =>
+          verbosity === "detail"
+            ? { id: row.id, title: row.title, state: row.currentState, description: row.description, context: row.context, priority: row.priority, labels: row.labels, parentId: row.parentId }
+            : { id: row.id, title: row.title, state: row.currentState },
+        );
+
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ items, total: items.length }) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: `Failed to list items: ${err instanceof Error ? err.message : String(err)}` }) }],
+          isError: true,
+        };
+      }
+    },
   );
 
   // ── get_context ─────────────────────────────────────────────
@@ -372,7 +383,60 @@ export function createMcpServer(context: McpContext): McpServer {
           .describe("Whether to include project-level memories"),
       }),
     },
-    async () => stub("get_context"),
+    async ({ workItemId, includeMemory }) => {
+      try {
+        const [item] = await db
+          .select({
+            id: workItems.id,
+            title: workItems.title,
+            description: workItems.description,
+            currentState: workItems.currentState,
+            executionContext: workItems.executionContext,
+            context: workItems.context,
+            parentId: workItems.parentId,
+            projectId: workItems.projectId,
+          })
+          .from(workItems)
+          .where(eq(workItems.id, workItemId));
+
+        if (!item) {
+          return {
+            content: [{ type: "text" as const, text: JSON.stringify({ error: `Work item ${workItemId} not found` }) }],
+            isError: true,
+          };
+        }
+
+        const result: Record<string, unknown> = {
+          workItem: item,
+          executionContext: item.executionContext,
+        };
+
+        if (includeMemory) {
+          const memories = await db
+            .select({ summary: projectMemories.summary, createdAt: projectMemories.createdAt })
+            .from(projectMemories)
+            .where(and(
+              eq(projectMemories.projectId, item.projectId),
+              isNull(projectMemories.consolidatedInto),
+            ))
+            .limit(10);
+
+          result.memories = memories.map((m) => ({
+            summary: m.summary,
+            createdAt: m.createdAt.toISOString(),
+          }));
+        }
+
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify(result) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: `Failed to get context: ${err instanceof Error ? err.message : String(err)}` }) }],
+          isError: true,
+        };
+      }
+    },
   );
 
   // ── flag_blocked ────────────────────────────────────────────
@@ -386,7 +450,63 @@ export function createMcpServer(context: McpContext): McpServer {
         reason: z.string().describe("Why this work item is blocked"),
       }),
     },
-    async () => stub("flag_blocked"),
+    async ({ workItemId, reason }) => {
+      try {
+        // Get current state for the broadcast
+        const [item] = await db
+          .select({ currentState: workItems.currentState })
+          .from(workItems)
+          .where(eq(workItems.id, workItemId));
+
+        if (!item) {
+          return {
+            content: [{ type: "text" as const, text: JSON.stringify({ error: `Work item ${workItemId} not found` }) }],
+            isError: true,
+          };
+        }
+
+        const now = new Date();
+        const fromState = item.currentState;
+
+        // Update state to Blocked
+        await db
+          .update(workItems)
+          .set({ currentState: "Blocked", updatedAt: now })
+          .where(eq(workItems.id, workItemId));
+
+        // Post reason as system comment
+        const commentId = createId.comment();
+        await db.insert(comments).values({
+          id: commentId,
+          workItemId,
+          authorType: "system",
+          authorId: context.personaId || null,
+          authorName: context.personaName,
+          content: `Blocked: ${reason}`,
+          metadata: { reason, previousState: fromState },
+          createdAt: now,
+        });
+
+        // Broadcast state change
+        broadcast({
+          type: "state_change",
+          workItemId: workItemId as WorkItemId,
+          fromState,
+          toState: "Blocked",
+          triggeredBy: (context.personaId as PersonaId) || "system",
+          timestamp: now.toISOString(),
+        });
+
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ workItemId, fromState, toState: "Blocked" }) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: `Failed to flag blocked: ${err instanceof Error ? err.message : String(err)}` }) }],
+          isError: true,
+        };
+      }
+    },
   );
 
   // ── request_review ──────────────────────────────────────────
@@ -402,7 +522,41 @@ export function createMcpServer(context: McpContext): McpServer {
           .describe("What the human should review or decide"),
       }),
     },
-    async () => stub("request_review"),
+    async ({ workItemId, message }) => {
+      try {
+        const now = new Date();
+        const commentId = createId.comment();
+
+        await db.insert(comments).values({
+          id: commentId,
+          workItemId,
+          authorType: "system",
+          authorId: context.personaId || null,
+          authorName: context.personaName,
+          content: `🔍 Review requested: ${message}`,
+          metadata: { type: "review_request", message },
+          createdAt: now,
+        });
+
+        broadcast({
+          type: "comment_created",
+          commentId: commentId as CommentId,
+          workItemId: workItemId as WorkItemId,
+          authorName: context.personaName,
+          contentPreview: `Review requested: ${message.slice(0, 80)}`,
+          timestamp: now.toISOString(),
+        });
+
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ workItemId, commentId, message: "Review requested" }) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: `Failed to request review: ${err instanceof Error ? err.message : String(err)}` }) }],
+          isError: true,
+        };
+      }
+    },
   );
 
   return server;

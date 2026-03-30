@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-29 — A.5: Implement read-only MCP tools
+
+**Task:** Replace 4 remaining tool stubs: list_items, get_context, flag_blocked, request_review.
+
+**Done:**
+- **list_items**: Queries work items scoped to `context.projectId`. Optional filters: parentId, state. Verbosity: "summary" returns id+title+state; "detail" adds description, context, priority, labels, parentId. Returns `{ items, total }`.
+- **get_context**: Looks up work item, returns executionContext + full item data. If `includeMemory`, queries `project_memories` table (non-consolidated, limit 10) and includes summaries.
+- **flag_blocked**: Gets current state, updates to "Blocked", posts system comment with reason + previousState metadata, broadcasts state_change event.
+- **request_review**: Posts system comment with review_request metadata, broadcasts comment_created event. Does not change state.
+- Removed `stub()` helper and `CallToolResult` import — all 7 tools now have real implementations.
+- Added imports: `and`, `isNull` from drizzle-orm; `projectMemories` from schema.
+
+**Files modified:** `packages/backend/src/agent/mcp-server.ts`
+
+**Notes:** Backend build: 0 errors after removing unused stub/CallToolResult. All 7 MCP tools (A.1–A.5) are now complete. The MCP server is fully functional.
+
+---
+
 ## 2026-03-29 — Review: A.4 (approved)
 
 **Reviewed:** route_to_state MCP tool — `packages/backend/src/agent/mcp-server.ts`.
