@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: AI.12 (approved)
+
+**Reviewed:** Dashboard stats E2E test execution results.
+- Results file `tests/e2e/results/dashboard-stats.md`: proper markdown format with metadata (plan, date, URLs, overall result), step results table (11 rows), notes, evidence section ✓
+- All 11 steps passed — cross-verified against screenshot `dashboard-stats-full.png` (366KB): 4 stat cards visible in grid (Active Agents=2, Pending Proposals=1, Needs Attention=1, Today's Cost=$0.00), Active Agents strip (Engineer + Reviewer), Recent Activity (10 events with "View all" link), Upcoming Work (1 item), sidebar nav all visible ✓
+- Cost Summary chart confirmed via a11y snapshot (day labels Wed-Mon, "$0.00 today", "Monthly: $3.17", "Cap: $50.00") ✓
+- No NaN/undefined/loading states in any card ✓
+- Port deviation documented (5174 vs 5173 — acceptable per test plan noting `:5173/:5174`) ✓
+- Build: no code changes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.12: Execute dashboard-stats.md
 
 **Task:** Execute the dashboard stats test plan in a real browser via chrome-devtools MCP.
