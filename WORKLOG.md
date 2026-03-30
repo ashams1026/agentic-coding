@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — Review: PS.6 (approved)
+
+**Reviewed:** Persona assignment scoping and hardcoded project ID removal.
+- Hook: `usePersonaAssignments(ProjectId | null)` with `enabled: !!projectId` guard, non-null assertions safe behind guard ✓
+- detail-panel.tsx: passes `projectId` from `useSelectedProject()` ✓
+- board-view.tsx: passes `projectId` from `useSelectedProject()` ✓
+- workflow-config-section.tsx: removed `PROJECT_ID` constant, uses `useSelectedProject()`, null guard on mutation ✓
+- work-items.tsx: quick-add uses dynamic `projectId` with null guard ✓
+- Zero `pj-agntops`/`PROJECT_ID` references outside fixtures.ts ✓
+- Unused `ProjectId` imports cleaned ✓
+- Build: 0 errors ✓
+- Verdict: **approved**
+- **Sprint 15 Core Wiring complete** — all 6 tasks (PS.1-PS.6) approved.
+
+---
+
 ## 2026-03-30 — PS.6: Scope persona assignments to selected project
 
 **Task:** Remove hardcoded `"pj-agntops"` project IDs from all persona assignment call sites, use `useSelectedProject()` instead.
