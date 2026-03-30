@@ -47,7 +47,7 @@ const themeIcon = { system: Monitor, light: Sun, dark: Moon } as const;
 const themeLabel = { system: "System", light: "Light", dark: "Dark" } as const;
 
 export function Sidebar() {
-  const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, setMobileSidebarOpen, theme, setTheme } = useUIStore();
+  const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, setMobileSidebarOpen, theme, setTheme, selectedProjectId, setSelectedProjectId } = useUIStore();
   const { data: executions } = useExecutions();
   const { data: dashboardStats } = useDashboardStats();
   const { data: projectsList } = useProjects();
@@ -55,6 +55,13 @@ export function Sidebar() {
   const pendingProposalCount = dashboardStats?.pendingProposals ?? 0;
   const unreadActivityCount = useActivityStore((s) => s.unreadCount);
   const location = useLocation();
+
+  // Auto-select the first project if none is selected
+  useEffect(() => {
+    if (!selectedProjectId && projectsList && projectsList.length > 0) {
+      setSelectedProjectId(projectsList[0]!.id);
+    }
+  }, [selectedProjectId, projectsList, setSelectedProjectId]);
 
   // Close mobile sidebar on navigation
   useEffect(() => {
@@ -78,11 +85,14 @@ export function Sidebar() {
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">
-              {projectsList?.[0]?.name ?? "AgentOps"}
+              {projectsList?.find((p) => p.id === selectedProjectId)?.name ?? "No project"}
             </TooltipContent>
           </Tooltip>
         ) : (
-          <Select defaultValue={projectsList?.[0]?.id ?? "none"}>
+          <Select
+            value={selectedProjectId ?? undefined}
+            onValueChange={(value) => setSelectedProjectId(value)}
+          >
             <SelectTrigger className="h-8 w-full">
               <SelectValue placeholder="No projects" />
             </SelectTrigger>

@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — PS.1: Wire project switcher to selectedProjectId
+
+**Task:** Wire the sidebar project switcher to read/write `selectedProjectId` from the UI store, auto-select first project on load, persist selection.
+
+**Done:**
+- Changed `<Select>` in sidebar from uncontrolled (`defaultValue`) to controlled (`value` + `onValueChange`) wired to `selectedProjectId`/`setSelectedProjectId` from `useUIStore`
+- Added `useEffect` to auto-select the first project on initial load when `selectedProjectId` is null
+- Updated collapsed sidebar tooltip to show the selected project name instead of hardcoded first project
+- Selection persists via existing Zustand `persist` config (already in `partialize`)
+
+**Files modified:** `packages/frontend/src/components/sidebar.tsx`
+
+**Notes:** The UI store already had `selectedProjectId` and `setSelectedProjectId` — just needed wiring. Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: D.10 (approved)
 
 **Reviewed:** Frontend documentation — directory structure, views, mock layer, state management, design system.
