@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-29 — T3.2.5: Implement comment API routes
+
+**Task:** Create comment CRUD routes with workItemId filtering.
+
+**Done:**
+- Created `routes/comments.ts`: 4 routes
+  - `GET /api/comments?workItemId=` — list (optional filter by workItemId)
+  - `GET /api/comments/:id` — get single comment
+  - `POST /api/comments` — create (uses CreateCommentRequest from shared, auto-generates ID + timestamp)
+  - `DELETE /api/comments/:id` — delete
+- Registered in `server.ts`
+- Serializer converts Date→ISO, casts branded IDs (CommentId, WorkItemId, PersonaId)
+- Follows same patterns as work-items routes (404 handling, 201/204 status codes)
+
+**Files created:** `routes/comments.ts`
+**Files modified:** `server.ts`
+
+**Notes:** Backend typecheck: 0 errors.
+
+---
+
 ## 2026-03-29 — Review: T3.1.3 (approved)
 
 **Reviewed:** Drizzle migrations setup — `drizzle.config.ts`, `src/db/migrate.ts`, `src/index.ts`, `src/db/seed.ts`, `package.json`, `drizzle/0000_secret_magneto.sql`.

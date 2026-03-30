@@ -3,6 +3,7 @@ import cors from "@fastify/cors";
 import { workItemRoutes } from "./routes/work-items.js";
 import { personaAssignmentRoutes } from "./routes/persona-assignments.js";
 import { workItemEdgeRoutes } from "./routes/work-item-edges.js";
+import { commentRoutes } from "./routes/comments.js";
 
 export async function buildServer() {
   const server = Fastify({
@@ -30,6 +31,7 @@ export async function buildServer() {
   await workItemRoutes(server);
   await personaAssignmentRoutes(server);
   await workItemEdgeRoutes(server);
+  await commentRoutes(server);
 
   return server;
 }
