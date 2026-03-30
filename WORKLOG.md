@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: A.10 (approved)
+
+**Reviewed:** Persona dispatch — `dispatch.ts` + `work-items.ts` PATCH integration.
+- dispatchForState: projectId lookup, personaAssignments composite key query, runExecution call ✓
+- No-op for unassigned states (Backlog, Done) ✓
+- PATCH integration: only fires when currentState changes, non-blocking with .catch() ✓
+- Error logging: workItemId + state included ✓
+- Backend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.10: Implement persona dispatch on state entry
 
 **Task:** Create dispatch.ts and wire into PATCH work-items route.
