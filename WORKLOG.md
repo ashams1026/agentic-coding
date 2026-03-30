@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-29 — T3.3.1: Implement real WebSocket server
+
+**Task:** Set up @fastify/websocket with broadcast capability for real-time events.
+
+**Done:**
+- Created `packages/backend/src/ws.ts`:
+  - `registerWebSocket(app)` — registers @fastify/websocket plugin and `/ws` route
+  - Tracks connected clients in a module-level `Set<WebSocket>`
+  - `broadcast(event: WsEvent)` — sends JSON-serialized WsEvent to all connected clients (readyState === OPEN)
+  - `getClientCount()` — returns number of connected clients
+  - Connection lifecycle: logs connect/disconnect with client count, handles errors
+  - Sends `{ type: "connected", timestamp }` welcome message on connect
+- Registered in `server.ts` before API routes
+- Added `@types/ws` as dev dependency
+
+**Files created:** `packages/backend/src/ws.ts`
+**Files modified:** `packages/backend/src/server.ts`, `packages/backend/package.json`
+
+**Notes:** Backend typecheck: 0 errors. The `broadcast()` function is exported for use by route handlers — when a mutation occurs (state change, comment created, etc.), the route can call `broadcast(event)` to push it to all connected clients. The frontend's T3.3.4 task will connect to this `/ws` endpoint.
+
+---
+
 ## 2026-03-29 — Review: T3.2.10 (approved)
 
 **Reviewed:** Dashboard aggregate routes — `routes/dashboard.ts`, `server.ts`.

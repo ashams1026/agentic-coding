@@ -8,6 +8,7 @@ import { personaRoutes } from "./routes/personas.js";
 import { executionRoutes } from "./routes/executions.js";
 import { proposalRoutes } from "./routes/proposals.js";
 import { dashboardRoutes } from "./routes/dashboard.js";
+import { registerWebSocket } from "./ws.js";
 
 export async function buildServer() {
   const server = Fastify({
@@ -30,6 +31,9 @@ export async function buildServer() {
   server.get("/health", async () => {
     return { status: "ok", timestamp: new Date().toISOString() };
   });
+
+  // WebSocket
+  await registerWebSocket(server);
 
   // API routes
   await workItemRoutes(server);
