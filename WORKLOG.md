@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-29 — T3.3.3: Add API mode toggle to frontend
+
+**Task:** Wire up mock/real API switching so hooks can use either backend.
+
+**Done:**
+- Added `apiMode: "mock" | "api"` to `stores/ui-store.ts` (persisted to localStorage via `partialize`)
+- Added `setApiMode` action to UI store
+- Created `src/api/index.ts` — unified API layer that delegates to mock or real based on `apiMode`
+  - Uses `useUIStore.getState().apiMode` to read mode (non-reactive, read at call time)
+  - Each function wraps both mock and real implementations with `pick()` helper
+  - 32 functions matching same signatures as mock API and real client
+- Updated all 8 hook files to import from `@/api` instead of `@/mocks/api`:
+  - use-projects.ts, use-work-items.ts, use-personas.ts, use-persona-assignments.ts
+  - use-executions.ts, use-comments.ts, use-proposals.ts, use-dashboard.ts
+- Default mode: `"mock"` (no change in behavior until user toggles)
+
+**Files created:** `packages/frontend/src/api/index.ts`
+**Files modified:** `packages/frontend/src/stores/ui-store.ts`, 8 hook files (import path change)
+
+**Notes:** Frontend typecheck: 0 errors. The toggle UI itself (a button/switch in settings or status bar) can be added as a polish task — the store and wiring are ready. When `setApiMode("api")` is called, all subsequent query function calls will hit the real backend. TanStack Query caches should be invalidated on mode switch (can be done by the component that calls `setApiMode`).
+
+---
+
 ## 2026-03-29 — Review: T3.3.2 (approved)
 
 **Reviewed:** Frontend API client — `src/api/client.ts`.

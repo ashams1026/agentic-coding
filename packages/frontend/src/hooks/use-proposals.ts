@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { WorkItemId, ProposalId, UpdateProposalRequest } from "@agentops/shared";
-import { getProposals, getProposal, updateProposal } from "@/mocks/api";
+import { getProposals, getProposal, updateProposal } from "@/api";
 import { queryKeys } from "./query-keys";
 
 export function useProposals(workItemId?: WorkItemId) {

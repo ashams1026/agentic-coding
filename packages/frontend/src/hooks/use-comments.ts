@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { WorkItemId, CreateCommentRequest } from "@agentops/shared";
-import { getComments, createComment } from "@/mocks/api";
+import { getComments, createComment } from "@/api";
 import { queryKeys } from "./query-keys";
 
 export function useComments(workItemId: WorkItemId) {

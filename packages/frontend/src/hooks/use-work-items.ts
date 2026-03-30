@@ -17,7 +17,7 @@ import {
   getWorkItemEdges,
   createWorkItemEdge,
   deleteWorkItemEdge,
-} from "@/mocks/api";
+} from "@/api";
 import { queryKeys } from "./query-keys";
 
 // ── Work Item queries ────────────────────────────────────────────

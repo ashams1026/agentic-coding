@@ -6,7 +6,7 @@ import {
   createPersona,
   updatePersona,
   deletePersona,
-} from "@/mocks/api";
+} from "@/api";
 import { queryKeys } from "./query-keys";
 
 export function usePersonas() {

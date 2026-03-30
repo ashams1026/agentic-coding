@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { WorkItemId, ExecutionId } from "@agentops/shared";
-import { getExecutions, getExecution } from "@/mocks/api";
+import { getExecutions, getExecution } from "@/api";
 import { queryKeys } from "./query-keys";
 
 export function useExecutions(workItemId?: WorkItemId) {

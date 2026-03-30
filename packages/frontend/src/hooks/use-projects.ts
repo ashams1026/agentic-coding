@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ProjectId, CreateProjectRequest, UpdateProjectRequest } from "@agentops/shared";
-import { getProjects, getProject, createProject, updateProject, deleteProject } from "@/mocks/api";
+import { getProjects, getProject, createProject, updateProject, deleteProject } from "@/api";
 import { queryKeys } from "./query-keys";
 
 export function useProjects() {

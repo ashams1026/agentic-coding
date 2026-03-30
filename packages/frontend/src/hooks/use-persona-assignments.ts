@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { ProjectId, UpsertPersonaAssignmentRequest } from "@agentops/shared";
-import { getPersonaAssignments, updatePersonaAssignment } from "@/mocks/api";
+import { getPersonaAssignments, updatePersonaAssignment } from "@/api";
 import { queryKeys } from "./query-keys";
 
 export function usePersonaAssignments(projectId: ProjectId) {
