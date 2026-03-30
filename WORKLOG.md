@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-30 — Q.4: Test work items CRUD routes
+
+**Task:** Integration tests for work items CRUD routes using Fastify `app.inject()` with real in-memory SQLite.
+
+**Done:**
+- Created `packages/backend/src/routes/__tests__/work-items.test.ts` with 18 tests:
+  - POST: create top-level item, create child with parentId
+  - GET by id: existing item, 404 for non-existent
+  - GET list: all items, filter by projectId, filter by parentId, empty result for non-existent project
+  - PATCH: update title/description, priority, labels, currentState (valid transition), 404 for non-existent
+  - DELETE: leaf item, recursive parent+children, 204 for non-existent
+  - Response shapes: ISO date serialization, list data+total structure
+- **Bug fix in `work-items.ts`**: Removed `JSON.stringify()` for `labels` and `context` in PATCH handler — Drizzle's JSON-mode columns auto-serialize, so manual stringify caused double-encoding
+- Mocked agent side-effects (dispatch, coordination, memory) — these call the SDK
+- Mocked `db` connection to use in-memory test database
+
+**Files created:** `packages/backend/src/routes/__tests__/work-items.test.ts`
+**Files modified:** `packages/backend/src/routes/work-items.ts` (fix double-encoding bug)
+
+**Notes:** Build: 0 errors, 46 tests pass. Recursive delete test uses TOP_3 (no FK-linked executions/comments) to avoid constraint violations. The delete route only cascades to child work items, not to related records (executions, comments, edges) — a limitation noted but not fixed here.
+
+---
+
 ## 2026-03-30 — Review: Q.3 (approved)
 
 **Reviewed:** Workflow state machine tests — `packages/shared/src/__tests__/workflow.test.ts`.

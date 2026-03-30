@@ -120,9 +120,9 @@ export async function workItemRoutes(app: FastifyInstance) {
     if (body.title !== undefined) updates["title"] = body.title;
     if (body.description !== undefined) updates["description"] = body.description;
     if (body.priority !== undefined) updates["priority"] = body.priority;
-    if (body.labels !== undefined) updates["labels"] = JSON.stringify(body.labels);
+    if (body.labels !== undefined) updates["labels"] = body.labels;
     if (body.currentState !== undefined) updates["currentState"] = body.currentState;
-    if (body.context !== undefined) updates["context"] = JSON.stringify(body.context);
+    if (body.context !== undefined) updates["context"] = body.context;
     if (body.assignedPersonaId !== undefined) updates["assignedPersonaId"] = body.assignedPersonaId;
 
     const [row] = await db
