@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — AI.13: Execute dashboard-navigation.md
+
+**Task:** Execute the dashboard navigation test plan in a real browser via chrome-devtools MCP.
+
+**Done:**
+- Opened `http://localhost:5174/` in browser, executed all 12 steps
+- **Result: ✅ PASS (12/12)** — all stat card clicks and "View all" link navigate correctly
+- Navigation targets verified: Active Agents→`/agents` (Live/History tabs), Pending Proposals→`/items` (Work Items heading), Needs Attention→`/activity` (Activity feed with filters), Today's Cost→`/settings` (Settings sidebar), "View all"→`/activity`
+- All 5 back-navigations restored the dashboard completely with all widgets intact
+- No JS errors, blank pages, or stale data
+
+**Files created:** `tests/e2e/results/dashboard-navigation.md`, `tests/e2e/results/dashboard-navigation.png`
+
+**Notes:** Frontend on port 5174. Build: 0 errors (no code changes).
+
+---
+
 ## 2026-03-30 — Review: AI.12 (approved)
 
 **Reviewed:** Dashboard stats E2E test execution results.
