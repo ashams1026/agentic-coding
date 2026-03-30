@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-29 — Review: A.7 (approved)
+
+**Reviewed:** Claude Agent SDK executor — `packages/backend/src/agent/claude-executor.ts`.
+- ClaudeExecutor implements AgentExecutor interface correctly ✓
+- MODEL_MAP: 3 aliases → full model IDs, fallback to raw string ✓
+- SDK query() options: cwd, model, systemPrompt, bypassPermissions, maxTurns, maxBudgetUsd ✓
+- MCP server as stdio subprocess with env var context ✓
+- tools: [] disables built-in tools — agent only uses MCP ✓
+- mapMessage: handles assistant (text/tool_use/thinking), result (success/error) ✓
+- Prompt construction: title, description, state, parentChain, execution count ✓
+- Error handling: try/catch yields ErrorEvent ✓
+- AbortController created per spawn ✓
+- Backend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.7: Install Claude Agent SDK and create executor
 
 **Task:** Install SDK and create ClaudeExecutor implementing AgentExecutor interface.
