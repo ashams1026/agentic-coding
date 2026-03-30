@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-30 — Review: AI.5 (approved)
+
+**Reviewed:** Detail panel view and edit test plans.
+- `detail-panel-view.md`: 16 steps — all required sections covered: title (editable heading matching `EditableTitle`), state badge (colored), "Move to…" dropdown (`StateTransitionControl`), priority selector (`PrioritySelector` with colored dots), persona avatar, labels (badges + "+ label" from `LabelEditor`), Description ("Edit" button, empty state text matches source), Children (state badges + "No children" text matches `ChildrenList`), Comments (`CommentStream`), Execution History (`ExecutionTimeline`), Metadata (ID/Created/Updated from `MetadataSection`), close button, item switching ✓
+- `detail-panel-edit.md`: 17 steps — all 5 edits tested: title inline edit (click→input→Enter), description Write/Preview tabs (Edit→textarea→Preview→Save), priority dropdown change, label add ("+ label"→input→Enter), state transition ("Move to…" + TransitionPrompt dialog "Skip" handling). Persistence verified: full page reload + reopen + verify all 5 mutations ✓
+- Template format ✓, UI references by visible text ✓
+- Build: no code changes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.5: Write test plans for Work Items — Detail Panel
 
 **Task:** Create test plans for detail panel viewing and editing.
