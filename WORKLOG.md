@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — AI.V2: Update dashboard test plans with visual inspection
+
+**Task:** Add visual inspection steps to `dashboard-stats.md` and `dashboard-navigation.md`.
+
+**Done:**
+- `dashboard-stats.md`: Added visual inspection protocol blockquote, 6 screenshot checkpoints (initial load, stat card grid, agent strip, cost chart, recent activity, upcoming work), "Visual Quality" section (stat cards, agent strip, chart, activity, upcoming work, overall), "Visual Failure Criteria" section, updated prerequisites (port 5174, chrome-devtools MCP)
+- `dashboard-navigation.md`: Added visual inspection protocol blockquote, 7 screenshot checkpoints (initial load, after each navigation to /agents /items /activity /settings, after back-navigation, final state), "Visual Quality" section (target page rendering, sidebar active state, dashboard restoration, transitions), "Visual Failure Criteria" section, updated prerequisites
+- Each screenshot checkpoint includes specific visual aspects to examine (layout, alignment, spacing, rendering quality)
+
+**Files changed:** `tests/e2e/plans/dashboard-stats.md`, `tests/e2e/plans/dashboard-navigation.md`
+
+**Notes:** Build passes (no code changes). Step counts unchanged — visual checkpoints are annotations on existing steps, not new steps.
+
+---
+
 ## 2026-03-30 — Review: AI.V1 (approved)
 
 **Reviewed:** Test plan template update for visual inspection protocol.
