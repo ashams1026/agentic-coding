@@ -58,3 +58,19 @@
 *Sprint 8 decomposition + A.1:* Decomposed Phase 4+5 into 18 tasks (A.1–A.18). Created MCP server skeleton (mcp-server.ts, createMcpServer factory, 7 tool stubs with Zod v4 schemas, stdio entry point). Installed @modelcontextprotocol/sdk@1.28.0 + zod@4.3.6.
 
 **Key patterns:** MCP server uses `@modelcontextprotocol/sdk/server/mcp.js` subpath import. Zod v4 requires 2-arg `z.record()`. CallToolResult with isError for stubs. Standalone stdio entry point reads context from env vars.
+
+---
+
+## Sprint 8: A.2–A.12 (MCP tools, executor, dispatch, router, wiring) — archived 2026-03-30
+
+*MCP tools (A.2–A.5):* post_comment (DB insert + WS broadcast, agent authorType), create_children (child items in Backlog, depends_on edges with index/ID refs), route_to_state (isValidTransition check, system comment with Router authorName, state_change broadcast), list_items (project-scoped, parentId/state filters, summary/detail verbosity), get_context (work item + executionContext + optional project memories), flag_blocked (state→Blocked + system comment), request_review (system comment, no state change). All 7 tools complete.
+
+*Executor types + SDK (A.6–A.7):* AgentEvent 6-variant union (thinking, tool_use, tool_result, text, error, result), AgentTask/SpawnOptions/AgentExecutor interface. ClaudeExecutor: model alias map (opus/sonnet/haiku), SDK query() with MCP subprocess, permissionMode bypassPermissions, tools:[] (MCP only), SDKMessage→AgentEvent mapping.
+
+*System prompt + lifecycle (A.8–A.9):* 4-layer buildSystemPrompt (persona, project, work item, execution history with rejection details). execution-manager.ts: runExecution creates DB record + WS broadcast, buildAgentTask walks parent chain, runExecutionStream iterates events with WS streaming, completion updates DB (cost as cents, duration, summary, outcome), error handling preserves partial logs.
+
+*Dispatch + router (A.10–A.11):* dispatch.ts: dispatchForState looks up persona assignment, spawns execution, fire-and-forget. router.ts: runRouter checks autoRouting, lazy-creates __router__ persona (haiku, isSystem:true), 3 tools (list_items, get_context, route_to_state).
+
+*Wiring (A.12):* Execution chain: persona→runRouter→dispatchForState. Transition rate limiter: in-memory Map, max 10/hour/workItem, self-cleaning. Both router and dispatch paths gated by canTransition().
+
+**Key patterns:** Non-blocking execution via `.catch()`. Cost as cents in DB. `__router__` persona name as discriminator. authorType "system" for routing comments. broadcast() for all WS events. Serializer functions for DB→entity conversion.

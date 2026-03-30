@@ -96,7 +96,7 @@
 
 ---
 
-## Sprint 8: Agent Execution Engine (Phase 4 + 5) — in progress
+## Sprint 8: Agent Execution Engine (Phase 4 + 5) — completed 2026-03-30
 
 ### Agent MCP Server (T5.1)
 
@@ -117,3 +117,29 @@
 
 - [x] **A.10** — Implement persona dispatch on state entry. dispatch.ts with dispatchForState, wired into PATCH route. *(completed 2026-03-29)*
 - [x] **A.11** — Implement Router agent. router.ts with runRouter, haiku model, lazy __router__ persona, autoRouting check. *(completed 2026-03-29)*
+- [x] **A.12** — Wire dispatch and routing into execution lifecycle. Transition rate limiter (10/hour), execution chain: persona→runRouter→dispatchForState. *(completed 2026-03-29)*
+
+### State Coordination & Rejection (T4.4 + T4.5)
+
+- [x] **A.13** — Implement parent-child state coordination. All-children-done→parent "In Review", child blocked→system comment on parent. *(completed 2026-03-29)*
+- [x] **A.14** — Implement rejection and retry logic. Retry counter, structured rejection payload, max 3 retries→Blocked. *(completed 2026-03-29)*
+
+### Concurrency & Cost (T5.4)
+
+- [x] **A.15** — Implement concurrency limiter. In-memory tracking, canSpawn(), FIFO queue with priority, wired into dispatch. *(completed 2026-03-29)*
+- [x] **A.16** — Implement cost tracking and caps. costUsd accumulation, monthly cap check, cost_update WS broadcast. *(completed 2026-03-29)*
+
+### Project Memory (T5.5)
+
+- [x] **A.17** — Implement project memory creation. Haiku summary on top-level Done, insert into project_memories. *(completed 2026-03-29)*
+- [x] **A.18** — Implement memory consolidation and retrieval. Threshold-based consolidation, getRecentMemories with token budget. *(completed 2026-03-29)*
+
+---
+
+## Sprint 9: Testing (partial) — in progress
+
+### Test Infrastructure
+
+- [x] **Q.1** — Set up Vitest in the monorepo. vitest@^4.1.2, root config, test scripts in root/backend/shared. *(completed 2026-03-29)*
+- [x] **Q.2** — Create test database helper. createTestDb() (in-memory SQLite + migrations), seedTestDb() (realistic fixtures), TEST_IDS. *(completed 2026-03-30)*
+- [x] **Q.3** — Test workflow state machine. 24 tests for getValidTransitions, isValidTransition, getStateByName, constants, edge cases. *(completed 2026-03-30)*

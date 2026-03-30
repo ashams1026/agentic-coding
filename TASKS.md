@@ -5,51 +5,12 @@
 
 ---
 
-## Sprint 8: Agent Execution Engine (Phase 4 + 5)
-
-> Core agent infrastructure. Implements Phase 4 (Workflow & Router) and Phase 5 (Agent Persona & Execution) from PLANNING.md.
-> T4.1 (hardcoded workflow) already done in Sprint 6 (O.2). T4.6 (user intervention UI) partially done in Sprint 7 (U.7).
-> Order: MCP tools → executor interface → SDK executor → dispatch → router → coordination → rejection → concurrency → memory.
-
-### Workflow Dispatch & Router (T4.2 + T4.3)
-
-- [x] **A.12** — Wire dispatch and routing into execution lifecycle. In `execution-manager.ts`: after successful execution completion, call `runRouter(workItemId)`. In `dispatch.ts`: after router changes state, call `dispatchForState()` for the new state. Add guard against infinite loops (max 10 transitions per work item per hour). Wire `dispatchForState` into the PATCH /api/work-items/:id route when currentState changes.
-
-### State Coordination & Rejection (T4.4 + T4.5)
-
-- [x] **A.13** — Implement parent-child state coordination. In `packages/backend/src/agent/coordination.ts`: after any child work item reaches Done, check if all siblings are also Done. If yes, auto-advance parent to "In Review" state (configurable). If any child enters Blocked, add a visual indicator on parent (flag field or comment). Wire into the state-change handler.
-
-- [x] **A.14** — Implement rejection and retry logic. In execution-manager: when Router routes from "In Review" back to "In Progress" (rejection), increment a retry counter on the work item. Carry structured rejection payload: `{ decision, reason, severity, retry_hint }`. Append to executionContext. On max retries (default 3): auto-transition to Blocked, broadcast notification. Persona on next run receives rejection context.
-
-### Concurrency & Cost (T5.4)
-
-- [x] **A.15** — Implement concurrency limiter. Create `packages/backend/src/agent/concurrency.ts`. Track active executions in memory. `canSpawn()`: check against global max (default 3, from project settings). `enqueue(task)`: if at capacity, add to FIFO queue with priority ordering. `onComplete()`: dequeue next task. Wire into dispatch.ts.
-
-- [x] **A.16** — Implement cost tracking and caps. In execution-manager: accumulate `costUsd` from executor events. In concurrency.ts: before spawning, check monthly cost against project's `monthCap` setting. If exceeded, reject spawn and post system comment. Broadcast `cost_update` WS event after each execution.
-
-### Project Memory (T5.5)
-
-- [x] **A.17** — Implement project memory creation. After a top-level work item reaches Done: generate a compressed summary (what was done, key decisions, files changed). Insert into `project_memories` table. Use a haiku-model one-shot call for summary generation.
-
-- [x] **A.18** — Implement memory consolidation and retrieval. Periodic consolidation: when memory count exceeds threshold (e.g., 50), merge oldest entries into higher-level summaries. `get_context` MCP tool serves recent memories capped at ~1000 tokens. Add `getRecentMemories(projectId, tokenBudget)` to a new `packages/backend/src/agent/memory.ts` module.
-
----
-
 ## Sprint 9: Testing
 
 > First testing sprint. Sets up Vitest, then covers the highest-value backend logic.
 > Principle: never mock the core logic under test. Integration tests use real SQLite. Unit tests cover pure functions.
 > Agent SDK calls are the one thing we stub — everything else is real.
-
-### Test Infrastructure
-
-- [x] **Q.1** — Set up Vitest in the monorepo. Install `vitest` as a root devDependency. Create `vitest.config.ts` at root (or per-package configs if needed) with TypeScript support, path aliases matching tsconfig. Add `"test"` script to root `package.json` (`vitest run`) and `"test:watch"` (`vitest`). Add `"test"` scripts to `packages/backend/package.json` and `packages/shared/package.json`. Verify `pnpm test` runs and finds zero tests.
-
-- [x] **Q.2** — Create test database helper. In `packages/backend/src/test/setup.ts`: helper that creates a fresh in-memory SQLite database (`:memory:`), runs Drizzle migrations, and optionally seeds with fixture data. Export `createTestDb()` that returns `{ db, cleanup }`. Export `seedTestDb(db)` that inserts a minimal but realistic dataset (1 project, 5 personas, persona assignments, 3 top-level work items with children, comments, executions). Each test file gets its own database — no shared state between tests.
-
-### Shared Package Tests (Pure Logic)
-
-- [x] **Q.3** — Test workflow state machine. In `packages/shared/src/__tests__/workflow.test.ts`: test `getValidTransitions()` for every state (verify exact transition sets), test `isValidTransition()` for valid and invalid pairs, test `getStateByName()` for existing and non-existing states, verify initial state is Backlog, verify Done is a final state, verify Blocked can transition back, verify no state can transition to Backlog (except as defined).
+> Completed: Q.1 (Vitest setup), Q.2 (test DB helper), Q.3 (workflow tests) — see TASKS_ARCHIVE.md
 
 ### Backend API Integration Tests
 
