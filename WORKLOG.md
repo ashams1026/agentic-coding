@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: Q.8 (approved)
+
+**Reviewed:** Dashboard aggregate route tests — `packages/backend/src/routes/__tests__/dashboard.test.ts`.
+- 7 tests: 3 empty DB (all zeros baseline) + 4 seeded DB (aggregation verification) ✓
+- Stats: activeAgents=1, pendingProposals=0, needsAttention=0, todayCostUsd=0 — matches seed ✓
+- Execution-stats: totalRuns=3, totalCostUsd=145 (42+18+85), successRate=1 — matches seed ✓
+- Cost-summary: 7-day shape, monthTotal/monthCap types verified ✓
+- Ready-work: items in Ready state with persona info ✓
+- Build: 0 errors
+- Tests: 100 pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — Q.8: Test dashboard aggregate routes
 
 **Task:** Integration tests for dashboard stats, cost summary, execution stats, and ready work endpoints.
