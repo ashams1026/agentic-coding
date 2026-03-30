@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-29 — A.17: Implement project memory creation
+
+**Task:** Generate compressed summary when top-level work item reaches Done.
+
+**Done:**
+- Created `packages/backend/src/agent/memory.ts`:
+  - `checkMemoryGeneration(workItemId, newState)`: entry point, checks state is "Done" and item is top-level (no parent), fires generateMemory in background
+  - `generateMemory()`: gathers context (executions, children, system comments), calls haiku summarizer, inserts into `project_memories` table
+  - `callHaikuSummarizer(context)`: one-shot haiku call via Claude Agent SDK `query()` with maxTurns:1, no tools. Prompt asks for structured JSON `{ summary, filesChanged, keyDecisions }`. Parses JSON from response with regex fallback. Returns safe defaults on error.
+- Wired into 2 state-change handlers (non-blocking `.catch()`):
+  - `mcp-server.ts` `route_to_state` — after coordination
+  - `work-items.ts` PATCH route — after coordination
+
+**Files created:** `packages/backend/src/agent/memory.ts`
+**Files modified:** `packages/backend/src/agent/mcp-server.ts`, `packages/backend/src/routes/work-items.ts`
+
+**Notes:** Build: 0 errors. Only top-level items generate memories (child items skip). Uses `createId.projectMemory()` for ID generation. Summarizer prompt enforces JSON output with explicit schema.
+
+---
+
 ## 2026-03-29 — Review: A.16 (approved)
 
 **Reviewed:** Cost tracking and caps — `concurrency.ts`, `dispatch.ts`, `execution-manager.ts`.

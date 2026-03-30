@@ -5,6 +5,7 @@ import { workItems } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import { dispatchForState } from "../agent/dispatch.js";
 import { checkParentCoordination } from "../agent/coordination.js";
+import { checkMemoryGeneration } from "../agent/memory.js";
 import { WORKFLOW } from "@agentops/shared";
 import type {
   WorkItemId,
@@ -141,6 +142,9 @@ export async function workItemRoutes(app: FastifyInstance) {
       });
       checkParentCoordination(id, body.currentState).catch((err) => {
         app.log.error({ err, workItemId: id, state: body.currentState }, "Coordination failed");
+      });
+      checkMemoryGeneration(id, body.currentState).catch((err) => {
+        app.log.error({ err, workItemId: id, state: body.currentState }, "Memory generation failed");
       });
     }
 

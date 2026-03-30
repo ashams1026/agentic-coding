@@ -18,6 +18,7 @@ import { createId, WORKFLOW, isValidTransition } from "@agentops/shared";
 import type { CommentId, WorkItemId, PersonaId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 import { checkParentCoordination } from "./coordination.js";
+import { checkMemoryGeneration } from "./memory.js";
 import { handleRejection } from "./execution-manager.js";
 
 // ── Context passed to the MCP server ────────────────────────────
@@ -341,6 +342,11 @@ export function createMcpServer(context: McpContext): McpServer {
         // Parent-child coordination (non-blocking)
         checkParentCoordination(workItemId, finalTargetState).catch((err) => {
           console.error(`Coordination failed for ${workItemId}:`, err);
+        });
+
+        // Project memory generation (non-blocking)
+        checkMemoryGeneration(workItemId, finalTargetState).catch((err) => {
+          console.error(`Memory generation failed for ${workItemId}:`, err);
         });
 
         return {
