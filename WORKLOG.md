@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — Q.9: Test concurrency limiter
+
+**Task:** Unit tests for the concurrency limiter module (in-memory logic).
+
+**Done:**
+- Created `packages/backend/src/agent/__tests__/concurrency.test.ts` with 14 tests:
+  - `canSpawn()`: true under limit, true at limit-1, false at limit, true again after onComplete
+  - `trackExecution`/`getActiveCount`: starts at 0, increments on track, decrements on complete
+  - `enqueue`/`getQueueLength`: starts empty, enqueue adds entries, multiple enqueues
+  - `onComplete` dequeue: returns null on empty queue, dequeues next entry, priority ordering (p1 before p2), FIFO within same priority
+- Module-level state (Set + queue) managed via afterEach cleanup — onComplete for tracked IDs + drain queue
+
+**Files created:** `packages/backend/src/agent/__tests__/concurrency.test.ts`
+
+**Notes:** Build: 0 errors, 114 tests pass. Task description said "no DB needed" but canSpawn reads project settings and enqueue reads work item priority from DB — mocked DB with test data same as route tests. Priority test uses seed items with different priorities (p1 for CHILD_1A, p2 for TOP_2/TOP_3).
+
+---
+
 ## 2026-03-30 — Review: Q.8 (approved)
 
 **Reviewed:** Dashboard aggregate route tests — `packages/backend/src/routes/__tests__/dashboard.test.ts`.
