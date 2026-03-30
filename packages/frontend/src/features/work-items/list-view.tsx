@@ -7,6 +7,27 @@ import { useWorkItemsStore } from "@/stores/work-items-store";
 import { WORKFLOW, getStateByName } from "@agentops/shared";
 import type { WorkItem, WorkItemId, Priority, Persona } from "@agentops/shared";
 
+// ── Text highlight ─────────────────────────────────────────────
+
+function HighlightedText({ text, query }: { text: string; query: string }) {
+  if (!query) return <>{text}</>;
+  const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
+  const parts = text.split(regex);
+  return (
+    <>
+      {parts.map((part, i) =>
+        regex.test(part) ? (
+          <mark key={i} className="bg-yellow-200 dark:bg-yellow-800/60 text-inherit rounded-sm px-0.5">
+            {part}
+          </mark>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
 // ── Priority config ─────────────────────────────────────────────
 
 const priorityConfig: Record<Priority, { label: string; className: string }> = {
@@ -115,6 +136,7 @@ interface ListRowProps {
   isExpanded: boolean;
   hasChildren: boolean;
   isSelected: boolean;
+  searchQuery: string;
   onToggleExpand: () => void;
   onSelect: () => void;
 }
@@ -129,6 +151,7 @@ function ListRow({
   isExpanded,
   hasChildren,
   isSelected,
+  searchQuery,
   onToggleExpand,
   onSelect,
 }: ListRowProps) {
@@ -191,7 +214,9 @@ function ListRow({
       </Badge>
 
       {/* Title */}
-      <span className="flex-1 truncate text-sm">{item.title}</span>
+      <span className="flex-1 truncate text-sm">
+        <HighlightedText text={item.title} query={searchQuery} />
+      </span>
 
       {/* Progress (if has children) */}
       {childrenTotal > 0 && (
@@ -223,7 +248,7 @@ export function ListView() {
   const { data: allItems, isLoading } = useWorkItems();
   const { data: personas } = usePersonas();
   const { data: executions } = useExecutions();
-  const { groupBy, sortBy, filterState, filterPriority, selectedItemId, setSelectedItemId } =
+  const { searchQuery, groupBy, sortBy, filterState, filterPriority, selectedItemId, setSelectedItemId } =
     useWorkItemsStore();
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -268,8 +293,14 @@ export function ListView() {
     let items = [...allItems];
     if (filterState) items = items.filter((w) => w.currentState === filterState);
     if (filterPriority) items = items.filter((w) => w.priority === filterPriority);
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      items = items.filter(
+        (w) => w.title.toLowerCase().includes(q) || w.description?.toLowerCase().includes(q),
+      );
+    }
     return items;
-  }, [allItems, filterState, filterPriority]);
+  }, [allItems, filterState, filterPriority, searchQuery]);
 
   // Sort function
   const sortItems = (items: WorkItem[]): WorkItem[] => {
@@ -331,6 +362,7 @@ export function ListView() {
           isExpanded={isExpanded}
           hasChildren={hasChildren}
           isSelected={selectedItemId === item.id}
+          searchQuery={searchQuery}
           onToggleExpand={() => toggleExpand(item.id)}
           onSelect={() => setSelectedItemId(item.id)}
         />
@@ -415,6 +447,7 @@ export function ListView() {
                           isExpanded={isExpanded}
                           hasChildren={hasChildren}
                           isSelected={selectedItemId === item.id}
+                          searchQuery={searchQuery}
                           onToggleExpand={() => toggleExpand(item.id)}
                           onSelect={() => setSelectedItemId(item.id)}
                         />

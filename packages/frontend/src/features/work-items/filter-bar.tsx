@@ -1,5 +1,7 @@
-import { X } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -23,10 +25,12 @@ const priorities = [
 
 export function FilterBar() {
   const {
+    searchQuery,
     groupBy,
     sortBy,
     filterState,
     filterPriority,
+    setSearchQuery,
     setGroupBy,
     setSortBy,
     setFilterState,
@@ -34,10 +38,50 @@ export function FilterBar() {
     clearFilters,
   } = useWorkItemsStore();
 
-  const hasFilters = filterState !== null || filterPriority !== null;
+  // Local input state for debounce
+  const [inputValue, setInputValue] = useState(searchQuery);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Sync store → local when store changes externally (e.g. clearFilters)
+  useEffect(() => {
+    setInputValue(searchQuery);
+  }, [searchQuery]);
+
+  // Debounce local → store at 200ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setSearchQuery(inputValue);
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [inputValue, setSearchQuery]);
+
+  const hasFilters = searchQuery !== "" || filterState !== null || filterPriority !== null;
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
+      {/* Text search */}
+      <div className="relative">
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+        <Input
+          ref={inputRef}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          placeholder="Search items..."
+          className="h-8 w-[200px] pl-8 pr-8 text-xs"
+        />
+        {inputValue && (
+          <button
+            onClick={() => {
+              setInputValue("");
+              inputRef.current?.focus();
+            }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        )}
+      </div>
+
       {/* Filter by state */}
       <Select
         value={filterState ?? "all"}

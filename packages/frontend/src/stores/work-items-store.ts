@@ -13,6 +13,7 @@ interface WorkItemsState {
   selectedItemId: WorkItemId | null;
 
   // Filters
+  searchQuery: string;
   filterState: string | null;
   filterPriority: string | null;
   filterPersona: string | null;
@@ -23,6 +24,7 @@ interface WorkItemsState {
   setGroupBy: (groupBy: GroupBy) => void;
   setSortBy: (sortBy: SortBy) => void;
   setSelectedItemId: (id: WorkItemId | null) => void;
+  setSearchQuery: (query: string) => void;
   setFilterState: (state: string | null) => void;
   setFilterPriority: (priority: string | null) => void;
   setFilterPersona: (persona: string | null) => void;
@@ -39,6 +41,7 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       sortBy: "priority",
       selectedItemId: null,
 
+      searchQuery: "",
       filterState: null,
       filterPriority: null,
       filterPersona: null,
@@ -49,6 +52,7 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       setGroupBy: (groupBy) => set({ groupBy }),
       setSortBy: (sortBy) => set({ sortBy }),
       setSelectedItemId: (id) => set({ selectedItemId: id }),
+      setSearchQuery: (searchQuery) => set({ searchQuery }),
       setFilterState: (filterState) => set({ filterState }),
       setFilterPriority: (filterPriority) => set({ filterPriority }),
       setFilterPersona: (filterPersona) => set({ filterPersona }),
@@ -56,6 +60,7 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       setFilterParent: (filterParent) => set({ filterParent }),
       clearFilters: () =>
         set({
+          searchQuery: "",
           filterState: null,
           filterPriority: null,
           filterPersona: null,

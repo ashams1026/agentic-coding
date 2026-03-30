@@ -18,21 +18,41 @@ const viewOptions: { value: WorkItemView; label: string; icon: typeof List }[] =
 
 export function WorkItemsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { view, setView, selectedItemId } = useWorkItemsStore();
+  const { view, setView, searchQuery, setSearchQuery, selectedItemId } = useWorkItemsStore();
   const createWorkItem = useCreateWorkItem();
 
-  // Sync view from URL params on mount
+  // Sync view and search query from URL params on mount
   useEffect(() => {
     const urlView = searchParams.get("view");
     if (urlView && (urlView === "list" || urlView === "flow")) {
       setView(urlView);
     }
+    const urlQuery = searchParams.get("q");
+    if (urlQuery) {
+      setSearchQuery(urlQuery);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync search query → URL params
+  useEffect(() => {
+    const current = searchParams.get("q") ?? "";
+    if (searchQuery !== current) {
+      const next = new URLSearchParams(searchParams);
+      if (searchQuery) {
+        next.set("q", searchQuery);
+      } else {
+        next.delete("q");
+      }
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync URL params when view changes
   const handleViewChange = (newView: WorkItemView) => {
     setView(newView);
-    setSearchParams({ view: newView }, { replace: true });
+    const next = new URLSearchParams(searchParams);
+    next.set("view", newView);
+    setSearchParams(next, { replace: true });
   };
 
   const handleQuickAdd = () => {

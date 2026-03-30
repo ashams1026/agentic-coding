@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — P.5: Add text search to work items
+
+**Task:** Add search input to filter bar, filter by title/description, debounce at 200ms, highlight matches, sync with URL `?q=` param.
+
+**Done:**
+- Added `searchQuery` field + `setSearchQuery` to Zustand store, included in `clearFilters`
+- Added search input to filter bar: left-most position, Search icon, X clear button, 200ms debounce via local state + useEffect
+- Added text filtering in list-view's `filteredItems` memo: matches against `title` and `description` (case-insensitive)
+- Added `HighlightedText` component: regex-based text highlighting with `<mark>` tags (yellow-200 light / yellow-800/60 dark), escapes special regex chars
+- Synced `searchQuery` to URL params (`?q=`) in work-items page: reads on mount, updates on change (replace mode)
+- Updated `handleViewChange` to preserve existing URL params when switching views
+
+**Files modified:** `work-items-store.ts`, `filter-bar.tsx`, `list-view.tsx`, `work-items.tsx`
+
+**Notes:** Build: 0 errors, 145 tests pass. Debounce uses local state pattern (no external dependency). The `HighlightedText` component is defined inline in list-view.tsx, not extracted to a shared util — keep it local until another consumer needs it.
+
+---
+
 ## 2026-03-30 — Review: P.4 (approved)
 
 **Reviewed:** Color palette refinement — `index.css`, `workflow.ts`, + 6 data/component files.
