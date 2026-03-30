@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: PS.9 (approved)
+
+**Reviewed:** Backend routes project scoping audit.
+- Independently verified all 8 routes via grep: work-items, executions, comments, proposals, dashboard/* ✓
+- Each accepts `?projectId=` in Querystring type and destructures it ✓
+- work-items: `eq(workItems.projectId, projectId)` ✓
+- executions/comments/proposals: work item membership pattern ✓
+- dashboard (4 routes): all filter by projectId ✓
+- No code changes needed — verification-only pass is correct ✓
+- Verdict: **approved**
+- **Sprint 15 complete** — all 10 tasks (PS.1-PS.10) approved.
+
+---
+
 ## 2026-03-30 — PS.9: Audit backend routes for project scoping
 
 **Task:** Audit all backend list routes for `?projectId=` query param support.

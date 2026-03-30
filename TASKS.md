@@ -38,7 +38,7 @@
 
 ### Backend Scoping Audit
 
-- [review] **PS.9** — Audit and fix backend routes for project scoping. Review all routes that return lists: `GET /api/work-items`, `GET /api/executions`, `GET /api/comments`, `GET /api/proposals`, `GET /api/dashboard/*`. Ensure each accepts an optional `?projectId=` query param and filters results when provided. For work items this likely already works — verify the others. Add `projectId` filtering to any route that's missing it.
+- [x] **PS.9** — Audit and fix backend routes for project scoping. Review all routes that return lists: `GET /api/work-items`, `GET /api/executions`, `GET /api/comments`, `GET /api/proposals`, `GET /api/dashboard/*`. Ensure each accepts an optional `?projectId=` query param and filters results when provided. For work items this likely already works — verify the others. Add `projectId` filtering to any route that's missing it.
 
 ---
 
