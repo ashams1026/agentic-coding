@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: O.18 (approved)
+
+**Reviewed:** Drizzle schema — `packages/backend/src/db/schema.ts`.
+- All 9 entity tables present matching shared/entities.ts (projects, work_items, work_item_edges, persona_assignments, personas, executions, comments, proposals, project_memories)
+- No workflows or triggers tables — correct per WorkItem model
+- work_items table has all 13 columns from task spec including self-referencing parentId
+- persona_assignments uses composite PK (projectId + stateName) — correct
+- All cross-table FKs defined (comments/executions/proposals/memories → workItemId)
+- JSON columns use $type<> for type safety
+- Relations correctly defined including self-referencing parent/child
+- Backend typecheck: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.18: Rewrite Drizzle schema for WorkItem model
 
 **Task:** Create `packages/backend/src/db/schema.ts` with Drizzle ORM schema matching the WorkItem-based entity model from `@agentops/shared`.
