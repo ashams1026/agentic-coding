@@ -18,7 +18,7 @@
 
 - [x] **PS.1** — Wire project switcher to selectedProjectId. In the sidebar project switcher component: read projects from `useProjects()`, display as dropdown, call `useUIStore.getState().setSelectedProjectId(id)` on selection. Auto-select the first project on initial load if `selectedProjectId` is null. Show the selected project name in the sidebar. Persist selection via the existing Zustand persist config.
 
-- [ ] **PS.2** — Create a useSelectedProject hook. Create `packages/frontend/src/hooks/use-selected-project.ts`: reads `selectedProjectId` from `useUIStore`, fetches the full project via `useProject(id)`, returns `{ project, projectId, isLoading }`. This becomes the single source of truth for "which project am I looking at" — all other hooks consume it.
+- [review] **PS.2** — Create a useSelectedProject hook. Create `packages/frontend/src/hooks/use-selected-project.ts`: reads `selectedProjectId` from `useUIStore`, fetches the full project via `useProject(id)`, returns `{ project, projectId, isLoading }`. This becomes the single source of truth for "which project am I looking at" — all other hooks consume it.
 
 - [ ] **PS.3** — Scope work items queries to selected project. Update all `useWorkItems()` call sites (list-view, board-view, flow-view, filter-bar, detail-panel, command-palette, agent-monitor components — ~10 files) to pass `projectId` from `useSelectedProject()`. The hook already accepts `projectId` as a parameter — callers just aren't passing it.
 

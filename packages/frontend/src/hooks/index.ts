@@ -1,6 +1,7 @@
 export { queryKeys } from "./query-keys";
 export { useThemeSync } from "./use-theme";
 export { useProjects, useProject, useCreateProject, useUpdateProject, useDeleteProject } from "./use-projects";
+export { useSelectedProject } from "./use-selected-project";
 export { useWorkItems, useWorkItem, useCreateWorkItem, useUpdateWorkItem, useDeleteWorkItem, useWorkItemEdges, useCreateWorkItemEdge, useDeleteWorkItemEdge } from "./use-work-items";
 export { usePersonaAssignments, useUpdatePersonaAssignment } from "./use-persona-assignments";
 export { usePersonas, usePersona, useCreatePersona, useUpdatePersona, useDeletePersona } from "./use-personas";

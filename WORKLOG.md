@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — PS.2: Create useSelectedProject hook
+
+**Task:** Create `use-selected-project.ts` hook as single source of truth for the selected project.
+
+**Done:**
+- Created `packages/frontend/src/hooks/use-selected-project.ts`: reads `selectedProjectId` from `useUIStore`, fetches full project via `useProject(id)`, returns `{ project, projectId, isLoading }`
+- Updated `useProject` in `use-projects.ts` to accept `ProjectId | null` with `enabled: !!id` — prevents broken fetch when no project is selected
+- Exported `useSelectedProject` from `hooks/index.ts` barrel
+
+**Files created:** `packages/frontend/src/hooks/use-selected-project.ts`
+**Files modified:** `packages/frontend/src/hooks/use-projects.ts`, `packages/frontend/src/hooks/index.ts`
+
+**Notes:** `useProject` previously only accepted `ProjectId` (non-null). Updated to accept null with `enabled` guard so downstream hooks like `useSelectedProject` work correctly when no project is selected. Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: PS.1 (approved)
 
 **Reviewed:** Sidebar project switcher wiring to selectedProjectId.

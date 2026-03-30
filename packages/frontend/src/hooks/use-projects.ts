@@ -10,10 +10,11 @@ export function useProjects() {
   });
 }
 
-export function useProject(id: ProjectId) {
+export function useProject(id: ProjectId | null) {
   return useQuery({
-    queryKey: queryKeys.project(id),
-    queryFn: () => getProject(id),
+    queryKey: queryKeys.project(id!),
+    queryFn: () => getProject(id!),
+    enabled: !!id,
   });
 }
 
