@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-29 — T3.2.7: Implement persona API routes
+
+**Task:** Create persona CRUD routes.
+
+**Done:**
+- Created `routes/personas.ts`: 5 routes
+  - `GET /api/personas` — list all
+  - `GET /api/personas/:id` — get single
+  - `POST /api/personas` — create (CreatePersonaRequest, defaults for avatar/tools/budget)
+  - `PATCH /api/personas/:id` — partial update (UpdatePersonaRequest, 400 if no fields)
+  - `DELETE /api/personas/:id` — delete
+- Registered in `server.ts`
+- Serializer casts PersonaId, passes through all persona fields
+
+**Files created:** `routes/personas.ts`
+**Files modified:** `server.ts`
+
+**Notes:** Backend typecheck: 0 errors. No timestamp fields on personas — simpler serializer than other routes.
+
+---
+
 ## 2026-03-29 — Review: T3.2.5 (approved)
 
 **Reviewed:** Comment routes — `routes/comments.ts`, `server.ts`.

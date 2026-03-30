@@ -4,6 +4,7 @@ import { workItemRoutes } from "./routes/work-items.js";
 import { personaAssignmentRoutes } from "./routes/persona-assignments.js";
 import { workItemEdgeRoutes } from "./routes/work-item-edges.js";
 import { commentRoutes } from "./routes/comments.js";
+import { personaRoutes } from "./routes/personas.js";
 
 export async function buildServer() {
   const server = Fastify({
@@ -32,6 +33,7 @@ export async function buildServer() {
   await personaAssignmentRoutes(server);
   await workItemEdgeRoutes(server);
   await commentRoutes(server);
+  await personaRoutes(server);
 
   return server;
 }
