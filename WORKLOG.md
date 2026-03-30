@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — P.11: Add loading and empty states
+
+**Task:** Add skeleton loading states and empty state messaging across the app.
+
+**Done:**
+- **List view**: Improved loading skeleton from plain bars to badge+text+avatar shimmer pattern (5 rows). Added empty states: "No work items yet. Click + to create one." when no items, "No items match your filters." when filters active.
+- **Detail panel**: Added loading skeleton (title bar + badges + content placeholders) when item is selected but data not yet loaded. Children section now shows "No children. Click 'Add child' or 'Decompose'." instead of hiding entirely.
+- **Dashboard**: Stat card values show shimmer placeholder (`h-8 w-12 animate-pulse`) when loading instead of "—" text.
+- **Flow view**: Already had node placeholder skeletons — no changes needed.
+- **Comment stream**: Already had "No comments yet." empty state — no changes needed.
+
+**Files modified:** `list-view.tsx`, `detail-panel.tsx`, `dashboard.tsx`
+
+**Notes:** Build: 0 errors. Used `&apos;` for HTML entity in JSX string. Empty state detection checks all filter types (search, state, priority, personas, labels).
+
+---
+
 ## 2026-03-30 — Review: P.10 (approved)
 
 **Reviewed:** Tooltips across the app — `tooltip.tsx`, `root-layout.tsx`, `list-view.tsx`, `work-items.tsx`, `detail-panel.tsx`, `filter-bar.tsx`.

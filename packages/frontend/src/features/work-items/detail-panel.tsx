@@ -495,7 +495,14 @@ function ChildrenList({
   children: WorkItem[];
   onNavigate: (id: WorkItemId) => void;
 }) {
-  if (children.length === 0) return null;
+  if (children.length === 0) {
+    return (
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium">Children</h3>
+        <p className="text-xs text-muted-foreground py-2">No children. Click &apos;Add child&apos; or &apos;Decompose&apos;.</p>
+      </div>
+    );
+  }
 
   const done = children.filter((c) => c.currentState === "Done").length;
 
@@ -657,7 +664,24 @@ export function DetailPanel() {
     return map;
   }, [assignments, personaMap]);
 
-  if (!selectedItemId || !item) return null;
+  if (!selectedItemId) return null;
+
+  if (!item) {
+    return (
+      <div className="h-full border-l border-border p-6 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="h-7 w-3/4 rounded bg-muted animate-pulse" />
+          <div className="h-7 w-7 rounded bg-muted animate-pulse" />
+        </div>
+        <div className="flex gap-2">
+          <div className="h-5 w-16 rounded bg-muted animate-pulse" />
+          <div className="h-5 w-12 rounded bg-muted animate-pulse" />
+        </div>
+        <div className="h-20 rounded bg-muted animate-pulse" />
+        <div className="h-32 rounded bg-muted animate-pulse" />
+      </div>
+    );
+  }
 
   const stateInfo = getStateByName(item.currentState);
 

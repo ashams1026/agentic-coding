@@ -416,10 +416,27 @@ export function ListView() {
 
   if (isLoading) {
     return (
-      <div className="space-y-2 p-2">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="h-9 rounded-md bg-muted animate-pulse" />
+      <div className="space-y-1 p-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-2 px-3 py-2">
+            <div className="h-5 w-16 rounded bg-muted animate-pulse" />
+            <div className="h-5 w-8 rounded bg-muted animate-pulse" />
+            <div className="h-5 flex-1 rounded bg-muted animate-pulse" />
+            <div className="h-5 w-5 rounded-full bg-muted animate-pulse" />
+          </div>
         ))}
+      </div>
+    );
+  }
+
+  // Empty states
+  if (filteredItems.length === 0 && !isLoading) {
+    const hasFilters = searchQuery || filterState || filterPriority || filterPersonas.length > 0 || filterLabels.length > 0;
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center p-8">
+        <p className="text-sm text-muted-foreground">
+          {hasFilters ? "No items match your filters." : "No work items yet. Click + to create one."}
+        </p>
       </div>
     );
   }

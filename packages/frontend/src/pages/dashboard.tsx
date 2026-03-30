@@ -30,7 +30,11 @@ function StatCard({ title, value, icon, iconBgClass, onClick }: StatCardProps) {
         </div>
         <div className="min-w-0">
           <p className="text-sm text-muted-foreground">{title}</p>
-          <p className="text-2xl font-bold tracking-tight">{value}</p>
+          {value === "—" ? (
+            <div className="h-8 w-12 rounded bg-muted animate-pulse" />
+          ) : (
+            <p className="text-2xl font-bold tracking-tight">{value}</p>
+          )}
         </div>
       </CardContent>
     </Card>
