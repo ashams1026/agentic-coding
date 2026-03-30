@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-29 — Decompose Sprint 8: Agent Execution Engine
+
+**Phase:** Phase 4 (Workflow & Router) + Phase 5 (Agent Persona & Execution) from PLANNING.md.
+
+**Context:** Sprint 7 complete (9/9 tasks). T4.1 (hardcoded workflow) already done in Sprint 6. T4.6 (user intervention UI) partially done in Sprint 7. Backend has CRUD routes, WebSocket, Drizzle schema — ready for agent layer.
+
+**Tasks created:** 18 tasks (A.1–A.18) across 6 sections:
+1. Agent MCP Server (A.1–A.5): Scaffold, post_comment, create_children, route_to_state, read-only tools
+2. Agent Executor (A.6–A.9): Types, Claude SDK executor, system prompt assembly, execution lifecycle
+3. Workflow Dispatch & Router (A.10–A.12): State-entry dispatch, Router agent, lifecycle wiring
+4. State Coordination & Rejection (A.13–A.14): Parent-child auto-advance, retry logic
+5. Concurrency & Cost (A.15–A.16): Limiter with queue, monthly cost caps
+6. Project Memory (A.17–A.18): Summary generation, consolidation, retrieval
+
+**Key decisions:**
+- Ordered by dependency: MCP tools first (agents need tools), then executor (needs MCP), then dispatch/router (needs executor)
+- Router uses haiku model for cost efficiency — read-only tools + route_to_state
+- Concurrency tracking in-memory (not DB) — process-local, sufficient for single-server
+- Memory consolidation via haiku one-shot — keeps costs low
+
+---
+
 ## 2026-03-29 — Review: U.9 (approved)
 
 **Reviewed:** Bottom padding fix — `root-layout.tsx`.
