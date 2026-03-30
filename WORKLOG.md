@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: O.16 (approved)
+
+**Reviewed:** Workflow configuration — `workflow-config-section.tsx`, `settings-layout.tsx`, `projects-section.tsx`.
+- All 6 requirements met: workflow config panel in settings, auto-routing toggle, persona-per-state table (5 states, dropdown + model badge), SVG state machine diagram, old workflow refs removed from projects
+- PersonaStateTable correctly filters out Backlog/Done/Blocked (non-configurable per PLANNING.md)
+- WorkflowDiagram renders all states with transitions, Blocked positioned below
+- projects-section fully cleaned — zero workflow/WorkflowId references remain
+- No type errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.16: Build workflow configuration in settings
 
 **Task:** Add per-project workflow config panel with auto-routing toggle, persona-per-state table, state machine diagram.

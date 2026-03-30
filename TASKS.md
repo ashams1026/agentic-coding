@@ -29,7 +29,7 @@
 
 ### Settings: Workflow Configuration
 
-- [review] **O.16** — Build workflow configuration in settings. In the settings page (projects section): add per-project workflow config panel. Auto-routing toggle (ON/OFF switch). Persona-per-state table: rows for each state (from WORKFLOW.states), columns: state name (read-only), persona dropdown (from personas list), model badge. Read-only state machine diagram below the table showing states and transitions visually (simple SVG or canvas rendering of the hardcoded workflow). Remove old workflow-related settings.
+- [x] **O.16** — Build workflow configuration in settings. In the settings page (projects section): add per-project workflow config panel. Auto-routing toggle (ON/OFF switch). Persona-per-state table: rows for each state (from WORKFLOW.states), columns: state name (read-only), persona dropdown (from personas list), model badge. Read-only state machine diagram below the table showing states and transitions visually (simple SVG or canvas rendering of the hardcoded workflow). Remove old workflow-related settings.
 
 ### Remove Old Code
 
