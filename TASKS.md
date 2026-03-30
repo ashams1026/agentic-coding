@@ -14,7 +14,7 @@
 
 - [x] **D.1** — Write project README. Replace the current root `README.md` with a proper project overview: what AgentOps is (one paragraph), key features (bullet list), screenshot or architecture diagram placeholder, quick start (prerequisites, install, run), link to full docs in `docs/`. Keep it concise — this is the first thing someone sees.
 
-- [ ] **D.2** — Write getting started guide. Create `docs/getting-started.md`: prerequisites (Node 22, pnpm), clone + install steps, first run (`pnpm dev`), creating your first project (register a directory), configuring your API key, creating a work item and walking it through states manually, enabling auto-routing for the first time. Step-by-step with expected output at each stage.
+- [review] **D.2** — Write getting started guide. Create `docs/getting-started.md`: prerequisites (Node 22, pnpm), clone + install steps, first run (`pnpm dev`), creating your first project (register a directory), configuring your API key, creating a work item and walking it through states manually, enabling auto-routing for the first time. Step-by-step with expected output at each stage.
 
 - [ ] **D.3** — Document the architecture. Create `docs/architecture.md`: high-level system diagram (monorepo packages, how they connect), frontend stack (React, Vite, Tailwind, shadcn/ui, TanStack Query, Zustand), backend stack (Fastify, SQLite, Drizzle, WebSocket), shared types package, data flow (HTTP requests, WebSocket events, agent execution lifecycle). Include a simple ASCII or mermaid diagram showing the request flow from UI action → API → agent dispatch → execution → WS update → UI refresh.
 

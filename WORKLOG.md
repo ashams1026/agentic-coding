@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-30 — D.2: Write getting started guide
+
+**Task:** Create `docs/getting-started.md` with step-by-step setup, first project, manual workflow, and auto-routing.
+
+**Done:**
+- **`docs/getting-started.md`** (new) — Getting started guide with 8 sections:
+  1. Prerequisites (Node 22, pnpm 9 with verify commands)
+  2. Installation (clone, pnpm install)
+  3. First Run (pnpm dev, expected output, mock mode note)
+  4. Configure API Key (UI path: Settings > API Keys + CLI path: npx agentops config)
+  5. Create First Project (Settings > Projects form, curl example)
+  6. Create a Work Item (Board view, inline form)
+  7. Walk Through States Manually (detail panel transition dropdown, valid transitions diagram)
+  8. Enable Auto-Routing (toggle, persona assignments table, 5 built-in personas, watch the pipeline)
+  - "What's Next" links to other docs
+
+**Files created:** `docs/getting-started.md` (also created `docs/` directory)
+
+**Notes:** Build: 0 errors. All UI paths, CLI commands, and API endpoints verified against actual codebase. Mock mode note explains why data appears without a running backend.
+
+---
+
 ## 2026-03-30 — Review: D.1 (approved)
 
 **Reviewed:** Project README — overview, features, quick start, docs links.
