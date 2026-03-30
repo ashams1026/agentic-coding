@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — P.8: Make detail panel resizable
+
+**Task:** Replace fixed w-2/5 / w-3/5 split with a draggable divider. Track panel width in Zustand (persist to localStorage). Clamp between 30% and 70%.
+
+**Done:**
+- **Store**: Added `detailPanelWidth: number` (percentage, default 60) + `setDetailPanelWidth` action with clamping (30-70%). Persisted in `partialize`.
+- **Work items page**: Replaced fixed `w-2/5`/`w-3/5` classes with percentage-based `style={{ width }}` driven by store. Added 4px resize handle (`w-1 cursor-col-resize`) between list and detail panel.
+- **Resize handle**: `onMouseDown` sets resizing state → `mousemove` on document calculates percentage from mouse position relative to container right edge → `mouseup` stops. Sets `cursor: col-resize` and `user-select: none` on body during drag.
+- **Grip indicator**: Three dots centered on handle, visible on hover via group-hover opacity transition.
+- **Visual feedback**: Handle highlights with `border-primary/50 bg-primary/10` on hover and during active resize.
+
+**Files modified:** `work-items-store.ts`, `work-items.tsx`
+
+**Notes:** Build: 0 errors. Using `containerRef` + `getBoundingClientRect()` for accurate percentage calculation. Cleanup removes listeners and resets body styles on mouseup or unmount.
+
+---
+
 ## 2026-03-30 — Review: P.7 (approved)
 
 **Reviewed:** Sort direction toggle and secondary sort — `work-items-store.ts`, `filter-bar.tsx`, `list-view.tsx`, `work-items.tsx`.

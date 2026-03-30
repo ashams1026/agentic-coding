@@ -13,6 +13,7 @@ interface WorkItemsState {
   sortBy: SortBy;
   sortDir: SortDir;
   selectedItemId: WorkItemId | null;
+  detailPanelWidth: number; // percentage (30-70)
 
   // Filters
   searchQuery: string;
@@ -28,6 +29,7 @@ interface WorkItemsState {
   setSortDir: (sortDir: SortDir) => void;
   toggleSortDir: () => void;
   setSelectedItemId: (id: WorkItemId | null) => void;
+  setDetailPanelWidth: (width: number) => void;
   setSearchQuery: (query: string) => void;
   setFilterState: (state: string | null) => void;
   setFilterPriority: (priority: string | null) => void;
@@ -45,6 +47,7 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       sortBy: "priority",
       sortDir: "asc",
       selectedItemId: null,
+      detailPanelWidth: 60,
 
       searchQuery: "",
       filterState: null,
@@ -60,6 +63,8 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       toggleSortDir: () =>
         set((state) => ({ sortDir: state.sortDir === "asc" ? "desc" : "asc" })),
       setSelectedItemId: (id) => set({ selectedItemId: id }),
+      setDetailPanelWidth: (width) =>
+        set({ detailPanelWidth: Math.min(70, Math.max(30, width)) }),
       setSearchQuery: (searchQuery) => set({ searchQuery }),
       setFilterState: (filterState) => set({ filterState }),
       setFilterPriority: (filterPriority) => set({ filterPriority }),
@@ -93,6 +98,7 @@ export const useWorkItemsStore = create<WorkItemsState>()(
         groupBy: state.groupBy,
         sortBy: state.sortBy,
         sortDir: state.sortDir,
+        detailPanelWidth: state.detailPanelWidth,
       }),
     },
   ),

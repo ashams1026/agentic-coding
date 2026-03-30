@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { List, GitBranch, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ const viewOptions: { value: WorkItemView; label: string; icon: typeof List }[] =
 export function WorkItemsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const store = useWorkItemsStore();
-  const { view, setView, searchQuery, setSearchQuery, sortDir, setSortDir, filterPersonas, filterLabels, selectedItemId } = store;
+  const { view, setView, searchQuery, setSearchQuery, sortDir, setSortDir, filterPersonas, filterLabels, selectedItemId, detailPanelWidth, setDetailPanelWidth } = store;
   const createWorkItem = useCreateWorkItem();
 
   // Sync URL params → store on mount
@@ -71,6 +71,41 @@ export function WorkItemsPage() {
     next.set("view", newView);
     setSearchParams(next, { replace: true });
   };
+
+  // Resize handle logic
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isResizing, setIsResizing] = useState(false);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizing(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const container = containerRef.current;
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const pct = ((rect.right - e.clientX) / rect.width) * 100;
+      setDetailPanelWidth(pct);
+    };
+
+    const handleMouseUp = () => setIsResizing(false);
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [isResizing, setDetailPanelWidth]);
 
   const handleQuickAdd = () => {
     createWorkItem.mutate({
@@ -125,16 +160,37 @@ export function WorkItemsPage() {
       </div>
 
       {/* Content: view + detail panel */}
-      <div className="flex flex-1 overflow-hidden">
-        <div className={cn("flex-1 overflow-hidden p-6", selectedItemId && "w-2/5")}>
+      <div ref={containerRef} className="flex flex-1 overflow-hidden">
+        <div
+          className="overflow-hidden p-6"
+          style={{ width: selectedItemId ? `${100 - detailPanelWidth}%` : "100%" }}
+        >
           {view === "list" && <ListView />}
           {view === "flow" && <FlowView />}
         </div>
 
         {selectedItemId && (
-          <div className="w-3/5 shrink-0">
-            <DetailPanel />
-          </div>
+          <>
+            {/* Resize handle */}
+            <div
+              className={cn(
+                "shrink-0 w-1 cursor-col-resize border-l border-border hover:border-primary/50 hover:bg-primary/10 transition-colors relative group",
+                isResizing && "border-primary/50 bg-primary/10",
+              )}
+              onMouseDown={handleMouseDown}
+            >
+              {/* Grip indicator */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                <span className="block h-0.5 w-0.5 rounded-full bg-muted-foreground" />
+                <span className="block h-0.5 w-0.5 rounded-full bg-muted-foreground" />
+                <span className="block h-0.5 w-0.5 rounded-full bg-muted-foreground" />
+              </div>
+            </div>
+
+            <div className="overflow-hidden shrink-0" style={{ width: `${detailPanelWidth}%` }}>
+              <DetailPanel />
+            </div>
+          </>
         )}
       </div>
     </div>

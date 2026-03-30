@@ -30,7 +30,7 @@
 
 ### Detail Panel Improvements
 
-- [ ] **P.8** — Make detail panel resizable. In `packages/frontend/src/pages/work-items.tsx`: replace the fixed `w-2/5` / `w-3/5` split with a draggable divider. Add a 4px vertical resize handle between the list and detail panel (cursor-col-resize, subtle border-l with hover highlight). Track panel width in Zustand (persist to localStorage). Clamp width between 30% and 70% of container. Smooth resize with no layout jank. Show a subtle visual grip indicator on the divider.
+- [review] **P.8** — Make detail panel resizable. In `packages/frontend/src/pages/work-items.tsx`: replace the fixed `w-2/5` / `w-3/5` split with a draggable divider. Add a 4px vertical resize handle between the list and detail panel (cursor-col-resize, subtle border-l with hover highlight). Track panel width in Zustand (persist to localStorage). Clamp width between 30% and 70% of container. Smooth resize with no layout jank. Show a subtle visual grip indicator on the divider.
 
 - [ ] **P.9** — Add visual divider and panel transition. Add a `border-l border-border` between the list pane and detail panel. Animate panel open/close with a slide-in transition (`transition-all duration-200`). When panel closes, list smoothly expands back to full width.
 
