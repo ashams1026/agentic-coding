@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: A.16 (approved)
+
+**Reviewed:** Cost tracking and caps — `concurrency.ts`, `dispatch.ts`, `execution-manager.ts`.
+- checkMonthlyCost: queries executions JOIN workItems, sums cents→dollars, compares to monthCap ✓
+- getProjectCostSince: coalesce(sum, 0) with gte(startedAt, since) ✓
+- dispatch.ts: cost cap check before concurrency check, system comment + broadcast on block ✓
+- execution-manager: cost_update broadcast (todayCostUsd + monthCostUsd) after agent_completed, non-blocking ✓
+- getMonthCap: 0 = no cap, skips check ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.16: Implement cost tracking and caps
 
 **Task:** Monthly cost cap check before spawning, cost_update broadcast after execution.
