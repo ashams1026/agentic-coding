@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-29 — U.2: Build Flow view
+
+**Task:** Create state machine graph view for work items with live containers, directed arrows, and filtered item panel.
+
+**Done:**
+- Created `packages/frontend/src/features/work-items/flow-view.tsx` (~330 lines):
+  - **Layout engine**: Static positions computed at module level for 7 main states (horizontal row) + Blocked (centered below). Constants: NODE_W=168, NODE_H=130, GAP_X=40, GAP_Y=64.
+  - **Arrow paths**: Precomputed cubic bezier curves for all WORKFLOW transitions. Forward arrows: right-to-left with slight curve for non-adjacent. Backward arrows: arc below nodes. Blocked arrows: vertical beziers up/down.
+  - **StateNode component**: Colored header (state color + name + item count badge), active agent indicator (pulsing emerald dot via `animate-ping` + count), mini avatar stack of personas with running executions, progress bar (children done/total aggregated across items in state).
+  - **Data computation**: `useMemo` aggregates items by state, counts active agents from running executions (grouped by state via itemStateMap), builds child progress stats.
+  - **Click interaction**: Clicking a state node toggles `filterState` in the Zustand store (highlights node with ring). Below the graph, a filtered items list appears showing items in the selected state with priority badge, title, and persona avatar. Clicking an item sets `selectedItemId` to open the detail panel.
+  - **SVG overlay**: Arrows rendered in an absolute-positioned SVG layer with `pointer-events-none`. Arrow markers defined with `<marker>` + `<polygon>`.
+  - **Horizontal scroll**: `ScrollArea` wraps the canvas for viewports narrower than the 1504px graph.
+  - **Loading skeleton**: Placeholder blocks matching node dimensions.
+
+**Files created:** `packages/frontend/src/features/work-items/flow-view.tsx`
+
+**Notes:** Frontend build: 0 errors. Component is not yet wired into the page — U.3 will replace the Board import with Flow in work-items.tsx and update the view toggle. The `FlowView` export matches the same pattern as `BoardView` and `ListView` so U.3 can swap it in directly.
+
+---
+
 ## 2026-03-29 — Review: U.1 (approved)
 
 **Reviewed:** Tree view removal — `tree-view.tsx` deleted, `work-items.tsx`, `work-items-store.ts` updated.
