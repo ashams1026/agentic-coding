@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-03-30 — Review: AI.16 (approved)
+
+**Reviewed:** Work Items flow view E2E test execution results.
+- Results file: 13-row step table, all pass. Covers all 8 state nodes (Backlog/Planning/Decomposition/Ready/In Progress/In Review/Done/Blocked), item count badges (total 16, no NaN), agent status indicators (2 active, 6 idle), 16 SVG arrow paths with arrowhead, count match verified against list view (16=16), node click filtering (In Progress → 2 items), detail panel from filtered list, node deselect, zero-count node → "No items in this state." ✓
+- Screenshot `work-items-flow-view.png` exists ✓
+- No code changes, build not affected ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.16: Execute work-items-flow-view.md
 
 **Task:** Execute the work items flow view test plan in a real browser via chrome-devtools MCP.
