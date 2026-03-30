@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-30 — D.10: Document the frontend
+
+**Task:** Create `docs/frontend.md` with directory structure, feature pattern, views, mock layer, state management, design system.
+
+**Done:**
+- **`docs/frontend.md`** (new) — Frontend documentation with:
+  - Full directory tree (14 directories/files in src/ with descriptions)
+  - Route table (6 routes: /, /items, /agents, /activity, /personas, /settings)
+  - Feature directory pattern: collocated components with examples (work-items: 5 files, agent-monitor: 7 files)
+  - Work items views: List View (table with sorting/filtering) and Flow View (dependency graph), URL-synced view state
+  - Detail panel: resizable side panel with work item info, children, timeline, comments, proposals, transitions
+  - Mock data layer architecture: api/index.ts → pick(mockFn, realFn) → mocks/api.ts or api/client.ts
+  - Mock/API mode switching via Settings UI, localStorage persistence, fixture data (~800 lines)
+  - State management: TanStack Query for server state (query keys factory, mutations with invalidation, WS sync), Zustand for UI state (4 stores: ui, work-items, toast, activity)
+  - ui-store fields table: 6 persisted state fields with types and defaults
+  - Design system: persona colors (5), status colors (7), priority colors (4), shadcn/ui semantic colors (light+dark)
+  - Typography scale: 5 custom utilities (page-title, section-title, body, label, caption)
+  - Component library: 18 shadcn/ui components listed
+  - Dark mode: light/dark/system via .dark class
+  - Density: comfortable/compact via data-density attribute
+  - Source files table (9 files)
+
+**Files created:** `docs/frontend.md`
+
+**Notes:** Build: 0 errors. Directory structure verified by listing actual filesystem. Routes verified against `router.tsx`. UI store fields verified against `ui-store.ts`. Color tokens verified against `index.css` @theme blocks. shadcn/ui components verified by listing `components/ui/`.
+
+---
+
 ## 2026-03-30 — Review: D.9 (approved)
 
 **Reviewed:** Configuration and deployment documentation — config, CLI, pm2, logging, database, shutdown, recovery.

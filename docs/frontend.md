@@ -1,0 +1,328 @@
+# Frontend
+
+The AgentOps frontend is a React single-page application built with Vite, Tailwind CSS v4, and shadcn/ui. It runs on port 5173 in development and can operate entirely against mock data or a live backend.
+
+## Directory Structure
+
+```
+packages/frontend/src/
+  main.tsx              # Entry point — mounts React app
+  app.tsx               # App root — providers (QueryClient, RouterProvider, TooltipProvider)
+  router.tsx            # Route definitions (6 routes)
+  index.css             # Tailwind config, theme tokens, typography scale, dark mode, density overrides
+  api/                  # Unified API layer
+    index.ts            # Delegates to mock or real based on apiMode
+    client.ts           # Real HTTP client (fetch wrapper)
+    ws-client.ts        # WebSocket client connection
+    ws.ts               # WebSocket event subscription helpers
+  mocks/                # Mock data layer
+    api.ts              # Mock API implementations (in-memory CRUD)
+    fixtures.ts         # Seed data (~800 lines of realistic fixtures)
+    demo.ts             # Demo mode — simulated agent executions
+    ws.ts               # Mock WebSocket event emitter
+  features/             # Feature modules (collocated components)
+    work-items/         # Board, list, flow views + detail panel + filter bar
+    dashboard/          # Stats cards, cost chart, activity feed, upcoming work
+    agent-monitor/      # Terminal renderer, split view, agent history, tool calls
+    persona-manager/    # Persona cards, editor, prompt preview
+    settings/           # API keys, costs, workflow config, appearance, data management
+    activity-feed/      # Chronological event stream
+    common/             # Shared feature components (detail panels, etc.)
+    command-palette/    # Global command palette (Cmd+K)
+    toasts/             # Toast notification system
+    demo/               # Demo mode controls
+  pages/                # Route-level page components
+    dashboard.tsx       # Dashboard page (/ route)
+    work-items.tsx      # Work items page (/items) — view switcher + detail panel
+    agent-monitor.tsx   # Agent monitor page (/agents)
+    activity-feed.tsx   # Activity feed page (/activity)
+    persona-manager.tsx # Persona manager page (/personas)
+    settings.tsx        # Settings page (/settings)
+  components/           # Shared UI components
+    sidebar.tsx         # App sidebar with navigation and project switcher
+    status-bar.tsx      # Bottom status bar (active agents, cost, WebSocket status)
+    ui/                 # shadcn/ui primitives (18 components)
+  hooks/                # TanStack Query hooks wrapping the API layer
+    index.ts            # Barrel export
+    query-keys.ts       # Query key factory
+    use-projects.ts     # Project CRUD hooks
+    use-work-items.ts   # Work item + edge CRUD hooks
+    use-personas.ts     # Persona CRUD hooks
+    use-persona-assignments.ts  # Assignment hooks
+    use-comments.ts     # Comment hooks
+    use-executions.ts   # Execution hooks
+    use-proposals.ts    # Proposal hooks
+    use-dashboard.ts    # Dashboard aggregate hooks
+    use-theme.ts        # Theme + density sync to DOM
+    use-ws-sync.ts      # WebSocket → query cache invalidation
+    use-demo.ts         # Demo mode hook
+  stores/               # Zustand stores for UI state
+    ui-store.ts         # Sidebar, theme, apiMode, density, selected project
+    work-items-store.ts # View mode, filters, sort, selected item, panel width
+    toast-store.ts      # Toast notification queue
+    activity-store.ts   # Activity feed filter state
+  layouts/
+    root-layout.tsx     # Root layout with sidebar, mobile nav, status bar
+  lib/
+    utils.ts            # cn() utility for class merging
+```
+
+## Routes
+
+| Path | Page | Description |
+|---|---|---|
+| `/` | Dashboard | Stats cards, cost chart, active agents, recent activity |
+| `/items` | Work Items | Board/list/flow views with detail panel |
+| `/agents` | Agent Monitor | Live terminal output, split view, execution history |
+| `/activity` | Activity Feed | Chronological event stream |
+| `/personas` | Persona Manager | Persona cards, editor, tool config |
+| `/settings` | Settings | API keys, costs, workflow, appearance, data |
+
+All routes are wrapped in `RootLayout` which provides the sidebar, mobile navigation, and status bar.
+
+## Feature Directory Pattern
+
+Each feature module in `features/` contains **collocated components and hooks** — everything needed for that feature lives together:
+
+```
+features/work-items/
+  board-view.tsx      # Kanban board with drag-and-drop columns
+  list-view.tsx       # Tabular list with sorting and inline editing
+  flow-view.tsx       # Dependency graph visualization
+  detail-panel.tsx    # Side panel showing full work item details
+  filter-bar.tsx      # Search, persona filter, label filter, sort controls
+```
+
+```
+features/agent-monitor/
+  agent-monitor-layout.tsx  # Page layout with sidebar + content
+  split-view.tsx            # Multi-agent split terminal view
+  terminal-renderer.tsx     # Terminal-like output renderer
+  active-agent-sidebar.tsx  # Sidebar listing active agent sessions
+  agent-control-bar.tsx     # Play/pause/stop controls
+  agent-history.tsx         # Past execution history
+  tool-call-display.tsx     # Formatted tool call/result display
+```
+
+This pattern keeps imports short and features self-contained. Pages are thin wrappers that compose feature components.
+
+## Views
+
+### Work Items Page
+
+The work items page (`/items`) offers two view modes, toggled via buttons in the header:
+
+**List View** — Tabular layout with sortable columns (title, state, priority, persona, updated). Supports inline state transitions, search filtering, persona/label filtering, and click-to-select for the detail panel.
+
+**Flow View** — Dependency graph visualization showing work items as nodes connected by edges (`blocks`, `depends_on`, `related_to`). Interactive — click nodes to open the detail panel.
+
+Both views share the same filter bar and detail panel. The selected view is persisted in the `work-items-store` Zustand store and synced to URL search params (`?view=list` or `?view=flow`).
+
+### Detail Panel
+
+A resizable side panel that appears when a work item is selected. Shows:
+- Work item title, state badge, priority
+- Description (markdown)
+- Child work items (expandable tree)
+- Execution timeline (history of agent runs)
+- Comment stream (agent, user, and system comments)
+- Proposals (pending/approved/rejected)
+- State transition dropdown (valid next states only)
+
+The panel width is persisted in the work-items store.
+
+## Mock Data Layer
+
+The frontend ships with a complete mock data layer that simulates the entire backend in-browser.
+
+### Architecture
+
+```
+hooks/use-*.ts  →  api/index.ts  →  pick(mockFn, realFn)
+                                        │           │
+                                   mocks/api.ts  api/client.ts
+                                        │           │
+                                   In-memory     HTTP fetch
+                                   CRUD on       to backend
+                                   fixtures       :3001
+```
+
+### How It Works
+
+1. `api/index.ts` exports every API function (e.g., `getWorkItems`, `createProject`)
+2. Each function uses `pick(mockFn, realFn)` to select the implementation
+3. `pick()` reads `apiMode` from the UI store: `"mock"` or `"api"`
+4. Mock mode: calls `mocks/api.ts` which operates on in-memory fixture data
+5. API mode: calls `api/client.ts` which makes real HTTP requests to `localhost:3001`
+
+### Switching Modes
+
+Toggle in **Settings > Appearance > API Mode**:
+
+- **Mock** (default): All data comes from `mocks/fixtures.ts`. No backend needed. WebSocket events are simulated by `mocks/ws.ts`.
+- **API**: Data comes from the real backend. Requires `pnpm dev` (backend running on port 3001).
+
+The mode is persisted to localStorage via the UI store.
+
+### Fixture Data
+
+`mocks/fixtures.ts` contains ~800 lines of realistic seed data:
+- 1 project ("AgentOps")
+- 5 personas (Product Manager, Tech Lead, Engineer, Code Reviewer, Router)
+- 3 top-level work items with children and grandchildren
+- 10 executions across various states
+- Comments, proposals, persona assignments, project memories
+- Work item edges (dependency graph)
+
+## State Management
+
+### TanStack Query — Server State
+
+All data from the backend (or mock layer) is managed by TanStack Query. Hooks in `hooks/` wrap the API layer:
+
+```typescript
+// hooks/use-work-items.ts
+export function useWorkItems(params?) {
+  return useQuery({
+    queryKey: queryKeys.workItems.list(params),
+    queryFn: () => getWorkItems(params),
+  });
+}
+```
+
+**Key patterns:**
+- **Query keys** defined in `hooks/query-keys.ts` as a hierarchical factory
+- **Mutations** use `useMutation` with `onSuccess` callbacks that invalidate related queries
+- **WebSocket sync**: `hooks/use-ws-sync.ts` listens for WS events and invalidates the relevant query keys, triggering automatic re-fetches
+
+### Zustand — UI State
+
+Client-only UI state is managed by Zustand stores, persisted to localStorage:
+
+**`ui-store.ts`:**
+
+| State | Type | Default | Description |
+|---|---|---|---|
+| `sidebarCollapsed` | `boolean` | `false` | Sidebar collapsed state |
+| `mobileSidebarOpen` | `boolean` | `false` | Mobile sidebar drawer state |
+| `selectedProjectId` | `string \| null` | `null` | Currently selected project |
+| `theme` | `"light" \| "dark" \| "system"` | `"system"` | Color theme |
+| `apiMode` | `"mock" \| "api"` | `"mock"` | Data source (mock or real backend) |
+| `density` | `"comfortable" \| "compact"` | `"comfortable"` | UI density |
+
+Persisted fields: `sidebarCollapsed`, `selectedProjectId`, `theme`, `apiMode`, `density`.
+
+**`work-items-store.ts`:** View mode (`list`/`flow`), search query, sort direction, filter personas, filter labels, selected item ID, detail panel width.
+
+**`toast-store.ts`:** Toast notification queue with auto-dismiss.
+
+**`activity-store.ts`:** Activity feed filter state.
+
+## Design System
+
+### Color Tokens
+
+Defined in `index.css` via Tailwind v4 `@theme` blocks:
+
+**Persona colors** (used for avatar backgrounds and badges):
+
+| Token | Color | Persona |
+|---|---|---|
+| `--color-persona-pm` | `#7c3aed` (purple) | Product Manager |
+| `--color-persona-tech-lead` | `#2563eb` (blue) | Tech Lead |
+| `--color-persona-engineer` | `#059669` (green) | Engineer |
+| `--color-persona-reviewer` | `#d97706` (amber) | Code Reviewer |
+| `--color-persona-qa` | `#dc2626` (red) | QA |
+
+**Status colors:**
+
+| Token | Color | Status |
+|---|---|---|
+| `--color-status-pending` | `#94a3b8` (slate) | Pending |
+| `--color-status-in-progress` | `#2563eb` (blue) | In Progress |
+| `--color-status-running` | `#059669` (green) | Running |
+| `--color-status-success` | `#16a34a` (green) | Success |
+| `--color-status-failure` | `#dc2626` (red) | Failure |
+| `--color-status-rejected` | `#d97706` (amber) | Rejected |
+| `--color-status-blocked` | `#ea580c` (orange) | Blocked |
+
+**Priority colors:**
+
+| Token | Color | Priority |
+|---|---|---|
+| `--color-priority-p0` | `#dc2626` (red) | Critical |
+| `--color-priority-p1` | `#ea580c` (orange) | High |
+| `--color-priority-p2` | `#ca8a04` (yellow) | Medium |
+| `--color-priority-p3` | `#94a3b8` (slate) | Low |
+
+**shadcn/ui semantic colors:** `background`, `foreground`, `card`, `popover`, `primary`, `secondary`, `muted`, `accent`, `destructive`, `border`, `input`, `ring` — each with light and dark mode values.
+
+### Typography Scale
+
+Custom Tailwind utilities defined in `index.css`:
+
+| Utility | Size | Weight | Usage |
+|---|---|---|---|
+| `text-page-title` | `text-2xl` (24px) | Bold (700) | Page headings |
+| `text-section-title` | `text-lg` (18px) | Semibold (600) | Section headers, card titles |
+| `text-body` | `text-sm` (14px) | Normal | Default body copy |
+| `text-label` | `text-xs` (12px) | Medium (500) | Form labels, badges, metadata |
+| `text-caption` | `text-xs` (12px) | Normal + muted | Timestamps, counts, secondary info |
+
+Standard Tailwind sizes (`text-2xl`, `text-lg`, `text-sm`, `text-xs`) are used directly. Arbitrary pixel sizes (`text-[10px]`) are not allowed.
+
+### Component Library
+
+18 shadcn/ui components in `components/ui/`:
+
+| Component | File |
+|---|---|
+| AlertDialog | `alert-dialog.tsx` |
+| Badge | `badge.tsx` |
+| Button | `button.tsx` |
+| Card | `card.tsx` |
+| Checkbox | `checkbox.tsx` |
+| Collapsible | `collapsible.tsx` |
+| Dialog | `dialog.tsx` |
+| DropdownMenu | `dropdown-menu.tsx` |
+| Input | `input.tsx` |
+| ScrollArea | `scroll-area.tsx` |
+| Select | `select.tsx` |
+| Separator | `separator.tsx` |
+| Sheet | `sheet.tsx` |
+| Skeleton | `skeleton.tsx` |
+| Table | `table.tsx` |
+| Tabs | `tabs.tsx` |
+| Textarea | `textarea.tsx` |
+| Tooltip | `tooltip.tsx` |
+
+All components are Tailwind-native (copy-paste from shadcn/ui, not a dependency). Dark mode is supported out of the box via the `.dark` class on `<html>`.
+
+### Dark Mode
+
+Theme is controlled by the `theme` field in `ui-store.ts`:
+- `"light"` — forces light mode
+- `"dark"` — forces dark mode (`.dark` class on `<html>`)
+- `"system"` — follows OS preference via `prefers-color-scheme`
+
+The `useThemeSync` hook in `use-theme.ts` syncs the theme and density settings to the DOM on every change.
+
+### Density
+
+Two density modes controlled by `data-density` attribute on `<html>`:
+- **Comfortable** (default) — standard spacing
+- **Compact** — reduced padding, smaller text, tighter gaps (CSS overrides in `index.css`)
+
+## Source Files
+
+| File | Purpose |
+|---|---|
+| `packages/frontend/src/router.tsx` | Route definitions (6 routes) |
+| `packages/frontend/src/api/index.ts` | Unified API layer with mock/real delegation |
+| `packages/frontend/src/mocks/fixtures.ts` | Seed data for mock mode |
+| `packages/frontend/src/mocks/api.ts` | In-memory CRUD mock implementations |
+| `packages/frontend/src/stores/ui-store.ts` | UI state (theme, apiMode, density, sidebar) |
+| `packages/frontend/src/stores/work-items-store.ts` | Work items view state (filters, sort, selection) |
+| `packages/frontend/src/hooks/index.ts` | TanStack Query hook barrel export |
+| `packages/frontend/src/hooks/use-ws-sync.ts` | WebSocket → query cache invalidation |
+| `packages/frontend/src/index.css` | Theme tokens, typography, dark mode, density |
