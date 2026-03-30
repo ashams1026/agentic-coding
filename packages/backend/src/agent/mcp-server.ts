@@ -11,14 +11,14 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
-import { eq, and, isNull } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { comments, workItems, workItemEdges, projectMemories } from "../db/schema.js";
+import { comments, workItems, workItemEdges } from "../db/schema.js";
 import { createId, WORKFLOW, isValidTransition } from "@agentops/shared";
 import type { CommentId, WorkItemId, PersonaId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 import { checkParentCoordination } from "./coordination.js";
-import { checkMemoryGeneration } from "./memory.js";
+import { checkMemoryGeneration, getRecentMemories } from "./memory.js";
 import { handleRejection } from "./execution-manager.js";
 
 // ── Context passed to the MCP server ────────────────────────────
@@ -456,19 +456,7 @@ export function createMcpServer(context: McpContext): McpServer {
         };
 
         if (includeMemory) {
-          const memories = await db
-            .select({ summary: projectMemories.summary, createdAt: projectMemories.createdAt })
-            .from(projectMemories)
-            .where(and(
-              eq(projectMemories.projectId, item.projectId),
-              isNull(projectMemories.consolidatedInto),
-            ))
-            .limit(10);
-
-          result.memories = memories.map((m) => ({
-            summary: m.summary,
-            createdAt: m.createdAt.toISOString(),
-          }));
+          result.memories = await getRecentMemories(item.projectId, 1000);
         }
 
         return {

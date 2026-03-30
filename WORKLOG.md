@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-29 — A.18: Implement memory consolidation and retrieval
+
+**Task:** Periodic consolidation of old memories, token-budgeted retrieval for MCP tool.
+
+**Done:**
+- In `memory.ts`:
+  - `getRecentMemories(projectId, tokenBudget=1000)`: fetches non-consolidated memories, accumulates until ~tokenBudget tokens (~4 chars/token). Returns newest first.
+  - `consolidateIfNeeded(projectId)`: if non-consolidated count >= 50, takes oldest half, calls haiku consolidator, creates merged entry, marks old entries via `consolidatedInto` field
+  - `callConsolidator(context)`: haiku one-shot for merging memories into single summary. Same JSON output format as summarizer.
+  - Consolidation triggered automatically after each new memory is generated
+- In `mcp-server.ts`:
+  - `get_context` tool's `includeMemory` branch now calls `getRecentMemories(projectId, 1000)` instead of raw DB query
+  - Removed unused `isNull` and `projectMemories` imports
+
+**Files modified:** `packages/backend/src/agent/memory.ts`, `packages/backend/src/agent/mcp-server.ts`
+
+**Notes:** Build: 0 errors. Consolidation threshold: 50 memories. Token budget: 1000 (~4000 chars). Oldest half is merged. consolidatedInto field links old entries to the new consolidated entry.
+
+---
+
 ## 2026-03-29 — Review: A.17 (approved)
 
 **Reviewed:** Project memory creation — `memory.ts`, `mcp-server.ts`, `work-items.ts`.
