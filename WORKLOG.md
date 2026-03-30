@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-29 — A.12: Wire dispatch and routing into execution lifecycle
+
+**Task:** Connect execution completion → router → dispatch chain with loop guard.
+
+**Done:**
+- In `execution-manager.ts`:
+  - Added **transition rate limiter**: in-memory `Map<workItemId, timestamps[]>`, `canTransition()` checks max 10 per hour, `recordTransition()` records timestamp
+  - After successful execution: if `__router__` → dispatchForState(newState); if regular persona → runRouter
+  - Both paths gated by `canTransition()` to prevent infinite loops
+  - Added imports: `runRouter`, `dispatchForState`
+- PATCH route already wired (from A.10)
+
+**Execution chain:** Persona completes → runRouter → Router completes → dispatchForState(newState) → Persona starts → ... (max 10/hour/workItem)
+
+**Files modified:** `packages/backend/src/agent/execution-manager.ts`
+
+**Notes:** Backend build: 0 errors. `__router__` persona name used as discriminator. Rate limiter is in-memory, cleans up old entries on check.
+
+---
+
 ## 2026-03-29 — Review: A.11 (approved)
 
 **Reviewed:** Router agent — `packages/backend/src/agent/router.ts`.

@@ -19,9 +19,31 @@ import type {
 } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 import { ClaudeExecutor } from "./claude-executor.js";
+import { runRouter } from "./router.js";
+import { dispatchForState } from "./dispatch.js";
 import type { AgentTask, AgentEvent } from "./types.js";
 
 // ── Singleton executor ────────────────────────────────────────────
+
+// ── Transition rate limiter ───────────────────────────────────────
+
+const MAX_TRANSITIONS_PER_HOUR = 10;
+const transitionLog = new Map<string, number[]>(); // workItemId → timestamps
+
+export function canTransition(workItemId: string): boolean {
+  const now = Date.now();
+  const oneHourAgo = now - 60 * 60 * 1000;
+  const timestamps = transitionLog.get(workItemId) ?? [];
+  const recent = timestamps.filter((t) => t > oneHourAgo);
+  transitionLog.set(workItemId, recent);
+  return recent.length < MAX_TRANSITIONS_PER_HOUR;
+}
+
+function recordTransition(workItemId: string): void {
+  const timestamps = transitionLog.get(workItemId) ?? [];
+  timestamps.push(Date.now());
+  transitionLog.set(workItemId, timestamps);
+}
 
 const executor = new ClaudeExecutor();
 
@@ -263,6 +285,29 @@ async function runExecutionStream(
       costUsd: finalCostUsd,
       timestamp: new Date().toISOString(),
     });
+
+    // After successful completion, chain the next step
+    if (finalOutcome === "success" && canTransition(task.workItemId)) {
+      recordTransition(task.workItemId);
+
+      if (persona.name === "__router__") {
+        // Router just completed — dispatch for the (potentially changed) state
+        const [updated] = await db
+          .select({ currentState: workItems.currentState })
+          .from(workItems)
+          .where(eq(workItems.id, task.workItemId));
+        if (updated) {
+          dispatchForState(task.workItemId, updated.currentState).catch((err) => {
+            console.error(`Dispatch after routing failed for ${task.workItemId}:`, err);
+          });
+        }
+      } else {
+        // Regular persona completed — run the router to decide next state
+        runRouter(task.workItemId).catch((err) => {
+          console.error(`Router failed for ${task.workItemId}:`, err);
+        });
+      }
+    }
   } catch (err) {
     // On error: set status failed, preserve partial logs
     const errorMsg = err instanceof Error ? err.message : String(err);
