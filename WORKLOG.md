@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — E.1: Fix API client response parsing
+
+**Task:** Audit API client response shapes vs backend routes. Add error handling with toast notifications on failure.
+
+**Done:**
+- **Audit results**: All response shapes match between frontend client and backend routes:
+  - List endpoints return `{ data, total }` — client unwraps `res.data` ✓
+  - Single-entity endpoints return `{ data }` — client unwraps `res.data` ✓
+  - Dashboard stats/cost-summary/execution-stats return flat objects — client reads directly ✓
+  - Dashboard ready-work returns `{ data, total }` — client unwraps ✓
+  - JSON columns (`labels`, `executionContext`, `context`, `settings`) auto-deserialized by Drizzle — no manual parsing needed ✓
+  - Serializers convert dates to ISO strings, cast branded IDs — matches shared types ✓
+- **Error handling**: Added `showErrorToast()` helper using `useToastStore.getState().addToast()` (Zustand external access). All 5 HTTP helpers (get, post, patch, put, del) now show error toasts with method, path, and status code before throwing.
+- **No response shape fixes needed**: The API client was already correctly aligned with backend routes. The double-encoding bugs were fixed in Sprint 9 (Q.4-Q.6).
+
+**Files modified:** `client.ts`
+
+**Notes:** Build: 0 errors, 145 tests pass. Used Zustand's `getState()` for external store access from non-React code. Toast shows "API request failed" with "GET /api/... returned 404" description.
+
+---
+
 ## 2026-03-30 — Review: P.12 (approved)
 
 **Reviewed:** Hover states and transitions — `list-view.tsx`, `card.tsx`, `detail-panel.tsx`.

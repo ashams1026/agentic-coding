@@ -24,7 +24,7 @@
 
 ### Frontend ↔ Backend Wiring
 
-- [ ] **E.1** — Fix API client response parsing. Audit `packages/frontend/src/api/client.ts`: verify every function's response shape matches what the backend actually returns (field names, casing, nested JSON fields like `labels`, `executionContext`, `settings`). The mock API and real API may have diverged — compare mock fixtures against actual DB seed output. Fix any mismatches. Add error handling for non-200 responses (toast notification on failure).
+- [review] **E.1** — Fix API client response parsing. Audit `packages/frontend/src/api/client.ts`: verify every function's response shape matches what the backend actually returns (field names, casing, nested JSON fields like `labels`, `executionContext`, `settings`). The mock API and real API may have diverged — compare mock fixtures against actual DB seed output. Fix any mismatches. Add error handling for non-200 responses (toast notification on failure).
 
 - [ ] **E.2** — Wire TanStack Query cache invalidation to WebSocket events. In `packages/frontend/src/api/ws-client.ts` or a new `packages/frontend/src/hooks/use-ws-invalidation.ts`: subscribe to WebSocket events and invalidate the correct TanStack Query cache keys. `state_change` → invalidate `workItems` + `dashboardStats`. `comment_created` → invalidate `comments`. `agent_started` / `agent_completed` → invalidate `executions` + `dashboardStats`. `proposal_created` → invalidate `proposals`. `cost_update` → invalidate `dashboardStats` + `costSummary`. This replaces polling and makes the UI reactive.
 

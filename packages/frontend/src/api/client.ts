@@ -6,6 +6,8 @@
  * response envelope so return types match the mock layer exactly.
  */
 
+import { useToastStore } from "@/stores/toast-store";
+
 import type {
   Project,
   WorkItem,
@@ -45,9 +47,20 @@ const BASE_URL = API_BASE_URL;
 
 // ── Helpers ──────────────────────────────────────────────────────
 
+function showErrorToast(method: string, path: string, status: number) {
+  useToastStore.getState().addToast({
+    type: "error",
+    title: "API request failed",
+    description: `${method} ${path} returned ${status}`,
+  });
+}
+
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`);
-  if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
+  if (!res.ok) {
+    showErrorToast("GET", path, res.status);
+    throw new Error(`GET ${path} failed: ${res.status}`);
+  }
   return res.json();
 }
 
@@ -57,7 +70,10 @@ async function post<T>(path: string, body: unknown): Promise<T> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`POST ${path} failed: ${res.status}`);
+  if (!res.ok) {
+    showErrorToast("POST", path, res.status);
+    throw new Error(`POST ${path} failed: ${res.status}`);
+  }
   return res.json();
 }
 
@@ -67,7 +83,10 @@ async function patch<T>(path: string, body: unknown): Promise<T> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`PATCH ${path} failed: ${res.status}`);
+  if (!res.ok) {
+    showErrorToast("PATCH", path, res.status);
+    throw new Error(`PATCH ${path} failed: ${res.status}`);
+  }
   return res.json();
 }
 
@@ -77,12 +96,18 @@ async function put<T>(path: string, body: unknown): Promise<T> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`PUT ${path} failed: ${res.status}`);
+  if (!res.ok) {
+    showErrorToast("PUT", path, res.status);
+    throw new Error(`PUT ${path} failed: ${res.status}`);
+  }
   return res.json();
 }
 
 async function del(path: string): Promise<boolean> {
   const res = await fetch(`${BASE_URL}${path}`, { method: "DELETE" });
+  if (!res.ok) {
+    showErrorToast("DELETE", path, res.status);
+  }
   return res.ok;
 }
 
