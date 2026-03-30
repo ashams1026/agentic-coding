@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-03-29 — O.5: Refactor mock API layer
+
+**Task:** Replace Story/Task/Workflow/Trigger API functions with WorkItem equivalents.
+
+**Done:**
+- Rewrote `packages/frontend/src/mocks/api.ts`:
+  - Replaced `getStories()`/`getStory()` etc. → `getWorkItems(parentId?, projectId?)`, `getWorkItem(id)`, `createWorkItem()`, `updateWorkItem()`, `deleteWorkItem()`
+  - deleteWorkItem recursively removes children
+  - Replaced `getTaskEdges()`/`createTaskEdge()`/`deleteTaskEdge()` → workItemEdge equivalents
+  - Added `getPersonaAssignments(projectId)`, `updatePersonaAssignment()` (upsert)
+  - Removed workflow CRUD functions (getWorkflows, createWorkflow, etc.)
+  - Removed trigger functions (getTriggers)
+  - Updated `getExecutions(workItemId?)` to filter by workItemId
+  - Updated `getComments(workItemId)` and `createComment()` to use workItemId
+  - Updated `getProposals(workItemId?)` to filter by workItemId
+  - Updated `getDashboardStats()`: needsAttention counts Blocked items (was "Failed" tasks)
+  - Updated `getReadyWork()`: filters items in "Ready" state (was "Pending" tasks)
+  - Updated Store interface and resetStore()
+  - Updated mockApi bundle with new function names
+
+**Files changed:** `packages/frontend/src/mocks/api.ts`
+
+**Notes:** api.ts compiles clean. Uses WORKFLOW.initialState for new items instead of looking up workflow objects. createWorkItem sets currentState to "Backlog" via WORKFLOW constant.
+
+---
+
 ## 2026-03-29 — Review: O.4 (approved)
 
 **Reviewed:** Mock data fixtures — `fixtures.ts`.

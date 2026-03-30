@@ -1,32 +1,25 @@
 import type {
   Project,
-  Story,
-  Task,
-  TaskEdge,
-  Workflow,
+  WorkItem,
+  WorkItemEdge,
   Persona,
-  Trigger,
+  PersonaAssignment,
   Execution,
   Comment,
   ProjectMemory,
   Proposal,
   ProjectId,
-  StoryId,
-  TaskId,
-  TaskEdgeId,
-  WorkflowId,
+  WorkItemId,
+  WorkItemEdgeId,
   PersonaId,
   ExecutionId,
   ProposalId,
   CreateProjectRequest,
   UpdateProjectRequest,
-  CreateStoryRequest,
-  UpdateStoryRequest,
-  CreateTaskRequest,
-  UpdateTaskRequest,
-  CreateTaskEdgeRequest,
-  CreateWorkflowRequest,
-  UpdateWorkflowRequest,
+  CreateWorkItemRequest,
+  UpdateWorkItemRequest,
+  CreateWorkItemEdgeRequest,
+  UpsertPersonaAssignmentRequest,
   CreatePersonaRequest,
   UpdatePersonaRequest,
   CreateCommentRequest,
@@ -36,7 +29,7 @@ import type {
   ExecutionStats,
   ReadyWorkItem,
 } from "@agentops/shared";
-import { createId } from "@agentops/shared";
+import { createId, WORKFLOW } from "@agentops/shared";
 import { fixtures } from "./fixtures";
 
 // ── Simulated latency ─────────────────────────────────────────────
@@ -50,12 +43,10 @@ function delay(): Promise<void> {
 
 interface Store {
   projects: Project[];
-  stories: Story[];
-  tasks: Task[];
-  taskEdges: TaskEdge[];
-  workflows: Workflow[];
+  workItems: WorkItem[];
+  workItemEdges: WorkItemEdge[];
   personas: Persona[];
-  triggers: Trigger[];
+  personaAssignments: PersonaAssignment[];
   executions: Execution[];
   comments: Comment[];
   projectMemories: ProjectMemory[];
@@ -64,12 +55,10 @@ interface Store {
 
 const store: Store = {
   projects: [...fixtures.projects],
-  stories: [...fixtures.stories],
-  tasks: [...fixtures.tasks],
-  taskEdges: [...fixtures.taskEdges],
-  workflows: [...fixtures.workflows],
+  workItems: [...fixtures.workItems],
+  workItemEdges: [...fixtures.workItemEdges],
   personas: [...fixtures.personas],
-  triggers: [...fixtures.triggers],
+  personaAssignments: [...fixtures.personaAssignments],
   executions: [...fixtures.executions],
   comments: [...fixtures.comments],
   projectMemories: [...fixtures.projectMemories],
@@ -79,12 +68,10 @@ const store: Store = {
 /** Reset store to initial fixture state (useful for tests / demo reset) */
 export function resetStore(): void {
   store.projects = [...fixtures.projects];
-  store.stories = [...fixtures.stories];
-  store.tasks = [...fixtures.tasks];
-  store.taskEdges = [...fixtures.taskEdges];
-  store.workflows = [...fixtures.workflows];
+  store.workItems = [...fixtures.workItems];
+  store.workItemEdges = [...fixtures.workItemEdges];
   store.personas = [...fixtures.personas];
-  store.triggers = [...fixtures.triggers];
+  store.personaAssignments = [...fixtures.personaAssignments];
   store.executions = [...fixtures.executions];
   store.comments = [...fixtures.comments];
   store.projectMemories = [...fixtures.projectMemories];
@@ -109,7 +96,6 @@ export async function createProject(req: CreateProjectRequest): Promise<Project>
     id: createId.project(),
     name: req.name,
     path: req.path,
-    defaultWorkflowId: req.defaultWorkflowId ?? null,
     settings: req.settings ?? {},
     createdAt: new Date().toISOString(),
   };
@@ -126,7 +112,6 @@ export async function updateProject(
   if (!project) return null;
   if (req.name !== undefined) project.name = req.name;
   if (req.path !== undefined) project.path = req.path;
-  if (req.defaultWorkflowId !== undefined) project.defaultWorkflowId = req.defaultWorkflowId;
   if (req.settings !== undefined) project.settings = req.settings;
   return project;
 }
@@ -139,206 +124,126 @@ export async function deleteProject(id: ProjectId): Promise<boolean> {
   return true;
 }
 
-// ── Stories ───────────────────────────────────────────────────────
+// ── Work Items ───────────────────────────────────────────────────
 
-export async function getStories(projectId?: ProjectId): Promise<Story[]> {
+export async function getWorkItems(parentId?: WorkItemId | null, projectId?: ProjectId): Promise<WorkItem[]> {
   await delay();
-  if (projectId) return store.stories.filter((s) => s.projectId === projectId);
-  return store.stories;
+  let items = store.workItems;
+  if (parentId !== undefined) items = items.filter((w) => w.parentId === parentId);
+  if (projectId) items = items.filter((w) => w.projectId === projectId);
+  return items;
 }
 
-export async function getStory(id: StoryId): Promise<Story | null> {
+export async function getWorkItem(id: WorkItemId): Promise<WorkItem | null> {
   await delay();
-  return store.stories.find((s) => s.id === id) ?? null;
+  return store.workItems.find((w) => w.id === id) ?? null;
 }
 
-export async function createStory(req: CreateStoryRequest): Promise<Story> {
+export async function createWorkItem(req: CreateWorkItemRequest): Promise<WorkItem> {
   await delay();
-  const workflow = store.workflows.find((w) => w.id === req.workflowId);
-  const story: Story = {
-    id: createId.story(),
+  const workItem: WorkItem = {
+    id: createId.workItem(),
+    parentId: req.parentId ?? null,
     projectId: req.projectId,
     title: req.title,
     description: req.description ?? "",
-    workflowId: req.workflowId,
-    currentState: workflow?.initialState ?? "Backlog",
+    context: req.context ?? {},
+    currentState: WORKFLOW.initialState,
     priority: req.priority ?? "p2",
     labels: req.labels ?? [],
-    context: {
-      acceptanceCriteria: req.context?.acceptanceCriteria ?? "",
-      notes: req.context?.notes ?? "",
-    },
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  };
-  store.stories.push(story);
-  return story;
-}
-
-export async function updateStory(id: StoryId, req: UpdateStoryRequest): Promise<Story | null> {
-  await delay();
-  const story = store.stories.find((s) => s.id === id);
-  if (!story) return null;
-  if (req.title !== undefined) story.title = req.title;
-  if (req.description !== undefined) story.description = req.description;
-  if (req.priority !== undefined) story.priority = req.priority;
-  if (req.labels !== undefined) story.labels = req.labels;
-  if (req.currentState !== undefined) story.currentState = req.currentState;
-  if (req.context !== undefined) {
-    if (req.context.acceptanceCriteria !== undefined)
-      story.context.acceptanceCriteria = req.context.acceptanceCriteria;
-    if (req.context.notes !== undefined) story.context.notes = req.context.notes;
-  }
-  story.updatedAt = new Date().toISOString();
-  return story;
-}
-
-export async function deleteStory(id: StoryId): Promise<boolean> {
-  await delay();
-  const idx = store.stories.findIndex((s) => s.id === id);
-  if (idx === -1) return false;
-  store.stories.splice(idx, 1);
-  return true;
-}
-
-// ── Tasks ─────────────────────────────────────────────────────────
-
-export async function getTasks(storyId?: StoryId): Promise<Task[]> {
-  await delay();
-  if (storyId) return store.tasks.filter((t) => t.storyId === storyId);
-  return store.tasks;
-}
-
-export async function getTask(id: TaskId): Promise<Task | null> {
-  await delay();
-  return store.tasks.find((t) => t.id === id) ?? null;
-}
-
-export async function createTask(req: CreateTaskRequest): Promise<Task> {
-  await delay();
-  const workflow = store.workflows.find((w) => w.id === req.workflowId);
-  const story = store.stories.find((s) => s.id === req.storyId);
-  const task: Task = {
-    id: createId.task(),
-    storyId: req.storyId,
-    title: req.title,
-    description: req.description ?? "",
-    workflowId: req.workflowId,
-    currentState: workflow?.initialState ?? "Pending",
-    assignedPersonaId: req.assignedPersonaId ?? null,
-    parentTaskId: req.parentTaskId ?? null,
-    inheritedContext: story?.description ?? "",
+    assignedPersonaId: null,
     executionContext: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
-  store.tasks.push(task);
-  return task;
+  store.workItems.push(workItem);
+  return workItem;
 }
 
-export async function updateTask(id: TaskId, req: UpdateTaskRequest): Promise<Task | null> {
+export async function updateWorkItem(
+  id: WorkItemId,
+  req: UpdateWorkItemRequest,
+): Promise<WorkItem | null> {
   await delay();
-  const task = store.tasks.find((t) => t.id === id);
-  if (!task) return null;
-  if (req.title !== undefined) task.title = req.title;
-  if (req.description !== undefined) task.description = req.description;
-  if (req.currentState !== undefined) task.currentState = req.currentState;
-  if (req.assignedPersonaId !== undefined) task.assignedPersonaId = req.assignedPersonaId;
-  task.updatedAt = new Date().toISOString();
-  return task;
+  const workItem = store.workItems.find((w) => w.id === id);
+  if (!workItem) return null;
+  if (req.title !== undefined) workItem.title = req.title;
+  if (req.description !== undefined) workItem.description = req.description;
+  if (req.priority !== undefined) workItem.priority = req.priority;
+  if (req.labels !== undefined) workItem.labels = req.labels;
+  if (req.currentState !== undefined) workItem.currentState = req.currentState;
+  if (req.context !== undefined) workItem.context = req.context;
+  if (req.assignedPersonaId !== undefined) workItem.assignedPersonaId = req.assignedPersonaId;
+  workItem.updatedAt = new Date().toISOString();
+  return workItem;
 }
 
-export async function deleteTask(id: TaskId): Promise<boolean> {
+export async function deleteWorkItem(id: WorkItemId): Promise<boolean> {
   await delay();
-  const idx = store.tasks.findIndex((t) => t.id === id);
+  const idx = store.workItems.findIndex((w) => w.id === id);
   if (idx === -1) return false;
-  store.tasks.splice(idx, 1);
+  store.workItems.splice(idx, 1);
+  // Also remove children recursively
+  const childIds = store.workItems.filter((w) => w.parentId === id).map((w) => w.id);
+  for (const childId of childIds) {
+    await deleteWorkItem(childId);
+  }
   return true;
 }
 
-// ── Task Edges ────────────────────────────────────────────────────
+// ── Work Item Edges ──────────────────────────────────────────────
 
-export async function getTaskEdges(taskId?: TaskId): Promise<TaskEdge[]> {
+export async function getWorkItemEdges(workItemId?: WorkItemId): Promise<WorkItemEdge[]> {
   await delay();
-  if (taskId) return store.taskEdges.filter((e) => e.fromId === taskId || e.toId === taskId);
-  return store.taskEdges;
+  if (workItemId) return store.workItemEdges.filter((e) => e.fromId === workItemId || e.toId === workItemId);
+  return store.workItemEdges;
 }
 
-export async function createTaskEdge(req: CreateTaskEdgeRequest): Promise<TaskEdge> {
+export async function createWorkItemEdge(req: CreateWorkItemEdgeRequest): Promise<WorkItemEdge> {
   await delay();
-  const edge: TaskEdge = {
-    id: createId.taskEdge(),
+  const edge: WorkItemEdge = {
+    id: createId.workItemEdge(),
     fromId: req.fromId,
     toId: req.toId,
     type: req.type,
   };
-  store.taskEdges.push(edge);
+  store.workItemEdges.push(edge);
   return edge;
 }
 
-export async function deleteTaskEdge(id: TaskEdgeId): Promise<boolean> {
+export async function deleteWorkItemEdge(id: WorkItemEdgeId): Promise<boolean> {
   await delay();
-  const idx = store.taskEdges.findIndex((e) => e.id === id);
+  const idx = store.workItemEdges.findIndex((e) => e.id === id);
   if (idx === -1) return false;
-  store.taskEdges.splice(idx, 1);
+  store.workItemEdges.splice(idx, 1);
   return true;
 }
 
-// ── Workflows ─────────────────────────────────────────────────────
+// ── Persona Assignments ──────────────────────────────────────────
 
-export async function getWorkflows(): Promise<Workflow[]> {
+export async function getPersonaAssignments(projectId: ProjectId): Promise<PersonaAssignment[]> {
   await delay();
-  return store.workflows;
+  return store.personaAssignments.filter((pa) => pa.projectId === projectId);
 }
 
-export async function getWorkflow(id: WorkflowId): Promise<Workflow | null> {
+export async function updatePersonaAssignment(
+  req: UpsertPersonaAssignmentRequest,
+): Promise<PersonaAssignment> {
   await delay();
-  return store.workflows.find((w) => w.id === id) ?? null;
-}
-
-export async function createWorkflow(req: CreateWorkflowRequest): Promise<Workflow> {
-  await delay();
-  const initial = req.states.find((s) => s.isInitial);
-  const finals = req.states.filter((s) => s.isFinal).map((s) => s.name);
-  const workflow: Workflow = {
-    id: createId.workflow(),
-    name: req.name,
-    type: req.type,
-    states: req.states,
-    transitions: req.transitions,
-    initialState: initial?.name ?? req.states[0]?.name ?? "",
-    finalStates: finals,
-    isDefault: req.isDefault ?? false,
-  };
-  store.workflows.push(workflow);
-  return workflow;
-}
-
-export async function updateWorkflow(
-  id: WorkflowId,
-  req: UpdateWorkflowRequest,
-): Promise<Workflow | null> {
-  await delay();
-  const workflow = store.workflows.find((w) => w.id === id);
-  if (!workflow) return null;
-  if (req.name !== undefined) workflow.name = req.name;
-  if (req.states !== undefined) {
-    workflow.states = req.states;
-    const initial = req.states.find((s) => s.isInitial);
-    if (initial) workflow.initialState = initial.name;
-    workflow.finalStates = req.states.filter((s) => s.isFinal).map((s) => s.name);
+  const existing = store.personaAssignments.find(
+    (pa) => pa.projectId === req.projectId && pa.stateName === req.stateName,
+  );
+  if (existing) {
+    existing.personaId = req.personaId;
+    return existing;
   }
-  if (req.transitions !== undefined) workflow.transitions = req.transitions;
-  if (req.isDefault !== undefined) workflow.isDefault = req.isDefault;
-  return workflow;
-}
-
-export async function deleteWorkflow(id: WorkflowId): Promise<boolean> {
-  await delay();
-  const idx = store.workflows.findIndex((w) => w.id === id);
-  if (idx === -1) return false;
-  store.workflows.splice(idx, 1);
-  return true;
+  const assignment: PersonaAssignment = {
+    projectId: req.projectId,
+    stateName: req.stateName,
+    personaId: req.personaId,
+  };
+  store.personaAssignments.push(assignment);
+  return assignment;
 }
 
 // ── Personas ──────────────────────────────────────────────────────
@@ -397,19 +302,11 @@ export async function deletePersona(id: PersonaId): Promise<boolean> {
   return true;
 }
 
-// ── Triggers ──────────────────────────────────────────────────────
-
-export async function getTriggers(workflowId?: WorkflowId): Promise<Trigger[]> {
-  await delay();
-  if (workflowId) return store.triggers.filter((t) => t.workflowId === workflowId);
-  return store.triggers;
-}
-
 // ── Executions ────────────────────────────────────────────────────
 
-export async function getExecutions(targetId?: StoryId | TaskId): Promise<Execution[]> {
+export async function getExecutions(workItemId?: WorkItemId): Promise<Execution[]> {
   await delay();
-  if (targetId) return store.executions.filter((e) => e.targetId === targetId);
+  if (workItemId) return store.executions.filter((e) => e.workItemId === workItemId);
   return store.executions;
 }
 
@@ -420,17 +317,16 @@ export async function getExecution(id: ExecutionId): Promise<Execution | null> {
 
 // ── Comments ──────────────────────────────────────────────────────
 
-export async function getComments(targetId: StoryId | TaskId): Promise<Comment[]> {
+export async function getComments(workItemId: WorkItemId): Promise<Comment[]> {
   await delay();
-  return store.comments.filter((c) => c.targetId === targetId);
+  return store.comments.filter((c) => c.workItemId === workItemId);
 }
 
 export async function createComment(req: CreateCommentRequest): Promise<Comment> {
   await delay();
   const comment: Comment = {
     id: createId.comment(),
-    targetId: req.targetId,
-    targetType: req.targetType,
+    workItemId: req.workItemId,
     authorType: req.authorType,
     authorId: req.authorId ?? null,
     authorName: req.authorName,
@@ -444,9 +340,9 @@ export async function createComment(req: CreateCommentRequest): Promise<Comment>
 
 // ── Proposals ─────────────────────────────────────────────────────
 
-export async function getProposals(parentId?: StoryId | TaskId): Promise<Proposal[]> {
+export async function getProposals(workItemId?: WorkItemId): Promise<Proposal[]> {
   await delay();
-  if (parentId) return store.proposals.filter((p) => p.parentId === parentId);
+  if (workItemId) return store.proposals.filter((p) => p.workItemId === workItemId);
   return store.proposals;
 }
 
@@ -479,8 +375,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   await delay();
   const activeAgents = store.executions.filter((e) => e.status === "running").length;
   const pendingProposals = store.proposals.filter((p) => p.status === "pending").length;
-  const needsAttention =
-    store.tasks.filter((t) => t.currentState === "Failed").length + pendingProposals;
+  const blockedItems = store.workItems.filter((w) => w.currentState === "Blocked").length;
+  const needsAttention = blockedItems + pendingProposals;
   const today = new Date().toISOString().slice(0, 10);
   const todayCostUsd = store.executions
     .filter((e) => e.startedAt.startsWith(today))
@@ -501,7 +397,7 @@ export async function getCostSummary(): Promise<CostSummary> {
       .reduce((sum, e) => sum + e.costUsd, 0);
     dailySpend.push({ date: dateStr, costUsd });
   }
-  const monthStart = now.toISOString().slice(0, 7); // "YYYY-MM"
+  const monthStart = now.toISOString().slice(0, 7);
   const monthTotal = store.executions
     .filter((e) => e.startedAt.startsWith(monthStart))
     .reduce((sum, e) => sum + e.costUsd, 0);
@@ -524,12 +420,11 @@ export async function getExecutionStats(): Promise<ExecutionStats> {
 
 export async function getReadyWork(): Promise<ReadyWorkItem[]> {
   await delay();
-  const pendingTasks = store.tasks.filter((t) => t.currentState === "Pending");
-  return pendingTasks.slice(0, 5).map((task) => ({
-    task,
-    story: store.stories.find((s) => s.id === task.storyId)!,
-    persona: task.assignedPersonaId
-      ? (store.personas.find((p) => p.id === task.assignedPersonaId) ?? null)
+  const readyItems = store.workItems.filter((w) => w.currentState === "Ready");
+  return readyItems.slice(0, 5).map((workItem) => ({
+    workItem,
+    persona: workItem.assignedPersonaId
+      ? (store.personas.find((p) => p.id === workItem.assignedPersonaId) ?? null)
       : null,
   }));
 }
@@ -543,36 +438,25 @@ export const mockApi = {
   createProject,
   updateProject,
   deleteProject,
-  // Stories
-  getStories,
-  getStory,
-  createStory,
-  updateStory,
-  deleteStory,
-  // Tasks
-  getTasks,
-  getTask,
-  createTask,
-  updateTask,
-  deleteTask,
-  // Task Edges
-  getTaskEdges,
-  createTaskEdge,
-  deleteTaskEdge,
-  // Workflows
-  getWorkflows,
-  getWorkflow,
-  createWorkflow,
-  updateWorkflow,
-  deleteWorkflow,
+  // Work Items
+  getWorkItems,
+  getWorkItem,
+  createWorkItem,
+  updateWorkItem,
+  deleteWorkItem,
+  // Work Item Edges
+  getWorkItemEdges,
+  createWorkItemEdge,
+  deleteWorkItemEdge,
+  // Persona Assignments
+  getPersonaAssignments,
+  updatePersonaAssignment,
   // Personas
   getPersonas,
   getPersona,
   createPersona,
   updatePersona,
   deletePersona,
-  // Triggers
-  getTriggers,
   // Executions
   getExecutions,
   getExecution,
