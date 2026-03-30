@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-29 — Q.2: Create test database helper
+
+**Task:** Create `createTestDb()` and `seedTestDb()` helpers for integration tests.
+
+**Done:**
+- Created `packages/backend/src/test/setup.ts` with:
+  - `createTestDb()`: creates in-memory SQLite, runs Drizzle migrations, returns `{ db, cleanup }`. Each call is fully isolated.
+  - `seedTestDb(db)`: inserts realistic dataset — 1 project, 5 personas, 4 persona assignments, 9 work items (3 top-level + 6 children), 2 edges, 4 executions, 5 comments, 1 proposal, 1 project memory
+  - `TEST_IDS` export: all fixed IDs for assertion in tests
+- Created `packages/backend/src/test/setup.test.ts` — 4 smoke tests verifying isolation, seeding counts, and parent-child relationships
+- All 4 tests pass (`pnpm test`)
+
+**Files created:** `packages/backend/src/test/setup.ts`, `packages/backend/src/test/setup.test.ts`
+
+**Notes:** Migration path resolved via `import.meta.url` relative to file location. TestDb type derived from schema inference. Build: 0 errors.
+
+---
+
 ## 2026-03-29 — Review: Q.1 (approved)
 
 **Reviewed:** Vitest setup — `vitest.config.ts`, package.json scripts.

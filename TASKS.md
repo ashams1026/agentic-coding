@@ -45,7 +45,7 @@
 
 - [x] **Q.1** — Set up Vitest in the monorepo. Install `vitest` as a root devDependency. Create `vitest.config.ts` at root (or per-package configs if needed) with TypeScript support, path aliases matching tsconfig. Add `"test"` script to root `package.json` (`vitest run`) and `"test:watch"` (`vitest`). Add `"test"` scripts to `packages/backend/package.json` and `packages/shared/package.json`. Verify `pnpm test` runs and finds zero tests.
 
-- [ ] **Q.2** — Create test database helper. In `packages/backend/src/test/setup.ts`: helper that creates a fresh in-memory SQLite database (`:memory:`), runs Drizzle migrations, and optionally seeds with fixture data. Export `createTestDb()` that returns `{ db, cleanup }`. Export `seedTestDb(db)` that inserts a minimal but realistic dataset (1 project, 5 personas, persona assignments, 3 top-level work items with children, comments, executions). Each test file gets its own database — no shared state between tests.
+- [review] **Q.2** — Create test database helper. In `packages/backend/src/test/setup.ts`: helper that creates a fresh in-memory SQLite database (`:memory:`), runs Drizzle migrations, and optionally seeds with fixture data. Export `createTestDb()` that returns `{ db, cleanup }`. Export `seedTestDb(db)` that inserts a minimal but realistic dataset (1 project, 5 personas, persona assignments, 3 top-level work items with children, comments, executions). Each test file gets its own database — no shared state between tests.
 
 ### Shared Package Tests (Pure Logic)
 
