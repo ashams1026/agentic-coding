@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@agentops/shared": "workspace:*",
     "@fastify/cors": "^11.2.0",
     "@fastify/websocket": "^11.2.0",
     "better-sqlite3": "^12.8.0",

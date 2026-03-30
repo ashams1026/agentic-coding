@@ -5,6 +5,35 @@
 
 ---
 
+## 2026-03-29 — O.20: Rewrite CRUD API routes for WorkItem
+
+**Task:** Create routes/work-items.ts, routes/persona-assignments.ts, routes/work-item-edges.ts. Register in server.ts.
+
+**Done:**
+- Created `routes/work-items.ts`: 5 routes
+  - `GET /api/work-items` — list with optional `?parentId=` and `?projectId=` filters
+  - `GET /api/work-items/:id` — get single item
+  - `POST /api/work-items` — create (uses WORKFLOW.initialState, createId.workItem())
+  - `PATCH /api/work-items/:id` — partial update (only provided fields, auto-sets updatedAt)
+  - `DELETE /api/work-items/:id` — recursive delete (collects all descendant IDs, deletes deepest first)
+- Created `routes/persona-assignments.ts`: 2 routes
+  - `GET /api/persona-assignments?projectId=` — list
+  - `PUT /api/persona-assignments` — upsert (onConflictDoUpdate on composite PK)
+- Created `routes/work-item-edges.ts`: 3 routes
+  - `GET /api/work-item-edges?workItemId=` — list (matches both fromId and toId)
+  - `POST /api/work-item-edges` — create
+  - `DELETE /api/work-item-edges/:id` — delete
+- Updated `server.ts`: registered all 3 route modules, added PUT to CORS methods
+- Added `@agentops/shared` as workspace dependency to backend package.json
+- Serializer functions convert DB types (Date → ISO string, branded IDs)
+
+**Files created:** `routes/work-items.ts`, `routes/persona-assignments.ts`, `routes/work-item-edges.ts`
+**Files modified:** `server.ts`, `package.json`
+
+**Notes:** All routes return `{ data, total }` list format or `{ data }` single format matching shared API types. Backend typecheck: 0 errors. Full monorepo build: passes.
+
+---
+
 ## 2026-03-29 — Review: O.19 (approved)
 
 **Reviewed:** Seed script and DB connection — `packages/backend/src/db/seed.ts`, `packages/backend/src/db/connection.ts`.
