@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — Review: S.5 (approved)
+
+**Reviewed:** Install/setup script — `scripts/setup.sh`.
+- Executable with correct shebang and strict mode (`set -euo pipefail`) ✓
+- Node >= 22 check with version parsing ✓
+- pnpm check with install instruction on failure ✓
+- `pnpm install --frozen-lockfile` + `pnpm build` ✓
+- Creates `~/.agentops/{config,logs,data}` directories ✓
+- `AGENTOPS_DB_PATH` env var configurable (default `~/.agentops/data/agentops.db`) ✓
+- `DATABASE_URL` bridge correct — maps to what `connection.ts` reads ✓
+- Migrations + seed run with correct env var ✓
+- Clear summary with next steps and CLI commands ✓
+- Build: 0 errors, Tests: 159/159
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — S.5: Create install/setup script
 
 **Task:** Create setup script that checks prereqs, installs, builds, creates data dirs, runs migrations, seeds personas.
