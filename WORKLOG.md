@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: A.13 (approved)
+
+**Reviewed:** Parent-child state coordination — `packages/backend/src/agent/coordination.ts`.
+- checkParentCoordination: parentId lookup, early return for top-level items ✓
+- handleChildDone: queries all siblings, allDone check, parent guard (Done/In Review), auto-advance + system comment + broadcasts ✓
+- handleChildBlocked: child title lookup, system comment on parent + broadcast ✓
+- PARENT_ADVANCE_STATE const for configurability ✓
+- Wired into route_to_state, flag_blocked, PATCH route (all non-blocking .catch()) ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.13: Implement parent-child state coordination
 
 **Task:** After child state changes, coordinate parent state automatically.
