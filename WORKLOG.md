@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — D.1: Write project README
+
+**Task:** Create root README.md with project overview, key features, quick start, docs links.
+
+**Done:**
+- **`README.md`** (new) — Project README with:
+  - One-paragraph overview (local-first, workflow-driven, autonomous pipeline)
+  - 8 key features (workflow engine, personas, hierarchy, monitoring, MCP tools, cost management, project memory, local-first)
+  - Architecture diagram (3 packages: frontend/backend/shared with tech stacks)
+  - Quick start: prerequisites (Node 22, pnpm 9), install + dev, production pm2 commands
+  - Configuration section (config.json path, API key via CLI)
+  - Documentation table linking to all 9 docs/* files (D.2-D.10)
+  - Development commands section
+
+**Files created:** `README.md`
+
+**Notes:** Build: 0 errors. Kept concise per task spec. Links to docs/ files that will be created by D.2-D.10. No docs/ directory created yet — each doc task will create its own file.
+
+---
+
 ## 2026-03-30 — Review: W.8 (approved)
 
 **Reviewed:** Data management settings — DB stats, execution cleanup, settings export/import.

@@ -12,7 +12,7 @@
 > Produce comprehensive documentation for the project. Each task covers a distinct aspect.
 > All docs go in a `docs/` directory at the monorepo root. Use clear markdown with code examples where relevant.
 
-- [ ] **D.1** — Write project README. Replace the current root `README.md` with a proper project overview: what AgentOps is (one paragraph), key features (bullet list), screenshot or architecture diagram placeholder, quick start (prerequisites, install, run), link to full docs in `docs/`. Keep it concise — this is the first thing someone sees.
+- [review] **D.1** — Write project README. Replace the current root `README.md` with a proper project overview: what AgentOps is (one paragraph), key features (bullet list), screenshot or architecture diagram placeholder, quick start (prerequisites, install, run), link to full docs in `docs/`. Keep it concise — this is the first thing someone sees.
 
 - [ ] **D.2** — Write getting started guide. Create `docs/getting-started.md`: prerequisites (Node 22, pnpm), clone + install steps, first run (`pnpm dev`), creating your first project (register a directory), configuring your API key, creating a work item and walking it through states manually, enabling auto-routing for the first time. Step-by-step with expected output at each stage.
 
