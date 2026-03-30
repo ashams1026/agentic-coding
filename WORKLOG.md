@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: S.8 (approved)
+
+**Reviewed:** Execution audit trail — `audit.ts`, `routes/audit.ts`, and all consumer files.
+- `audit.ts`: separate pino instance with `base: null` + ISO timestamps writing to `~/.agentops/logs/audit.log` ✓
+- 4 typed emitters: `auditStateTransition`, `auditAgentDispatch`, `auditAgentComplete`, `auditCostEvent` ✓
+- `queryAuditLog()`: reads file, parses JSON lines, filters by workItemId, newest-first, limit ✓
+- `routes/audit.ts`: `GET /api/audit?workItemId=&limit=`, max 500, default 50 ✓
+- Wired in execution-manager (dispatch + completion + cost), mcp-server (route_to_state + flag_blocked), coordination (parent auto-advance), work-items route (user-driven) ✓
+- All 3 actor types covered: persona, system, user ✓
+- Cost event only emitted when finalCostUsd > 0 ✓
+- Build: 0 errors, Tests: 159/159
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — S.8: Add execution audit trail
 
 **Task:** Create audit log for state transitions, agent dispatches, and cost events. Store in `~/.agentops/logs/audit.log`. Add `GET /api/audit` endpoint.
