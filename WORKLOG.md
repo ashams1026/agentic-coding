@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: AI.10 (approved)
+
+**Reviewed:** Persona Manager test plan.
+- `persona-manager.md`: 19 steps — persona grid with cards verified against `persona-list.tsx` (avatar colored circle + icon, name `<h3>`, "Built-in" `<Badge>` via `BUILT_IN_IDS`, model badges Opus violet / Sonnet blue / Haiku emerald matching `MODEL_CONFIG`, description `line-clamp-2`, tool count `{toolCount} tools` badge), CreateCard with dashed border + Plus + "Create new persona" ✓
+- Hover actions: Pencil edit icon in `opacity-0 group-hover:opacity-100` div ✓
+- Sheet editor: `SheetDescription` "Edit persona configuration", 6 sections verified against `persona-editor.tsx`: Identity (Name Input, Description Textarea, Avatar picker with `COLOR_OPTIONS` swatches + `ICON_OPTIONS` grid), Model (`MODEL_OPTIONS` with Opus "$$$"/Sonnet "$$"/Haiku "$" costLabels), System Prompt (`SystemPromptEditor`), Tools (`ToolConfiguration`), Budget ("Max cost per run (USD)" label exact match) ✓
+- Edit/save flow: `SheetTitle` renders reactive `{name || "Untitled"}`, `handleSave` calls `updateMutation.mutate` → `onClose()`, reopen verifies persistence via `useEffect` sync ✓
+- Template format ✓, UI references match source ✓
+- Build: no code changes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.10: Write test plans for Persona Manager
 
 **Task:** Create test plan for the persona manager page.
