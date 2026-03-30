@@ -14,6 +14,7 @@ import { workItems, comments } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import type { WorkItemId, CommentId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
+import { dispatchForState } from "./dispatch.js";
 
 /** The state to advance parent to when all children complete. */
 const PARENT_ADVANCE_STATE = "In Review";
@@ -112,6 +113,11 @@ async function handleChildDone(parentId: string): Promise<void> {
     authorName: "System",
     contentPreview: `All ${children.length} child work items are Done.`,
     timestamp: now.toISOString(),
+  });
+
+  // Dispatch persona for the parent's new state (e.g., reviewer for "In Review")
+  dispatchForState(parentId, PARENT_ADVANCE_STATE).catch((err) => {
+    console.error(`Dispatch after parent coordination failed for ${parentId}:`, err);
   });
 }
 

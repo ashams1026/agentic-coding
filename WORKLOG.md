@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-03-30 — E.8: Fix parent-child coordination in real flow
+
+**Task:** Verify and fix parent-child coordination: auto-advance parent when all children Done, system comment on child Blocked, frontend reactive updates.
+
+**Bug found and fixed:**
+
+- **Bug: No dispatch after parent auto-advance** — When `coordination.ts` auto-advanced a parent to "In Review" (all children Done), it updated the DB and broadcast WS events but **never called `dispatchForState()`**. This meant no reviewer persona was dispatched to actually review the parent work item. Fixed by importing `dispatchForState` and calling it after the parent state update.
+
+**Verification:**
+1. All children Done → parent auto-advances to "In Review" ✓ (existing test)
+2. Auto-advance now triggers `dispatchForState(parentId, "In Review")` → reviewer persona dispatched ✓ (new assertion)
+3. Partial children Done → parent stays put, no dispatch ✓ (new assertion)
+4. Parent already "In Review" → no redundant advance or dispatch ✓ (new assertion)
+5. Child Blocked → system comment posted on parent ✓ (existing test)
+6. Top-level items → no-op ✓ (existing test)
+7. Frontend WS sync: `state_change` → invalidates `workItems`+`dashboardStats`, `comment_created` → invalidates `comments` ✓
+8. No circular dependency: coordination→dispatch→execution-manager (dispatch doesn't import coordination) ✓
+
+**Files modified:** `packages/backend/src/agent/coordination.ts`, `packages/backend/src/agent/__tests__/coordination.test.ts`
+
+**Notes:** Build: 0 errors. Tests: 151/151 passing. The fix is small but critical — without it, the parent would sit in "In Review" with no persona ever running to review it.
+
+---
+
 ## 2026-03-30 — Review: E.7 (approved)
 
 **Reviewed:** Settings field name standardization and dispatch pipeline verification.

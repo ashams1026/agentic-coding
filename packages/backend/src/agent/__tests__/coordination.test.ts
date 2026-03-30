@@ -15,6 +15,12 @@ vi.mock("../../ws.js", () => ({
   broadcast: vi.fn(),
 }));
 
+// Mock dispatch — coordination should trigger persona dispatch after auto-advancing parent
+const mockDispatchForState = vi.fn().mockResolvedValue(undefined);
+vi.mock("../dispatch.js", () => ({
+  dispatchForState: (...args: unknown[]) => mockDispatchForState(...args),
+}));
+
 import { checkParentCoordination } from "../coordination.js";
 
 let testDb: TestDatabase;
@@ -24,6 +30,7 @@ describe("parent-child coordination", () => {
     testDb = createTestDb();
     mockDb.db = testDb.db;
     await seedTestDb(testDb.db);
+    mockDispatchForState.mockClear();
   });
 
   afterEach(() => {
@@ -69,6 +76,12 @@ describe("parent-child coordination", () => {
     // Parent should now be "In Review"
     const parentState = await getState(TEST_IDS.WI_TOP_1);
     expect(parentState).toBe("In Review");
+
+    // Should dispatch persona for the parent's new state
+    expect(mockDispatchForState).toHaveBeenCalledWith(
+      TEST_IDS.WI_TOP_1,
+      "In Review",
+    );
   });
 
   // ── 2/3 children Done → parent does NOT advance ─────────────────
@@ -86,6 +99,9 @@ describe("parent-child coordination", () => {
     // Parent should NOT have changed
     const parentStateAfter = await getState(TEST_IDS.WI_TOP_1);
     expect(parentStateAfter).toBe(parentStateBefore);
+
+    // Should NOT dispatch since parent didn't advance
+    expect(mockDispatchForState).not.toHaveBeenCalled();
   });
 
   // ── Child Blocked → system comment on parent ────────────────────
@@ -130,6 +146,9 @@ describe("parent-child coordination", () => {
     // No new system comment about auto-advance
     const commentsAfter = await getComments(TEST_IDS.WI_TOP_1);
     expect(commentsAfter.length).toBe(commentsBefore.length);
+
+    // No dispatch since parent was already in target state
+    expect(mockDispatchForState).not.toHaveBeenCalled();
   });
 
   // ── Top-level items are no-ops ───────────────────────────────────

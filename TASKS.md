@@ -40,7 +40,7 @@
 
 - [x] **E.7** — Fix dispatch trigger on state change. Verify that `PATCH /api/work-items/:id` with a `currentState` change actually calls `dispatchForState()`. Verify the dispatch checks persona assignments, concurrency limits, and cost caps. Verify that when auto-routing is ON, the router fires after each persona completes. Verify that when auto-routing is OFF, items stay in their current state after persona completion. Fix any gaps in the wiring between routes → dispatch → execution-manager → router.
 
-- [ ] **E.8** — Fix parent-child coordination in real flow. Test with real DB: create a parent with 3 children, move children to Done one by one. Verify parent auto-advances to "In Review" only when ALL children are Done. Verify that blocking a child posts a system comment on the parent. Verify the detail panel updates reactively (via WS invalidation from E.2).
+- [review] **E.8** — Fix parent-child coordination in real flow. Test with real DB: create a parent with 3 children, move children to Done one by one. Verify parent auto-advances to "In Review" only when ALL children are Done. Verify that blocking a child posts a system comment on the parent. Verify the detail panel updates reactively (via WS invalidation from E.2).
 
 ### Error Handling & Recovery
 
