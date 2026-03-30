@@ -34,19 +34,7 @@
 
 - [x] **Q.12** — Test MCP tool implementations. In `packages/backend/src/agent/__tests__/mcp-tools.test.ts`: use test DB. Test `post_comment` inserts a comment and returns success. Test `create_children` creates child work items with correct parentId and edges. Test `route_to_state` validates transition and updates state. Test `route_to_state` rejects invalid transition. Test `flag_blocked` sets state to Blocked. Test `list_items` returns filtered results. Test `get_context` returns work item with execution history.
 
-- [ ] **Q.13** — Test execution manager lifecycle. In `packages/backend/src/agent/__tests__/execution-manager.test.ts`: use test DB, stub ClaudeExecutor. Test: `runExecution()` creates DB record with status "running". Test: on executor success, record updated to "completed" with cost/duration. Test: on executor failure, record updated to "failed". Test: transition rate limiting — more than 10 transitions per item per hour is blocked. Test: rejection increments retry counter, max retries triggers Blocked state.
-> [feedback: The `canTransition` rate-limiting test doesn't actually verify blocking.
->  `canTransition()` only reads the `transitionLog` Map — it never writes. Since
->  `recordTransition()` is never called in the test, the log stays empty and
->  `canTransition` trivially returns `true` every time. The second test is a no-op.
->
->  Fix: Export `recordTransition` from `execution-manager.ts` (add `export` keyword
->  to `function recordTransition` at line 43). Then in the test, import it and add a
->  test that calls `recordTransition("wi-ratelimit1")` 10 times, then asserts
->  `canTransition("wi-ratelimit1")` returns `false`. Also clean up the transitionLog
->  in afterEach (you may need to export a `clearTransitionLog()` helper or export the
->  Map itself for test access). The existing "returns true for fresh item" test is fine —
->  just add the blocking test alongside it.]
+- [review] **Q.13** — Test execution manager lifecycle. In `packages/backend/src/agent/__tests__/execution-manager.test.ts`: use test DB, stub ClaudeExecutor. Test: `runExecution()` creates DB record with status "running". Test: on executor success, record updated to "completed" with cost/duration. Test: on executor failure, record updated to "failed". Test: transition rate limiting — more than 10 transitions per item per hour is blocked. Test: rejection increments retry counter, max retries triggers Blocked state.
 
 ---
 

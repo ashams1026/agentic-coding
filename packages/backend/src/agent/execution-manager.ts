@@ -40,10 +40,15 @@ export function canTransition(workItemId: string): boolean {
   return recent.length < MAX_TRANSITIONS_PER_HOUR;
 }
 
-function recordTransition(workItemId: string): void {
+export function recordTransition(workItemId: string): void {
   const timestamps = transitionLog.get(workItemId) ?? [];
   timestamps.push(Date.now());
   transitionLog.set(workItemId, timestamps);
+}
+
+/** Clear all transition log entries. Exported for test cleanup. */
+export function clearTransitionLog(): void {
+  transitionLog.clear();
 }
 
 const executor = new ClaudeExecutor();

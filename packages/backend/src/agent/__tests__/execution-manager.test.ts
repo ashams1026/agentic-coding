@@ -43,7 +43,7 @@ vi.mock("../concurrency.js", () => ({
   getProjectCostSummary: (...args: unknown[]) => mockGetProjectCostSummary(...args),
 }));
 
-import { runExecution, canTransition, handleRejection } from "../execution-manager.js";
+import { runExecution, canTransition, recordTransition, clearTransitionLog, handleRejection } from "../execution-manager.js";
 
 let testDb: TestDatabase;
 
@@ -69,6 +69,7 @@ describe("execution manager", () => {
   });
 
   afterEach(() => {
+    clearTransitionLog();
     testDb.cleanup();
   });
 
@@ -165,17 +166,32 @@ describe("execution manager", () => {
       expect(canTransition("wi-fresh0001")).toBe(true);
     });
 
-    it("tracks transitions via the rate limiter", () => {
-      // canTransition checks the in-memory log. Without recordTransition
-      // (which is private), canTransition should always return true for fresh IDs.
-      // The rate limiter is tested indirectly through the full execution path.
+    it("returns true when under the 10-transition limit", () => {
       const id = "wi-ratelimit1";
-      for (let i = 0; i < 10; i++) {
-        expect(canTransition(id)).toBe(true);
+      for (let i = 0; i < 9; i++) {
+        recordTransition(id);
       }
-      // canTransition only reads, doesn't add — so it stays true
-      // The actual rate limiting happens inside runExecutionStream via recordTransition
+      // 9 transitions recorded — still under the limit of 10
       expect(canTransition(id)).toBe(true);
+    });
+
+    it("returns false after 10 transitions in the same hour", () => {
+      const id = "wi-ratelimit2";
+      for (let i = 0; i < 10; i++) {
+        recordTransition(id);
+      }
+      // 10 transitions recorded — at the limit, should be blocked
+      expect(canTransition(id)).toBe(false);
+    });
+
+    it("does not affect other work items", () => {
+      const blocked = "wi-blocked01";
+      const unrelated = "wi-unrelate1";
+      for (let i = 0; i < 10; i++) {
+        recordTransition(blocked);
+      }
+      expect(canTransition(blocked)).toBe(false);
+      expect(canTransition(unrelated)).toBe(true);
     });
   });
 
