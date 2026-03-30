@@ -30,7 +30,7 @@
 
 - [x] **W.3** — Wire project CRUD in settings. The Projects section in settings currently uses mock data. Wire to real `GET /api/projects`, `POST /api/projects`, `PATCH /api/projects/:id`, `DELETE /api/projects/:id`. Project creation should validate that the `path` exists on disk (backend checks via `fs.existsSync`). Display validation errors in the form. Wire the project switcher in the sidebar to use real projects.
 
-- [review] **W.4** — Wire concurrency settings. In the Settings Concurrency section: read current `maxConcurrent` from project settings via API. Slider (1-10) updates via `PATCH /api/projects/:id` with `settings.maxConcurrent`. Change takes effect immediately — the concurrency limiter in `concurrency.ts` reads from project settings on each `canSpawn()` check. Show current active/queued count next to the slider.
+- [x] **W.4** — Wire concurrency settings. In the Settings Concurrency section: read current `maxConcurrent` from project settings via API. Slider (1-10) updates via `PATCH /api/projects/:id` with `settings.maxConcurrent`. Change takes effect immediately — the concurrency limiter in `concurrency.ts` reads from project settings on each `canSpawn()` check. Show current active/queued count next to the slider.
 
 - [ ] **W.5** — Wire cost management settings. In the Settings Costs section: read `monthCap` from project settings. Dollar input updates via `PATCH /api/projects/:id` with `settings.monthCap`. Add `warningThreshold` (percentage, default 80%) and `dailyLimit` fields to project settings schema. Wire the cost chart to real `GET /api/dashboard/cost-summary` data. Show real monthly spend vs cap progress bar.
 

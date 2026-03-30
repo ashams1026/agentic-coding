@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: W.4 (approved)
+
+**Reviewed:** Concurrency settings wiring — backend endpoint, frontend slider, live stats polling.
+- Backend: `GET /api/settings/concurrency` returns `{ active, queued }` from concurrency tracker ✓
+- Frontend: `ConcurrencySection` reads `maxConcurrent` from project settings via `useProjects()` ✓
+- Slider (1-10) updates via `PATCH /api/projects/:id` with `settings.maxConcurrent` ✓
+- Change takes effect immediately — `canSpawn()` reads project settings on each call ✓
+- Polls stats every 5s, displays "Active: N / Queued: N" below slider ✓
+- Disabled state when no project configured ✓
+- API client, mock, and unified wrapper all added consistently ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — W.4: Wire concurrency settings
 
 **Task:** Wire the Settings Concurrency section to read/write `maxConcurrent` from project settings. Show active/queued counts.
