@@ -25,7 +25,7 @@
 
 - [x] **AI.3** — Write test plans for Work Items — List View. Create `tests/e2e/plans/work-items-list-view.md`: navigate to `/items`, verify list view is default, verify work items render with titles/state badges/priority badges, expand a parent item to see children, click a work item to open detail panel, verify detail panel shows correct item data. Create `tests/e2e/plans/work-items-create.md`: click the "+" button, verify a new work item appears in the list, verify it starts in Backlog state.
 
-- [review] **AI.4** — Write test plans for Work Items — Flow View. Create `tests/e2e/plans/work-items-flow-view.md`: navigate to `/items?view=flow`, verify state machine nodes render for all 8 workflow states, verify arrows between states, verify item counts on each node match the list view counts, click a state node and verify items in that state are highlighted or filtered.
+- [x] **AI.4** — Write test plans for Work Items — Flow View. Create `tests/e2e/plans/work-items-flow-view.md`: navigate to `/items?view=flow`, verify state machine nodes render for all 8 workflow states, verify arrows between states, verify item counts on each node match the list view counts, click a state node and verify items in that state are highlighted or filtered.
 
 - [ ] **AI.5** — Write test plans for Work Items — Detail Panel. Create `tests/e2e/plans/detail-panel-view.md`: select a work item, verify detail panel opens with title, state, priority, description, children list, comments, execution history. Create `tests/e2e/plans/detail-panel-edit.md`: click title to edit, change it, verify save works, edit description via Write/Preview tabs, change priority via dropdown, add a label, change state via transition dropdown — verify each mutation persists after page reload.
 

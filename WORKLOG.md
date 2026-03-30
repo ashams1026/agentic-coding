@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-30 — Review: AI.4 (approved)
+
+**Reviewed:** Work Items flow view test plan.
+- `work-items-flow-view.md`: 13 steps — navigates to `/items?view=flow`, verifies all 8 state nodes (correct layout: 7 in row + Blocked below center), item count badges on each node, agent status ("idle"/"N active"), SVG arrows with arrowheads matching all WORKFLOW.transitions (verified all 15 transitions listed correctly), cross-checks node count sum against list view total, click node → filtered items panel (colored dot + state name + count + items with priority/title/persona), item selection → detail panel, toggle deselect, zero-count → "No items in this state." ✓
+- Template format (Objective/Prerequisites/Steps/Expected Results/Failure Criteria) ✓
+- References UI by visible text, not implementation details ✓
+- Build: no code changes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.4: Write test plans for Work Items — Flow View
 
 **Task:** Create test plan for work items flow view.
