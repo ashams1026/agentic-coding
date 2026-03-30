@@ -5,44 +5,7 @@
 
 ---
 
-## Sprint 12: System Service & CLI (continued)
-
-> Sprints 1-11 complete and archived. S.1-S.8 complete and archived. Remaining task below.
-
-### Configuration
-
-- [x] **S.9** — Implement configuration file. Create `packages/backend/src/config.ts`: load config from `~/.agentops/config.json` (JSON for simplicity, not TOML). Config fields: `port` (default 3001), `dbPath` (default `~/.agentops/data/agentops.db`), `logLevel` (default "info"), `anthropicApiKey` (loaded from config or `ANTHROPIC_API_KEY` env var). Env vars override config file. Add `agentops config` CLI command to print current resolved config. Add `agentops config set <key> <value>` to update config file.
-
----
-
-## Sprint 13: Settings Wiring
-
-> Connect the existing Settings UI to real backend functionality. Every control should actually do something.
-> The settings pages already exist from Sprint 4 — this sprint wires them to real APIs and persistence.
-
-### API Key Management
-
-- [x] **W.1** — Implement API key storage and validation. Add `POST /api/settings/api-key` route: accepts `{ key: string }`, validates by making a test call to the Anthropic API (e.g., a minimal `messages.create` with 1 token max), stores the key encrypted (or base64 for MVP) in `~/.agentops/config.json`. Add `GET /api/settings/api-key` that returns `{ configured: boolean, maskedKey: "sk-ant-...****" }` (never return the full key). Add `DELETE /api/settings/api-key` to remove. Wire the Settings API Keys section to these endpoints: input field, "Test connection" button (calls POST, shows success/fail), masked display when configured, remove button.
-
-- [x] **W.2** — Wire API key into agent executor. In `packages/backend/src/agent/claude-executor.ts`: read the API key from config on each execution (don't cache — user might update it). If no key configured, reject dispatch with a clear error: "Anthropic API key not configured. Go to Settings → API Keys." Show this error in the UI as a toast and in the execution record.
-
-### Project Settings Wiring
-
-- [x] **W.3** — Wire project CRUD in settings. The Projects section in settings currently uses mock data. Wire to real `GET /api/projects`, `POST /api/projects`, `PATCH /api/projects/:id`, `DELETE /api/projects/:id`. Project creation should validate that the `path` exists on disk (backend checks via `fs.existsSync`). Display validation errors in the form. Wire the project switcher in the sidebar to use real projects.
-
-- [x] **W.4** — Wire concurrency settings. In the Settings Concurrency section: read current `maxConcurrent` from project settings via API. Slider (1-10) updates via `PATCH /api/projects/:id` with `settings.maxConcurrent`. Change takes effect immediately — the concurrency limiter in `concurrency.ts` reads from project settings on each `canSpawn()` check. Show current active/queued count next to the slider.
-
-- [x] **W.5** — Wire cost management settings. In the Settings Costs section: read `monthCap` from project settings. Dollar input updates via `PATCH /api/projects/:id` with `settings.monthCap`. Add `warningThreshold` (percentage, default 80%) and `dailyLimit` fields to project settings schema. Wire the cost chart to real `GET /api/dashboard/cost-summary` data. Show real monthly spend vs cap progress bar.
-
-- [x] **W.6** — Wire auto-routing toggle. In the Settings Workflow section: read `autoRouting` from project settings. Toggle switch updates via `PATCH /api/projects/:id` with `settings.autoRouting`. When toggled OFF: router stops firing after persona completions. When toggled ON: router resumes. Show current state clearly: "Auto-routing: ON — Router agent will automatically transition work items" / "OFF — Manual transitions only".
-
-### Appearance & Data
-
-- [x] **W.7** — Wire appearance settings. The theme toggle already works (Zustand + localStorage). Add density setting: `comfortable` (current) vs `compact` (tighter padding, smaller text — reduce page padding to `p-4`, card padding to `p-3`, use `text-xs` for body text). Store density preference in Zustand + localStorage. Apply via a CSS class on the root element (`data-density="compact"`) with Tailwind variant or CSS overrides.
-
-- [x] **W.8** — Wire data management settings. In the Settings Data section: add "Database size" display (query SQLite `page_count * page_size` via a new `GET /api/settings/db-stats` endpoint). Add "Clear execution history" button: `DELETE /api/settings/executions` that deletes all execution records older than 30 days (with confirmation dialog). Add "Export settings" button: `GET /api/settings/export` returns JSON dump of projects, personas, persona-assignments. Add "Import settings": `POST /api/settings/import` accepts the same JSON format.
-
----
+> Sprints 1-13 complete and archived.
 
 ## Sprint 14: Documentation
 

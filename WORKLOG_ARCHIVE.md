@@ -156,3 +156,27 @@
 *E.7 (work + review approved):* Settings field name fix — `maxConcurrentAgents`→`maxConcurrent`, `monthlyCostCap`→`monthCap`. Monthly cost cap was silently never enforced. 6 new tests (cost cap, auto-routing). Pipeline trace verified.
 
 *E.8 (work + review approved):* Parent-child coordination fix — `dispatchForState()` call added after parent auto-advances to "In Review". Without it, reviewer persona was never dispatched. 3 new test assertions.
+
+---
+
+## Sprint 12 (S.9) + Sprint 13 (W.1–W.8) — archived 2026-03-30
+
+*S.9 (work + review approved):* Configuration file `config.ts` — `loadConfig()` with precedence (defaults ← file ← env vars), `setConfigValue()` with validation, `getConfigPath()`. 4 fields: port, dbPath, logLevel, anthropicApiKey. CLI `config` and `config set` commands added to `cli.ts`. Dynamic ESM import. Sprint 12 completed.
+
+*W.1 (work + review approved):* API key management — 3 backend routes in `settings.ts` (GET/POST/DELETE `/api/settings/api-key`). POST validates via real Anthropic API call (401 = invalid). Frontend `ApiKeySection` rewired: masked key display, "Test connection" button, remove button. API client/mock/index layers added.
+
+*W.2 (work + review approved):* API key in executor — `claude-executor.ts` reads key from config on each `spawn()`, rejects with "Go to Settings → API Keys" error if not configured. Sets `process.env["ANTHROPIC_API_KEY"]` for Claude SDK.
+
+*W.3 (work + review approved):* Project CRUD — 5 routes in `projects.ts` (GET list, GET single, POST, PATCH, DELETE) with `existsSync()` path validation. Settings form `formError` state with `AlertCircle`. Sidebar project switcher wired to `useProjects()`.
+
+*W.4 (work + review approved):* Concurrency settings — `ConcurrencySection` reads `maxConcurrent` from project settings via `useProjects()`, slider (1-10) updates via PATCH. `GET /api/settings/concurrency` returns live active/queued counts from concurrency tracker. Polls every 5s.
+
+*W.5 (work + review approved):* Cost management — `monthCap`, `warningThreshold` (default 80%), `dailyLimit` in project settings. Progress bar from real `useCostSummary()`. Cost chart wired to `GET /api/dashboard/cost-summary` (7-day real data replacing 30-day mock). No backend changes needed.
+
+*W.6 (work + review approved):* Auto-routing toggle — `autoRouting` read/written to project settings. Backend `router.ts` already checked `if (autoRouting === false) return false`. Descriptive state text (ON/OFF). Toggle visual: emerald ON, muted OFF.
+
+*W.7 (work + review approved):* Density setting — `Density` type ("comfortable" | "compact") in Zustand store + localStorage. `data-density` attribute synced on root via `useThemeSync`. CSS `[data-density="compact"]` overrides: page padding 1rem, card padding 0.75rem, font-size 0.75rem, reduced gaps, compact table rows.
+
+*W.8 (work + review approved):* Data management — 4 backend endpoints: `GET /api/settings/db-stats` (SQLite pragma), `DELETE /api/settings/executions` (>30 days), `GET /api/settings/export`, `POST /api/settings/import` (onConflictDoNothing). Frontend: real DB size display, export JSON download, import JSON upload, 2-click clear confirmation. Sprint 13 completed.
+
+**Key patterns established:** All settings follow the same frontend pattern: `useProjects()` + `useUpdateProject()` for project settings fields, with `settings` stored as freeform `Record<string, unknown>` JSON. API layer consistently wired across `client.ts`, `mocks/api.ts`, `api/index.ts` with unified `pick()` delegation.

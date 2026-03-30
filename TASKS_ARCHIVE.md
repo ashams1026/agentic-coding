@@ -28,147 +28,57 @@
 
 ---
 
-## Sprint 5: Backend API Completion — completed 2026-03-29
+## Sprints 5, 7: Backend API + UI Refinements (consolidated) — completed 2026-03-29
 
-- [x] **T3.1.3** — Set up Drizzle migrations and seed script (drizzle.config.ts, migrate.ts, generated SQL, 5 npm scripts). *(completed 2026-03-29)*
-- [x] **T3.2.5** — Implement comment API routes (4 routes: GET list, GET by id, POST, DELETE). *(completed 2026-03-29)*
-- [x] **T3.2.7** — Implement persona API routes (5 routes: GET list, GET by id, POST, PATCH, DELETE). *(completed 2026-03-29)*
-- [x] **T3.2.8** — Implement execution API routes (5 routes: GET list, GET by id, POST, PATCH, DELETE). *(completed 2026-03-29)*
-- [x] **T3.2.9** — Implement proposal API routes (5 routes: GET list, GET by id, POST, PATCH, DELETE). *(completed 2026-03-29)*
-- [x] **T3.2.10** — Implement aggregate/dashboard API routes (4 routes: stats, cost-summary, execution-stats, ready-work). *(completed 2026-03-29)*
-- [x] **T3.3.1** — Implement real WebSocket server (@fastify/websocket, broadcast, client tracking). *(completed 2026-03-29)*
-- [x] **T3.3.2** — Create API client for frontend (32 functions mirroring mock API, fetch-based). *(completed 2026-03-29)*
-- [x] **T3.3.3** — Add API mode toggle to frontend (Zustand apiMode, unified API layer, 8 hooks updated). *(completed 2026-03-29)*
-- [x] **T3.3.4** — Connect WebSocket client to real server (RealWsClient, unified WS module, 5 consumers updated). *(completed 2026-03-29)*
+**Sprint 5 (T3.x):** 10 tasks. Drizzle migrations/seed, 5 resource route sets (comments, personas, executions, proposals, dashboard), WebSocket server, API client (32 functions), API mode toggle (Zustand), real WebSocket client.
+
+**Sprint 7 (U.x):** 9 tasks. Removed tree view, built Flow view (state machine graph), view toggle, inline editing (title, description, priority, labels), state transition control, agent monitor chrome polish, status bar padding.
 
 ---
 
-## Sprint 7: UI Refinements & Flow View — completed 2026-03-29
+## Sprint 8: Agent Execution Engine (consolidated) — completed 2026-03-30
 
-- [x] **U.1** — Remove tree view. Deleted tree-view.tsx, removed from page/store. *(completed 2026-03-29)*
-- [x] **U.2** — Build Flow view. State machine graph with colored nodes, bezier arrows, click-to-filter, avatar stacks, progress bars (~497 lines). *(completed 2026-03-29)*
-- [x] **U.3** — Update view toggle. Board→Flow swap, GitBranch icon, URL params, store type. *(completed 2026-03-29)*
-- [x] **U.4** — Add inline title editing to detail panel. Click-to-edit h2→input, Enter/blur save, Escape cancel. *(completed 2026-03-29)*
-- [x] **U.5** — Add description editing to detail panel. Write/Preview tabs, textarea, Save/Cancel. *(completed 2026-03-29)*
-- [x] **U.6** — Add priority and label editing to detail panel. shadcn Select dropdown, pill editor with inline input. *(completed 2026-03-29)*
-- [x] **U.7** — Add state transition control to detail panel. Valid-next-state dropdown, persona trigger prompt dialog. *(completed 2026-03-29)*
-- [x] **U.8** — Soften agent monitor page chrome. Replaced zinc colors with app tokens in split-view, control-bar, history. *(completed 2026-03-29)*
-- [x] **U.9** — Fix bottom padding for status bar. Added pb-8 to main element. *(completed 2026-03-29)*
+**MCP Server (A.1–A.5):** 5 tasks. 7 tools (post_comment, create_children, route_to_state, list_items, get_context, flag_blocked, request_review) with Zod v4 schemas, stdio entry point.
 
----
+**Executor (A.6–A.9):** 4 tasks. AgentEvent types, ClaudeExecutor with SDK, 4-layer system prompt assembly, execution lifecycle with DB/WS streaming.
 
-## Sprint 8: Agent Execution Engine (Phase 4 + 5) — completed 2026-03-30
+**Dispatch & Router (A.10–A.12):** 3 tasks. Persona dispatch on state entry, Router agent (haiku model, autoRouting check), rate limiter (10/hour), execution chain.
 
-### Agent MCP Server (T5.1)
+**Coordination (A.13–A.14):** 2 tasks. Parent-child auto-advance, rejection retry (max 3→Blocked).
 
-- [x] **A.1** — Create AgentOps MCP server skeleton. mcp-server.ts with createMcpServer factory, 7 tool stubs with Zod v4 schemas, standalone stdio entry point. *(completed 2026-03-29)*
-- [x] **A.2** — Implement post_comment MCP tool. DB insert with agent authorType, WS broadcast. *(completed 2026-03-29)*
-- [x] **A.3** — Implement create_children MCP tool. Child work items in Backlog, depends_on edges. *(completed 2026-03-29)*
-- [x] **A.4** — Implement route_to_state MCP tool. Transition validation, state update, system comment. *(completed 2026-03-29)*
-- [x] **A.5** — Implement read-only MCP tools. list_items, get_context, flag_blocked, request_review. *(completed 2026-03-29)*
-
-### Agent Executor (T5.2 + T5.3)
-
-- [x] **A.6** — Create agent executor interface and types. AgentEvent union (6 variants), AgentTask, SpawnOptions, AgentExecutor interface. *(completed 2026-03-29)*
-- [x] **A.7** — Install Claude Agent SDK and create executor. ClaudeExecutor with model mapping, MCP subprocess, SDKMessage→AgentEvent mapping. *(completed 2026-03-29)*
-- [x] **A.8** — Implement system prompt assembly. 4-layer buildSystemPrompt (persona, project, work item, execution history). *(completed 2026-03-29)*
-- [x] **A.9** — Implement execution lifecycle and streaming. execution-manager.ts with runExecution, DB records, WS streaming, completion/failure handling. *(completed 2026-03-29)*
-
-### Workflow Dispatch & Router (T4.2 + T4.3)
-
-- [x] **A.10** — Implement persona dispatch on state entry. dispatch.ts with dispatchForState, wired into PATCH route. *(completed 2026-03-29)*
-- [x] **A.11** — Implement Router agent. router.ts with runRouter, haiku model, lazy __router__ persona, autoRouting check. *(completed 2026-03-29)*
-- [x] **A.12** — Wire dispatch and routing into execution lifecycle. Transition rate limiter (10/hour), execution chain: persona→runRouter→dispatchForState. *(completed 2026-03-29)*
-
-### State Coordination & Rejection (T4.4 + T4.5)
-
-- [x] **A.13** — Implement parent-child state coordination. All-children-done→parent "In Review", child blocked→system comment on parent. *(completed 2026-03-29)*
-- [x] **A.14** — Implement rejection and retry logic. Retry counter, structured rejection payload, max 3 retries→Blocked. *(completed 2026-03-29)*
-
-### Concurrency & Cost (T5.4)
-
-- [x] **A.15** — Implement concurrency limiter. In-memory tracking, canSpawn(), FIFO queue with priority, wired into dispatch. *(completed 2026-03-29)*
-- [x] **A.16** — Implement cost tracking and caps. costUsd accumulation, monthly cap check, cost_update WS broadcast. *(completed 2026-03-29)*
-
-### Project Memory (T5.5)
-
-- [x] **A.17** — Implement project memory creation. Haiku summary on top-level Done, insert into project_memories. *(completed 2026-03-29)*
-- [x] **A.18** — Implement memory consolidation and retrieval. Threshold-based consolidation, getRecentMemories with token budget. *(completed 2026-03-29)*
+**Infrastructure (A.15–A.18):** 4 tasks. Concurrency limiter (priority FIFO queue), cost tracking/caps, project memory creation (haiku summary), memory consolidation.
 
 ---
 
-## Sprint 9: Testing — completed 2026-03-30
+## Sprint 9: Testing (consolidated) — completed 2026-03-30
 
-### Test Infrastructure
+**Q.1–Q.3:** Test infrastructure — Vitest setup, in-memory test DB helper, 24 workflow state machine tests.
 
-- [x] **Q.1** — Set up Vitest in the monorepo. vitest@^4.1.2, root config, test scripts in root/backend/shared. *(completed 2026-03-29)*
-- [x] **Q.2** — Create test database helper. createTestDb() (in-memory SQLite + migrations), seedTestDb() (realistic fixtures), TEST_IDS. *(completed 2026-03-30)*
-- [x] **Q.3** — Test workflow state machine. 24 tests for getValidTransitions, isValidTransition, getStateByName, constants, edge cases. *(completed 2026-03-30)*
+**Q.4–Q.8:** API integration tests — 49 tests across work items, personas, assignments, comments, executions, proposals, edges, dashboard. Found & fixed double-encoding bugs.
 
-### Backend API Integration Tests
-
-- [x] **Q.4** — Test work items CRUD routes. 19 tests: POST (top-level + child), GET (by id, list with filters), PATCH (fields, state transitions), DELETE (leaf + recursive). Found & fixed double-encoding bug in PATCH. *(completed 2026-03-30)*
-- [x] **Q.5** — Test persona and persona-assignment routes. 11 persona tests (full CRUD + edge cases), 6 assignment tests (list/filter, upsert). Fixed double-encoding in personas.ts. *(completed 2026-03-30)*
-- [x] **Q.6** — Test comments, executions, and proposals routes. 6 comments tests, 7 executions tests, 7 proposals tests. Fixed double-encoding in executions.ts. *(completed 2026-03-30)*
-- [x] **Q.7** — Test work-item-edges routes. 9 tests: create 3 edge types, list/filter, delete, cycle detection. *(completed 2026-03-30)*
-- [x] **Q.8** — Test dashboard aggregate routes. 7 tests: empty DB baselines, seeded aggregation (stats, cost-summary, execution-stats, ready-work). *(completed 2026-03-30)*
-
-### Agent Logic Unit Tests
-
-- [x] **Q.9** — Test concurrency limiter. 14 tests: canSpawn (under/at/over limit), trackExecution, enqueue, onComplete dequeue (priority + FIFO). *(completed 2026-03-30)*
-- [x] **Q.10** — Test parent-child coordination. 5 tests: all-children-done advance, partial no-advance, child blocked comment, no double-advance, top-level no-op. *(completed 2026-03-30)*
-- [x] **Q.11** — Test dispatch logic. 6 tests: spawn on assignment, no-op cases (Backlog/Done/non-existent), concurrency limit enqueue, under-limit spawn. *(completed 2026-03-30)*
-- [x] **Q.12** — Test MCP tool implementations. 10 tests via MCP Client + InMemoryTransport: post_comment, create_children, route_to_state, flag_blocked, list_items, get_context. *(completed 2026-03-30)*
-- [x] **Q.13** — Test execution manager lifecycle. 10 tests: runExecution lifecycle (create/success/failure), canTransition rate limiting (under/at limit, blocking, isolation), handleRejection (retry/blocked/payload). *(completed 2026-03-30)*
+**Q.9–Q.13:** Agent logic unit tests — 45 tests across concurrency limiter, parent-child coordination, dispatch, MCP tools, execution manager lifecycle.
 
 ---
 
-## Sprint 10: UI Polish & UX Refinements (partial) — completed 2026-03-30
+## Sprint 10: UI Polish (consolidated) — completed 2026-03-30
 
-### Design System Tightening
+**P.1–P.4:** Design system — typography scale utilities, button/badge sizing, spacing alignment, 600-level color palette with 5-layer dark mode surfaces.
 
-- [x] **P.1** — Standardize typography scale. Semantic text size utilities (`text-page-title`, `text-section-title`, `text-body`, `text-label`, `text-caption`) via Tailwind `@utility` directives. Audited and replaced all `text-[10px]`/`text-[11px]`. *(completed 2026-03-30)*
-- [x] **P.2** — Standardize button and badge sizing. Converged to `sm`/`default` for both. Added CVA `sm` size variant to badge. Removed all `text-[10px]` badge variants. *(completed 2026-03-30)*
-- [x] **P.3** — Audit and fix spacing alignment. Unified page padding `p-6`, card padding `p-4`, filter bar `gap-3`, header spacing `mb-6` across all pages. *(completed 2026-03-30)*
-- [x] **P.4** — Refine color palette for modern feel. 5-layer dark mode surface depth, all colors shifted to 600-level for WCAG AA. Card distinct from background in light mode. *(completed 2026-03-30)*
+**P.5–P.7:** Filtering — text search (debounced), persona/label multi-select filters, sort direction toggle with URL sync.
 
-### Filtering & Sorting Enhancements
+**P.8–P.9:** Detail panel — resizable (30-70%, persisted), CSS transitions on open/close.
 
-- [x] **P.5** — Add text search to work items. Debounced search input (200ms), regex-based highlight, URL param sync (`?q=`). *(completed 2026-03-30)*
-- [x] **P.6** — Add persona and label filters. Multi-select DropdownMenu dropdowns with toggle actions, deterministic label coloring, URL sync (`?personas=`, `?labels=`). *(completed 2026-03-30)*
-- [x] **P.7** — Add sort direction toggle and secondary sort. ArrowUp/ArrowDown toggle, direction multiplier, secondary sort (priority→created, dates→priority), URL sync (`?sortDir=`). *(completed 2026-03-30)*
-
-### Detail Panel Improvements
-
-- [x] **P.8** — Make detail panel resizable. Draggable 4px resize handle, percentage-based width (30-70%), persisted to localStorage via Zustand. *(completed 2026-03-30)*
-- [x] **P.9** — Add visual divider and panel transition. `transition-all duration-200` on open/close, disabled during active resize. Always-rendered DOM pattern for CSS transitions. *(completed 2026-03-30)*
-
-### Tooltips & Micro-Interactions
-
-- [x] **P.10** — Add tooltips across the app. Radix tooltips on state/priority badges, truncated titles, persona avatars, progress bars, view toggles, icon buttons. Global delay 300ms, sideOffset 4. *(completed 2026-03-30)*
-- [x] **P.11** — Add loading and empty states. Skeleton loading states (work items list, detail panel, flow view, dashboard cards) and empty states with helpful messaging. *(completed 2026-03-30)*
-- [x] **P.12** — Polish hover states and transitions. Audited all interactive elements for hover feedback, active/selected states, focus-visible rings. *(completed 2026-03-30)*
+**P.10–P.12:** Micro-interactions — Radix tooltips, skeleton/empty states, hover polish and focus-visible rings.
 
 ---
 
-## Sprint 12: System Service & CLI (S.1–S.8) — completed 2026-03-30
+## Sprint 12: System Service & CLI (S.1–S.8, consolidated) — completed 2026-03-30
 
-### CLI Foundation
+**S.1–S.3:** CLI foundation — command parser with start/stop/status/dev, PID file, graceful shutdown (30s drain), crash recovery (orphaned execution reset).
 
-- [x] **S.1** — Create CLI entry point. `cli.ts` with command parser, PID file at `~/.agentops/`, 4 commands (start/stop/status/dev), bin entry in package.json. *(completed 2026-03-30)*
-- [x] **S.2** — Add graceful shutdown handling. SIGTERM/SIGINT handlers, 30s execution drain, WS close(1001), DB close, `/api/health` endpoint. *(completed 2026-03-30)*
-- [x] **S.3** — Add crash recovery on startup. Production-grade `recoverOrphanedState()` resets running+pending executions, typed RecoveryReport, try/catch wrapped. *(completed 2026-03-30)*
+**S.4–S.6:** pm2 service — ecosystem config, setup.sh script, CLI install/uninstall/logs/restart commands.
 
-### pm2 Service Management
-
-- [x] **S.4** — Create pm2 ecosystem config. `ecosystem.config.cjs` with restart policy, kill_timeout 35s, log paths, service:* scripts in root package.json. *(completed 2026-03-30)*
-- [x] **S.5** — Create install/setup script. `scripts/setup.sh` — Node/pnpm checks, install, build, create `~/.agentops/`, migrations, seed, `AGENTOPS_DB_PATH` env var. *(completed 2026-03-30)*
-- [x] **S.6** — Add pm2 startup integration. CLI install/uninstall/logs/restart commands wrapping pm2, ecosystem config validation. *(completed 2026-03-30)*
-
-### Logging & Observability
-
-- [x] **S.7** — Set up structured logging. Global pino logger (`logger.ts`), dev pino-pretty, prod daily-rotated file via pino-roll (7-day retention), replaced 18 console calls across 5 files. *(completed 2026-03-30)*
-- [x] **S.8** — Add execution audit trail. `audit.ts` with 4 typed emitters, pino writing to `~/.agentops/logs/audit.log`, `GET /api/audit` endpoint, wired in 5 files. *(completed 2026-03-30)*
+**S.7–S.8:** Logging — pino structured logger (dev pretty-print, prod daily-rotated), execution audit trail (4 emitters, audit.log, GET /api/audit).
 
 ---
 
@@ -192,3 +102,32 @@
 - [x] **E.6** — Manual pipeline walkthrough and fix. Fixed state transition validation (isValidTransition) and WS state_change broadcast in PATCH route. *(completed 2026-03-30)*
 - [x] **E.7** — Fix dispatch trigger on state change. Fixed settings field name mismatch (maxConcurrentAgents→maxConcurrent, monthlyCostCap→monthCap). Monthly cost cap was never enforced. Added router auto-routing tests. *(completed 2026-03-30)*
 - [x] **E.8** — Fix parent-child coordination in real flow. Added dispatchForState() call after parent auto-advances to "In Review" so reviewer persona actually gets dispatched. *(completed 2026-03-30)*
+
+---
+
+## Sprint 12: System Service & CLI (continued) — completed 2026-03-30
+
+### Configuration
+
+- [x] **S.9** — Implement configuration file. `config.ts` — loads from `~/.agentops/config.json`, 4 fields (port, dbPath, logLevel, anthropicApiKey), env var overrides. `agentops config` and `agentops config set` CLI commands. *(completed 2026-03-30)*
+
+---
+
+## Sprint 13: Settings Wiring — completed 2026-03-30
+
+### API Key Management
+
+- [x] **W.1** — Implement API key storage and validation. Backend settings routes (GET/POST/DELETE `/api/settings/api-key`), Anthropic API validation, frontend ApiKeySection wired. *(completed 2026-03-30)*
+- [x] **W.2** — Wire API key into agent executor. `claude-executor.ts` reads key from config on each execution, rejects with clear error if not configured. *(completed 2026-03-30)*
+
+### Project Settings Wiring
+
+- [x] **W.3** — Wire project CRUD in settings. 5 CRUD routes with `existsSync()` path validation, settings form with error display, sidebar project switcher. *(completed 2026-03-30)*
+- [x] **W.4** — Wire concurrency settings. Slider (1-10) updates `maxConcurrent` via PATCH, `GET /api/settings/concurrency` for live active/queued counts. *(completed 2026-03-30)*
+- [x] **W.5** — Wire cost management settings. `monthCap`, `warningThreshold`, `dailyLimit` in project settings. Cost chart wired to `GET /api/dashboard/cost-summary`. Progress bar with real monthly spend. *(completed 2026-03-30)*
+- [x] **W.6** — Wire auto-routing toggle. Reads/writes `autoRouting` from project settings. ON/OFF descriptive text. Backend `router.ts` already checked this setting. *(completed 2026-03-30)*
+
+### Appearance & Data
+
+- [x] **W.7** — Wire appearance settings. Density (comfortable/compact) in Zustand store + localStorage, `data-density` attribute, CSS compact overrides. *(completed 2026-03-30)*
+- [x] **W.8** — Wire data management settings. `GET /api/settings/db-stats`, `DELETE /api/settings/executions` (>30 days), `GET /api/settings/export`, `POST /api/settings/import`. DatabaseInfo, export download, import upload, 2-click clear confirmation. *(completed 2026-03-30)*
