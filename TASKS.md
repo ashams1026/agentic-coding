@@ -19,7 +19,7 @@
 
 - [x] **A.4** — Implement `route_to_state` MCP tool. Router-only tool. Input: `{ workItemId, targetState, reasoning }`. Validates against `isValidTransition()`. Updates work item's `currentState`. Posts reasoning as a system comment. Broadcasts `state_change` WS event. Returns success/error.
 
-- [review] **A.5** — Implement read-only MCP tools. Implement `list_items` (query work items with optional parentId/state filter, verbosity control: "summary" returns id+title+state, "detail" includes description+context), `get_context` (returns work item's executionContext + optional project memories), `flag_blocked` (sets state to Blocked, posts reason as comment), `request_review` (posts a system comment flagging human attention needed).
+- [x] **A.5** — Implement read-only MCP tools. Implement `list_items` (query work items with optional parentId/state filter, verbosity control: "summary" returns id+title+state, "detail" includes description+context), `get_context` (returns work item's executionContext + optional project memories), `flag_blocked` (sets state to Blocked, posts reason as comment), `request_review` (posts a system comment flagging human attention needed).
 
 ### Agent Executor (T5.2 + T5.3)
 

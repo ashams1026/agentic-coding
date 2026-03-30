@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: A.5 (approved)
+
+**Reviewed:** 4 remaining MCP tools — `packages/backend/src/agent/mcp-server.ts`.
+- list_items: project-scoped, parentId/state filters, summary/detail verbosity ✓
+- get_context: work item lookup + executionContext, optional project memories (non-consolidated, limit 10) ✓
+- flag_blocked: state→Blocked, system comment with reason/previousState metadata, state_change broadcast ✓
+- request_review: system comment with review_request metadata, comment_created broadcast, no state change ✓
+- stub() helper and CallToolResult import removed — all 7 tools fully implemented ✓
+- Imports: and, isNull, projectMemories added correctly ✓
+- Backend build: 0 errors
+- Verdict: **approved**
+- **MCP server is now complete** — all 7 tools (A.1–A.5) have real implementations
+
+---
+
 ## 2026-03-29 — A.5: Implement read-only MCP tools
 
 **Task:** Replace 4 remaining tool stubs: list_items, get_context, flag_blocked, request_review.
