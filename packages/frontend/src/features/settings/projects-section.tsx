@@ -9,23 +9,20 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
   useProjects,
   useCreateProject,
   useUpdateProject,
   useDeleteProject,
-  useWorkflows,
 } from "@/hooks";
-import { cn } from "@/lib/utils";
-import type { Project, ProjectId, WorkflowId } from "@agentops/shared";
+import type { Project, ProjectId } from "@agentops/shared";
 
 // ── Add / Edit form ────────────────────────────────────────────────
 
 interface ProjectFormProps {
-  initial?: { name: string; path: string; workflowId: string };
-  onSubmit: (data: { name: string; path: string; workflowId: string }) => void;
+  initial?: { name: string; path: string };
+  onSubmit: (data: { name: string; path: string }) => void;
   onCancel: () => void;
   submitLabel: string;
 }
@@ -33,10 +30,6 @@ interface ProjectFormProps {
 function ProjectForm({ initial, onSubmit, onCancel, submitLabel }: ProjectFormProps) {
   const [name, setName] = useState(initial?.name ?? "");
   const [path, setPath] = useState(initial?.path ?? "");
-  const [workflowId, setWorkflowId] = useState(initial?.workflowId ?? "");
-  const { data: workflows = [] } = useWorkflows();
-
-  const storyWorkflows = workflows.filter((w) => w.type === "story");
 
   // Simple path validation — non-empty and starts with /
   const pathValid = path.length > 0 && path.startsWith("/");
@@ -45,7 +38,7 @@ function ProjectForm({ initial, onSubmit, onCancel, submitLabel }: ProjectFormPr
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
-    onSubmit({ name: name.trim(), path, workflowId });
+    onSubmit({ name: name.trim(), path });
   };
 
   return (
@@ -90,26 +83,6 @@ function ProjectForm({ initial, onSubmit, onCancel, submitLabel }: ProjectFormPr
         )}
       </div>
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium" htmlFor="project-workflow">Default workflow</label>
-        <select
-          id="project-workflow"
-          className={cn(
-            "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm",
-            "transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
-          )}
-          value={workflowId}
-          onChange={(e) => setWorkflowId(e.target.value)}
-        >
-          <option value="">None</option>
-          {storyWorkflows.map((wf) => (
-            <option key={wf.id} value={wf.id}>
-              {wf.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
       <div className="flex items-center gap-2 pt-1">
         <Button type="submit" size="sm" disabled={!canSubmit}>
           {submitLabel}
@@ -126,22 +99,16 @@ function ProjectForm({ initial, onSubmit, onCancel, submitLabel }: ProjectFormPr
 
 interface ProjectRowProps {
   project: Project;
-  workflowName: string | null;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-function ProjectRow({ project, workflowName, onEdit, onDelete }: ProjectRowProps) {
+function ProjectRow({ project, onEdit, onDelete }: ProjectRowProps) {
   return (
     <div className="flex items-center justify-between rounded-lg border px-4 py-3 group">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium truncate">{project.name}</span>
-          {workflowName && (
-            <Badge variant="secondary" className="text-[10px] shrink-0">
-              {workflowName}
-            </Badge>
-          )}
         </div>
         <p className="text-xs text-muted-foreground truncate mt-0.5">{project.path}</p>
       </div>
@@ -161,7 +128,6 @@ function ProjectRow({ project, workflowName, onEdit, onDelete }: ProjectRowProps
 
 export function ProjectsSection() {
   const { data: projects = [], isLoading } = useProjects();
-  const { data: workflows = [] } = useWorkflows();
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
@@ -169,23 +135,19 @@ export function ProjectsSection() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<ProjectId | null>(null);
 
-  const workflowNameMap = new Map(workflows.map((w) => [w.id, w.name]));
-
-  const handleCreate = (data: { name: string; path: string; workflowId: string }) => {
+  const handleCreate = (data: { name: string; path: string }) => {
     createProject.mutate({
       name: data.name,
       path: data.path,
-      defaultWorkflowId: data.workflowId ? (data.workflowId as WorkflowId) : undefined,
     });
     setShowAddForm(false);
   };
 
-  const handleUpdate = (id: ProjectId, data: { name: string; path: string; workflowId: string }) => {
+  const handleUpdate = (id: ProjectId, data: { name: string; path: string }) => {
     updateProject.mutate({
       id,
       name: data.name,
       path: data.path,
-      defaultWorkflowId: data.workflowId ? (data.workflowId as WorkflowId) : null,
     });
     setEditingId(null);
   };
@@ -246,7 +208,6 @@ export function ProjectsSection() {
                 initial={{
                   name: project.name,
                   path: project.path,
-                  workflowId: project.defaultWorkflowId ?? "",
                 }}
                 onSubmit={(data) => handleUpdate(project.id, data)}
                 onCancel={() => setEditingId(null)}
@@ -256,7 +217,6 @@ export function ProjectsSection() {
               <ProjectRow
                 key={project.id}
                 project={project}
-                workflowName={project.defaultWorkflowId ? (workflowNameMap.get(project.defaultWorkflowId) ?? null) : null}
                 onEdit={() => setEditingId(project.id)}
                 onDelete={() => handleDelete(project.id)}
               />

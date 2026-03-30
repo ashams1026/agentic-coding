@@ -7,6 +7,7 @@ import {
   Palette,
   Server,
   Database,
+  GitBranch,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -15,6 +16,7 @@ import { ProjectsSection } from "./projects-section";
 import { ApiKeysSection } from "./api-keys-section";
 import { CostsSection } from "./costs-section";
 import { AppearanceSection, ServiceSection, DataSection } from "./appearance-section";
+import { WorkflowConfigSection } from "./workflow-config-section";
 
 // ── Section definitions ─────────────────────────────────────────
 
@@ -26,6 +28,7 @@ interface SectionDef {
 
 const SECTIONS: SectionDef[] = [
   { id: "projects", label: "Projects", icon: FolderOpen },
+  { id: "workflow", label: "Workflow", icon: GitBranch },
   { id: "api-keys", label: "API Keys", icon: Key },
   { id: "concurrency", label: "Concurrency", icon: Gauge },
   { id: "costs", label: "Costs", icon: DollarSign },
@@ -96,6 +99,8 @@ export function SettingsLayout() {
           {/* Section content */}
           {activeSection === "projects" ? (
             <ProjectsSection />
+          ) : activeSection === "workflow" ? (
+            <WorkflowConfigSection />
           ) : activeSection === "api-keys" || activeSection === "concurrency" ? (
             <ApiKeysSection />
           ) : activeSection === "costs" ? (

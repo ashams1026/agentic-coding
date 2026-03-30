@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-29 — O.16: Build workflow configuration in settings
+
+**Task:** Add per-project workflow config panel with auto-routing toggle, persona-per-state table, state machine diagram.
+
+**Done:**
+- Created `features/settings/workflow-config-section.tsx`:
+  - AutoRoutingToggle: ON/OFF switch with description
+  - PersonaStateTable: grid of configurable states (Planning, Decomposition, Ready, In Progress, In Review) with persona dropdown (from usePersonas) and model badge (opus/sonnet/haiku with colors). Note about Backlog/Done/Blocked being non-configurable
+  - WorkflowDiagram: read-only SVG rendering of WORKFLOW states and transitions. Horizontal layout for main states, Blocked below. Arrow markers, colored node fills from WORKFLOW.states
+  - Uses usePersonaAssignments/useUpdatePersonaAssignment for live updates
+- Updated `features/settings/settings-layout.tsx`: added "Workflow" section with GitBranch icon between Projects and API Keys
+- Updated `features/settings/projects-section.tsx`: removed all workflow references (workflowId form field, defaultWorkflowId, workflow name badge, useWorkflows import, WorkflowId type)
+
+**Files created:** `features/settings/workflow-config-section.tsx`
+**Files modified:** `features/settings/settings-layout.tsx`, `features/settings/projects-section.tsx`
+
+**Notes:** All settings files compile clean. Workflow config is read-only for state machine — only persona assignments are editable.
+
+---
+
 ## 2026-03-29 — Review: O.15 (approved)
 
 **Reviewed:** Activity feed — `activity-feed.tsx`.
