@@ -11,7 +11,7 @@
 
 ### Configuration
 
-- [review] **S.9** — Implement configuration file. Create `packages/backend/src/config.ts`: load config from `~/.agentops/config.json` (JSON for simplicity, not TOML). Config fields: `port` (default 3001), `dbPath` (default `~/.agentops/data/agentops.db`), `logLevel` (default "info"), `anthropicApiKey` (loaded from config or `ANTHROPIC_API_KEY` env var). Env vars override config file. Add `agentops config` CLI command to print current resolved config. Add `agentops config set <key> <value>` to update config file.
+- [x] **S.9** — Implement configuration file. Create `packages/backend/src/config.ts`: load config from `~/.agentops/config.json` (JSON for simplicity, not TOML). Config fields: `port` (default 3001), `dbPath` (default `~/.agentops/data/agentops.db`), `logLevel` (default "info"), `anthropicApiKey` (loaded from config or `ANTHROPIC_API_KEY` env var). Env vars override config file. Add `agentops config` CLI command to print current resolved config. Add `agentops config set <key> <value>` to update config file.
 
 ---
 

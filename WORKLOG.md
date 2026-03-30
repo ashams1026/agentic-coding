@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — Review: S.9 (approved)
+
+**Reviewed:** Configuration file — `config.ts` and CLI commands in `cli.ts`.
+- `AgentOpsConfig` interface: 4 fields (port, dbPath, logLevel, anthropicApiKey) with sensible defaults ✓
+- `loadConfig()`: correct precedence defaults <- file <- env vars. Reads PORT, AGENTOPS_DB_PATH/DATABASE_URL, LOG_LEVEL, ANTHROPIC_API_KEY ✓
+- `setConfigValue()`: validates port (1-65535), logLevel (6 pino levels), unknown keys. Merge-writes (reads before writing) ✓
+- `readConfigFile()`: handles missing file and parse errors gracefully ✓
+- `writeConfigFile()`: lazy mkdirSync, pretty-printed JSON ✓
+- CLI `config`: prints resolved config, masks API key (last 4 chars or "(not set)") ✓
+- CLI `config set`: validates, saves, masks API key in output, dynamic ESM import ✓
+- Switch dispatch: `process.argv[3] === "set"` subcommand ✓
+- `--help` updated with both commands ✓
+- Build: 0 errors, Tests: 159/159
+- Verdict: **approved** — Sprint 12 complete!
+
+---
+
 ## 2026-03-30 — S.9: Implement configuration file
 
 **Task:** Create config loader from `~/.agentops/config.json` with env var overrides. Add `agentops config` and `agentops config set` CLI commands.
