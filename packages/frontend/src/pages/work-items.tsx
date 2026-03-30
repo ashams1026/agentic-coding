@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { FilterBar } from "@/features/work-items/filter-bar";
 import { ListView } from "@/features/work-items/list-view";
 import { BoardView } from "@/features/work-items/board-view";
+import { TreeView } from "@/features/work-items/tree-view";
 import { useWorkItemsStore, type WorkItemView } from "@/stores/work-items-store";
 import { useCreateWorkItem } from "@/hooks";
 import type { ProjectId } from "@agentops/shared";
@@ -91,20 +92,9 @@ export function WorkItemsPage() {
       <div className="flex-1 overflow-hidden p-6">
         {view === "list" && <ListView />}
         {view === "board" && <BoardView />}
-        {view === "tree" && <WorkItemsTreePlaceholder />}
+        {view === "tree" && <TreeView />}
       </div>
     </div>
   );
 }
 
-// Placeholder — will be replaced by O.10
-function WorkItemsTreePlaceholder() {
-  return (
-    <div className="flex h-full items-center justify-center text-muted-foreground">
-      <div className="text-center">
-        <GitBranch className="h-12 w-12 mx-auto mb-3 opacity-20" />
-        <p className="text-sm">Tree view — coming in O.10</p>
-      </div>
-    </div>
-  );
-}

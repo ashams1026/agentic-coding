@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-03-29 — O.10: Build tree view
+
+**Task:** Create pure hierarchy tree view with indent lines/guides, no state grouping.
+
+**Done:**
+- Created `packages/frontend/src/features/work-items/tree-view.tsx` (~220 lines):
+  - Pure hierarchy display via parentId — no state grouping
+  - TreeNode component: expand/collapse chevron, state badge (WORKFLOW-colored), priority badge, title, progress bar
+  - Visual indent with vertical guide lines via parentGuides array: each ancestor level shows a vertical line if that ancestor is NOT the last child
+  - Branch connectors (horizontal line segments) connecting nodes to their parent's guide line
+  - isLast flag tracks whether a node is the last sibling (controls guide line continuation)
+  - Click to select → selectedItemId in Zustand
+  - Keyboard accessible expand/collapse (Enter key)
+  - Recursive renderTree with depth tracking
+  - Loading skeletons, empty state
+- Updated `pages/work-items.tsx`: replaced tree placeholder with `<TreeView />`, removed placeholder component
+
+**Files created:** `features/work-items/tree-view.tsx`
+**Files modified:** `pages/work-items.tsx`
+
+**Notes:** All three views (List, Board, Tree) now implemented. All placeholders removed from work-items page. Tree view compiles clean.
+
+---
+
 ## 2026-03-29 — Review: O.9 (approved)
 
 **Reviewed:** Board view — `board-view.tsx`, `work-items.tsx` update.
