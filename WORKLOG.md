@@ -5,6 +5,38 @@
 
 ---
 
+## 2026-03-29 — A.9: Implement execution lifecycle and streaming
+
+**Task:** Create execution-manager.ts with runExecution() lifecycle.
+
+**Done:**
+- Created `packages/backend/src/agent/execution-manager.ts`:
+  - **`runExecution(workItemId, personaId)`**: main entry point, returns ExecutionId
+    - Looks up persona, work item, project from DB
+    - Creates execution record (status: "running")
+    - Broadcasts `agent_started` WS event
+    - Builds AgentTask with parent chain walk
+    - Fires off `runExecutionStream()` in background (non-blocking)
+  - **`buildAgentTask(workItemId)`**: constructs AgentTask from DB
+    - Walks parentId chain to build parentChain array
+    - Returns context with title, description, state, parentChain, inheritedContext
+  - **`runExecutionStream()`**: async streaming loop
+    - Spawns executor, iterates AgentEvent stream
+    - Broadcasts each event as `agent_output_chunk` WS event (maps event type → chunkType)
+    - Accumulates logs as string
+    - Captures ResultEvent fields (outcome, summary, costUsd, durationMs)
+    - On completion: updates execution record (status, cost in cents, duration, summary, outcome, logs)
+    - Broadcasts `agent_completed` WS event
+    - On error: sets status "failed", preserves partial logs, broadcasts failure
+  - Helper functions: `toChunkType()`, `eventToChunk()` — map AgentEvent to WS chunk format
+  - Singleton `ClaudeExecutor` instance
+
+**Files created:** `packages/backend/src/agent/execution-manager.ts`
+
+**Notes:** Backend build: 0 errors. Initial build had TS2322 for executionContext branded ID — fixed with explicit cast. Cost stored as cents in DB (multiplied by 100). Execution runs in background via `.catch()` — caller gets ExecutionId immediately.
+
+---
+
 ## 2026-03-29 — Review: A.8 (approved)
 
 **Reviewed:** System prompt assembly — `packages/backend/src/agent/claude-executor.ts`.

@@ -1,0 +1,293 @@
+/**
+ * Execution manager — orchestrates agent execution lifecycle.
+ *
+ * Creates execution records, spawns the executor, streams events
+ * to WebSocket clients, and updates the execution on completion.
+ */
+
+import { eq } from "drizzle-orm";
+import { db } from "../db/connection.js";
+import { executions, workItems, personas, projects } from "../db/schema.js";
+import { createId } from "@agentops/shared";
+import type {
+  ExecutionId,
+  WorkItemId,
+  PersonaId,
+  ProjectId,
+  ExecutionOutcome,
+  ExecutionContextEntry,
+} from "@agentops/shared";
+import { broadcast } from "../ws.js";
+import { ClaudeExecutor } from "./claude-executor.js";
+import type { AgentTask, AgentEvent } from "./types.js";
+
+// ── Singleton executor ────────────────────────────────────────────
+
+const executor = new ClaudeExecutor();
+
+// ── Helper: build AgentTask from DB ───────────────────────────────
+
+async function buildAgentTask(workItemId: string): Promise<AgentTask | null> {
+  const [item] = await db
+    .select()
+    .from(workItems)
+    .where(eq(workItems.id, workItemId));
+
+  if (!item) return null;
+
+  // Build parent chain by walking up parentId
+  const parentChain: Array<{ id: WorkItemId; title: string }> = [];
+  let currentParentId = item.parentId;
+  while (currentParentId) {
+    const [parent] = await db
+      .select({ id: workItems.id, title: workItems.title, parentId: workItems.parentId })
+      .from(workItems)
+      .where(eq(workItems.id, currentParentId));
+    if (!parent) break;
+    parentChain.unshift({ id: parent.id as WorkItemId, title: parent.title });
+    currentParentId = parent.parentId;
+  }
+
+  return {
+    workItemId: item.id as WorkItemId,
+    context: {
+      title: item.title,
+      description: item.description,
+      currentState: item.currentState,
+      parentChain,
+      inheritedContext: item.context,
+    },
+    executionHistory: item.executionContext as ExecutionContextEntry[],
+  };
+}
+
+// ── Map AgentEvent to WS chunk type ───────────────────────────────
+
+function toChunkType(event: AgentEvent): "text" | "code" | "thinking" | "tool_call" | "tool_result" {
+  switch (event.type) {
+    case "thinking": return "thinking";
+    case "tool_use": return "tool_call";
+    case "tool_result": return "tool_result";
+    default: return "text";
+  }
+}
+
+function eventToChunk(event: AgentEvent): string {
+  switch (event.type) {
+    case "text": return event.content;
+    case "thinking": return event.content;
+    case "tool_use": return `${event.toolName}(${JSON.stringify(event.input)})`;
+    case "tool_result": return event.output;
+    case "error": return `Error: ${event.message}`;
+    case "result": return event.summary;
+  }
+}
+
+// ── Run execution ─────────────────────────────────────────────────
+
+export async function runExecution(
+  workItemId: string,
+  personaId: string,
+): Promise<ExecutionId> {
+  const now = new Date();
+  const executionId = createId.execution();
+
+  // Look up persona and project
+  const [persona] = await db
+    .select()
+    .from(personas)
+    .where(eq(personas.id, personaId));
+
+  if (!persona) {
+    throw new Error(`Persona ${personaId} not found`);
+  }
+
+  const [item] = await db
+    .select({ projectId: workItems.projectId, title: workItems.title })
+    .from(workItems)
+    .where(eq(workItems.id, workItemId));
+
+  if (!item) {
+    throw new Error(`Work item ${workItemId} not found`);
+  }
+
+  const [project] = await db
+    .select()
+    .from(projects)
+    .where(eq(projects.id, item.projectId));
+
+  if (!project) {
+    throw new Error(`Project ${item.projectId} not found`);
+  }
+
+  // Create execution record
+  await db.insert(executions).values({
+    id: executionId,
+    workItemId,
+    personaId,
+    status: "running",
+    startedAt: now,
+    costUsd: 0,
+    durationMs: 0,
+    summary: "",
+    outcome: null,
+    rejectionPayload: null,
+    logs: "",
+  });
+
+  // Broadcast agent_started
+  broadcast({
+    type: "agent_started",
+    executionId: executionId as ExecutionId,
+    personaId: personaId as PersonaId,
+    workItemId: workItemId as WorkItemId,
+    workItemTitle: item.title,
+    timestamp: now.toISOString(),
+  });
+
+  // Build task and spawn executor (async — don't await completion)
+  const task = await buildAgentTask(workItemId);
+  if (!task) {
+    await db
+      .update(executions)
+      .set({ status: "failed", summary: "Work item not found", completedAt: new Date() })
+      .where(eq(executions.id, executionId));
+    return executionId as ExecutionId;
+  }
+
+  // Serialize persona for the executor
+  const personaEntity = {
+    id: persona.id as PersonaId,
+    name: persona.name,
+    description: persona.description,
+    avatar: persona.avatar,
+    systemPrompt: persona.systemPrompt,
+    model: persona.model as "opus" | "sonnet" | "haiku",
+    allowedTools: persona.allowedTools,
+    mcpTools: persona.mcpTools,
+    maxBudgetPerRun: persona.maxBudgetPerRun,
+    settings: persona.settings,
+  };
+
+  const projectEntity = {
+    id: project.id as ProjectId,
+    name: project.name,
+    path: project.path,
+    settings: project.settings,
+    createdAt: project.createdAt.toISOString(),
+  };
+
+  // Run execution in background
+  runExecutionStream(
+    executionId,
+    task,
+    personaEntity,
+    projectEntity,
+  ).catch((err) => {
+    console.error(`Execution ${executionId} failed:`, err);
+  });
+
+  return executionId as ExecutionId;
+}
+
+// ── Stream execution events ───────────────────────────────────────
+
+async function runExecutionStream(
+  executionId: string,
+  task: AgentTask,
+  persona: Parameters<typeof executor.spawn>[1],
+  project: Parameters<typeof executor.spawn>[2],
+): Promise<void> {
+  let logs = "";
+  let finalOutcome: ExecutionOutcome = "failure";
+  let finalSummary = "";
+  let finalCostUsd = 0;
+  let finalDurationMs = 0;
+
+  try {
+    const events = executor.spawn(task, persona, project, {
+      model: persona.model,
+      maxBudget: persona.maxBudgetPerRun,
+      tools: persona.allowedTools.length > 0 ? persona.allowedTools : [],
+    });
+
+    for await (const event of events) {
+      const chunk = eventToChunk(event);
+      logs += chunk + "\n";
+
+      // Broadcast to WebSocket
+      broadcast({
+        type: "agent_output_chunk",
+        executionId: executionId as ExecutionId,
+        personaId: persona.id as PersonaId,
+        chunk,
+        chunkType: toChunkType(event),
+        timestamp: new Date().toISOString(),
+      });
+
+      // Capture final result
+      if (event.type === "result") {
+        finalOutcome = event.outcome;
+        finalSummary = event.summary;
+        finalCostUsd = event.costUsd;
+        finalDurationMs = event.durationMs;
+      }
+
+      if (event.type === "error") {
+        finalSummary = event.message;
+      }
+    }
+
+    // Update execution record on completion
+    await db
+      .update(executions)
+      .set({
+        status: "completed",
+        completedAt: new Date(),
+        costUsd: Math.round(finalCostUsd * 100), // store as cents
+        durationMs: finalDurationMs,
+        summary: finalSummary,
+        outcome: finalOutcome,
+        logs,
+      })
+      .where(eq(executions.id, executionId));
+
+    // Broadcast agent_completed
+    broadcast({
+      type: "agent_completed",
+      executionId: executionId as ExecutionId,
+      personaId: persona.id as PersonaId,
+      workItemId: task.workItemId,
+      outcome: finalOutcome,
+      durationMs: finalDurationMs,
+      costUsd: finalCostUsd,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    // On error: set status failed, preserve partial logs
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    logs += `\nFATAL: ${errorMsg}\n`;
+
+    await db
+      .update(executions)
+      .set({
+        status: "failed",
+        completedAt: new Date(),
+        summary: `Execution failed: ${errorMsg}`,
+        outcome: "failure",
+        logs,
+      })
+      .where(eq(executions.id, executionId));
+
+    broadcast({
+      type: "agent_completed",
+      executionId: executionId as ExecutionId,
+      personaId: persona.id as PersonaId,
+      workItemId: task.workItemId,
+      outcome: "failure",
+      durationMs: 0,
+      costUsd: 0,
+      timestamp: new Date().toISOString(),
+    });
+  }
+}
