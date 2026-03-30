@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — PS.4: Scope dashboard queries to selected project
+
+**Task:** Update dashboard hooks, backend routes, API client, mock API, and call sites to accept and filter by `projectId`.
+
+**Done:**
+- **Backend** (`dashboard.ts`): All 4 routes (`/stats`, `/cost-summary`, `/execution-stats`, `/ready-work`) now accept `?projectId=` query param. Filter work items by projectId, then filter executions/proposals by work item membership.
+- **API client** (`client.ts`): All 4 dashboard functions accept optional `projectId`, append as query param.
+- **Mock API** (`mocks/api.ts`): All 4 mock functions accept `projectId`, filter in-memory data accordingly.
+- **Query keys** (`query-keys.ts`): Dashboard keys changed from static arrays to functions accepting `projectId`.
+- **Hooks** (`use-dashboard.ts`): All 4 hooks accept optional `projectId`, pass to query key + queryFn.
+- **Call sites updated**: sidebar.tsx, status-bar.tsx, dashboard.tsx, cost-summary.tsx, upcoming-work.tsx, costs-section.tsx (2 components)
+- **Fixed**: `use-proposals.ts` invalidation used static `queryKeys.dashboardStats` — changed to raw `["dashboardStats"]` for prefix matching.
+
+**Files modified:** `packages/backend/src/routes/dashboard.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/mocks/api.ts`, `packages/frontend/src/hooks/query-keys.ts`, `packages/frontend/src/hooks/use-dashboard.ts`, `packages/frontend/src/hooks/use-proposals.ts`, `packages/frontend/src/components/sidebar.tsx`, `packages/frontend/src/components/status-bar.tsx`, `packages/frontend/src/pages/dashboard.tsx`, `packages/frontend/src/features/dashboard/cost-summary.tsx`, `packages/frontend/src/features/dashboard/upcoming-work.tsx`, `packages/frontend/src/features/settings/costs-section.tsx`
+
+**Notes:** Build initially failed due to unused `inArray` import — removed. Build: 0 errors after fix.
+
+---
+
 ## 2026-03-30 — Review: PS.3 (approved)
 
 **Reviewed:** Scoping all useWorkItems() call sites to selected project.

@@ -24,7 +24,7 @@ export function useUpdateProposal() {
       updateProposal(id, req),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["proposals"] });
-      queryClient.invalidateQueries({ queryKey: queryKeys.dashboardStats });
+      queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
     },
   });
 }

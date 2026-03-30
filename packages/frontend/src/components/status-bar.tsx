@@ -1,9 +1,10 @@
 import { Bot, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useDashboardStats } from "@/hooks";
+import { useDashboardStats, useSelectedProject } from "@/hooks";
 
 export function StatusBar() {
-  const { data: stats } = useDashboardStats();
+  const { projectId } = useSelectedProject();
+  const { data: stats } = useDashboardStats(projectId ?? undefined);
 
   const activeAgents = stats?.activeAgents ?? 0;
   const todayCost = stats?.todayCostUsd ?? 0;

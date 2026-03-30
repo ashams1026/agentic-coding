@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { executions, proposals, workItems, personas, projects } from "../db/schema.js";
 import type {
@@ -25,10 +25,18 @@ function toIso(d: Date): string {
 
 export async function dashboardRoutes(app: FastifyInstance) {
   // GET /api/dashboard/stats
-  app.get("/api/dashboard/stats", async (): Promise<DashboardStats> => {
-    const allExecutions = await db.select().from(executions);
-    const allProposals = await db.select().from(proposals);
-    const allWorkItems = await db.select().from(workItems);
+  app.get("/api/dashboard/stats", async (request): Promise<DashboardStats> => {
+    const { projectId } = request.query as { projectId?: string };
+
+    let allWorkItems = await db.select().from(workItems);
+    if (projectId) allWorkItems = allWorkItems.filter((w) => w.projectId === projectId);
+    const workItemIds = new Set(allWorkItems.map((w) => w.id));
+
+    let allExecutions = await db.select().from(executions);
+    if (projectId) allExecutions = allExecutions.filter((e) => workItemIds.has(e.workItemId));
+
+    let allProposals = await db.select().from(proposals);
+    if (projectId) allProposals = allProposals.filter((p) => workItemIds.has(p.workItemId));
 
     const activeAgents = allExecutions.filter((e) => e.status === "running").length;
     const pendingProposals = allProposals.filter((p) => p.status === "pending").length;
@@ -44,8 +52,16 @@ export async function dashboardRoutes(app: FastifyInstance) {
   });
 
   // GET /api/dashboard/cost-summary
-  app.get("/api/dashboard/cost-summary", async (): Promise<CostSummary> => {
-    const allExecutions = await db.select().from(executions);
+  app.get("/api/dashboard/cost-summary", async (request): Promise<CostSummary> => {
+    const { projectId } = request.query as { projectId?: string };
+
+    let allExecutions = await db.select().from(executions);
+    if (projectId) {
+      const projectWorkItems = await db.select().from(workItems).where(eq(workItems.projectId, projectId));
+      const workItemIds = new Set(projectWorkItems.map((w) => w.id));
+      allExecutions = allExecutions.filter((e) => workItemIds.has(e.workItemId));
+    }
+
     const now = new Date();
 
     const dailySpend: CostSummary["dailySpend"] = [];
@@ -64,16 +80,30 @@ export async function dashboardRoutes(app: FastifyInstance) {
       .filter((e) => toIso(e.startedAt).startsWith(monthStart))
       .reduce((sum, e) => sum + e.costUsd, 0);
 
-    const allProjects = await db.select().from(projects);
-    const project = allProjects[0];
+    let project;
+    if (projectId) {
+      const rows = await db.select().from(projects).where(eq(projects.id, projectId));
+      project = rows[0];
+    } else {
+      const allProjects = await db.select().from(projects);
+      project = allProjects[0];
+    }
     const monthCap = (project?.settings as Record<string, unknown>)?.monthCap as number ?? 50;
 
     return { dailySpend, monthTotal, monthCap };
   });
 
   // GET /api/dashboard/execution-stats
-  app.get("/api/dashboard/execution-stats", async (): Promise<ExecutionStats> => {
-    const allExecutions = await db.select().from(executions);
+  app.get("/api/dashboard/execution-stats", async (request): Promise<ExecutionStats> => {
+    const { projectId } = request.query as { projectId?: string };
+
+    let allExecutions = await db.select().from(executions);
+    if (projectId) {
+      const projectWorkItems = await db.select().from(workItems).where(eq(workItems.projectId, projectId));
+      const workItemIds = new Set(projectWorkItems.map((w) => w.id));
+      allExecutions = allExecutions.filter((e) => workItemIds.has(e.workItemId));
+    }
+
     const completed = allExecutions.filter((e) => e.status === "completed");
 
     const totalRuns = completed.length;
@@ -87,11 +117,16 @@ export async function dashboardRoutes(app: FastifyInstance) {
   });
 
   // GET /api/dashboard/ready-work
-  app.get("/api/dashboard/ready-work", async () => {
+  app.get("/api/dashboard/ready-work", async (request) => {
+    const { projectId } = request.query as { projectId?: string };
+
+    const conditions = [eq(workItems.currentState, "Ready")];
+    if (projectId) conditions.push(eq(workItems.projectId, projectId));
+
     const readyItems = await db
       .select()
       .from(workItems)
-      .where(eq(workItems.currentState, "Ready"));
+      .where(conditions.length > 1 ? and(...conditions) : conditions[0]);
 
     const allPersonas = await db.select().from(personas);
     const personaMap = new Map(allPersonas.map((p) => [p.id, p]));

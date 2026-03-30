@@ -9,31 +9,31 @@ import {
 } from "@/api";
 import { queryKeys } from "./query-keys";
 
-export function useDashboardStats() {
+export function useDashboardStats(projectId?: string) {
   return useQuery({
-    queryKey: queryKeys.dashboardStats,
-    queryFn: getDashboardStats,
+    queryKey: queryKeys.dashboardStats(projectId),
+    queryFn: () => getDashboardStats(projectId),
   });
 }
 
-export function useCostSummary() {
+export function useCostSummary(projectId?: string) {
   return useQuery({
-    queryKey: queryKeys.costSummary,
-    queryFn: getCostSummary,
+    queryKey: queryKeys.costSummary(projectId),
+    queryFn: () => getCostSummary(projectId),
   });
 }
 
-export function useExecutionStats() {
+export function useExecutionStats(projectId?: string) {
   return useQuery({
-    queryKey: queryKeys.executionStats,
-    queryFn: getExecutionStats,
+    queryKey: queryKeys.executionStats(projectId),
+    queryFn: () => getExecutionStats(projectId),
   });
 }
 
-export function useReadyWork() {
+export function useReadyWork(projectId?: string) {
   return useQuery({
-    queryKey: queryKeys.readyWork,
-    queryFn: getReadyWork,
+    queryKey: queryKeys.readyWork(projectId),
+    queryFn: () => getReadyWork(projectId),
   });
 }
 

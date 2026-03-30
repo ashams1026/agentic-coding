@@ -319,20 +319,24 @@ export async function getProjectMemories(_projectId: ProjectId): Promise<Project
 
 // ── Aggregate / Dashboard ────────────────────────────────────────
 
-export async function getDashboardStats(): Promise<DashboardStats> {
-  return get<DashboardStats>("/api/dashboard/stats");
+export async function getDashboardStats(projectId?: string): Promise<DashboardStats> {
+  const q = projectId ? `?projectId=${projectId}` : "";
+  return get<DashboardStats>(`/api/dashboard/stats${q}`);
 }
 
-export async function getCostSummary(): Promise<CostSummary> {
-  return get<CostSummary>("/api/dashboard/cost-summary");
+export async function getCostSummary(projectId?: string): Promise<CostSummary> {
+  const q = projectId ? `?projectId=${projectId}` : "";
+  return get<CostSummary>(`/api/dashboard/cost-summary${q}`);
 }
 
-export async function getExecutionStats(): Promise<ExecutionStats> {
-  return get<ExecutionStats>("/api/dashboard/execution-stats");
+export async function getExecutionStats(projectId?: string): Promise<ExecutionStats> {
+  const q = projectId ? `?projectId=${projectId}` : "";
+  return get<ExecutionStats>(`/api/dashboard/execution-stats${q}`);
 }
 
-export async function getReadyWork(): Promise<ReadyWorkItem[]> {
-  const res = await get<{ data: ReadyWorkItem[]; total: number }>("/api/dashboard/ready-work");
+export async function getReadyWork(projectId?: string): Promise<ReadyWorkItem[]> {
+  const q = projectId ? `?projectId=${projectId}` : "";
+  const res = await get<{ data: ReadyWorkItem[]; total: number }>(`/api/dashboard/ready-work${q}`);
   return res.data;
 }
 

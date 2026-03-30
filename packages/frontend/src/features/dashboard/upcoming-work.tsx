@@ -2,7 +2,7 @@ import { Link } from "react-router";
 import { Bot, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { useReadyWork } from "@/hooks";
+import { useReadyWork, useSelectedProject } from "@/hooks";
 import type { ReadyWorkItem } from "@agentops/shared";
 
 // ── Work item row ────────────────────────────────────────────────
@@ -58,7 +58,8 @@ function WorkItemRow({ item }: WorkItemRowProps) {
 // ── Component ────────────────────────────────────────────────────
 
 export function UpcomingWork() {
-  const { data: readyWork } = useReadyWork();
+  const { projectId } = useSelectedProject();
+  const { data: readyWork } = useReadyWork(projectId ?? undefined);
 
   const items = readyWork ?? [];
 

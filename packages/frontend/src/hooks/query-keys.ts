@@ -47,8 +47,8 @@ export const queryKeys = {
   projectMemories: (projectId: ProjectId) => ["projectMemories", { projectId }] as const,
 
   // Aggregates
-  dashboardStats: ["dashboardStats"] as const,
-  costSummary: ["costSummary"] as const,
-  executionStats: ["executionStats"] as const,
-  readyWork: ["readyWork"] as const,
+  dashboardStats: (projectId?: string) => projectId ? ["dashboardStats", { projectId }] as const : ["dashboardStats"] as const,
+  costSummary: (projectId?: string) => projectId ? ["costSummary", { projectId }] as const : ["costSummary"] as const,
+  executionStats: (projectId?: string) => projectId ? ["executionStats", { projectId }] as const : ["executionStats"] as const,
+  readyWork: (projectId?: string) => projectId ? ["readyWork", { projectId }] as const : ["readyWork"] as const,
 };

@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
-import { useCostSummary } from "@/hooks";
+import { useCostSummary, useSelectedProject } from "@/hooks";
 
 // ── Sparkline tooltip ────────────────────────────────────────────
 
@@ -79,7 +79,8 @@ function formatDay(dateStr: string): string {
 // ── Component ────────────────────────────────────────────────────
 
 export function CostSummary() {
-  const { data: costData } = useCostSummary();
+  const { projectId } = useSelectedProject();
+  const { data: costData } = useCostSummary(projectId ?? undefined);
 
   const dailySpend = costData?.dailySpend ?? [];
   const monthTotal = costData?.monthTotal ?? 0;

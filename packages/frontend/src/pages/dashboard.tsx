@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 import { Bot, FileCheck, AlertTriangle, DollarSign } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { useDashboardStats } from "@/hooks";
+import { useDashboardStats, useSelectedProject } from "@/hooks";
 import { ActiveAgentsStrip } from "@/features/dashboard/active-agents-strip";
 import { RecentActivity } from "@/features/dashboard/recent-activity";
 import { UpcomingWork } from "@/features/dashboard/upcoming-work";
@@ -43,7 +43,8 @@ function StatCard({ title, value, icon, iconBgClass, onClick }: StatCardProps) {
 
 export function DashboardPage() {
   const navigate = useNavigate();
-  const { data: stats, isLoading } = useDashboardStats();
+  const { projectId } = useSelectedProject();
+  const { data: stats, isLoading } = useDashboardStats(projectId ?? undefined);
 
   const activeAgents = stats?.activeAgents ?? 0;
   const pendingProposals = stats?.pendingProposals ?? 0;

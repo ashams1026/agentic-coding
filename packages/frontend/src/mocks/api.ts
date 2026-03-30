@@ -383,44 +383,57 @@ export async function getProjectMemories(projectId: ProjectId): Promise<ProjectM
 
 // ── Aggregate queries ─────────────────────────────────────────────
 
-export async function getDashboardStats(): Promise<DashboardStats> {
+export async function getDashboardStats(projectId?: string): Promise<DashboardStats> {
   await delay();
-  const activeAgents = store.executions.filter((e) => e.status === "running").length;
-  const pendingProposals = store.proposals.filter((p) => p.status === "pending").length;
-  const blockedItems = store.workItems.filter((w) => w.currentState === "Blocked").length;
+  const items = projectId ? store.workItems.filter((w) => w.projectId === projectId) : store.workItems;
+  const itemIds = new Set(items.map((w) => w.id));
+  const execs = projectId ? store.executions.filter((e) => itemIds.has(e.workItemId)) : store.executions;
+  const props = projectId ? store.proposals.filter((p) => itemIds.has(p.workItemId)) : store.proposals;
+
+  const activeAgents = execs.filter((e) => e.status === "running").length;
+  const pendingProposals = props.filter((p) => p.status === "pending").length;
+  const blockedItems = items.filter((w) => w.currentState === "Blocked").length;
   const needsAttention = blockedItems + pendingProposals;
   const today = new Date().toISOString().slice(0, 10);
-  const todayCostUsd = store.executions
+  const todayCostUsd = execs
     .filter((e) => e.startedAt.startsWith(today))
     .reduce((sum, e) => sum + e.costUsd, 0);
   return { activeAgents, pendingProposals, needsAttention, todayCostUsd };
 }
 
-export async function getCostSummary(): Promise<CostSummary> {
+export async function getCostSummary(projectId?: string): Promise<CostSummary> {
   await delay();
+  const items = projectId ? store.workItems.filter((w) => w.projectId === projectId) : store.workItems;
+  const itemIds = new Set(items.map((w) => w.id));
+  const execs = projectId ? store.executions.filter((e) => itemIds.has(e.workItemId)) : store.executions;
+
   const now = new Date();
   const dailySpend: CostSummary["dailySpend"] = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date(now);
     d.setDate(d.getDate() - i);
     const dateStr = d.toISOString().slice(0, 10);
-    const costUsd = store.executions
+    const costUsd = execs
       .filter((e) => e.startedAt.startsWith(dateStr))
       .reduce((sum, e) => sum + e.costUsd, 0);
     dailySpend.push({ date: dateStr, costUsd });
   }
   const monthStart = now.toISOString().slice(0, 7);
-  const monthTotal = store.executions
+  const monthTotal = execs
     .filter((e) => e.startedAt.startsWith(monthStart))
     .reduce((sum, e) => sum + e.costUsd, 0);
-  const project = store.projects[0];
+  const project = projectId ? store.projects.find((p) => p.id === projectId) : store.projects[0];
   const monthCap = (project?.settings?.monthCap as number) ?? 50;
   return { dailySpend, monthTotal, monthCap };
 }
 
-export async function getExecutionStats(): Promise<ExecutionStats> {
+export async function getExecutionStats(projectId?: string): Promise<ExecutionStats> {
   await delay();
-  const completed = store.executions.filter((e) => e.status === "completed");
+  const items = projectId ? store.workItems.filter((w) => w.projectId === projectId) : store.workItems;
+  const itemIds = new Set(items.map((w) => w.id));
+  const execs = projectId ? store.executions.filter((e) => itemIds.has(e.workItemId)) : store.executions;
+
+  const completed = execs.filter((e) => e.status === "completed");
   const totalRuns = completed.length;
   const totalCostUsd = completed.reduce((sum, e) => sum + e.costUsd, 0);
   const successes = completed.filter((e) => e.outcome === "success").length;
@@ -430,9 +443,10 @@ export async function getExecutionStats(): Promise<ExecutionStats> {
   return { totalRuns, totalCostUsd, successRate, averageDurationMs };
 }
 
-export async function getReadyWork(): Promise<ReadyWorkItem[]> {
+export async function getReadyWork(projectId?: string): Promise<ReadyWorkItem[]> {
   await delay();
-  const readyItems = store.workItems.filter((w) => w.currentState === "Ready");
+  let readyItems = store.workItems.filter((w) => w.currentState === "Ready");
+  if (projectId) readyItems = readyItems.filter((w) => w.projectId === projectId);
   return readyItems.slice(0, 5).map((workItem) => ({
     workItem,
     persona: workItem.assignedPersonaId
