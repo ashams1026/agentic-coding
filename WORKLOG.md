@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: P.7 (approved)
+
+**Reviewed:** Sort direction toggle and secondary sort — `work-items-store.ts`, `filter-bar.tsx`, `list-view.tsx`, `work-items.tsx`.
+- Store: `SortDir` type, `sortDir` state with default "asc", `setSortDir` + `toggleSortDir` actions ✓
+- Persisted in `partialize` for localStorage ✓
+- Filter bar: ArrowUp/ArrowDown ghost button grouped with sort dropdown, title attribute for accessibility ✓
+- List view: direction multiplier pattern, natural ascending sort with `* dir`, secondary sort (priority→created, dates→priority) ✓
+- URL params: bidirectional sync, writes `?sortDir=desc` only when non-default ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — P.7: Add sort direction toggle and secondary sort
 
 **Task:** Add ascending/descending toggle button next to sort dropdown. Add secondary sort. Persist sort direction in URL params.

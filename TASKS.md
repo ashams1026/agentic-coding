@@ -26,7 +26,7 @@
 
 - [x] **P.6** — Add persona and label filters. In filter-bar.tsx: add persona filter dropdown (shows persona avatars + names from mock data, multi-select). Add label filter dropdown (shows all unique labels across work items, multi-select with colored pills). Both filter additively (AND with other filters). Update URL params.
 
-- [review] **P.7** — Add sort direction toggle and secondary sort. In filter-bar.tsx: add ascending/descending toggle button next to the sort dropdown (ArrowUp/ArrowDown icon). Add a secondary sort option (e.g., sort by priority then by created date). Persist sort direction in URL params (`?sortDir=asc`).
+- [x] **P.7** — Add sort direction toggle and secondary sort. In filter-bar.tsx: add ascending/descending toggle button next to the sort dropdown (ArrowUp/ArrowDown icon). Add a secondary sort option (e.g., sort by priority then by created date). Persist sort direction in URL params (`?sortDir=asc`).
 
 ### Detail Panel Improvements
 
