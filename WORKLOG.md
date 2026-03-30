@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: AI.2 (approved)
+
+**Reviewed:** Dashboard test plans (dashboard-stats.md, dashboard-navigation.md).
+- `dashboard-stats.md`: 11 steps — navigates to `/`, verifies all 4 stat cards (Active Agents, Pending Proposals, Needs Attention, Today's Cost) with numeric values, checks "$" prefix on cost, verifies active agents strip, cost summary chart, recent activity + upcoming work widgets ✓
+- `dashboard-navigation.md`: 12 steps — clicks each stat card, verifies correct navigation (Active Agents→/agents, Pending Proposals→/items, Needs Attention→/activity, Today's Cost→/settings), back-button restores dashboard, tests "View all" link ✓
+- Both files follow template format (Objective/Prerequisites/Steps/Expected Results/Failure Criteria) ✓
+- References UI by visible text, not implementation details ✓
+- Navigation targets verified against dashboard.tsx StatCard definitions ✓
+- Build: no code changes, no impact ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.2: Write test plans for Dashboard
 
 **Task:** Create test plans for dashboard stats verification and dashboard navigation.
