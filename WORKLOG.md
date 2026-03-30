@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — Review: P.4 (approved)
+
+**Reviewed:** Color palette refinement — `index.css`, `workflow.ts`, + 6 data/component files.
+- Light mode card distinct from background (`220 10% 98.5%` vs pure white) ✓
+- Dark mode 5-layer surface depth (3.9% → 6% → 14% → 16% → 20%) ✓
+- Ring focus token softened for both modes ✓
+- All 7 workflow state colors shifted to 600-level in `workflow.ts` ✓
+- Theme tokens (status, persona, priority, proposal) all updated in `index.css` ✓
+- Mock data updated across frontend fixtures, backend seed, backend test setup ✓
+- Hardcoded colors updated in flow-view, detail-panel, persona-editor ✓
+- Minor note: `router.ts` internal persona still uses `#6366f1` (indigo-500) — non-blocking, 4:1 contrast
+- Build: 0 errors, 145 tests pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — P.4: Refine color palette for modern feel
 
 **Task:** Improve card/surface layering, darken badge colors for WCAG AA contrast, add softer ring focus token.

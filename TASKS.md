@@ -18,7 +18,7 @@
 
 - [x] **P.3** — Audit and fix spacing alignment. Consistent page padding: all pages use `p-6` for outer padding. Consistent section spacing: `space-y-6` between major sections, `space-y-3` within sections. Consistent card padding: `p-4` for all cards. Fix the filter bar gap (currently `gap-2`, should align with button height). Ensure header-to-content spacing is uniform across Dashboard, Work Items, Agent Monitor, Activity Feed, Personas, Settings pages.
 
-- [review] **P.4** — Refine color palette for modern feel. In `packages/frontend/src/index.css`: soften the primary accent — current hsl values may be too saturated for a modern look. Review the card/surface color layering: `background` → `card` → `muted` should have subtle but visible distinction (especially in dark mode). Ensure state badge colors have good contrast against both light and dark card backgrounds. Add a subtle `ring` color token for focus states. Test both light and dark modes for WCAG AA contrast compliance on all text/badge combinations.
+- [x] **P.4** — Refine color palette for modern feel. In `packages/frontend/src/index.css`: soften the primary accent — current hsl values may be too saturated for a modern look. Review the card/surface color layering: `background` → `card` → `muted` should have subtle but visible distinction (especially in dark mode). Ensure state badge colors have good contrast against both light and dark card backgrounds. Add a subtle `ring` color token for focus states. Test both light and dark modes for WCAG AA contrast compliance on all text/badge combinations.
 
 ### Filtering & Sorting Enhancements
 
