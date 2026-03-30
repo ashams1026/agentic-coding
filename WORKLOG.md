@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: O.8 (approved)
+
+**Reviewed:** List view — `list-view.tsx`, `work-items.tsx` update.
+- All 12 requirements met: tree-indented rows, expand/collapse chevrons, state badges from WORKFLOW, priority badges, progress bars, persona avatars, active agent indicators, collapsible state groups, "Done" default collapsed, click-to-select, loading skeletons
+- Well-structured sub-components with proper separation of concerns
+- Good memoization: personaMap, runningItemIds, filteredItems, childStats, childrenOf
+- State badge uses dynamic WORKFLOW colors with alpha transparency — nice approach
+- Recursive renderTree supports arbitrary nesting depth
+- Keyboard accessible expand/collapse (Enter key handler)
+- No type errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.8: Build list view (primary)
 
 **Task:** Create tree-indented list view with hierarchy, state/priority badges, progress, persona avatars, grouping.
