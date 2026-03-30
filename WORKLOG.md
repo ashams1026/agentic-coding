@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: O.3 (approved)
+
+**Reviewed:** API contract types — confirmed all requirements already satisfied by O.1 commit.
+- WorkItem CRUD types replace Story/Task — present in api.ts
+- WS events use workItemId — confirmed in ws-events.ts
+- PersonaAssignment CRUD types — present (Upsert, Response, ListResponse)
+- Workflow CRUD types removed — confirmed absent
+- Shared package typecheck passes
+- Verdict: **approved** (no new code needed)
+
+---
+
 ## 2026-03-29 — O.3: Update API contract types (already done by O.1)
 
 **Task:** Replace Story/Task API types with WorkItem equivalents, update WS events, add PersonaAssignment CRUD types.
