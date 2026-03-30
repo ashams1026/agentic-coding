@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — Review: W.5 (approved)
+
+**Reviewed:** Cost management settings wiring — monthCap, warningThreshold, dailyLimit, cost chart, progress bar.
+- Reads `monthCap` (default 50), `warningThreshold` (default 80%), `dailyLimit` (default 0) from project settings ✓
+- All three fields persist via `PATCH /api/projects/:id` through `useUpdateProject()` ✓
+- Progress bar uses real `monthTotal` from `useCostSummary()` (→ `GET /api/dashboard/cost-summary`) ✓
+- Warning threshold triggers amber alert when spend % exceeds it, danger at 95% ✓
+- Daily limit enable/disable toggle (0 ↔ 10) with dollar input ✓
+- Cost chart uses real 7-day `dailySpend` data, loading skeleton, empty state ✓
+- Disabled inputs when no project configured ✓
+- No backend changes needed — `settings` JSON column already supports arbitrary fields ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — W.5: Wire cost management settings
 
 **Task:** Wire the Settings Costs section to read/write `monthCap`, `warningThreshold`, `dailyLimit` from project settings. Wire cost chart to real `GET /api/dashboard/cost-summary` data. Show real monthly spend vs cap progress bar.
