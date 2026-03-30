@@ -466,6 +466,11 @@ export async function deleteApiKey(): Promise<{ configured: boolean; maskedKey: 
   return { configured: false, maskedKey: null };
 }
 
+export async function getConcurrencyStats(): Promise<{ active: number; queued: number }> {
+  await delay();
+  return { active: 1, queued: 0 };
+}
+
 // ── Bundled mock API ──────────────────────────────────────────────
 
 export const mockApi = {
@@ -517,6 +522,7 @@ export const mockApi = {
   getApiKeyStatus,
   setApiKey,
   deleteApiKey,
+  getConcurrencyStats,
   // Utility
   resetStore,
 };

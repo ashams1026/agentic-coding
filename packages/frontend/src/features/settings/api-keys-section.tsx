@@ -10,9 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { usePersonas } from "@/hooks";
+import { useProjects, useUpdateProject, usePersonas } from "@/hooks";
 import { cn } from "@/lib/utils";
-import { getApiKeyStatus, setApiKey, deleteApiKey } from "@/api";
+import { getApiKeyStatus, setApiKey, deleteApiKey, getConcurrencyStats } from "@/api";
 
 // ── API Key input ──────────────────────────────────────────────────
 
@@ -152,7 +152,31 @@ function ApiKeySection() {
 // ── Concurrency slider ─────────────────────────────────────────────
 
 function ConcurrencySection() {
-  const [maxAgents, setMaxAgents] = useState(3);
+  const { data: projectsList } = useProjects();
+  const updateProject = useUpdateProject();
+  const [stats, setStats] = useState<{ active: number; queued: number } | null>(null);
+
+  const project = projectsList?.[0];
+  const maxAgents = typeof project?.settings?.maxConcurrent === "number"
+    ? project.settings.maxConcurrent as number
+    : 3;
+
+  // Fetch live active/queued stats
+  useEffect(() => {
+    getConcurrencyStats().then(setStats).catch(() => {});
+    const interval = setInterval(() => {
+      getConcurrencyStats().then(setStats).catch(() => {});
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleChange = (value: number) => {
+    if (!project) return;
+    updateProject.mutate({
+      id: project.id,
+      settings: { ...project.settings, maxConcurrent: value },
+    });
+  };
 
   return (
     <div className="space-y-3">
@@ -169,8 +193,9 @@ function ConcurrencySection() {
           min={1}
           max={10}
           value={maxAgents}
-          onChange={(e) => setMaxAgents(Number(e.target.value))}
-          className="flex-1 h-2 rounded-full appearance-none bg-secondary cursor-pointer accent-primary"
+          onChange={(e) => handleChange(Number(e.target.value))}
+          disabled={!project}
+          className="flex-1 h-2 rounded-full appearance-none bg-secondary cursor-pointer accent-primary disabled:opacity-50"
         />
         <Badge variant="secondary" className="text-sm font-mono tabular-nums min-w-[2.5rem] justify-center">
           {maxAgents}
@@ -182,6 +207,17 @@ function ConcurrencySection() {
         <span>5</span>
         <span>10</span>
       </div>
+
+      {stats && (
+        <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1">
+          <span>Active: <span className="font-mono font-medium text-foreground">{stats.active}</span></span>
+          <span>Queued: <span className="font-mono font-medium text-foreground">{stats.queued}</span></span>
+        </div>
+      )}
+
+      {!project && (
+        <p className="text-xs text-muted-foreground">No project configured. Add a project first.</p>
+      )}
     </div>
   );
 }

@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-30 — W.4: Wire concurrency settings
+
+**Task:** Wire the Settings Concurrency section to read/write `maxConcurrent` from project settings. Show active/queued counts.
+
+**Done:**
+- **`packages/backend/src/routes/settings.ts`** — Added `GET /api/settings/concurrency` returning `{ active, queued }` from in-memory concurrency tracker
+- **`packages/frontend/src/api/client.ts`** — Added `getConcurrencyStats()` with `ConcurrencyStats` interface
+- **`packages/frontend/src/mocks/api.ts`** — Added mock `getConcurrencyStats()` returning `{ active: 1, queued: 0 }`
+- **`packages/frontend/src/api/index.ts`** — Added unified wrapper
+- **`packages/frontend/src/features/settings/api-keys-section.tsx`** — Rewired `ConcurrencySection`:
+  - Reads `maxConcurrent` from first project's settings via `useProjects()`
+  - Slider change calls `useUpdateProject()` with `settings.maxConcurrent` — takes effect immediately (backend reads on each `canSpawn()`)
+  - Polls `GET /api/settings/concurrency` every 5s for live active/queued counts
+  - Shows "Active: N / Queued: N" below the slider
+  - Disabled state when no project configured
+
+**Files modified:** `settings.ts`, `client.ts`, `mocks/api.ts`, `api/index.ts`, `api-keys-section.tsx`
+
+**Notes:** Build: 0 errors. Tests: 159/159. Backend concurrency limiter already reads `maxConcurrent` from project settings on each `canSpawn()` call — no backend changes needed for the setting to take effect.
+
+---
+
 ## 2026-03-30 — Review: W.3 (approved)
 
 **Reviewed:** Project CRUD routes, settings UI wiring, sidebar project switcher.

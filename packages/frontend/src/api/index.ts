@@ -150,3 +150,6 @@ export const setApiKey = (...args: Parameters<typeof mock.setApiKey>) =>
 
 export const deleteApiKey = (...args: Parameters<typeof mock.deleteApiKey>) =>
   pick(mock.deleteApiKey, real.deleteApiKey)(...args);
+
+export const getConcurrencyStats = (...args: Parameters<typeof mock.getConcurrencyStats>) =>
+  pick(mock.getConcurrencyStats, real.getConcurrencyStats)(...args);

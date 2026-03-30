@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { loadConfig, setConfigValue } from "../config.js";
 import { logger } from "../logger.js";
+import { getActiveCount, getQueueLength } from "../agent/concurrency.js";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
@@ -94,5 +95,13 @@ export async function settingsRoutes(app: FastifyInstance) {
   app.delete("/api/settings/api-key", async () => {
     setConfigValue("anthropicApiKey", "");
     return { configured: false, maskedKey: null };
+  });
+
+  // GET /api/settings/concurrency — current active/queued counts
+  app.get("/api/settings/concurrency", async () => {
+    return {
+      active: getActiveCount(),
+      queued: getQueueLength(),
+    };
   });
 }

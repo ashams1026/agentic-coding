@@ -366,6 +366,15 @@ export async function deleteApiKey(): Promise<ApiKeyStatus> {
   return res.json();
 }
 
+export interface ConcurrencyStats {
+  active: number;
+  queued: number;
+}
+
+export async function getConcurrencyStats(): Promise<ConcurrencyStats> {
+  return get<ConcurrencyStats>("/api/settings/concurrency");
+}
+
 // ── Bundled API (mirrors mockApi shape) ──────────────────────────
 
 export const apiClient = {
@@ -416,4 +425,5 @@ export const apiClient = {
   getApiKeyStatus,
   setApiKey,
   deleteApiKey,
+  getConcurrencyStats,
 };
