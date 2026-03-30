@@ -3,6 +3,13 @@ import { X, ChevronRight, Plus, GitBranch } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useWorkItem, useWorkItems, useProposals, usePersonas, useCreateWorkItem, useUpdateWorkItem } from "@/hooks";
@@ -205,12 +212,127 @@ function EditableDescription({
 
 // ── Priority config ─────────────────────────────────────────────
 
-const priorityConfig: Record<Priority, { label: string; className: string }> = {
-  p0: { label: "P0 — Critical", className: "border-red-500 text-red-600 dark:text-red-400" },
-  p1: { label: "P1 — High", className: "border-amber-500 text-amber-600 dark:text-amber-400" },
-  p2: { label: "P2 — Medium", className: "border-blue-500 text-blue-600 dark:text-blue-400" },
-  p3: { label: "P3 — Low", className: "border-slate-400 text-slate-500 dark:text-slate-400" },
-};
+const priorityOptions: {
+  value: Priority;
+  label: string;
+  shortLabel: string;
+  className: string;
+  dotColor: string;
+}[] = [
+  { value: "p0", label: "P0 — Critical", shortLabel: "P0", className: "border-red-500 text-red-600 dark:text-red-400", dotColor: "#ef4444" },
+  { value: "p1", label: "P1 — High", shortLabel: "P1", className: "border-amber-500 text-amber-600 dark:text-amber-400", dotColor: "#f59e0b" },
+  { value: "p2", label: "P2 — Medium", shortLabel: "P2", className: "border-blue-500 text-blue-600 dark:text-blue-400", dotColor: "#3b82f6" },
+  { value: "p3", label: "P3 — Low", shortLabel: "P3", className: "border-slate-400 text-slate-500 dark:text-slate-400", dotColor: "#94a3b8" },
+];
+
+const priorityConfig: Record<Priority, (typeof priorityOptions)[number]> = Object.fromEntries(
+  priorityOptions.map((o) => [o.value, o]),
+) as Record<Priority, (typeof priorityOptions)[number]>;
+
+// ── Priority selector ───────────────────────────────────────────
+
+function PrioritySelector({
+  value,
+  onChange,
+}: {
+  value: Priority;
+  onChange: (p: Priority) => void;
+}) {
+  return (
+    <Select value={value} onValueChange={(v) => onChange(v as Priority)}>
+      <SelectTrigger className="h-7 w-auto gap-1.5 border text-xs font-semibold px-2 py-0.5">
+        <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: priorityConfig[value].dotColor }} />
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {priorityOptions.map((opt) => (
+          <SelectItem key={opt.value} value={opt.value}>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: opt.dotColor }} />
+              {opt.label}
+            </span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+// ── Label editor ────────────────────────────────────────────────
+
+function LabelEditor({
+  labels,
+  onAdd,
+  onRemove,
+}: {
+  labels: string[];
+  onAdd: (label: string) => void;
+  onRemove: (label: string) => void;
+}) {
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (adding && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [adding]);
+
+  const handleSubmit = () => {
+    const trimmed = draft.trim();
+    if (trimmed && !labels.includes(trimmed)) {
+      onAdd(trimmed);
+    }
+    setDraft("");
+    setAdding(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmit();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      setDraft("");
+      setAdding(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-1.5 flex-wrap">
+      {labels.map((label) => (
+        <Badge key={label} variant="secondary" className="text-[10px] px-1.5 py-0 gap-1 group">
+          {label}
+          <button
+            onClick={() => onRemove(label)}
+            className="ml-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <X className="h-2.5 w-2.5" />
+          </button>
+        </Badge>
+      ))}
+      {adding ? (
+        <input
+          ref={inputRef}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={handleSubmit}
+          onKeyDown={handleKeyDown}
+          className="h-5 w-20 text-[10px] bg-transparent border-b border-primary/40 outline-none px-1"
+          placeholder="label..."
+        />
+      ) : (
+        <button
+          onClick={() => setAdding(true)}
+          className="h-5 px-1.5 text-[10px] text-muted-foreground hover:text-foreground transition-colors rounded border border-dashed border-muted-foreground/30 hover:border-muted-foreground/60"
+        >
+          + label
+        </button>
+      )}
+    </div>
+  );
+}
 
 // ── Parent breadcrumb ───────────────────────────────────────────
 
@@ -408,7 +530,6 @@ export function DetailPanel() {
   if (!selectedItemId || !item) return null;
 
   const stateInfo = getStateByName(item.currentState);
-  const pCfg = priorityConfig[item.priority];
 
   const handleClose = () => setSelectedItemId(null);
   const handleNavigate = (id: WorkItemId) => setSelectedItemId(id);
@@ -450,14 +571,10 @@ export function DetailPanel() {
           >
             {item.currentState}
           </Badge>
-          <Badge variant="outline" className={cn("text-xs px-2 py-0.5 font-semibold", pCfg.className)}>
-            {pCfg.label}
-          </Badge>
-          {item.labels.map((label) => (
-            <Badge key={label} variant="secondary" className="text-[10px] px-1.5 py-0">
-              {label}
-            </Badge>
-          ))}
+          <PrioritySelector
+            value={item.priority}
+            onChange={(p) => updateWorkItem.mutate({ id: item.id, priority: p })}
+          />
           {persona && (
             <div className="flex items-center gap-1 ml-auto">
               <div
@@ -469,6 +586,19 @@ export function DetailPanel() {
               <span className="text-xs text-muted-foreground">{persona.name}</span>
             </div>
           )}
+        </div>
+
+        {/* Labels */}
+        <div className="mt-2">
+          <LabelEditor
+            labels={item.labels}
+            onAdd={(label) =>
+              updateWorkItem.mutate({ id: item.id, labels: [...item.labels, label] })
+            }
+            onRemove={(label) =>
+              updateWorkItem.mutate({ id: item.id, labels: item.labels.filter((l) => l !== label) })
+            }
+          />
         </div>
       </div>
 

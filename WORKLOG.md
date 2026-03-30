@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-29 — U.6: Add priority and label editing to detail panel
+
+**Task:** Replace static priority badge with dropdown, add inline label pill editor.
+
+**Done:**
+- Added `PrioritySelector` component:
+  - Uses shadcn Select component with P0–P3 options
+  - Each option shows colored dot + full label (e.g., "P0 — Critical")
+  - Trigger shows colored dot + short label
+  - Calls `updateWorkItem.mutate({ id, priority })` on change
+- Added `LabelEditor` component:
+  - Renders existing labels as pills with hover-reveal X button for removal
+  - "+ label" dashed-border button to add new labels
+  - Click to add → inline input, Enter/blur to submit, Escape to cancel
+  - Duplicate labels prevented
+  - Add calls `mutate({ id, labels: [...existing, new] })`
+  - Remove calls `mutate({ id, labels: existing.filter(...) })`
+- Refactored `priorityConfig` to use `priorityOptions` array (adds `dotColor` and `shortLabel`)
+- Replaced static priority Badge with `<PrioritySelector>` in badges row
+- Moved labels from inline badges to `<LabelEditor>` below badges row
+- Removed unused `pCfg` variable
+
+**Files modified:** `packages/frontend/src/features/work-items/detail-panel.tsx`
+
+**Notes:** Frontend build: 0 errors. Select component imported from `@/components/ui/select`.
+
+---
+
 ## 2026-03-29 — Review: U.5 (approved)
 
 **Reviewed:** Description editing — `detail-panel.tsx`, `EditableDescription` component.
