@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-30 — D.4: Document the data model
+
+**Task:** Create `docs/data-model.md` with all entities, fields, relationships, hierarchy, edges, executionContext.
+
+**Done:**
+- **`docs/data-model.md`** (new) — Data model documentation with:
+  - ASCII entity relationship diagram showing all 9 entities and their relationships
+  - 9 entity sections with complete field tables (type, description for every field)
+  - WorkItem hierarchy explanation (top-level → child → grandchild, auto-advance, blocked notification)
+  - Execution context accumulation pattern (ExecutionContextEntry array, how it feeds system prompts)
+  - Dependency graph (3 edge types: blocks, depends_on, related_to)
+  - RejectionPayload structure (reason, severity, hint, retryCount, 3-retry escalation)
+  - PersonaAssignment composite PK explanation
+  - ProjectMemory consolidation mechanism
+  - ID format table (8 prefixes with examples)
+  - Storage section (SQLite WAL, JSON columns, timestamp format)
+
+**Files created:** `docs/data-model.md`
+
+**Notes:** Build: 0 errors. All field names, types, and relationships verified against both `entities.ts` (shared types) and `schema.ts` (Drizzle schema).
+
+---
+
 ## 2026-03-30 — Review: D.3 (approved)
 
 **Reviewed:** Architecture documentation — system diagram, packages, data flow, agent lifecycle.
