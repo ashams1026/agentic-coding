@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-29 — U.3: Update view toggle
+
+**Task:** Replace Board with Flow in the view toggle, icons, URL params, and store type.
+
+**Done:**
+- Updated `packages/frontend/src/stores/work-items-store.ts`:
+  - `WorkItemView` type: `"list" | "board"` → `"list" | "flow"`
+- Updated `packages/frontend/src/pages/work-items.tsx`:
+  - Import: `Columns3` → `GitBranch` from lucide-react
+  - Import: `BoardView` → `FlowView` from flow-view
+  - viewOptions: `{ value: "board", label: "Board", icon: Columns3 }` → `{ value: "flow", label: "Flow", icon: GitBranch }`
+  - URL param check: `"board"` → `"flow"`
+  - Render: `{view === "board" && <BoardView />}` → `{view === "flow" && <FlowView />}`
+
+**Files modified:** `pages/work-items.tsx`, `stores/work-items-store.ts`
+
+**Notes:** Frontend build: 0 errors. Bundle size dropped ~44KB (1,120→1,076 KB) because BoardView's dnd-kit imports are no longer tree-shaken in. board-view.tsx still exists but is now unreferenced — can be deleted in a future cleanup.
+
+---
+
 ## 2026-03-29 — Review: U.2 (approved)
 
 **Reviewed:** Flow view — `features/work-items/flow-view.tsx` (~497 lines).

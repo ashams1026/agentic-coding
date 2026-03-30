@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router";
-import { List, Columns3, Plus } from "lucide-react";
+import { List, GitBranch, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { FilterBar } from "@/features/work-items/filter-bar";
 import { ListView } from "@/features/work-items/list-view";
-import { BoardView } from "@/features/work-items/board-view";
+import { FlowView } from "@/features/work-items/flow-view";
 import { DetailPanel } from "@/features/work-items/detail-panel";
 import { useWorkItemsStore, type WorkItemView } from "@/stores/work-items-store";
 import { useCreateWorkItem } from "@/hooks";
@@ -13,7 +13,7 @@ import type { ProjectId } from "@agentops/shared";
 
 const viewOptions: { value: WorkItemView; label: string; icon: typeof List }[] = [
   { value: "list", label: "List", icon: List },
-  { value: "board", label: "Board", icon: Columns3 },
+  { value: "flow", label: "Flow", icon: GitBranch },
 ];
 
 export function WorkItemsPage() {
@@ -24,7 +24,7 @@ export function WorkItemsPage() {
   // Sync view from URL params on mount
   useEffect(() => {
     const urlView = searchParams.get("view");
-    if (urlView && (urlView === "list" || urlView === "board")) {
+    if (urlView && (urlView === "list" || urlView === "flow")) {
       setView(urlView);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -91,7 +91,7 @@ export function WorkItemsPage() {
       <div className="flex flex-1 overflow-hidden">
         <div className={cn("flex-1 overflow-hidden p-6", selectedItemId && "w-2/5")}>
           {view === "list" && <ListView />}
-          {view === "board" && <BoardView />}
+          {view === "flow" && <FlowView />}
         </div>
 
         {selectedItemId && (
