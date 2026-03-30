@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — Q.11: Test dispatch logic
+
+**Task:** Tests for dispatch logic — persona assignment lookup, executor spawning, concurrency limits.
+
+**Done:**
+- Created `packages/backend/src/agent/__tests__/dispatch.test.ts` with 6 tests:
+  - Spawns executor when persona is assigned to state (Planning → PM)
+  - No-op for Backlog (no assignment), Done (no assignment), non-existent work item
+  - Enqueues instead of spawning when at concurrency limit (3/3 slots filled)
+  - Spawns when under concurrency limit (2/3 slots used)
+- Mocked `runExecution` (stub executor spawn — testing dispatch decisions only)
+- Mocked `broadcast` (no WS server)
+- Real concurrency module with state management via trackExecution/onComplete cleanup
+
+**Files created:** `packages/backend/src/agent/__tests__/dispatch.test.ts`
+
+**Notes:** Build: 0 errors, 125 tests pass. Seed project has maxConcurrent: 3 and persona assignments for Planning/Decomposition/InProgress/InReview states. Cost check passes with seed data ($1.45 < $50 cap).
+
+---
+
 ## 2026-03-30 — Review: Q.10 (approved)
 
 **Reviewed:** Parent-child coordination tests — `packages/backend/src/agent/__tests__/coordination.test.ts`.

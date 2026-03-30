@@ -30,7 +30,7 @@
 
 - [x] **Q.10** — Test parent-child coordination. In `packages/backend/src/agent/__tests__/coordination.test.ts`: use test DB with a parent + 3 children. Test: when all children are Done, parent advances to "In Review". Test: when 2/3 children are Done, parent does NOT advance. Test: when a child enters Blocked, system comment is posted on parent. Test: manual parent state override is not blocked by children state.
 
-- [ ] **Q.11** — Test dispatch logic. In `packages/backend/src/agent/__tests__/dispatch.test.ts`: use test DB with persona assignments. Test: `dispatchForState()` spawns executor when persona is assigned. Test: no-op when no persona assigned (Backlog, Done). Test: respects concurrency limit (enqueues instead of spawning). Stub the actual executor spawn — we're testing dispatch decisions, not agent execution.
+- [review] **Q.11** — Test dispatch logic. In `packages/backend/src/agent/__tests__/dispatch.test.ts`: use test DB with persona assignments. Test: `dispatchForState()` spawns executor when persona is assigned. Test: no-op when no persona assigned (Backlog, Done). Test: respects concurrency limit (enqueues instead of spawning). Stub the actual executor spawn — we're testing dispatch decisions, not agent execution.
 
 - [ ] **Q.12** — Test MCP tool implementations. In `packages/backend/src/agent/__tests__/mcp-tools.test.ts`: use test DB. Test `post_comment` inserts a comment and returns success. Test `create_children` creates child work items with correct parentId and edges. Test `route_to_state` validates transition and updates state. Test `route_to_state` rejects invalid transition. Test `flag_blocked` sets state to Blocked. Test `list_items` returns filtered results. Test `get_context` returns work item with execution history.
 
