@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: S.4 (approved)
+
+**Reviewed:** pm2 ecosystem config — `ecosystem.config.cjs`, `package.json`.
+- CJS format correct (pm2 doesn't support ESM configs) ✓
+- App name, script path, cwd, env vars all correct ✓
+- Log paths to `~/.agentops/logs/` with date format and merge_logs ✓
+- Restart policy: max_restarts 3, min_uptime 60s, restart_delay 1s ✓
+- kill_timeout 35s aligned with 30s graceful shutdown + 5s buffer ✓
+- watch: false ✓
+- 5 service:* scripts in package.json wrapping pm2 commands ✓
+- Build: 0 errors, Tests: 159/159
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — S.4: Create pm2 ecosystem config
 
 **Task:** Create `ecosystem.config.cjs` with pm2 app config and add service management scripts to root package.json.
