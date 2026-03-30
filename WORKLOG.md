@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: O.19 (approved)
+
+**Reviewed:** Seed script and DB connection — `packages/backend/src/db/seed.ts`, `packages/backend/src/db/connection.ts`.
+- All 9 entity types seeded matching frontend fixtures exactly (1 project, 5 personas, 16 work items, 4 edges, 4 assignments, 8 executions, 15 comments, 2 proposals, 2 memories)
+- All IDs match frontend fixtures for cross-system consistency
+- Dependency-ordered inserts (projects → personas → workItems → ...) and reverse-order deletes
+- Idempotent: CREATE TABLE IF NOT EXISTS + delete-before-insert
+- connection.ts: WAL mode, FK enforcement, proper type annotation
+- Note: costUsd/maxBudgetPerRun stored as cents (integer) vs fixtures' dollars — correct for SQLite integer column, API layer will convert
+- Backend typecheck: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.19: Update seed script for WorkItem model
 
 **Task:** Create `packages/backend/src/db/seed.ts` with seed data matching frontend fixtures.

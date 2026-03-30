@@ -39,7 +39,7 @@
 
 - [x] **O.18** — Rewrite Drizzle schema for WorkItem model. In `packages/backend/src/db/schema.ts`: replace `stories` and `tasks` tables with single `work_items` table (id text PK, parentId text nullable FK self-referencing, projectId text FK, title text, description text, context text JSON, currentState text, priority text, labels text JSON, assignedPersonaId text, executionContext text JSON, createdAt integer, updatedAt integer). Replace `task_edges` with `work_item_edges`. Add `persona_assignments` table (projectId text, stateName text, personaId text, PK on projectId+stateName). Remove `workflows` and `triggers` tables. Update `comments`, `executions`, `proposals`, `project_memories` to reference `workItemId`.
 
-- [review] **O.19** — Update seed script for WorkItem model. In `packages/backend/src/db/seed.ts`: update to insert work items (not stories/tasks), persona assignments, and all related data matching the refactored frontend fixtures.
+- [x] **O.19** — Update seed script for WorkItem model. In `packages/backend/src/db/seed.ts`: update to insert work items (not stories/tasks), persona assignments, and all related data matching the refactored frontend fixtures.
 
 - [ ] **O.20** — Rewrite CRUD API routes for WorkItem. Replace `routes/stories.ts` and `routes/tasks.ts` with `routes/work-items.ts`. Routes: `GET /api/work-items` (list, optional `?parentId=` and `?projectId=` filters), `GET /api/work-items/:id`, `POST /api/work-items`, `PATCH /api/work-items/:id`, `DELETE /api/work-items/:id`. Add `routes/persona-assignments.ts`: `GET /api/persona-assignments?projectId=`, `PUT /api/persona-assignments` (upsert). Remove `routes/workflows.ts`. Update `routes/task-edges.ts` → `routes/work-item-edges.ts`.
 
