@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: U.5 (approved)
+
+**Reviewed:** Description editing — `detail-panel.tsx`, `EditableDescription` component.
+- Read mode: heading + Edit button, text or italic placeholder when empty ✓
+- Write/Preview tabs: border-b-2 underline indicator, active/inactive styling ✓
+- Write tab: textarea with min-h, resize-y, autoFocus, placeholder ✓
+- Preview tab: whitespace-pre-wrap text, empty placeholder ✓
+- Save/Cancel buttons: Save triggers mutation if changed, Cancel reverts ✓
+- Wired to `updateWorkItem.mutate({ id, description })` ✓
+- Draft syncs externally, useCallback on handlers ✓
+- Always visible (shows placeholder when no description) ✓
+- Frontend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — U.5: Add description editing to detail panel
 
 **Task:** Add Write/Preview tabs for the description field with Save/Cancel buttons.
