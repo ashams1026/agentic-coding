@@ -25,7 +25,7 @@
 
 - [x] **U.6** — Add priority and label editing to detail panel. Priority: replace static badge with a dropdown selector (P0-P3 with colors). Labels: add an inline pill editor (click to add/remove labels). Both wire to `useUpdateWorkItem` mutation.
 
-- [review] **U.7** — Add state transition control to detail panel. Below the state badge: add a dropdown showing valid next states from `getValidTransitions(currentState)`. Selecting a state triggers the transition (with persona prompt if auto-routing is on). Reuse transition prompt modal from the old board view.
+- [x] **U.7** — Add state transition control to detail panel. Below the state badge: add a dropdown showing valid next states from `getValidTransitions(currentState)`. Selecting a state triggers the transition (with persona prompt if auto-routing is on). Reuse transition prompt modal from the old board view.
 
 ### Agent Monitor Polish
 

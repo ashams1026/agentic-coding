@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: U.7 (approved)
+
+**Reviewed:** State transition control — `detail-panel.tsx`.
+- StateTransitionControl: Select dropdown with valid next states from getValidTransitions ✓
+- Each option: state color dot + name + persona hint if assigned ✓
+- Hidden when no valid transitions (Done state) ✓
+- handleTransition: checks assignmentMap → shows prompt or direct mutate ✓
+- TransitionPrompt: Dialog matching board-view pattern (persona card, Run/Skip/Cancel) ✓
+- usePersonaAssignments + personaMap + assignmentMap correctly wired ✓
+- pendingState + promptData state management clean ✓
+- Imports: Dialog, Bot, getValidTransitions, usePersonaAssignments, Persona, ProjectId ✓
+- Frontend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — U.7: Add state transition control to detail panel
 
 **Task:** Add dropdown showing valid next states, with persona prompt modal for auto-routing.
