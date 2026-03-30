@@ -21,7 +21,7 @@ import { broadcast } from "../ws.js";
 import { ClaudeExecutor } from "./claude-executor.js";
 import { runRouter } from "./router.js";
 import { dispatchForState } from "./dispatch.js";
-import { trackExecution, onComplete } from "./concurrency.js";
+import { trackExecution, onComplete, getProjectCostSummary } from "./concurrency.js";
 import type { AgentTask, AgentEvent } from "./types.js";
 
 // ── Singleton executor ────────────────────────────────────────────
@@ -372,6 +372,18 @@ async function runExecutionStream(
       durationMs: finalDurationMs,
       costUsd: finalCostUsd,
       timestamp: new Date().toISOString(),
+    });
+
+    // Broadcast cost_update after each execution
+    getProjectCostSummary(project.id as string).then((costSummary) => {
+      broadcast({
+        type: "cost_update",
+        todayCostUsd: costSummary.todayCostUsd,
+        monthCostUsd: costSummary.monthCostUsd,
+        timestamp: new Date().toISOString(),
+      });
+    }).catch((err) => {
+      console.error("Cost summary broadcast failed:", err);
     });
 
     // Release concurrency slot and dequeue next task

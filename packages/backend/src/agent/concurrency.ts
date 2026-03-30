@@ -5,9 +5,9 @@
  * enqueued in a priority-ordered FIFO queue and dequeued on completion.
  */
 
-import { eq } from "drizzle-orm";
+import { eq, and, gte, sql } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { projects, workItems } from "../db/schema.js";
+import { projects, workItems, executions } from "../db/schema.js";
 
 const DEFAULT_MAX_CONCURRENT = 3;
 
@@ -118,6 +118,75 @@ export function getQueueLength(): number {
   return queue.length;
 }
 
+// ── Cost tracking ────────────────────────────────────────────────
+
+/**
+ * Check if the project's monthly cost cap has been exceeded.
+ * Returns { allowed, monthCostUsd, monthCapUsd }.
+ */
+export async function checkMonthlyCost(
+  projectId: string,
+): Promise<{ allowed: boolean; monthCostUsd: number; monthCapUsd: number }> {
+  const monthCapUsd = await getMonthCap(projectId);
+  if (monthCapUsd <= 0) return { allowed: true, monthCostUsd: 0, monthCapUsd: 0 }; // No cap
+
+  const monthCostUsd = await getProjectCostSince(projectId, startOfMonth());
+  return {
+    allowed: monthCostUsd < monthCapUsd,
+    monthCostUsd,
+    monthCapUsd,
+  };
+}
+
+/**
+ * Get aggregate cost for a project since a given date.
+ * Returns cost in USD (converts from cents stored in DB).
+ */
+export async function getProjectCostSince(
+  projectId: string,
+  since: Date,
+): Promise<number> {
+  const result = await db
+    .select({
+      totalCents: sql<number>`coalesce(sum(${executions.costUsd}), 0)`,
+    })
+    .from(executions)
+    .innerJoin(workItems, eq(executions.workItemId, workItems.id))
+    .where(
+      and(
+        eq(workItems.projectId, projectId),
+        gte(executions.startedAt, since),
+      ),
+    );
+
+  const totalCents = result[0]?.totalCents ?? 0;
+  return totalCents / 100; // cents → dollars
+}
+
+function startOfMonth(): Date {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), 1);
+}
+
+function startOfDay(): Date {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
+/**
+ * Get today's and this month's cost for a project (in USD).
+ * Used for cost_update broadcasts.
+ */
+export async function getProjectCostSummary(
+  projectId: string,
+): Promise<{ todayCostUsd: number; monthCostUsd: number }> {
+  const [todayCostUsd, monthCostUsd] = await Promise.all([
+    getProjectCostSince(projectId, startOfDay()),
+    getProjectCostSince(projectId, startOfMonth()),
+  ]);
+  return { todayCostUsd, monthCostUsd };
+}
+
 // ── Helpers ──────────────────────────────────────────────────────
 
 async function getMaxConcurrent(projectId: string): Promise<number> {
@@ -130,4 +199,16 @@ async function getMaxConcurrent(projectId: string): Promise<number> {
 
   const max = project.settings.maxConcurrent;
   return typeof max === "number" && max > 0 ? max : DEFAULT_MAX_CONCURRENT;
+}
+
+async function getMonthCap(projectId: string): Promise<number> {
+  const [project] = await db
+    .select({ settings: projects.settings })
+    .from(projects)
+    .where(eq(projects.id, projectId));
+
+  if (!project) return 0;
+
+  const cap = project.settings.monthCap;
+  return typeof cap === "number" && cap > 0 ? cap : 0; // 0 = no cap
 }

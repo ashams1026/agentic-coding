@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-29 — A.16: Implement cost tracking and caps
+
+**Task:** Monthly cost cap check before spawning, cost_update broadcast after execution.
+
+**Done:**
+- In `concurrency.ts`:
+  - `checkMonthlyCost(projectId)`: queries executions joined with workItems for current month, sums costUsd (cents→dollars), checks against project's `monthCap` setting. Returns `{ allowed, monthCostUsd, monthCapUsd }`
+  - `getProjectCostSince(projectId, since)`: aggregate cost query with JOIN on workItems for project filtering
+  - `getProjectCostSummary(projectId)`: returns `{ todayCostUsd, monthCostUsd }` for broadcast
+  - `getMonthCap(projectId)`: reads project settings (0 = no cap)
+- In `dispatch.ts`:
+  - Before concurrency check: calls `checkMonthlyCost()`. If exceeded, posts system comment with cost details and returns (blocks execution)
+- In `execution-manager.ts`:
+  - After agent_completed broadcast: calls `getProjectCostSummary()` and broadcasts `cost_update` WS event (non-blocking)
+
+**Files modified:** `packages/backend/src/agent/concurrency.ts`, `packages/backend/src/agent/dispatch.ts`, `packages/backend/src/agent/execution-manager.ts`
+
+**Notes:** Build: 0 errors. Cost stored as cents in DB, converted to dollars in API. Project setting: `settings.monthCap` (dollars). costUsd already accumulated from executor result events (existing from A.9).
+
+---
+
 ## 2026-03-29 — Review: A.15 (approved)
 
 **Reviewed:** Concurrency limiter — `concurrency.ts`, `dispatch.ts`, `execution-manager.ts`.

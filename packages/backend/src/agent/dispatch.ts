@@ -7,9 +7,12 @@
 
 import { eq, and } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { personaAssignments, workItems } from "../db/schema.js";
+import { personaAssignments, workItems, comments } from "../db/schema.js";
 import { runExecution } from "./execution-manager.js";
-import { canSpawn, enqueue } from "./concurrency.js";
+import { canSpawn, enqueue, checkMonthlyCost } from "./concurrency.js";
+import { createId } from "@agentops/shared";
+import type { CommentId, WorkItemId } from "@agentops/shared";
+import { broadcast } from "../ws.js";
 
 /**
  * Check if the given state has an assigned persona for the work item's project,
@@ -41,6 +44,32 @@ export async function dispatchForState(
     );
 
   if (!assignment) return; // No persona assigned to this state
+
+  // Check monthly cost cap before spawning
+  const costCheck = await checkMonthlyCost(item.projectId);
+  if (!costCheck.allowed) {
+    const now = new Date();
+    const commentId = createId.comment();
+    await db.insert(comments).values({
+      id: commentId,
+      workItemId,
+      authorType: "system",
+      authorId: null,
+      authorName: "System",
+      content: `Monthly cost cap exceeded ($${costCheck.monthCostUsd.toFixed(2)} / $${costCheck.monthCapUsd.toFixed(2)}). Execution blocked.`,
+      metadata: { costBlock: true, monthCostUsd: costCheck.monthCostUsd, monthCapUsd: costCheck.monthCapUsd },
+      createdAt: now,
+    });
+    broadcast({
+      type: "comment_created",
+      commentId: commentId as CommentId,
+      workItemId: workItemId as WorkItemId,
+      authorName: "System",
+      contentPreview: `Monthly cost cap exceeded. Execution blocked.`,
+      timestamp: now.toISOString(),
+    });
+    return;
+  }
 
   // Check concurrency before spawning
   const allowed = await canSpawn(item.projectId);
