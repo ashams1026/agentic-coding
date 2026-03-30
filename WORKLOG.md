@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: A.4 (approved)
+
+**Reviewed:** route_to_state MCP tool — `packages/backend/src/agent/mcp-server.ts`.
+- Work item lookup + not-found error ✓
+- isValidTransition() validation + invalid-transition error ✓
+- currentState + updatedAt update via drizzle ✓
+- System comment: authorType "system", authorName "Router", structured metadata ✓
+- state_change WS broadcast with all required fields ✓
+- Return: { workItemId, fromState, toState } ✓
+- Error handling: try/catch + isError ✓
+- Backend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.4: Implement route_to_state MCP tool
 
 **Task:** Replace route_to_state stub with real state transition + validation + system comment.
