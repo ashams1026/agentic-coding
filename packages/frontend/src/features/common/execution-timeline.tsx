@@ -9,14 +9,18 @@ import {
   DollarSign,
   Clock,
   Loader2,
+  RotateCcw,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useExecutions, usePersonas } from "@/hooks";
+import { retryWorkItem } from "@/api";
+import { useToastStore } from "@/stores/toast-store";
 import type {
   Execution,
   Persona,
@@ -86,9 +90,10 @@ interface TimelineEntryProps {
   execution: Execution;
   persona: Persona | undefined;
   isLast: boolean;
+  onRetry?: () => void;
 }
 
-function TimelineEntry({ execution, persona, isLast }: TimelineEntryProps) {
+function TimelineEntry({ execution, persona, isLast, onRetry }: TimelineEntryProps) {
   const [expanded, setExpanded] = useState(false);
   const avatarColor = persona?.avatar.color ?? "#6b7280";
   const personaName = persona?.name ?? "Agent";
@@ -163,6 +168,21 @@ function TimelineEntry({ execution, persona, isLast }: TimelineEntryProps) {
           </span>
         </div>
 
+        {/* Retry button for failed executions */}
+        {execution.outcome === "failure" && onRetry && (
+          <div className="mt-2 ml-6">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs gap-1"
+              onClick={onRetry}
+            >
+              <RotateCcw className="h-3 w-3" />
+              Retry
+            </Button>
+          </div>
+        )}
+
         {/* Expanded: logs */}
         {expanded && execution.logs && (
           <div className="mt-3 ml-6 rounded-md border bg-muted/30 p-3 overflow-x-auto">
@@ -185,6 +205,7 @@ interface ExecutionTimelineProps {
 export function ExecutionTimeline({ workItemId }: ExecutionTimelineProps) {
   const { data: executions = [] } = useExecutions(workItemId);
   const { data: personas = [] } = usePersonas();
+  const addToast = useToastStore((s) => s.addToast);
 
   const personaMap = useMemo(
     () => new Map(personas.map((p) => [p.id as string, p])),
@@ -200,6 +221,14 @@ export function ExecutionTimeline({ workItemId }: ExecutionTimelineProps) {
       ),
     [executions],
   );
+
+  const handleRetry = () => {
+    retryWorkItem(workItemId).then(() => {
+      addToast({ type: "info", title: "Retry dispatched", description: "A new execution has been queued." });
+    }).catch(() => {
+      addToast({ type: "error", title: "Retry failed", description: "Could not dispatch retry." });
+    });
+  };
 
   if (sorted.length === 0) return null;
 
@@ -217,6 +246,7 @@ export function ExecutionTimeline({ workItemId }: ExecutionTimelineProps) {
             execution={execution}
             persona={personaMap.get(execution.personaId as string)}
             isLast={i === sorted.length - 1}
+            onRetry={execution.outcome === "failure" ? handleRetry : undefined}
           />
         ))}
       </div>

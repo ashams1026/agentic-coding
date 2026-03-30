@@ -315,6 +315,32 @@ describe("work-items routes", () => {
     });
   });
 
+  // ── POST /api/work-items/:id/retry ────────────────────────────────
+
+  describe("POST /api/work-items/:id/retry", () => {
+    it("dispatches retry for existing work item", async () => {
+      const res = await app.inject({
+        method: "POST",
+        url: `/api/work-items/${TEST_IDS.WI_TOP_1}/retry`,
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = res.json();
+      expect(body.data.workItemId).toBe(TEST_IDS.WI_TOP_1);
+      expect(body.data.dispatched).toBe(true);
+    });
+
+    it("returns 404 for non-existent id", async () => {
+      const res = await app.inject({
+        method: "POST",
+        url: "/api/work-items/wi-nonexistent/retry",
+      });
+
+      expect(res.statusCode).toBe(404);
+      expect(res.json().error.code).toBe("NOT_FOUND");
+    });
+  });
+
   // ── Response shape verification ──────────────────────────────────
 
   describe("response shapes", () => {

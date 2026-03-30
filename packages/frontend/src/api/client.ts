@@ -183,6 +183,10 @@ export async function deleteWorkItem(id: WorkItemId): Promise<boolean> {
   return del(`/api/work-items/${id}`);
 }
 
+export async function retryWorkItem(id: WorkItemId): Promise<void> {
+  await post(`/api/work-items/${id}/retry`, {});
+}
+
 // ── Work Item Edges ──────────────────────────────────────────────
 
 export async function getWorkItemEdges(workItemId?: WorkItemId): Promise<WorkItemEdge[]> {

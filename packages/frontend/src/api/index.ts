@@ -52,6 +52,9 @@ export const updateWorkItem = (...args: Parameters<typeof mock.updateWorkItem>) 
 export const deleteWorkItem = (...args: Parameters<typeof mock.deleteWorkItem>) =>
   pick(mock.deleteWorkItem, real.deleteWorkItem)(...args);
 
+export const retryWorkItem = (...args: Parameters<typeof mock.retryWorkItem>) =>
+  pick(mock.retryWorkItem, real.retryWorkItem)(...args);
+
 // ── Work Item Edges ──────────────────────────────────────────────
 
 export const getWorkItemEdges = (...args: Parameters<typeof mock.getWorkItemEdges>) =>

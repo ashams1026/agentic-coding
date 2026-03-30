@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-30 — E.9: Add execution error handling and UI feedback
+
+**Task:** Verify error handling pipeline, add toast on failure, add retry button in detail panel.
+
+**Verification (already working):**
+1. Execution record updated to `failed` in DB — execution-manager.ts catch block sets `status: "failed"`, `outcome: "failure"`, error in summary/logs ✓
+2. Failure broadcast via WS — catch block broadcasts `agent_completed` with `outcome: "failure"` ✓
+3. Agent monitor shows error — terminal renderer streams all chunks including `FATAL:` error messages. Execution hook shows `status: "failed"` ✓
+4. Work item does NOT advance state — routing chain only fires on `finalOutcome === "success"` ✓
+5. Toast on failure — `use-toast-events.ts` already handles `agent_completed` with failure: shows error toast with "Agent failed" title and "View" action ✓
+
+**New features added:**
+- **`POST /api/work-items/:id/retry` route** — Re-dispatches the persona for the work item's current state. Returns 404 if work item doesn't exist. Fire-and-forget dispatch.
+- **`retryWorkItem()` API client** — Added to real client, mock API, and unified API index.
+- **Retry button in ExecutionTimeline** — Shows a "Retry" button (RotateCcw icon) below the badges row for failed executions. Calls `retryWorkItem()`, shows info/error toast on success/failure.
+- **2 new tests** — retry dispatch for existing item (200), retry for non-existent (404).
+
+**Files modified:** `packages/backend/src/routes/work-items.ts`, `packages/backend/src/routes/__tests__/work-items.test.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/mocks/api.ts`, `packages/frontend/src/api/index.ts`, `packages/frontend/src/features/common/execution-timeline.tsx`
+
+**Notes:** Build: 0 errors. Tests: 153/153 passing (was 151). Most of E.9 was already working — the execution-manager and toast system were properly handling failures. The retry button was the main new UI feature.
+
+---
+
 ## 2026-03-30 — Review: E.8 (approved)
 
 **Reviewed:** Parent-child coordination dispatch fix — `coordination.ts`, `coordination.test.ts`.

@@ -191,6 +191,11 @@ export async function deleteWorkItem(id: WorkItemId): Promise<boolean> {
   return true;
 }
 
+export async function retryWorkItem(_id: WorkItemId): Promise<void> {
+  await delay();
+  // Mock: no-op — in real mode this re-dispatches the persona
+}
+
 // ── Work Item Edges ──────────────────────────────────────────────
 
 export async function getWorkItemEdges(workItemId?: WorkItemId): Promise<WorkItemEdge[]> {
@@ -451,6 +456,7 @@ export const mockApi = {
   createWorkItem,
   updateWorkItem,
   deleteWorkItem,
+  retryWorkItem,
   // Work Item Edges
   getWorkItemEdges,
   createWorkItemEdge,

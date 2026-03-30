@@ -185,6 +185,29 @@ export async function workItemRoutes(app: FastifyInstance) {
     return { data: serializeWorkItem(row) };
   });
 
+  // POST /api/work-items/:id/retry — re-dispatch persona for current state
+  app.post<{
+    Params: { id: string };
+  }>("/api/work-items/:id/retry", async (request, reply) => {
+    const { id } = request.params;
+
+    const [item] = await db
+      .select({ id: workItems.id, currentState: workItems.currentState })
+      .from(workItems)
+      .where(eq(workItems.id, id));
+
+    if (!item) {
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Work item ${id} not found` } });
+    }
+
+    // Fire-and-forget dispatch for current state
+    dispatchForState(id, item.currentState).catch((err) => {
+      app.log.error({ err, workItemId: id, state: item.currentState }, "Retry dispatch failed");
+    });
+
+    return { data: { workItemId: id, state: item.currentState, dispatched: true } };
+  });
+
   // DELETE /api/work-items/:id (recursive — deletes children too)
   app.delete<{
     Params: { id: string };
