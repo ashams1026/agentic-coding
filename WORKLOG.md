@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-29 — Review: T3.2.8 (approved)
+
+**Reviewed:** Execution CRUD routes — `routes/executions.ts`, `server.ts`, `shared/src/api.ts`.
+- 5 routes: GET list (?workItemId filter), GET by id, POST create, PATCH update, DELETE
+- Added CreateExecutionRequest/UpdateExecutionRequest to shared api.ts with correct entity type imports
+- Serializer correctly converts Date→ISO for startedAt/completedAt, handles null completedAt, casts branded IDs
+- POST defaults sensible: status=pending, startedAt=now, zeros/empty/null for remaining fields
+- PATCH completedAt: accepts ISO string, converts to Date; handles null correctly
+- JSON.stringify pattern on rejectionPayload consistent with established codebase pattern
+- 404/400 error handling, correct HTTP status codes (201/204)
+- Registered in server.ts
+- Backend typecheck: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T3.2.8: Implement execution API routes
 
 **Task:** Create execution CRUD routes with workItemId filtering.
