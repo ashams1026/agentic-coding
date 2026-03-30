@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-29 — A.14: Implement rejection and retry logic
+
+**Task:** Detect "In Review" → "In Progress" as rejection, track retries, auto-block on max.
+
+**Done:**
+- In `execution-manager.ts`:
+  - Added `appendExecutionContext(workItemId, entry)`: reads existing executionContext, appends entry, updates DB
+  - Added `handleRejection(workItemId, reason, severity?, hint?)`: counts existing rejections in executionContext, appends rejection entry with `RejectionPayload`, returns `{ targetState, retryCount, blocked }`. If retryCount >= 3 (MAX_REJECTIONS), returns "Blocked" as targetState
+  - After execution completion (non-router): appends `{ executionId, summary, outcome, rejectionPayload: null }` to work item's executionContext
+- In `mcp-server.ts` `route_to_state` tool:
+  - Detects "In Review" → "In Progress" as rejection
+  - Calls `handleRejection()` to get finalTargetState (may be "Blocked" if max retries)
+  - If blocked: posts system comment + broadcasts comment_created notification
+  - All subsequent references use `finalTargetState` (comment, broadcast, coordination, return)
+
+**Files modified:** `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/agent/mcp-server.ts`
+
+**Notes:** Build: 0 errors. Uses existing `RejectionPayload` type from shared. `buildSystemPrompt` already renders rejection history (from A.8). MAX_REJECTIONS = 3.
+
+---
+
 ## 2026-03-29 — Review: A.13 (approved)
 
 **Reviewed:** Parent-child state coordination — `packages/backend/src/agent/coordination.ts`.

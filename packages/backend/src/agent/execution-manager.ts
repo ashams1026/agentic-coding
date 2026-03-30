@@ -47,6 +47,81 @@ function recordTransition(workItemId: string): void {
 
 const executor = new ClaudeExecutor();
 
+// ── Execution context helpers ────────────────────────────────────
+
+const MAX_REJECTIONS = 3;
+
+/**
+ * Append an entry to a work item's executionContext array.
+ */
+export async function appendExecutionContext(
+  workItemId: string,
+  entry: ExecutionContextEntry,
+): Promise<void> {
+  const [item] = await db
+    .select({ executionContext: workItems.executionContext })
+    .from(workItems)
+    .where(eq(workItems.id, workItemId));
+
+  if (!item) return;
+
+  const ctx = (item.executionContext as ExecutionContextEntry[]) ?? [];
+  ctx.push(entry);
+
+  await db
+    .update(workItems)
+    .set({ executionContext: ctx, updatedAt: new Date() })
+    .where(eq(workItems.id, workItemId));
+}
+
+/**
+ * Handle rejection: "In Review" → "In Progress" transition.
+ * Increments retry counter, appends rejection to executionContext.
+ * Returns "Blocked" if max retries exceeded, otherwise returns "In Progress".
+ */
+export async function handleRejection(
+  workItemId: string,
+  reason: string,
+  severity: "low" | "medium" | "high" = "medium",
+  hint: string = "",
+): Promise<{ targetState: string; retryCount: number; blocked: boolean }> {
+  const [item] = await db
+    .select({ executionContext: workItems.executionContext })
+    .from(workItems)
+    .where(eq(workItems.id, workItemId));
+
+  if (!item) return { targetState: "In Progress", retryCount: 0, blocked: false };
+
+  const ctx = (item.executionContext as ExecutionContextEntry[]) ?? [];
+
+  // Count existing rejections
+  const retryCount = ctx.filter((e) => e.rejectionPayload !== null).length + 1;
+  const blocked = retryCount >= MAX_REJECTIONS;
+  const targetState = blocked ? "Blocked" : "In Progress";
+
+  // Append rejection entry
+  const rejectionEntry: ExecutionContextEntry = {
+    executionId: `rejection-${retryCount}` as ExecutionId,
+    summary: reason,
+    outcome: "rejected",
+    rejectionPayload: {
+      reason,
+      severity,
+      hint,
+      retryCount,
+    },
+  };
+
+  ctx.push(rejectionEntry);
+
+  await db
+    .update(workItems)
+    .set({ executionContext: ctx, updatedAt: new Date() })
+    .where(eq(workItems.id, workItemId));
+
+  return { targetState, retryCount, blocked };
+}
+
 // ── Helper: build AgentTask from DB ───────────────────────────────
 
 async function buildAgentTask(workItemId: string): Promise<AgentTask | null> {
@@ -273,6 +348,16 @@ async function runExecutionStream(
         logs,
       })
       .where(eq(executions.id, executionId));
+
+    // Append to work item's executionContext (skip for router)
+    if (persona.name !== "__router__") {
+      await appendExecutionContext(task.workItemId, {
+        executionId: executionId as ExecutionId,
+        summary: finalSummary,
+        outcome: finalOutcome,
+        rejectionPayload: null,
+      });
+    }
 
     // Broadcast agent_completed
     broadcast({

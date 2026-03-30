@@ -18,6 +18,7 @@ import { createId, WORKFLOW, isValidTransition } from "@agentops/shared";
 import type { CommentId, WorkItemId, PersonaId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 import { checkParentCoordination } from "./coordination.js";
+import { handleRejection } from "./execution-manager.js";
 
 // ── Context passed to the MCP server ────────────────────────────
 
@@ -276,11 +277,42 @@ export function createMcpServer(context: McpContext): McpServer {
 
         const now = new Date();
         const fromState = item.currentState;
+        let finalTargetState = targetState;
+
+        // Detect rejection: "In Review" → "In Progress"
+        if (fromState === "In Review" && targetState === "In Progress") {
+          const result = await handleRejection(workItemId, reasoning);
+          finalTargetState = result.targetState; // may be "Blocked" if max retries exceeded
+
+          if (result.blocked) {
+            // Post notification about max retries
+            const blockedCommentId = createId.comment();
+            await db.insert(comments).values({
+              id: blockedCommentId,
+              workItemId,
+              authorType: "system",
+              authorId: null,
+              authorName: "System",
+              content: `Max retries (${result.retryCount}) reached after repeated rejections. Auto-transitioning to Blocked.`,
+              metadata: { coordination: "max_retries", retryCount: result.retryCount },
+              createdAt: now,
+            });
+
+            broadcast({
+              type: "comment_created",
+              commentId: blockedCommentId as CommentId,
+              workItemId: workItemId as WorkItemId,
+              authorName: "System",
+              contentPreview: `Max retries reached. Auto-blocked.`,
+              timestamp: now.toISOString(),
+            });
+          }
+        }
 
         // Update work item state
         await db
           .update(workItems)
-          .set({ currentState: targetState, updatedAt: now })
+          .set({ currentState: finalTargetState, updatedAt: now })
           .where(eq(workItems.id, workItemId));
 
         // Post reasoning as a system comment
@@ -291,8 +323,8 @@ export function createMcpServer(context: McpContext): McpServer {
           authorType: "system",
           authorId: context.personaId || null,
           authorName: "Router",
-          content: `State transition: ${fromState} → ${targetState}\n\n${reasoning}`,
-          metadata: { fromState, toState: targetState, reasoning },
+          content: `State transition: ${fromState} → ${finalTargetState}\n\n${reasoning}`,
+          metadata: { fromState, toState: finalTargetState, reasoning },
           createdAt: now,
         });
 
@@ -301,18 +333,18 @@ export function createMcpServer(context: McpContext): McpServer {
           type: "state_change",
           workItemId: workItemId as WorkItemId,
           fromState,
-          toState: targetState,
+          toState: finalTargetState,
           triggeredBy: (context.personaId as PersonaId) || "system",
           timestamp: now.toISOString(),
         });
 
         // Parent-child coordination (non-blocking)
-        checkParentCoordination(workItemId, targetState).catch((err) => {
+        checkParentCoordination(workItemId, finalTargetState).catch((err) => {
           console.error(`Coordination failed for ${workItemId}:`, err);
         });
 
         return {
-          content: [{ type: "text" as const, text: JSON.stringify({ workItemId, fromState, toState: targetState }) }],
+          content: [{ type: "text" as const, text: JSON.stringify({ workItemId, fromState, toState: finalTargetState }) }],
         };
       } catch (err) {
         return {
