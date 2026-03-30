@@ -98,3 +98,25 @@
 *Q.4 (work + rejected + rework + approved):* Work items CRUD route tests — 19 tests via Fastify app.inject(). Found & fixed JSON double-encoding bug in PATCH route (labels, context). Rejected for missing invalid-state-transition test, fixed by adding test documenting route allows Backlog→Done (validation at MCP/workflow level, not route level).
 
 **Key patterns established:** DB mock via getter (`vi.mock("../../db/connection.js", () => ({ get db() { return mockDb.db; } }))`). Agent side-effects mocked (dispatch, coordination, memory). Test DB isolated per test (in-memory SQLite). `vi.hoisted()` for mock functions used in vi.mock factories. `vi.waitFor()` for background async operations. JSON double-encoding bug: Drizzle JSON columns auto-serialize, so manual `JSON.stringify()` causes double-encoding — removed from work-items.ts, personas.ts, executions.ts.
+
+---
+
+## Sprint 9: Q.5–Q.13 (remaining tests) — archived 2026-03-30
+
+*Q.5 (work + review approved):* Persona + persona-assignment route tests — 11 persona tests (CRUD, edge cases), 6 assignment tests (list/filter, upsert). Fixed double-encoding in personas.ts PATCH. 64 tests pass.
+
+*Q.6 (work + review approved):* Comments/executions/proposals route tests — 6 + 7 + 7 = 20 tests. Fixed double-encoding in executions.ts PATCH. 84 tests pass.
+
+*Q.7 (work + review approved):* Work-item-edges route tests — 9 tests (create 3 edge types, list/filter, delete, cycle detection documents no server-side validation). 93 tests pass.
+
+*Q.8 (work + review approved):* Dashboard aggregate route tests — 7 tests (3 empty DB zero baselines + 4 seeded aggregation). 100 tests pass.
+
+*Q.9 (work + review approved):* Concurrency limiter unit tests — 14 tests (canSpawn limits, trackExecution, enqueue, onComplete dequeue with priority + FIFO ordering). 114 tests pass.
+
+*Q.10 (work + review approved):* Parent-child coordination tests — 5 tests (all-done advance, partial no-advance, blocked comment, no double-advance, top-level no-op). 119 tests pass.
+
+*Q.11 (work + review approved):* Dispatch logic tests — 6 tests (spawn on assignment, 3 no-ops, enqueue at limit, spawn under limit). 125 tests pass.
+
+*Q.12 (work + review approved):* MCP tool tests — 10 tests via MCP Client + InMemoryTransport (post_comment, create_children, route_to_state, flag_blocked, list_items, get_context). 135 tests pass.
+
+*Q.13 (work + rejected + rework + approved):* Execution manager lifecycle tests — 10 tests (runExecution create/success/failure, canTransition rate limiting, handleRejection retry/blocked/payload). Initially rejected for no-op rate-limiting test; fixed by exporting `recordTransition` + `clearTransitionLog`. 145 tests pass.

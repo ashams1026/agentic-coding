@@ -159,3 +159,29 @@
 - [x] **Q.11** — Test dispatch logic. 6 tests: spawn on assignment, no-op cases (Backlog/Done/non-existent), concurrency limit enqueue, under-limit spawn. *(completed 2026-03-30)*
 - [x] **Q.12** — Test MCP tool implementations. 10 tests via MCP Client + InMemoryTransport: post_comment, create_children, route_to_state, flag_blocked, list_items, get_context. *(completed 2026-03-30)*
 - [x] **Q.13** — Test execution manager lifecycle. 10 tests: runExecution lifecycle (create/success/failure), canTransition rate limiting (under/at limit, blocking, isolation), handleRejection (retry/blocked/payload). *(completed 2026-03-30)*
+
+---
+
+## Sprint 10: UI Polish & UX Refinements (partial) — completed 2026-03-30
+
+### Design System Tightening
+
+- [x] **P.1** — Standardize typography scale. Semantic text size utilities (`text-page-title`, `text-section-title`, `text-body`, `text-label`, `text-caption`) via Tailwind `@utility` directives. Audited and replaced all `text-[10px]`/`text-[11px]`. *(completed 2026-03-30)*
+- [x] **P.2** — Standardize button and badge sizing. Converged to `sm`/`default` for both. Added CVA `sm` size variant to badge. Removed all `text-[10px]` badge variants. *(completed 2026-03-30)*
+- [x] **P.3** — Audit and fix spacing alignment. Unified page padding `p-6`, card padding `p-4`, filter bar `gap-3`, header spacing `mb-6` across all pages. *(completed 2026-03-30)*
+- [x] **P.4** — Refine color palette for modern feel. 5-layer dark mode surface depth, all colors shifted to 600-level for WCAG AA. Card distinct from background in light mode. *(completed 2026-03-30)*
+
+### Filtering & Sorting Enhancements
+
+- [x] **P.5** — Add text search to work items. Debounced search input (200ms), regex-based highlight, URL param sync (`?q=`). *(completed 2026-03-30)*
+- [x] **P.6** — Add persona and label filters. Multi-select DropdownMenu dropdowns with toggle actions, deterministic label coloring, URL sync (`?personas=`, `?labels=`). *(completed 2026-03-30)*
+- [x] **P.7** — Add sort direction toggle and secondary sort. ArrowUp/ArrowDown toggle, direction multiplier, secondary sort (priority→created, dates→priority), URL sync (`?sortDir=`). *(completed 2026-03-30)*
+
+### Detail Panel Improvements
+
+- [x] **P.8** — Make detail panel resizable. Draggable 4px resize handle, percentage-based width (30-70%), persisted to localStorage via Zustand. *(completed 2026-03-30)*
+- [x] **P.9** — Add visual divider and panel transition. `transition-all duration-200` on open/close, disabled during active resize. Always-rendered DOM pattern for CSS transitions. *(completed 2026-03-30)*
+
+### Tooltips & Micro-Interactions
+
+- [x] **P.10** — Add tooltips across the app. Radix tooltips on state/priority badges, truncated titles, persona avatars, progress bars, view toggles, icon buttons. Global delay 300ms, sideOffset 4. *(completed 2026-03-30)*

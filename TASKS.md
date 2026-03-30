@@ -5,38 +5,11 @@
 
 ---
 
-## Sprint 10: UI Polish & UX Refinements
+## Sprint 10: UI Polish & UX Refinements (continued)
 
-> Design-eyed polish pass. Standardize typography, tighten spacing, add micro-interactions, improve filtering, make the detail panel resizable.
-> Reference the existing design tokens in `index.css` — extend them, don't fight them.
-
-### Design System Tightening
-
-- [x] **P.1** — Standardize typography scale. In `packages/frontend/src/index.css`: define semantic text size tokens as CSS custom properties or Tailwind utilities — `--text-page-title` (text-2xl font-bold), `--text-section-title` (text-lg font-semibold), `--text-body` (text-sm), `--text-label` (text-xs font-medium), `--text-caption` (text-xs text-muted-foreground). Audit and replace all one-off sizes like `text-[10px]` and `text-[11px]` — use `text-caption` or `text-label` instead. Document the scale in a comment block at the top of `index.css`.
-
-- [x] **P.2** — Standardize button and badge sizing. Audit all button sizes across the app — converge on two sizes: `sm` (h-7 text-xs) for inline/compact actions and `default` (h-8 text-sm) for primary actions. Audit badge sizing — converge on two sizes: `sm` (px-1.5 py-0.5 text-xs) for inline badges and `default` (px-2 py-0.5 text-xs) for standalone badges. Remove all `text-[10px]` badge variants. Update `packages/frontend/src/components/ui/button.tsx` and `packages/frontend/src/components/ui/badge.tsx` if needed.
-
-- [x] **P.3** — Audit and fix spacing alignment. Consistent page padding: all pages use `p-6` for outer padding. Consistent section spacing: `space-y-6` between major sections, `space-y-3` within sections. Consistent card padding: `p-4` for all cards. Fix the filter bar gap (currently `gap-2`, should align with button height). Ensure header-to-content spacing is uniform across Dashboard, Work Items, Agent Monitor, Activity Feed, Personas, Settings pages.
-
-- [x] **P.4** — Refine color palette for modern feel. In `packages/frontend/src/index.css`: soften the primary accent — current hsl values may be too saturated for a modern look. Review the card/surface color layering: `background` → `card` → `muted` should have subtle but visible distinction (especially in dark mode). Ensure state badge colors have good contrast against both light and dark card backgrounds. Add a subtle `ring` color token for focus states. Test both light and dark modes for WCAG AA contrast compliance on all text/badge combinations.
-
-### Filtering & Sorting Enhancements
-
-- [x] **P.5** — Add text search to work items. In `packages/frontend/src/features/work-items/filter-bar.tsx`: add a search input (left-most position, with Search icon) that filters work items by title and description text. Debounce input at 200ms. Highlight matching text in list view rows. Store search term in URL params (`?q=`). Clear search with X button or when "Clear filters" is clicked.
-
-- [x] **P.6** — Add persona and label filters. In filter-bar.tsx: add persona filter dropdown (shows persona avatars + names from mock data, multi-select). Add label filter dropdown (shows all unique labels across work items, multi-select with colored pills). Both filter additively (AND with other filters). Update URL params.
-
-- [x] **P.7** — Add sort direction toggle and secondary sort. In filter-bar.tsx: add ascending/descending toggle button next to the sort dropdown (ArrowUp/ArrowDown icon). Add a secondary sort option (e.g., sort by priority then by created date). Persist sort direction in URL params (`?sortDir=asc`).
-
-### Detail Panel Improvements
-
-- [x] **P.8** — Make detail panel resizable. In `packages/frontend/src/pages/work-items.tsx`: replace the fixed `w-2/5` / `w-3/5` split with a draggable divider. Add a 4px vertical resize handle between the list and detail panel (cursor-col-resize, subtle border-l with hover highlight). Track panel width in Zustand (persist to localStorage). Clamp width between 30% and 70% of container. Smooth resize with no layout jank. Show a subtle visual grip indicator on the divider.
-
-- [x] **P.9** — Add visual divider and panel transition. Add a `border-l border-border` between the list pane and detail panel. Animate panel open/close with a slide-in transition (`transition-all duration-200`). When panel closes, list smoothly expands back to full width.
+> P.1–P.10 completed and archived. Remaining tasks below.
 
 ### Tooltips & Micro-Interactions
-
-- [x] **P.10** — Add tooltips across the app. Add tooltips to: truncated work item titles in list view (show full title), priority badges (show "Priority: Critical/High/Medium/Low"), state badges (show "State: [name]"), persona avatars (show persona name + model), progress bars (show "X of Y children done"), view toggle buttons (show "List view" / "Flow view"), all icon-only buttons (quick add, close panel, filter clear). Use consistent tooltip styling: `sideOffset={4}`, delay 300ms.
 
 - [ ] **P.11** — Add loading and empty states. Add skeleton loading states to: work items list (5 shimmer rows), detail panel (header + content skeleton), flow view (node placeholders), dashboard cards (number placeholder shimmer). Add empty states with helpful messaging to: work items list when no items exist ("No work items yet. Click + to create one."), filtered list with no matches ("No items match your filters."), detail panel children section ("No children. Click 'Add child' or 'Decompose'."), comment stream when empty ("No comments yet.").
 
