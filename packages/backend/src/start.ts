@@ -8,6 +8,7 @@ import { executions, workItems } from "./db/schema.js";
 import { clearAll as clearConcurrency, getActiveCount } from "./agent/concurrency.js";
 import { clearTransitionLog } from "./agent/execution-manager.js";
 import { closeAllClients } from "./ws.js";
+import { logger } from "./logger.js";
 
 const SHUTDOWN_TIMEOUT_MS = 30_000;
 
@@ -62,9 +63,9 @@ export async function recoverOrphanedState(): Promise<RecoveryReport> {
     if (orphaned.length > 0) {
       // Log each orphaned execution
       for (const exec of orphaned) {
-        console.log(
-          `  Recovery: resetting execution ${exec.id} (${exec.status}) ` +
-          `for work item ${exec.workItemId}, persona ${exec.personaId}`,
+        logger.info(
+          { executionId: exec.id, status: exec.status, workItemId: exec.workItemId, personaId: exec.personaId },
+          "Recovery: resetting orphaned execution",
         );
       }
 
@@ -104,9 +105,9 @@ export async function recoverOrphanedState(): Promise<RecoveryReport> {
           );
 
         for (const item of items) {
-          console.log(
-            `  Recovery: work item ${item.id} "${item.title}" ` +
-            `remains in state "${item.currentState}" (no change)`,
+          logger.info(
+            { workItemId: item.id, title: item.title, currentState: item.currentState },
+            "Recovery: work item remains in current state (no change)",
           );
         }
       }
@@ -114,7 +115,7 @@ export async function recoverOrphanedState(): Promise<RecoveryReport> {
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     report.errors.push(message);
-    console.error(`Recovery error: ${message}`);
+    logger.error({ err: message }, "Recovery error");
   }
 
   // Always clear in-memory state, even if DB recovery failed
@@ -210,14 +211,15 @@ export async function startServer(options: StartOptions = {}): Promise<void> {
   // Production-grade crash recovery
   const recovery = await recoverOrphanedState();
   if (recovery.executionsReset > 0) {
-    console.log(
-      `Startup recovery: reset ${recovery.executionsReset} orphaned execution(s), ` +
-      `${recovery.affectedWorkItems.length} work item(s) affected`,
+    logger.info(
+      { executionsReset: recovery.executionsReset, affectedWorkItems: recovery.affectedWorkItems.length },
+      "Startup recovery: reset orphaned executions",
     );
   }
   if (recovery.errors.length > 0) {
-    console.error(
-      `Startup recovery completed with ${recovery.errors.length} error(s)`,
+    logger.error(
+      { errorCount: recovery.errors.length, errors: recovery.errors },
+      "Startup recovery completed with errors",
     );
   }
 

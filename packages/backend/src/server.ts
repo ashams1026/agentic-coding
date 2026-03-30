@@ -10,16 +10,11 @@ import { proposalRoutes } from "./routes/proposals.js";
 import { dashboardRoutes } from "./routes/dashboard.js";
 import { registerWebSocket } from "./ws.js";
 import { getActiveCount } from "./agent/concurrency.js";
+import { loggerConfig } from "./logger.js";
 
 export async function buildServer() {
   const server = Fastify({
-    logger: {
-      level: "info",
-      transport: {
-        target: "pino-pretty",
-        options: { colorize: true },
-      },
-    },
+    logger: loggerConfig,
   });
 
   // CORS — allow frontend dev server

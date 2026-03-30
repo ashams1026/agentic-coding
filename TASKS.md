@@ -40,7 +40,7 @@
 
 ### Logging & Observability
 
-- [ ] **S.7** — Set up structured logging. Replace all `console.log` in the backend with pino logger (already a Fastify default — expose it globally). Log levels: `info` for lifecycle events (server start, execution start/complete, state transitions), `warn` for rate limits hit and cost cap blocks, `error` for execution failures and unhandled errors. Add request logging via Fastify's built-in pino integration. Write logs to `~/.agentops/logs/agentops.log` with daily rotation (keep 7 days). In dev mode: pretty-print to stdout via `pino-pretty`.
+- [review] **S.7** — Set up structured logging. Replace all `console.log` in the backend with pino logger (already a Fastify default — expose it globally). Log levels: `info` for lifecycle events (server start, execution start/complete, state transitions), `warn` for rate limits hit and cost cap blocks, `error` for execution failures and unhandled errors. Add request logging via Fastify's built-in pino integration. Write logs to `~/.agentops/logs/agentops.log` with daily rotation (keep 7 days). In dev mode: pretty-print to stdout via `pino-pretty`.
 
 - [ ] **S.8** — Add execution audit trail. Create a lightweight audit log: every state transition, every agent dispatch, every cost event gets a one-line structured log entry with timestamp, workItemId, action, actor (persona or user), and outcome. Store in a separate `~/.agentops/logs/audit.log` file. Add `GET /api/audit?workItemId=&limit=` endpoint for querying. This is the "what happened and when" trail for debugging agent behavior.
 

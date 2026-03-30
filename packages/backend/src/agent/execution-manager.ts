@@ -23,6 +23,7 @@ import { runRouter } from "./router.js";
 import { dispatchForState } from "./dispatch.js";
 import { trackExecution, onComplete, getProjectCostSummary } from "./concurrency.js";
 import type { AgentTask, AgentEvent } from "./types.js";
+import { logger } from "../logger.js";
 
 // ── Singleton executor ────────────────────────────────────────────
 
@@ -289,7 +290,7 @@ export async function runExecution(
     personaEntity,
     projectEntity,
   ).catch((err) => {
-    console.error(`Execution ${executionId} failed:`, err);
+    logger.error({ err, executionId }, "Execution failed");
   });
 
   return executionId as ExecutionId;
@@ -388,14 +389,14 @@ async function runExecutionStream(
         timestamp: new Date().toISOString(),
       });
     }).catch((err) => {
-      console.error("Cost summary broadcast failed:", err);
+      logger.error({ err }, "Cost summary broadcast failed");
     });
 
     // Release concurrency slot and dequeue next task
     const nextTask = onComplete(executionId);
     if (nextTask) {
       runExecution(nextTask.workItemId, nextTask.personaId).catch((err) => {
-        console.error(`Dequeued execution failed for ${nextTask.workItemId}:`, err);
+        logger.error({ err, workItemId: nextTask.workItemId }, "Dequeued execution failed");
       });
     }
 
@@ -411,13 +412,13 @@ async function runExecutionStream(
           .where(eq(workItems.id, task.workItemId));
         if (updated) {
           dispatchForState(task.workItemId, updated.currentState).catch((err) => {
-            console.error(`Dispatch after routing failed for ${task.workItemId}:`, err);
+            logger.error({ err, workItemId: task.workItemId }, "Dispatch after routing failed");
           });
         }
       } else {
         // Regular persona completed — run the router to decide next state
         runRouter(task.workItemId).catch((err) => {
-          console.error(`Router failed for ${task.workItemId}:`, err);
+          logger.error({ err, workItemId: task.workItemId }, "Router failed");
         });
       }
     }
@@ -452,7 +453,7 @@ async function runExecutionStream(
     const nextTask = onComplete(executionId);
     if (nextTask) {
       runExecution(nextTask.workItemId, nextTask.personaId).catch((e) => {
-        console.error(`Dequeued execution failed for ${nextTask.workItemId}:`, e);
+        logger.error({ err: e, workItemId: nextTask.workItemId }, "Dequeued execution failed");
       });
     }
   }

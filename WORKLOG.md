@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-30 — S.7: Set up structured logging
+
+**Task:** Replace all `console.log/error` in the backend server code with pino structured logger. Daily rotation to file in production, pino-pretty to stdout in dev.
+
+**Done:**
+- **`packages/backend/src/logger.ts`** (new) — Global logger module. Exports:
+  - `logger` — standalone pino instance for application code (start.ts, agent modules)
+  - `loggerConfig` — Fastify-compatible config object (avoids `loggerInstance` type issues)
+  - Dev: `pino-pretty` to stdout. Production: `pino-roll` to `~/.agentops/logs/agentops.log` (daily rotation, 7-day retention) + stdout.
+- **`packages/backend/src/server.ts`** — Replaced inline logger config with `loggerConfig` from logger.ts.
+- **`packages/backend/src/start.ts`** — Replaced 5 `console.log/error` calls with structured `logger.info/error` (includes context objects: executionId, workItemId, etc.)
+- **`packages/backend/src/agent/execution-manager.ts`** — Replaced 5 `console.error` calls with `logger.error`
+- **`packages/backend/src/agent/memory.ts`** — Replaced 4 `console.error` calls with `logger.error`
+- **`packages/backend/src/agent/mcp-server.ts`** — Replaced 3 `console.error` calls with `logger.error`
+- **`packages/backend/src/agent/coordination.ts`** — Replaced 1 `console.error` call with `logger.error`
+- Installed `pino` (direct dependency) and `pino-roll` (file rotation transport)
+- Kept `console.log` in CLI scripts (`cli.ts`, `db/seed.ts`, `db/migrate.ts`) — user-facing terminal output, not structured logging.
+
+**Files created:** `packages/backend/src/logger.ts`
+**Files modified:** `server.ts`, `start.ts`, `agent/execution-manager.ts`, `agent/memory.ts`, `agent/mcp-server.ts`, `agent/coordination.ts`, `packages/backend/package.json`
+
+**Notes:** Build: 0 errors. Tests: 159/159. Used `loggerConfig` (not `loggerInstance`) for Fastify to avoid type incompatibility between pino's `Logger` type and Fastify's `FastifyBaseLogger`. Structured log calls include context objects (e.g., `{ err, workItemId }`) for better searchability.
+
+---
+
 ## 2026-03-30 — Review: S.6 (approved)
 
 **Reviewed:** pm2 startup integration — `cli.ts`.

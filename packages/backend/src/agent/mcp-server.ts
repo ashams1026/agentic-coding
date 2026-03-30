@@ -20,6 +20,7 @@ import { broadcast } from "../ws.js";
 import { checkParentCoordination } from "./coordination.js";
 import { checkMemoryGeneration, getRecentMemories } from "./memory.js";
 import { handleRejection } from "./execution-manager.js";
+import { logger } from "../logger.js";
 
 // ── Context passed to the MCP server ────────────────────────────
 
@@ -341,12 +342,12 @@ export function createMcpServer(context: McpContext): McpServer {
 
         // Parent-child coordination (non-blocking)
         checkParentCoordination(workItemId, finalTargetState).catch((err) => {
-          console.error(`Coordination failed for ${workItemId}:`, err);
+          logger.error({ err, workItemId }, "Coordination failed");
         });
 
         // Project memory generation (non-blocking)
         checkMemoryGeneration(workItemId, finalTargetState).catch((err) => {
-          console.error(`Memory generation failed for ${workItemId}:`, err);
+          logger.error({ err, workItemId }, "Memory generation failed");
         });
 
         return {
@@ -531,7 +532,7 @@ export function createMcpServer(context: McpContext): McpServer {
 
         // Parent-child coordination (non-blocking)
         checkParentCoordination(workItemId, "Blocked").catch((err) => {
-          console.error(`Coordination failed for ${workItemId}:`, err);
+          logger.error({ err, workItemId }, "Coordination failed");
         });
 
         return {

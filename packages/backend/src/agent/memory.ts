@@ -15,6 +15,7 @@ import {
   projectMemories,
 } from "../db/schema.js";
 import { createId } from "@agentops/shared";
+import { logger } from "../logger.js";
 
 const CONSOLIDATION_THRESHOLD = 50;
 const DEFAULT_TOKEN_BUDGET = 1000;
@@ -50,7 +51,7 @@ export async function checkMemoryGeneration(
   // Generate in background — don't block the state transition
   generateMemory(workItemId, item.projectId, item.title, item.description).catch(
     (err) => {
-      console.error(`Memory generation failed for ${workItemId}:`, err);
+      logger.error({ err, workItemId }, "Memory generation failed");
     },
   );
 }
@@ -142,7 +143,7 @@ async function generateMemory(
 
   // Check if consolidation is needed
   consolidateIfNeeded(projectId).catch((err) => {
-    console.error(`Memory consolidation failed for project ${projectId}:`, err);
+    logger.error({ err, projectId }, "Memory consolidation failed");
   });
 }
 
@@ -213,7 +214,7 @@ async function callHaikuSummarizer(context: string): Promise<SummaryResult> {
       keyDecisions: Array.isArray(parsed.keyDecisions) ? parsed.keyDecisions : [],
     };
   } catch (err) {
-    console.error("Haiku summarizer failed:", err);
+    logger.error({ err }, "Haiku summarizer failed");
     return fallback;
   }
 }
@@ -375,7 +376,7 @@ async function callConsolidator(context: string): Promise<SummaryResult> {
       keyDecisions: Array.isArray(parsed.keyDecisions) ? parsed.keyDecisions : [],
     };
   } catch (err) {
-    console.error("Consolidation summarizer failed:", err);
+    logger.error({ err }, "Consolidation summarizer failed");
     return fallback;
   }
 }
