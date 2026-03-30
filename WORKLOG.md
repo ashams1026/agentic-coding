@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — PS.9: Audit backend routes for project scoping
+
+**Task:** Audit all backend list routes for `?projectId=` query param support.
+
+**Done — Verification pass (no fixes needed):**
+All 8 routes already have proper `?projectId=` filtering, implemented in PS.3–PS.5:
+- `GET /api/work-items` — filters via `eq(workItems.projectId, projectId)` (PS.3)
+- `GET /api/executions` — fetches project work items, filters by ID membership (PS.5)
+- `GET /api/comments` — same membership pattern (PS.5)
+- `GET /api/proposals` — same membership pattern (PS.5)
+- `GET /api/dashboard/stats` — filters work items + executions + proposals (PS.4)
+- `GET /api/dashboard/cost-summary` — filters executions by project (PS.4)
+- `GET /api/dashboard/execution-stats` — filters executions by project (PS.4)
+- `GET /api/dashboard/ready-work` — filters via `eq(workItems.projectId)` + `and()` (PS.4)
+
+**Files modified:** None (audit only — `TASKS.md` and `WORKLOG.md` updated)
+
+**Notes:** `GET /api/audit` (not in task scope) uses file-based JSONL storage and only supports `workItemId` filter. Could be enhanced later if needed.
+
+---
+
 ## 2026-03-30 — Review: PS.10 (approved)
 
 **Reviewed:** Folder browser for project creation/edit form.
