@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: E.1 (approved)
+
+**Reviewed:** API client response parsing and error handling — `client.ts`.
+- Response shape audit: all list endpoints `{ data, total }` unwrapped correctly ✓
+- Single-entity endpoints `{ data }` unwrapped correctly ✓
+- Dashboard flat endpoints (stats, cost-summary, execution-stats) read directly ✓
+- JSON columns auto-deserialized by Drizzle, no manual parsing needed ✓
+- `showErrorToast()` via `useToastStore.getState().addToast()` — correct external Zustand access ✓
+- All 5 helpers (get/post/patch/put/del) fire toast before throwing ✓
+- `del` fires toast but returns `res.ok` (no throw) — consistent with existing contract ✓
+- Build: 0 errors, 145 tests pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — E.1: Fix API client response parsing
 
 **Task:** Audit API client response shapes vs backend routes. Add error handling with toast notifications on failure.
