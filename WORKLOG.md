@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: U.9 (approved)
+
+**Reviewed:** Bottom padding fix — `root-layout.tsx`.
+- `pb-8` added to `<main>` element ✓
+- 32px padding clears the StatusBar below ✓
+- Single-line change, no side effects ✓
+- Frontend build: 0 errors
+- **Sprint 7 is now complete** — all 9 tasks approved
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — U.9: Fix bottom padding for status bar
 
 **Task:** Add bottom padding to `<main>` so content doesn't get clipped behind the StatusBar.
