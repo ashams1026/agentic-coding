@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-29 — Review: O.2 (approved)
+
+**Reviewed:** Hardcoded workflow constant — `workflow.ts`, `index.ts`.
+- All 7 requirements met: WORKFLOW constant with 8 states, transitions map, 3 helper functions, WorkflowState type
+- Transitions verified against PLANNING.md — all 8 entries match exactly
+- `as const satisfies` pattern is correct for preserving literal types
+- Blocked→[previous state] correctly mapped to all states that can transition to Blocked
+- Shared package typecheck passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — O.2: Add hardcoded workflow constant
 
 **Task:** Create `packages/shared/src/workflow.ts` with WORKFLOW constant, helpers, and types.
