@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: T3.3.3 (approved)
+
+**Reviewed:** API mode toggle — `src/api/index.ts`, `stores/ui-store.ts`, 8 hook files.
+- `apiMode` added to Zustand UI store with persistence, default "mock"
+- `ApiMode` type exported for reuse
+- Unified API layer uses `pick()` to delegate per-call based on store state
+- All 32 functions wrapped with proper Parameters<typeof> typing
+- All 8 hook files updated from `@/mocks/api` to `@/api`
+- Zero stale `@/mocks/api` imports in hooks
+- Frontend typecheck: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T3.3.3: Add API mode toggle to frontend
 
 **Task:** Wire up mock/real API switching so hooks can use either backend.
