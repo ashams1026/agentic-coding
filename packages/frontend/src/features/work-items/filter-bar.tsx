@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Search, X, Bot } from "lucide-react";
+import { Search, X, Bot, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -53,6 +53,7 @@ export function FilterBar() {
     searchQuery,
     groupBy,
     sortBy,
+    sortDir,
     filterState,
     filterPriority,
     filterPersonas,
@@ -60,6 +61,7 @@ export function FilterBar() {
     setSearchQuery,
     setGroupBy,
     setSortBy,
+    toggleSortDir,
     setFilterState,
     setFilterPriority,
     toggleFilterPersona,
@@ -261,19 +263,34 @@ export function FilterBar() {
       </Select>
 
       {/* Sort by */}
-      <Select
-        value={sortBy}
-        onValueChange={(v) => setSortBy(v as SortBy)}
-      >
-        <SelectTrigger className="w-[130px] h-8 text-xs">
-          <SelectValue placeholder="Sort by" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="priority">Sort by priority</SelectItem>
-          <SelectItem value="created">Sort by created</SelectItem>
-          <SelectItem value="updated">Sort by updated</SelectItem>
-        </SelectContent>
-      </Select>
+      <div className="flex items-center gap-0.5">
+        <Select
+          value={sortBy}
+          onValueChange={(v) => setSortBy(v as SortBy)}
+        >
+          <SelectTrigger className="w-[130px] h-8 text-xs">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="priority">Sort by priority</SelectItem>
+            <SelectItem value="created">Sort by created</SelectItem>
+            <SelectItem value="updated">Sort by updated</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0 shrink-0"
+          onClick={toggleSortDir}
+          title={sortDir === "asc" ? "Ascending" : "Descending"}
+        >
+          {sortDir === "asc" ? (
+            <ArrowUp className="h-3.5 w-3.5" />
+          ) : (
+            <ArrowDown className="h-3.5 w-3.5" />
+          )}
+        </Button>
+      </div>
 
       {/* Clear filters */}
       {hasFilters && (

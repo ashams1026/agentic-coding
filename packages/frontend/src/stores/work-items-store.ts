@@ -5,11 +5,13 @@ import type { WorkItemId } from "@agentops/shared";
 export type WorkItemView = "list" | "flow";
 export type GroupBy = "none" | "state" | "parent" | "priority";
 export type SortBy = "priority" | "created" | "updated";
+export type SortDir = "asc" | "desc";
 
 interface WorkItemsState {
   view: WorkItemView;
   groupBy: GroupBy;
   sortBy: SortBy;
+  sortDir: SortDir;
   selectedItemId: WorkItemId | null;
 
   // Filters
@@ -23,6 +25,8 @@ interface WorkItemsState {
   setView: (view: WorkItemView) => void;
   setGroupBy: (groupBy: GroupBy) => void;
   setSortBy: (sortBy: SortBy) => void;
+  setSortDir: (sortDir: SortDir) => void;
+  toggleSortDir: () => void;
   setSelectedItemId: (id: WorkItemId | null) => void;
   setSearchQuery: (query: string) => void;
   setFilterState: (state: string | null) => void;
@@ -39,6 +43,7 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       view: "list",
       groupBy: "state",
       sortBy: "priority",
+      sortDir: "asc",
       selectedItemId: null,
 
       searchQuery: "",
@@ -51,6 +56,9 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       setView: (view) => set({ view }),
       setGroupBy: (groupBy) => set({ groupBy }),
       setSortBy: (sortBy) => set({ sortBy }),
+      setSortDir: (sortDir) => set({ sortDir }),
+      toggleSortDir: () =>
+        set((state) => ({ sortDir: state.sortDir === "asc" ? "desc" : "asc" })),
       setSelectedItemId: (id) => set({ selectedItemId: id }),
       setSearchQuery: (searchQuery) => set({ searchQuery }),
       setFilterState: (filterState) => set({ filterState }),
@@ -84,6 +92,7 @@ export const useWorkItemsStore = create<WorkItemsState>()(
         view: state.view,
         groupBy: state.groupBy,
         sortBy: state.sortBy,
+        sortDir: state.sortDir,
       }),
     },
   ),

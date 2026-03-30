@@ -19,7 +19,7 @@ const viewOptions: { value: WorkItemView; label: string; icon: typeof List }[] =
 export function WorkItemsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const store = useWorkItemsStore();
-  const { view, setView, searchQuery, setSearchQuery, filterPersonas, filterLabels, selectedItemId } = store;
+  const { view, setView, searchQuery, setSearchQuery, sortDir, setSortDir, filterPersonas, filterLabels, selectedItemId } = store;
   const createWorkItem = useCreateWorkItem();
 
   // Sync URL params → store on mount
@@ -44,6 +44,10 @@ export function WorkItemsPage() {
         if (label && !store.filterLabels.includes(label)) store.toggleFilterLabel(label);
       }
     }
+    const urlSortDir = searchParams.get("sortDir");
+    if (urlSortDir && (urlSortDir === "asc" || urlSortDir === "desc")) {
+      setSortDir(urlSortDir);
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync store → URL params
@@ -55,8 +59,10 @@ export function WorkItemsPage() {
     if (filterPersonas.length > 0) next.set("personas", filterPersonas.join(",")); else next.delete("personas");
     // labels
     if (filterLabels.length > 0) next.set("labels", filterLabels.join(",")); else next.delete("labels");
+    // sort direction
+    if (sortDir !== "asc") next.set("sortDir", sortDir); else next.delete("sortDir");
     setSearchParams(next, { replace: true });
-  }, [searchQuery, filterPersonas, filterLabels]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchQuery, filterPersonas, filterLabels, sortDir]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync URL params when view changes
   const handleViewChange = (newView: WorkItemView) => {

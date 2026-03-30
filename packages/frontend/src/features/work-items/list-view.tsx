@@ -248,7 +248,7 @@ export function ListView() {
   const { data: allItems, isLoading } = useWorkItems();
   const { data: personas } = usePersonas();
   const { data: executions } = useExecutions();
-  const { searchQuery, groupBy, sortBy, filterState, filterPriority, filterPersonas, filterLabels, selectedItemId, setSelectedItemId } =
+  const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterPersonas, filterLabels, selectedItemId, setSelectedItemId } =
     useWorkItemsStore();
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -308,14 +308,21 @@ export function ListView() {
     return items;
   }, [allItems, filterState, filterPriority, filterPersonas, filterLabels, searchQuery]);
 
-  // Sort function
+  // Sort function with direction and secondary sort
   const sortItems = (items: WorkItem[]): WorkItem[] => {
     const priorityOrder = { p0: 0, p1: 1, p2: 2, p3: 3 };
+    const dir = sortDir === "asc" ? 1 : -1;
     return [...items].sort((a, b) => {
-      if (sortBy === "priority") return priorityOrder[a.priority] - priorityOrder[b.priority];
-      if (sortBy === "created") return b.createdAt.localeCompare(a.createdAt);
-      if (sortBy === "updated") return b.updatedAt.localeCompare(a.updatedAt);
-      return 0;
+      let primary = 0;
+      if (sortBy === "priority") primary = priorityOrder[a.priority] - priorityOrder[b.priority];
+      else if (sortBy === "created") primary = a.createdAt.localeCompare(b.createdAt);
+      else if (sortBy === "updated") primary = a.updatedAt.localeCompare(b.updatedAt);
+
+      if (primary !== 0) return primary * dir;
+
+      // Secondary sort: priority → created, date sorts → priority
+      if (sortBy === "priority") return a.createdAt.localeCompare(b.createdAt) * dir;
+      return (priorityOrder[a.priority] - priorityOrder[b.priority]) * dir;
     });
   };
 

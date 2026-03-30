@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — P.7: Add sort direction toggle and secondary sort
+
+**Task:** Add ascending/descending toggle button next to sort dropdown. Add secondary sort. Persist sort direction in URL params.
+
+**Done:**
+- **Store**: Added `sortDir: SortDir` ("asc" | "desc"), `setSortDir`, and `toggleSortDir` actions. Persisted `sortDir` in `partialize`.
+- **Filter bar**: Added ArrowUp/ArrowDown toggle button next to sort dropdown. Uses `toggleSortDir` on click.
+- **List view**: Updated `sortItems` to apply direction multiplier. Changed date sorts to ascending-natural (a.localeCompare(b)) with direction applied on top. Added secondary sort: priority→created date, date sorts→priority.
+- **URL params**: Added `?sortDir=desc` sync (omits param when "asc" since that's the default). Reads on mount.
+
+**Files modified:** `work-items-store.ts`, `filter-bar.tsx`, `list-view.tsx`, `work-items.tsx`
+
+**Notes:** Build: 0 errors. Removed unused `SortDir` type import from filter-bar (only used in store). Default sort direction is "asc" — for priority that means P0 first, for dates that means oldest first.
+
+---
+
 ## 2026-03-30 — Review: P.6 (approved)
 
 **Reviewed:** Persona and label multi-select filters — `work-items-store.ts`, `filter-bar.tsx`, `list-view.tsx`, `work-items.tsx`.
