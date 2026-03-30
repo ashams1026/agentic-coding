@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — Review: D.9 (approved)
+
+**Reviewed:** Configuration and deployment documentation — config, CLI, pm2, logging, database, shutdown, recovery.
+- AgentOpsConfig: 4 fields match `config.ts:17-22` ✓
+- Defaults: port=3001, dbPath=~/.agentops/data/agentops.db, logLevel="info", anthropicApiKey="" match `config.ts:24-29` ✓
+- Resolution order: env → file → defaults, null coalescing chain in loadConfig() ✓
+- 5 env vars: PORT, AGENTOPS_DB_PATH, DATABASE_URL, LOG_LEVEL, ANTHROPIC_API_KEY match `config.ts:59-74` ✓
+- 10 CLI commands: all match switch statement in `cli.ts:285-326` ✓
+- start: PID write, duplicate check, startServer ✓; stop: SIGTERM + removePid ✓; status: health + dashboard stats ✓
+- dev: tsx watch ✓; config: loadConfig + masked key ✓; config set: setConfigValue ✓
+- install: pm2 start+save+startup ✓; uninstall: stop+delete+unstartup+save ✓; logs: --lines 100 ✓; restart ✓
+- pm2 ecosystem: name, script, env, log paths, max_restarts=3, min_uptime=60s, kill_timeout=35000 match `ecosystem.config.cjs` ✓
+- Logging: dev pino-pretty (NODE_ENV !== production), prod pino-roll daily 7-day + stdout match `logger.ts` ✓
+- Graceful shutdown: 5 steps, SHUTDOWN_TIMEOUT_MS=30000 match `start.ts:154-192` ✓
+- Crash recovery: find running/pending → failed "Interrupted by server restart" → clear concurrency match `start.ts:36-126` ✓
+- Source files: 5 files ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — D.9: Document configuration and deployment
 
 **Task:** Create `docs/deployment.md` with directory structure, config file, env vars, pm2, CLI commands, logging, database, dev vs prod.
