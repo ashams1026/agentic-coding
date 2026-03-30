@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: E.10 (approved)
+
+**Reviewed:** Startup cleanup — `index.ts`, `concurrency.ts`, `startup-cleanup.test.ts`.
+- `cleanupOrphanedState()` runs after migrations, before server start ✓
+- Bulk update `running`→`failed` with completedAt/summary/outcome ✓
+- `clearAll()` clears both activeExecutions Set and queue array ✓
+- `clearTransitionLog()` reused from execution-manager ✓
+- Work items intentionally NOT reset — correct design (avoid state ambiguity) ✓
+- Logs only when cleanedUp > 0 ✓
+- 3 tests: orphaned reset, clearAll, clearTransitionLog ✓
+- Build: 0 errors, Tests: 156/156
+- Verdict: **approved** — Sprint 11 complete!
+
+---
+
 ## 2026-03-30 — E.10: Handle stale execution cleanup on server restart
 
 **Task:** On server startup, reset orphaned `running` executions to `failed`, clear in-memory concurrency/transition state.

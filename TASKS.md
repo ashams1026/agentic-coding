@@ -13,7 +13,7 @@
 
 - [x] **E.9** — Add execution error handling and UI feedback. When an agent execution fails: verify the execution record is updated to `failed` in DB, verify the failure is broadcast via WS, verify the agent monitor shows the error state, verify the work item does NOT advance state. Add a toast notification on execution failure visible from any page. Add a "retry" button in the detail panel for failed executions.
 
-- [review] **E.10** — Handle stale execution cleanup on server restart. In `packages/backend/src/index.ts` (after migrations, before server start): query for any executions with status `running` — these are orphaned from a previous crash. Update them to `failed` with summary "Interrupted by server restart". Reset any work items that were mid-transition. Clear the in-memory concurrency tracker. Log the cleanup count.
+- [x] **E.10** — Handle stale execution cleanup on server restart. In `packages/backend/src/index.ts` (after migrations, before server start): query for any executions with status `running` — these are orphaned from a previous crash. Update them to `failed` with summary "Interrupted by server restart". Reset any work items that were mid-transition. Clear the in-memory concurrency tracker. Log the cleanup count.
 
 ---
 
