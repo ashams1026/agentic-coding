@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — Review: P.6 (approved)
+
+**Reviewed:** Persona and label multi-select filters — `work-items-store.ts`, `filter-bar.tsx`, `list-view.tsx`, `work-items.tsx`.
+- Store: array-based `filterPersonas`/`filterLabels` with toggle actions, correctly excluded from localStorage ✓
+- Filter bar: DropdownMenu + CheckboxItem pattern for both persona and label dropdowns ✓
+- Persona dropdown shows avatar color dots + names from mock data ✓
+- Label dropdown uses deterministic hash-based coloring over 10-color palette ✓
+- Badge count indicators when filters active ✓
+- List view filtering: persona filter AND with other filters, label filter OR within labels ✓
+- URL param sync: bidirectional `?personas=` and `?labels=` (comma-separated) ✓
+- clearFilters resets both arrays ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — P.6: Add persona and label filters
 
 **Task:** Add multi-select persona and label filter dropdowns to the filter bar. Filter additively (AND) with other filters. Update URL params.
