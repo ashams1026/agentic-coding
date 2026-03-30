@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: E.5 (approved)
+
+**Reviewed:** Realistic pipeline seed — `seed.ts`, `router.ts`, `execution-manager.ts`.
+- Project has `autoRouting: true` ✓
+- 5 personas with detailed system prompts (PM, Tech Lead, Engineer, Code Reviewer, Router) ✓
+- Persona assignments for 5 workflow states ✓
+- Router persona matches `getOrCreateRouterPersona` fallback (color, icon, isSystem) ✓
+- Router executions (EXEC_9, EXEC_10) show routing decisions ✓
+- `__router__` → `"Router"` rename consistent across all files ✓
+- Comment authorNames match new persona names ✓
+- Build: 0 errors, Tests: 145/145
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — E.5: Create development seed with realistic pipeline data
 
 **Task:** Update seed.ts with autoRouting, 5 personas with real system prompts, persona assignments for all workflow states, and realistic pipeline data.
