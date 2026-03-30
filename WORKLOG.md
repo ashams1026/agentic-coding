@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — Q.7: Test work-item-edges routes
+
+**Task:** Integration tests for work-item-edges CRUD routes, including cycle detection.
+
+**Done:**
+- Created `packages/backend/src/routes/__tests__/work-item-edges.test.ts` with 9 tests:
+  - GET list all, filter by workItemId (matches from OR to), empty for no edges
+  - POST create depends_on, blocks, related_to edges
+  - DELETE edge (verify total decreased), 404 for non-existent
+  - Cycle detection: documents that route allows creating A→B→C→A cycle (no server-side cycle detection implemented)
+- Seeded edges: we-test001 (1A blocks 1B), we-test002 (1B depends_on 1C) — used for filter and cycle tests
+
+**Files created:** `packages/backend/src/routes/__tests__/work-item-edges.test.ts`
+
+**Notes:** Build: 0 errors, 93 tests pass. No route modifications needed. Cycle detection test follows same pattern as Q.4's invalid transition test — documents actual behavior (no validation at route level).
+
+---
+
 ## 2026-03-30 — Review: Q.6 (approved)
 
 **Reviewed:** Comments, executions, and proposals route tests.
