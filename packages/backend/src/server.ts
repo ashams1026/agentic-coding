@@ -1,5 +1,6 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import { projectRoutes } from "./routes/projects.js";
 import { workItemRoutes } from "./routes/work-items.js";
 import { personaAssignmentRoutes } from "./routes/persona-assignments.js";
 import { workItemEdgeRoutes } from "./routes/work-item-edges.js";
@@ -49,6 +50,7 @@ export async function buildServer() {
   await registerWebSocket(server);
 
   // API routes
+  await projectRoutes(server);
   await workItemRoutes(server);
   await personaAssignmentRoutes(server);
   await workItemEdgeRoutes(server);

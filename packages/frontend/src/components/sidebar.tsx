@@ -17,7 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
 import { useActivityStore } from "@/stores/activity-store";
-import { useExecutions, useDashboardStats } from "@/hooks";
+import { useExecutions, useDashboardStats, useProjects } from "@/hooks";
 import { Button } from "@/components/ui/button";
 import {
   Tooltip,
@@ -50,6 +50,7 @@ export function Sidebar() {
   const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, setMobileSidebarOpen, theme, setTheme } = useUIStore();
   const { data: executions } = useExecutions();
   const { data: dashboardStats } = useDashboardStats();
+  const { data: projectsList } = useProjects();
   const activeAgentCount = executions?.filter((e) => e.status === "running").length ?? 0;
   const pendingProposalCount = dashboardStats?.pendingProposals ?? 0;
   const unreadActivityCount = useActivityStore((s) => s.unreadCount);
@@ -76,15 +77,23 @@ export function Sidebar() {
                 <FolderOpen className="h-4 w-4" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">AgentOps</TooltipContent>
+            <TooltipContent side="right">
+              {projectsList?.[0]?.name ?? "AgentOps"}
+            </TooltipContent>
           </Tooltip>
         ) : (
-          <Select defaultValue="agentops">
+          <Select defaultValue={projectsList?.[0]?.id ?? "none"}>
             <SelectTrigger className="h-8 w-full">
-              <SelectValue />
+              <SelectValue placeholder="No projects" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="agentops">AgentOps</SelectItem>
+              {projectsList && projectsList.length > 0 ? (
+                projectsList.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                ))
+              ) : (
+                <SelectItem value="none" disabled>No projects</SelectItem>
+              )}
             </SelectContent>
           </Select>
         )}

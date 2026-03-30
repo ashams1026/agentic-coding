@@ -134,22 +134,28 @@ export function ProjectsSection() {
 
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<ProjectId | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
 
   const handleCreate = (data: { name: string; path: string }) => {
-    createProject.mutate({
-      name: data.name,
-      path: data.path,
-    });
-    setShowAddForm(false);
+    setFormError(null);
+    createProject.mutate(
+      { name: data.name, path: data.path },
+      {
+        onSuccess: () => setShowAddForm(false),
+        onError: (err) => setFormError(err instanceof Error ? err.message : "Failed to create project"),
+      },
+    );
   };
 
   const handleUpdate = (id: ProjectId, data: { name: string; path: string }) => {
-    updateProject.mutate({
-      id,
-      name: data.name,
-      path: data.path,
-    });
-    setEditingId(null);
+    setFormError(null);
+    updateProject.mutate(
+      { id, name: data.name, path: data.path },
+      {
+        onSuccess: () => setEditingId(null),
+        onError: (err) => setFormError(err instanceof Error ? err.message : "Failed to update project"),
+      },
+    );
   };
 
   const handleDelete = (id: ProjectId) => {
@@ -178,9 +184,15 @@ export function ProjectsSection() {
         <>
           <ProjectForm
             onSubmit={handleCreate}
-            onCancel={() => setShowAddForm(false)}
+            onCancel={() => { setShowAddForm(false); setFormError(null); }}
             submitLabel="Add project"
           />
+          {formError && (
+            <p className="text-xs text-destructive flex items-center gap-1.5">
+              <AlertCircle className="h-3 w-3" />
+              {formError}
+            </p>
+          )}
           <Separator />
         </>
       )}
@@ -203,16 +215,23 @@ export function ProjectsSection() {
         <div className="space-y-2">
           {projects.map((project) =>
             editingId === project.id ? (
-              <ProjectForm
-                key={project.id}
-                initial={{
-                  name: project.name,
-                  path: project.path,
-                }}
-                onSubmit={(data) => handleUpdate(project.id, data)}
-                onCancel={() => setEditingId(null)}
-                submitLabel="Save changes"
-              />
+              <div key={project.id} className="space-y-2">
+                <ProjectForm
+                  initial={{
+                    name: project.name,
+                    path: project.path,
+                  }}
+                  onSubmit={(data) => handleUpdate(project.id, data)}
+                  onCancel={() => { setEditingId(null); setFormError(null); }}
+                  submitLabel="Save changes"
+                />
+                {formError && (
+                  <p className="text-xs text-destructive flex items-center gap-1.5">
+                    <AlertCircle className="h-3 w-3" />
+                    {formError}
+                  </p>
+                )}
+              </div>
             ) : (
               <ProjectRow
                 key={project.id}

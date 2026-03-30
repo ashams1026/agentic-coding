@@ -5,6 +5,37 @@
 
 ---
 
+## 2026-03-30 — W.3: Wire project CRUD in settings
+
+**Task:** Create backend project CRUD routes with path validation. Wire settings Projects section and sidebar project switcher to real API.
+
+**Done:**
+- **`packages/backend/src/routes/projects.ts`** (new) — 5 CRUD routes:
+  - `GET /api/projects` — list all projects
+  - `GET /api/projects/:id` — get single project
+  - `POST /api/projects` — create with `fs.existsSync()` path validation, returns 400 on invalid path
+  - `PATCH /api/projects/:id` — update with path validation if path field provided
+  - `DELETE /api/projects/:id` — delete project
+  - Serializer: dates to ISO, branded ProjectId cast
+- **`packages/backend/src/server.ts`** — Registered `projectRoutes`
+- **`packages/frontend/src/components/sidebar.tsx`** — Wired project switcher to real data:
+  - Uses `useProjects()` hook to fetch project list
+  - Select dropdown populated with real projects (name + id)
+  - Collapsed tooltip shows first project name
+  - Fallback to "No projects" when none exist
+- **`packages/frontend/src/features/settings/projects-section.tsx`** — Added validation error display:
+  - `formError` state captures mutation errors
+  - Inline error message with AlertCircle icon shown below form on create/update failure
+  - Error cleared on cancel or new submission
+  - Mutations use `onSuccess`/`onError` callbacks instead of fire-and-forget
+
+**Files created:** `packages/backend/src/routes/projects.ts`
+**Files modified:** `server.ts`, `sidebar.tsx`, `projects-section.tsx`
+
+**Notes:** Build: 0 errors. Tests: 159/159. Frontend API layer (client, mock, hooks, unified index) already had project functions — only needed backend routes. Path validation: backend checks `existsSync`, frontend checks starts-with-`/`.
+
+---
+
 ## 2026-03-30 — Review: W.2 (approved)
 
 **Reviewed:** API key wiring in `claude-executor.ts`.
