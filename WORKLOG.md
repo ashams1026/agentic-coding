@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: A.8 (approved)
+
+**Reviewed:** System prompt assembly — `packages/backend/src/agent/claude-executor.ts`.
+- buildSystemPrompt exported with 4 layers: persona, project, work item, execution history ✓
+- Persona systemPrompt included only if non-empty ✓
+- Project context: name, path, optional description/patterns from settings ✓
+- Work item: title, ID, state, description, parentChain with IDs, inheritedContext ✓
+- Execution history: outcome+summary, rejection details (reason, severity, hint) ✓
+- Sections joined with \n\n, markdown headers for structure ✓
+- Wired into spawn() replacing raw persona.systemPrompt ✓
+- Backend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.8: Implement system prompt assembly
 
 **Task:** Build layered system prompt from persona, project, work item context, and execution history.
