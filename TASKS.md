@@ -22,7 +22,7 @@
 
 ### Filtering & Sorting Enhancements
 
-- [review] **P.5** — Add text search to work items. In `packages/frontend/src/features/work-items/filter-bar.tsx`: add a search input (left-most position, with Search icon) that filters work items by title and description text. Debounce input at 200ms. Highlight matching text in list view rows. Store search term in URL params (`?q=`). Clear search with X button or when "Clear filters" is clicked.
+- [x] **P.5** — Add text search to work items. In `packages/frontend/src/features/work-items/filter-bar.tsx`: add a search input (left-most position, with Search icon) that filters work items by title and description text. Debounce input at 200ms. Highlight matching text in list view rows. Store search term in URL params (`?q=`). Clear search with X button or when "Clear filters" is clicked.
 
 - [ ] **P.6** — Add persona and label filters. In filter-bar.tsx: add persona filter dropdown (shows persona avatars + names from mock data, multi-select). Add label filter dropdown (shows all unique labels across work items, multi-select with colored pills). Both filter additively (AND with other filters). Update URL params.
 

@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — Review: P.5 (approved)
+
+**Reviewed:** Text search for work items — `filter-bar.tsx`, `list-view.tsx`, `work-items-store.ts`, `work-items.tsx`.
+- Search input at left-most position with Search icon ✓
+- 200ms debounce via local state + setTimeout pattern ✓
+- Filters by title and description (case-insensitive) ✓
+- HighlightedText component with regex split + mark tags, special chars escaped ✓
+- URL param sync (`?q=`): reads on mount, writes on change, clears `?q=` when empty ✓
+- Clear search via X button (refocuses) and "Clear filters" button ✓
+- `handleViewChange` preserves existing URL params ✓
+- `searchQuery` correctly excluded from localStorage persistence ✓
+- Build: 0 errors, 145 tests pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — P.5: Add text search to work items
 
 **Task:** Add search input to filter bar, filter by title/description, debounce at 200ms, highlight matches, sync with URL `?q=` param.
