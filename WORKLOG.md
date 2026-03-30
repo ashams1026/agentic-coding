@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — QF.1: Add API mode toggle to the UI
+
+**Task:** Add Mock/Live toggle to status bar and Settings → Appearance, with health check on switch to Live.
+
+**Done:**
+- **Status bar** (`packages/frontend/src/components/status-bar.tsx`): Added clickable Mock/Live toggle with colored indicator (amber dot for Mock, green dot for Live). Clicking toggles `apiMode` in `useUIStore`. On switch to Live: fetches `GET /api/health` — if fails, shows error toast "Backend not running. Start it with `pnpm --filter backend dev`" and reverts. On success: calls `setApiMode("api")` + `initWsConnection()`.
+- **Settings → Appearance** (`packages/frontend/src/features/settings/appearance-section.tsx`): Added `ApiModeSection` component at top of Appearance section. Two card buttons (Mock/Live) with colored dots, same health check logic. Description: "Mock mode uses demo data. Live mode connects to the backend API at localhost:3001."
+
+**Files modified:** `packages/frontend/src/components/status-bar.tsx`, `packages/frontend/src/features/settings/appearance-section.tsx`
+
+**Notes:** Both toggle sites share the same pattern: check health → show toast on failure → set mode + init WS on success. Imports `API_BASE_URL` from `@/api/client`, `initWsConnection` from `@/api/ws`, `useToastStore` for error toasts. Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: AI.6 (approved)
 
 **Reviewed:** Work Items filtering/search and sorting test plans.
