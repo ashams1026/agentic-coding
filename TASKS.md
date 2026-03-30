@@ -16,7 +16,7 @@
 
 - [x] **Q.4** — Test work items CRUD routes. In `packages/backend/src/routes/__tests__/work-items.test.ts`: spin up Fastify with test DB via `app.inject()`. Test: create top-level item, create child item with parentId, get item by id, list items with `?parentId=` filter, list items with `?projectId=` filter, update item fields (title, description, priority), update `currentState` (valid transition), reject invalid state transition, delete item. Verify response shapes and status codes.
 
-- [ ] **Q.5** — Test persona and persona-assignment routes. In `packages/backend/src/routes/__tests__/personas.test.ts`: test persona CRUD (create, get, list, update, delete). In `packages/backend/src/routes/__tests__/persona-assignments.test.ts`: test upsert assignment, get assignments by project, verify assignment links valid persona to valid state.
+- [review] **Q.5** — Test persona and persona-assignment routes. In `packages/backend/src/routes/__tests__/personas.test.ts`: test persona CRUD (create, get, list, update, delete). In `packages/backend/src/routes/__tests__/persona-assignments.test.ts`: test upsert assignment, get assignments by project, verify assignment links valid persona to valid state.
 
 - [ ] **Q.6** — Test comments, executions, and proposals routes. In `packages/backend/src/routes/__tests__/comments.test.ts`: test create comment with different authorTypes (agent, user, system), list comments filtered by workItemId. In `packages/backend/src/routes/__tests__/executions.test.ts`: test create execution, update status/outcome, list by workItemId. In `packages/backend/src/routes/__tests__/proposals.test.ts`: test create proposal, update status (approve/reject), list by workItemId.
 

@@ -86,11 +86,11 @@ export async function personaRoutes(app: FastifyInstance) {
     const updates: Record<string, unknown> = {};
     if (body.name !== undefined) updates["name"] = body.name;
     if (body.description !== undefined) updates["description"] = body.description;
-    if (body.avatar !== undefined) updates["avatar"] = JSON.stringify(body.avatar);
+    if (body.avatar !== undefined) updates["avatar"] = body.avatar;
     if (body.systemPrompt !== undefined) updates["systemPrompt"] = body.systemPrompt;
     if (body.model !== undefined) updates["model"] = body.model;
-    if (body.allowedTools !== undefined) updates["allowedTools"] = JSON.stringify(body.allowedTools);
-    if (body.mcpTools !== undefined) updates["mcpTools"] = JSON.stringify(body.mcpTools);
+    if (body.allowedTools !== undefined) updates["allowedTools"] = body.allowedTools;
+    if (body.mcpTools !== undefined) updates["mcpTools"] = body.mcpTools;
     if (body.maxBudgetPerRun !== undefined) updates["maxBudgetPerRun"] = body.maxBudgetPerRun;
 
     if (Object.keys(updates).length === 0) {

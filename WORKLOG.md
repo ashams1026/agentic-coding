@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-30 — Q.5: Test persona and persona-assignment routes
+
+**Task:** Integration tests for persona CRUD and persona-assignment upsert routes.
+
+**Done:**
+- Created `packages/backend/src/routes/__tests__/personas.test.ts` with 11 tests:
+  - GET list (all personas), GET by id (200 + 404)
+  - POST with required fields only, POST with all optional fields
+  - PATCH name/model, PATCH allowedTools, 404 for non-existent, 400 for empty body
+  - DELETE (204 + verify gone), DELETE 404 for non-existent
+- Created `packages/backend/src/routes/__tests__/persona-assignments.test.ts` with 6 tests:
+  - GET list all, GET filtered by projectId, GET empty for non-existent project
+  - PUT create new assignment (verify total increased), PUT upsert on conflict (verify total unchanged)
+  - PUT links valid persona to valid state
+- **Bug fix in `personas.ts`**: Removed `JSON.stringify()` for `avatar`, `allowedTools`, `mcpTools` in PATCH handler — same double-encoding issue as work-items
+
+**Files created:** `packages/backend/src/routes/__tests__/personas.test.ts`, `packages/backend/src/routes/__tests__/persona-assignments.test.ts`
+**Files modified:** `packages/backend/src/routes/personas.ts` (fix double-encoding bug)
+
+**Notes:** Build: 0 errors, 64 tests pass. Same mock pattern as Q.4 (mock db connection + test DB). Delete test uses QA persona (not referenced by assignments).
+
+---
+
 ## 2026-03-30 — Review: Q.4 (approved)
 
 **Reviewed:** Work items CRUD route tests (rework) — `packages/backend/src/routes/__tests__/work-items.test.ts`.
