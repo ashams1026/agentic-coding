@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: P.1 (approved)
+
+**Reviewed:** Typography scale standardization — `index.css` + 29 component files.
+- 5 `@utility` definitions match task spec exactly (page-title, section-title, body, label, caption) ✓
+- Comment block documents the full scale with pixel equivalents and usage guidance ✓
+- All 78 arbitrary pixel text sizes (text-[8-11px]) replaced with text-xs ✓
+- Zero arbitrary pixel sizes remain in code (verified via grep) ✓
+- Build: 0 errors, 145 tests pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — P.1: Standardize typography scale
 
 **Task:** Define semantic typography tokens and eliminate arbitrary pixel text sizes.
