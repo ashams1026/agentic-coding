@@ -131,3 +131,20 @@
 
 - [x] **W.7** — Wire appearance settings. Density (comfortable/compact) in Zustand store + localStorage, `data-density` attribute, CSS compact overrides. *(completed 2026-03-30)*
 - [x] **W.8** — Wire data management settings. `GET /api/settings/db-stats`, `DELETE /api/settings/executions` (>30 days), `GET /api/settings/export`, `POST /api/settings/import`. DatabaseInfo, export download, import upload, 2-click clear confirmation. *(completed 2026-03-30)*
+
+---
+
+## Sprint 14: Documentation (D.1–D.10) — completed 2026-03-30
+
+10 documentation files created in `docs/`, each reviewed and approved.
+
+- [x] **D.1** — Project README (`README.md`). Overview, 8 features, architecture diagram, quick start, docs links. *(completed 2026-03-30)*
+- [x] **D.2** — Getting started guide (`docs/getting-started.md`). 8-section walkthrough: prerequisites, install, first run, API key, project, work item, manual states, auto-routing. *(completed 2026-03-30)*
+- [x] **D.3** — Architecture (`docs/architecture.md`). System diagram, 3 packages, agent engine (9 modules), request lifecycle, agent execution lifecycle, 9 WS events. *(completed 2026-03-30)*
+- [x] **D.4** — Data model (`docs/data-model.md`). 9 entities with field tables, ER diagram, hierarchy, edges, executionContext, RejectionPayload, ID format. *(completed 2026-03-30)*
+- [x] **D.5** — Workflow system (`docs/workflow.md`). 8 states, transitions, rate limiting, auto-routing, persona assignments, Router, parent-child coordination, rejection/retry (max 3). *(completed 2026-03-30)*
+- [x] **D.6** — Agent personas (`docs/personas.md`). 5 built-in personas, system prompt layering (4 layers), MCP tool allowlists, Router as special persona. *(completed 2026-03-30)*
+- [x] **D.7** — REST API (`docs/api.md`). 48 endpoints across 11 route files, TypeScript request/response types, curl examples, 9-event WebSocket protocol. *(completed 2026-03-30)*
+- [x] **D.8** — MCP tools (`docs/mcp-tools.md`). 7 tools with Zod schemas, output formats, side effects, persona access matrix, MCP server attachment mechanism. *(completed 2026-03-30)*
+- [x] **D.9** — Configuration & deployment (`docs/deployment.md`). ~/.agentops/ structure, 4 config fields, 5 env vars, 10 CLI commands, pm2, logging, database, graceful shutdown, crash recovery. *(completed 2026-03-30)*
+- [x] **D.10** — Frontend (`docs/frontend.md`). Directory structure, feature pattern, list/flow views, mock data layer, TanStack Query + Zustand, design system (color tokens, typography, 18 shadcn/ui components). *(completed 2026-03-30)*

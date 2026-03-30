@@ -180,3 +180,17 @@
 *W.8 (work + review approved):* Data management — 4 backend endpoints: `GET /api/settings/db-stats` (SQLite pragma), `DELETE /api/settings/executions` (>30 days), `GET /api/settings/export`, `POST /api/settings/import` (onConflictDoNothing). Frontend: real DB size display, export JSON download, import JSON upload, 2-click clear confirmation. Sprint 13 completed.
 
 **Key patterns established:** All settings follow the same frontend pattern: `useProjects()` + `useUpdateProject()` for project settings fields, with `settings` stored as freeform `Record<string, unknown>` JSON. API layer consistently wired across `client.ts`, `mocks/api.ts`, `api/index.ts` with unified `pick()` delegation.
+
+---
+
+## Sprint 14: Documentation D.1–D.5 (work + reviews) — archived 2026-03-30
+
+*D.1 (work + review approved):* README.md — one-paragraph overview, 8 features, ASCII package tree, quick start (Node 22, pnpm 9, dev + production), config path, 9-doc table. 101 lines.
+
+*D.2 (work + review approved):* `docs/getting-started.md` — 8 sections: prerequisites, install, first run, API key (UI+CLI), create project (UI+curl), create work item, manual state walk, enable auto-routing with persona assignments.
+
+*D.3 (work + review approved):* `docs/architecture.md` — ASCII system diagram (browser↔backend↔SQLite/Claude/MCP), 3 package tables, agent engine 9 modules, request lifecycle, agent execution lifecycle, 9 WS events table.
+
+*D.4 (work + review approved):* `docs/data-model.md` — ASCII ER diagram, 9 entity field tables, WorkItem hierarchy, executionContext, dependency graph, RejectionPayload, ID format, storage details.
+
+*D.5 (work + review approved):* `docs/workflow.md` — 8 states with colors, transition map, rate limiting (10/hour), manual vs auto transitions, Router agent, auto-routing toggle, persona assignments, parent-child coordination, rejection/retry (3-max escalation), dispatch checks.
