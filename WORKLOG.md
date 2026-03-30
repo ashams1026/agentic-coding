@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — W.2: Wire API key into agent executor
+
+**Task:** Read API key from config on each execution. Reject with clear error if not configured.
+
+**Done:**
+- **`packages/backend/src/agent/claude-executor.ts`** — Added at the start of `spawn()`:
+  1. `loadConfig()` call to read API key fresh on every execution (user might update between runs)
+  2. If no key: yields `{ type: "error", message: "Anthropic API key not configured. Go to Settings → API Keys.", code: "no_api_key" }` and returns early
+  3. Sets `process.env["ANTHROPIC_API_KEY"]` for the SDK before calling `query()`
+- Error flows through existing pipeline: `runExecutionStream` catch → DB update to failed → WS broadcast `agent_completed(failure)` → frontend toast via `use-toast-events.ts`
+
+**Files modified:** `packages/backend/src/agent/claude-executor.ts`
+
+**Notes:** Build: 0 errors. Tests: 159/159. The error message includes a unicode arrow (→) pointing to Settings. Setting `process.env` is safe because all executions use the same configured key. The key is read fresh on each `spawn()` call, not cached.
+
+---
+
 ## 2026-03-30 — Review: W.1 (approved)
 
 **Reviewed:** API key storage, validation, and Settings UI wiring — `settings.ts`, `api-keys-section.tsx`, API layer.

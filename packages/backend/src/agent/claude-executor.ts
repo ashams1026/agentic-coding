@@ -12,6 +12,7 @@ import type {
   SpawnOptions,
 } from "./types.js";
 import type { Persona, Project } from "@agentops/shared";
+import { loadConfig } from "../config.js";
 
 // ── System prompt assembly ────────────────────────────────────────
 
@@ -150,6 +151,20 @@ export class ClaudeExecutor implements AgentExecutor {
     project: Project,
     options: SpawnOptions,
   ): AsyncIterable<AgentEvent> {
+    // Read API key from config on each execution (user might update it)
+    const config = loadConfig();
+    if (!config.anthropicApiKey) {
+      yield {
+        type: "error",
+        message: "Anthropic API key not configured. Go to Settings \u2192 API Keys.",
+        code: "no_api_key",
+      };
+      return;
+    }
+
+    // Set env var for the SDK (reads ANTHROPIC_API_KEY)
+    process.env["ANTHROPIC_API_KEY"] = config.anthropicApiKey;
+
     // Build the prompt from work item context
     const prompt = [
       `Work item: ${task.context.title}`,

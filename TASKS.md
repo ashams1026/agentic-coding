@@ -24,7 +24,7 @@
 
 - [x] **W.1** — Implement API key storage and validation. Add `POST /api/settings/api-key` route: accepts `{ key: string }`, validates by making a test call to the Anthropic API (e.g., a minimal `messages.create` with 1 token max), stores the key encrypted (or base64 for MVP) in `~/.agentops/config.json`. Add `GET /api/settings/api-key` that returns `{ configured: boolean, maskedKey: "sk-ant-...****" }` (never return the full key). Add `DELETE /api/settings/api-key` to remove. Wire the Settings API Keys section to these endpoints: input field, "Test connection" button (calls POST, shows success/fail), masked display when configured, remove button.
 
-- [ ] **W.2** — Wire API key into agent executor. In `packages/backend/src/agent/claude-executor.ts`: read the API key from config on each execution (don't cache — user might update it). If no key configured, reject dispatch with a clear error: "Anthropic API key not configured. Go to Settings → API Keys." Show this error in the UI as a toast and in the execution record.
+- [review] **W.2** — Wire API key into agent executor. In `packages/backend/src/agent/claude-executor.ts`: read the API key from config on each execution (don't cache — user might update it). If no key configured, reject dispatch with a clear error: "Anthropic API key not configured. Go to Settings → API Keys." Show this error in the UI as a toast and in the execution record.
 
 ### Project Settings Wiring
 
