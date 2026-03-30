@@ -15,7 +15,7 @@ import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { eq } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { comments, workItems, workItemEdges } from "../db/schema.js";
-import { createId, WORKFLOW } from "@agentops/shared";
+import { createId, WORKFLOW, isValidTransition } from "@agentops/shared";
 import type { CommentId, WorkItemId, PersonaId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 
@@ -265,7 +265,71 @@ export function createMcpServer(context: McpContext): McpServer {
           ),
       }),
     },
-    async () => stub("route_to_state"),
+    async ({ workItemId, targetState, reasoning }) => {
+      try {
+        // Look up current state
+        const [item] = await db
+          .select({ currentState: workItems.currentState })
+          .from(workItems)
+          .where(eq(workItems.id, workItemId));
+
+        if (!item) {
+          return {
+            content: [{ type: "text" as const, text: JSON.stringify({ error: `Work item ${workItemId} not found` }) }],
+            isError: true,
+          };
+        }
+
+        // Validate transition
+        if (!isValidTransition(item.currentState, targetState)) {
+          return {
+            content: [{ type: "text" as const, text: JSON.stringify({ error: `Invalid transition from "${item.currentState}" to "${targetState}"` }) }],
+            isError: true,
+          };
+        }
+
+        const now = new Date();
+        const fromState = item.currentState;
+
+        // Update work item state
+        await db
+          .update(workItems)
+          .set({ currentState: targetState, updatedAt: now })
+          .where(eq(workItems.id, workItemId));
+
+        // Post reasoning as a system comment
+        const commentId = createId.comment();
+        await db.insert(comments).values({
+          id: commentId,
+          workItemId,
+          authorType: "system",
+          authorId: context.personaId || null,
+          authorName: "Router",
+          content: `State transition: ${fromState} → ${targetState}\n\n${reasoning}`,
+          metadata: { fromState, toState: targetState, reasoning },
+          createdAt: now,
+        });
+
+        // Broadcast state_change event
+        broadcast({
+          type: "state_change",
+          workItemId: workItemId as WorkItemId,
+          fromState,
+          toState: targetState,
+          triggeredBy: (context.personaId as PersonaId) || "system",
+          timestamp: now.toISOString(),
+        });
+
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ workItemId, fromState, toState: targetState }) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: `Failed to route: ${err instanceof Error ? err.message : String(err)}` }) }],
+          isError: true,
+        };
+      }
+    },
   );
 
   // ── list_items ──────────────────────────────────────────────

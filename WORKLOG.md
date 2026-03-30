@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-29 — A.4: Implement route_to_state MCP tool
+
+**Task:** Replace route_to_state stub with real state transition + validation + system comment.
+
+**Done:**
+- In `mcp-server.ts`: replaced stub handler for `route_to_state` with real implementation:
+  - Looks up work item's current state
+  - Validates transition via `isValidTransition(currentState, targetState)`
+  - Returns specific error if work item not found or transition invalid
+  - Updates `currentState` and `updatedAt` on the work item
+  - Posts reasoning as a system comment with `authorType: "system"`, `authorName: "Router"`
+  - Comment content: "State transition: X → Y\n\n{reasoning}", metadata includes fromState/toState/reasoning
+  - Broadcasts `state_change` WS event with fromState, toState, triggeredBy
+  - Returns `{ workItemId, fromState, toState }` on success
+- Added import: `isValidTransition` from `@agentops/shared`
+
+**Files modified:** `packages/backend/src/agent/mcp-server.ts`
+
+**Notes:** Backend build: 0 errors. The reasoning comment uses authorType "system" (not "agent") since this is a routing decision, not agent work output.
+
+---
+
 ## 2026-03-29 — Review: A.3 (approved)
 
 **Reviewed:** create_children MCP tool — `packages/backend/src/agent/mcp-server.ts`.
