@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: E.8 (approved)
+
+**Reviewed:** Parent-child coordination dispatch fix — `coordination.ts`, `coordination.test.ts`.
+- `dispatchForState(parentId, "In Review")` called after DB update + WS broadcast ✓
+- Fire-and-forget with `.catch()` — consistent with dispatch pattern elsewhere ✓
+- No circular dependency: coordination→dispatch→execution-manager chain verified ✓
+- Test: dispatch called with correct args on all-children-Done ✓
+- Test: dispatch NOT called on partial-done and already-in-target-state ✓
+- Existing tests (blocked comment, top-level no-op) still pass ✓
+- Build: 0 errors, Tests: 151/151
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — E.8: Fix parent-child coordination in real flow
 
 **Task:** Verify and fix parent-child coordination: auto-advance parent when all children Done, system comment on child Blocked, frontend reactive updates.
