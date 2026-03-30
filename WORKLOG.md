@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — D.3: Document the architecture
+
+**Task:** Create `docs/architecture.md` with system diagram, package details, data flow, agent lifecycle.
+
+**Done:**
+- **`docs/architecture.md`** (new) — Architecture documentation with:
+  - ASCII system diagram showing browser ↔ backend ↔ SQLite/Claude/MCP, plus shared package
+  - Package breakdown: shared (5 files), frontend (8 directories with key libraries), backend (10 files/dirs with key libraries)
+  - Agent execution engine table: 9 files in `agent/` with roles
+  - Request lifecycle diagram: UI → TanStack Query → REST → Drizzle → SQLite → broadcast → WS → Query invalidation → re-render
+  - Agent execution lifecycle diagram: state change → dispatch checks → runExecution → ClaudeExecutor.spawn → MCP tools → completion → runRouter → next dispatch
+  - WebSocket events table: 9 event types with triggers and query cache invalidation targets
+
+**Files created:** `docs/architecture.md`
+
+**Notes:** Build: 0 errors. All file paths, library names, and port numbers verified against actual codebase. Diagrams use ASCII art (not mermaid) for maximum compatibility.
+
+---
+
 ## 2026-03-30 — Review: D.2 (approved)
 
 **Reviewed:** Getting started guide — 8-section walkthrough from install to auto-routing.
