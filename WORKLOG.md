@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-29 — A.7: Install Claude Agent SDK and create executor
+
+**Task:** Install SDK and create ClaudeExecutor implementing AgentExecutor interface.
+
+**Done:**
+- Installed `@anthropic-ai/claude-agent-sdk@0.2.87` as backend dependency
+- Created `packages/backend/src/agent/claude-executor.ts`:
+  - `ClaudeExecutor` class implements `AgentExecutor` interface
+  - `MODEL_MAP` maps persona model aliases (opus/sonnet/haiku) to full model IDs
+  - `spawn()` method: builds prompt from task context, calls SDK `query()`, yields mapped `AgentEvent`s
+  - SDK options: `cwd` from project.path, `systemPrompt` from persona, `permissionMode: "bypassPermissions"`, `maxTurns: 30`, `maxBudgetUsd` from options
+  - MCP server configured as stdio subprocess via `mcpServers.agentops` with env vars for persona/project context
+  - `tools: []` disables built-in tools — agent uses only MCP tools
+  - `mapMessage()` converts `SDKMessage` → `AgentEvent[]`: extracts text/tool_use/thinking blocks from assistant messages, maps result success/error
+  - Error catching yields ErrorEvent with `executor_error` code
+
+**Files created:** `packages/backend/src/agent/claude-executor.ts`
+**Files modified:** `packages/backend/package.json` (added claude-agent-sdk dep)
+
+**Notes:** Backend build: 0 errors. The SDK spawns Claude Code as a subprocess with MCP server. SDKMessage types are complex (22+ variants) — we only map assistant, result, and stream_event for now. Additional event types can be mapped as needed.
+
+---
+
 ## 2026-03-29 — Review: A.6 (approved)
 
 **Reviewed:** Agent executor types — `packages/backend/src/agent/types.ts`.
