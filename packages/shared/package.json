@@ -12,7 +12,9 @@
     "build": "tsc",
     "lint": "eslint src/",
     "format": "prettier --write \"src/**/*.ts\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "nanoid": "^5.1.7"

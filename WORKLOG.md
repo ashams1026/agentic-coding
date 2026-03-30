@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-29 — Q.1: Set up Vitest in the monorepo
+
+**Task:** Install Vitest, configure for monorepo, add test scripts.
+
+**Done:**
+- Installed `vitest@^4.1.2` as root devDependency
+- Created `vitest.config.ts` at root: `include: ["packages/*/src/**/*.test.ts"]`, globals enabled
+- Added scripts to root `package.json`: `"test": "vitest run"`, `"test:watch": "vitest"`
+- Added `"test"` and `"test:watch"` scripts to `packages/backend/package.json` and `packages/shared/package.json`
+- Verified: `pnpm test` runs Vitest and reports "No test files found" (expected for zero tests)
+
+**Files created:** `vitest.config.ts`
+**Files modified:** `package.json`, `packages/backend/package.json`, `packages/shared/package.json`
+
+**Notes:** Build: 0 errors. Vitest uses root config for all packages (single config approach vs per-package). Test file pattern: `*.test.ts`.
+
+---
+
 ## 2026-03-29 — Review: A.18 (approved)
 
 **Reviewed:** Memory consolidation and retrieval — `memory.ts`, `mcp-server.ts`.
