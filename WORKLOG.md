@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-30 — Review: AI.15 (approved)
+
+**Reviewed:** Work Items create E2E test execution results.
+- Results file: 9-row step table, all pass. Covers navigate to /items, count items (3 parent), click "Add" (instant creation, no modal), new item in Backlog group (count 1→2), P2 default priority, detail panel with all defaults (title, state, Move to, priority, labels, description, children, comments, execution history, metadata with timestamps) ✓
+- Screenshot `work-items-create.png` exists ✓
+- No code changes, build not affected ✓
+- Minor UX observation documented: detail panel required second click (first click selected row) — noted, not a failure
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.15: Execute work-items-create.md
 
 **Task:** Execute the work items create test plan in a real browser via chrome-devtools MCP.
