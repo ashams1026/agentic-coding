@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-30 — Review: AI.17 (approved)
+
+**Reviewed:** Detail panel view E2E test execution results.
+- Results file: 16-row step table, all pass. Covers navigate + list view switch, click item → panel opens, all 11 sections verified (title editable h2, state "In Progress", Move to dropdown, priority "P0 — Critical", persona conditional, labels auth/security + "+ label", description + Edit, children 1/3 done + "Add child", comments 5 with input, execution history 2 entries, metadata wi-auth001 with valid dates), close via X, switch to different item ("Dashboard analytics widgets") → panel updates with entirely different data ✓
+- Screenshot `detail-panel-view.png` exists ✓
+- No code changes, build not affected ✓
+- Bonus: "Pending Proposals" section discovered on second item — extra functionality correctly noted
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.17: Execute detail-panel-view.md
 
 **Task:** Execute the detail panel view test plan in a real browser via chrome-devtools MCP.
