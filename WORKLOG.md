@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — Review: S.2 (approved)
+
+**Reviewed:** Graceful shutdown + health endpoint — `start.ts`, `ws.ts`, `server.ts`, `cli.ts`.
+- Shutdown sequence correct: server.close() → closeAllClients(1001) → waitForExecutions(30s) → sqlite.close() → exit ✓
+- Double-shutdown guard via `shuttingDown` flag ✓
+- `waitForExecutions()` polls getActiveCount() at 500ms intervals with deadline ✓
+- Timeout logs warning, continues shutdown (force-kill) ✓
+- `closeAllClients()` iterates clients, try/catch per client, clears set ✓
+- `/api/health` returns { status, uptime, activeExecutions, version } ✓
+- Legacy `/health` kept for backwards compat ✓
+- CLI signal handlers removed, `exit` handler retained for PID cleanup ✓
+- Build: 0 errors, Tests: 156/156
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — S.2: Add graceful shutdown handling
 
 **Task:** Handle SIGTERM/SIGINT with graceful shutdown (drain executions, close WS/DB), add enhanced `/api/health` endpoint.
