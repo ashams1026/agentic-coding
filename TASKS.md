@@ -30,7 +30,7 @@
 
 ### New Project Experience
 
-- [ ] **PS.7** — Show empty state for new projects. When a project has zero work items: show a friendly empty state on the Work Items page ("No work items yet. Create your first one to get started.") with a prominent "Create work item" button. Dashboard should show zeroed-out stats gracefully (not errors or loading spinners). Activity feed should show "No activity yet."
+- [review] **PS.7** — Show empty state for new projects. When a project has zero work items: show a friendly empty state on the Work Items page ("No work items yet. Create your first one to get started.") with a prominent "Create work item" button. Dashboard should show zeroed-out stats gracefully (not errors or loading spinners). Activity feed should show "No activity yet."
 
 - [ ] **PS.8** — Auto-seed default personas on project creation. When creating a new project via the API: if no personas exist in the DB yet, seed the 5 built-in personas (PM, Tech Lead, Engineer, Code Reviewer, Router). Create default persona assignments for the new project mapping states to the built-in personas. This ensures a new project is immediately usable with the agent pipeline.
 

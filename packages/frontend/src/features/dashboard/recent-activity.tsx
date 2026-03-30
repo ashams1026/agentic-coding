@@ -314,7 +314,7 @@ export function RecentActivity() {
         </div>
         {events.length === 0 ? (
           <div className="flex items-center justify-center py-6">
-            <p className="text-sm text-muted-foreground">Nothing yet</p>
+            <p className="text-sm text-muted-foreground">No activity yet</p>
           </div>
         ) : (
           <div className="space-y-1">

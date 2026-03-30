@@ -733,9 +733,9 @@ export function ActivityFeed() {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center space-y-2">
-          <p className="text-sm font-medium">Nothing yet</p>
+          <p className="text-sm font-medium">No activity yet</p>
           <p className="text-xs text-muted-foreground">
-            Activity events will appear here as agents work.
+            Activity events will appear here as agents work on this project.
           </p>
         </div>
       </div>

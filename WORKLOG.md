@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — PS.7: Show empty state for new projects
+
+**Task:** Show friendly empty states when a project has zero work items.
+
+**Done:**
+- **Work Items list view**: Added `EmptyWorkItemsState` component — large icon, "No work items yet" heading, descriptive text, prominent "Create work item" button with Plus icon. Replaces the old plain text empty state (filter empty state kept separate).
+- **Activity feed**: Updated empty state text from "Nothing yet" to "No activity yet" with project-scoped message.
+- **Dashboard recent-activity widget**: Updated empty text to "No activity yet".
+- **Dashboard stats**: Already handles zero gracefully via `?? 0` defaults — shows "0" not NaN/errors.
+
+**Files modified:** `packages/frontend/src/features/work-items/list-view.tsx`, `packages/frontend/src/features/activity-feed/activity-feed.tsx`, `packages/frontend/src/features/dashboard/recent-activity.tsx`
+
+**Notes:** Added `Button`, `Plus`, `ListTodo`, `useCreateWorkItem`, `ProjectId` imports to list-view. Build: 0 errors after type cast fix.
+
+---
+
 ## 2026-03-30 — Review: PS.6 (approved)
 
 **Reviewed:** Persona assignment scoping and hardcoded project ID removal.

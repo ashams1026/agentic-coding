@@ -1,12 +1,13 @@
 import { useState, useMemo } from "react";
-import { ChevronRight, Bot } from "lucide-react";
+import { ChevronRight, Bot, Plus, ListTodo } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { useWorkItems, usePersonas, useExecutions, useSelectedProject } from "@/hooks";
+import { useWorkItems, usePersonas, useExecutions, useSelectedProject, useCreateWorkItem } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { WORKFLOW, getStateByName } from "@agentops/shared";
-import type { WorkItem, WorkItemId, Priority, Persona } from "@agentops/shared";
+import type { WorkItem, WorkItemId, Priority, Persona, ProjectId } from "@agentops/shared";
 
 // ── Text highlight ─────────────────────────────────────────────
 
@@ -268,6 +269,35 @@ function ListRow({
   );
 }
 
+// ── Empty state for new projects ────────────────────────────────
+
+function EmptyWorkItemsState({ projectId }: { projectId: string | null }) {
+  const createWorkItem = useCreateWorkItem();
+
+  const handleCreate = () => {
+    if (!projectId) return;
+    createWorkItem.mutate({ projectId: projectId as ProjectId, title: "New work item" });
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center h-full text-center p-12 gap-4">
+      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
+        <ListTodo className="h-8 w-8 text-muted-foreground" />
+      </div>
+      <div className="space-y-1">
+        <h3 className="text-lg font-semibold">No work items yet</h3>
+        <p className="text-sm text-muted-foreground max-w-sm">
+          Create your first work item to get started. Work items track features, bugs, and tasks for your project.
+        </p>
+      </div>
+      <Button onClick={handleCreate} className="gap-1.5 mt-2">
+        <Plus className="h-4 w-4" />
+        Create work item
+      </Button>
+    </div>
+  );
+}
+
 // ── Main list view ──────────────────────────────────────────────
 
 export function ListView() {
@@ -433,12 +463,15 @@ export function ListView() {
   // Empty states
   if (filteredItems.length === 0 && !isLoading) {
     const hasFilters = searchQuery || filterState || filterPriority || filterPersonas.length > 0 || filterLabels.length > 0;
+    if (hasFilters) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full text-center p-8">
+          <p className="text-sm text-muted-foreground">No items match your filters.</p>
+        </div>
+      );
+    }
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center p-8">
-        <p className="text-sm text-muted-foreground">
-          {hasFilters ? "No items match your filters." : "No work items yet. Click + to create one."}
-        </p>
-      </div>
+      <EmptyWorkItemsState projectId={projectId} />
     );
   }
 
