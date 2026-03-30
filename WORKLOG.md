@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — Review: W.8 (approved)
+
+**Reviewed:** Data management settings — DB stats, execution cleanup, settings export/import.
+- Backend: `GET /api/settings/db-stats` queries SQLite pragma page_count * page_size, returns sizeMB + entity counts ✓
+- Backend: `DELETE /api/settings/executions` uses `lt(startedAt, cutoff)` for 30-day cleanup ✓
+- Backend: `GET /api/settings/export` returns JSON of projects, personas, personaAssignments ✓
+- Backend: `POST /api/settings/import` iterates arrays with `onConflictDoNothing()` — safe re-imports ✓
+- Frontend: `DatabaseInfo` fetches stats on mount with loading skeleton ✓
+- Frontend: Export downloads dated JSON file via blob URL ✓
+- Frontend: Import uses file input for `.json` with result/error feedback ✓
+- Frontend: Clear has 2-click confirmation with 5s auto-dismiss ✓
+- API layer: client, mock, and unified wrapper all added consistently ✓
+- Build: 0 errors
+- Verdict: **approved**
+- **Sprint 13 (Settings Wiring) complete** — all 8 tasks (W.1-W.8) approved.
+
+---
+
 ## 2026-03-30 — W.8: Wire data management settings
 
 **Task:** Wire the Settings Data section with real backend endpoints for DB stats, execution cleanup, settings export/import.
