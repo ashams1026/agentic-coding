@@ -1,46 +1,130 @@
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import type { FastifyInstance } from "fastify";
 import { buildServer } from "./server.js";
 import { runMigrations } from "./db/migrate.js";
 import { db } from "./db/connection.js";
 import { sqlite } from "./db/connection.js";
-import { executions } from "./db/schema.js";
+import { executions, workItems } from "./db/schema.js";
 import { clearAll as clearConcurrency, getActiveCount } from "./agent/concurrency.js";
 import { clearTransitionLog } from "./agent/execution-manager.js";
 import { closeAllClients } from "./ws.js";
 
 const SHUTDOWN_TIMEOUT_MS = 30_000;
 
+// ── Crash recovery ──────────────────────────────────────────────
+
+export interface RecoveryReport {
+  executionsReset: number;
+  affectedWorkItems: string[];
+  errors: string[];
+}
+
 /**
- * Clean up orphaned state from a previous crash.
- * Any executions stuck in "running" are reset to "failed".
- * In-memory trackers (concurrency, transition log) are cleared.
+ * Production-grade crash recovery.
+ *
+ * Runs after migrations and before the server accepts connections:
+ * 1. Find all orphaned executions (status "running" or "pending" from a previous crash)
+ * 2. Reset them to "failed" with a descriptive summary
+ * 3. Log each recovered execution with details
+ * 4. Clear in-memory state (concurrency tracker, transition rate limiter)
+ * 5. Report what was recovered
+ *
+ * Work items are intentionally left in their current state —
+ * the user or auto-routing can re-trigger dispatch.
  */
-async function cleanupOrphanedState(): Promise<number> {
-  const now = new Date();
+export async function recoverOrphanedState(): Promise<RecoveryReport> {
+  const report: RecoveryReport = {
+    executionsReset: 0,
+    affectedWorkItems: [],
+    errors: [],
+  };
 
-  const orphaned = await db
-    .select({ id: executions.id })
-    .from(executions)
-    .where(eq(executions.status, "running"));
+  try {
+    const now = new Date();
 
-  if (orphaned.length > 0) {
-    await db
-      .update(executions)
-      .set({
-        status: "failed",
-        completedAt: now,
-        summary: "Interrupted by server restart",
-        outcome: "failure",
+    // Find all orphaned executions — "running" or "pending" from a previous crash
+    const orphaned = await db
+      .select({
+        id: executions.id,
+        workItemId: executions.workItemId,
+        personaId: executions.personaId,
+        status: executions.status,
+        startedAt: executions.startedAt,
       })
-      .where(eq(executions.status, "running"));
+      .from(executions)
+      .where(
+        or(
+          eq(executions.status, "running"),
+          eq(executions.status, "pending"),
+        ),
+      );
+
+    if (orphaned.length > 0) {
+      // Log each orphaned execution
+      for (const exec of orphaned) {
+        console.log(
+          `  Recovery: resetting execution ${exec.id} (${exec.status}) ` +
+          `for work item ${exec.workItemId}, persona ${exec.personaId}`,
+        );
+      }
+
+      // Bulk update all orphaned executions to failed
+      await db
+        .update(executions)
+        .set({
+          status: "failed",
+          completedAt: now,
+          summary: "Interrupted by server restart",
+          outcome: "failure",
+        })
+        .where(
+          or(
+            eq(executions.status, "running"),
+            eq(executions.status, "pending"),
+          ),
+        );
+
+      report.executionsReset = orphaned.length;
+
+      // Collect affected work item IDs (deduplicated)
+      const workItemIds = [...new Set(orphaned.map((e) => e.workItemId))];
+      report.affectedWorkItems = workItemIds;
+
+      // Log affected work items and their current states (informational only)
+      if (workItemIds.length > 0) {
+        const items = await db
+          .select({
+            id: workItems.id,
+            title: workItems.title,
+            currentState: workItems.currentState,
+          })
+          .from(workItems)
+          .where(
+            or(...workItemIds.map((id) => eq(workItems.id, id))),
+          );
+
+        for (const item of items) {
+          console.log(
+            `  Recovery: work item ${item.id} "${item.title}" ` +
+            `remains in state "${item.currentState}" (no change)`,
+          );
+        }
+      }
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    report.errors.push(message);
+    console.error(`Recovery error: ${message}`);
   }
 
+  // Always clear in-memory state, even if DB recovery failed
   clearConcurrency();
   clearTransitionLog();
 
-  return orphaned.length;
+  return report;
 }
+
+// ── Graceful shutdown ───────────────────────────────────────────
 
 /**
  * Wait for active agent executions to drain, up to a timeout.
@@ -106,13 +190,15 @@ async function gracefulShutdown(
   process.exit(0);
 }
 
+// ── Server startup ──────────────────────────────────────────────
+
 export interface StartOptions {
   port?: number;
   host?: string;
 }
 
 /**
- * Start the AgentOps server: run migrations, clean up orphaned state,
+ * Start the AgentOps server: run migrations, recover orphaned state,
  * build and listen on the given port. Registers graceful shutdown handlers.
  */
 export async function startServer(options: StartOptions = {}): Promise<void> {
@@ -121,10 +207,17 @@ export async function startServer(options: StartOptions = {}): Promise<void> {
 
   runMigrations();
 
-  const cleanedUp = await cleanupOrphanedState();
-  if (cleanedUp > 0) {
+  // Production-grade crash recovery
+  const recovery = await recoverOrphanedState();
+  if (recovery.executionsReset > 0) {
     console.log(
-      `Startup cleanup: reset ${cleanedUp} orphaned execution(s) to failed`,
+      `Startup recovery: reset ${recovery.executionsReset} orphaned execution(s), ` +
+      `${recovery.affectedWorkItems.length} work item(s) affected`,
+    );
+  }
+  if (recovery.errors.length > 0) {
+    console.error(
+      `Startup recovery completed with ${recovery.errors.length} error(s)`,
     );
   }
 

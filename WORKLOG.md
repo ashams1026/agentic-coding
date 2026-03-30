@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — S.3: Add crash recovery on startup (production-grade)
+
+**Task:** Upgrade the E.10 orphan cleanup to a production-grade recovery system with structured reporting, per-execution logging, pending execution recovery, and error resilience.
+
+**Done:**
+- **`start.ts`** — Replaced `cleanupOrphanedState()` with exported `recoverOrphanedState()` returning a typed `RecoveryReport` (`{ executionsReset, affectedWorkItems, errors }`). Now also recovers "pending" executions (crash between insert and start). Logs each orphaned execution with ID, work item, persona. Logs affected work items with their current state (informational, no changes). Entire recovery wrapped in try/catch — DB errors logged to report but don't prevent server start. In-memory state (concurrency, transition log) always cleared, even if DB recovery fails.
+- **`startup-cleanup.test.ts`** — Rewrote to use exported `recoverOrphanedState()` directly. Added mock for `sqlite` and `closeAllClients`. New tests:
+  - Recovers running executions with correct report fields
+  - Also recovers pending executions (new)
+  - Leaves work items in their current state (new)
+  - Returns empty report when no orphans (new)
+  - Existing clearAll and clearTransitionLog tests preserved
+
+**Files modified:** `packages/backend/src/start.ts`, `packages/backend/src/__tests__/startup-cleanup.test.ts`
+
+**Notes:** Build: 0 errors. Tests: 159/159 (was 156, +3 new). The `or()` from drizzle-orm handles the combined running/pending query. RecoveryReport type is exported for potential use by health/status endpoints.
+
+---
+
 ## 2026-03-30 — Review: S.2 (approved)
 
 **Reviewed:** Graceful shutdown + health endpoint — `start.ts`, `ws.ts`, `server.ts`, `cli.ts`.
