@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: Q.6 (approved)
+
+**Reviewed:** Comments, executions, and proposals route tests.
+- `comments.test.ts`: 6 tests — all 3 authorTypes (user/agent/system), list/filter ✓
+- `executions.test.ts`: 7 tests — create, update status (completed/failed), list/filter, date serialization ✓
+- `proposals.test.ts`: 7 tests — create, approve, reject (with fresh pending proposals), list/filter ✓
+- Route fix: double-encoding removed from executions.ts PATCH for rejectionPayload ✓
+- Build: 0 errors
+- Tests: 84 pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — Q.6: Test comments, executions, and proposals routes
 
 **Task:** Integration tests for comments, executions, and proposals CRUD routes.

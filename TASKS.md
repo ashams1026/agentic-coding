@@ -18,7 +18,7 @@
 
 - [x] **Q.5** — Test persona and persona-assignment routes. In `packages/backend/src/routes/__tests__/personas.test.ts`: test persona CRUD (create, get, list, update, delete). In `packages/backend/src/routes/__tests__/persona-assignments.test.ts`: test upsert assignment, get assignments by project, verify assignment links valid persona to valid state.
 
-- [review] **Q.6** — Test comments, executions, and proposals routes. In `packages/backend/src/routes/__tests__/comments.test.ts`: test create comment with different authorTypes (agent, user, system), list comments filtered by workItemId. In `packages/backend/src/routes/__tests__/executions.test.ts`: test create execution, update status/outcome, list by workItemId. In `packages/backend/src/routes/__tests__/proposals.test.ts`: test create proposal, update status (approve/reject), list by workItemId.
+- [x] **Q.6** — Test comments, executions, and proposals routes. In `packages/backend/src/routes/__tests__/comments.test.ts`: test create comment with different authorTypes (agent, user, system), list comments filtered by workItemId. In `packages/backend/src/routes/__tests__/executions.test.ts`: test create execution, update status/outcome, list by workItemId. In `packages/backend/src/routes/__tests__/proposals.test.ts`: test create proposal, update status (approve/reject), list by workItemId.
 
 - [ ] **Q.7** — Test work-item-edges routes. In `packages/backend/src/routes/__tests__/work-item-edges.test.ts`: test create edge (depends_on, blocks, related_to), list edges for a work item, delete edge. Test cycle detection — creating A→B→C→A should fail.
 
