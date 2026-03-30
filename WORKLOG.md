@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: AI.8 (approved)
+
+**Reviewed:** Activity Feed test plan.
+- `activity-feed.md`: 14 steps — event rows with colored icons (matching `eventConfig` — blue/State Change, sky/Agent Started, emerald/Agent Completed, red/Agent Failed, violet/Comment, amber/Proposal Created), descriptions, timestamps via `formatTimestamp`, type badges via `config.label`, target labels ✓
+- Date grouping: "Today"/"Yesterday"/full date matching `formatDateGroup`, sticky headers ✓
+- Filter bar: "Types" button → 11 checkboxes (all `eventConfig` labels), Select all/Deselect all, Types badge count, persona "All personas" dropdown, date "All time" dropdown (5 presets matching `DatePreset`), "Clear" button via `hasActiveFilters` ✓
+- Empty states: "No activity yet" + "No events match the current filters." both match source ✓
+- Template format ✓, UI references match source ✓
+- Build: no code changes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.8: Write test plans for Activity Feed
 
 **Task:** Create test plan for the activity feed page.
