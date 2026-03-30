@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: AI.13 (approved)
+
+**Reviewed:** Dashboard navigation E2E test execution results.
+- Results file `tests/e2e/results/dashboard-navigation.md`: proper format with step table (12 rows) + navigation summary table (5 routes) ✓
+- All 5 navigation targets verified: Active Agents→`/agents` (Live/History tabs confirmed), Pending Proposals→`/items` (Work Items heading confirmed), Needs Attention→`/activity` (feed + filters confirmed), Today's Cost→`/settings` (sidebar confirmed), "View all"→`/activity` ✓
+- All 5 back-navigations confirmed dashboard fully restored (stat cards + all widgets) ✓
+- Screenshot `dashboard-navigation.png` (367KB) exists ✓
+- No code changes, build not affected ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.13: Execute dashboard-navigation.md
 
 **Task:** Execute the dashboard navigation test plan in a real browser via chrome-devtools MCP.

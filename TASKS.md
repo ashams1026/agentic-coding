@@ -133,7 +133,7 @@
 
 - [x] **AI.12** — Execute `dashboard-stats.md`. Read `tests/e2e/plans/dashboard-stats.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/dashboard-stats.md`.
 
-- [review] **AI.13** — Execute `dashboard-navigation.md`. Read `tests/e2e/plans/dashboard-navigation.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/dashboard-navigation.md`.
+- [x] **AI.13** — Execute `dashboard-navigation.md`. Read `tests/e2e/plans/dashboard-navigation.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/dashboard-navigation.md`.
 
 - [ ] **AI.14** — Execute `work-items-list-view.md`. Read `tests/e2e/plans/work-items-list-view.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/work-items-list-view.md`.
 
