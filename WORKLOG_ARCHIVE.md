@@ -5,183 +5,26 @@
 
 ---
 
-## Sprint 1: Project Scaffolding (T1.1–T1.4) — 2026-03-28
+## Sprints 1-4 (consolidated) — 2026-03-28 to 2026-03-29
 
-**Summary:** Set up pnpm monorepo (frontend/backend/shared), TypeScript strict mode, ESLint 9, Prettier. React 19 + Vite 8 + Tailwind v4 (CSS-first) + shadcn/ui (new-york, 14 components). React Router v7 (9 routes), TanStack Query + Zustand. Full app shell with collapsible sidebar, dark mode. Defined all entity/API/WS types with branded IDs. Built mock data layer: fixtures, in-memory CRUD API with latency, TanStack Query hooks, mock WebSocket, 60s demo mode.
+**Sprint 1:** Monorepo setup (pnpm/TS/ESLint/Prettier), React 19 + Vite 8 + Tailwind v4 + shadcn/ui + React Router v7 + TanStack Query + Zustand. App shell with sidebar, dark mode. Entity types with branded IDs. Mock data layer (fixtures, API, hooks, WebSocket, demo mode).
 
-**Key decisions:** Node 22/pnpm 10, ESM throughout, `verbatimModuleSyntax`, Tailwind v4 `@theme` blocks, dark mode via `.dark` class + HSL vars, branded IDs (`StoryId = \`st-\${string}\``), mock API returns copies, singleton WS EventEmitter.
+**Sprint 2:** Dashboard (stat cards, agent strip, activity feed, upcoming work, cost chart), kanban board (dnd-kit columns, filters, transition prompts), story detail (all sections), task detail (context, deps, execution, rejections), agent monitor (xterm.js terminal, split view, control bar), activity feed, workflow designer (canvas + panels), persona manager (editor, prompt, tools, test run).
 
-**Core patterns:** `cn()` utility, named exports, kebab-case files, `@/` path alias, query hooks in `hooks/use-*.ts`, mock data in `mocks/`, Zustand persist to localStorage.
+**Sprint 3 (partial):** Settings page (5 sections), global components (command palette, toasts, skeletons, nav badges), WebSocket integration (useWsQuerySync centralized invalidation), demo mode (floating controls overlay).
 
----
+**Sprint 4 (R.1-R.6):** Sidebar refinements (spacing, transitions, mobile responsive), shared component extraction (CommentStream, ExecutionTimeline → features/common/), story list master-detail view, nested task detail panel.
 
-## Sprint 2: Dashboard (T2.1.1–T2.1.5) — 2026-03-28
+**Sprint 5 (T3.1.1 only):** Fastify backend scaffold — buildServer() factory with CORS, health check, pino-pretty, port 3001.
 
-**Summary:** Built dashboard with 4 stat cards (active agents, pending proposals, needs attention, today's cost), active agents strip (horizontal scroll, live elapsed time, pulsing dots), recent activity feed (unified from executions/comments/proposals, color-coded icons, persona avatars), upcoming work widget (next 5 dispatchable tasks), cost summary widget (recharts sparkline, monthly cap progress bar).
-
-**Key decisions:**
-- `useDashboardStats()` aggregates across stories, executions, proposals in one hook
-- Activity feed uses `useActivityEvents()` which merges 3 data sources by timestamp
-- Recharts for chart components (cost sparkline)
-
-**Patterns established:**
-- Dashboard features in `features/dashboard/` directory
-- Status card pattern: icon + label + value + trend indicator
-- Elapsed time with `useEffect` interval for live counters
+**Key patterns:** `cn()` utility, named exports, kebab-case files, `@/` alias, query hooks in `hooks/use-*.ts`, mock data in `mocks/`, Zustand persist, branded IDs, `verbatimModuleSyntax`, `features/common/` for shared UI, mobile sidebar overlay pattern, master-detail with `w-2/5` panels.
 
 ---
 
-## Sprint 2: Story Board / Kanban (T2.2.1–T2.2.6) — 2026-03-28
+## Sprint 6: O.1–O.10 — archived 2026-03-29
 
-**Summary:** Built kanban board with columns from workflow states, story cards (title, priority badge, labels, task progress, proposal badge, active agent indicator), drag-and-drop via @dnd-kit, transition prompt modal (shows trigger persona + run/skip/cancel), filter bar (label/priority/persona/proposals multi-select, sort options, URL params), inline story creation ("+" in Backlog column).
+*Data layer (O.1–O.6):* Replaced Story/Task/Workflow/Trigger types with WorkItem/PersonaAssignment across shared types, mock fixtures (3 top-level + 10 children + 3 grandchildren), mock API (WorkItem CRUD, persona assignments), TanStack Query hooks (use-work-items.ts, use-persona-assignments.ts). Added WORKFLOW constant (8 states, transitions, helpers). All IDs use wi- prefix.
 
-**Key decisions:**
-- @dnd-kit over react-beautiful-dnd (better maintained, more flexible)
-- Filters persisted in URL search params via `useSearchParams`
-- Transition modal only appears when target column has a trigger configured
-- Inline creation form only on initial (Backlog) state column
+*Multi-view UI (O.7–O.10):* Work items page at /items with 3-mode view toggle, filter bar, Zustand store. List view: tree-indented rows with state/priority badges, progress bars, persona avatars, state grouping. Board view: WORKFLOW columns with dnd-kit drag-and-drop, scope selector, persona trigger prompt. Tree view: pure hierarchy with indent guide lines.
 
-**Patterns established:**
-- Kanban features in `features/kanban/` directory
-- `StoryCard` reusable component with `priorityConfig` color mapping
-- DndContext wraps the board, each column is a Droppable, cards are Draggable
-
----
-
-## Sprint 2: Story Detail (T2.3.1–T2.3.2) — 2026-03-28
-
-**Summary:** Built story detail as full-page view at `/stories/:id`. Header with inline-editable title (click to edit, Enter/Escape), state badge, priority selector (P0-P3 colored), editable label pills. Description section with markdown textarea + preview toggle (Write/Preview tabs), acceptance criteria section. Both editable inline with save/cancel via `useUpdateStory`.
-
-**Key decisions:**
-- Full-page layout over Sheet (route already existed, more room for content)
-- Lightweight inline markdown renderer (`MarkdownPreview`) — paragraphs, bold, code, bullets
-- `EditableSection` reusable for both description and acceptance criteria
-
-**Patterns established:**
-- Story detail features in `features/story-detail/` directory
-- Inline edit pattern: view mode → click "Edit" → Write/Preview tabs → Save/Cancel
-- `priorityConfig` maps P0-P3 to colors (duplicated from story-card.tsx — extract if reused again)
-
----
-
-## Sprint 2: Story Detail continued (T2.3.3–T2.3.7) — 2026-03-28 to 2026-03-29
-
-**Summary:** Completed Story Detail with child tasks section (task rows + mini SVG dep graph + inline add form), proposals section (amber-themed approve/reject/bulk), comment stream (reusable for stories+tasks, 3 author types, Cmd+Enter), execution timeline (vertical timeline with persona avatars, expandable logs, cost/outcome badges), and story metadata sidebar (collapsible with dates, workflow, trigger status, rejection count). Added shadcn Checkbox and Collapsible components.
-
-**Key decisions:**
-- `CommentStream` and `ExecutionTimeline` designed as reusable components via `targetId` prop — shared between story detail and task detail
-- Mini dep graph uses SVG with topological sort layout
-- Collapsible pattern: shadcn Collapsible with ChevronDown rotation, used across many components
-
-**Patterns established:**
-- Reusable components: `CommentStream`, `ExecutionTimeline` (used in both story + task detail)
-- Collapsible sections: open/closed by default varies by importance
-- Persona avatar pattern: `persona.avatar.color + "20"` for transparent bg, Bot icon with inline color
-
----
-
-## Sprint 3: Task Detail (T2.4.1–T2.4.5) — 2026-03-29
-
-**Summary:** Built Task Detail with full-page view (header with title/state/persona/story link), inherited context (collapsible panel with parent story context), dependency info ("Depends on"/"Blocks" lists with state-colored badges), execution context viewer (3 collapsible sections: previous runs, rejection payloads, project memory), and rejection history (vertical timeline with severity badges, attempt counters, current attempt highlighted). Added mock data: EXEC_7 rejected execution for TASK_1_1.
-
-**Key decisions:**
-- Task detail reuses `CommentStream` and `ExecutionTimeline` from story-detail
-- Execution context shows what the agent received — useful for debugging agent behavior
-- Rejection history only renders when rejections exist (returns null otherwise)
-
-**Patterns established:**
-- Task detail features in `features/task-detail/` directory
-- Severity badge pattern: low=yellow, medium=amber, high=red
-- "Current attempt" highlighting with ring + colored bg + badge
-
----
-
-## Sprint 3: Agent Monitor (T2.5.1–T2.6.2) — 2026-03-29
-
-**Summary:** Built Agent Monitor with split-pane layout (sidebar + terminal), active agent sidebar list (persona avatar, live elapsed time, cost ticker, pulsing status dot), terminal-style output renderer (typed chunks: text/code/thinking, auto-scroll + scroll lock), tool call display (collapsible sections with tool icons, status indicators, formatted JSON I/O, mini diff view), multi-agent split view (CSS grid 2-3 panes, independent selectors, responsive fallback), agent control bar (stop/force stop with dialogs, model badges, live counters), agent history list (sortable table, expandable rows with terminal renderer), and history filters with aggregate stats (persona/outcome/cost filters, stats bar). Enhanced mock WS to support typed chunks. Added second running execution (EXEC_8) for split view testing.
-
-**Key decisions:**
-- `processChunks()` pairs tool_call + tool_result by `toolCallId` into `DisplayItem` union type
-- Mock WS `simulateAgentOutput` accepts typed chunks: plain strings → "text", objects with `chunkType`
-- Agent monitor uses Live/History tabs (shadcn Tabs)
-- History omitted date range filter (needs datepicker component) — acceptable scope reduction
-
-**Patterns established:**
-- Agent monitor features in `features/agent-monitor/` directory
-- Tool icon mapping: Read→FileText, Edit→PenLine, Write→FilePlus2, Grep→Search, Glob→FolderSearch, Bash→TerminalSquare, WebFetch/WebSearch→Globe
-- Model badge pattern: `modelConfig` maps opus→purple, sonnet→blue, haiku→emerald
-- Live counter: `useState` + `useEffect` with `setInterval(1000)` and `tabular-nums` CSS
-- StatusIndicator: Loader2 spinning blue (running), Check emerald (success), X red (error)
-
----
-
-## Sprint 4: Activity Feed (T2.7.1–T2.7.2) — 2026-03-29
-
-**Summary:** Built activity feed page with full chronological event stream (10 event types: state_change, comment_added, agent_started/completed/failed, task_created, proposal_created/approved/rejected, cost_alert), date grouping with sticky headers, persona avatars, entity links. Filter bar with event type checkboxes (expandable grid), persona/story/date dropdowns, clear all. Live WS subscription via `mockWs.subscribeAll()` with `wsEventToActivity()` converter, slide-down animation for new events, "new events" indicator when scrolled. Zustand activity store for unread nav badge (sky-blue, "9+" cap).
-
-**Key decisions:**
-- `useBaseActivityEvents()` builds from executions/comments/proposals mock data
-- `useLiveActivityEvents()` subscribes to all WS events, converts via mapping function
-- Activity store: simple `{unreadCount, increment, reset}` — reset on mount, increment on WS
-- CSS `@keyframes slide-down` animation for live events entering the feed
-
-**Patterns established:**
-- Activity feed features in `features/activity-feed/` directory
-- `useActivityStore` Zustand store in `stores/activity-store.ts`
-- Sidebar badge pattern: conditional Badge with count, "9+" overflow
-
----
-
-## Sprint 4: Workflow Designer early (T2.8.1–T2.8.3) — 2026-03-29
-
-**Summary:** Built workflow designer with 3-column layout (260px sidebar + flex canvas + 280px right panel). Sidebar: workflow list with type badges (violet=story, blue=task), state count, Default badge, hover actions (Duplicate, Delete with AlertDialog), "Create new" button. Canvas: SVG-based state machine with BFS layout algorithm (level-based horizontal positioning from initial state), cubic bezier arrows (forward right→left, backward bottom→bottom), arrowhead rotation, grid dot pattern, drag support with SVG coordinate transform and 5px click-vs-drag threshold. State editing: click-to-select with properties panel (name, 12-color swatch + hex input, initial/final checkboxes), add state via button/double-click, delete with transition cleanup confirmation.
-
-**Key decisions:**
-- SVG-based canvas (no external graph library) — custom BFS layout + bezier paths
-- `transitionKey()` = "from→to→name" for unique transition identification
-- `resolvedTransition` derived from workflow data (not separate state) to stay in sync after mutations
-- Click vs drag: 5px mouse movement threshold
-- `key={selectedStateName}` resets properties panel on selection change
-
-**Patterns established:**
-- Workflow designer features in `features/workflow-designer/` directory
-- `computeLayout()` — BFS from initial state, assigns levels, horizontal positioning with vertical centering
-- `computeArrowPath()` — cubic bezier, forward vs backward paths
-- `ConnectionHandle` on right edge for drag-to-connect
-- State/transition selection mutually exclusive in layout
-
----
-
-## Sprint 4: Workflow Designer continued (T2.8.4–T2.8.7) — 2026-03-29
-
-**Summary:** Completed workflow designer with transition creation (drag-to-connect from right-edge handle, preview dashed line, hit-test drop), transition editing (click-to-select arrows with 12px invisible hit area, properties panel with name input, delete via panel or keyboard), trigger configuration (persona dropdown with avatars/model badges, dispatch mode auto/propose/gated, max retries, advancement mode auto/approval/agent, no-trigger toggle), validation warnings (5 rules: missing/multiple initial as errors, no finals/orphans/unreachable finals/dead-ends as warnings, amber badges on states, collapsible bottom panel), and workflow templates (Workflows/Templates tabs, two pre-built templates matching fixtures, TemplatePreview mini SVG, "Use template" clones into editable workflow).
-
-**Key decisions:**
-- `OptionGroup<T>` generic segmented button component for radio-like selection (reusable)
-- Trigger config is local state + read from mock triggers — no save mutation yet
-- Validation via pure `validateWorkflow()` function + `useWorkflowValidation()` useMemo hook
-- Templates defined as constants matching mock fixture data, clone via createWorkflow mutation
-
-**Patterns established:**
-- `TransitionPropertiesPanel` — right panel for transition editing (mutually exclusive with state properties)
-- `ConnectionHandle` + drag preview + hit-test for creating transitions
-- Trigger lookup: `triggers.find(t => t.fromState === from && t.toState === to)`
-- Validation badges: `stateWarnings` map for O(1) lookup in canvas
-
----
-
-## Refinements: UI Polish & UX (R.1–R.6) — 2026-03-29
-
-**Summary:** Completed 6 refinement tasks: sidebar spacing normalization (consistent badge sizing h-4/h-5, padding px-2 py-2, space-y-0.5), sidebar transitions (duration-300 ease-in-out, scale/opacity badge animations, label width+opacity transitions), mobile responsiveness (fixed overlay with backdrop, slide-in via translate-x, auto-close on navigation, hamburger menu in mobile top bar), shared component extraction (moved CommentStream + ExecutionTimeline to features/common/ via git mv), story list view with master-detail panels (search/sort, compact StoryListRow with state badge + priority + progress bar, StoryDetailSidePanel at ~60% width, Board/List toggle), nested task detail panel (TaskDetailSidePanel with breadcrumb navigation, optional onTaskClick callback pattern for backward compatibility).
-
-**Key decisions:**
-- `sidebarContent` variable pattern for rendering same sidebar in desktop and mobile contexts
-- `mobileSidebarOpen` excluded from Zustand persist (always starts closed)
-- Breadcrumb navigation over nested panel stacking for task detail (simpler UX)
-- `onTaskClick` optional prop — renders `<button>` when provided, falls back to `<Link>` when not
-
-**Patterns established:**
-- Mobile sidebar: fixed overlay (md:hidden) + desktop inline (hidden md:block), backdrop bg-black/50
-- Master-detail: left panel `w-2/5` when detail open, `w-full` when not, transition-all duration-300
-- Story list features in `features/story-list/` directory
-- Shared reusable components in `features/common/` directory
+**Key patterns:** State badges use `${color}20` bg / `${color}40` border from WORKFLOW. priorityConfig record reused across views. WorkItemsStore: view/groupBy/sortBy persisted, filters ephemeral. childStats Map for progress. assignmentMap from personaAssignments + personaMap for triggers.
