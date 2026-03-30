@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — Review: W.1 (approved)
+
+**Reviewed:** API key storage, validation, and Settings UI wiring — `settings.ts`, `api-keys-section.tsx`, API layer.
+- Backend: GET (status check), POST (validate via real Anthropic API + store), DELETE (clear) ✓
+- `validateAnthropicKey()`: real POST to Anthropic, 401=invalid, else valid, network errors caught ✓
+- `maskKey()`: first 12 chars + "...****", short key fallback ✓
+- Frontend: fetches status on mount with loading skeleton ✓
+- Configured: masked key + green checkmark + Remove button (X icon, destructive) ✓
+- Unconfigured: password input + Test connection button ✓
+- Test connection = validate + store in one round trip, transitions to configured view on success ✓
+- Error messages from backend displayed ✓
+- API layer: client + mock + unified index, all 3 functions, typed interfaces ✓
+- Build: 0 errors, Tests: 159/159
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — W.1: Implement API key storage and validation
 
 **Task:** Add backend routes for API key CRUD, validate via Anthropic API test call, wire the Settings API Keys section.
