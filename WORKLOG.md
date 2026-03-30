@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-03-29 — A.11: Implement Router agent
+
+**Task:** Create router.ts with runRouter() that spawns haiku-model routing agent.
+
+**Done:**
+- Created `packages/backend/src/agent/router.ts`:
+  - **`runRouter(workItemId)`**: main entry point, returns boolean (routed or skipped)
+    - Looks up work item's projectId
+    - Checks `project.settings.autoRouting` — skips if explicitly `false`
+    - Gets/creates built-in router persona
+    - Calls `runExecution(workItemId, routerPersonaId)`
+  - **`getOrCreateRouterPersona()`**: finds or creates `__router__` persona
+    - Name: `__router__` (identifiable as system persona)
+    - Model: `haiku` (cost efficient)
+    - Allowed tools: `list_items`, `get_context`, `route_to_state` (read-only + routing)
+    - System prompt: explains routing logic (In Progress→In Review, review→Done, rejection→In Progress, stuck→Blocked)
+    - Settings: `{ isSystem: true }` to distinguish from user-created personas
+  - **`ROUTER_SYSTEM_PROMPT`**: detailed guidelines for state transition decisions
+  - **`ROUTER_TOOLS`**: 3 tools (list_items, get_context, route_to_state)
+
+**Files created:** `packages/backend/src/agent/router.ts`
+
+**Notes:** Backend build: 0 errors. Auto-routing defaults to enabled (only skips if `autoRouting === false`). Router persona created lazily on first use and reused thereafter.
+
+---
+
 ## 2026-03-29 — Review: A.10 (approved)
 
 **Reviewed:** Persona dispatch — `dispatch.ts` + `work-items.ts` PATCH integration.
