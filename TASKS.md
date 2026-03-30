@@ -41,7 +41,7 @@
 
 - [x] **AI.8** — Write test plans for Activity Feed. Create `tests/e2e/plans/activity-feed.md`: navigate to `/activity`, verify events render with icons, timestamps, descriptions, verify date grouping headers, apply a filter (e.g., by event type), verify list updates, clear filters.
 
-- [ ] **AI.9** — Write test plans for Settings. Create `tests/e2e/plans/settings-projects.md`: navigate to `/settings`, verify Projects section shows project list, create a new project with a valid path, verify it appears, delete it. Create `tests/e2e/plans/settings-workflow.md`: verify persona-per-state table renders all 8 states, verify auto-routing toggle works. Create `tests/e2e/plans/settings-appearance.md`: toggle dark/light mode, verify theme changes, toggle compact/comfortable density, verify layout adjusts.
+- [review] **AI.9** — Write test plans for Settings. Create `tests/e2e/plans/settings-projects.md`: navigate to `/settings`, verify Projects section shows project list, create a new project with a valid path, verify it appears, delete it. Create `tests/e2e/plans/settings-workflow.md`: verify persona-per-state table renders all 8 states, verify auto-routing toggle works. Create `tests/e2e/plans/settings-appearance.md`: toggle dark/light mode, verify theme changes, toggle compact/comfortable density, verify layout adjusts.
 
 - [ ] **AI.10** — Write test plans for Persona Manager. Create `tests/e2e/plans/persona-manager.md`: navigate to `/personas`, verify persona cards render (5 built-in), click a persona to open editor, verify name/description/model/tools fields render, edit a field and save, verify change persists.
 

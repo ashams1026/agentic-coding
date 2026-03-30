@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — AI.9: Write test plans for Settings
+
+**Task:** Create test plans for settings projects, workflow, and appearance sections.
+
+**Done:**
+- **`tests/e2e/plans/settings-projects.md`** — 11 steps: navigate to `/settings`, verify Projects default section (sidebar highlighted), verify project list (name+path rows), hover → edit/delete icons, click "Add project" → form with name/path inputs, type valid path → green "Valid path format", "Browse..." button present, submit → new project in list, delete → project removed.
+- **`tests/e2e/plans/settings-workflow.md`** — 12 steps: click "Workflow" sidebar item, verify auto-routing toggle (ON/OFF description + green/gray switch), toggle and verify text updates, verify persona-per-state table ("Persona Assignments" heading, columns State/Persona/Model), 5 configurable states (Planning/Decomposition/Ready/In Progress/In Review — excludes Backlog/Done/Blocked), non-configurable note footer, persona dropdowns with names, model badges (opus purple/sonnet blue/haiku green), workflow SVG diagram.
+- **`tests/e2e/plans/settings-appearance.md`** — 11 steps: click "Appearance" sidebar item, verify Data Source section (Mock/Live cards with amber/green dots), Theme section (Light/Dark/System cards with icons), click Dark → dark mode, click Light → light mode, Density section (Comfortable/Compact with preview bars), click Compact → tighter spacing, click Comfortable → normal spacing.
+
+**Files created:** `tests/e2e/plans/settings-projects.md`, `tests/e2e/plans/settings-workflow.md`, `tests/e2e/plans/settings-appearance.md`
+
+**Notes:** Plans reference actual source: `settings-layout.tsx` (sidebar with 8 sections, Projects default), `projects-section.tsx` (ProjectRow with hover edit/delete, ProjectForm with name/path/Browse, path validation), `workflow-config-section.tsx` (AutoRoutingToggle with role="switch", PersonaStateTable with 5 configurable states from `WORKFLOW.states` minus Backlog/Done/Blocked, ModelBadge, WorkflowDiagram SVG), `appearance-section.tsx` (ApiModeSection, ThemeSection with 3 options, DensitySection with 2 options). Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: AI.8 (approved)
 
 **Reviewed:** Activity Feed test plan.
