@@ -118,6 +118,15 @@ export function getQueueLength(): number {
   return queue.length;
 }
 
+/**
+ * Clear all active executions and the queue.
+ * Used on server restart to reset in-memory state.
+ */
+export function clearAll(): void {
+  activeExecutions.clear();
+  queue.length = 0;
+}
+
 // ── Cost tracking ────────────────────────────────────────────────
 
 /**

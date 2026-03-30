@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — E.10: Handle stale execution cleanup on server restart
+
+**Task:** On server startup, reset orphaned `running` executions to `failed`, clear in-memory concurrency/transition state.
+
+**Done:**
+- **`cleanupOrphanedState()` in `index.ts`** — Runs after migrations, before server start. Queries all executions with `status: "running"`, updates them to `failed` with `summary: "Interrupted by server restart"` and `outcome: "failure"`. Clears in-memory concurrency tracker and transition rate-limiter. Logs cleanup count.
+- **`clearAll()` in `concurrency.ts`** — New export that clears `activeExecutions` Set and `queue` array. Used by startup cleanup.
+- **3 new tests** in `startup-cleanup.test.ts`:
+  - Resets orphaned running execution (EXEC_3 from seed) to failed with correct summary
+  - `clearAll()` resets concurrency tracker and queue
+  - `clearTransitionLog()` resets rate limiter
+
+**Files modified:** `packages/backend/src/index.ts`, `packages/backend/src/agent/concurrency.ts`, `packages/backend/src/__tests__/startup-cleanup.test.ts` (new)
+
+**Notes:** Build: 0 errors. Tests: 156/156 passing (was 153). Work items are intentionally NOT reset — they stay in their current state and can be re-triggered by the user or auto-routing. This avoids state machine ambiguity about what state they "should" be in.
+
+---
+
 ## 2026-03-30 — Review: E.9 (approved)
 
 **Reviewed:** Execution error handling and retry button — `work-items.ts`, `work-items.test.ts`, `execution-timeline.tsx`, `client.ts`, `api.ts`, `index.ts`.
