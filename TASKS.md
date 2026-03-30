@@ -15,7 +15,7 @@
 
 - [x] **U.2** — Build Flow view. Replace the board view (`board-view.tsx`) with a new `packages/frontend/src/features/work-items/flow-view.tsx`. Render the hardcoded workflow as a state machine graph (reuse layout concepts from the workflow designer's `computeLayout` and `computeArrowPath`). Each state node is a live container showing: state name, colored header from `WORKFLOW`, item count badge, active agent count with pulsing indicator, mini avatar stack of assigned personas currently working, progress bar (items done / total in that state). Directed arrows between states per `WORKFLOW.transitions`. Click a state node to expand it inline or filter the detail panel to items in that state. The view should feel alive — pulsing dots for active agents, counts updating reactively.
 
-- [review] **U.3** — Update view toggle. In `packages/frontend/src/pages/work-items.tsx`: rename toggle options from `[List] [Board] [Tree]` to `[List] [Flow]`. Update icons — List keeps list icon, Flow gets a workflow/git-branch icon. Update URL param values (`?view=list`, `?view=flow`). Default view remains List.
+- [x] **U.3** — Update view toggle. In `packages/frontend/src/pages/work-items.tsx`: rename toggle options from `[List] [Board] [Tree]` to `[List] [Flow]`. Update icons — List keeps list icon, Flow gets a workflow/git-branch icon. Update URL param values (`?view=list`, `?view=flow`). Default view remains List.
 
 ### Detail Panel Editability
 

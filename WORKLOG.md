@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: U.3 (approved)
+
+**Reviewed:** View toggle update — `work-items.tsx`, `work-items-store.ts`.
+- WorkItemView type: `"list" | "flow"` — no "board" ✓
+- viewOptions: List + Flow with correct labels and icons (List, GitBranch) ✓
+- FlowView imported from correct path, BoardView reference removed ✓
+- URL param validation: `"list" || "flow"` ✓
+- Render: `{view === "flow" && <FlowView />}` ✓
+- Default view unchanged: "list" ✓
+- No stale "board"/Columns3 in pages/ or stores/ ✓
+- Frontend build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — U.3: Update view toggle
 
 **Task:** Replace Board with Flow in the view toggle, icons, URL params, and store type.
