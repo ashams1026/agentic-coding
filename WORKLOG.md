@@ -21,6 +21,22 @@
 
 ---
 
+## 2026-03-30 — E.3: Wire agent monitor to real WebSocket streaming
+
+**Task:** Connect terminal renderer to real `agent_output_chunk` WS events. Handle reconnection with re-fetch of active executions.
+
+**Done:**
+- **Terminal renderer already wired**: `subscribe("agent_output_chunk", ...)` was already mapping `event.chunk` + `event.chunkType` to `OutputChunk` type. The `processChunks` function pairs `tool_call`/`tool_result` via `toolCallId`. No changes needed to terminal-renderer.tsx.
+- **Backend event shape verified**: `execution-manager.ts` broadcasts `{ type, executionId, personaId, chunk, chunkType, timestamp }` — matches `AgentOutputChunkEvent` interface exactly.
+- **Reconnection callback**: Added `onReconnect(callback)` method to `RealWsClient` class. Fires registered callbacks when WS connection reopens after a disconnect. Exposed via unified `ws.ts` module.
+- **Re-fetch on reconnect**: In `useWsQuerySync`, registered a reconnect handler that invalidates `["executions"]`, `["workItems"]`, and `["dashboardStats"]` — so split-view's active execution list refreshes automatically.
+
+**Files modified:** `ws-client.ts`, `ws.ts`, `use-ws-sync.ts`
+
+**Notes:** Build: 0 errors. The `isReconnect` heuristic checks if listeners exist (meaning the app has been running). Terminal renderer didn't need changes — it was already correctly subscribing and mapping events from Sprint 5.
+
+---
+
 ## 2026-03-30 — E.2: Wire TanStack Query cache invalidation to WebSocket events
 
 **Task:** Subscribe to WS events and invalidate the correct TanStack Query cache keys for reactive UI updates.

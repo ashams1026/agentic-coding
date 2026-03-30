@@ -27,6 +27,11 @@ export function subscribeAll(handler: WsEventHandler<WsEvent>): Unsubscribe {
   return getClient().subscribeAll(handler);
 }
 
+/** Register a callback that fires on WebSocket reconnection. */
+export function onReconnect(callback: () => void): Unsubscribe {
+  return realWs.onReconnect(callback);
+}
+
 /**
  * Initialize the WS connection when in API mode.
  * Call this once at app startup or when apiMode changes.

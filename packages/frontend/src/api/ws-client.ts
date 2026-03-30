@@ -37,6 +37,7 @@ class RealWsClient {
   private ws: WebSocket | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private shouldReconnect = true;
+  private reconnectCallbacks = new Set<() => void>();
 
   /** Connect to the backend WebSocket server. */
   connect(): void {
@@ -47,6 +48,14 @@ class RealWsClient {
     const wsUrl = API_BASE_URL.replace(/^http/, "ws") + "/ws";
     this.ws = new WebSocket(wsUrl);
     this.shouldReconnect = true;
+
+    const isReconnect = this.shouldReconnect && this.reconnectTimer !== null || this.listeners["*"].size > 0;
+
+    this.ws.onopen = () => {
+      if (isReconnect) {
+        this.reconnectCallbacks.forEach((cb) => cb());
+      }
+    };
 
     this.ws.onmessage = (event) => {
       try {
@@ -102,6 +111,14 @@ class RealWsClient {
     this.listeners["*"].add(handler);
     return () => {
       this.listeners["*"].delete(handler);
+    };
+  }
+
+  /** Register a callback that fires on WebSocket reconnection. */
+  onReconnect(callback: () => void): Unsubscribe {
+    this.reconnectCallbacks.add(callback);
+    return () => {
+      this.reconnectCallbacks.delete(callback);
     };
   }
 

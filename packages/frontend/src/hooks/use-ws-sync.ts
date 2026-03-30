@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { subscribeAll } from "@/api/ws";
+import { subscribeAll, onReconnect } from "@/api/ws";
 import type { WsEvent } from "@agentops/shared";
 
 /**
@@ -46,6 +46,16 @@ export function useWsQuerySync() {
       }
     });
 
-    return unsub;
+    // On reconnect, invalidate all execution-related queries so agent monitor refreshes
+    const unsubReconnect = onReconnect(() => {
+      queryClient.invalidateQueries({ queryKey: ["executions"] });
+      queryClient.invalidateQueries({ queryKey: ["workItems"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
+    });
+
+    return () => {
+      unsub();
+      unsubReconnect();
+    };
   }, [queryClient]);
 }
