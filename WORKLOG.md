@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-29 — Review: T3.2.9 (approved)
+
+**Reviewed:** Proposal CRUD routes — `routes/proposals.ts`, `server.ts`, `shared/src/api.ts`.
+- 5 routes: GET list (?workItemId filter), GET by id, POST create, PATCH status, DELETE
+- Added CreateProposalRequest to shared api.ts with ProposalType import
+- Serializer correctly converts Date→ISO for createdAt, casts all branded IDs
+- POST defaults: status=pending, payload={}, createdAt=now
+- PATCH: only updates status (feedback field intentionally not stored — no DB column)
+- 404/400 error handling, correct HTTP status codes (201/204)
+- Registered in server.ts
+- Backend typecheck: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T3.2.9: Implement proposal API routes
 
 **Task:** Create proposal CRUD routes with workItemId filtering.
