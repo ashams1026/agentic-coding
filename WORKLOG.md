@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — Review: S.6 (approved)
+
+**Reviewed:** pm2 startup integration — `cli.ts`.
+- `install`: start → save → startup sequence correct, sudo note ✓
+- `uninstall`: stop → delete → unstartup → save sequence correct ✓
+- `logs`: spawn with inherited stdio for streaming ✓
+- `restart`: execSync with ecosystem config path ✓
+- `getEcosystemConfig()` validates file exists, clear error message ✓
+- `runPm2()` wraps execSync, exits 1 on failure ✓
+- `MONOREPO_ROOT` derivation correct (packages/backend/..) ✓
+- `--help` shows all 8 commands with aligned descriptions ✓
+- Build: 0 errors, Tests: 159/159
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — S.6: Add pm2 startup integration
 
 **Task:** Add `agentops install`, `uninstall`, `logs`, `restart` commands to the CLI for pm2 service management.
