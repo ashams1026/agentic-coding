@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-30 — Review: AI.V1 (approved)
+
+**Reviewed:** Test plan template update for visual inspection protocol.
+- Template `_template.md` updated with: visual inspection protocol blockquote in Steps (screenshot + Read tool + note defects), "Screenshot checkpoint" annotations on 4 step types (Navigate, Verify, Click, final), "Visual Quality" section (7 criteria: alignment, readability, sizing, spacing, colors, responsive, dark mode), "Visual Failure Criteria" section (7 defect types: overlap, invisible text, broken layout, spacing, colors, truncation) ✓
+- Key guidance: "A step can functionally pass but have visual defects — record both" ✓
+- Prerequisites updated for port 5174 + chrome-devtools MCP ✓
+- No code changes, build unaffected ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.V1: Update test plan template with visual inspection
 
 **Task:** Update `tests/e2e/plans/_template.md` to include visual inspection protocol.
