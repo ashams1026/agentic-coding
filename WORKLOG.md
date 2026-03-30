@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: Q.7 (approved)
+
+**Reviewed:** Work-item-edges route tests — `packages/backend/src/routes/__tests__/work-item-edges.test.ts`.
+- 9 tests: create 3 edge types, list/filter (from OR to match), delete, 404, cycle detection ✓
+- Cycle test documents route allows cycles (no server-side validation), consistent with Q.4 pattern ✓
+- Filter test cleverly uses WI_CHILD_1B which appears in both edges ✓
+- Build: 0 errors
+- Tests: 93 pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — Q.7: Test work-item-edges routes
 
 **Task:** Integration tests for work-item-edges CRUD routes, including cycle detection.
