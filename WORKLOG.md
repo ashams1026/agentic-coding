@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — Review: E.4 (approved)
+
+**Reviewed:** Wire activity feed to real WebSocket events — `activity-feed.tsx`, `recent-activity.tsx`, `client.ts`, `mocks/api.ts`, `api/index.ts`, `query-keys.ts`, `use-comments.ts`, `hooks/index.ts`.
+- `fixtures` import fully removed from both activity components ✓
+- `getRecentComments()` added to real client, mock API, and unified index ✓
+- `useRecentComments()` hook with `["comments", "recent"]` query key ✓
+- Both components null-guard comments data and include in `useMemo` deps ✓
+- Hardcoded mock events (router decision, cost alert) removed ✓
+- Live WS events (`useLiveActivityEvents` + `wsEventToActivity`) unchanged ✓
+- WS invalidation: `["comments"]` prefix covers `["comments", "recent"]` ✓
+- Minor: stale comment "Build events from mock data" at line 191 — cosmetic only
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — E.4: Wire activity feed to real WebSocket events
 
 **Task:** Replace mock data (`fixtures.comments`, hardcoded events) in activity feed and dashboard recent activity with real API calls. Keep live WS event streaming.

@@ -30,7 +30,7 @@
 
 - [x] **E.3** — Wire agent monitor to real WebSocket streaming. In `packages/frontend/src/features/agent-monitor/`: connect the terminal renderer to real `agent_output_chunk` WebSocket events (not mock). Map real event payloads (`{ chunkType, content, toolName, toolInput, toolResult }`) to the existing `DisplayItem` types the renderer expects. Verify live streaming works: start an execution, see output appear in real-time. Handle reconnection — re-fetch active executions on WS reconnect.
 
-- [review] **E.4** — Wire activity feed to real WebSocket events. In `packages/frontend/src/features/activity-feed/`: replace `useBaseActivityEvents()` (which builds from mock data) with a real API call to fetch recent events. Subscribe to all WS event types and convert to activity feed entries using the existing `wsEventToActivity()` converter. Verify live events slide in at the top.
+- [x] **E.4** — Wire activity feed to real WebSocket events. In `packages/frontend/src/features/activity-feed/`: replace `useBaseActivityEvents()` (which builds from mock data) with a real API call to fetch recent events. Subscribe to all WS event types and convert to activity feed entries using the existing `wsEventToActivity()` converter. Verify live events slide in at the top.
 
 ### Pipeline Smoke Test
 
