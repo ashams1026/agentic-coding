@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: P.11 (approved)
+
+**Reviewed:** Loading skeletons and empty states — `list-view.tsx`, `detail-panel.tsx`, `dashboard.tsx`.
+- List view: 5-row skeleton with badge+text+avatar shimmer pattern ✓
+- Empty states: filter-aware messaging ("No items match" vs "No work items yet") ✓
+- Detail panel: loading skeleton (title+badges+content), children empty message ✓
+- Dashboard: shimmer placeholder replaces "—" text during loading ✓
+- Flow view + comment stream correctly identified as already handled ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — P.11: Add loading and empty states
 
 **Task:** Add skeleton loading states and empty state messaging across the app.
