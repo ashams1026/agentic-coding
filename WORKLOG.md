@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-29 — T3.2.10: Implement aggregate/dashboard API routes
+
+**Task:** Create read-only aggregate endpoints mirroring the frontend mock functions.
+
+**Done:**
+- Created `routes/dashboard.ts`: 4 routes
+  - `GET /api/dashboard/stats` → DashboardStats (activeAgents, pendingProposals, needsAttention, todayCostUsd)
+  - `GET /api/dashboard/cost-summary` → CostSummary (7-day dailySpend, monthTotal, monthCap from project settings)
+  - `GET /api/dashboard/execution-stats` → ExecutionStats (totalRuns, totalCostUsd, successRate, averageDurationMs)
+  - `GET /api/dashboard/ready-work` → ReadyWorkItem[] (work items in "Ready" state, joined with persona, limit 5)
+- All routes compute aggregates in JS matching the mock implementations exactly
+- Ready-work route serializes full WorkItem and Persona entities with proper branded ID casts
+- Required type casts for DB→entity: Priority, PersonaModel, ExecutionId, ExecutionOutcome, RejectionPayload
+- Registered in `server.ts`
+
+**Files created:** `packages/backend/src/routes/dashboard.ts`
+**Files modified:** `packages/backend/src/server.ts`
+
+**Notes:** Backend typecheck: 0 errors. These are read-only aggregate routes — no create/update/delete. The ready-work route needed extensive type casting because the compound WorkItem+Persona response has many branded/union types that the DB returns as plain strings.
+
+---
+
 ## 2026-03-29 — Review: T3.2.9 (approved)
 
 **Reviewed:** Proposal CRUD routes — `routes/proposals.ts`, `server.ts`, `shared/src/api.ts`.

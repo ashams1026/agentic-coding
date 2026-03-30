@@ -7,6 +7,7 @@ import { commentRoutes } from "./routes/comments.js";
 import { personaRoutes } from "./routes/personas.js";
 import { executionRoutes } from "./routes/executions.js";
 import { proposalRoutes } from "./routes/proposals.js";
+import { dashboardRoutes } from "./routes/dashboard.js";
 
 export async function buildServer() {
   const server = Fastify({
@@ -38,6 +39,7 @@ export async function buildServer() {
   await personaRoutes(server);
   await executionRoutes(server);
   await proposalRoutes(server);
+  await dashboardRoutes(server);
 
   return server;
 }
