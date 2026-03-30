@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-29 — Review: A.15 (approved)
+
+**Reviewed:** Concurrency limiter — `concurrency.ts`, `dispatch.ts`, `execution-manager.ts`.
+- canSpawn: reads project maxConcurrent setting, checks activeExecutions.size ✓
+- trackExecution: adds to active Set ✓
+- enqueue: priority-ordered insertion (p0 first, FIFO within same priority) ✓
+- onComplete: removes from active, dequeues next entry ✓
+- dispatch.ts: canSpawn check before runExecution, enqueue on capacity ✓
+- execution-manager: trackExecution on start, onComplete on both success and failure paths ✓
+- Build: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — A.15: Implement concurrency limiter
 
 **Task:** Track active executions, cap concurrency, queue overflow tasks.
