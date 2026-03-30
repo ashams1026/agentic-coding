@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-29 — Review: T3.2.5 (approved)
+
+**Reviewed:** Comment routes — `routes/comments.ts`, `server.ts`.
+- 4 routes: GET list (?workItemId filter), GET by id, POST create, DELETE
+- Serializer correctly converts Date→ISO and casts branded IDs
+- Uses CreateCommentRequest from shared, createId.comment() for ID generation
+- 404 handling, correct HTTP status codes (201/204)
+- Registered in server.ts
+- Backend typecheck: 0 errors
+- Verdict: **approved**
+
+---
+
 ## 2026-03-29 — T3.2.5: Implement comment API routes
 
 **Task:** Create comment CRUD routes with workItemId filtering.
