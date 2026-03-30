@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — AI.4: Write test plans for Work Items — Flow View
+
+**Task:** Create test plan for work items flow view.
+
+**Done:**
+- **`tests/e2e/plans/work-items-flow-view.md`** — 13 steps: navigate to `/items?view=flow`, verify all 8 state nodes (Backlog, Planning, Decomposition, Ready, In Progress, In Review, Done, Blocked — 7 in row + Blocked below center), verify item count badges on each node, verify agent status ("idle" or "N active" with green pulsing dot), verify SVG arrows with arrowheads between states following `WORKFLOW.transitions`, cross-check node count sum against list view total, click state node to show filtered items panel (colored dot + state name + count + item rows with priority/title/persona), click item to select and open detail panel, click node again to deselect, click zero-count node to see "No items in this state." message.
+
+**Files created:** `tests/e2e/plans/work-items-flow-view.md`
+
+**Notes:** Plan references actual layout from `flow-view.tsx`: static positions computed from `WORKFLOW.states`, `computeArrowPath` for SVG arrows, `StateNode` component (colored header, count badge, active agents indicator, avatar stack, progress bar), `FilteredItemsList` below graph on node click, toggle filter via `handleNodeClick`. Build: 0 errors.
+
+---
+
 ## 2026-03-30 — Review: AI.3 (approved)
 
 **Reviewed:** Work Items list view and creation test plans.
