@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: PS.10 (approved)
+
+**Reviewed:** Folder browser for project creation/edit form.
+- Backend: `POST /api/settings/browse-directory` accepts `{ startPath? }`, defaults to `homedir()`, returns `{ currentPath, entries }` ✓
+- Uses `readdirSync` with `withFileTypes`, filters directories only, hides dotfiles, sorts alphabetically ✓
+- Error handling: catches unreadable directories, returns 400 ✓
+- Frontend API: `browseDirectory()`, `DirectoryEntry`, `BrowseDirectoryResult` types ✓
+- FolderBrowser modal: Dialog with breadcrumb bar (clickable root + segments), ScrollArea listing, ".." parent nav, loading/error/empty states ✓
+- ProjectForm: text input preserved with FolderOpen icon + "Browse..." button ✓
+- Dark mode: uses muted-foreground, accent, bg-muted/50 ✓
+- Build: 0 errors ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — PS.10: Add folder browser to project creation form
 
 **Task:** Replace text input for project path with a folder picker (text input + "Browse..." button + modal folder browser).
