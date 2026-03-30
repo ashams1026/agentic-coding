@@ -17,6 +17,7 @@ import { comments, workItems, workItemEdges, projectMemories } from "../db/schem
 import { createId, WORKFLOW, isValidTransition } from "@agentops/shared";
 import type { CommentId, WorkItemId, PersonaId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
+import { checkParentCoordination } from "./coordination.js";
 
 // ── Context passed to the MCP server ────────────────────────────
 
@@ -305,6 +306,11 @@ export function createMcpServer(context: McpContext): McpServer {
           timestamp: now.toISOString(),
         });
 
+        // Parent-child coordination (non-blocking)
+        checkParentCoordination(workItemId, targetState).catch((err) => {
+          console.error(`Coordination failed for ${workItemId}:`, err);
+        });
+
         return {
           content: [{ type: "text" as const, text: JSON.stringify({ workItemId, fromState, toState: targetState }) }],
         };
@@ -495,6 +501,11 @@ export function createMcpServer(context: McpContext): McpServer {
           toState: "Blocked",
           triggeredBy: (context.personaId as PersonaId) || "system",
           timestamp: now.toISOString(),
+        });
+
+        // Parent-child coordination (non-blocking)
+        checkParentCoordination(workItemId, "Blocked").catch((err) => {
+          console.error(`Coordination failed for ${workItemId}:`, err);
         });
 
         return {

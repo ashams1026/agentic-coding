@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-29 — A.13: Implement parent-child state coordination
+
+**Task:** After child state changes, coordinate parent state automatically.
+
+**Done:**
+- Created `packages/backend/src/agent/coordination.ts`:
+  - `checkParentCoordination(workItemId, newState)`: entry point, looks up parentId, dispatches to handlers
+  - `handleChildDone(parentId)`: queries all children of parent, if all Done → auto-advance parent to "In Review", post system comment, broadcast state_change + comment_created
+  - `handleChildBlocked(childId, parentId)`: post system comment on parent noting which child is blocked, broadcast comment_created
+  - Skips top-level items (no parent) and parents already in Done/In Review
+- Wired into 3 state-change handlers (all non-blocking with `.catch()`):
+  - `mcp-server.ts` `route_to_state` tool — after state change broadcast
+  - `mcp-server.ts` `flag_blocked` tool — after state change broadcast
+  - `work-items.ts` PATCH route — after dispatch call
+
+**Files created:** `packages/backend/src/agent/coordination.ts`
+**Files modified:** `packages/backend/src/agent/mcp-server.ts`, `packages/backend/src/routes/work-items.ts`
+
+**Notes:** Build: 0 errors. Parent advance state is "In Review" (const at top of module). Comments include metadata for coordination type (`all_children_done`, `child_blocked`).
+
+---
+
 ## 2026-03-29 — Review: A.12 (approved)
 
 **Reviewed:** Wire dispatch and routing into execution lifecycle.

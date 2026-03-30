@@ -17,7 +17,7 @@
 
 ### State Coordination & Rejection (T4.4 + T4.5)
 
-- [ ] **A.13** — Implement parent-child state coordination. In `packages/backend/src/agent/coordination.ts`: after any child work item reaches Done, check if all siblings are also Done. If yes, auto-advance parent to "In Review" state (configurable). If any child enters Blocked, add a visual indicator on parent (flag field or comment). Wire into the state-change handler.
+- [review] **A.13** — Implement parent-child state coordination. In `packages/backend/src/agent/coordination.ts`: after any child work item reaches Done, check if all siblings are also Done. If yes, auto-advance parent to "In Review" state (configurable). If any child enters Blocked, add a visual indicator on parent (flag field or comment). Wire into the state-change handler.
 
 - [ ] **A.14** — Implement rejection and retry logic. In execution-manager: when Router routes from "In Review" back to "In Progress" (rejection), increment a retry counter on the work item. Carry structured rejection payload: `{ decision, reason, severity, retry_hint }`. Append to executionContext. On max retries (default 3): auto-transition to Blocked, broadcast notification. Persona on next run receives rejection context.
 
