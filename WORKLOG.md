@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: D.3 (approved)
+
+**Reviewed:** Architecture documentation — system diagram, packages, data flow, agent lifecycle.
+- ASCII system diagram: browser (5173) ↔ backend (3001) with REST/WS, SQLite, Claude SDK, MCP, shared package ✓
+- Shared package: 5 files (entities, api, workflow, ws-events, ids) with contents ✓
+- Frontend: 8 directories + 9 key libraries (React 19, Vite, Tailwind v4, shadcn/ui, TanStack Query, Zustand, React Router, Recharts, dnd-kit) ✓
+- Backend: 10 files/dirs + 7 key libraries (Fastify, better-sqlite3, Drizzle, WS, Claude SDK, pino, pm2) ✓
+- Agent engine: 9 modules table (types, executor, manager, dispatch, router, coordination, concurrency, memory, mcp-server) ✓
+- Request lifecycle flow: UI → Query → REST → Drizzle → SQLite → broadcast → WS → invalidation → re-render ✓
+- Agent execution lifecycle: state change → dispatch checks → runExecution → spawn → MCP → completion → router → next dispatch ✓
+- WebSocket events: 9 types with triggers and cache invalidation targets ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — D.3: Document the architecture
 
 **Task:** Create `docs/architecture.md` with system diagram, package details, data flow, agent lifecycle.
