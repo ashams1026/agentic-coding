@@ -74,3 +74,27 @@
 *Wiring (A.12):* Execution chain: persona→runRouter→dispatchForState. Transition rate limiter: in-memory Map, max 10/hour/workItem, self-cleaning. Both router and dispatch paths gated by canTransition().
 
 **Key patterns:** Non-blocking execution via `.catch()`. Cost as cents in DB. `__router__` persona name as discriminator. authorType "system" for routing comments. broadcast() for all WS events. Serializer functions for DB→entity conversion.
+
+---
+
+## Sprint 8: A.13–A.18 (coordination, concurrency, memory) reviews — archived 2026-03-30
+
+*A.13–A.14 (reviews approved):* Parent-child state coordination (all-children-done→"In Review", child-blocked→system comment). Rejection/retry logic (structured payload, max 3→Blocked). Both reviewed and approved.
+
+*A.15–A.16 (reviews approved):* Concurrency limiter (in-memory Set, canSpawn, FIFO queue with priority). Cost tracking (costUsd accumulation, monthly cap check, cost_update WS broadcast). Both reviewed and approved.
+
+*A.17–A.18 (reviews approved):* Project memory creation (haiku summary on top-level Done, insert project_memories). Memory consolidation/retrieval (threshold-based, getRecentMemories with token budget). Both reviewed and approved.
+
+---
+
+## Sprint 9: Q.1–Q.4 (test infra + early route tests) — archived 2026-03-30
+
+*Q.1 (work + review approved):* Vitest setup — vitest@^4.1.2, root config with `include: ["packages/*/src/**/*.test.ts"]`, test scripts in root/backend/shared.
+
+*Q.2 (work + rejected + rework + approved):* Test DB helper — createTestDb() (in-memory SQLite + Drizzle migrations), seedTestDb() (1 project, 5 personas, 9 work items, etc.), TEST_IDS export. Rejected for TS2532 (`projects[0].id` strict mode), fixed with `!` assertion.
+
+*Q.3 (work + review approved):* Workflow state machine tests — 24 tests covering getValidTransitions (all 8 states), isValidTransition (valid/invalid/unknown), getStateByName, WORKFLOW constants, Blocked transitions, Backlog guard.
+
+*Q.4 (work + rejected + rework + approved):* Work items CRUD route tests — 19 tests via Fastify app.inject(). Found & fixed JSON double-encoding bug in PATCH route (labels, context). Rejected for missing invalid-state-transition test, fixed by adding test documenting route allows Backlog→Done (validation at MCP/workflow level, not route level).
+
+**Key patterns established:** DB mock via getter (`vi.mock("../../db/connection.js", () => ({ get db() { return mockDb.db; } }))`). Agent side-effects mocked (dispatch, coordination, memory). Test DB isolated per test (in-memory SQLite). `vi.hoisted()` for mock functions used in vi.mock factories. `vi.waitFor()` for background async operations. JSON double-encoding bug: Drizzle JSON columns auto-serialize, so manual `JSON.stringify()` causes double-encoding — removed from work-items.ts, personas.ts, executions.ts.

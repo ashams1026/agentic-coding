@@ -136,10 +136,26 @@
 
 ---
 
-## Sprint 9: Testing (partial) — in progress
+## Sprint 9: Testing — completed 2026-03-30
 
 ### Test Infrastructure
 
 - [x] **Q.1** — Set up Vitest in the monorepo. vitest@^4.1.2, root config, test scripts in root/backend/shared. *(completed 2026-03-29)*
 - [x] **Q.2** — Create test database helper. createTestDb() (in-memory SQLite + migrations), seedTestDb() (realistic fixtures), TEST_IDS. *(completed 2026-03-30)*
 - [x] **Q.3** — Test workflow state machine. 24 tests for getValidTransitions, isValidTransition, getStateByName, constants, edge cases. *(completed 2026-03-30)*
+
+### Backend API Integration Tests
+
+- [x] **Q.4** — Test work items CRUD routes. 19 tests: POST (top-level + child), GET (by id, list with filters), PATCH (fields, state transitions), DELETE (leaf + recursive). Found & fixed double-encoding bug in PATCH. *(completed 2026-03-30)*
+- [x] **Q.5** — Test persona and persona-assignment routes. 11 persona tests (full CRUD + edge cases), 6 assignment tests (list/filter, upsert). Fixed double-encoding in personas.ts. *(completed 2026-03-30)*
+- [x] **Q.6** — Test comments, executions, and proposals routes. 6 comments tests, 7 executions tests, 7 proposals tests. Fixed double-encoding in executions.ts. *(completed 2026-03-30)*
+- [x] **Q.7** — Test work-item-edges routes. 9 tests: create 3 edge types, list/filter, delete, cycle detection. *(completed 2026-03-30)*
+- [x] **Q.8** — Test dashboard aggregate routes. 7 tests: empty DB baselines, seeded aggregation (stats, cost-summary, execution-stats, ready-work). *(completed 2026-03-30)*
+
+### Agent Logic Unit Tests
+
+- [x] **Q.9** — Test concurrency limiter. 14 tests: canSpawn (under/at/over limit), trackExecution, enqueue, onComplete dequeue (priority + FIFO). *(completed 2026-03-30)*
+- [x] **Q.10** — Test parent-child coordination. 5 tests: all-children-done advance, partial no-advance, child blocked comment, no double-advance, top-level no-op. *(completed 2026-03-30)*
+- [x] **Q.11** — Test dispatch logic. 6 tests: spawn on assignment, no-op cases (Backlog/Done/non-existent), concurrency limit enqueue, under-limit spawn. *(completed 2026-03-30)*
+- [x] **Q.12** — Test MCP tool implementations. 10 tests via MCP Client + InMemoryTransport: post_comment, create_children, route_to_state, flag_blocked, list_items, get_context. *(completed 2026-03-30)*
+- [x] **Q.13** — Test execution manager lifecycle. 10 tests: runExecution lifecycle (create/success/failure), canTransition rate limiting (under/at limit, blocking, isolation), handleRejection (retry/blocked/payload). *(completed 2026-03-30)*

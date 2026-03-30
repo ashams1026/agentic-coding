@@ -5,39 +5,6 @@
 
 ---
 
-## Sprint 9: Testing
-
-> First testing sprint. Sets up Vitest, then covers the highest-value backend logic.
-> Principle: never mock the core logic under test. Integration tests use real SQLite. Unit tests cover pure functions.
-> Agent SDK calls are the one thing we stub — everything else is real.
-> Completed: Q.1 (Vitest setup), Q.2 (test DB helper), Q.3 (workflow tests) — see TASKS_ARCHIVE.md
-
-### Backend API Integration Tests
-
-- [x] **Q.4** — Test work items CRUD routes. In `packages/backend/src/routes/__tests__/work-items.test.ts`: spin up Fastify with test DB via `app.inject()`. Test: create top-level item, create child item with parentId, get item by id, list items with `?parentId=` filter, list items with `?projectId=` filter, update item fields (title, description, priority), update `currentState` (valid transition), reject invalid state transition, delete item. Verify response shapes and status codes.
-
-- [x] **Q.5** — Test persona and persona-assignment routes. In `packages/backend/src/routes/__tests__/personas.test.ts`: test persona CRUD (create, get, list, update, delete). In `packages/backend/src/routes/__tests__/persona-assignments.test.ts`: test upsert assignment, get assignments by project, verify assignment links valid persona to valid state.
-
-- [x] **Q.6** — Test comments, executions, and proposals routes. In `packages/backend/src/routes/__tests__/comments.test.ts`: test create comment with different authorTypes (agent, user, system), list comments filtered by workItemId. In `packages/backend/src/routes/__tests__/executions.test.ts`: test create execution, update status/outcome, list by workItemId. In `packages/backend/src/routes/__tests__/proposals.test.ts`: test create proposal, update status (approve/reject), list by workItemId.
-
-- [x] **Q.7** — Test work-item-edges routes. In `packages/backend/src/routes/__tests__/work-item-edges.test.ts`: test create edge (depends_on, blocks, related_to), list edges for a work item, delete edge. Test cycle detection — creating A→B→C→A should fail.
-
-- [x] **Q.8** — Test dashboard aggregate routes. In `packages/backend/src/routes/__tests__/dashboard.test.ts`: test stats endpoint returns correct counts (active agents, pending proposals, blocked items, today's cost). Test with empty DB (all zeros). Test with seeded data (verify aggregation logic).
-
-### Agent Logic Unit Tests
-
-- [x] **Q.9** — Test concurrency limiter. In `packages/backend/src/agent/__tests__/concurrency.test.ts`: test `canSpawn()` returns true when under limit, false when at limit. Test `enqueue()` adds to queue, `onComplete()` dequeues by priority (P0 before P3). Test queue ordering is FIFO within same priority. Test `getActiveCount()` and `getQueueLength()`. No DB needed — this is in-memory logic.
-
-- [x] **Q.10** — Test parent-child coordination. In `packages/backend/src/agent/__tests__/coordination.test.ts`: use test DB with a parent + 3 children. Test: when all children are Done, parent advances to "In Review". Test: when 2/3 children are Done, parent does NOT advance. Test: when a child enters Blocked, system comment is posted on parent. Test: manual parent state override is not blocked by children state.
-
-- [x] **Q.11** — Test dispatch logic. In `packages/backend/src/agent/__tests__/dispatch.test.ts`: use test DB with persona assignments. Test: `dispatchForState()` spawns executor when persona is assigned. Test: no-op when no persona assigned (Backlog, Done). Test: respects concurrency limit (enqueues instead of spawning). Stub the actual executor spawn — we're testing dispatch decisions, not agent execution.
-
-- [x] **Q.12** — Test MCP tool implementations. In `packages/backend/src/agent/__tests__/mcp-tools.test.ts`: use test DB. Test `post_comment` inserts a comment and returns success. Test `create_children` creates child work items with correct parentId and edges. Test `route_to_state` validates transition and updates state. Test `route_to_state` rejects invalid transition. Test `flag_blocked` sets state to Blocked. Test `list_items` returns filtered results. Test `get_context` returns work item with execution history.
-
-- [x] **Q.13** — Test execution manager lifecycle. In `packages/backend/src/agent/__tests__/execution-manager.test.ts`: use test DB, stub ClaudeExecutor. Test: `runExecution()` creates DB record with status "running". Test: on executor success, record updated to "completed" with cost/duration. Test: on executor failure, record updated to "failed". Test: transition rate limiting — more than 10 transitions per item per hour is blocked. Test: rejection increments retry counter, max retries triggers Blocked state.
-
----
-
 ## Sprint 10: UI Polish & UX Refinements
 
 > Design-eyed polish pass. Standardize typography, tighten spacing, add micro-interactions, improve filtering, make the detail panel resizable.
