@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — Review: D.4 (approved)
+
+**Reviewed:** Data model documentation — entities, relationships, hierarchy, edges, executionContext.
+- ASCII ER diagram: all 9 entities with relationship cardinality ✓
+- 9 entity sections: Project, WorkItem, WorkItemEdge, PersonaAssignment, Persona, Execution, Comment, Proposal, ProjectMemory ✓
+- Every field documented with type and description ✓
+- WorkItem hierarchy: tree diagram, auto-advance on all-children-Done, blocked notification ✓
+- Execution context: TypeScript interface, iterative refinement explanation, system prompt integration ✓
+- Dependency graph: 3 edge types (blocks, depends_on, related_to) with semantics ✓
+- RejectionPayload: structure + 3-retry escalation to Blocked ✓
+- PersonaAssignment composite PK `(projectId, stateName)` ✓
+- ProjectMemory consolidation mechanism ✓
+- ID format table: 8 prefixes ✓
+- Storage: WAL, JSON columns, timestamp format ✓
+- All verified against `entities.ts` and `schema.ts` ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — D.4: Document the data model
 
 **Task:** Create `docs/data-model.md` with all entities, fields, relationships, hierarchy, edges, executionContext.
