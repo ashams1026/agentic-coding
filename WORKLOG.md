@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: Q.11 (approved)
+
+**Reviewed:** Dispatch logic tests — `packages/backend/src/agent/__tests__/dispatch.test.ts`.
+- 6 tests: spawn on assignment (Planning→PM verified), 3 no-op cases (Backlog, Done, non-existent), enqueue at limit, spawn under limit ✓
+- Executor properly stubbed via mockRunExecution — verifies workItemId + personaId args ✓
+- Real concurrency module with trackExecution state management + afterEach cleanup ✓
+- Build: 0 errors
+- Tests: 125 pass
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — Q.11: Test dispatch logic
 
 **Task:** Tests for dispatch logic — persona assignment lookup, executor spawning, concurrency limits.
