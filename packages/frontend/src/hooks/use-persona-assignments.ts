@@ -3,10 +3,11 @@ import type { ProjectId, UpsertPersonaAssignmentRequest } from "@agentops/shared
 import { getPersonaAssignments, updatePersonaAssignment } from "@/api";
 import { queryKeys } from "./query-keys";
 
-export function usePersonaAssignments(projectId: ProjectId) {
+export function usePersonaAssignments(projectId: ProjectId | null) {
   return useQuery({
-    queryKey: queryKeys.personaAssignments(projectId),
-    queryFn: () => getPersonaAssignments(projectId),
+    queryKey: queryKeys.personaAssignments(projectId!),
+    queryFn: () => getPersonaAssignments(projectId!),
+    enabled: !!projectId,
   });
 }
 

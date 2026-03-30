@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — PS.6: Scope persona assignments to selected project
+
+**Task:** Remove hardcoded `"pj-agntops"` project IDs from all persona assignment call sites, use `useSelectedProject()` instead.
+
+**Done:**
+- Updated `usePersonaAssignments` hook to accept `ProjectId | null` with `enabled: !!projectId` guard (same pattern as `useProject`)
+- Replaced hardcoded `"pj-agntops" as ProjectId` in `detail-panel.tsx` → uses `projectId` from `useSelectedProject()`
+- Replaced hardcoded `"pj-agntops" as ProjectId` in `board-view.tsx` → uses `projectId` from `useSelectedProject()`
+- Removed `const PROJECT_ID = "pj-agntops"` from `workflow-config-section.tsx` → uses `projectId` from `useSelectedProject()`
+- Fixed `updateAssignment.mutate` in workflow config to use dynamic `projectId` with null guard
+- Also fixed hardcoded `projectId` in `work-items.tsx` quick-add handler → uses `projectId` from `useSelectedProject()`
+- Removed unused `ProjectId` type imports from `board-view.tsx` and `detail-panel.tsx`
+
+**Files modified:** `packages/frontend/src/hooks/use-persona-assignments.ts`, `packages/frontend/src/features/work-items/detail-panel.tsx`, `packages/frontend/src/features/work-items/board-view.tsx`, `packages/frontend/src/features/settings/workflow-config-section.tsx`, `packages/frontend/src/pages/work-items.tsx`
+
+**Notes:** Zero hardcoded `"pj-agntops"` references remain outside fixtures.ts. Build: 0 errors after removing unused imports.
+
+---
+
 ## 2026-03-30 — Review: PS.5 (approved)
 
 **Reviewed:** Scoping executions, comments, and proposals to selected project — full stack.

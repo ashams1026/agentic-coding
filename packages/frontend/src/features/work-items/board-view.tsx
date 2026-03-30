@@ -28,7 +28,7 @@ import { cn } from "@/lib/utils";
 import { useWorkItems, usePersonas, useUpdateWorkItem, usePersonaAssignments, useSelectedProject } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { WORKFLOW } from "@agentops/shared";
-import type { WorkItem, WorkItemId, Priority, Persona, ProjectId } from "@agentops/shared";
+import type { WorkItem, WorkItemId, Priority, Persona } from "@agentops/shared";
 
 // ── Priority config ─────────────────────────────────────────────
 
@@ -291,7 +291,7 @@ export function BoardView() {
   const { projectId } = useSelectedProject();
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined);
   const { data: personas } = usePersonas();
-  const { data: assignments } = usePersonaAssignments("pj-agntops" as ProjectId);
+  const { data: assignments } = usePersonaAssignments(projectId);
   const updateWorkItem = useUpdateWorkItem();
   const { selectedItemId, setSelectedItemId } = useWorkItemsStore();
 

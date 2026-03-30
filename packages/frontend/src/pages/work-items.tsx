@@ -9,8 +9,7 @@ import { ListView } from "@/features/work-items/list-view";
 import { FlowView } from "@/features/work-items/flow-view";
 import { DetailPanel } from "@/features/work-items/detail-panel";
 import { useWorkItemsStore, type WorkItemView } from "@/stores/work-items-store";
-import { useCreateWorkItem } from "@/hooks";
-import type { ProjectId } from "@agentops/shared";
+import { useCreateWorkItem, useSelectedProject } from "@/hooks";
 
 const viewOptions: { value: WorkItemView; label: string; icon: typeof List }[] = [
   { value: "list", label: "List", icon: List },
@@ -21,6 +20,7 @@ export function WorkItemsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const store = useWorkItemsStore();
   const { view, setView, searchQuery, setSearchQuery, sortDir, setSortDir, filterPersonas, filterLabels, selectedItemId, detailPanelWidth, setDetailPanelWidth } = store;
+  const { projectId } = useSelectedProject();
   const createWorkItem = useCreateWorkItem();
 
   // Sync URL params → store on mount
@@ -109,8 +109,9 @@ export function WorkItemsPage() {
   }, [isResizing, setDetailPanelWidth]);
 
   const handleQuickAdd = () => {
+    if (!projectId) return;
     createWorkItem.mutate({
-      projectId: "pj-agntops" as ProjectId,
+      projectId,
       title: "New work item",
     });
   };

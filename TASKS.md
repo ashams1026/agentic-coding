@@ -26,7 +26,7 @@
 
 - [x] **PS.5** — Scope executions, comments, and proposals to selected project. These are already scoped by `workItemId` in most places, but any top-level listing (agent monitor history, activity feed) should filter to work items belonging to the selected project. Update `useExecutions()` and the agent monitor history/sidebar to pass a `projectId` filter. Update the activity feed to only show events for the selected project.
 
-- [ ] **PS.6** — Scope persona assignments to selected project. The `usePersonaAssignments()` hook already takes `projectId` — verify all call sites pass the selected project ID. The settings workflow section should read/write assignments for the selected project only.
+- [review] **PS.6** — Scope persona assignments to selected project. The `usePersonaAssignments()` hook already takes `projectId` — verify all call sites pass the selected project ID. The settings workflow section should read/write assignments for the selected project only.
 
 ### New Project Experience
 

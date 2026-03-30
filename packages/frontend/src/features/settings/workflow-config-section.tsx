@@ -8,11 +8,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { useProjects, useUpdateProject, usePersonas, usePersonaAssignments, useUpdatePersonaAssignment } from "@/hooks";
+import { useProjects, useUpdateProject, usePersonas, usePersonaAssignments, useUpdatePersonaAssignment, useSelectedProject } from "@/hooks";
 import { WORKFLOW } from "@agentops/shared";
-import type { ProjectId, PersonaId, Persona } from "@agentops/shared";
-
-const PROJECT_ID = "pj-agntops" as ProjectId;
+import type { PersonaId, Persona } from "@agentops/shared";
 
 // ── Auto-routing toggle ─────────────────────────────────────────
 
@@ -79,8 +77,9 @@ function ModelBadge({ model }: { model: string }) {
 // ── Persona-per-state table ─────────────────────────────────────
 
 function PersonaStateTable() {
+  const { projectId } = useSelectedProject();
   const { data: personas = [] } = usePersonas();
-  const { data: assignments = [] } = usePersonaAssignments(PROJECT_ID);
+  const { data: assignments = [] } = usePersonaAssignments(projectId);
   const updateAssignment = useUpdatePersonaAssignment();
 
   const assignmentMap = useMemo(() => {
@@ -97,8 +96,9 @@ function PersonaStateTable() {
 
   const handleChange = (stateName: string, personaId: string) => {
     if (personaId === "none") return;
+    if (!projectId) return;
     updateAssignment.mutate({
-      projectId: PROJECT_ID,
+      projectId,
       stateName,
       personaId: personaId as PersonaId,
     });

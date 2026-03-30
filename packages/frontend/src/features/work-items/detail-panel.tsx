@@ -26,7 +26,7 @@ import { useWorkItemsStore } from "@/stores/work-items-store";
 import { CommentStream } from "@/features/common/comment-stream";
 import { ExecutionTimeline } from "@/features/common/execution-timeline";
 import { getStateByName, getValidTransitions } from "@agentops/shared";
-import type { WorkItem, WorkItemId, Priority, Persona, ProjectId } from "@agentops/shared";
+import type { WorkItem, WorkItemId, Priority, Persona } from "@agentops/shared";
 
 // ── Editable title ──────────────────────────────────────────────
 
@@ -633,7 +633,7 @@ export function DetailPanel() {
   const { data: item } = useWorkItem(selectedItemId!);
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
   const { data: personas = [] } = usePersonas();
-  const { data: assignments = [] } = usePersonaAssignments("pj-agntops" as ProjectId);
+  const { data: assignments = [] } = usePersonaAssignments(projectId);
   const createWorkItem = useCreateWorkItem();
   const updateWorkItem = useUpdateWorkItem();
 
