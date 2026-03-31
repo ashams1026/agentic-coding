@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-31 — Review: PICO.2 (approved)
+
+**Reviewed:** Chat session API — routes, schema, shared types, server registration.
+- 4 endpoints match spec: create, list (desc by updatedAt), get messages (asc by createdAt), delete (manual cascade + session delete).
+- Schema: `chat_sessions` (5 cols, FK to projects), `chat_messages` (6 cols, FK with onDelete cascade, JSON metadata). Relations defined.
+- Shared: `ChatSessionId` (`cs-`), `ChatMessageId` (`msg-`), entities + role type. Barrel exported.
+- Serializers follow established pattern (toIso timestamps, typed IDs).
+- Title defaults to "New chat" — auto-generation from first message deferred to PICO.3 (reasonable separation).
+- Migration generated. Build passes.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — PICO.2: Create chat session API
 
 **Task:** Add chat session DB tables and CRUD routes for Pico chat.
