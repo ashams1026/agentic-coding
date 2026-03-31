@@ -2,7 +2,7 @@ import { eq, or } from "drizzle-orm";
 import type { FastifyInstance } from "fastify";
 import { buildServer } from "./server.js";
 import { runMigrations } from "./db/migrate.js";
-import { db } from "./db/connection.js";
+import { db, DB_PATH } from "./db/connection.js";
 import { sqlite } from "./db/connection.js";
 import { executions, workItems } from "./db/schema.js";
 import { clearAll as clearConcurrency, getActiveCount } from "./agent/concurrency.js";
@@ -205,6 +205,8 @@ export interface StartOptions {
 export async function startServer(options: StartOptions = {}): Promise<void> {
   const port = options.port ?? Number(process.env["PORT"] ?? 3001);
   const host = options.host ?? process.env["HOST"] ?? "0.0.0.0";
+
+  logger.info({ dbPath: DB_PATH, nodeEnv: process.env["NODE_ENV"] ?? "development" }, "Database path resolved");
 
   runMigrations();
 

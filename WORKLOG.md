@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — FX.DB1: Separate dev, test, and prod databases
+
+**Task:** Select DB path based on NODE_ENV: dev → local file, prod → home directory, with env var override.
+
+**Done:**
+- **`connection.ts`**: Replaced hardcoded `DATABASE_URL` fallback with `resolveDbPath()` function. Priority: `AGENTOPS_DB_PATH` env → `DATABASE_URL` env → NODE_ENV-based default. Production → `~/.agentops/data/agentops.db` (with `mkdirSync`), Development/unset → `agentops-dev.db` (local to project). Exported `DB_PATH` for logging.
+- **`start.ts`**: Added startup log line: `logger.info({ dbPath: DB_PATH, nodeEnv })` before migrations run.
+- **`packages/backend/package.json`**: `dev` script now sets `NODE_ENV=development` explicitly. Added `db:reset` script: deletes dev DB + WAL/SHM files, re-runs migrations, re-seeds with `NODE_ENV=development`.
+- **`drizzle.config.ts`**: Fallback changed from `agentops.db` → `agentops-dev.db` (drizzle-kit tools are dev-only).
+- **`.gitignore`**: Already has `*.db` — covers `agentops-dev.db`, no change needed.
+- **`ecosystem.config.cjs`**: Already has `NODE_ENV: "production"` — no change needed.
+- **Test**: Already uses `:memory:` via `createTestDb()` — no change needed.
+- Build passes
+
+**Files modified:** `packages/backend/src/db/connection.ts`, `packages/backend/src/start.ts`, `packages/backend/package.json`, `packages/backend/drizzle.config.ts`
+
+**Notes:** The `config.ts` CLI config system (`loadConfig`) is separate from `connection.ts` DB resolution. Both support `AGENTOPS_DB_PATH` override. The `seed-e2e.ts` and `seed-demo.ts` scripts set `DATABASE_URL` explicitly before import, so they're unaffected.
+
+---
+
 ## 2026-03-30 — Review: FX.8 (approved)
 
 **Reviewed:** Historical log chunk type detection in `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`.
