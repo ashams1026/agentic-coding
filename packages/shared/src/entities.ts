@@ -92,6 +92,7 @@ export interface Persona {
   model: PersonaModel;
   allowedTools: string[];
   mcpTools: string[];
+  skills: string[];
   maxBudgetPerRun: number;
   settings: Record<string, unknown>;
 }

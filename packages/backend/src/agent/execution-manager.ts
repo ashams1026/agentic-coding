@@ -280,6 +280,7 @@ export async function runExecution(
     model: persona.model as "opus" | "sonnet" | "haiku",
     allowedTools: persona.allowedTools,
     mcpTools: persona.mcpTools,
+    skills: persona.skills,
     maxBudgetPerRun: persona.maxBudgetPerRun,
     settings: persona.settings,
   };

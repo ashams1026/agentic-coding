@@ -19,6 +19,7 @@ function serializePersona(row: typeof personas.$inferSelect) {
     model: row.model,
     allowedTools: row.allowedTools,
     mcpTools: row.mcpTools,
+    skills: row.skills,
     maxBudgetPerRun: row.maxBudgetPerRun,
     settings: row.settings,
   };
@@ -67,6 +68,7 @@ export async function personaRoutes(app: FastifyInstance) {
         model: body.model,
         allowedTools: body.allowedTools ?? [],
         mcpTools: body.mcpTools ?? [],
+        skills: body.skills ?? [],
         maxBudgetPerRun: body.maxBudgetPerRun ?? 0,
         settings: {},
       })
@@ -91,6 +93,7 @@ export async function personaRoutes(app: FastifyInstance) {
     if (body.model !== undefined) updates["model"] = body.model;
     if (body.allowedTools !== undefined) updates["allowedTools"] = body.allowedTools;
     if (body.mcpTools !== undefined) updates["mcpTools"] = body.mcpTools;
+    if (body.skills !== undefined) updates["skills"] = body.skills;
     if (body.maxBudgetPerRun !== undefined) updates["maxBudgetPerRun"] = body.maxBudgetPerRun;
 
     if (Object.keys(updates).length === 0) {

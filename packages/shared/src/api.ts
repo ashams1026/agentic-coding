@@ -118,6 +118,7 @@ export interface CreatePersonaRequest {
   model: "opus" | "sonnet" | "haiku";
   allowedTools?: string[];
   mcpTools?: string[];
+  skills?: string[];
   maxBudgetPerRun?: number;
 }
 
@@ -129,6 +130,7 @@ export interface UpdatePersonaRequest {
   model?: "opus" | "sonnet" | "haiku";
   allowedTools?: string[];
   mcpTools?: string[];
+  skills?: string[];
   maxBudgetPerRun?: number;
 }
 

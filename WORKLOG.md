@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — FX.P7: Add skills field to persona schema
+
+**Task:** Add `skills: string[]` to Persona entity, DB schema, and API contracts.
+
+**Done:**
+- **`packages/shared/src/entities.ts`**: Added `skills: string[]` to `Persona` interface (after `mcpTools`)
+- **`packages/shared/src/api.ts`**: Added `skills?: string[]` to both `CreatePersonaRequest` and `UpdatePersonaRequest`
+- **`packages/backend/src/db/schema.ts`**: Added `skills` column — `text("skills", { mode: "json" }).notNull().$type<string[]>().default([])`
+- **`packages/backend/src/routes/personas.ts`**: Added `skills` to serialize, create, and update handlers
+- **`packages/backend/src/agent/execution-manager.ts`**: Added `skills` to persona entity construction (line 282)
+- **`packages/backend/src/routes/dashboard.ts`**: Added `skills` to serialized persona in active executions response
+- **Migration**: Ran `pnpm --filter backend db:push` — schema changes applied
+- Build passes (2 TS errors fixed — missing `skills` in Persona object literals)
+
+**Files modified:** `packages/shared/src/entities.ts`, `packages/shared/src/api.ts`, `packages/backend/src/db/schema.ts`, `packages/backend/src/routes/personas.ts`, `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/routes/dashboard.ts`
+
+**Notes:** Default is `[]` so existing personas get empty skills arrays. No seed changes needed — skills are user-configured per-persona.
+
+---
+
 ## 2026-03-30 — Review: FX.PM2 (approved)
 
 **Reviewed:** Persona card expand → side detail panel.

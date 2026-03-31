@@ -163,6 +163,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
             model: persona.model as PersonaModel,
             allowedTools: persona.allowedTools,
             mcpTools: persona.mcpTools,
+            skills: persona.skills,
             maxBudgetPerRun: persona.maxBudgetPerRun,
             settings: persona.settings,
           }

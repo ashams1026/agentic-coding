@@ -26,7 +26,7 @@
 
 ### Persona Skills System
 
-- [ ] **FX.P7** — Add skills field to persona schema. In `packages/shared/src/entities.ts`: add `skills: string[]` to the `Persona` interface — an array of skill file paths (relative to the project directory, e.g., `skills/review-checklist.md`, `skills/coding-standards.md`). In `packages/backend/src/db/schema.ts`: add `skills` column to personas table (text, JSON serialized array, default `[]`). Run migration.
+- [review] **FX.P7** — Add skills field to persona schema. In `packages/shared/src/entities.ts`: add `skills: string[]` to the `Persona` interface — an array of skill file paths (relative to the project directory, e.g., `skills/review-checklist.md`, `skills/coding-standards.md`). In `packages/backend/src/db/schema.ts`: add `skills` column to personas table (text, JSON serialized array, default `[]`). Run migration.
 
 - [ ] **FX.P8** — Build skill browser in persona editor. In the Persona Editor UI (`packages/frontend/src/features/persona-manager/`): add a "Skills" section below the Tools section. Show currently assigned skills as removable pills. Add a "Browse skills..." button that opens a modal: the modal uses the `POST /api/settings/browse-directory` endpoint (from PS.10) scoped to the project directory, filtered to show only `.md` files. User can navigate folders, select files, and add them. Also allow typing a path directly. Show a preview of the skill file content when selected (first 20 lines). Skills are saved as relative paths in the persona's `skills` array.
 

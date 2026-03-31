@@ -126,6 +126,7 @@ export const personas = sqliteTable("personas", {
   model: text("model").notNull().default("sonnet"), // PersonaModel
   allowedTools: text("allowed_tools", { mode: "json" }).notNull().$type<string[]>().default([]),
   mcpTools: text("mcp_tools", { mode: "json" }).notNull().$type<string[]>().default([]),
+  skills: text("skills", { mode: "json" }).notNull().$type<string[]>().default([]),
   maxBudgetPerRun: integer("max_budget_per_run").notNull().default(0),
   settings: text("settings", { mode: "json" }).notNull().$type<Record<string, unknown>>().default({}),
 });
