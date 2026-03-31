@@ -5,6 +5,28 @@
 
 ---
 
+## 2026-03-31 — SDK.V2.2: Unblock FX.SDK1 with SDK capabilities endpoint
+
+**Task:** Create `GET /api/sdk/capabilities` and `POST /api/sdk/reload` routes using Query control methods.
+
+**Done:**
+- Created `packages/backend/src/routes/sdk.ts`:
+  - `GET /api/sdk/capabilities`: lazy-fetches SDK capabilities on first call, caches for server lifetime. Returns `{ commands: SlashCommand[], agents: AgentInfo[], models: ModelInfo[], cachedAt: string }`.
+  - `POST /api/sdk/reload`: calls `reloadPlugins()` control method, refreshes cache. Returns updated capabilities + reload error count.
+  - `withDiscoveryQuery()` helper: spins up a lightweight `query()` with minimal prompt, reads first message to ensure subprocess is running, calls the control method, then interrupts and drains. Proper cleanup on error.
+  - Uses `initializationResult()` for initial fetch (returns commands, agents, models) and `reloadPlugins()` for reload (returns commands, agents, plugins, MCP status).
+- Updated `packages/backend/src/server.ts`: registered `sdkRoutes`.
+- Updated `TASKS.md`:
+  - Marked FX.SDK1 as `[x]` (superseded by SDK.V2.2)
+  - Unblocked FX.SDK3, FX.SDK4, FX.SDK5, FX.SDK6 (removed `[blocked]` tags)
+
+**Files created:** `packages/backend/src/routes/sdk.ts`
+**Files modified:** `packages/backend/src/server.ts`, `TASKS.md`
+
+**Notes for next agent:** The discovery query approach spins up a temporary query subprocess per call (cached after first call, so it only happens once per server lifetime unless reload is called). FX.SDK3-6 are now unblocked and can use `GET /api/sdk/capabilities` to populate tool/skill/agent selectors. Note that `initializationResult()` does NOT return tools — it returns commands (skills), agents, and models. Built-in tools (Read, Write, Bash, etc.) are a fixed SDK set, not discoverable via this API. Frontend may need a hardcoded tool list or a different approach for FX.SDK3.
+
+---
+
 ## 2026-03-31 — Review: SDK.V2.1 (approved)
 
 **Reviewed:** Persistent SDK session manager — lazy singleton with retry and shutdown integration.

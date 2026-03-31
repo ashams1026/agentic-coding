@@ -12,6 +12,7 @@ import { dashboardRoutes } from "./routes/dashboard.js";
 import { auditRoutes } from "./routes/audit.js";
 import { settingsRoutes } from "./routes/settings.js";
 import { chatRoutes } from "./routes/chat.js";
+import { sdkRoutes } from "./routes/sdk.js";
 import { registerWebSocket } from "./ws.js";
 import { getActiveCount } from "./agent/concurrency.js";
 import { getExecutorMode } from "./agent/execution-manager.js";
@@ -65,6 +66,7 @@ export async function buildServer() {
   await auditRoutes(server);
   await settingsRoutes(server);
   await chatRoutes(server);
+  await sdkRoutes(server);
 
   return server;
 }
