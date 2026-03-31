@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — AI.28: Execute navigation.md E2E test
+
+**Task:** Execute navigation test plan via chrome-devtools MCP.
+
+**Done:**
+- Executed all 19 steps in browser against http://localhost:5174
+- 17/19 steps PASS, 2 N/A (tooltip hover, backdrop dismiss), 0 FAIL
+- 4 screenshot checkpoints taken — all visual checks PASS
+- All 6 nav items link to correct pages (/, /items, /agents, /activity, /personas, /settings)
+- Project switcher shows "AgentOps"
+- Sidebar collapse: icon-only mode works (second button is toggle)
+- Mobile (375x812): hamburger menu opens sidebar overlay with dark backdrop, nav click auto-closes
+- Known visual defect: icons stacked above labels (FX.NAV1)
+
+**Files created:** `tests/e2e/results/navigation.md`, 5 screenshot PNGs in `tests/e2e/results/`
+
+**Notes:** All navigation features work functionally. Sidebar icon/label layout is a known visual issue tracked as FX.NAV1.
+
+---
+
 ## 2026-03-30 — Review: AI.27 (approved)
 
 **Reviewed:** E2E test execution of persona-manager.md.
