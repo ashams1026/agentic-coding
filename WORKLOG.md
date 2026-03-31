@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: FX.SDK2 (approved)
+
+**Reviewed:** SDK-native skill injection in `packages/backend/src/agent/claude-executor.ts`.
+- `buildSystemPrompt()`: Section (5) "Persona skills" cleanly removed, sections renumbered (5→execution history). No dead code.
+- Removed imports: `readFileSync`, `join`/`basename`, `logger` — all only used in removed section. Clean.
+- `AgentDefinition` type imported from SDK — correct named export.
+- Agent/agents pattern: `persona.id` as agent name, `AgentDefinition` includes `description`, `prompt`, `tools`, `model`, `maxTurns: 30`. Skills conditional spread: only added when non-empty. Clean.
+- Top-level `query()` options: `agent` + `agents` properly wired. No duplication of `systemPrompt`/`model`/`tools` between levels. Process-level options (`permissionMode`, `mcpServers`, etc.) stay top-level. Correct.
+- SDK's `skills` is on `AgentDefinition`, not top-level `Options` — `agent`/`agents` pattern is the correct approach.
+- No migration needed: all existing skill values are `[]`.
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.SDK2: Replace custom skill injection with SDK native skills
 
 **Task:** Remove manual skill file reading from `buildSystemPrompt()` and use the SDK's native `AgentDefinition.skills` field instead.
