@@ -5,6 +5,37 @@
 
 ---
 
+## 2026-03-31 — PICO.6: Build chat panel
+
+**Task:** Create the Pico chat panel that opens above the floating bubble.
+
+**Done:**
+- Created `packages/frontend/src/features/pico/chat-panel.tsx`:
+  - 400px wide, 500px tall panel fixed at `bottom-24 right-6` (above the bubble), `z-50`
+  - Responsive: `max-w-[calc(100vw-3rem)]`, height capped at `calc(100vh-8rem)`
+  - Header: Pico avatar (amber circle + Dog icon), "Pico" label, session title ("New conversation" placeholder), Plus (new session stub for PICO.9), X (minimize)
+  - Message area: `ScrollArea` with auto-scroll to bottom on new messages
+  - Mock messages (3): Pico greeting, user question, Pico response — drives UI during development
+  - User messages: right-aligned, primary color bg. Pico messages: left-aligned, muted bg
+  - Input area: textarea (1 row, resizable-none) + Send button, Cmd+Enter to send
+  - Disabled state when `isStreaming` (controlled by PICO.8 later)
+  - Keyboard hint: ⌘ ↵ to send
+  - Typing indicator: three bouncing dots component (ready for streaming state)
+  - Click-outside-to-dismiss with chat bubble exclusion
+  - Focus textarea on panel open (200ms delay for animation)
+  - Reads `isOpen` from `usePicoStore`, returns null when closed
+- Added CSS animations to `index.css`:
+  - `@keyframes pico-panel-in`: scale(0.95)+translateY(8px) → scale(1)+translateY(0), 0.2s ease-out
+  - `@keyframes pico-dot`: bouncing dot opacity 0.3→1, translateY(0)→-4px, 1.2s infinite with staggered delays
+- Added `<ChatPanel />` to `root-layout.tsx` before `<ChatBubble />`
+
+**Files created:** `packages/frontend/src/features/pico/chat-panel.tsx`
+**Files modified:** `packages/frontend/src/layouts/root-layout.tsx`, `packages/frontend/src/index.css`
+
+**Notes for next agent:** The panel uses mock messages. PICO.7 will create proper message components (markdown, thinking, tool cards). PICO.8 will wire `sendMessage` to the streaming API and control `isStreaming`. PICO.9 will implement the new session button and session title dropdown. The `ChatMessage` interface is defined locally — PICO.7/8 may want to move it to a shared location.
+
+---
+
 ## 2026-03-31 — Review: PICO.5 (approved)
 
 **Reviewed:** Floating chat bubble — chat-bubble.tsx, pico-store.ts, root-layout.tsx, index.css.

@@ -232,6 +232,40 @@ body {
   animation: pico-bounce-in 0.5s ease-out;
 }
 
+/* Pico chat panel — scale+opacity on open */
+@keyframes pico-panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-pico-panel-in {
+  animation: pico-panel-in 0.2s ease-out;
+}
+
+/* Pico typing indicator — bouncing dots */
+@keyframes pico-dot {
+  0%,
+  60%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+.animate-pico-dot {
+  animation: pico-dot 1.2s infinite;
+}
+
 /* ── Compact density overrides ──────────────────────────────────── */
 
 [data-density="compact"] {
