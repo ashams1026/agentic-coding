@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: FX.2 (approved)
+
+**Reviewed:** Router transition history awareness in `packages/backend/src/agent/router.ts`.
+- `getRecentTransitions()`: queries comments table for Router comments with `fromState`/`toState` metadata, ordered by `desc(createdAt)`, limit 3 — correct data source and filtering
+- `buildRouterSystemPrompt()`: base prompt + optional transition list + mandatory anti-loop instruction — clean assembly, anti-loop instruction always present
+- `runRouter()`: updates Router persona's `systemPrompt` in DB before each `runExecution()` call — pragmatic approach
+- Minor race condition risk if two `runRouter()` calls for different work items overlap — low risk given sequential execution chain, and FX.1's same-state rejection provides the hard safety net
+- Anti-loop instruction matches task spec: "Do NOT route to a state this item was just in. If the persona's work appears incomplete, route to Blocked..."
+- `getOrCreateRouterPersona()` uses `buildRouterSystemPrompt([])` for initial creation — consistent
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.2: Add Router transition history awareness
 
 **Task:** Include last 3 state transitions in Router's system prompt to prevent routing loops.
