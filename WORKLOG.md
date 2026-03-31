@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: FX.PM2 (approved)
+
+**Reviewed:** Persona card expand → side detail panel.
+- persona-list.tsx: expand/collapse fully removed, cards clickable with ring selection highlight ✓
+- Hover actions use stopPropagation to prevent card selection ✓
+- persona-detail-panel.tsx: full editing (identity, avatar, model, prompt, tools, budget), reuses SystemPromptEditor + ToolConfiguration ✓
+- Built-in badge via `settings.isSystem`, panel stays open after save ✓
+- persona-manager.tsx: split layout 45%/55%, animated transitions, PersonaEditor Sheet removed ✓
+- Dark mode, responsive grid (lg:3 cols), proper overflow handling ✓
+- Build passes, bundle slightly smaller ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.PM2: Replace persona card expand with side panel
 
 **Task:** Replace inline expand/collapse on persona cards with a click-to-open detail panel.
