@@ -9,6 +9,8 @@
  *   DATABASE_URL=/tmp/agentops-e2e-test.db tsx src/db/seed-e2e.ts
  */
 
+export {};  // Make this a module (prevents TS global scope conflicts)
+
 const DB_PATH = process.env["DATABASE_URL"] ?? "/tmp/agentops-e2e-test.db";
 
 // Set env before any connection module loads

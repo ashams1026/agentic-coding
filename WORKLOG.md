@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-30 — FX.MOCK4: Create demo seed snapshot
+
+**Task:** Create rich demo dataset for showcasing AgentOps without real agents.
+
+**Done:**
+- Created `packages/backend/src/db/seed-demo.ts` with 3 projects (TicTacToe, Blog API, Analytics Dashboard)
+- 14 work items across all 8 workflow states (Backlog, Planning, Decomposition, Ready, In Progress, In Review, Done, Blocked)
+- 14 executions including running agents, rejected/retried work, and completed pipeline
+- 13 comments from users, agents (PM, TL, Engineer, Reviewer), and system
+- 3 proposals (2 approved, 1 pending)
+- 2 project memories, 6 edges, 15 persona assignments
+- Realistic cost data ($1-$92 per execution)
+- Added `"db:seed:demo"` script to root `package.json`
+- Fixed TS scope conflict in seed-e2e.ts and seed-demo.ts (added `export {}`)
+- Build passes
+
+**Files created:** `packages/backend/src/db/seed-demo.ts`
+**Files modified:** `package.json`, `packages/backend/src/db/seed-e2e.ts` (export fix)
+
+**Notes:** Demo dataset showcases: completed project (TicTacToe), active pipeline with rejections (Blog API), early-stage project (Analytics Dashboard). Covers all persona types and workflow states.
+
+---
+
 ## 2026-03-30 — Review: FX.MOCK3 (approved)
 
 **Reviewed:** E2E test database script.
