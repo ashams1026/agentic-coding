@@ -6,18 +6,23 @@ Verify the Persona Manager page renders persona cards for built-in personas, ope
 
 ## Prerequisites
 
-- Backend running on `:3001`, frontend on `:5173`
+- Backend running on `:3001`, frontend on `:5173` or `:5174`
 - API mode set to "api"
 - Database seeded with test data (5 built-in personas: Product Manager, Tech Lead, Engineer, Code Reviewer, Router)
+- chrome-devtools MCP connected
 
 ## Steps
 
+> **Visual inspection protocol:** After each major navigation or UI interaction step, take a screenshot using `take_screenshot`. Examine the screenshot visually using the `Read` tool. Note any visual issues (misalignment, clipping, bad spacing, broken layout, invisible text, wrong colors, overlapping elements, truncated content) in the results alongside the functional pass/fail. A step can functionally pass but have visual defects — record both.
+
 1. **Navigate** to `http://localhost:5173/personas`
    - Verify: the Persona Manager page loads without errors
+   - **Screenshot checkpoint:** Take screenshot. Examine: page layout, sidebar active state for Persona Manager, persona card grid structure, overall spacing.
 
 2. **Verify** persona cards render in a grid
    - Look for: a grid of persona cards, each showing a colored circular avatar icon, a name, a model badge, a description, and a tool count badge
    - Expected: at least 5 persona cards are visible (the 5 built-in personas)
+   - **Screenshot checkpoint:** Take screenshot. Examine: card grid alignment, consistent card sizes, avatar circles properly colored and sized, name text readable, model badges colored correctly, tool count badges positioned consistently, "Built-in" badges visible.
 
 3. **Verify** built-in personas are labeled
    - Look for: cards with a "Built-in" badge next to the persona name
@@ -38,6 +43,7 @@ Verify the Persona Manager page renders persona cards for built-in personas, ope
 7. **Click** a persona card to open the editor
    - Target: hover over any persona card (e.g., "Engineer") and click the pencil (Edit) icon that appears
    - Expected: a side panel (sheet) slides in from the right showing "Edit persona configuration"
+   - **Screenshot checkpoint:** Take screenshot. Examine: editor panel slides in cleanly, panel width appropriate, header with persona name visible, sections laid out vertically with consistent spacing, no overlap with card grid behind.
 
 8. **Verify** the editor shows the Name field
    - Look for: a section labeled "Identity" with a "Name" input field
@@ -54,6 +60,7 @@ Verify the Persona Manager page renders persona cards for built-in personas, ope
 11. **Verify** the editor shows the Model selector
     - Look for: a section labeled "Model" with three card buttons: "Opus" (with "$$$"), "Sonnet" (with "$$"), "Haiku" (with "$")
     - Expected: the current model is highlighted with a colored border
+    - **Screenshot checkpoint:** Take screenshot. Examine: model cards evenly sized, active model border clearly visible, cost indicators readable, color coding correct (purple/blue/green), section label aligned.
 
 12. **Verify** the editor shows the System Prompt section
     - Look for: a section labeled "System Prompt" with a text editor
@@ -74,6 +81,7 @@ Verify the Persona Manager page renders persona cards for built-in personas, ope
 16. **Click** the "Save" button
     - Target: the "Save" button in the sheet header
     - Expected: the sheet closes and the persona card in the grid now shows "Test Engineer Persona" as the name
+    - **Screenshot checkpoint:** Take screenshot. Examine: editor panel closed, card grid visible with updated persona name, no stale data displayed, grid layout intact after panel close.
 
 17. **Verify** the change persisted
     - Click the pencil (Edit) icon on the "Test Engineer Persona" card to reopen the editor
@@ -97,6 +105,18 @@ Verify the Persona Manager page renders persona cards for built-in personas, ope
 - Editing the name and saving updates the card in the grid
 - Reopening the editor confirms the change persisted
 
+### Visual Quality
+
+- Card grid: cards evenly sized and spaced, consistent padding within cards, grid wraps cleanly on viewport
+- Avatar circles: consistent size, colored backgrounds, letter/icon centered within circle
+- Badges: model badges correct colors (purple/blue/green), "Built-in" badges readable, tool count badges positioned consistently at card bottom
+- "Create new persona" card: dashed border visible, plus icon centered, card same height as other cards
+- Editor panel: slides in from right at appropriate width, sections vertically stacked with clear labels, consistent field spacing
+- Editor fields: inputs aligned, avatar color swatches evenly spaced, icon grid uniform, model cards same size
+- System prompt editor: properly sized textarea, readable monospaced text, sufficient height
+- Save/cancel: buttons properly positioned in header, clickable area sufficient
+- Overall: no horizontal overflow, card grid responsive, editor panel doesn't clip content
+
 ## Failure Criteria
 
 - The Persona Manager page does not load or shows a white screen
@@ -107,3 +127,15 @@ Verify the Persona Manager page renders persona cards for built-in personas, ope
 - Saving changes does not update the card in the grid
 - Reopening the editor shows the old (unsaved) value
 - Any action causes a JavaScript error or API error
+
+### Visual Failure Criteria
+
+- Card grid cards different sizes or uneven spacing between cards
+- Avatar circles inconsistent sizes or missing colored background
+- Model badges wrong colors or text invisible against badge background
+- "Create new persona" card different height than persona cards or dashed border missing
+- Editor panel overlaps card grid or clips at viewport edge
+- Editor field sections misaligned or labels not aligned with inputs
+- Avatar color swatches different sizes or icon grid items overlapping
+- System prompt textarea too small or text clipped
+- Save button invisible or positioned outside visible area

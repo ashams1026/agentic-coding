@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — AI.V10: Update persona manager test plan with visual inspection
+
+**Task:** Add visual inspection steps to `persona-manager.md`.
+
+**Done:**
+- Added protocol blockquote (exact template text)
+- Added 5 screenshot checkpoints: step 1 (page load — layout, sidebar, grid structure), step 2 (card grid — alignment, avatars, badges, sizing), step 7 (editor open — panel slide-in, sections, spacing), step 11 (model selector — card sizing, colors, active border), step 16 (after save — panel closed, updated name, grid intact)
+- Added "Visual Quality" section (9 criteria: card grid, avatars, badges, create card, editor panel, editor fields, system prompt, save/cancel, overall)
+- Added "Visual Failure Criteria" section (9 defects: card sizes, avatars, model badges, create card, editor overlap, field alignment, color swatches, textarea, save button)
+- Updated prerequisites: added `:5174` port alternative and `chrome-devtools MCP connected`
+
+**Files changed:** `tests/e2e/plans/persona-manager.md`
+
+**Notes:** No code changes — build unaffected. All 19 original steps preserved.
+
+---
+
 ## 2026-03-30 — Review: AI.V9 (approved)
 
 **Reviewed:** Settings test plans visual inspection update (3 files).
