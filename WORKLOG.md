@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-03-30 — Review: AI.25 (approved)
+
+**Reviewed:** E2E test execution of settings-workflow.md.
+- Results file well-structured: summary, step-by-step table, screenshot table (3 checkpoints), visual quality (6 criteria), evidence ✓
+- All 12 steps executed, 3 screenshots captured ✓
+- 12/12 PASS — auto-routing toggle (ON/OFF/ON), persona table (5 states), model badges, note, SVG diagram all verified ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.25: Execute settings-workflow.md E2E test
 
 **Task:** Execute settings-workflow test plan via chrome-devtools MCP.
