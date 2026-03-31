@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: FX.6 (approved)
+
+**Reviewed:** Persona identity header in `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`.
+- `usePersona(execution?.personaId)` + `useWorkItem(execution?.workItemId)` — correct hook usage, TanStack Query handles undefined gracefully
+- Header placement: above toolbar, above terminal output — first thing visible. Correct.
+- Colored circular avatar: `persona.avatar.color` background, first letter, white text, `rounded-full` — consistent with persona manager cards
+- Model badge: `Badge variant="secondary"` with MODEL_LABELS fallback — correct
+- Work item subtext: "working on {title}" with `truncate` — correct, conditional on workItem load
+- Conditional rendering `{persona && (...)}` — graceful degradation while loading
+- Minor: `MODEL_LABELS` inside render (could be module-level) and duplicate `@agentops/shared` import — cosmetic, not bugs
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.6: Show persona identity in terminal renderer
 
 **Task:** Add a header bar above terminal output showing persona name (colored avatar), model badge, and work item title.
