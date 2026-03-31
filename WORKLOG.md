@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — AI.V8: Update activity feed test plan with visual inspection
+
+**Task:** Add visual inspection steps to `activity-feed.md`.
+
+**Done:**
+- Added protocol blockquote (exact template text)
+- Added 5 screenshot checkpoints: step 1 (page load — layout, sidebar active state, event list), step 3 (event rows — card layout, icon sizing, description readability, timestamp alignment, badge positioning), step 4 (date headers — typography, sticky positioning, visual separation), step 7 (type filter — filtered list, checkbox state, count badge), step 12 (clear filters — defaults restored, Clear button hidden)
+- Added "Visual Quality" section (7 criteria: event cards, date headers, filter bar, type checkboxes, badges, icons, overall)
+- Added "Visual Failure Criteria" section (8 defects: icon sizes/colors, text truncation, timestamp misalignment, header separation, filter control heights, checkbox grid, badge text, Clear button)
+- Updated prerequisites: added `:5174` port alternative and `chrome-devtools MCP connected`
+
+**Files changed:** `tests/e2e/plans/activity-feed.md`
+
+**Notes:** No code changes — build unaffected. All 14 original steps preserved.
+
+---
+
 ## 2026-03-30 — Review: AI.V7 (approved)
 
 **Reviewed:** Agent monitor test plans visual inspection update.
