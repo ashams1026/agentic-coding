@@ -26,7 +26,7 @@
 
 - [x] **FX.MOCK3** — Create E2E test database script. Create `scripts/test-e2e.sh` (and/or `packages/backend/src/db/seed-e2e.ts`): starts the backend with `AGENTOPS_DB_PATH=/tmp/agentops-e2e-test.db` (or a configurable temp path), runs migrations on the test DB, seeds it with E2E test fixtures (same data the mock fixtures had — projects, personas, work items in various states, executions, comments), starts the frontend pointing at this backend, prints the URLs. Add `"test:e2e:setup"` and `"test:e2e:teardown"` scripts to root `package.json`. E2E test plan prerequisites should reference this script. On teardown: delete the temp DB file.
 
-- [review] **FX.MOCK4** — Create demo seed snapshot. For showcasing the app without running real agents: create `packages/backend/src/db/seed-demo.ts` with a rich dataset (multiple projects, work items in all states, realistic execution history with comments, cost data, proposals). Add `"db:seed:demo"` script. Users can run `pnpm db:seed:demo` to populate their local DB with demo data. This replaces the old in-memory mock "Watch Demo" feature with persistent real data.
+- [x] **FX.MOCK4** — Create demo seed snapshot. For showcasing the app without running real agents: create `packages/backend/src/db/seed-demo.ts` with a rich dataset (multiple projects, work items in all states, realistic execution history with comments, cost data, proposals). Add `"db:seed:demo"` script. Users can run `pnpm db:seed:demo` to populate their local DB with demo data. This replaces the old in-memory mock "Watch Demo" feature with persistent real data.
 
 ### Settings Navigation Fix
 

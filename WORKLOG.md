@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: FX.MOCK4 (approved)
+
+**Reviewed:** Demo seed snapshot.
+- 3 projects, 14 work items across all 8 workflow states ✓
+- 14 executions with realistic costs, rejections, running agents ✓
+- 13 comments (user, agent, system), 3 proposals, 2 memories ✓
+- `db:seed:demo` script in package.json ✓
+- Dynamic imports, migrations, data clearing ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.MOCK4: Create demo seed snapshot
 
 **Task:** Create rich demo dataset for showcasing AgentOps without real agents.
