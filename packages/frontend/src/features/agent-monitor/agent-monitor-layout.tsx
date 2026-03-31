@@ -27,8 +27,8 @@ function EmptyState() {
           </p>
         </div>
         <Button variant="outline" size="sm" asChild>
-          <Link to="/board">
-            Go to Story Board
+          <Link to="/items">
+            Go to Work Items
             <ArrowRight className="ml-1 h-3 w-3" />
           </Link>
         </Button>

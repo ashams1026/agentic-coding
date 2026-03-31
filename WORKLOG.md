@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-31 — FX.AM1: Fix agent monitor empty state button
+
+**Task:** Change stale "Go to Story Board" button (links to `/board` — 404) to "Go to Work Items" linking to `/items`.
+
+**Done:** Updated `agent-monitor-layout.tsx` line 30-31: `to="/board"` → `to="/items"`, "Go to Story Board" → "Go to Work Items".
+
+**Files modified:** `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`
+
+**Notes:** Found additional stale `/board` and "Story Board" references in: `command-palette.tsx` (2 entries), `empty-states.tsx` (3 entries), `use-toast-events.ts` (1 entry). These are separate bugs — not part of this task. The command palette is partially covered by FX.CMD1 but that task focuses on `/work-items/:id` navigation, not the `/board` reference. Consider adding a sweep task for remaining `/board` routes.
+
+---
+
 ## 2026-03-31 — Review: FX.NAV2 (approved)
 
 **Reviewed:** Sidebar navigation ground-up fix in `sidebar.tsx` and `index.css`.
