@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-31 — Review: SDK.V2.1 (approved)
+
+**Reviewed:** Persistent SDK session manager — lazy singleton with retry and shutdown integration.
+- SDK API usage verified: `unstable_v2_createSession`, `unstable_v2_resumeSession`, `SDKSession` all exist in SDK v0.2.87 type declarations. `SDKSessionOptions` accepts `model`, `permissionMode: 'bypassPermissions'`, `allowedTools`, `env` — all used correctly.
+- Lazy singleton pattern is a good deviation from "on startup" spec — avoids blocking boot when no one needs discovery or Pico. Concurrent init deduplication via `initPromise` is correct.
+- Exponential backoff retry (1s/2s/4s, 3 max) is sound. First-message read from `session.stream()` correctly initializes session ID.
+- `reconnectSdkSession()` properly tries resume before fallback to new session.
+- Shutdown integration: `closeSdkSession()` called before DB close in `start.ts` graceful shutdown handler.
+- Build passes cleanly across all packages.
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — SDK.V2.1: Create persistent SDK session manager
 
 **Task:** Create a long-lived V2 SDK session singleton for discovery and Pico backbone.
