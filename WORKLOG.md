@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-31 — Review: FX.CMD1 (approved)
+
+**Reviewed:** Command palette navigation fixes in `command-palette.tsx`.
+- Work item selection: `setSelectedItemId(wi.id)` → `navigate("/items")` — correct pattern matching how the work items page reads selection from Zustand store. Detail panel will open for the selected item.
+- `useWorkItemsStore` selector `(s) => s.setSelectedItemId` — stable ref, no unnecessary re-renders.
+- NAV_ITEMS: all paths match actual routes. Stale "Story Board"/"/board" and non-existent "Workflow Designer" removed.
+- ACTION_ITEMS: "Create work item" → "/items" — correct.
+- Icons: `ListTodo` matches sidebar for Work Items. Unused imports removed.
+- Build passes.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — FX.CMD1: Fix command palette work item navigation
 
 **Task:** Clicking a work item in command palette navigated to `/work-items/:id` (404). Also had stale "Story Board" / `/board` references.
