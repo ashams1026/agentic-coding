@@ -22,7 +22,7 @@
 
 ### Persona Detail Panel Redesign
 
-- [ ] **FX.PM2** — Replace persona card expand with a click-to-open side panel. Remove the inline expand/collapse behavior from FX.PM1. Instead: clicking a persona card opens a right-side detail panel (same pattern as work items — card grid on the left, panel on the right at ~50-60% width). The panel shows all persona details in a readable layout: name + avatar header, description, model badge, system prompt rendered as markdown (scrollable), MCP tools as badges, SDK tools as badges, skills as file path pills, budget. All fields are inline-editable: click the name to edit, click the description to edit, system prompt has a Write/Preview tab (same as work item description editing), model is a dropdown, tools are checkboxes, budget is an input. Save happens on blur/Enter for simple fields, explicit Save/Cancel for the system prompt. Built-in personas (isSystem: true) show a "Built-in" badge and disable the delete button but still allow editing. Remove the old separate persona editor Sheet — this panel replaces it entirely.
+- [review] **FX.PM2** — Replace persona card expand with a click-to-open side panel. Remove the inline expand/collapse behavior from FX.PM1. Instead: clicking a persona card opens a right-side detail panel (same pattern as work items — card grid on the left, panel on the right at ~50-60% width). The panel shows all persona details in a readable layout: name + avatar header, description, model badge, system prompt rendered as markdown (scrollable), MCP tools as badges, SDK tools as badges, skills as file path pills, budget. All fields are inline-editable: click the name to edit, click the description to edit, system prompt has a Write/Preview tab (same as work item description editing), model is a dropdown, tools are checkboxes, budget is an input. Save happens on blur/Enter for simple fields, explicit Save/Cancel for the system prompt. Built-in personas (isSystem: true) show a "Built-in" badge and disable the delete button but still allow editing. Remove the old separate persona editor Sheet — this panel replaces it entirely.
 
 ### Persona Skills System
 
@@ -114,4 +114,29 @@
 - [ ] **AW.1** — Add conditional visual UI check to agent WORK state. Update `AGENT_PROMPT.md`: add a `[VISUAL CHECK]` step between `[IMPLEMENT]` and `[VERIFY]` in the WORK state. The step is conditional: after implementing, run `git diff --name-only` and check if any files in `packages/frontend/` were modified. If NO frontend files changed → skip to [VERIFY]. If frontend files changed → ensure dev servers are running (check ports 3001 and 5173/5174, skip starting if already up), use chrome-devtools MCP to open the affected page(s) in a browser, take a screenshot, visually examine it for layout issues / broken styling / clipping / misalignment, fix any visual defects found, re-screenshot to confirm. Include a file path → page URL mapping in the prompt so the agent knows which pages to check: `features/work-items/` → `/items`, `features/dashboard/` or `pages/dashboard` → `/`, `features/agent-monitor/` → `/agents`, `features/activity-feed/` → `/activity`, `features/persona-manager/` → `/personas`, `features/settings/` → `/settings`, `components/sidebar.tsx` or `layouts/` → `/` (check any page). If multiple feature directories were touched, check each corresponding page. Add to the Worker Rules section: "If your task modifies frontend code, the visual check is mandatory — do not skip it."
 
 - [ ] **AW.2** — Add visual check to REVIEW state. Update `AGENT_PROMPT.md`: in the REVIEW state's `[INSPECT WORK]` step, add: if the worker's WORKLOG entry lists frontend files, open the affected pages in a browser via chrome-devtools MCP and visually verify the UI looks correct. This gives the reviewer a second pair of eyes on visual quality. Add a review checklist item: "If UI was changed: does it look correct visually? No broken layout, clipping, or styling issues?"
+
+---
+
+## Backlog: Documentation Refresh
+
+> All docs were written on 2026-03-30 and haven't been updated since. 153+ commits have landed since then.
+> Each task: run `git log --oneline --since="<last_edit_date>" -- <relevant_source_paths>` to find what changed, read the current doc, update it to reflect the new state of the code. Don't rewrite from scratch — update what's stale, add what's missing, remove what's been deleted.
+
+- [ ] **DOC.1** — Update `docs/getting-started.md`. Check commits touching `packages/backend/src/index.ts`, `packages/backend/src/cli.ts`, `packages/backend/src/db/seed.ts`, `package.json`, `scripts/`. Update: install steps, first-run commands, any new CLI commands, seed script changes, new prerequisites. The mock mode instructions should be removed (mock layer was deleted). Add the `pnpm db:seed:demo` command if it exists.
+
+- [ ] **DOC.2** — Update `docs/architecture.md`. Check commits touching `packages/backend/src/agent/`, `packages/backend/src/routes/`, `packages/frontend/src/api/`, `packages/frontend/src/features/`. Update: system diagram if new components were added (Pico chat, sandbox, audit trail), data flow if the execution chain changed (router loop fixes, rate limiter logging), any new backend services or routes.
+
+- [ ] **DOC.3** — Update `docs/data-model.md`. Check commits touching `packages/shared/src/entities.ts`, `packages/backend/src/db/schema.ts`. Update: any new fields added to entities (skills on Persona, isAssistant flag, chat_sessions/chat_messages tables), any changed field names or types, update the ER diagram if relationships changed.
+
+- [ ] **DOC.4** — Update `docs/workflow.md`. Check commits touching `packages/shared/src/workflow.ts`, `packages/backend/src/agent/router.ts`, `packages/backend/src/agent/dispatch.ts`, `packages/backend/src/agent/coordination.ts`, `packages/backend/src/agent/execution-manager.ts`. Update: router behavior changes (same-state blocking, loop detection, transition history), rate limiter logging, any new states or transition rules, play/pause auto-routing UX.
+
+- [ ] **DOC.5** — Update `docs/personas.md`. Check commits touching `packages/backend/src/db/seed.ts` persona entries, `packages/backend/src/agent/claude-executor.ts`. Update: any persona prompt changes from the FX.P1-P5 overhaul, corrected tool names, new skills system, SDK tool name verification results, Pico as a new built-in persona (if implemented). Document the full list of correct MCP and SDK tool names per persona.
+
+- [ ] **DOC.6** — Update `docs/api.md`. Check commits touching `packages/backend/src/routes/`, `packages/backend/src/server.ts`. Update: any new routes (chat sessions, service status, browse-directory, audit), any changed request/response shapes, any removed routes. Add curl examples for new endpoints.
+
+- [ ] **DOC.7** — Update `docs/mcp-tools.md`. Check commits touching `packages/backend/src/agent/mcp-server.ts`. Update: any tool schema changes, new tools added, tool name corrections, per-persona allowlist changes from the audit.
+
+- [ ] **DOC.8** — Update `docs/deployment.md`. Check commits touching `packages/backend/src/cli.ts`, `ecosystem.config.cjs`, `packages/backend/src/config.ts`, `packages/backend/src/logger.ts`, `packages/backend/src/audit.ts`, `scripts/`. Update: any new CLI commands, config file changes, log file paths, pm2 config changes, new scripts (test-e2e, dev wrapper).
+
+- [ ] **DOC.9** — Update `docs/frontend.md`. Check commits touching `packages/frontend/src/`. Update: mock layer removal, new features (Pico chat, resizable panels, flow view redesign, play/pause control), deleted directories (mocks/), new stores or hooks, design system changes from the polish sprint.
 

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  ChevronDown,
   ClipboardList,
   Code,
   Copy,
@@ -10,9 +9,7 @@ import {
   TestTube,
   Trash2,
   Bot,
-  Pencil,
   Users,
-  DollarSign,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -29,7 +26,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { usePersonas, useCreatePersona, useDeletePersona } from "@/hooks";
 import { cn } from "@/lib/utils";
-import { MarkdownPreview } from "./system-prompt-editor";
 import type { Persona, PersonaId, PersonaModel } from "@agentops/shared";
 
 // ── Icon map ────────────────────────────────────────────────────
@@ -77,7 +73,8 @@ const BUILT_IN_IDS = new Set<string>([
 // ── Props ───────────────────────────────────────────────────────
 
 interface PersonaListProps {
-  onEdit: (id: PersonaId) => void;
+  selectedId: PersonaId | null;
+  onSelect: (id: PersonaId) => void;
 }
 
 // ── Persona card ────────────────────────────────────────────────
@@ -85,24 +82,24 @@ interface PersonaListProps {
 interface PersonaCardProps {
   persona: Persona;
   isBuiltIn: boolean;
-  isExpanded: boolean;
-  onToggleExpand: () => void;
-  onEdit: () => void;
+  isSelected: boolean;
+  onSelect: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
 }
 
-function PersonaCard({ persona, isBuiltIn, isExpanded, onToggleExpand, onEdit, onDuplicate, onDelete }: PersonaCardProps) {
+function PersonaCard({ persona, isBuiltIn, isSelected, onSelect, onDuplicate, onDelete }: PersonaCardProps) {
   const Icon = getPersonaIcon(persona.avatar.icon);
   const model = MODEL_CONFIG[persona.model];
   const toolCount = persona.allowedTools.length + persona.mcpTools.length;
 
   return (
     <div
+      onClick={onSelect}
       className={cn(
-        "group relative rounded-lg border border-border bg-card transition-all duration-200",
+        "group relative rounded-lg border border-border bg-card transition-all duration-200 cursor-pointer",
         "hover:shadow-md hover:border-border/80",
-        isExpanded && "col-span-full shadow-md border-primary/30",
+        isSelected && "shadow-md border-primary/50 ring-1 ring-primary/20",
       )}
     >
       <div className="p-4">
@@ -112,16 +109,7 @@ function PersonaCard({ persona, isBuiltIn, isExpanded, onToggleExpand, onEdit, o
             variant="ghost"
             size="icon"
             className="h-7 w-7"
-            onClick={onEdit}
-            title="Edit"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            onClick={onDuplicate}
+            onClick={(e) => { e.stopPropagation(); onDuplicate(); }}
             title="Duplicate"
           >
             <Copy className="h-3.5 w-3.5" />
@@ -130,7 +118,7 @@ function PersonaCard({ persona, isBuiltIn, isExpanded, onToggleExpand, onEdit, o
             variant="ghost"
             size="icon"
             className="h-7 w-7 text-destructive hover:text-destructive"
-            onClick={onDelete}
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
             title="Delete"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -168,86 +156,13 @@ function PersonaCard({ persona, isBuiltIn, isExpanded, onToggleExpand, onEdit, o
           {persona.description}
         </p>
 
-        {/* Tool count pill + view prompt button */}
+        {/* Tool count pill */}
         <div className="mt-3 flex items-center gap-2">
           <Badge variant="secondary" className="text-xs px-1.5 py-0">
             {toolCount} tool{toolCount !== 1 ? "s" : ""}
           </Badge>
-          <button
-            onClick={onToggleExpand}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors ml-auto"
-          >
-            {isExpanded ? "Collapse" : "View prompt"}
-            <ChevronDown className={cn(
-              "h-3 w-3 transition-transform duration-200",
-              isExpanded && "rotate-180",
-            )} />
-          </button>
         </div>
       </div>
-
-      {/* Expanded prompt preview */}
-      {isExpanded && (
-        <div className="border-t border-border px-4 py-4 space-y-4">
-          {/* System prompt */}
-          <div>
-            <p className="text-xs font-medium mb-2">System Prompt</p>
-            <div className="max-h-[400px] overflow-y-auto rounded-md border border-border bg-muted/20 p-3">
-              {persona.systemPrompt.trim() ? (
-                <MarkdownPreview text={persona.systemPrompt} />
-              ) : (
-                <p className="text-xs text-muted-foreground italic">No system prompt.</p>
-              )}
-            </div>
-          </div>
-
-          {/* MCP tools */}
-          {persona.mcpTools.length > 0 && (
-            <div>
-              <p className="text-xs font-medium mb-1.5">MCP Tools</p>
-              <div className="flex flex-wrap gap-1.5">
-                {persona.mcpTools.map((tool) => (
-                  <Badge key={tool} variant="secondary" className="text-xs px-2 py-0.5 font-mono">
-                    {tool}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* SDK tools */}
-          {persona.allowedTools.length > 0 && (
-            <div>
-              <p className="text-xs font-medium mb-1.5">SDK Tools</p>
-              <div className="flex flex-wrap gap-1.5">
-                {persona.allowedTools.map((tool) => (
-                  <Badge key={tool} variant="outline" className="text-xs px-2 py-0.5 font-mono">
-                    {tool}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Model + budget row */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5">
-              <Badge
-                variant="outline"
-                className={cn("text-xs px-1.5 py-0 border-0", model.className)}
-              >
-                {model.label}
-              </Badge>
-            </div>
-            {persona.maxBudgetPerRun > 0 && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <DollarSign className="h-3 w-3" />
-                <span>${persona.maxBudgetPerRun.toFixed(2)}/run</span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -283,12 +198,11 @@ function CreateCard({ onClick, isPending }: CreateCardProps) {
 
 // ── Main component ──────────────────────────────────────────────
 
-export function PersonaList({ onEdit }: PersonaListProps) {
+export function PersonaList({ selectedId, onSelect }: PersonaListProps) {
   const { data: personas } = usePersonas();
   const createMutation = useCreatePersona();
   const deleteMutation = useDeletePersona();
   const [deleteTarget, setDeleteTarget] = useState<Persona | null>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const handleCreate = () => {
     createMutation.mutate(
@@ -301,7 +215,7 @@ export function PersonaList({ onEdit }: PersonaListProps) {
       },
       {
         onSuccess: (p) => {
-          onEdit(p.id);
+          onSelect(p.id);
         },
       },
     );
@@ -321,7 +235,7 @@ export function PersonaList({ onEdit }: PersonaListProps) {
       },
       {
         onSuccess: (p) => {
-          onEdit(p.id);
+          onSelect(p.id);
         },
       },
     );
@@ -366,15 +280,14 @@ export function PersonaList({ onEdit }: PersonaListProps) {
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {personas.map((p) => (
           <PersonaCard
             key={p.id as string}
             persona={p}
             isBuiltIn={BUILT_IN_IDS.has(p.id as string)}
-            isExpanded={expandedId === (p.id as string)}
-            onToggleExpand={() => setExpandedId(expandedId === (p.id as string) ? null : (p.id as string))}
-            onEdit={() => onEdit(p.id)}
+            isSelected={selectedId === p.id}
+            onSelect={() => onSelect(p.id)}
             onDuplicate={() => handleDuplicate(p)}
             onDelete={() => setDeleteTarget(p)}
           />

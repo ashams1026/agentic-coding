@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — FX.PM2: Replace persona card expand with side panel
+
+**Task:** Replace inline expand/collapse on persona cards with a click-to-open detail panel.
+
+**Done:**
+- **`persona-list.tsx`**: Removed expand/collapse (`isExpanded`, `onToggleExpand`, `expandedId`, `MarkdownPreview` import, `ChevronDown`, `DollarSign`, `Pencil` imports). Cards now clickable for selection (`isSelected` highlight with ring). Removed "View prompt" / "Collapse" button. Removed expanded prompt preview section (~60 lines). Added `selectedId` + `onSelect` props replacing `onEdit`. Cards show: avatar, name, built-in badge, model badge, description (2 lines), tool count. Hover actions: Duplicate + Delete (Edit removed — panel handles it).
+- **`persona-detail-panel.tsx`** (new): Right-side panel showing all persona details with inline editing. Sections: Identity (name input, description textarea, avatar picker with color swatches + icon grid), Model (3 selectable cards), System Prompt (Write/Preview tabs via SystemPromptEditor), Tools (ToolConfiguration component), Budget (dollar input). Header: avatar, name, Built-in badge, Save + Close buttons. Scrollable content area with flex layout.
+- **`persona-manager.tsx`** (page): Split layout — card grid on left (45% when panel open, 100% when closed), detail panel on right (55%) with border-l separator. Animated width transitions. Removed PersonaEditor Sheet import — panel replaces it entirely.
+- Bundle size slightly decreased (1069KB vs 1076KB — unused Sheet/persona-editor no longer imported)
+- Build passes
+
+**Files created:** `packages/frontend/src/features/persona-manager/persona-detail-panel.tsx`
+**Files modified:** `packages/frontend/src/features/persona-manager/persona-list.tsx`, `packages/frontend/src/pages/persona-manager.tsx`
+
+**Notes:** The old `persona-editor.tsx` (Sheet) is still in the codebase but no longer imported by the page. It can be deleted in a cleanup pass. The detail panel reuses SystemPromptEditor and ToolConfiguration from the old editor.
+
+---
+
 ## 2026-03-30 — Review: FX.P6 (approved)
 
 **Reviewed:** SDK tool name verification and executor tool wiring fix.
