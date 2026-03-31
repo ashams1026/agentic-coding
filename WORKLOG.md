@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: FX.P6 (approved)
+
+**Reviewed:** SDK tool name verification and executor tool wiring fix.
+- SDK expects short names (`'Bash'`, `'Read'`, `'Edit'`) — persona arrays already correct ✓
+- Critical fix: `tools: []` → `persona.allowedTools` — agents now get SDK built-in tools ✓
+- `ALLOWED_TOOLS` env: `options.tools` → `persona.mcpTools` — correct MCP tool names to MCP server ✓
+- `router.ts` fallback: `allowedTools: []`, `mcpTools: ROUTER_MCP_TOOLS` with `post_comment` ✓
+- SDK tool reference comment: 12 tools documented ✓
+- `SpawnOptions.tools` comment clarified ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.P6: Verify SDK tool names and fix executor tool wiring
 
 **Task:** Verify SDK tool name format, fix the executor to pass tools correctly, document available tools.
