@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: FX.P4 (approved)
+
+**Reviewed:** Code Reviewer persona audit and overhaul.
+- mcpTools: `route_to_state` removed, `get_context` + `list_items` added ✓
+- allowedTools: `["Read", "Glob", "Grep", "Bash"]` verified valid SDK names ✓
+- systemPrompt: 5-step workflow (gather context → read files → verify build → review checklist → post verdict) ✓
+- Review checklist: 11 criteria (AC match, types, naming, dark mode, responsive, security, etc.) ✓
+- Structured approve/reject formats with severity levels (HIGH/MEDIUM/LOW) ✓
+- Anti-patterns: don't approve without reading, don't fix code yourself, don't use route_to_state ✓
+- default-personas.ts updated in sync ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.P4: Audit and overhaul Code Reviewer persona
 
 **Task:** Fix mcpTools, overhaul systemPrompt for Code Reviewer persona.
