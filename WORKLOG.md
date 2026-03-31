@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-31 — Review: FX.9 (approved)
+
+**Reviewed:** Activity feed enrichment in `activity-feed.tsx`.
+- Base events: lookup maps from `useWorkItems`/`usePersonas` resolve persona names and work item titles. Graceful fallbacks (`"Agent"`, `"work item"`) when data not yet loaded. `targetLabel` also enriched.
+- WS events: `wsEventToActivity` accepts `LookupMaps`, consistent format. `AgentStartedEvent` prefers `e.workItemTitle` then falls back to map lookup — good.
+- Ref pattern in `useLiveActivityEvents`: `mapsRef.current = maps` avoids WS resubscription. Correct.
+- Duplicate `useWorkItems`/`usePersonas` between `useBaseActivityEvents` and `ActivityFeed` is fine — TanStack Query deduplicates.
+- All 5 event formats match task spec. Build passes.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — FX.9: Enrich activity feed event descriptions
 
 **Task:** Replace generic "Agent started working on work item" descriptions with enriched ones using persona names and work item titles.
