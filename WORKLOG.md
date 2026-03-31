@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: FX.P2 (approved)
+
+**Reviewed:** Tech Lead persona audit and overhaul.
+- mcpTools: `request_review` removed, `get_context`/`list_items` added ✓
+- allowedTools: verified valid SDK names ✓
+- systemPrompt: 3-step workflow (read codebase → create_children → post rationale), granularity 2-8, skip-decomposition, anti-patterns ✓
+- default-personas.ts updated in sync ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.P2: Audit and overhaul Tech Lead persona
 
 **Task:** Fix mcpTools, overhaul systemPrompt for Tech Lead persona.
