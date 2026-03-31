@@ -153,7 +153,7 @@
 
 > Update remaining test plans with visual inspection protocol (screenshot checkpoints, visual quality/failure criteria).
 
-- [review] **AI.V3** — Update `work-items-list-view.md` and `work-items-create.md` with visual inspection steps. Add screenshot + examine after: list renders, expanding a parent, opening detail panel, creating a new item. Check: row alignment, badge sizing, indentation, panel transition.
+- [x] **AI.V3** — Update `work-items-list-view.md` and `work-items-create.md` with visual inspection steps. Add screenshot + examine after: list renders, expanding a parent, opening detail panel, creating a new item. Check: row alignment, badge sizing, indentation, panel transition.
 
 - [ ] **AI.V4** — Update `work-items-flow-view.md` with visual inspection steps. Add screenshot + examine after: flow view renders, clicking a state node. Check: node layout, arrow rendering, label readability, no clipping or overflow.
 
