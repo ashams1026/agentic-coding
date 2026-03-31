@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-31 — Review: FX.SDK4 (approved)
+
+**Reviewed:** Replaced filesystem skill browser with SDK capabilities-driven skill picker.
+- Correctly fetches `commands` from `GET /api/sdk/capabilities` on dialog open. Searchable list with name, description, argument hint — matches task spec.
+- Clean component architecture: loading/error/empty states, retry button, `useMemo` for filtered results, `stopPropagation` on Add button.
+- Manual path input preserved as fallback for custom skills — task requirement met.
+- Persona detail panel: `isSlashCommand` heuristic (`!includes("/") && !includes(".")`) is reasonable for distinguishing SDK commands from file paths.
+- Removed `useSelectedProject` dependency and `projectPath` prop — skill browsing no longer requires project context.
+- API types (`SdkSkill`, `SdkCapabilities`) match backend response shape.
+- Build passes.
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — FX.SDK4: Replace file browser skill picker with SDK skill picker
 
 **Task:** Replace filesystem-based skill browser with SDK capabilities-driven skill picker.
