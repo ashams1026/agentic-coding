@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — FX.P1: Audit and overhaul Product Manager persona
+
+**Task:** Fix mcpTools, verify allowedTools, overhaul systemPrompt for PM persona.
+
+**Done:**
+- **mcpTools**: Changed from `["post_comment", "route_to_state"]` → `["post_comment", "list_items", "get_context", "request_review"]`. Removed `route_to_state` (Router's job), added `list_items` + `get_context` + `request_review` for PM's needs.
+- **allowedTools**: Verified correct — `["Read", "Glob", "Grep", "WebSearch"]` are valid SDK tool names.
+- **systemPrompt**: Complete overhaul from 17-line generic prompt to comprehensive ~50-line prompt covering: when PM runs (Planning state), what it receives, exact output format (acceptance criteria template with checkboxes, scope, priority, open questions), what "done" looks like, and explicit "what NOT to do" section (don't code, don't decompose, don't transition state, don't post multiple comments).
+- Updated both `seed.ts` and `default-personas.ts`
+- Build passes
+
+**Files modified:** `packages/backend/src/db/seed.ts`, `packages/backend/src/db/default-personas.ts`
+
+**Notes:** The prompt includes a concrete acceptance criteria template with markdown checkboxes. The "What NOT To Do" section explicitly addresses the routing loop issue — PM no longer has `route_to_state` and the prompt reinforces that transitions are the Router's job.
+
+---
+
 ## 2026-03-30 — Review: FX.0 (approved)
 
 **Reviewed:** MCP tool name mismatch fix in seed personas.
