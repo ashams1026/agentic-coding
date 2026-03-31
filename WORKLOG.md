@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — FX.MOCK1: Remove mock API mode from frontend
+
+**Task:** Remove mock/real branching so frontend always talks to real backend.
+
+**Done:**
+- Removed `ApiMode` type, `apiMode` field, `setApiMode` method from `useUIStore` (and from localStorage persistence)
+- Rewrote `api/index.ts` to re-export directly from `api/client` (removed `pick()` mock/real branching)
+- Rewrote `api/ws.ts` to always use `realWs` (removed `getClient()` mode check, `initWsConnection()` now unconditionally connects)
+- Removed status bar mock/live toggle button (kept health indicator)
+- Removed `ApiModeSection` from Settings → Appearance (Data Source mock/live toggle)
+- Removed `DemoButton` from Dashboard header
+- Removed `DemoControls` from root layout
+- Build passes, bundle ~43KB smaller (1069KB vs 1112KB)
+- Kept `mocks/` directory for now (FX.MOCK2 will delete it)
+
+**Files modified:** `stores/ui-store.ts`, `api/index.ts`, `api/ws.ts`, `components/status-bar.tsx`, `features/settings/appearance-section.tsx`, `layouts/root-layout.tsx`, `pages/dashboard.tsx`
+
+**Notes:** Frontend now always talks to the real backend. Demo controls still exist as files but are no longer imported/rendered.
+
+---
+
 ## 2026-03-30 — Review: FX.SEC1 (approved)
 
 **Reviewed:** Command sandbox for agent directory protection.

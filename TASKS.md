@@ -20,7 +20,7 @@
 
 ### Remove Mock Layer & E2E Test DB
 
-- [ ] **FX.MOCK1** — Remove mock API mode from frontend. Delete the `apiMode` field from `useUIStore` (and its localStorage persistence). Remove the mock/real branching in `packages/frontend/src/api/index.ts` — all exports should point directly to the real API client. Remove the `initWsConnection` mode check — always connect to the real WebSocket. Remove the QF.1 status bar mock/live toggle. Remove the demo controls that rely on mock WS (`features/demo/demo-controls.tsx`). The frontend now always talks to the real backend. Keep the `mocks/` directory for now (next task deletes it).
+- [review] **FX.MOCK1** — Remove mock API mode from frontend. Delete the `apiMode` field from `useUIStore` (and its localStorage persistence). Remove the mock/real branching in `packages/frontend/src/api/index.ts` — all exports should point directly to the real API client. Remove the `initWsConnection` mode check — always connect to the real WebSocket. Remove the QF.1 status bar mock/live toggle. Remove the demo controls that rely on mock WS (`features/demo/demo-controls.tsx`). The frontend now always talks to the real backend. Keep the `mocks/` directory for now (next task deletes it).
 
 - [ ] **FX.MOCK2** — Delete mock data layer. Delete `packages/frontend/src/mocks/` directory entirely (api.ts, fixtures.ts, ws.ts, demo.ts). Remove any imports of mock functions throughout the codebase. Clean up any dead code that only existed to support the mock layer (mock WS event simulation, demo mode hooks, etc.).
 

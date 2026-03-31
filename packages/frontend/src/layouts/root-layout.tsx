@@ -10,7 +10,6 @@ import { CommandPalette } from "@/features/command-palette/command-palette";
 import { ToastRenderer } from "@/features/toasts/toast-renderer";
 import { useToastEvents } from "@/features/toasts/use-toast-events";
 import { useWsQuerySync } from "@/hooks/use-ws-sync";
-import { DemoControls } from "@/features/demo/demo-controls";
 
 export function RootLayout() {
   useThemeSync();
@@ -43,7 +42,6 @@ export function RootLayout() {
       </div>
       <CommandPalette />
       <ToastRenderer />
-      <DemoControls />
     </TooltipProvider>
   );
 }

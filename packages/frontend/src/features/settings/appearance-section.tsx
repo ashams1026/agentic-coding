@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Sun,
   Moon,
@@ -13,12 +13,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { useUIStore, type ApiMode, type Density } from "@/stores/ui-store";
-import { useToastStore } from "@/stores/toast-store";
+import { useUIStore, type Density } from "@/stores/ui-store";
 import { cn } from "@/lib/utils";
 import { getDbStats, clearExecutionHistory, exportSettings, importSettings } from "@/api";
-import { API_BASE_URL } from "@/api/client";
-import { initWsConnection } from "@/api/ws";
 
 // ── Theme toggle ───────────────────────────────────────────────────
 
@@ -113,77 +110,11 @@ function DensitySection() {
   );
 }
 
-// ── API mode toggle ───────────────────────────────────────────────
-
-function ApiModeSection() {
-  const apiMode = useUIStore((s) => s.apiMode);
-  const setApiMode = useUIStore((s) => s.setApiMode);
-  const addToast = useToastStore((s) => s.addToast);
-
-  const handleToggle = useCallback(async (mode: ApiMode) => {
-    if (mode === apiMode) return;
-
-    if (mode === "api") {
-      try {
-        const res = await fetch(`${API_BASE_URL}/api/health`);
-        if (!res.ok) throw new Error(`Status ${res.status}`);
-      } catch {
-        addToast({
-          type: "error",
-          title: "Backend not running",
-          description: "Start it with `pnpm --filter backend dev`",
-        });
-        return;
-      }
-    }
-
-    setApiMode(mode);
-    initWsConnection();
-  }, [apiMode, setApiMode, addToast]);
-
-  return (
-    <div className="space-y-3">
-      <div>
-        <p className="text-sm font-medium mb-1">Data Source</p>
-        <p className="text-xs text-muted-foreground mb-3">
-          Mock mode uses demo data. Live mode connects to the backend API at localhost:3001.
-        </p>
-      </div>
-
-      <div className="flex gap-2">
-        {([
-          { value: "mock" as const, label: "Mock", color: "bg-amber-500" },
-          { value: "api" as const, label: "Live", color: "bg-emerald-500" },
-        ]).map((opt) => {
-          const isActive = apiMode === opt.value;
-          return (
-            <button
-              key={opt.value}
-              onClick={() => handleToggle(opt.value)}
-              className={cn(
-                "flex flex-1 flex-col items-center gap-2 rounded-lg border p-3 transition-colors",
-                isActive
-                  ? "border-primary bg-accent text-accent-foreground"
-                  : "border-border hover:bg-accent/50",
-              )}
-            >
-              <span className={cn("h-3 w-3 rounded-full", opt.color)} />
-              <span className="text-xs font-medium">{opt.label}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
 // ── Appearance section (exported) ──────────────────────────────────
 
 export function AppearanceSection() {
   return (
     <div className="space-y-6">
-      <ApiModeSection />
-      <Separator />
       <ThemeSection />
       <Separator />
       <DensitySection />

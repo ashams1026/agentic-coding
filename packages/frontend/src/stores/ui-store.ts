@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 type Theme = "light" | "dark" | "system";
-export type ApiMode = "mock" | "api";
 export type Density = "comfortable" | "compact";
 
 interface UIState {
@@ -10,7 +9,6 @@ interface UIState {
   mobileSidebarOpen: boolean;
   selectedProjectId: string | null;
   theme: Theme;
-  apiMode: ApiMode;
   density: Density;
 
   toggleSidebar: () => void;
@@ -18,7 +16,6 @@ interface UIState {
   setMobileSidebarOpen: (open: boolean) => void;
   setSelectedProjectId: (id: string | null) => void;
   setTheme: (theme: Theme) => void;
-  setApiMode: (mode: ApiMode) => void;
   setDensity: (density: Density) => void;
 }
 
@@ -29,7 +26,6 @@ export const useUIStore = create<UIState>()(
       mobileSidebarOpen: false,
       selectedProjectId: null,
       theme: "system",
-      apiMode: "mock",
       density: "comfortable",
 
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
@@ -37,7 +33,6 @@ export const useUIStore = create<UIState>()(
       setMobileSidebarOpen: (open) => set({ mobileSidebarOpen: open }),
       setSelectedProjectId: (id) => set({ selectedProjectId: id }),
       setTheme: (theme) => set({ theme }),
-      setApiMode: (mode) => set({ apiMode: mode }),
       setDensity: (density) => set({ density }),
     }),
     {
@@ -46,7 +41,6 @@ export const useUIStore = create<UIState>()(
         sidebarCollapsed: state.sidebarCollapsed,
         selectedProjectId: state.selectedProjectId,
         theme: state.theme,
-        apiMode: state.apiMode,
         density: state.density,
       }),
     },

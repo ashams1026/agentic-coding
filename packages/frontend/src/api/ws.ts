@@ -1,30 +1,23 @@
 /**
- * Unified WebSocket layer — delegates to mock or real WS client
- * based on the current apiMode setting.
+ * Unified WebSocket layer — delegates to the real WS client.
  */
 
 import type { WsEvent, WsEventType, WsEventMap, WsEventHandler } from "@agentops/shared";
-import { useUIStore } from "@/stores/ui-store";
-import { mockWs } from "@/mocks/ws";
 import { realWs } from "@/api/ws-client";
 
 type Unsubscribe = () => void;
 
-function getClient() {
-  return useUIStore.getState().apiMode === "api" ? realWs : mockWs;
-}
-
-/** Subscribe to a specific event type on the active WS client. */
+/** Subscribe to a specific event type on the WS client. */
 export function subscribe<K extends WsEventType>(
   eventType: K,
   handler: WsEventHandler<WsEventMap[K]>,
 ): Unsubscribe {
-  return getClient().subscribe(eventType, handler);
+  return realWs.subscribe(eventType, handler);
 }
 
-/** Subscribe to ALL events on the active WS client. */
+/** Subscribe to ALL events on the WS client. */
 export function subscribeAll(handler: WsEventHandler<WsEvent>): Unsubscribe {
-  return getClient().subscribeAll(handler);
+  return realWs.subscribeAll(handler);
 }
 
 /** Register a callback that fires on WebSocket reconnection. */
@@ -33,14 +26,9 @@ export function onReconnect(callback: () => void): Unsubscribe {
 }
 
 /**
- * Initialize the WS connection when in API mode.
- * Call this once at app startup or when apiMode changes.
+ * Initialize the WS connection.
+ * Call this once at app startup.
  */
 export function initWsConnection(): void {
-  const mode = useUIStore.getState().apiMode;
-  if (mode === "api") {
-    realWs.connect();
-  } else {
-    realWs.disconnect();
-  }
+  realWs.connect();
 }
