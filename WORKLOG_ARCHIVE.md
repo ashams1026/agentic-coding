@@ -88,3 +88,23 @@ AI.19: filtering 14/14 PASS. AI.20: sorting 12/12 PASS. AI.21: agent-monitor-lay
 - Code Reviewer: mcpTools → post_comment, get_context, list_items, request_review. Prompt: 5-step (context → read files → build → checklist → verdict), severity-tagged rejections.
 
 All personas updated in both seed.ts and default-personas.ts. Key pattern: no persona has route_to_state except Router — all state transitions are Router's responsibility.
+
+---
+
+## Sprint 17 (continued): Persona Panel, Skills, Router Loop Defense, Monitor UX, DB/Executor Env Separation — 2026-03-30
+
+**FX.P5-P6:** Router persona audit — fixed swapped allowedTools/mcpTools (critical: MCP names in SDK field), overhauled systemPrompt with valid transitions map. SDK tool verification — confirmed short names, fixed `tools: []` bug in executor (agents had zero built-in tools), fixed MCP env var.
+
+**FX.PM2-PM3:** Replaced persona card expand with side detail panel (45%/55% split layout). Fixed panel to open read-only by default with explicit Edit button.
+
+**FX.P7-P9:** Added `skills: string[]` to Persona entity + DB + API. Built skill browser modal (filesystem `.md` browser with preview). Skill injection into system prompt (section 5 in `buildSystemPrompt`, 8K char cap).
+
+**FX.1-FX.3 (Router loop defense):** Three-layer system: (1) same-state rejection in `route_to_state` MCP tool, (2) transition history awareness in Router's dynamic system prompt, (3) rate limiter logging with system comment + WS broadcast when chaining is paused.
+
+**FX.4-FX.5:** Transition loop detection (6-entry history, 3-occurrence threshold, auto-Blocked). Cost aggregation audit — fixed cents→dollars in 4 dashboard routes + execution serializer.
+
+**FX.6-FX.8 (Agent Monitor UX):** Persona identity header (avatar, model badge, work item title). Chat thread restructure (grouped text bubbles, collapsible thinking, tool cards, timestamps). Historical log chunk detection (JSON/tool_call/thinking heuristics via `parseLogLine`).
+
+**FX.DB1-DB4 (DB & Executor):** Dev/prod DB separation by NODE_ENV (`agentops-dev.db` local, `~/.agentops/data/agentops.db` prod). MockExecutor (6 events, configurable delay, zero cost). Executor selection by NODE_ENV with health endpoint indicator. Settings toggle for executor mode (runtime swapping, hidden in production).
+
+**FX.DEV1:** Port-check wrapper `scripts/dev.sh` — skips backend/frontend if already running.

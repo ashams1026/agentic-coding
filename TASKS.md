@@ -5,42 +5,14 @@
 
 ---
 
-> Sprints 1-16 complete and archived. Sprint 17 partially archived (FX.SEC1, FX.MOCK1-4, FX.SET1-3, FX.RST1, FX.FLOW1, FX.NAV1, FX.PM1, FX.0, FX.P1-P9, FX.PM2-PM3, FX.1-FX.3).
+> Sprints 1-16 complete and archived. Sprint 17 partially archived (FX.SEC1, FX.MOCK1-4, FX.SET1-3, FX.RST1, FX.FLOW1, FX.NAV1, FX.PM1, FX.0, FX.P1-P9, FX.PM2-PM3, FX.1-FX.3, FX.4-FX.8, FX.DB1-DB4, FX.DEV1).
 
 ---
 
-## Sprint 17: Agent Pipeline Fixes & Monitor UX
+## Sprint 17: Agent Pipeline Fixes & Monitor UX (remaining)
 
 > Critical fixes from first real-world test run. Router loop, cost display, agent monitor readability, activity feed descriptions.
 > Also includes persona audit, skills system, security, UX improvements, and SDK-native tool/skill discovery.
-
-### Router & Dispatch Fixes (remaining)
-
-- [x] **FX.4** — Add transition loop detection. In `execution-manager.ts` or `dispatch.ts`: track the last 3 state transitions per work item in memory. If the same state appears 3 times in the recent history (A→B→A→B pattern), halt the chain and post a system comment: "Detected routing loop — halting automatic transitions. Manual intervention required." Transition the item to Blocked.
-
-### Cost Display Fixes
-
-- [x] **FX.5** — Audit cost aggregation and display. Check the dashboard stats route (`GET /api/dashboard/stats`) and cost summary route: verify that `costUsd` is correctly converted from cents (DB storage) to dollars (display). Verify the frontend dashboard cost widgets are dividing by 100 where needed. Check if seeded execution data has inflated fake costs that pollute the real project's totals. Ensure cost queries are scoped to the selected project (may overlap with PS.4 from Sprint 15).
-
-### Agent Monitor UX Overhaul
-
-- [x] **FX.6** — Show persona identity in terminal renderer. In `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`: add a header bar above the output showing persona name (with colored avatar), persona model badge, and the work item title being worked on. Look up persona details from the execution's `personaId`. This should be the first thing the user sees — "Product Manager (Sonnet) working on Build TicTacToe App".
-
-- [x] **FX.7** — Render agent output as a chat thread. Restructure the terminal renderer to display output as a conversation: system/user messages appear as chat bubbles (left-aligned, muted background), agent text responses appear as chat bubbles (right-aligned or full-width), thinking blocks are collapsible accordion sections (collapsed by default, italic muted text, "Thinking..." label), tool calls are custom UI cards (tool icon + name + collapsible input/output, reuse existing ToolCallSection). Group consecutive text chunks into single message bubbles. Show timestamps on each message group.
-
-- [x] **FX.8** — Fix historical log chunk type detection. In `terminal-renderer.tsx` where `execution.logs` is split into chunks: instead of marking all lines as `"text"`, parse the log content to detect chunk types. Look for JSON-parseable lines that contain `chunkType` fields, or use heuristics: lines starting with `Tool:` or containing `tool_call`/`tool_result` → tool type, lines wrapped in `<thinking>` tags or prefixed with thinking indicators → thinking type, code blocks between triple backticks → code type. This restores structure to historical execution replays.
-
-### Database Environment Separation
-
-- [x] **FX.DB1** — Separate dev, test, and prod databases. In `packages/backend/src/db/connection.ts` (or `config.ts`): select the DB path based on `NODE_ENV`. **Test** (`NODE_ENV=test`): use `:memory:` — already handled by Vitest `createTestDb()`, no changes needed. **Dev** (`NODE_ENV=development` or unset): use `packages/backend/agentops-dev.db` (local to the project, gitignored). **Prod** (`NODE_ENV=production`): use `~/.agentops/data/agentops.db` (user home directory). The `AGENTOPS_DB_PATH` env var overrides all of these if set. Update `packages/backend/src/start.ts` to log which DB path is being used on startup. Add `agentops-dev.db` to `.gitignore`. Add `"db:reset"` script to `packages/backend/package.json`: deletes the dev DB file, re-runs migrations, re-seeds — a clean slate for development. Update `pnpm dev` to set `NODE_ENV=development` explicitly. Update `ecosystem.config.cjs` to set `NODE_ENV=production`.
-
-### Executor Modes (Test / Dev / Prod)
-
-- [x] **FX.DB2** — Create a mock/simulated executor for test and dev. Create `packages/backend/src/agent/mock-executor.ts` implementing the same `AgentExecutor` interface as `ClaudeExecutor`. The mock executor simulates an agent run: waits 1-3 seconds, yields a sequence of fake `AgentEvent`s (a thinking event, a text event with a canned response referencing the work item title, a tool_use for `post_comment`, a tool_result, and a result event with `costUsd: 0` and `durationMs` matching the wait time). The output should be realistic enough to exercise the full execution pipeline (DB records, WS streaming, router chain) without calling the Claude API. Configurable delay via constructor option (`delayMs`, default 2000).
-
-- [x] **FX.DB3** — Wire executor selection by environment. In `packages/backend/src/agent/execution-manager.ts` (or wherever the executor is instantiated): select the executor based on environment and config. **Test** (`NODE_ENV=test`): always use `MockExecutor` — no API calls during tests. **Dev** (`NODE_ENV=development`): check a project setting or env var `AGENTOPS_EXECUTOR` — `"mock"` uses `MockExecutor`, `"claude"` (default) uses `ClaudeExecutor`. This lets developers test the full pipeline without burning API credits. **Prod** (`NODE_ENV=production`): always use `ClaudeExecutor`. Add an executor mode indicator to the `/api/health` response: `{ executor: "mock" | "claude" }`. In the frontend status bar: show the executor mode when not `"claude"` (e.g., a small "Simulated" badge next to the service health indicator so the user knows agents aren't real).
-
-- [x] **FX.DB4** — Add executor toggle to Settings. In Settings → API & Execution section: when in dev mode, show an "Agent Executor" dropdown with two options: "Claude API (real)" and "Simulated (no API calls)". Switching updates the project setting and takes effect on the next agent dispatch. Show a description: "Simulated mode runs fake agent executions for testing the pipeline without using API credits. Agents will produce placeholder output." Hide this dropdown in production mode.
 
 ### SDK-Native Skills & Tool Discovery
 
@@ -55,10 +27,6 @@
 - [ ] **FX.SDK5** — Add startup tool validation. In `packages/backend/src/agent/execution-manager.ts`: on first dispatch (or server start), fetch the SDK capabilities and validate all persona `allowedTools` and `skills` against the actual available set. Log warnings for any mismatches: "Persona 'Engineer' references unknown tool 'FooBar' — will be ignored by SDK." This catches stale tool names early (like the `transition_state` vs `route_to_state` incident).
 
 - [ ] **FX.SDK6** — Expose available subagents in persona config. The SDK provides `supportedAgents()` returning agent name, description, and model. In the persona editor: add a "Subagents" section showing available agents from the SDK discovery. Allow personas to reference specific subagents (e.g., the Engineer persona might use the `code-reviewer` subagent). Store as `subagents: string[]` on the Persona entity. Pass via query options if the SDK supports it, otherwise inject as guidance in the system prompt.
-
-### Dev Server Deduplication
-
-- [x] **FX.DEV1** — Skip server start if already running. In the agent's build/verify workflow and any dev scripts: before starting the backend (`pnpm --filter backend dev`), check if port 3001 is already responding (`curl -s http://localhost:3001/api/health`). If it responds with `status: "ok"`, skip starting — the existing server has hot reload via `tsx watch` and will pick up code changes automatically. Same for the frontend: check if port 5173 or 5174 is already serving before running `pnpm --filter frontend dev` — Vite HMR handles file changes. Implement as a wrapper script `scripts/dev.sh` (or update existing `pnpm dev`): check ports first, only start what's not already running. This prevents agents from spawning duplicate servers across sessions.
 
 ### Sidebar Navigation Redo
 

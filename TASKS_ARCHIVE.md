@@ -96,3 +96,19 @@
 - [x] **FX.1** — Same-state routing rejection in `route_to_state` MCP tool. *(completed 2026-03-30)*
 - [x] **FX.2** — Router transition history awareness (last 3 transitions in dynamic system prompt). *(completed 2026-03-30)*
 - [x] **FX.3** — Rate limiter logging: `logger.warn` + system comment + `comment_created` WS broadcast. *(completed 2026-03-30)*
+
+### Router Loop Defense, Cost Fixes & Monitor UX — archived 2026-03-30
+- [x] **FX.4** — Transition loop detection: in-memory state history (6 entries, 3-occurrence threshold), auto-Blocked + system comment. *(completed 2026-03-30)*
+- [x] **FX.5** — Cost aggregation audit: fixed cents→dollars conversion in 4 dashboard routes + execution serializer. *(completed 2026-03-30)*
+- [x] **FX.6** — Persona identity header in terminal renderer (colored avatar, model badge, work item title). *(completed 2026-03-30)*
+- [x] **FX.7** — Chat thread restructure: grouped text bubbles, collapsible thinking, tool cards, timestamps. *(completed 2026-03-30)*
+- [x] **FX.8** — Historical log chunk type detection: `parseLogLine()` with JSON/tool_call/thinking heuristics. *(completed 2026-03-30)*
+
+### Database & Executor Environment Separation — archived 2026-03-30
+- [x] **FX.DB1** — Dev/prod DB separation: `resolveDbPath()` by NODE_ENV, `db:reset` script, startup logging. *(completed 2026-03-30)*
+- [x] **FX.DB2** — MockExecutor: simulates agent runs (6 events, configurable delay, costUsd: 0). *(completed 2026-03-30)*
+- [x] **FX.DB3** — Executor selection by NODE_ENV: test→mock, prod→claude, dev→env override. Health endpoint + status bar badge. *(completed 2026-03-30)*
+- [x] **FX.DB4** — Executor toggle in Settings: two-button UI, runtime swapping via `setExecutorMode()`, hidden in production. *(completed 2026-03-30)*
+
+### Dev Server — archived 2026-03-30
+- [x] **FX.DEV1** — Port-check wrapper `scripts/dev.sh`: skips backend/frontend if already running. *(completed 2026-03-30)*
