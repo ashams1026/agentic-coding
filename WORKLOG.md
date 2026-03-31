@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: FX.3 (approved)
+
+**Reviewed:** Rate limiter logging in `packages/backend/src/agent/execution-manager.ts`.
+- `getTransitionCount()`: clean helper, correctly filters timestamps within last hour
+- `else if (finalOutcome === "success")` at line 462: correct placement — fires only when execution succeeded but rate limiter blocked chaining. Failed executions correctly fall through neither branch.
+- `logger.warn` includes workItemId, transitionCount, and max — matches task spec
+- System comment: follows same pattern as mcp-server.ts (authorType: "system", metadata with coordination key). Content includes count and max with user instructions.
+- WS broadcast: `comment_created` event — correct existing event type that frontend already listens for
+- `comments` and `CommentId` imports both used — no dead imports
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.3: Log when rate limiter triggers
 
 **Task:** When `canTransition()` returns false, log a warning, post a system comment, and broadcast a WS event.
