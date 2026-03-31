@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: FX.DB4 (approved)
+
+**Reviewed:** Executor toggle in Settings across backend and frontend.
+- `execution-manager.ts`: `runtimeOverride` + `setExecutorMode()` — guards against production, recreates executor singleton. Priority chain: test→mock, prod→claude, dev→runtime→env→default. `let executor` allows reassignment. Clean.
+- `settings.ts`: GET returns `{ mode, isProduction }`. PUT validates mode, returns 403 in prod, calls `setExecutorMode()`. Correct REST patterns.
+- `api/client.ts`: `ExecutorModeResponse` interface, `getExecutorMode()` and `setExecutorMode()` functions. Correctly typed.
+- `api/index.ts`: Both functions exported.
+- `api-keys-section.tsx`: `ExecutorModeSection` placed between API Key and Concurrency. Two-button toggle: "Claude API (real)" (primary highlight) / "Simulated (no API calls)" (amber highlight). Hidden when `isProduction`. Loading skeleton. Disabled while saving. Amber warning when mock active. `useHealth` sync keeps toggle consistent with status bar badge.
+- Description matches task spec verbatim: "Simulated mode runs fake agent executions..."
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.DB4: Add executor toggle to Settings
 
 **Task:** Add an executor mode toggle in the Settings page, hidden in production.
