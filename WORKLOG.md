@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — AI.V5: Update detail panel test plans with visual inspection
+
+**Task:** Add visual inspection steps to `detail-panel-view.md` and `detail-panel-edit.md`.
+
+**Done:**
+- `detail-panel-view.md`: Added visual inspection protocol blockquote, 5 screenshot checkpoints (panel open, header layout, description section, comments section, metadata section), "Visual Quality" section (9 criteria: panel sizing, header layout, section spacing, labels, children, comments, execution history, metadata, scrolling), "Visual Failure Criteria" section (8 defects), updated prerequisites
+- `detail-panel-edit.md`: Added visual inspection protocol blockquote, 7 screenshot checkpoints (title edit input, description editor, markdown preview, priority dropdown, label add, state transition, post-reload verification), "Visual Quality" section (7 criteria: title edit, description editor, preview, priority, label, transition dialog, post-reload), "Visual Failure Criteria" section (7 defects), updated prerequisites
+
+**Files changed:** `tests/e2e/plans/detail-panel-view.md`, `tests/e2e/plans/detail-panel-edit.md`
+
+**Notes:** Build passes (no code changes). Original functional steps preserved (16 view, 17 edit).
+
+---
+
 ## 2026-03-30 — Review: AI.V4 (approved)
 
 **Reviewed:** Flow view test plan visual inspection update.
