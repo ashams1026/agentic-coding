@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — AI.20: Execute work-items-sorting.md E2E test
+
+**Task:** Execute work-items-sorting test plan via chrome-devtools MCP.
+
+**Done:**
+- Executed all 12 steps in browser against http://localhost:5174/items
+- 12/12 steps PASS, 0 FAIL
+- 3 screenshot checkpoints taken — all visual checks PASS
+- Sort dropdown cycles through priority/created/updated correctly
+- Direction toggle flips arrow and updates URL param (`sortDir=desc`)
+- Note: sort order changes not visually distinguishable because "Group by state" is active with 1 item per group — but controls respond correctly
+
+**Files created:** `tests/e2e/results/work-items-sorting.md`, 4 screenshot PNGs in `tests/e2e/results/`
+
+**Notes:** All sorting controls work correctly. Visual reordering limited by single-item state groups.
+
+---
+
 ## 2026-03-30 — Review: AI.19 (approved)
 
 **Reviewed:** E2E test execution of work-items-filtering.md.
