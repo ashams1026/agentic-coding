@@ -3,10 +3,8 @@
  * @anthropic-ai/claude-agent-sdk to spawn Claude Code subprocesses.
  */
 
-import { readFileSync } from "node:fs";
-import { join, basename } from "node:path";
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import type { SDKMessage } from "@anthropic-ai/claude-agent-sdk";
+import type { SDKMessage, AgentDefinition } from "@anthropic-ai/claude-agent-sdk";
 import type {
   AgentExecutor,
   AgentTask,
@@ -15,7 +13,6 @@ import type {
 } from "./types.js";
 import type { Persona, Project } from "@agentops/shared";
 import { loadConfig } from "../config.js";
-import { logger } from "../logger.js";
 import { validateCommand, buildSandboxPrompt } from "./sandbox.js";
 
 // ── System prompt assembly ────────────────────────────────────────
@@ -72,35 +69,7 @@ export function buildSystemPrompt(
   // (4) Sandbox rules
   sections.push(buildSandboxPrompt(project.path));
 
-  // (5) Persona skills — inject skill file contents
-  if (persona.skills.length > 0) {
-    const MAX_SKILL_CHARS = 8000; // ~2000 tokens
-    let totalChars = 0;
-    const skillSections: string[] = ["## Skills"];
-
-    for (const skillPath of persona.skills) {
-      const fullPath = join(project.path, skillPath);
-      try {
-        const content = readFileSync(fullPath, "utf-8");
-        const remaining = MAX_SKILL_CHARS - totalChars;
-        if (remaining <= 0) {
-          logger.warn({ skillPath, personaId: persona.id }, "Skill content cap reached, skipping");
-          break;
-        }
-        const trimmed = content.length > remaining ? content.slice(0, remaining) + "\n...(truncated)" : content;
-        skillSections.push(`### ${basename(skillPath)}\n\n${trimmed}`);
-        totalChars += trimmed.length;
-      } catch {
-        logger.warn({ skillPath, personaId: persona.id }, "Skill file not found, skipping");
-      }
-    }
-
-    if (skillSections.length > 1) {
-      sections.push(skillSections.join("\n\n"));
-    }
-  }
-
-  // (6) Execution history
+  // (5) Execution history
   if (task.executionHistory.length > 0) {
     const historyLines = ["## Previous Executions"];
     for (const entry of task.executionHistory) {
@@ -232,20 +201,29 @@ export class ClaudeExecutor implements AgentExecutor {
     const abortController = new AbortController();
 
     try {
+      // Define persona as a named agent so the SDK handles skills natively.
+      // Skills are SDK skill names (e.g., "commit", "review-pr") — the SDK
+      // loads, tokenizes, and manages their context automatically.
+      const agentId = persona.id;
+      const agentDef: AgentDefinition = {
+        description: persona.description,
+        prompt: buildSystemPrompt(persona, task, project),
+        tools: persona.allowedTools.length > 0 ? persona.allowedTools : [],
+        model: resolveModel(options.model),
+        maxTurns: 30,
+        ...(persona.skills.length > 0 ? { skills: persona.skills } : {}),
+      };
+
       const q = query({
         prompt,
         options: {
           abortController,
           cwd: project.path,
-          model: resolveModel(options.model),
-          systemPrompt: buildSystemPrompt(persona, task, project),
           permissionMode: "bypassPermissions",
           allowDangerouslySkipPermissions: true,
-          maxTurns: 30,
           maxBudgetUsd: options.maxBudget > 0 ? options.maxBudget : undefined,
-          // SDK built-in tools: pass persona's allowedTools (short names like 'Read', 'Bash')
-          // Empty array disables all built-in tools (e.g., Router only uses MCP tools)
-          tools: persona.allowedTools.length > 0 ? persona.allowedTools : [],
+          agent: agentId,
+          agents: { [agentId]: agentDef },
           mcpServers: {
             agentops: {
               command: "node",

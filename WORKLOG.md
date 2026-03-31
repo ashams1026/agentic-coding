@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — FX.SDK2: Replace custom skill injection with SDK native skills
+
+**Task:** Remove manual skill file reading from `buildSystemPrompt()` and use the SDK's native `AgentDefinition.skills` field instead.
+
+**Done:**
+- **`claude-executor.ts`**: Removed section (5) "Persona skills" from `buildSystemPrompt()` — the manual `readFileSync` + 8K char cap logic that read `.md` files from disk and injected them into the system prompt
+- Removed unused imports: `readFileSync` from `node:fs`, `join`/`basename` from `node:path`, `logger` from `../logger.js`
+- Restructured `query()` call to use the `agent`/`agents` pattern: persona is defined as a named `AgentDefinition` with `description`, `prompt`, `tools`, `model`, `maxTurns`, and `skills`. The top-level `agent` option tells the SDK to use this definition as the main thread agent.
+- When `persona.skills` is non-empty, the skill names are passed via `AgentDefinition.skills` — the SDK handles loading, tokenization, and context management natively
+- Added `AgentDefinition` type import from the SDK
+- No DB migration needed — all existing persona `skills` values are already `[]` (empty arrays)
+- Build passes
+
+**Files modified:** `packages/backend/src/agent/claude-executor.ts`
+
+**Notes:** The SDK's `skills` field is on `AgentDefinition`, not top-level `Options`. Using the `agent`/`agents` pattern is the correct way to pass skills. Skills are now expected to be SDK skill names (e.g., `"commit"`, `"review-pr"`) not file paths. The frontend skill browser (FX.SDK4) will need updating to reflect this — currently it's a file browser for `.md` files. MCP servers remain at the top-level `Options` since they're process-wide configuration.
+
+---
+
 ## 2026-03-30 — Review: FX.DEV1 (approved)
 
 **Reviewed:** Dev server deduplication script `scripts/dev.sh` and root `package.json` changes.
