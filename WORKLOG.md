@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: FX.DB1 (approved)
+
+**Reviewed:** Dev/prod database separation in `packages/backend/src/db/connection.ts` and related files.
+- `resolveDbPath()`: clean priority chain — `AGENTOPS_DB_PATH` → `DATABASE_URL` → NODE_ENV-based. Dev returns `"agentops-dev.db"` (local), prod returns `~/.agentops/data/agentops.db` with `mkdirSync`. Unset NODE_ENV defaults to `"development"` via `??`. Correct.
+- `DB_PATH` exported as module-level const — evaluated once at import. Start.ts logs it with `nodeEnv` before migrations. Correct.
+- `package.json`: `dev` script sets `NODE_ENV=development`. `db:reset` cleans dev DB + WAL/SHM, re-runs migrate + seed with `NODE_ENV=development`. Correct.
+- `drizzle.config.ts`: fallback updated `agentops.db` → `agentops-dev.db` — consistent with dev default.
+- `.gitignore`: `*.db` already covers `agentops-dev.db`. `ecosystem.config.cjs`: already has `NODE_ENV: "production"`. Both verified, no changes needed.
+- `seed-e2e.ts` / `seed-demo.ts`: set `DATABASE_URL` before import — unaffected by this change.
+- Test: uses `:memory:` via `createTestDb()` — separate path, no change needed.
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.DB1: Separate dev, test, and prod databases
 
 **Task:** Select DB path based on NODE_ENV: dev → local file, prod → home directory, with env var override.
