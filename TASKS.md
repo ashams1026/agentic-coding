@@ -5,52 +5,21 @@
 
 ---
 
-> Sprints 1-16 complete and archived. Sprint 17 fully archived except blocked SDK tasks (FX.SDK1, FX.SDK3-6). Sprint 18 partially archived (PICO.1-4).
+> Sprints 1-16 complete and archived. Sprint 17 archived except blocked FX.SDK3/SDK5 and pending FX.SDK6. Sprint 18 fully archived. Sprint 19 V2.1-V2.2 archived.
 
 ---
 
 ## Sprint 17: Agent Pipeline Fixes & Monitor UX (remaining)
 
-> Critical fixes from first real-world test run. Router loop, cost display, agent monitor readability, activity feed descriptions.
-> Also includes persona audit, skills system, security, UX improvements, and SDK-native tool/skill discovery.
+> Blocked and remaining SDK tasks.
 
 ### SDK-Native Skills & Tool Discovery
 
-- [x] **FX.SDK1** — ~~Create SDK discovery endpoint.~~ Superseded by SDK.V2.2: `GET /api/sdk/capabilities` and `POST /api/sdk/reload` implemented in `packages/backend/src/routes/sdk.ts` using lightweight query with `initializationResult()` control method.
-
-
 - [blocked: SDK initializationResult() does not return built-in tool names/descriptions — only commands (skills), agents, and models. No tool discovery API exists in the SDK. The hardcoded SDK_TOOLS list in tool-configuration.tsx is actually correct since built-in tools are a fixed set.]  **FX.SDK3** — Replace hardcoded tool list with SDK discovery in persona editor. In the persona editor UI (`packages/frontend/src/features/persona-manager/`): replace any freeform text input or hardcoded tool checkboxes for `allowedTools` with a multi-select populated from `GET /api/sdk/capabilities`. Show each tool with its name and description. Group by category: File tools, Search tools, Execution, Web, Agent, Other. Same for `mcpTools` — show available MCP tools from the discovery response. Validate on save: warn if a selected tool isn't in the available set.
-
-- [x] **FX.SDK4** — Replace file browser skill picker with SDK skill picker. Rewrite `packages/frontend/src/features/persona-manager/skill-browser.tsx`: instead of browsing the filesystem for `.md` files, fetch available skills from `GET /api/sdk/capabilities`. Render as a searchable list with skill name, description, and argument hint. Each skill has an "Add" button. Preview panel shows the skill's description (no file content preview needed). Keep the manual path input as a fallback for custom skills not yet discovered. Update the persona detail panel to show skill names with descriptions instead of raw file paths.
 
 - [blocked: same as FX.SDK3 — no tool discovery API in SDK. Can validate skills (commands) and agents from capabilities, but not built-in tools.] **FX.SDK5** — Add startup tool validation. In `packages/backend/src/agent/execution-manager.ts`: on first dispatch (or server start), fetch the SDK capabilities and validate all persona `allowedTools` and `skills` against the actual available set. Log warnings for any mismatches: "Persona 'Engineer' references unknown tool 'FooBar' — will be ignored by SDK." This catches stale tool names early (like the `transition_state` vs `route_to_state` incident).
 
 - [ ] **FX.SDK6** — Expose available subagents in persona config. The SDK provides `supportedAgents()` returning agent name, description, and model. In the persona editor: add a "Subagents" section showing available agents from the SDK discovery. Allow personas to reference specific subagents (e.g., the Engineer persona might use the `code-reviewer` subagent). Store as `subagents: string[]` on the Persona entity. Pass via query options if the SDK supports it, otherwise inject as guidance in the system prompt.
-
----
-
-## Sprint 18: Pico — Project Assistant
-
-> Pico is a friendly dog-persona AI assistant built into AgentOps. Named after the creator's dog.
-> Pico is always available via a floating chat bubble, can answer questions about the project, help manage work items, and search documentation.
-> Pico is a special built-in persona: not editable, not triggered by workflow state changes, only invoked by user chat.
-> Pico's chat supports rich rendering: markdown, collapsible thinking, tool call cards, and a warm conversational tone.
-
-### Frontend: Chat Interface
-
-- [x] **PICO.5** — Build floating chat bubble. Create `packages/frontend/src/features/pico/chat-bubble.tsx`: a circular button (56px) fixed to the bottom-right corner of the viewport (`bottom-6 right-6`), showing a dog icon (or paw print) with Pico's amber color. Subtle bounce animation on first load. Unread message indicator (small dot) when Pico has responded and chat is closed. Click toggles the chat panel open/closed. Render in `root-layout.tsx` so it's available on every page.
-
-- [x] **PICO.6** — Build chat panel. Create `packages/frontend/src/features/pico/chat-panel.tsx`: a panel that appears above the chat bubble (400px wide, 500px tall, rounded corners, shadow-lg). Header: "Pico" with dog icon, session title, minimize button, new session button. Message area: scrollable, auto-scroll to bottom on new messages. Input area: textarea with send button, Cmd+Enter to send, disabled while Pico is responding. Show a typing indicator (three bouncing dots) while streaming. Panel is dismissible by clicking outside or the minimize button. Animate open/close with scale + opacity transition.
-
-- [x] **PICO.7** — Build chat message components. Create `packages/frontend/src/features/pico/chat-message.tsx`: user messages render as right-aligned bubbles (primary color background, white text). Pico messages render as left-aligned bubbles (muted background) with Pico's avatar. Pico message content supports: **markdown rendering** (paragraphs, bold, code, lists, links — reuse or extend the existing MarkdownPreview component), **thinking blocks** (collapsible accordion, "Pico is thinking..." label, muted italic text, collapsed by default), **tool call cards** (compact card showing tool icon + name + status, collapsible input/output — reuse ToolCallSection patterns from agent monitor), **code blocks** with syntax highlighting and copy button. Timestamps shown on hover. Group consecutive messages from same role.
-
-- [x] **PICO.8** — Wire chat panel to streaming API. Create `packages/frontend/src/hooks/use-pico-chat.ts`: manages chat state — current session, message history, streaming state. `sendMessage(content)`: POST to `/api/chat/sessions/:id/messages`, read SSE stream, incrementally update the assistant message as chunks arrive (text appends, thinking blocks build up, tool calls show as in-progress then complete). `createSession()`: POST to create new session. `loadHistory()`: GET messages for current session. Store current session ID in Zustand (persisted to localStorage). On app load: if a session exists, load its history. Handle errors: if streaming fails, show error message in chat with retry button.
-
-- [x] **PICO.9** — Add session management. In the chat panel header: dropdown showing recent sessions (last 10, sorted by most recent). Click to switch sessions and load that history. "New chat" button clears the panel and creates a fresh session. Session titles auto-generated from the first user message (truncated to 40 chars). "Clear all" option in the dropdown to delete all sessions. Show the current session title in the header (editable on click).
-
-### Pico Personality & Polish
-
-- [x] **PICO.10** — Polish Pico's personality and onboarding. First-time experience: when the user opens the chat for the first time (no sessions exist), show a welcome message from Pico: "Woof! I'm Pico, your project assistant. I know everything about this project — the architecture, the workflow, all the agents. Ask me anything, or I can help you manage work items. What can I help with?" Add 3-4 suggested quick-action buttons below the welcome message: "What's the project status?", "Explain the workflow", "Show recent activity", "Help me create a work item". Clicking a suggestion sends it as a message. Pico's tone: enthusiastic but not annoying, technically accurate, occasionally uses dog puns ("let me dig into that", "I'll fetch that for you", "good boy status: all tests passing").
 
 ---
 
@@ -61,10 +30,6 @@
 > Each feature with UI changes includes a test plan update + visual verification task.
 
 ### Part 1: Infrastructure — V2 Persistent Sessions
-
-- [x] **SDK.V2.1** — Create persistent SDK session manager. Create `packages/backend/src/agent/sdk-session.ts`: on server startup, call `unstable_v2_createSession()` with a lightweight config (sonnet model, minimal tools). Keep the session alive for the server's lifetime. Expose `getSdkSession()` singleton. This session serves two purposes: (a) SDK discovery — call `initializationResult()`, `supportedCommands()`, `supportedAgents()`, `supportedModels()` to populate the capabilities cache, unblocking FX.SDK1. (b) Pico backbone — Pico chat can use `unstable_v2_prompt()` or `session.send()` instead of spinning up a new `query()` per message. Handle session cleanup on server shutdown via `session.close()`. Handle reconnection if the session dies (exponential backoff, max 3 retries). Log session ID and status on startup.
-
-- [x] **SDK.V2.2** — Unblock FX.SDK1 with V2 session. Refactor `GET /api/sdk/capabilities` (from FX.SDK1, currently blocked): instead of trying to spin up a standalone `query()`, use the persistent session from SDK.V2.1. Call `initializationResult()` on the existing session to get tools, skills, agents, models. Cache the result. `POST /api/sdk/reload` calls `reloadPlugins()` on the session and refreshes the cache. Remove the `[blocked]` tag from FX.SDK1 and mark it as superseded by this task.
 
 - [ ] **SDK.V2.3** — Refactor Pico to use V2 sessions. Update PICO.2 and PICO.3 design: instead of a custom `chat_sessions`/`chat_messages` DB table + manual conversation history assembly, use the SDK's native session management. `POST /api/chat/sessions` → calls `unstable_v2_createSession()` and stores the SDK session ID. `POST /api/chat/sessions/:id/messages` → calls `session.send(message)` and streams from `session.stream()`. `GET /api/chat/sessions` → calls `listSessions()` from the SDK. `GET /api/chat/sessions/:id/messages` → calls `getSessionMessages(sessionId)`. This eliminates our custom chat persistence layer entirely — the SDK handles conversation history, context compaction, and session storage. Keep the `chat_sessions` table only as a lightweight index (sessionId, projectId, title, createdAt) for the UI list. Remove `chat_messages` table from the schema design.
 

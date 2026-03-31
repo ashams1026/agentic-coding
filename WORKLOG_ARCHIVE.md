@@ -136,3 +136,31 @@ All personas updated in both seed.ts and default-personas.ts. Key pattern: no pe
 **PICO.3:** Chat streaming endpoint. `POST /api/chat/sessions/:id/messages` — saves user message, assembles conversation history, spawns Claude SDK `query()` with Pico config, streams SSE (text/thinking/tool_use/tool_result/error/done). Saves assistant message with metadata on completion. Auto-generates session title from first message.
 
 **PICO.4:** Project knowledge skill. `pico-skill.md` (~700 tokens): AgentOps description, 8 workflow states, 5 personas, work item lifecycle, execution history, 5 common Q&A, docs/ directory pointer. Loaded at module level in chat.ts, injected into system prompt. Also fixed seed prompt: "Triage" → "Backlog", added docs/ instruction.
+
+---
+
+## Sprint 18 (continued): Pico Frontend — 2026-03-31
+
+**PICO.5:** Floating chat bubble — 56px circle, bottom-right, dog icon, bounce animation, unread indicator. Render in root-layout.
+
+**PICO.6:** Chat panel — 400x500px, header (title/session switch/new/minimize), scrollable messages with auto-scroll, textarea input (Cmd+Enter), typing indicator, click-outside dismiss, scale+opacity animation.
+
+**PICO.7:** Chat message components — user (right-aligned primary bubble), assistant (left-aligned muted + avatar). Markdown rendering, collapsible thinking blocks, tool call cards with expand/collapse, code blocks with syntax highlighting. Timestamps on hover, consecutive grouping.
+
+**PICO.8:** Streaming chat hook (`use-pico-chat.ts`) — `sendMessage()` with SSE parser (async generator, buffer management), `ensureSession()` lazy creation, optimistic user messages, incremental assistant updates (text/thinking/tool_use). Zustand-persisted `currentSessionId`.
+
+**PICO.9:** Session management — DropdownMenu for recent 10 sessions, switch/rename/clear-all. Inline title editing (Input with Enter/Escape/blur). `refreshSessions()`, `switchSession()`, `renameSession()`, `clearAllSessions()`. PATCH route for title updates.
+
+**PICO.10:** Personality & onboarding — welcome message ("Woof! I'm Pico..."), 4 quick-action buttons (BarChart3/GitBranch/Activity/PenLine icons). Backend personality guidelines in system prompt (dog puns, concise, technically accurate).
+
+---
+
+## Sprint 17 (final SDK) + Sprint 19 (V2 Sessions) — 2026-03-31
+
+**FX.SDK1:** Superseded by SDK.V2.2. `GET /api/sdk/capabilities` + `POST /api/sdk/reload` implemented using Query control methods.
+
+**FX.SDK4:** Replaced filesystem skill browser with SDK capabilities picker. Fetches `commands` from capabilities endpoint, searchable list with name/description/argumentHint, manual path fallback.
+
+**SDK.V2.1:** Persistent SDK session manager (`sdk-session.ts`). Lazy singleton via `getSdkSession()`, `unstable_v2_createSession()` with sonnet model, bypassPermissions, core tools. Exponential backoff retry (3 attempts). Reads first stream message to capture sessionId. `closeSdkSession()` in graceful shutdown. `reconnectSdkSession()` tries resume then fallback.
+
+**SDK.V2.2:** SDK capabilities discovery endpoint (`routes/sdk.ts`). `withDiscoveryQuery()` — temporary `query()` subprocess, reads first message, calls control method, interrupts/drains. `initializationResult()` returns commands/agents/models. Cache on first call. `reloadPlugins()` for refresh. Unblocked FX.SDK3-6. Key finding: `initializationResult()` does NOT return built-in tool names — FX.SDK3/SDK5 remain blocked.

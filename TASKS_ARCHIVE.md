@@ -134,3 +134,29 @@
 - [x] **PICO.2** — Chat session API: `chat_sessions`/`chat_messages` tables, 4 CRUD endpoints, Drizzle migration. *(completed 2026-03-31)*
 - [x] **PICO.3** — Chat streaming endpoint: `POST /api/chat/sessions/:id/messages`, SSE streaming via Claude SDK `query()`, 6 event types. *(completed 2026-03-31)*
 - [x] **PICO.4** — Pico project knowledge skill: `pico-skill.md` (~700 tokens), injected into system prompt, docs/ directory guidance. *(completed 2026-03-31)*
+
+### Frontend: Chat Interface — archived 2026-03-31
+- [x] **PICO.5** — Floating chat bubble: 56px circle, bottom-right, dog icon, bounce animation, unread indicator. *(completed 2026-03-31)*
+- [x] **PICO.6** — Chat panel: 400x500px, header/messages/input, typing indicator, animate open/close. *(completed 2026-03-31)*
+- [x] **PICO.7** — Chat message components: user/assistant bubbles, markdown, thinking blocks, tool cards, code blocks. *(completed 2026-03-31)*
+- [x] **PICO.8** — Wired chat panel to streaming API: `use-pico-chat.ts` hook, SSE parser, session persistence in Zustand. *(completed 2026-03-31)*
+- [x] **PICO.9** — Session management: dropdown, switch, rename, clear all, auto-generated titles. *(completed 2026-03-31)*
+
+### Pico Personality & Polish — archived 2026-03-31
+- [x] **PICO.10** — Personality polish: welcome message, 4 quick-action buttons, dog-pun personality guidelines. *(completed 2026-03-31)*
+
+---
+
+## Sprint 17: Agent Pipeline Fixes (remaining SDK tasks) — archived 2026-03-31
+
+### SDK-Native Skills & Tool Discovery — archived 2026-03-31
+- [x] **FX.SDK1** — ~~Create SDK discovery endpoint.~~ Superseded by SDK.V2.2. *(completed 2026-03-31)*
+- [x] **FX.SDK4** — Replaced filesystem skill browser with SDK capabilities picker (`GET /api/sdk/capabilities`). *(completed 2026-03-31)*
+
+---
+
+## Sprint 19: SDK Deep Integration — Core (partial) — archived 2026-03-31
+
+### Part 1: Infrastructure — V2 Persistent Sessions — archived 2026-03-31
+- [x] **SDK.V2.1** — Persistent SDK session manager: lazy singleton, `unstable_v2_createSession()`, retry with backoff, shutdown integration. *(completed 2026-03-31)*
+- [x] **SDK.V2.2** — SDK capabilities endpoint: `GET /api/sdk/capabilities` + `POST /api/sdk/reload` using `initializationResult()` Query control method. Unblocked FX.SDK3-6. *(completed 2026-03-31)*
