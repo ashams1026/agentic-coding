@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: FX.1 (approved)
+
+**Reviewed:** Same-state routing rejection in `route_to_state` tool.
+- Check positioned after item lookup, before `isValidTransition` — correct order
+- `targetState === item.currentState` — exact equality, correct
+- Error response: `isError: true`, JSON with descriptive message including state name — consistent with existing patterns
+- Clean early return — no DB writes, no broadcasts on rejection
+- Minimal change, single concern
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.1: Prevent Router from re-routing to same state
 
 **Task:** Reject `route_to_state` calls where `targetState === currentState`.
