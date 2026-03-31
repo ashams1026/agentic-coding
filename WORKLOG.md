@@ -5,6 +5,44 @@
 
 ---
 
+## 2026-03-31 — PICO.8: Wire chat panel to streaming API
+
+**Task:** Replace mock data with real API-driven chat — SSE streaming, session management, error handling.
+
+**Done:**
+- Created `packages/frontend/src/hooks/use-pico-chat.ts`:
+  - `usePicoChat()` hook managing: messages state, streaming state, error state, session lifecycle
+  - `sendMessage(content)`: creates session on-demand, adds user message optimistically, POSTs to `/api/chat/sessions/:id/messages`, consumes SSE stream, incrementally builds assistant message content blocks (text, thinking, tool_use, tool_result)
+  - `newSession()`: creates fresh session, clears messages
+  - `retry()`: resends last user message after error, removes failed assistant response
+  - SSE parser: async generator consuming `ReadableStream` byte-by-byte, yielding typed events
+  - `dbMessageToPico()`: converts DB ChatMessage (with metadata) back to `PicoChatMessage` with reconstructed ContentBlock array (thinking blocks, tool calls, text)
+  - Auto-loads history when `currentSessionId` changes
+  - Auto-restores last session when panel opens (from getChatSessions)
+  - Unread notification: sets `hasUnread` when response arrives while panel is closed
+- Updated `packages/frontend/src/features/pico/pico-store.ts`:
+  - Added `currentSessionId: ChatSessionId | null` to persisted state
+  - Added `setCurrentSessionId()` action
+- Updated `packages/frontend/src/features/pico/chat-panel.tsx`:
+  - Replaced `MOCK_MESSAGES` + `useState` with `usePicoChat()` hook
+  - Added empty state (Pico avatar + welcome text) when no messages
+  - Added loading spinner for history loading
+  - Added error banner with retry button (red border, AlertCircle icon)
+  - Typing indicator now only shows when streaming and assistant content is empty
+  - Wired "New session" button to `newSession()`
+  - Header shows "Chat" when messages exist, "New conversation" when empty
+- Added chat API functions to `packages/frontend/src/api/client.ts`:
+  - `getChatSessions()`, `createChatSession()`, `deleteChatSession()`, `getChatMessages()`
+  - `sendChatMessageSSE()`: returns `{ response: Promise<Response>, abort: () => void }` for SSE streaming with abort support
+- Re-exported from `packages/frontend/src/api/index.ts` and `packages/frontend/src/hooks/index.ts`
+
+**Files created:** `packages/frontend/src/hooks/use-pico-chat.ts`
+**Files modified:** `packages/frontend/src/features/pico/chat-panel.tsx`, `packages/frontend/src/features/pico/pico-store.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`, `packages/frontend/src/hooks/index.ts`
+
+**Notes for next agent:** The SSE event types match the backend's `sendSSE()` calls in `packages/backend/src/routes/chat.ts`: `text`, `thinking`, `tool_use`, `tool_result`, `error`, `done`. The `tool_result` event is paired with the most recent `tool_use` by order (not by ID) since the backend doesn't include the tool call ID in the result event. PICO.9 will add session switching dropdown in the header — `getChatSessions()` and `deleteChatSession()` are already exported. PICO.10 should add suggested quick-action buttons to the empty state.
+
+---
+
 ## 2026-03-31 — Review: PICO.7 (approved)
 
 **Reviewed:** Chat message components — chat-message.tsx, chat-panel.tsx updates.

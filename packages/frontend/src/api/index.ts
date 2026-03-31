@@ -67,4 +67,10 @@ export {
   // Service
   getServiceStatus,
   restartService,
+  // Chat
+  getChatSessions,
+  createChatSession,
+  deleteChatSession,
+  getChatMessages,
+  sendChatMessageSSE,
 } from "@/api/client";

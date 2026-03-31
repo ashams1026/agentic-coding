@@ -18,12 +18,15 @@ import type {
   Comment,
   ProjectMemory,
   Proposal,
+  ChatSession,
+  ChatMessage,
   ProjectId,
   WorkItemId,
   WorkItemEdgeId,
   PersonaId,
   ExecutionId,
   ProposalId,
+  ChatSessionId,
   CreateProjectRequest,
   UpdateProjectRequest,
   CreateWorkItemRequest,
@@ -515,6 +518,46 @@ export async function fetchHealth(): Promise<HealthResponse> {
   const res = await fetch(`${BASE_URL}/api/health`);
   if (!res.ok) throw new Error(`Health check failed: ${res.status}`);
   return res.json();
+}
+
+// ── Chat Sessions ───────────────────────────────────────────────
+
+export async function getChatSessions(projectId?: string): Promise<ChatSession[]> {
+  const q = projectId ? `?projectId=${projectId}` : "";
+  const res = await get<{ data: ChatSession[]; total: number }>(`/api/chat/sessions${q}`);
+  return res.data;
+}
+
+export async function createChatSession(projectId: string): Promise<ChatSession> {
+  const res = await post<{ data: ChatSession }>("/api/chat/sessions", { projectId });
+  return res.data;
+}
+
+export async function deleteChatSession(id: ChatSessionId): Promise<boolean> {
+  return del(`/api/chat/sessions/${id}`);
+}
+
+export async function getChatMessages(sessionId: ChatSessionId): Promise<ChatMessage[]> {
+  const res = await get<{ data: ChatMessage[]; total: number }>(`/api/chat/sessions/${sessionId}/messages`);
+  return res.data;
+}
+
+/**
+ * Send a message and stream the assistant response via SSE.
+ * Returns an EventSource-like reader. The caller processes SSE events.
+ */
+export function sendChatMessageSSE(
+  sessionId: ChatSessionId,
+  content: string,
+): { response: Promise<Response>; abort: () => void } {
+  const controller = new AbortController();
+  const response = fetch(`${BASE_URL}/api/chat/sessions/${sessionId}/messages`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content }),
+    signal: controller.signal,
+  });
+  return { response, abort: () => controller.abort() };
 }
 
 // ── Bundled API (mirrors mockApi shape) ──────────────────────────

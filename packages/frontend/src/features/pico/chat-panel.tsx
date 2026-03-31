@@ -1,19 +1,26 @@
 import { useRef, useEffect, useState } from "react";
-import { Dog, X, Plus, Send } from "lucide-react";
+import { Dog, X, Plus, Send, AlertCircle, RotateCcw, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { usePicoStore } from "./pico-store";
-import { ChatMessage, MOCK_MESSAGES } from "./chat-message";
-import type { PicoChatMessage } from "./chat-message";
+import { ChatMessage } from "./chat-message";
+import { usePicoChat } from "@/hooks/use-pico-chat";
 
 // ── Component ─────────────────────────────────────────────────────
 
 export function ChatPanel() {
   const { isOpen, setOpen } = usePicoStore();
   const [input, setInput] = useState("");
-  const [isStreaming] = useState(false); // PICO.8 will control this
-  const [messages] = useState<PicoChatMessage[]>(MOCK_MESSAGES);
+  const {
+    messages,
+    isStreaming,
+    isLoadingHistory,
+    error,
+    sendMessage,
+    newSession,
+    retry,
+  } = usePicoChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -48,8 +55,9 @@ export function ChatPanel() {
 
   const handleSend = () => {
     if (!input.trim() || isStreaming) return;
-    // PICO.8 will wire this to the streaming API
+    const text = input;
     setInput("");
+    sendMessage(text);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -83,16 +91,14 @@ export function ChatPanel() {
         <div className="flex-1 min-w-0">
           <span className="text-sm font-semibold">Pico</span>
           <span className="ml-2 text-xs text-muted-foreground truncate">
-            New conversation
+            {messages.length > 0 ? "Chat" : "New conversation"}
           </span>
         </div>
         <Button
           variant="ghost"
           size="icon"
           className="h-7 w-7 shrink-0"
-          onClick={() => {
-            /* PICO.9 will implement new session */
-          }}
+          onClick={() => newSession()}
           title="New session"
         >
           <Plus className="h-4 w-4" />
@@ -111,6 +117,26 @@ export function ChatPanel() {
       {/* Messages */}
       <ScrollArea className="flex-1">
         <div className="flex flex-col p-4">
+          {isLoadingHistory && (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          )}
+          {!isLoadingHistory && messages.length === 0 && (
+            <div className="flex flex-col items-center py-8 text-center">
+              <div
+                className="flex h-12 w-12 items-center justify-center rounded-full mb-3"
+                style={{ backgroundColor: "#f59e0b" }}
+              >
+                <Dog className="h-7 w-7 text-white" />
+              </div>
+              <p className="text-sm font-medium">Woof! I'm Pico</p>
+              <p className="mt-1 text-xs text-muted-foreground max-w-[280px]">
+                Your project assistant. Ask me anything about the project, or
+                let me help you manage work items.
+              </p>
+            </div>
+          )}
           {messages.map((msg, i) => {
             const prev = i > 0 ? messages[i - 1] : null;
             const showAvatar = !prev || prev.role !== msg.role;
@@ -123,9 +149,26 @@ export function ChatPanel() {
               </div>
             );
           })}
-          {isStreaming && (
+          {isStreaming && messages[messages.length - 1]?.content.length === 0 && (
             <div className="mt-1">
               <TypingIndicator />
+            </div>
+          )}
+          {error && (
+            <div className="mt-3 flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2">
+              <AlertCircle className="h-4 w-4 text-red-400 shrink-0 mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-red-400">{error}</p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-1 h-6 px-2 text-xs text-red-400 hover:text-red-300"
+                  onClick={retry}
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  Retry
+                </Button>
+              </div>
             </div>
           )}
           <div ref={messagesEndRef} />
