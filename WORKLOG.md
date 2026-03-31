@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — FX.MOCK3: Create E2E test database script
+
+**Task:** Create scripts to set up/tear down E2E test environment with a temp DB.
+
+**Done:**
+- Created `packages/backend/src/db/seed-e2e.ts` — sets `DATABASE_URL` to temp path before dynamically importing seed function, reuses all existing seed data
+- Created `scripts/test-e2e.sh` — shell script with setup/teardown/seed commands: seeds temp DB at `/tmp/agentops-e2e-test.db`, starts backend+frontend (skips if already running), prints URLs, tears down (kills processes, deletes DB)
+- Added `test:e2e:setup`, `test:e2e:teardown`, `test:e2e:seed` scripts to root `package.json`
+- Build passes
+
+**Files created:** `packages/backend/src/db/seed-e2e.ts`, `scripts/test-e2e.sh`
+**Files modified:** `package.json`
+
+**Notes:** Temp DB path configurable via `AGENTOPS_E2E_DB` env var. Script checks if servers are already running before starting new ones. Teardown deletes WAL/SHM files too.
+
+---
+
 ## 2026-03-30 — Review: FX.MOCK2 (approved)
 
 **Reviewed:** Mock data layer deletion.
