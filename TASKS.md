@@ -22,7 +22,7 @@
 
 - [x] **FX.MOCK1** — Remove mock API mode from frontend. Delete the `apiMode` field from `useUIStore` (and its localStorage persistence). Remove the mock/real branching in `packages/frontend/src/api/index.ts` — all exports should point directly to the real API client. Remove the `initWsConnection` mode check — always connect to the real WebSocket. Remove the QF.1 status bar mock/live toggle. Remove the demo controls that rely on mock WS (`features/demo/demo-controls.tsx`). The frontend now always talks to the real backend. Keep the `mocks/` directory for now (next task deletes it).
 
-- [review] **FX.MOCK2** — Delete mock data layer. Delete `packages/frontend/src/mocks/` directory entirely (api.ts, fixtures.ts, ws.ts, demo.ts). Remove any imports of mock functions throughout the codebase. Clean up any dead code that only existed to support the mock layer (mock WS event simulation, demo mode hooks, etc.).
+- [x] **FX.MOCK2** — Delete mock data layer. Delete `packages/frontend/src/mocks/` directory entirely (api.ts, fixtures.ts, ws.ts, demo.ts). Remove any imports of mock functions throughout the codebase. Clean up any dead code that only existed to support the mock layer (mock WS event simulation, demo mode hooks, etc.).
 
 - [ ] **FX.MOCK3** — Create E2E test database script. Create `scripts/test-e2e.sh` (and/or `packages/backend/src/db/seed-e2e.ts`): starts the backend with `AGENTOPS_DB_PATH=/tmp/agentops-e2e-test.db` (or a configurable temp path), runs migrations on the test DB, seeds it with E2E test fixtures (same data the mock fixtures had — projects, personas, work items in various states, executions, comments), starts the frontend pointing at this backend, prints the URLs. Add `"test:e2e:setup"` and `"test:e2e:teardown"` scripts to root `package.json`. E2E test plan prerequisites should reference this script. On teardown: delete the temp DB file.
 
@@ -101,6 +101,10 @@
 - [ ] **FX.7** — Render agent output as a chat thread. Restructure the terminal renderer to display output as a conversation: system/user messages appear as chat bubbles (left-aligned, muted background), agent text responses appear as chat bubbles (right-aligned or full-width), thinking blocks are collapsible accordion sections (collapsed by default, italic muted text, "Thinking..." label), tool calls are custom UI cards (tool icon + name + collapsible input/output, reuse existing ToolCallSection). Group consecutive text chunks into single message bubbles. Show timestamps on each message group.
 
 - [ ] **FX.8** — Fix historical log chunk type detection. In `terminal-renderer.tsx` where `execution.logs` is split into chunks: instead of marking all lines as `"text"`, parse the log content to detect chunk types. Look for JSON-parseable lines that contain `chunkType` fields, or use heuristics: lines starting with `Tool:` or containing `tool_call`/`tool_result` → tool type, lines wrapped in `<thinking>` tags or prefixed with thinking indicators → thinking type, code blocks between triple backticks → code type. This restores structure to historical execution replays.
+
+### Dev Server Deduplication
+
+- [ ] **FX.DEV1** — Skip server start if already running. In the agent's build/verify workflow and any dev scripts: before starting the backend (`pnpm --filter backend dev`), check if port 3001 is already responding (`curl -s http://localhost:3001/api/health`). If it responds with `status: "ok"`, skip starting — the existing server has hot reload via `tsx watch` and will pick up code changes automatically. Same for the frontend: check if port 5173 or 5174 is already serving before running `pnpm --filter frontend dev` — Vite HMR handles file changes. Implement as a wrapper script `scripts/dev.sh` (or update existing `pnpm dev`): check ports first, only start what's not already running. This prevents agents from spawning duplicate servers across sessions.
 
 ### E2E Triage Bugs
 

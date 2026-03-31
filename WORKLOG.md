@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: FX.MOCK2 (approved)
+
+**Reviewed:** Mock data layer deletion.
+- `mocks/` directory deleted (4 files) ✓
+- `use-demo.ts` and `demo-controls.tsx` deleted ✓
+- No remaining mock imports or references in frontend codebase ✓
+- Build passes ✓
+- 2,283 lines removed ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.MOCK2: Delete mock data layer
 
 **Task:** Delete mocks directory and all dead mock-related code.
