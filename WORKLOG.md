@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: FX.SET1 (approved)
+
+**Reviewed:** Settings nav dedup and rename.
+- "Concurrency" entry removed, "API Keys" → "Agent Configuration" with Settings2 icon ✓
+- Section id updated to `agent-config`, content rendering updated ✓
+- Unused imports cleaned (Key, Gauge) ✓
+- 7 sections in sidebar (was 8), no duplicate rendering ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.SET1: Remove duplicate settings nav and rename section
 
 **Task:** Remove duplicate "Concurrency" settings nav entry and rename "API Keys" to "Agent Configuration".
