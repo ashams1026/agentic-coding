@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-31 — PICO.3: Create chat streaming endpoint
+
+**Task:** Add `POST /api/chat/sessions/:id/messages` — streaming endpoint for Pico chat.
+
+**Done:**
+- Added streaming endpoint to `packages/backend/src/routes/chat.ts`:
+  - Accepts `{ content: string }`, validates session exists and API key is configured
+  - Saves user message to DB immediately
+  - Auto-generates session title from first user message (truncated to 40 chars)
+  - Loads Pico persona (found by `isAssistant` flag) and project context
+  - Assembles full conversation history as prompt for the SDK
+  - Builds Pico system prompt: personality + project context + chat instructions
+  - Spawns Claude via `query()` with Pico's tools (Read, Glob, Grep, WebSearch) and MCP server (list_items, get_context, post_comment)
+  - Streams response via SSE: `text`, `thinking`, `tool_use`, `tool_result`, `error`, `done` event types
+  - On completion, saves full assistant message with metadata (thinking blocks, tool calls, cost, duration) to DB
+  - Sends final `done` event with `messageId` for the frontend to reference
+- SDK integration: uses `AgentDefinition` + `query()` with `agents` pattern matching existing executor pattern
+- Model mapping reused (opus/sonnet/haiku → full model IDs)
+
+**Files modified:** `packages/backend/src/routes/chat.ts`
+
+**Notes for next agent:** The SSE format is: `data: {"type":"text","content":"..."}\n\n`. Frontend (PICO.8) should use `EventSource` or fetch with streaming to consume these events. The `done` event signals stream completion. Error events include the error message in `content`. Session title auto-update happens on first message only.
+
+---
+
 ## 2026-03-31 — Review: PICO.2 (approved)
 
 **Reviewed:** Chat session API — routes, schema, shared types, server registration.

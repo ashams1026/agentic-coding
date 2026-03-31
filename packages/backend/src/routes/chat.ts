@@ -1,13 +1,17 @@
 import type { FastifyInstance } from "fastify";
 import { eq, desc } from "drizzle-orm";
+import { query } from "@anthropic-ai/claude-agent-sdk";
+import type { AgentDefinition } from "@anthropic-ai/claude-agent-sdk";
 import { db } from "../db/connection.js";
-import { chatSessions, chatMessages } from "../db/schema.js";
+import { chatSessions, chatMessages, personas, projects } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import type {
   ChatSessionId,
   ChatMessageId,
   ProjectId,
 } from "@agentops/shared";
+import { loadConfig } from "../config.js";
+import { logger } from "../logger.js";
 
 function toIso(d: Date): string {
   return d.toISOString();
@@ -131,5 +135,252 @@ export async function chatRoutes(app: FastifyInstance) {
     await db.delete(chatSessions).where(eq(chatSessions.id, id));
 
     return { success: true };
+  });
+
+  // POST /api/chat/sessions/:id/messages — send a message and stream Pico's response via SSE
+  app.post<{
+    Params: { id: string };
+    Body: { content: string };
+  }>("/api/chat/sessions/:id/messages", async (request, reply) => {
+    const { id } = request.params;
+    const { content } = request.body;
+
+    if (!content?.trim()) {
+      return reply.status(400).send({ error: "content is required" });
+    }
+
+    // Verify session exists and get projectId
+    const [session] = await db
+      .select()
+      .from(chatSessions)
+      .where(eq(chatSessions.id, id));
+
+    if (!session) {
+      return reply.status(404).send({ error: "Session not found" });
+    }
+
+    // Check API key
+    const config = loadConfig();
+    if (!config.anthropicApiKey) {
+      return reply
+        .status(503)
+        .send({ error: "Anthropic API key not configured" });
+    }
+
+    // Save the user message
+    const userMsgId = createId.chatMessage() as string;
+    const now = new Date();
+    await db.insert(chatMessages).values({
+      id: userMsgId,
+      sessionId: id,
+      role: "user",
+      content: content.trim(),
+      metadata: {},
+      createdAt: now,
+    });
+
+    // Auto-generate session title from first user message
+    const existingMessages = await db
+      .select({ id: chatMessages.id })
+      .from(chatMessages)
+      .where(eq(chatMessages.sessionId, id));
+
+    if (existingMessages.length === 1) {
+      // This is the first message — update session title
+      const title = content.trim().slice(0, 40) + (content.trim().length > 40 ? "..." : "");
+      await db
+        .update(chatSessions)
+        .set({ title, updatedAt: now })
+        .where(eq(chatSessions.id, id));
+    } else {
+      await db
+        .update(chatSessions)
+        .set({ updatedAt: now })
+        .where(eq(chatSessions.id, id));
+    }
+
+    // Load Pico persona
+    const allPersonas = await db.select().from(personas);
+    const pico = allPersonas.find(
+      (p) =>
+        (p.settings as Record<string, unknown>)?.isAssistant === true,
+    );
+
+    if (!pico) {
+      return reply.status(503).send({ error: "Pico persona not found" });
+    }
+
+    // Load project for context
+    const [project] = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.id, session.projectId));
+
+    // Load full conversation history
+    const history = await db
+      .select()
+      .from(chatMessages)
+      .where(eq(chatMessages.sessionId, id))
+      .orderBy(chatMessages.createdAt);
+
+    // Build the conversation prompt from history
+    const conversationLines = history.map(
+      (msg) => `${msg.role === "user" ? "User" : "Pico"}: ${msg.content}`,
+    );
+
+    const prompt = conversationLines.join("\n\n");
+
+    // Build Pico's system prompt with project context
+    const systemSections: string[] = [];
+
+    if (pico.systemPrompt) {
+      systemSections.push(pico.systemPrompt);
+    }
+
+    if (project) {
+      systemSections.push(
+        [
+          `## Project Context`,
+          `Project: ${project.name}`,
+          `Working directory: ${project.path}`,
+          (project.settings as Record<string, unknown>)?.description
+            ? `Description: ${(project.settings as Record<string, unknown>).description}`
+            : null,
+        ]
+          .filter(Boolean)
+          .join("\n"),
+      );
+    }
+
+    systemSections.push(
+      `## Chat Instructions\nYou are chatting with the user in a conversational interface. Keep responses helpful and concise. Use markdown formatting for code, lists, and emphasis.`,
+    );
+
+    // Set SSE headers
+    reply.raw.writeHead(200, {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
+    });
+
+    const sendSSE = (data: Record<string, unknown>) => {
+      reply.raw.write(`data: ${JSON.stringify(data)}\n\n`);
+    };
+
+    // Set API key for SDK
+    process.env["ANTHROPIC_API_KEY"] = config.anthropicApiKey;
+
+    const MODEL_MAP: Record<string, string> = {
+      opus: "claude-opus-4-6",
+      sonnet: "claude-sonnet-4-6",
+      haiku: "claude-haiku-4-5-20251001",
+    };
+
+    const assistantMsgId = createId.chatMessage() as string;
+    let fullContent = "";
+    const metadata: Record<string, unknown> = {
+      thinkingBlocks: [] as string[],
+      toolCalls: [] as Record<string, unknown>[],
+    };
+
+    try {
+      const agentDef: AgentDefinition = {
+        description: pico.description,
+        prompt: systemSections.join("\n\n"),
+        tools: (pico.allowedTools as string[]).length > 0 ? (pico.allowedTools as string[]) : [],
+        model: MODEL_MAP[pico.model] ?? pico.model,
+        maxTurns: 15,
+      };
+
+      const q = query({
+        prompt,
+        options: {
+          cwd: project?.path ?? process.cwd(),
+          permissionMode: "bypassPermissions",
+          allowDangerouslySkipPermissions: true,
+          maxBudgetUsd: pico.maxBudgetPerRun > 0 ? pico.maxBudgetPerRun : undefined,
+          agent: "pico",
+          agents: { pico: agentDef },
+          mcpServers: {
+            agentops: {
+              command: "node",
+              args: [
+                "--import",
+                "tsx",
+                new URL("../agent/mcp-server.ts", import.meta.url).pathname,
+              ],
+              env: {
+                PERSONA_NAME: pico.name,
+                PERSONA_ID: pico.id,
+                PROJECT_ID: session.projectId,
+                ALLOWED_TOOLS: (pico.mcpTools as string[]).join(","),
+              },
+            },
+          },
+        },
+      });
+
+      for await (const msg of q) {
+        if (msg.type === "assistant") {
+          for (const block of msg.message.content) {
+            if (block.type === "text") {
+              fullContent += block.text;
+              sendSSE({ type: "text", content: block.text });
+            } else if (block.type === "thinking") {
+              (metadata.thinkingBlocks as string[]).push(block.thinking);
+              sendSSE({ type: "thinking", content: block.thinking });
+            } else if (block.type === "tool_use") {
+              const toolCall = {
+                id: block.id,
+                name: block.name,
+                input: block.input,
+              };
+              (metadata.toolCalls as Record<string, unknown>[]).push(toolCall);
+              sendSSE({
+                type: "tool_use",
+                content: JSON.stringify(toolCall),
+              });
+            }
+          }
+        } else if (msg.type === "user" && msg.tool_use_result != null) {
+          sendSSE({
+            type: "tool_result",
+            content: JSON.stringify({
+              output:
+                typeof msg.tool_use_result === "string"
+                  ? msg.tool_use_result
+                  : JSON.stringify(msg.tool_use_result),
+            }),
+          });
+        } else if (msg.type === "result") {
+          if (msg.subtype === "success") {
+            metadata.costUsd = msg.total_cost_usd;
+            metadata.durationMs = msg.duration_ms;
+          }
+        }
+      }
+    } catch (err) {
+      const errMsg =
+        err instanceof Error ? err.message : String(err);
+      logger.error({ err, sessionId: id }, "Pico chat error");
+      sendSSE({ type: "error", content: errMsg });
+    }
+
+    // Save assistant message to DB
+    if (fullContent) {
+      await db.insert(chatMessages).values({
+        id: assistantMsgId,
+        sessionId: id,
+        role: "assistant",
+        content: fullContent,
+        metadata,
+        createdAt: new Date(),
+      });
+    }
+
+    // Send done event with message ID
+    sendSSE({ type: "done", messageId: assistantMsgId });
+    reply.raw.end();
   });
 }
