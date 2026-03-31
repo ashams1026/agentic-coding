@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-31 — Review: FX.SDK6 (approved)
+
+**Reviewed:** Subagents field added to Persona entity with SDK discovery browser.
+- Full stack implementation: shared types, DB schema (migration `0003`), API contracts, routes (serializer + create + update), persona editor (edit + read-only), SubagentBrowser component.
+- SubagentBrowser follows SkillBrowser pattern exactly: fetch agents from capabilities on open, searchable list, model badge, description panel, Add/Added state.
+- Migration is backward-compatible: `DEFAULT '[]' NOT NULL`.
+- All Persona construction sites fixed with `?? []` fallback for existing rows.
+- Subagents stored but not yet wired to executor — correctly deferred to SDK.SA.1.
+- Build passes.
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — FX.SDK6: Expose available subagents in persona config
 
 **Task:** Add subagents field to Persona entity and create a subagent browser in the persona editor using SDK capabilities.
