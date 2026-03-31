@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-30 — AI.30: Execute keyboard-shortcuts.md E2E test
+
+**Task:** Execute keyboard-shortcuts test plan via chrome-devtools MCP.
+
+**Done:**
+- Executed all 17 steps in browser against http://localhost:5174
+- 16/17 steps PASS, 1 FAIL, 0 N/A
+- 3 screenshot checkpoints taken — all visual checks PASS
+- Cmd+K opens command palette with 3 categories: NAVIGATION (7), QUICK ACTIONS (2), WORK ITEMS (16)
+- Search filtering works: "OAuth" filtered to 4 items, "xyznonexistent" showed "No results found."
+- Arrow key navigation moves selection highlight correctly, Enter badge follows
+- Enter selects highlighted item and navigates
+- Escape closes palette without navigating
+- Reopening resets search query
+
+**FAIL:** Step 15 — clicking work item in palette navigates to `/work-items/:id` which is a 404 (route doesn't exist). Should navigate to `/items?selected=:id` or similar.
+
+**Files created:** `tests/e2e/results/keyboard-shortcuts.md`, 4 screenshot PNGs in `tests/e2e/results/`
+
+**Notes:** Command palette works well overall. One routing bug: work item links use a non-existent `/work-items/:id` route.
+
+---
+
 ## 2026-03-30 — Review: AI.29 (approved)
 
 **Reviewed:** E2E test execution of dark-mode.md.
