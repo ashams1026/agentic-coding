@@ -30,7 +30,7 @@ const BUILT_IN_PERSONAS: DefaultPersona[] = [
     avatar: { color: "#2563eb", icon: "git-branch" },
     model: "opus",
     allowedTools: ["Read", "Glob", "Grep", "WebSearch", "Bash"],
-    mcpTools: ["create_children", "post_comment", "request_review"],
+    mcpTools: ["create_children", "post_comment", "get_context", "list_items"],
     maxBudgetPerRun: 100,
   },
   {

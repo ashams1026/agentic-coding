@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — FX.P2: Audit and overhaul Tech Lead persona
+
+**Task:** Fix mcpTools, overhaul systemPrompt for Tech Lead persona.
+
+**Done:**
+- **mcpTools**: Changed from `["create_children", "post_comment", "request_review"]` → `["create_children", "post_comment", "get_context", "list_items"]`. Removed `request_review` (not TL's job), added `get_context` + `list_items`.
+- **allowedTools**: Verified correct — `["Read", "Glob", "Grep", "WebSearch", "Bash"]` are valid SDK names.
+- **systemPrompt**: Complete overhaul from 18-line generic prompt to comprehensive ~55-line prompt. Covers: when TL runs (Decomposition state), 3-step workflow (read codebase → create_children → post architectural comment), granularity guidelines (2-8 children, one commit each, include file paths), when to skip decomposition, and explicit anti-patterns.
+- Updated both `seed.ts` and `default-personas.ts`
+- Build passes
+
+**Files modified:** `packages/backend/src/db/seed.ts`, `packages/backend/src/db/default-personas.ts`
+
+**Notes:** Prompt emphasizes reading the codebase BEFORE decomposing — this prevents the TL from guessing at file paths. The "skip decomposition" guidance handles small items that don't need breakdown.
+
+---
+
 ## 2026-03-30 — Review: FX.P1 (approved)
 
 **Reviewed:** Product Manager persona audit and overhaul.
