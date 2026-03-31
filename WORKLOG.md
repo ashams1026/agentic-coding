@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-31 — Review: PICO.4 (approved)
+
+**Reviewed:** Pico project knowledge skill file + injection into system prompt.
+- Skill file at correct path (`agent/pico-skill.md`), ~526 words / ~700 tokens — well under 1500 limit.
+- Content covers all spec requirements: AgentOps description, 8 workflow states (verified against `workflow.ts`), 5 personas (matches `default-personas.ts`), 7-step lifecycle, execution history, 5 Q&A pairs, docs/ pointer.
+- Transition description accurate: happy path (Backlog > Planning > Ready > In Progress > In Review > Done) + side paths (Decomposition, Blocked).
+- Injected at module level in chat.ts via `readFileSync` — loaded once, cached. Graceful fallback if file missing.
+- Seed prompt fixes: "Triage" → "Backlog" corrected, docs/ directory instruction added.
+- Build passes.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — PICO.4: Author Pico's project knowledge skill
 
 **Task:** Create skill file teaching Pico about AgentOps, inject into system prompt.
