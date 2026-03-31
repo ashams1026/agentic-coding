@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — FX.SEC1: Add command sandbox for agent directory protection
+
+**Task:** Block agent commands that escape the project directory.
+
+**Done:**
+- Created `packages/backend/src/agent/sandbox.ts` with `validateCommand()` and `buildSandboxPrompt()`
+- `validateCommand(command, projectRoot)` checks for: dangerous commands (rm -rf /, mkfs, etc.), cd to absolute paths outside project, cd .. chains escaping root, references to system paths (/etc, /usr, /var, etc.), home directory writes, absolute path writes outside project (allows /tmp/)
+- `buildSandboxPrompt(projectRoot)` generates system prompt rules for agent self-policing
+- Wired into `claude-executor.ts`: sandbox prompt injected into system prompt (section 4), Bash tool_use events validated in the event stream — if blocked, yields error event and aborts execution
+- Build passes (`pnpm build` succeeds)
+
+**Files created:** `packages/backend/src/agent/sandbox.ts`
+**Files modified:** `packages/backend/src/agent/claude-executor.ts`
+
+**Notes:** This is a best-effort safeguard, not a full sandbox. It catches common escape patterns (cd .., absolute paths, system directories) but can't prevent all evasion (encoded paths, symlinks, subshells). The SDK streams events, so validation happens when the tool_use event is received — there may be a race with execution, but aborting stops further turns.
+
+---
+
 ## 2026-03-30 — Review: AI.31 (approved)
 
 **Reviewed:** E2E test results triage.

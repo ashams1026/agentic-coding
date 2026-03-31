@@ -13,6 +13,7 @@ import type {
 } from "./types.js";
 import type { Persona, Project } from "@agentops/shared";
 import { loadConfig } from "../config.js";
+import { validateCommand, buildSandboxPrompt } from "./sandbox.js";
 
 // ── System prompt assembly ────────────────────────────────────────
 
@@ -65,7 +66,10 @@ export function buildSystemPrompt(
   }
   sections.push(workItemLines.join("\n"));
 
-  // (4) Execution history
+  // (4) Sandbox rules
+  sections.push(buildSandboxPrompt(project.path));
+
+  // (5) Execution history
   if (task.executionHistory.length > 0) {
     const historyLines = ["## Previous Executions"];
     for (const entry of task.executionHistory) {
@@ -219,6 +223,23 @@ export class ClaudeExecutor implements AgentExecutor {
       for await (const msg of q) {
         const events = mapMessage(msg);
         for (const event of events) {
+          // Sandbox: validate Bash commands before they execute
+          if (
+            event.type === "tool_use" &&
+            event.toolName === "Bash" &&
+            typeof event.input.command === "string"
+          ) {
+            const result = validateCommand(event.input.command, project.path);
+            if (!result.allowed) {
+              yield {
+                type: "error",
+                message: `[SANDBOX] Blocked command: ${result.reason}`,
+                code: "sandbox_blocked",
+              };
+              abortController.abort();
+              return;
+            }
+          }
           yield event;
         }
       }
