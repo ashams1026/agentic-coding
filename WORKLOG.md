@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: FX.SET3 (approved)
+
+**Reviewed:** Play/pause button replacing auto-routing toggle across 3 locations.
+- Settings → Workflow: large circular play/pause button with descriptive text + tooltip ✓
+- Status bar: play/pause icon next to "AgentOps", toggles via PATCH mutation ✓
+- Work Items header: pill badge "Auto"/"Manual" with tooltip ✓
+- Consistent emerald (active) / amber (paused) color scheme across all 3 ✓
+- All locations read from project settings, sync via TanStack Query ✓
+- Dark mode variants present ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.SET3: Replace auto-routing toggle with play/pause button
 
 **Task:** Replace ON/OFF toggle with play/pause metaphor across 3 locations.
