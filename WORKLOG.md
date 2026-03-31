@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — AI.31: Triage E2E test results
+
+**Task:** Read all 19 E2E test result files, categorize failures, write summary, file bugs.
+
+**Done:**
+- Read all 19 test result files in `tests/e2e/results/`
+- 263 total steps: 256 PASS, 3 FAIL, 4 N/A (97.3% pass rate)
+- 3 failures found:
+  1. **Critical** — detail-panel-edit Step 16: mock mode persistence (already tracked as FX.MOCK1)
+  2. **Major** — keyboard-shortcuts Step 15: command palette work item click → 404 (**filed as FX.CMD1**)
+  3. **Minor** — detail-panel-edit Step 6: list row doesn't update on title edit (**filed as FX.EDIT1**)
+- 1 known visual defect: FX.NAV1 sidebar icons stacked above labels
+- 4 N/A steps: all reasonable (agents running, tooltip not verifiable via a11y)
+
+**Files created:** `tests/e2e/results/SUMMARY.md`
+**Files modified:** `TASKS.md` (added FX.CMD1, FX.EDIT1 to Sprint 17)
+
+**Notes:** Overall app health is good. Most failures trace back to mock mode (FX.MOCK1) or missing routes (FX.CMD1). Sprint 16 E2E testing phase is now complete.
+
+---
+
 ## 2026-03-30 — Review: AI.30 (approved)
 
 **Reviewed:** E2E test execution of keyboard-shortcuts.md.

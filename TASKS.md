@@ -102,6 +102,12 @@
 
 - [ ] **FX.8** — Fix historical log chunk type detection. In `terminal-renderer.tsx` where `execution.logs` is split into chunks: instead of marking all lines as `"text"`, parse the log content to detect chunk types. Look for JSON-parseable lines that contain `chunkType` fields, or use heuristics: lines starting with `Tool:` or containing `tool_call`/`tool_result` → tool type, lines wrapped in `<thinking>` tags or prefixed with thinking indicators → thinking type, code blocks between triple backticks → code type. This restores structure to historical execution replays.
 
+### E2E Triage Bugs
+
+- [ ] **FX.CMD1** — Fix command palette work item navigation route. In `packages/frontend/src/features/command-palette/` (or wherever the command palette component lives): clicking a work item navigates to `/work-items/:id` which is a 404. The route doesn't exist in the React Router config. Fix: change the navigation target to `/items` with the work item selected (e.g., via URL search param `?selected=:id` or by setting the selected item in the Zustand store before navigating to `/items`). Verify that clicking a work item in the palette opens the detail panel for that item.
+
+- [ ] **FX.EDIT1** — Fix list row not updating when title edited in detail panel. In the Work Items list view: when a title is edited in the detail panel, the list row on the left still shows the old title. The panel heading updates but the list doesn't reactively sync. Fix: ensure the list query data is invalidated or updated when a work item mutation completes, so the list row reflects the new title immediately.
+
 ### Activity Feed Improvements
 
 - [ ] **FX.9** — Enrich activity feed event descriptions. In `packages/frontend/src/features/activity-feed/activity-feed.tsx`: for base (historical) events, look up the persona name and work item title from the available query data. Replace generic descriptions: "Agent started working on work item" → "[Persona Name] started work on [Work Item Title]", "Agent completed" → "[Persona Name] completed work on [Work Item Title] (success/failed)", "State changed" → "[Work Item Title] moved from [Old State] to [New State]", "Router decision" → "Router moved [Work Item Title] to [New State]: [reasoning excerpt]". Ensure live WS events use the same enriched format (some already do — make it consistent).
@@ -165,4 +171,4 @@
 
 ### Phase 3: Triage
 
-- [ ] **AI.31** — Triage and file bugs from test results. Read all files in `tests/e2e/results/`. For each failure: assess severity (critical, major, minor), categorize (UI bug, data bug, integration bug, missing feature). Write a summary to `tests/e2e/results/SUMMARY.md` with a table of all failures sorted by severity. Add any critical/major bugs as new tasks to TASKS.md for the next sprint.
+- [review] **AI.31** — Triage and file bugs from test results. Read all files in `tests/e2e/results/`. For each failure: assess severity (critical, major, minor), categorize (UI bug, data bug, integration bug, missing feature). Write a summary to `tests/e2e/results/SUMMARY.md` with a table of all failures sorted by severity. Add any critical/major bugs as new tasks to TASKS.md for the next sprint.
