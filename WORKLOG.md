@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: FX.P9 (approved)
+
+**Reviewed:** Persona skills injection into system prompt.
+- Imports: `readFileSync`, `join`, `basename` from node:fs/path, `logger` from logger.js — all correct
+- Section placement: (5) between sandbox rules (4) and execution history (6) — good ordering
+- File resolution: `join(project.path, skillPath)` — correct relative-to-absolute resolution
+- Content cap: 8000 chars (~2000 tokens), remaining tracked per-file, truncation with `...(truncated)` marker
+- Missing files: try/catch with `logger.warn({ skillPath, personaId })` — structured logging, graceful skip
+- Skills section guard: `skillSections.length > 1` prevents empty `## Skills` header
+- Heading style: uses `## Skills` parent with `### {filename}` children — slightly different from task spec (`## Skill: {filename}`) but better hierarchy
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.P9: Inject persona skills into system prompt
 
 **Task:** Read skill files from disk and inject their content into the persona's system prompt at execution time.
