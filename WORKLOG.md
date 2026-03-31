@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — AI.27: Execute persona-manager.md E2E test
+
+**Task:** Execute persona-manager test plan via chrome-devtools MCP.
+
+**Done:**
+- Executed all 19 steps in browser against http://localhost:5174/personas
+- 19/19 steps PASS, 0 FAIL
+- 5 screenshot checkpoints taken — all visual checks PASS
+- 5 persona cards: PM (Sonnet/6), Tech Lead (Opus/8), Engineer (Sonnet/10), Reviewer (Sonnet/7), QA (Haiku/6) — all Built-in
+- "Create new persona" card present
+- Editor dialog: verified all 7 sections (Name, Description, Avatar, Model, System Prompt, Tools, Budget)
+- Tools: 10/15 selected, SDK Tools (7) + AgentOps Tools (3) with checkboxes
+- Edit/Save cycle: renamed Engineer → "Test Engineer Persona" → verified persistence → reverted
+
+**Files created:** `tests/e2e/results/persona-manager.md`, 5 screenshot PNGs in `tests/e2e/results/`
+
+**Notes:** All persona manager features work correctly within session. Full edit/save/verify/revert cycle completed.
+
+---
+
 ## 2026-03-30 — Review: AI.26 (approved)
 
 **Reviewed:** E2E test execution of settings-appearance.md.
