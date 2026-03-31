@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: FX.8 (approved)
+
+**Reviewed:** Historical log chunk type detection in `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`.
+- `parseLogLine()` with 3 detection layers: JSON with chunkType/ToolCallData shapes, `ToolName({...})` regex pattern against KNOWN_TOOLS set, `<thinking>` tag stripping
+- Layer 1: `startsWith("{")` guard before `JSON.parse` — avoids wasteful parsing on non-JSON lines. Checks both `chunkType` field and ToolCallData/ToolResultData shapes. Correct.
+- Layer 2: `TOOL_CALL_RE` matches actual `eventToChunk` output format. Null checks on regex groups satisfy strict TS. Reconstructs `ToolCallData` JSON for `ToolCallSection` rendering. `toolCallId: id` uses synthetic chunk ID — tool results won't pair in historical logs, acceptable limitation.
+- Layer 3: `<thinking>` detection with tag stripping, empty content guard falls through to text. Correct.
+- Missing code block detection (triple backtick) — non-issue: backend `toChunkType()` never returns "code", so no code markers exist in stored logs
+- `KNOWN_TOOLS`: 20 entries covering all SDK + MCP tools. `s` flag on regex harmless.
+- Integration: clean replacement of hardcoded `chunkType: "text"` in useEffect
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.8: Fix historical log chunk type detection
 
 **Task:** Parse historical log lines to detect chunk types instead of marking all as "text".
