@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — AI.29: Execute dark-mode.md E2E test
+
+**Task:** Execute dark-mode test plan via chrome-devtools MCP.
+
+**Done:**
+- Executed all 19 steps in browser against http://localhost:5174
+- 18/19 steps PASS, 1 N/A (tooltip intermittent in a11y tree), 0 FAIL
+- 4 screenshot checkpoints taken — all visual checks PASS
+- Theme toggle cycles: Light → Dark → System correctly
+- Light mode: white backgrounds, dark text, all elements readable across all pages
+- Dark mode: dark backgrounds, light text, adequate contrast across all 6 pages (Dashboard, Work Items, Agent Monitor, Activity Feed, Personas, Settings)
+- System mode: follows OS preference (light), html class="" confirmed
+- Settings → Appearance: Light/Dark/System cards with highlighted borders, bidirectional sync with sidebar toggle
+- No invisible text, no broken colors, no partial theme states
+
+**Files created:** `tests/e2e/results/dark-mode.md`, 12 screenshot PNGs in `tests/e2e/results/`
+
+**Notes:** All dark mode/theme switching features work correctly. Theme persists across navigation. Settings and sidebar toggle stay in sync.
+
+---
+
 ## 2026-03-30 — Review: AI.28 (approved)
 
 **Reviewed:** E2E test execution of navigation.md.
