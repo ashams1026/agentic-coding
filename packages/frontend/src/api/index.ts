@@ -67,6 +67,9 @@ export {
   // Service
   getServiceStatus,
   restartService,
+  // SDK Capabilities
+  getSdkCapabilities,
+  reloadSdkCapabilities,
   // Chat
   getChatSessions,
   createChatSession,

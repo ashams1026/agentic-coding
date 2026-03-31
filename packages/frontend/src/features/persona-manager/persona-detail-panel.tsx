@@ -18,7 +18,7 @@ import {
   Save,
   X,
   Pencil,
-  FolderSearch,
+  Slash,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +27,6 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { usePersona, useUpdatePersona } from "@/hooks";
-import { useSelectedProject } from "@/hooks/use-selected-project";
 import { cn } from "@/lib/utils";
 import { MarkdownPreview } from "./system-prompt-editor";
 import { SystemPromptEditor } from "./system-prompt-editor";
@@ -130,7 +129,6 @@ interface PersonaDetailPanelProps {
 export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelProps) {
   const { data: persona } = usePersona(personaId);
   const updateMutation = useUpdatePersona();
-  const { project } = useSelectedProject();
   const [editing, setEditing] = useState(false);
   const [skillBrowserOpen, setSkillBrowserOpen] = useState(false);
 
@@ -419,29 +417,20 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
                 size="sm"
                 className="gap-1.5 text-xs"
                 onClick={() => setSkillBrowserOpen(true)}
-                disabled={!project?.path}
               >
-                <FolderSearch className="h-3.5 w-3.5" />
+                <Slash className="h-3.5 w-3.5" />
                 Browse skills...
               </Button>
-              {!project?.path && (
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  Set a project path in Settings to browse skill files.
-                </p>
-              )}
-              {project?.path && (
-                <SkillBrowser
-                  open={skillBrowserOpen}
-                  onClose={() => setSkillBrowserOpen(false)}
-                  onAdd={(path) => {
-                    if (!skills.includes(path)) {
-                      setSkills([...skills, path]);
-                    }
-                  }}
-                  projectPath={project.path}
-                  existingSkills={skills}
-                />
-              )}
+              <SkillBrowser
+                open={skillBrowserOpen}
+                onClose={() => setSkillBrowserOpen(false)}
+                onAdd={(name) => {
+                  if (!skills.includes(name)) {
+                    setSkills([...skills, name]);
+                  }
+                }}
+                existingSkills={skills}
+              />
             </section>
 
             <Separator />
@@ -570,11 +559,14 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
                 <section>
                   <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Skills</h3>
                   <div className="flex flex-wrap gap-1.5">
-                    {persona.skills.map((skill) => (
-                      <Badge key={skill} variant="secondary" className="text-xs px-2 py-0.5 font-mono">
-                        {skill}
-                      </Badge>
-                    ))}
+                    {persona.skills.map((skill) => {
+                      const isSlashCommand = !skill.includes("/") && !skill.includes(".");
+                      return (
+                        <Badge key={skill} variant="secondary" className="text-xs px-2 py-0.5 font-mono">
+                          {isSlashCommand ? `/${skill}` : skill}
+                        </Badge>
+                      );
+                    })}
                   </div>
                 </section>
               </>

@@ -520,6 +520,43 @@ export async function fetchHealth(): Promise<HealthResponse> {
   return res.json();
 }
 
+// ── SDK Capabilities ────────────────────────────────────────────
+
+export interface SdkSkill {
+  name: string;
+  description: string;
+  argumentHint: string;
+}
+
+export interface SdkAgent {
+  name: string;
+  description: string;
+  model?: string;
+}
+
+export interface SdkModel {
+  value: string;
+  displayName: string;
+  description: string;
+}
+
+export interface SdkCapabilities {
+  commands: SdkSkill[];
+  agents: SdkAgent[];
+  models: SdkModel[];
+  cachedAt: string;
+}
+
+export async function getSdkCapabilities(): Promise<SdkCapabilities> {
+  const res = await get<{ data: SdkCapabilities }>("/api/sdk/capabilities");
+  return res.data;
+}
+
+export async function reloadSdkCapabilities(): Promise<SdkCapabilities> {
+  const res = await post<{ data: SdkCapabilities }>("/api/sdk/reload", {});
+  return res.data;
+}
+
 // ── Chat Sessions ───────────────────────────────────────────────
 
 export async function getChatSessions(projectId?: string): Promise<ChatSession[]> {

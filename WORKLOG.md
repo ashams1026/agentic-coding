@@ -5,6 +5,33 @@
 
 ---
 
+## 2026-03-31 — FX.SDK4: Replace file browser skill picker with SDK skill picker
+
+**Task:** Replace filesystem-based skill browser with SDK capabilities-driven skill picker.
+
+**Done:**
+- Added `getSdkCapabilities()` and `reloadSdkCapabilities()` to `packages/frontend/src/api/client.ts` with `SdkSkill`, `SdkAgent`, `SdkModel`, `SdkCapabilities` types
+- Re-exported both functions in `packages/frontend/src/api/index.ts`
+- Rewrote `packages/frontend/src/features/persona-manager/skill-browser.tsx`:
+  - Now fetches `GET /api/sdk/capabilities` on dialog open instead of browsing filesystem
+  - Searchable list of SDK skills with name, description, and argument hint
+  - Click a skill to see its description in a detail panel
+  - "Add" button on each skill (shows "Added" badge if already in the list)
+  - Manual path input kept as fallback for custom skills not yet discovered
+  - Retry button on error
+  - No longer requires `projectPath` prop
+- Updated `packages/frontend/src/features/persona-manager/persona-detail-panel.tsx`:
+  - Removed `useSelectedProject` dependency and `FolderSearch` import
+  - Skills browse button no longer requires project path (always enabled)
+  - Read-only skills display: SDK skill names shown with `/` prefix (e.g., `/commit`), file paths shown as-is
+- Also marked FX.SDK3 and FX.SDK5 as blocked (SDK doesn't expose built-in tool names via discovery API)
+
+**Files modified:** `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`, `packages/frontend/src/features/persona-manager/skill-browser.tsx`, `packages/frontend/src/features/persona-manager/persona-detail-panel.tsx`
+
+**Notes for next agent:** FX.SDK6 (subagent config) should follow same pattern — fetch `agents` from `GET /api/sdk/capabilities`. The `SdkCapabilities` type is already in the API client with the `agents` array. FX.SDK3 and FX.SDK5 remain blocked because the SDK doesn't return built-in tool names in `initializationResult()`.
+
+---
+
 ## 2026-03-31 — Review: SDK.V2.2 (approved)
 
 **Reviewed:** SDK capabilities discovery endpoint — `GET /api/sdk/capabilities` and `POST /api/sdk/reload`.
