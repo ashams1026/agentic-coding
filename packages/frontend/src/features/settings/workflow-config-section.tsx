@@ -158,7 +158,7 @@ function PersonaStateTable() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Not assigned</SelectItem>
-                    {personas.map((p) => (
+                    {personas.filter((p) => !p.settings?.isAssistant).map((p) => (
                       <SelectItem key={p.id} value={p.id}>
                         <span className="flex items-center gap-1.5">
                           <span

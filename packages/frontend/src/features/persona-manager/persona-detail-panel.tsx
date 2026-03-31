@@ -194,6 +194,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
   const AvatarIcon = getIcon(editing ? avatarIcon : (persona?.avatar.icon ?? "bot"));
   const displayColor = editing ? avatarColor : (persona?.avatar.color ?? "#6b7280");
   const isBuiltIn = persona?.settings?.isSystem === true;
+  const isAssistant = persona?.settings?.isAssistant === true;
 
   if (!persona) {
     return (
@@ -219,17 +220,21 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
           <div className="min-w-0">
             <h2 className="text-sm font-semibold truncate">{editing ? (name || "Untitled") : persona.name}</h2>
             <p className="text-xs text-muted-foreground truncate">
-              {isBuiltIn ? "Built-in persona" : "Custom persona"}
+              {isAssistant ? "Built-in assistant" : isBuiltIn ? "Built-in persona" : "Custom persona"}
             </p>
           </div>
-          {isBuiltIn && (
+          {isAssistant ? (
+            <Badge variant="outline" className="text-xs px-1.5 py-0 shrink-0 border-amber-500/50 text-amber-600 dark:text-amber-400">
+              Assistant
+            </Badge>
+          ) : isBuiltIn ? (
             <Badge variant="outline" className="text-xs px-1.5 py-0 shrink-0">
               Built-in
             </Badge>
-          )}
+          ) : null}
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          {!editing && (
+          {!editing && !isAssistant && (
             <Button
               variant="outline"
               size="sm"

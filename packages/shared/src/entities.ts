@@ -80,6 +80,12 @@ export interface PersonaAssignment {
   personaId: PersonaId;
 }
 
+export interface PersonaSettings {
+  isSystem?: boolean;
+  isAssistant?: boolean;
+  [key: string]: unknown;
+}
+
 export interface Persona {
   id: PersonaId;
   name: string;
@@ -94,7 +100,7 @@ export interface Persona {
   mcpTools: string[];
   skills: string[];
   maxBudgetPerRun: number;
-  settings: Record<string, unknown>;
+  settings: PersonaSettings;
 }
 
 export interface Execution {

@@ -82,13 +82,14 @@ interface PersonaListProps {
 interface PersonaCardProps {
   persona: Persona;
   isBuiltIn: boolean;
+  isAssistant: boolean;
   isSelected: boolean;
   onSelect: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
 }
 
-function PersonaCard({ persona, isBuiltIn, isSelected, onSelect, onDuplicate, onDelete }: PersonaCardProps) {
+function PersonaCard({ persona, isBuiltIn, isAssistant, isSelected, onSelect, onDuplicate, onDelete }: PersonaCardProps) {
   const Icon = getPersonaIcon(persona.avatar.icon);
   const model = MODEL_CONFIG[persona.model];
   const toolCount = persona.allowedTools.length + persona.mcpTools.length;
@@ -103,27 +104,29 @@ function PersonaCard({ persona, isBuiltIn, isSelected, onSelect, onDuplicate, on
       )}
     >
       <div className="p-4">
-        {/* Hover actions */}
-        <div className="absolute top-2 right-2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7"
-            onClick={(e) => { e.stopPropagation(); onDuplicate(); }}
-            title="Duplicate"
-          >
-            <Copy className="h-3.5 w-3.5" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 text-destructive hover:text-destructive"
-            onClick={(e) => { e.stopPropagation(); onDelete(); }}
-            title="Delete"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        </div>
+        {/* Hover actions — hidden for assistant personas */}
+        {!isAssistant && (
+          <div className="absolute top-2 right-2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7"
+              onClick={(e) => { e.stopPropagation(); onDuplicate(); }}
+              title="Duplicate"
+            >
+              <Copy className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-destructive hover:text-destructive"
+              onClick={(e) => { e.stopPropagation(); onDelete(); }}
+              title="Delete"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        )}
 
         {/* Avatar */}
         <div
@@ -286,6 +289,7 @@ export function PersonaList({ selectedId, onSelect }: PersonaListProps) {
             key={p.id as string}
             persona={p}
             isBuiltIn={BUILT_IN_IDS.has(p.id as string)}
+            isAssistant={p.settings?.isAssistant === true}
             isSelected={selectedId === p.id}
             onSelect={() => onSelect(p.id)}
             onDuplicate={() => handleDuplicate(p)}

@@ -60,6 +60,15 @@ const BUILT_IN_PERSONAS: DefaultPersona[] = [
     mcpTools: ["route_to_state", "list_items", "get_context", "post_comment"],
     maxBudgetPerRun: 10,
   },
+  {
+    name: "Pico",
+    description: "Your friendly project assistant. Woof!",
+    avatar: { color: "#f59e0b", icon: "dog" },
+    model: "sonnet",
+    allowedTools: ["Read", "Glob", "Grep", "WebSearch"],
+    mcpTools: ["list_items", "get_context", "post_comment"],
+    maxBudgetPerRun: 5,
+  },
 ];
 
 // Default state → persona name mapping for new projects
@@ -95,7 +104,7 @@ export async function seedDefaultPersonasForProject(projectId: string): Promise<
       allowedTools: p.allowedTools,
       mcpTools: p.mcpTools,
       maxBudgetPerRun: p.maxBudgetPerRun,
-      settings: p.name === "Router" ? { isSystem: true } : {},
+      settings: p.name === "Router" ? { isSystem: true } : p.name === "Pico" ? { isSystem: true, isAssistant: true } : {},
     }));
 
     await db.insert(personas).values(rows);

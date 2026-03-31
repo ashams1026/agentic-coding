@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-31 — PICO.1: Add Pico as built-in system persona
+
+**Task:** Add Pico (dog-persona AI assistant) as a built-in, non-editable, non-deletable persona with `isAssistant` flag.
+
+**Done:**
+- `entities.ts`: Added `PersonaSettings` interface with `isSystem?` and `isAssistant?` fields. Changed `Persona.settings` from `Record<string, unknown>` to `PersonaSettings`.
+- `seed.ts`: Added Pico persona (`id: "ps-pico"`, amber color, dog icon, sonnet model, $5 budget). Full system prompt establishing personality (friendly, dog-themed, technically accurate), knowledge (AgentOps architecture, workflow, personas), and capabilities (Read/Glob/Grep + MCP tools).
+- `default-personas.ts`: Added Pico to `BUILT_IN_PERSONAS` array with `{ isSystem: true, isAssistant: true }` settings.
+- `persona-detail-panel.tsx`: Assistant personas show "Built-in assistant" subtitle + amber "Assistant" badge. Edit button hidden for assistants.
+- `persona-list.tsx`: Added `isAssistant` prop to `PersonaCard`. Delete/duplicate buttons hidden for assistant personas.
+- `workflow-config-section.tsx`: Filtered assistant personas from state assignment dropdowns.
+
+**Files modified:** `packages/shared/src/entities.ts`, `packages/backend/src/db/seed.ts`, `packages/backend/src/db/default-personas.ts`, `packages/frontend/src/features/persona-manager/persona-detail-panel.tsx`, `packages/frontend/src/features/persona-manager/persona-list.tsx`, `packages/frontend/src/features/settings/workflow-config-section.tsx`
+
+---
+
 ## 2026-03-31 — Review: FX.9 (approved)
 
 **Reviewed:** Activity feed enrichment in `activity-feed.tsx`.
