@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: FX.MOCK1 (approved)
+
+**Reviewed:** Mock API mode removal from frontend.
+- `useUIStore`: ApiMode/apiMode/setApiMode removed, partialize cleaned ✓
+- `api/index.ts`: clean re-export from client, no mock branching ✓
+- `api/ws.ts`: always uses realWs, unconditional connect ✓
+- Status bar: toggle removed, health indicator kept ✓
+- Settings Appearance: ApiModeSection removed, unused imports cleaned ✓
+- Root layout + dashboard: DemoControls/DemoButton removed ✓
+- `mocks/` directory kept per task spec ✓
+- Build passes, bundle 43KB smaller ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.MOCK1: Remove mock API mode from frontend
 
 **Task:** Remove mock/real branching so frontend always talks to real backend.
