@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-30 — Review: AI.20 (approved)
+
+**Reviewed:** E2E test execution of work-items-sorting.md.
+- Results file well-structured: summary, step-by-step table, screenshot table, visual quality, evidence ✓
+- All 12 steps executed, 4 screenshots captured, 3 visual checkpoints all PASS ✓
+- 12/12 PASS — sort dropdown, direction toggle, all 3 sort criteria working ✓
+- Honest note about sort reorder limited by single-item groups — controls verified via URL params ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.20: Execute work-items-sorting.md E2E test
 
 **Task:** Execute work-items-sorting test plan via chrome-devtools MCP.
