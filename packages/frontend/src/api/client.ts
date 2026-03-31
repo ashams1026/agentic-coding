@@ -386,6 +386,19 @@ export async function getConcurrencyStats(): Promise<ConcurrencyStats> {
   return get<ConcurrencyStats>("/api/settings/concurrency");
 }
 
+export interface ExecutorModeResponse {
+  mode: "mock" | "claude";
+  isProduction: boolean;
+}
+
+export async function getExecutorMode(): Promise<ExecutorModeResponse> {
+  return get<ExecutorModeResponse>("/api/settings/executor-mode");
+}
+
+export async function setExecutorMode(mode: "mock" | "claude"): Promise<{ mode: "mock" | "claude" }> {
+  return put<{ mode: "mock" | "claude" }>("/api/settings/executor-mode", { mode });
+}
+
 export interface DbStats {
   sizeBytes: number;
   sizeMB: number;

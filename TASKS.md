@@ -12,7 +12,7 @@
 ## Sprint 17: Agent Pipeline Fixes & Monitor UX
 
 > Critical fixes from first real-world test run. Router loop, cost display, agent monitor readability, activity feed descriptions.
-> Also includes persona audit, skills system, security, and UX improvements.
+> Also includes persona audit, skills system, security, UX improvements, and SDK-native tool/skill discovery.
 
 ### Router & Dispatch Fixes (remaining)
 
@@ -40,7 +40,21 @@
 
 - [x] **FX.DB3** — Wire executor selection by environment. In `packages/backend/src/agent/execution-manager.ts` (or wherever the executor is instantiated): select the executor based on environment and config. **Test** (`NODE_ENV=test`): always use `MockExecutor` — no API calls during tests. **Dev** (`NODE_ENV=development`): check a project setting or env var `AGENTOPS_EXECUTOR` — `"mock"` uses `MockExecutor`, `"claude"` (default) uses `ClaudeExecutor`. This lets developers test the full pipeline without burning API credits. **Prod** (`NODE_ENV=production`): always use `ClaudeExecutor`. Add an executor mode indicator to the `/api/health` response: `{ executor: "mock" | "claude" }`. In the frontend status bar: show the executor mode when not `"claude"` (e.g., a small "Simulated" badge next to the service health indicator so the user knows agents aren't real).
 
-- [ ] **FX.DB4** — Add executor toggle to Settings. In Settings → API & Execution section: when in dev mode, show an "Agent Executor" dropdown with two options: "Claude API (real)" and "Simulated (no API calls)". Switching updates the project setting and takes effect on the next agent dispatch. Show a description: "Simulated mode runs fake agent executions for testing the pipeline without using API credits. Agents will produce placeholder output." Hide this dropdown in production mode.
+- [review] **FX.DB4** — Add executor toggle to Settings. In Settings → API & Execution section: when in dev mode, show an "Agent Executor" dropdown with two options: "Claude API (real)" and "Simulated (no API calls)". Switching updates the project setting and takes effect on the next agent dispatch. Show a description: "Simulated mode runs fake agent executions for testing the pipeline without using API credits. Agents will produce placeholder output." Hide this dropdown in production mode.
+
+### SDK-Native Skills & Tool Discovery
+
+- [ ] **FX.SDK1** — Create SDK discovery endpoint. Add `GET /api/sdk/capabilities` route in `packages/backend/src/routes/sdk.ts`. On startup (or first call, cached), spin up a minimal `query()` instance and call `initializationResult()` to get: available built-in tools (with names/descriptions), available skills/commands (with names/descriptions/argument hints), available subagents (with names/descriptions). Return the combined result as JSON. Cache for the lifetime of the server process. Also expose `POST /api/sdk/reload` that calls `reloadPlugins()` and refreshes the cache.
+
+- [ ] **FX.SDK2** — Replace custom skill injection with SDK native `skills` param. In `packages/backend/src/agent/claude-executor.ts`: remove section (5) "Persona skills" from `buildSystemPrompt()` (lines 76-101 — the manual `readFileSync` + 8K char cap logic). Instead, pass `skills: persona.skills` directly in the `query()` options alongside `tools`. The SDK handles loading, tokenization, and context management natively. Update the `Persona` entity: `skills` field now holds SDK skill names (e.g., `["commit", "review-pr"]`) not file paths. Add a migration to clear any existing file-path skill values.
+
+- [ ] **FX.SDK3** — Replace hardcoded tool list with SDK discovery in persona editor. In the persona editor UI (`packages/frontend/src/features/persona-manager/`): replace any freeform text input or hardcoded tool checkboxes for `allowedTools` with a multi-select populated from `GET /api/sdk/capabilities`. Show each tool with its name and description. Group by category: File tools, Search tools, Execution, Web, Agent, Other. Same for `mcpTools` — show available MCP tools from the discovery response. Validate on save: warn if a selected tool isn't in the available set.
+
+- [ ] **FX.SDK4** — Replace file browser skill picker with SDK skill picker. Rewrite `packages/frontend/src/features/persona-manager/skill-browser.tsx`: instead of browsing the filesystem for `.md` files, fetch available skills from `GET /api/sdk/capabilities`. Render as a searchable list with skill name, description, and argument hint. Each skill has an "Add" button. Preview panel shows the skill's description (no file content preview needed). Keep the manual path input as a fallback for custom skills not yet discovered. Update the persona detail panel to show skill names with descriptions instead of raw file paths.
+
+- [ ] **FX.SDK5** — Add startup tool validation. In `packages/backend/src/agent/execution-manager.ts`: on first dispatch (or server start), fetch the SDK capabilities and validate all persona `allowedTools` and `skills` against the actual available set. Log warnings for any mismatches: "Persona 'Engineer' references unknown tool 'FooBar' — will be ignored by SDK." This catches stale tool names early (like the `transition_state` vs `route_to_state` incident).
+
+- [ ] **FX.SDK6** — Expose available subagents in persona config. The SDK provides `supportedAgents()` returning agent name, description, and model. In the persona editor: add a "Subagents" section showing available agents from the SDK discovery. Allow personas to reference specific subagents (e.g., the Engineer persona might use the `code-reviewer` subagent). Store as `subagents: string[]` on the Persona entity. Pass via query options if the SDK supports it, otherwise inject as guidance in the system prompt.
 
 ### Dev Server Deduplication
 

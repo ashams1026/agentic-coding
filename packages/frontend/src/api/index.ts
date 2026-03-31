@@ -61,6 +61,9 @@ export {
   // Browse / Files
   browseDirectory,
   readFilePreview,
+  // Executor mode
+  getExecutorMode,
+  setExecutorMode,
   // Service
   getServiceStatus,
   restartService,

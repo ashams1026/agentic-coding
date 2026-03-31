@@ -10,9 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { useProjects, useUpdateProject, usePersonas } from "@/hooks";
+import { useProjects, useUpdateProject, usePersonas, useHealth } from "@/hooks";
 import { cn } from "@/lib/utils";
-import { getApiKeyStatus, setApiKey, deleteApiKey, getConcurrencyStats } from "@/api";
+import { getApiKeyStatus, setApiKey, deleteApiKey, getConcurrencyStats, getExecutorMode, setExecutorMode } from "@/api";
 
 // ── API Key input ──────────────────────────────────────────────────
 
@@ -329,12 +329,107 @@ function PersonaLimitsSection() {
   );
 }
 
+// ── Executor mode toggle ──────────────────────────────────────────
+
+function ExecutorModeSection() {
+  const { data: health } = useHealth();
+  const [mode, setMode] = useState<"mock" | "claude" | null>(null);
+  const [isProduction, setIsProduction] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    getExecutorMode()
+      .then((res) => {
+        setMode(res.mode);
+        setIsProduction(res.isProduction);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Sync from health check if available
+  useEffect(() => {
+    if (health?.executor && mode !== null) {
+      setMode(health.executor);
+    }
+  }, [health?.executor]);
+
+  const handleChange = async (newMode: "mock" | "claude") => {
+    setSaving(true);
+    try {
+      const res = await setExecutorMode(newMode);
+      setMode(res.mode);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-3">
+        <div className="h-4 w-32 bg-muted animate-pulse rounded" />
+        <div className="h-9 w-full bg-muted animate-pulse rounded" />
+      </div>
+    );
+  }
+
+  if (isProduction) return null;
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <p className="text-sm font-medium mb-1">Agent Executor</p>
+        <p className="text-xs text-muted-foreground mb-3">
+          Simulated mode runs fake agent executions for testing the pipeline without using API credits. Agents will produce placeholder output.
+        </p>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => handleChange("claude")}
+          disabled={saving}
+          className={cn(
+            "flex-1 rounded-md border px-3 py-2 text-sm transition-colors",
+            mode === "claude"
+              ? "border-primary bg-primary/10 text-primary font-medium"
+              : "border-border hover:bg-muted text-muted-foreground",
+          )}
+        >
+          Claude API (real)
+        </button>
+        <button
+          type="button"
+          onClick={() => handleChange("mock")}
+          disabled={saving}
+          className={cn(
+            "flex-1 rounded-md border px-3 py-2 text-sm transition-colors",
+            mode === "mock"
+              ? "border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium"
+              : "border-border hover:bg-muted text-muted-foreground",
+          )}
+        >
+          Simulated (no API calls)
+        </button>
+      </div>
+
+      {mode === "mock" && (
+        <p className="text-xs text-amber-600 dark:text-amber-400">
+          Agents are running in simulated mode. No API credits will be used.
+        </p>
+      )}
+    </div>
+  );
+}
+
 // ── Main component ─────────────────────────────────────────────────
 
 export function ApiKeysSection() {
   return (
     <div className="space-y-6">
       <ApiKeySection />
+      <Separator />
+      <ExecutorModeSection />
       <Separator />
       <ConcurrencySection />
       <Separator />

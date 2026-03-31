@@ -6,6 +6,7 @@ import { resolve } from "node:path";
 import { loadConfig, setConfigValue } from "../config.js";
 import { logger } from "../logger.js";
 import { getActiveCount, getQueueLength, getActiveExecutionIds, clearAll } from "../agent/concurrency.js";
+import { getExecutorMode, setExecutorMode } from "../agent/execution-manager.js";
 import { db, sqlite } from "../db/connection.js";
 import { projects, personas, personaAssignments, executions, workItems } from "../db/schema.js";
 import { eq, inArray } from "drizzle-orm";
@@ -354,5 +355,30 @@ export async function settingsRoutes(app: FastifyInstance) {
     setTimeout(() => {
       process.exit(0);
     }, 500);
+  });
+
+  // GET /api/settings/executor-mode
+  app.get("/api/settings/executor-mode", async () => {
+    const nodeEnv = process.env["NODE_ENV"] ?? "development";
+    return {
+      mode: getExecutorMode(),
+      isProduction: nodeEnv === "production",
+    };
+  });
+
+  // PUT /api/settings/executor-mode
+  app.put<{
+    Body: { mode: "mock" | "claude" };
+  }>("/api/settings/executor-mode", async (request, reply) => {
+    const nodeEnv = process.env["NODE_ENV"] ?? "development";
+    if (nodeEnv === "production") {
+      return reply.status(403).send({ error: { code: "FORBIDDEN", message: "Cannot change executor mode in production" } });
+    }
+    const { mode } = request.body;
+    if (mode !== "mock" && mode !== "claude") {
+      return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "Mode must be 'mock' or 'claude'" } });
+    }
+    setExecutorMode(mode);
+    return { mode: getExecutorMode() };
   });
 }

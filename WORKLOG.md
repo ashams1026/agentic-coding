@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — FX.DB4: Add executor toggle to Settings
+
+**Task:** Add an executor mode toggle in the Settings page, hidden in production.
+
+**Done:**
+- **`execution-manager.ts`**: Added `runtimeOverride` variable + `setExecutorMode(mode)` export. When called, updates the override and recreates the executor singleton. No-op in production. `getExecutorMode()` now checks: test→mock, prod→claude, dev→runtime override → env var → default.
+- **`settings.ts`**: Added `GET /api/settings/executor-mode` (returns `{ mode, isProduction }`) and `PUT /api/settings/executor-mode` (accepts `{ mode }`, returns 403 in production, validates mode string).
+- **`api/client.ts`**: Added `ExecutorModeResponse` interface, `getExecutorMode()` and `setExecutorMode()` API functions.
+- **`api/index.ts`**: Exported `getExecutorMode` and `setExecutorMode`.
+- **`api-keys-section.tsx`**: Added `ExecutorModeSection` component between API Key and Concurrency. Two toggle buttons: "Claude API (real)" with primary highlight and "Simulated (no API calls)" with amber highlight. Hidden in production (`isProduction` from backend). Shows amber warning text when mock mode is active. Syncs state from health check. Loading skeleton while fetching.
+- Build passes
+
+**Files modified:** `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/routes/settings.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`, `packages/frontend/src/features/settings/api-keys-section.tsx`
+
+**Notes:** The executor is swappable at runtime in dev mode — `setExecutorMode()` recreates the singleton. The toggle syncs with the health endpoint's `executor` field so status bar badge stays consistent. Production mode returns 403 on the PUT route and hides the toggle UI.
+
+---
+
 ## 2026-03-30 — Review: FX.DB3 (approved)
 
 **Reviewed:** Executor selection by environment across backend and frontend.

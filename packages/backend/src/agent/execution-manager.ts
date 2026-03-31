@@ -102,15 +102,27 @@ export function clearStateHistory(): void {
   stateHistory.clear();
 }
 
+let runtimeOverride: "mock" | "claude" | null = null;
+
 /** Resolve executor mode: "mock" or "claude". */
 export function getExecutorMode(): "mock" | "claude" {
   const nodeEnv = process.env["NODE_ENV"] ?? "development";
   if (nodeEnv === "test") return "mock";
   if (nodeEnv === "production") return "claude";
-  // Dev: check env var override
-  const override = process.env["AGENTOPS_EXECUTOR"];
-  if (override === "mock") return "mock";
+  // Dev: runtime override (settings toggle) > env var > default
+  if (runtimeOverride) return runtimeOverride;
+  const envOverride = process.env["AGENTOPS_EXECUTOR"];
+  if (envOverride === "mock") return "mock";
   return "claude";
+}
+
+/** Set executor mode at runtime (dev only). Recreates the executor. */
+export function setExecutorMode(mode: "mock" | "claude"): void {
+  const nodeEnv = process.env["NODE_ENV"] ?? "development";
+  if (nodeEnv === "production") return;
+  runtimeOverride = mode;
+  executor = createExecutor();
+  logger.info({ mode }, "Executor mode changed at runtime");
 }
 
 function createExecutor(): AgentExecutor {
@@ -122,7 +134,7 @@ function createExecutor(): AgentExecutor {
   return new ClaudeExecutor();
 }
 
-const executor = createExecutor();
+let executor = createExecutor();
 
 // ── Execution context helpers ────────────────────────────────────
 
