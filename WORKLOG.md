@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-31 — Review: PICO.10 (approved)
+
+**Reviewed:** Pico personality polish and onboarding — welcome message, quick-action buttons, backend personality guidelines.
+- Welcome message matches spec: "Woof! I'm Pico" + full description of project knowledge and assistance capabilities.
+- 4 quick-action buttons exactly matching spec: "What's the project status?", "Explain the workflow", "Show recent activity", "Help me create a work item". Each with appropriate Lucide icon.
+- Clicking a button calls `sendMessage(action.label)` which correctly triggers `ensureSession()` → session creation → SSE stream — works even on fresh state with no existing session.
+- Buttons disabled during streaming via `disabled={isStreaming}`.
+- `QUICK_ACTIONS` constant is clean and extensible.
+- Backend personality: warm tone, dog puns limited ("once or twice per response at most"), technically accurate, honest when uncertain — matches spec.
+- Personality injected as Chat Instructions alongside existing pico-skill.md — properly layered system prompt.
+- Conventions followed: named exports, cn(), theme tokens, Lucide icons.
+- Both frontend and backend builds pass cleanly.
+- Verdict: **approved**
+- **Sprint 18 (Pico) complete!** All PICO.5-10 reviewed and approved.
+
+---
+
 ## 2026-03-31 — PICO.10: Polish Pico's personality and onboarding
 
 **Task:** First-time welcome experience, quick-action suggestion buttons, personality guidelines.
