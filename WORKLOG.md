@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: FX.P5 (approved)
+
+**Reviewed:** Router persona audit and overhaul.
+- allowedTools: `[]` correct — Router has no SDK tools ✓
+- mcpTools: `["route_to_state", "list_items", "get_context", "post_comment"]` — all 4 valid MCP names, `post_comment` added ✓
+- Critical bug fixed: allowedTools/mcpTools were swapped (MCP names in SDK field, empty MCP array) ✓
+- systemPrompt: 5-step workflow, valid transitions map matching workflow.ts, per-state routing rules ✓
+- Correctly deviated from task spec: follows real transition map (Planning → Ready, not Planning → Decomposition) ✓
+- Anti-patterns: no code, no loops, no Done without approval ✓
+- default-personas.ts updated in sync ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.P5: Audit and overhaul Router persona
 
 **Task:** Fix allowedTools/mcpTools swap, overhaul systemPrompt for Router persona.
