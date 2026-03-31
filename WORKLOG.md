@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: FX.P3 (approved)
+
+**Reviewed:** Engineer persona audit and overhaul.
+- mcpTools: `route_to_state` removed, `get_context` added ✓
+- allowedTools: Write + Edit both present, all 7 valid SDK names ✓
+- systemPrompt: 4-step workflow (read → implement → verify build → post comment) ✓
+- Rejection handling (address EVERY point), flag_blocked guidance, anti-patterns ✓
+- Coding conventions embedded (TS strict, shadcn, Tailwind, dark mode, kebab-case) ✓
+- default-personas.ts updated in sync ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.P3: Audit and overhaul Engineer persona
 
 **Task:** Fix mcpTools, verify allowedTools, overhaul systemPrompt for Engineer persona.
