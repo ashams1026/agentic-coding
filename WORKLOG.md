@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-31 — Review: PICO.8 (approved)
+
+**Reviewed:** Streaming chat hook, pico-store session state, chat panel wiring, API client chat functions.
+- All spec requirements met: `use-pico-chat.ts` manages session lifecycle, SSE streaming, message state, error handling with retry.
+- `sendMessage()` correctly: creates session on-demand via `ensureSession()`, adds user message optimistically, POSTs to SSE endpoint, incrementally builds ContentBlock array from events (text, thinking, tool_use, tool_result).
+- SSE parser: async generator with buffer handling, correctly processes partial chunks and remaining buffer.
+- `dbMessageToPico()`: reconstructs ContentBlock array from DB metadata (thinking blocks, tool calls, text) for history loading.
+- Session restored on panel open via `getChatSessions()`, persisted via Zustand `currentSessionId`.
+- Chat panel: empty state with Pico avatar/welcome, loading spinner, error banner with retry, typing indicator when streaming + empty content.
+- API client functions follow existing patterns (get/post/del helpers, typed responses). `sendChatMessageSSE()` returns abort-capable fetch.
+- Minor note: `toolCallMap` in sendMessage is declared but unused (pairing uses `lastToolCallIndex` instead) — dead code, not a bug.
+- Conventions followed: named exports, kebab-case, cn(), theme tokens, TypeScript strict.
+- Build passes cleanly.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — PICO.8: Wire chat panel to streaming API
 
 **Task:** Replace mock data with real API-driven chat — SSE streaming, session management, error handling.
