@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — AI.22: Execute agent-monitor-history.md E2E test
+
+**Task:** Execute agent-monitor-history test plan via chrome-devtools MCP.
+
+**Done:**
+- Executed all 14 steps in browser against http://localhost:5174/agents → History tab
+- 14/14 steps PASS, 0 FAIL
+- 5 screenshot checkpoints taken — all visual checks PASS
+- Stats bar: Runs 6, $2.74, 83% success, 4m 4s avg — all valid values
+- Table: 6 rows with 6 columns, all data valid (no NaN/undefined/Invalid Date)
+- Row expand/collapse works — terminal shows execution output
+- Outcome filter works — "Success" shows 5 rows, stats update to 100%/5 runs/$2.52
+- Clear button resets filter
+- Sort by Cost works — click toggles ascending/descending order
+
+**Files created:** `tests/e2e/results/agent-monitor-history.md`, 4 screenshot PNGs in `tests/e2e/results/`
+
+**Notes:** All history functionality works correctly. Full feature coverage: stats, filters, table, expand/collapse, sort.
+
+---
+
 ## 2026-03-30 — Review: AI.21 (approved)
 
 **Reviewed:** E2E test execution of agent-monitor-layout.md.
