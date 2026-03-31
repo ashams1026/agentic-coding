@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — AI.21: Execute agent-monitor-layout.md E2E test
+
+**Task:** Execute agent-monitor-layout test plan via chrome-devtools MCP.
+
+**Done:**
+- Executed all 9 steps in browser against http://localhost:5174/agents
+- 7/9 steps PASS, 2 N/A (empty state not testable — 2 agents were running), 0 FAIL
+- 3 screenshot checkpoints taken — all visual checks PASS
+- Live tab active by default with green badge showing "2" active agents
+- History tab shows stats bar (Runs: 6, $2.74 total, 83% success, 4m 4s avg) + execution table
+- Tab switching works cleanly in both directions
+- Empty state / "Go to Story Board" link not testable (agents running)
+
+**Files created:** `tests/e2e/results/agent-monitor-layout.md`, 3 screenshot PNGs in `tests/e2e/results/`
+
+**Notes:** All testable functionality works correctly. Empty state testing would require stopping all running agents first.
+
+---
+
 ## 2026-03-30 — Review: AI.20 (approved)
 
 **Reviewed:** E2E test execution of work-items-sorting.md.
