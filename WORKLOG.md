@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — Review: FX.PM3 (approved)
+
+**Reviewed:** Persona detail panel read-only mode fix.
+- `editing` state defaults to `false` — panel opens read-only
+- Read-only: description text, model colored badge, MarkdownPreview prompt (scrollable, max-h 400px, bordered), MCP tools as secondary badges, SDK tools as outline badges, skills as badge pills, budget with DollarSign
+- Edit mode: name Input, description Textarea, avatar picker, model selector cards, SystemPromptEditor, ToolConfiguration, budget Input, Save + Cancel at bottom
+- Edit button in header (Pencil + "Edit"), only shown when not editing
+- Save: `updateMutation.mutate()` with `onSuccess: () => setEditing(false)`
+- Cancel: `syncFromPersona()` then `setEditing(false)`
+- `useEffect` keyed on `[persona?.id]` — correct, prevents clearing edits on TanStack Query refetch
+- Dark mode, empty state handling, built-in badge all correct
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.PM3: Fix persona side panel read-only mode
 
 **Task:** Panel opens in read-only mode by default, with explicit Edit button to switch to edit mode.
