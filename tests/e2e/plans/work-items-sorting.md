@@ -6,11 +6,14 @@ Verify that the Work Items list can be sorted by different criteria (priority, c
 
 ## Prerequisites
 
-- Backend running on `:3001`, frontend on `:5173`
+- Backend running on `:3001`, frontend on `:5173` or `:5174`
 - API mode set to "api"
 - Database seeded with test data (work items with varied priorities and different creation/update dates)
+- chrome-devtools MCP connected
 
 ## Steps
+
+> **Visual inspection protocol:** After each major navigation or UI interaction step, take a screenshot using `take_screenshot`. Examine the screenshot visually using the `Read` tool. Note any visual issues (misalignment, clipping, bad spacing, broken layout, invisible text, wrong colors, overlapping elements, truncated content) in the results alongside the functional pass/fail. A step can functionally pass but have visual defects — record both.
 
 1. **Navigate** to `http://localhost:5173/items`
    - Verify: "Work Items" heading is visible
@@ -19,6 +22,7 @@ Verify that the Work Items list can be sorted by different criteria (priority, c
 2. **Verify** the default sort is "Sort by priority"
    - Look for: the sort dropdown in the filter bar
    - Expected: it shows "Sort by priority" as the selected value
+   - **Screenshot checkpoint:** Take screenshot. Examine: sort dropdown shows selected value, direction arrow button visible and aligned, both controls same height, no clipping.
 
 3. **Note** the current order of items
    - Record the titles (or priority badges) of the first 3-5 items in the list
@@ -28,6 +32,7 @@ Verify that the Work Items list can be sorted by different criteria (priority, c
    - Target: the sort dropdown (currently showing "Sort by priority")
    - Click it and select "Sort by created"
    - Expected: the list reorders based on creation date
+   - **Screenshot checkpoint:** Take screenshot. Examine: dropdown shows "Sort by created", list order changed, no layout jump or flicker, items render cleanly in new order.
 
 5. **Verify** the order has changed
    - Compare the first 3-5 items to the order noted in step 3
@@ -40,6 +45,7 @@ Verify that the Work Items list can be sorted by different criteria (priority, c
 7. **Click** the sort direction toggle button
    - Target: the arrow button next to the sort dropdown
    - Expected: the arrow icon flips direction (up→down or down→up)
+   - **Screenshot checkpoint:** Take screenshot. Examine: arrow icon updated, list order reversed, items re-rendered smoothly, no missing or duplicate items.
 
 8. **Verify** the list order has reversed
    - Compare the first item to the last item from before the toggle
@@ -58,7 +64,7 @@ Verify that the Work Items list can be sorted by different criteria (priority, c
     - Select "Sort by priority" from the dropdown
     - Expected: the list returns to priority-based ordering
 
-12. **Take screenshot** of the sorted list for evidence
+12. **Take final screenshot** of the sorted list for evidence (full page)
 
 ## Expected Results
 
@@ -71,6 +77,14 @@ Verify that the Work Items list can be sorted by different criteria (priority, c
 - "Sort by priority" orders by priority level (P0 first in ascending)
 - Each sort change is immediately reflected in the visible list
 
+### Visual Quality
+
+- Sort dropdown: selected value readable, dropdown aligned with other filter controls
+- Direction button: arrow icon clearly visible, aligned vertically with dropdown, same height
+- List reorder: items re-render smoothly without flicker, no layout shift during transition
+- Item consistency: badge sizes, row heights, and spacing unchanged regardless of sort order
+- Group headers: if grouping active, headers update correctly when sort changes
+
 ## Failure Criteria
 
 - The sort dropdown does not change the list order
@@ -79,3 +93,11 @@ Verify that the Work Items list can be sorted by different criteria (priority, c
 - Changing sort criterion has no visible effect on the list
 - Sorting causes items to disappear or duplicates to appear
 - Sorting causes a JavaScript error
+
+### Visual Failure Criteria
+
+- Sort dropdown text truncated or selected value invisible
+- Direction arrow icon invisible or misaligned with dropdown
+- List flickers or shows layout shift during sort change
+- Items temporarily disappear or show in wrong positions during re-render
+- Row heights or badge sizes change based on sort order

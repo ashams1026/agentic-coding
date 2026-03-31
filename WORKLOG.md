@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — AI.V6: Update filtering/sorting test plans with visual inspection
+
+**Task:** Add visual inspection steps to `work-items-filtering.md` and `work-items-sorting.md`.
+
+**Done:**
+- `work-items-filtering.md`: Added protocol blockquote, 6 screenshot checkpoints (initial load/filter bar, search results, search highlighting, state filter applied, filters cleared, empty state), "Visual Quality" (7 criteria: filter bar, search input, highlighting, dropdowns, Clear button, filtered list, empty state), "Visual Failure Criteria" (7 defects), updated prerequisites
+- `work-items-sorting.md`: Added protocol blockquote, 3 screenshot checkpoints (default sort, after sort change, after direction toggle), "Visual Quality" (5 criteria: dropdown, direction button, list reorder, item consistency, group headers), "Visual Failure Criteria" (5 defects), updated prerequisites
+
+**Files changed:** `tests/e2e/plans/work-items-filtering.md`, `tests/e2e/plans/work-items-sorting.md`
+
+**Notes:** Build passes (no code changes). Original steps preserved (14 filtering, 12 sorting).
+
+---
+
 ## 2026-03-30 — Review: AI.V5 (approved)
 
 **Reviewed:** Detail panel test plans visual inspection update.

@@ -163,7 +163,7 @@
 
 - [x] **AI.V5** — Update `detail-panel-view.md` and `detail-panel-edit.md` with visual inspection steps. Add screenshot + examine after: panel opens, each section renders, each edit interaction (title edit, description edit, priority change, label add, state change). Check: panel sizing, input alignment, button placement, markdown preview rendering.
 
-- [ ] **AI.V6** — Update `work-items-filtering.md` and `work-items-sorting.md` with visual inspection steps. Add screenshot + examine after: search input, each filter applied, filter cleared, sort changed, sort direction toggled. Check: filter bar layout, dropdown rendering, result list updates.
+- [review] **AI.V6** — Update `work-items-filtering.md` and `work-items-sorting.md` with visual inspection steps. Add screenshot + examine after: search input, each filter applied, filter cleared, sort changed, sort direction toggled. Check: filter bar layout, dropdown rendering, result list updates.
 
 - [ ] **AI.V7** — Update `agent-monitor-layout.md` and `agent-monitor-history.md` with visual inspection steps. Add screenshot + examine after: page load, tab switch, selecting an agent, expanding a history row. Check: terminal rendering, sidebar layout, table alignment, control bar.
 
