@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — Review: FX.7 (approved)
+
+**Reviewed:** Chat thread restructure in `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`.
+- `groupIntoMessages()`: clean state machine — accumulates consecutive text/code chunks into `textGroup`, flushes at thinking/tool boundaries, pairs tool_call+tool_result via `callIndexMap` index. Defensive `[...textGroup]` copy in flush. Orphan tool_results handled gracefully.
+- `AgentTextBubble`: rounded-lg container with zinc-900 background, renders mixed text/code within one bubble. Correct.
+- `ThinkingAccordion`: `useState(false)` for collapsed default, chevron rotation via `cn()`, "Thinking..." label, italic muted text in collapsible section. Correct.
+- `ToolMessage`: thin wrapper around existing `ToolCallSection` + `MessageTimestamp`. Correct.
+- `MessageGroupRenderer`: exhaustive switch on `group.kind`. Clean.
+- `MODEL_LABELS` moved to module level — addresses prior FX.6 review minor note
+- No dead imports, all new imports (`cn`, `ChevronDown`) used
+- Persona header, toolbar, scroll lock, WS subscription all preserved
+- `space-y-3` on scroll area for visual separation between groups
+- "system/user messages" from spec not applicable — current data model has no user/system chunk types, full-width agent bubbles is the correct interpretation
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.7: Render agent output as chat thread
 
 **Task:** Restructure the terminal renderer to display output as a conversation with grouped messages, collapsible thinking, and timestamps.
