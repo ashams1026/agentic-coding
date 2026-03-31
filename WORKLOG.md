@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-03-31 — Review: FX.AM1 (approved)
+
+**Reviewed:** Agent monitor empty state button fix in `agent-monitor-layout.tsx`.
+- Link target: `/board` → `/items` — correct route for Work Items page.
+- Button text: "Go to Story Board" → "Go to Work Items" — matches the rename.
+- Minimal 2-line change, no side effects. Build passes.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — FX.AM1: Fix agent monitor empty state button
 
 **Task:** Change stale "Go to Story Board" button (links to `/board` — 404) to "Go to Work Items" linking to `/items`.

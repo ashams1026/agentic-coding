@@ -34,7 +34,7 @@
 
 ### E2E Triage Bugs
 
-- [review] **FX.AM1** — Fix agent monitor empty state button. In the agent monitor page (`packages/frontend/src/features/agent-monitor/`): the empty state shows a "Go to Story Board" button which links to a route that doesn't exist (Story Board was renamed to Work Items). Change the button text to "Go to Work Items" and update the link target to `/items`.
+- [x] **FX.AM1** — Fix agent monitor empty state button. In the agent monitor page (`packages/frontend/src/features/agent-monitor/`): the empty state shows a "Go to Story Board" button which links to a route that doesn't exist (Story Board was renamed to Work Items). Change the button text to "Go to Work Items" and update the link target to `/items`.
 
 - [ ] **FX.CMD1** — Fix command palette work item navigation route. In `packages/frontend/src/features/command-palette/` (or wherever the command palette component lives): clicking a work item navigates to `/work-items/:id` which is a 404. The route doesn't exist in the React Router config. Fix: change the navigation target to `/items` with the work item selected (e.g., via URL search param `?selected=:id` or by setting the selected item in the Zustand store before navigating to `/items`). Verify that clicking a work item in the palette opens the detail panel for that item.
 
