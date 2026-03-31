@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — FX.DEV1: Skip server start if already running
+
+**Task:** Create a wrapper script that checks ports before starting dev servers to prevent duplicates.
+
+**Done:**
+- Created `scripts/dev.sh`: checks backend (port 3001 via `/api/health`) and frontend (ports 5173/5174 via curl) before starting. Skips services already running. Only starts what's needed.
+- `check_backend()`: curls `http://localhost:3001/api/health` — `tsx watch` has hot reload, no restart needed
+- `check_frontend()`: curls 5173 or 5174 — Vite HMR handles file changes, no restart needed
+- Four cases: both need starting (parallel `pnpm -r dev`), backend only, frontend only, none (exit 0)
+- Updated root `package.json`: `"dev"` now runs `./scripts/dev.sh`. Added `"dev:force"` for unconditional parallel start.
+- `chmod +x` on the script
+- Build passes
+
+**Files created:** `scripts/dev.sh`
+**Files modified:** `package.json`
+
+**Notes:** Also marked FX.SDK1 as blocked — SDK discovery APIs (`initializationResult`, `supportedAgents`, `reloadPlugins`) are control methods on the `Query` interface requiring a live streaming session + API key. Can't be called standalone.
+
+---
+
 ## 2026-03-30 — Review: FX.DB4 (approved)
 
 **Reviewed:** Executor toggle in Settings across backend and frontend.
