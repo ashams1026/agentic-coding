@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — FX.P4: Audit and overhaul Code Reviewer persona
+
+**Task:** Fix mcpTools, overhaul systemPrompt for Code Reviewer persona.
+
+**Done:**
+- **mcpTools**: Changed from `["post_comment", "request_review", "route_to_state"]` → `["post_comment", "get_context", "list_items", "request_review"]`. Removed `route_to_state` (Router's job), added `get_context` + `list_items`.
+- **allowedTools**: Verified correct — `["Read", "Glob", "Grep", "Bash"]` are valid SDK names for a review role.
+- **systemPrompt**: Complete overhaul from ~23-line basic checklist to comprehensive ~65-line prompt. 5-step workflow: gather context (get_context) → read every modified file → verify build (pnpm build) → review against detailed checklist (11 criteria including AC match, types, naming, dark mode, responsive, security) → post structured verdict. Includes: approve format (checklist + summary), reject format (severity-tagged issues with file:line + fix instructions), important rules (no state transitions, flag ambiguity via request_review), and anti-patterns (don't approve without reading files, don't reject for style not in conventions, don't fix code yourself).
+- Updated both `seed.ts` and `default-personas.ts`
+- Build passes
+
+**Files modified:** `packages/backend/src/db/seed.ts`, `packages/backend/src/db/default-personas.ts`
+
+**Notes:** Rejection format includes severity levels (HIGH/MEDIUM/LOW) so Engineers can prioritize fixes. Prompt explicitly states the Engineer has no memory — rejection feedback must be self-contained.
+
 ## 2026-03-30 — Review: FX.P3 (approved)
 
 **Reviewed:** Engineer persona audit and overhaul.
