@@ -270,6 +270,14 @@ export function createMcpServer(context: McpContext): McpServer {
           };
         }
 
+        // Reject same-state routing
+        if (targetState === item.currentState) {
+          return {
+            content: [{ type: "text" as const, text: JSON.stringify({ error: `Cannot route to the current state. Work item is already in "${item.currentState}".` }) }],
+            isError: true,
+          };
+        }
+
         // Validate transition
         if (!isValidTransition(item.currentState, targetState)) {
           return {

@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — FX.1: Prevent Router from re-routing to same state
+
+**Task:** Reject `route_to_state` calls where `targetState === currentState`.
+
+**Done:**
+- In `packages/backend/src/agent/mcp-server.ts`, `route_to_state` tool handler: added same-state check immediately after looking up the work item's current state, before the `isValidTransition` validation
+- Returns `isError: true` with message `Cannot route to the current state. Work item is already in "{state}".`
+- This prevents the Router from triggering a PM→Router→PM loop where it keeps selecting the same state
+- Build passes
+
+**Files modified:** `packages/backend/src/agent/mcp-server.ts`
+
+**Notes:** This is the first line of defense against routing loops. FX.2 (transition history awareness) and FX.4 (loop detection) add deeper protection layers.
+
+---
+
 ## 2026-03-30 — Review: FX.P9 (approved)
 
 **Reviewed:** Persona skills injection into system prompt.
