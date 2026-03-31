@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Sun,
   Moon,
@@ -9,13 +9,24 @@ import {
   Trash2,
   CheckCircle2,
   HardDrive,
+  AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useUIStore, type Density } from "@/stores/ui-store";
 import { cn } from "@/lib/utils";
-import { getDbStats, clearExecutionHistory, exportSettings, importSettings } from "@/api";
+import { getDbStats, clearExecutionHistory, exportSettings, importSettings, getServiceStatus, restartService } from "@/api";
+import type { ActiveExecutionInfo } from "@/api/client";
 
 // ── Theme toggle ───────────────────────────────────────────────────
 
@@ -124,16 +135,110 @@ export function AppearanceSection() {
 
 // ── Service status ─────────────────────────────────────────────────
 
+function formatElapsed(ms: number): string {
+  const s = Math.floor(ms / 1000);
+  if (s < 60) return `${s}s`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ${s % 60}s`;
+  const h = Math.floor(m / 60);
+  return `${h}h ${m % 60}m`;
+}
+
 function ServiceStatusSection() {
   const [restarting, setRestarting] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [activeAgents, setActiveAgents] = useState<ActiveExecutionInfo[]>([]);
+  const [polling, setPolling] = useState(false);
+  const [confirmForce, setConfirmForce] = useState(false);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const stopPolling = useCallback(() => {
+    if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
+    }
+    setPolling(false);
+  }, []);
+
+  const pollStatus = useCallback(async () => {
+    try {
+      const status = await getServiceStatus();
+      setActiveAgents(status.activeExecutions);
+      if (status.activeExecutions.length === 0) {
+        // All agents finished — restart now
+        stopPolling();
+        setRestarting(true);
+        try {
+          await restartService(false);
+        } catch {
+          // Backend will disconnect on restart
+        }
+      }
+    } catch {
+      // Service may be restarting
+    }
+  }, [stopPolling]);
 
   const handleRestart = async () => {
-    setRestarting(true);
-    await new Promise((r) => setTimeout(r, 2000));
-    setRestarting(false);
+    try {
+      const status = await getServiceStatus();
+      if (status.activeExecutions.length === 0) {
+        // No active agents — restart immediately
+        setRestarting(true);
+        try {
+          await restartService(false);
+        } catch {
+          // Backend will disconnect on restart
+        }
+        return;
+      }
+      // Active agents found — show modal
+      setActiveAgents(status.activeExecutions);
+      setModalOpen(true);
+      setConfirmForce(false);
+      // Start polling every 3 seconds
+      setPolling(true);
+      pollRef.current = setInterval(pollStatus, 3000);
+    } catch {
+      // Fallback: try restart directly
+      setRestarting(true);
+      try {
+        await restartService(false);
+      } catch {
+        // Backend will disconnect on restart
+      }
+    }
   };
 
-  // Mock pm2 data
+  const handleForceRestart = async () => {
+    if (!confirmForce) {
+      setConfirmForce(true);
+      return;
+    }
+    stopPolling();
+    setRestarting(true);
+    setModalOpen(false);
+    try {
+      await restartService(true);
+    } catch {
+      // Backend will disconnect on restart
+    }
+  };
+
+  const handleCancel = () => {
+    stopPolling();
+    setModalOpen(false);
+    setConfirmForce(false);
+  };
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, []);
+
+  // Mock pm2 data (service info still mock until pm2 integration)
   const serviceData = {
     status: "online" as const,
     uptime: "3d 14h 22m",
@@ -154,7 +259,6 @@ function ServiceStatusSection() {
 
       <div className="rounded-lg border">
         <div className="grid grid-cols-2 gap-px bg-border">
-          {/* Status */}
           <div className="bg-card px-4 py-3">
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Status</p>
             <div className="flex items-center gap-1.5">
@@ -162,20 +266,14 @@ function ServiceStatusSection() {
               <span className="text-sm font-medium capitalize">{serviceData.status}</span>
             </div>
           </div>
-
-          {/* Uptime */}
           <div className="bg-card px-4 py-3">
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Uptime</p>
             <p className="text-sm font-medium">{serviceData.uptime}</p>
           </div>
-
-          {/* Memory */}
           <div className="bg-card px-4 py-3">
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Memory</p>
             <p className="text-sm font-medium">{serviceData.memory}</p>
           </div>
-
-          {/* Restarts */}
           <div className="bg-card px-4 py-3">
             <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Restarts</p>
             <p className="text-sm font-medium">{serviceData.restarts}</p>
@@ -199,6 +297,55 @@ function ServiceStatusSection() {
         <RotateCcw className={cn("h-3.5 w-3.5", restarting && "animate-spin")} />
         {restarting ? "Restarting..." : "Restart Service"}
       </Button>
+
+      {/* Graceful restart modal */}
+      <Dialog open={modalOpen} onOpenChange={(open) => { if (!open) handleCancel(); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {polling && <Loader2 className="h-4 w-4 animate-spin text-amber-500" />}
+              Waiting for {activeAgents.length} agent{activeAgents.length !== 1 ? "s" : ""} to finish...
+            </DialogTitle>
+            <DialogDescription>
+              The service will restart automatically once all agents complete their work.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2 py-2">
+            {activeAgents.map((agent) => (
+              <div
+                key={agent.executionId}
+                className="flex items-center justify-between rounded-md border px-3 py-2"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium truncate">{agent.personaName}</p>
+                  <p className="text-xs text-muted-foreground truncate">{agent.workItemTitle}</p>
+                </div>
+                <Badge variant="secondary" className="text-xs shrink-0 ml-2">
+                  {formatElapsed(agent.elapsedMs)}
+                </Badge>
+              </div>
+            ))}
+          </div>
+
+          <DialogFooter className="flex-row gap-2 sm:justify-between">
+            <Button variant="outline" size="sm" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              className="gap-1.5"
+              onClick={handleForceRestart}
+            >
+              <AlertTriangle className="h-3.5 w-3.5" />
+              {confirmForce
+                ? `Kill ${activeAgents.length} agent${activeAgents.length !== 1 ? "s" : ""} and restart`
+                : "Force Restart"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

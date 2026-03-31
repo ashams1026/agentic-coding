@@ -119,6 +119,13 @@ export function getQueueLength(): number {
 }
 
 /**
+ * Get the set of active execution IDs (shallow copy).
+ */
+export function getActiveExecutionIds(): string[] {
+  return [...activeExecutions];
+}
+
+/**
  * Clear all active executions and the queue.
  * Used on server restart to reset in-memory state.
  */

@@ -58,4 +58,7 @@ export {
   clearExecutionHistory,
   exportSettings,
   importSettings,
+  // Service
+  getServiceStatus,
+  restartService,
 } from "@/api/client";

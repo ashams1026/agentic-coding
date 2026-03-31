@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — FX.RST1: Add graceful restart flow with active agent modal
+
+**Task:** Add restart flow that checks for active agents before restarting the service.
+
+**Done:**
+- **Backend**: Added `getActiveExecutionIds()` to `concurrency.ts`, added `GET /api/service/status` route (returns active executions with persona name, work item title, elapsed time via join), added `POST /api/service/restart` with optional `?force=true` (returns 409 if agents active and not force, clears in-memory state, exits process for pm2 to restart)
+- **Frontend API**: Added `getServiceStatus()` and `restartService(force?)` to `api/client.ts`, exported from `api/index.ts`
+- **Frontend modal**: Rewrote `ServiceStatusSection` — "Restart Service" button now checks `/api/service/status` first. If agents active, opens Dialog with: agent list (persona name, work item title, elapsed time), auto-polling every 3s (auto-restarts when all finish), "Force Restart" button (red, requires double-click confirmation), "Cancel" button. If no agents: restarts immediately.
+- Build passes
+
+**Files modified:** `packages/backend/src/agent/concurrency.ts`, `packages/backend/src/routes/settings.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`, `packages/frontend/src/features/settings/appearance-section.tsx`
+
+**Notes:** Service status grid (uptime, memory, PID, etc.) is still mock data — will need pm2 integration later. The restart mechanism uses `process.exit(0)` with a 500ms delay for response flush, expecting pm2 to auto-restart.
+
+---
+
 ## 2026-03-30 — Review: FX.SET3 (approved)
 
 **Reviewed:** Play/pause button replacing auto-routing toggle across 3 locations.

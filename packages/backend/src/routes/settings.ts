@@ -5,9 +5,10 @@ import { homedir } from "node:os";
 import { resolve } from "node:path";
 import { loadConfig, setConfigValue } from "../config.js";
 import { logger } from "../logger.js";
-import { getActiveCount, getQueueLength } from "../agent/concurrency.js";
+import { getActiveCount, getQueueLength, getActiveExecutionIds, clearAll } from "../agent/concurrency.js";
 import { db, sqlite } from "../db/connection.js";
-import { projects, personas, personaAssignments, executions } from "../db/schema.js";
+import { projects, personas, personaAssignments, executions, workItems } from "../db/schema.js";
+import { eq, inArray } from "drizzle-orm";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
@@ -251,5 +252,66 @@ export async function settingsRoutes(app: FastifyInstance) {
       logger.error({ err }, "Settings import failed");
       return reply.status(400).send({ error: `Import failed: ${message}` });
     }
+  });
+
+  // GET /api/service/status — active executions with details
+  app.get("/api/service/status", async () => {
+    const activeIds = getActiveExecutionIds();
+
+    if (activeIds.length === 0) {
+      return { activeExecutions: [] };
+    }
+
+    // Join executions with personas and work items to get names
+    const rows = await db
+      .select({
+        executionId: executions.id,
+        personaName: personas.name,
+        workItemTitle: workItems.title,
+        startedAt: executions.startedAt,
+      })
+      .from(executions)
+      .innerJoin(personas, eq(executions.personaId, personas.id))
+      .innerJoin(workItems, eq(executions.workItemId, workItems.id))
+      .where(inArray(executions.id, activeIds));
+
+    const now = Date.now();
+    return {
+      activeExecutions: rows.map((r) => ({
+        executionId: r.executionId,
+        personaName: r.personaName,
+        workItemTitle: r.workItemTitle,
+        elapsedMs: now - (r.startedAt?.getTime() ?? now),
+      })),
+    };
+  });
+
+  // POST /api/service/restart — restart the backend process
+  app.post<{
+    Querystring: { force?: string };
+  }>("/api/service/restart", async (request, reply) => {
+    const force = request.query.force === "true";
+    const activeIds = getActiveExecutionIds();
+
+    if (!force && activeIds.length > 0) {
+      return reply.status(409).send({
+        error: "Active executions running",
+        activeCount: activeIds.length,
+      });
+    }
+
+    // Clear in-memory state
+    clearAll();
+
+    logger.info({ force, activeCount: activeIds.length }, "Service restart requested");
+
+    // Send response before exiting
+    reply.send({ restarting: true, force });
+
+    // Give time for the response to flush, then exit.
+    // pm2 (or the process supervisor) will restart the process.
+    setTimeout(() => {
+      process.exit(0);
+    }, 500);
   });
 }

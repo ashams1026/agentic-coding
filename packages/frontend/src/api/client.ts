@@ -426,6 +426,39 @@ export async function exportSettings(): Promise<Record<string, unknown>> {
   return get<Record<string, unknown>>("/api/settings/export");
 }
 
+// ── Service ─────────────────────────────────────────────────────
+
+export interface ActiveExecutionInfo {
+  executionId: string;
+  personaName: string;
+  workItemTitle: string;
+  elapsedMs: number;
+}
+
+export interface ServiceStatus {
+  activeExecutions: ActiveExecutionInfo[];
+}
+
+export async function getServiceStatus(): Promise<ServiceStatus> {
+  return get<ServiceStatus>("/api/service/status");
+}
+
+export async function restartService(force = false): Promise<{ restarting: boolean; force: boolean }> {
+  const url = force
+    ? `${BASE_URL}/api/service/restart?force=true`
+    : `${BASE_URL}/api/service/restart`;
+  const res = await fetch(url, { method: "POST" });
+  if (!res.ok) {
+    if (res.status === 409) {
+      const body = await res.json();
+      throw new Error(body.error ?? "Active executions running");
+    }
+    showErrorToast("POST", "/api/service/restart", res.status);
+    throw new Error(`POST /api/service/restart failed: ${res.status}`);
+  }
+  return res.json();
+}
+
 export async function importSettings(data: Record<string, unknown>): Promise<{ imported: Record<string, number> }> {
   const res = await fetch(`${BASE_URL}/api/settings/import`, {
     method: "POST",
