@@ -3,10 +3,9 @@ import { useNavigate } from "react-router";
 import {
   Search,
   LayoutDashboard,
-  Kanban,
+  ListTodo,
   Bot,
   Activity,
-  GitBranch,
   Users,
   Settings,
   FileText,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useWorkItems, useSelectedProject } from "@/hooks";
+import { useWorkItemsStore } from "@/stores/work-items-store";
 import { cn } from "@/lib/utils";
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -32,16 +32,15 @@ interface CommandItem {
 
 const NAV_ITEMS = [
   { label: "Dashboard", path: "/", icon: LayoutDashboard },
-  { label: "Story Board", path: "/board", icon: Kanban },
+  { label: "Work Items", path: "/items", icon: ListTodo },
   { label: "Agent Monitor", path: "/agents", icon: Bot },
   { label: "Activity Feed", path: "/activity", icon: Activity },
-  { label: "Workflow Designer", path: "/workflows", icon: GitBranch },
   { label: "Persona Manager", path: "/personas", icon: Users },
   { label: "Settings", path: "/settings", icon: Settings },
 ];
 
 const ACTION_ITEMS = [
-  { id: "action-create-story", label: "Create story", path: "/board", icon: Plus },
+  { id: "action-create-item", label: "Create work item", path: "/items", icon: Plus },
   { id: "action-view-agents", label: "View active agents", path: "/agents", icon: ArrowRight },
 ];
 
@@ -65,6 +64,7 @@ export function CommandPalette() {
 
   const { projectId } = useSelectedProject();
   const { data: workItems = [] } = useWorkItems(undefined, projectId ?? undefined);
+  const setSelectedItemId = useWorkItemsStore((s) => s.setSelectedItemId);
 
   // ── Keyboard shortcut to open ────────────────────────────────
   useEffect(() => {
@@ -113,7 +113,8 @@ export function CommandPalette() {
         category: "work-items",
         icon: wi.parentId ? <CheckSquare className="h-4 w-4" /> : <FileText className="h-4 w-4" />,
         onSelect: () => {
-          navigate(`/work-items/${wi.id}`);
+          setSelectedItemId(wi.id);
+          navigate("/items");
           setOpen(false);
         },
       });
@@ -135,7 +136,7 @@ export function CommandPalette() {
     }
 
     return items;
-  }, [workItems, navigate]);
+  }, [workItems, navigate, setSelectedItemId]);
 
   // ── Filter ───────────────────────────────────────────────────
   const filtered = useMemo(() => {

@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-31 — FX.CMD1: Fix command palette work item navigation
+
+**Task:** Clicking a work item in command palette navigated to `/work-items/:id` (404). Also had stale "Story Board" / `/board` references.
+
+**Done:**
+- Work item `onSelect`: now calls `setSelectedItemId(wi.id)` on the Zustand store before navigating to `/items` — opens the detail panel for that item
+- NAV_ITEMS: "Story Board" → "Work Items", `/board` → `/items`, removed stale "Workflow Designer" entry
+- ACTION_ITEMS: "Create story" → "Create work item", `/board` → `/items`
+- Icons: `Kanban` → `ListTodo` for Work Items (matches sidebar), removed unused `GitBranch`/`Kanban` imports
+- Added `useWorkItemsStore` import and `setSelectedItemId` to useMemo deps
+
+**Files modified:** `packages/frontend/src/features/command-palette/command-palette.tsx`
+
+**Notes:** There are still stale `/board` references in `empty-states.tsx` (3) and `use-toast-events.ts` (1). These are separate from the command palette and should get their own cleanup task.
+
+---
+
 ## 2026-03-31 — Review: FX.AM1 (approved)
 
 **Reviewed:** Agent monitor empty state button fix in `agent-monitor-layout.tsx`.
