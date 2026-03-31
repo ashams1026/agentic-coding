@@ -9,8 +9,8 @@
 ## Summary
 
 - **Steps:** 17
-- **Functional PASS:** 12
-- **Functional FAIL:** 3
+- **Functional PASS:** 15
+- **Functional FAIL:** 2
 - **Visual PASS:** 5 (all screenshot checkpoints)
 - **Visual FAIL:** 0
 - **Critical Issue:** App running in mock mode — all edits lost on page reload (0/5 mutations persisted)
