@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — Review: FX.4 (approved)
+
+**Reviewed:** Transition loop detection in `packages/backend/src/agent/execution-manager.ts`.
+- `LOOP_HISTORY_SIZE = 6` tracks more than the task's "last 3" — better design, 6 entries needed to reliably detect A→B→A→B→A→B (3 occurrences of each state)
+- `detectLoop()`: counts occurrences, returns true at >= 3. Early exit on `history.length < 3`. Correct.
+- `recordStateForLoop()`: `splice(0, len - LOOP_HISTORY_SIZE)` trims from front — preserves most recent. Correct.
+- Placement: inside Router completion path after reading `currentState`, before `dispatchForState()` — right place since only Router changes states
+- Loop detected path: `logger.warn`, DB update to Blocked, system comment with exact task spec text, `state_change` + `comment_created` WS broadcasts, no `dispatchForState()` call — chain fully halted
+- No-loop path: `dispatchForState()` in `else` branch — existing behavior preserved
+- `clearStateHistory()` exported for test cleanup — consistent with `clearTransitionLog()` pattern
+- Comment metadata includes `history` array for diagnostics
+- No unused imports, all symbols already in scope
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.4: Add transition loop detection
 
 **Task:** Track recent state transitions per work item. If a state appears 3+ times in recent history, halt the chain and transition to Blocked.
