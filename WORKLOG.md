@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-31 — FX.9: Enrich activity feed event descriptions
+
+**Task:** Replace generic "Agent started working on work item" descriptions with enriched ones using persona names and work item titles.
+
+**Done:**
+- `useBaseActivityEvents()`: Added `useWorkItems` and `usePersonas` queries. Built lookup maps (`itemMap`, `personaMap`) for name resolution. All event descriptions now use `[Persona Name] started work on [Work Item Title]` format. `targetLabel` also enriched from "work item" to actual title.
+- `wsEventToActivity()`: Refactored to accept `LookupMaps` param. All live WS events now use same enriched format: `"Engineer started work on Implement auth"`, `"Router moved Login Feature from Triage to Implementing"`, etc.
+- `useLiveActivityEvents()`: Accepts maps param, uses ref to avoid re-subscribing on map changes.
+- `ActivityFeed()`: Builds shared `personaMap` and `itemTitleMap`, passes to both base and live event hooks.
+
+**Enriched formats:**
+- Agent started: `"[Persona] started work on [Title]"`
+- Agent completed: `"[Persona] completed work on [Title] ($X.XX)"`
+- Agent failed: `"[Persona] work rejected on [Title]"`
+- State change: `"[Title] moved from [Old] to [New]"`
+- Proposal: `"New [type] proposal for [Title]"`
+
+**Files modified:** `packages/frontend/src/features/activity-feed/activity-feed.tsx`
+
+---
+
 ## 2026-03-31 — Review: FX.EDIT1 (approved)
 
 **Reviewed:** Optimistic list cache update in `use-work-items.ts`.
