@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-31 — Review: PICO.1 (approved)
+
+**Reviewed:** Pico built-in assistant persona across 6 files.
+- `PersonaSettings` interface: `isSystem?`, `isAssistant?`, plus index signature for backward compat. `Persona.settings` typed to `PersonaSettings`. Clean.
+- Seed data: `id: "ps-pico"`, amber `#f59e0b`, dog icon, sonnet, $5 budget, `{ isSystem: true, isAssistant: true }`. System prompt covers personality, knowledge, capabilities, and guidelines — good tone, not overdone.
+- Default personas: Pico added to array, settings ternary `Router → isSystem` / `Pico → isSystem+isAssistant` / else `{}`. Correct.
+- Detail panel: "Built-in assistant" subtitle, amber "Assistant" badge (distinct from blue "Built-in"), Edit button hidden via `!isAssistant`. Correct.
+- Persona list: `isAssistant` prop, delete/duplicate conditionally hidden. Correct.
+- Workflow config: `personas.filter((p) => !p.settings?.isAssistant)` — Pico excluded from assignment dropdowns. Correct.
+- Build passes.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — PICO.1: Add Pico as built-in system persona
 
 **Task:** Add Pico (dog-persona AI assistant) as a built-in, non-editable, non-deletable persona with `isAssistant` flag.
