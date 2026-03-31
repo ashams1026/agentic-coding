@@ -11,6 +11,10 @@ import {
   MessageSquare,
   Trash2,
   Check,
+  BarChart3,
+  GitBranch,
+  Activity,
+  PenLine,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -266,7 +270,7 @@ export function ChatPanel() {
             </div>
           )}
           {!isLoadingHistory && messages.length === 0 && (
-            <div className="flex flex-col items-center py-8 text-center">
+            <div className="flex flex-col items-center py-6 text-center">
               <div
                 className="flex h-12 w-12 items-center justify-center rounded-full mb-3"
                 style={{ backgroundColor: "#f59e0b" }}
@@ -274,10 +278,29 @@ export function ChatPanel() {
                 <Dog className="h-7 w-7 text-white" />
               </div>
               <p className="text-sm font-medium">Woof! I'm Pico</p>
-              <p className="mt-1 text-xs text-muted-foreground max-w-[280px]">
-                Your project assistant. Ask me anything about the project, or
-                let me help you manage work items.
+              <p className="mt-1 text-xs text-muted-foreground max-w-[300px]">
+                Your project assistant. I know everything about this project
+                — the architecture, the workflow, all the agents. Ask me
+                anything, or I can help you manage work items.
               </p>
+              <div className="mt-4 flex flex-col gap-2 w-full max-w-[300px]">
+                {QUICK_ACTIONS.map((action) => (
+                  <button
+                    key={action.label}
+                    type="button"
+                    onClick={() => sendMessage(action.label)}
+                    disabled={isStreaming}
+                    className={cn(
+                      "flex items-center gap-2 rounded-lg border border-border bg-background/50 px-3 py-2 text-left text-xs",
+                      "hover:bg-muted hover:border-muted-foreground/30 transition-colors",
+                      "disabled:opacity-50 disabled:cursor-not-allowed",
+                    )}
+                  >
+                    <action.icon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    <span>{action.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
           {messages.map((msg, i) => {
@@ -359,6 +382,15 @@ export function ChatPanel() {
     </div>
   );
 }
+
+// ── Quick actions for empty state ──────────────────────────────────
+
+const QUICK_ACTIONS = [
+  { label: "What's the project status?", icon: BarChart3 },
+  { label: "Explain the workflow", icon: GitBranch },
+  { label: "Show recent activity", icon: Activity },
+  { label: "Help me create a work item", icon: PenLine },
+];
 
 // ── Typing indicator (three bouncing dots) ────────────────────────
 

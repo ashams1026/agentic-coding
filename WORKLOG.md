@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-31 — PICO.10: Polish Pico's personality and onboarding
+
+**Task:** First-time welcome experience, quick-action suggestion buttons, personality guidelines.
+
+**Done:**
+- Updated `packages/frontend/src/features/pico/chat-panel.tsx`:
+  - Enhanced empty state welcome message: "Woof! I'm Pico" + full welcome text from spec ("I know everything about this project — the architecture, the workflow, all the agents...")
+  - Added 4 quick-action buttons below welcome: "What's the project status?" (BarChart3), "Explain the workflow" (GitBranch), "Show recent activity" (Activity), "Help me create a work item" (PenLine)
+  - Each button: bordered, bg-background/50, hover to muted, icon + label, disabled during streaming
+  - Clicking a suggestion calls `sendMessage(action.label)` — triggers real chat interaction
+  - `QUICK_ACTIONS` constant with label + icon — easy to extend
+  - Added lucide imports: BarChart3, GitBranch, Activity, PenLine
+- Updated `packages/backend/src/routes/chat.ts`:
+  - Expanded Chat Instructions with Pico personality guidelines
+  - Warm, enthusiastic but not annoying tone
+  - Occasional dog puns ("let me dig into that", "I'll fetch that for you", "sniffing through the codebase") — once or twice per response max
+  - Technically accurate, uses real project data
+  - Honest when uncertain
+
+**Files modified:** `packages/frontend/src/features/pico/chat-panel.tsx`, `packages/backend/src/routes/chat.ts`
+
+**Notes for next agent:** Sprint 18 (Pico) is now complete! All PICO.5-10 tasks done. The next sprint is Sprint 19: SDK Deep Integration. The Pico personality is injected via the chat route's system prompt sections — `pico-skill.md` for project knowledge, then Chat Instructions for personality. The quick-action buttons are in the `QUICK_ACTIONS` array in chat-panel.tsx — easy to add more.
+
+---
+
 ## 2026-03-31 — Review: PICO.9 (approved)
 
 **Reviewed:** Session management — dropdown, switching, title editing, clear all, backend PATCH route.
