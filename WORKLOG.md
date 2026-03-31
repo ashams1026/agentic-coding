@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-31 — FX.EDIT1: Fix list row not updating when title edited
+
+**Task:** List row showed old title after editing in detail panel. Panel updated immediately (optimistic) but list waited for refetch.
+
+**Root cause:** `useUpdateWorkItem()`'s `onMutate` only optimistically updated the single-item cache (`["workItems", id]`). The list query (`["workItems", { parentId, projectId }]`) was only invalidated in `onSettled`, requiring a full refetch before updating.
+
+**Fix:** In `onMutate`, added `queryClient.setQueriesData<WorkItem[]>({ queryKey: ["workItems"] }, ...)` to optimistically update ALL list queries containing the modified item. Also cancel list queries before optimistic update. On error, revert by invalidating list queries (forces refetch of server state).
+
+**Files modified:** `packages/frontend/src/hooks/use-work-items.ts`
+
+**Notes:** This pattern (optimistically updating both single-item and list caches) should be used for any mutation that affects items visible in list views. The `setQueriesData` with prefix `["workItems"]` matches all list variants regardless of filter params.
+
+---
+
 ## 2026-03-31 — Review: FX.CMD1 (approved)
 
 **Reviewed:** Command palette navigation fixes in `command-palette.tsx`.

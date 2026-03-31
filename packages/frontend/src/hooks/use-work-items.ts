@@ -53,6 +53,7 @@ export function useUpdateWorkItem() {
       updateWorkItem(id, req),
     onMutate: async ({ id, ...req }) => {
       await queryClient.cancelQueries({ queryKey: queryKeys.workItem(id) });
+      await queryClient.cancelQueries({ queryKey: ["workItems"] });
       const previous = queryClient.getQueryData<WorkItem | null>(queryKeys.workItem(id));
       if (previous) {
         const updated: WorkItem = {
@@ -66,12 +67,19 @@ export function useUpdateWorkItem() {
           ...(req.assignedPersonaId !== undefined && { assignedPersonaId: req.assignedPersonaId }),
         };
         queryClient.setQueryData<WorkItem | null>(queryKeys.workItem(id), updated);
+        // Also optimistically update all list queries so the list row reflects changes immediately
+        queryClient.setQueriesData<WorkItem[]>(
+          { queryKey: ["workItems"] },
+          (old) => old?.map((item) => (item.id === id ? updated : item)),
+        );
       }
       return { previous };
     },
     onError: (_err, variables, context) => {
       if (context?.previous) {
         queryClient.setQueryData(queryKeys.workItem(variables.id), context.previous);
+        // Revert list queries on error
+        queryClient.invalidateQueries({ queryKey: ["workItems"] });
       }
     },
     onSettled: (_data, _err, variables) => {
