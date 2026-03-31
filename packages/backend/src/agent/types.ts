@@ -84,7 +84,7 @@ export interface SpawnOptions {
   model: PersonaModel;
   /** Maximum cost in USD for this execution (0 = unlimited) */
   maxBudget: number;
-  /** MCP tool names this persona is allowed to use */
+  /** SDK built-in tool names this persona is allowed to use (e.g., 'Read', 'Bash') */
   tools: string[];
 }
 

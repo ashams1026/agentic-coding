@@ -13,11 +13,12 @@ import { runExecution } from "./execution-manager.js";
 import { createId } from "@agentops/shared";
 import { personas } from "../db/schema.js";
 
-/** Read-only tools the router can use, plus route_to_state */
-const ROUTER_TOOLS = [
+/** MCP tools the router can use */
+const ROUTER_MCP_TOOLS = [
+  "route_to_state",
   "list_items",
   "get_context",
-  "route_to_state",
+  "post_comment",
 ];
 
 const ROUTER_SYSTEM_PROMPT = `You are a routing agent for the AgentOps workflow system.
@@ -94,8 +95,8 @@ async function getOrCreateRouterPersona(): Promise<string> {
     avatar: { color: "#6366f1", icon: "route" },
     systemPrompt: ROUTER_SYSTEM_PROMPT,
     model: "haiku",
-    allowedTools: ROUTER_TOOLS,
-    mcpTools: [],
+    allowedTools: [],
+    mcpTools: ROUTER_MCP_TOOLS,
     maxBudgetPerRun: 0,
     settings: { isSystem: true },
   });

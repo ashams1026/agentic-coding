@@ -91,6 +91,18 @@ export function buildSystemPrompt(
   return sections.join("\n\n");
 }
 
+// ── Available SDK built-in tool names ─────────────────────────────
+// These are the short names the Claude Agent SDK expects in the
+// `tools` option of query(). Passing [] disables all built-in tools.
+// Persona `allowedTools` arrays should use these exact names.
+//
+// File tools:    Read, Edit, Write, NotebookEdit
+// Search tools:  Glob, Grep
+// Execution:     Bash
+// Web tools:     WebFetch, WebSearch
+// Agent tools:   Agent
+// Other:         TodoWrite, AskUserQuestion
+
 // ── Model mapping ─────────────────────────────────────────────────
 
 const MODEL_MAP: Record<string, string> = {
@@ -200,7 +212,9 @@ export class ClaudeExecutor implements AgentExecutor {
           allowDangerouslySkipPermissions: true,
           maxTurns: 30,
           maxBudgetUsd: options.maxBudget > 0 ? options.maxBudget : undefined,
-          tools: [],
+          // SDK built-in tools: pass persona's allowedTools (short names like 'Read', 'Bash')
+          // Empty array disables all built-in tools (e.g., Router only uses MCP tools)
+          tools: persona.allowedTools.length > 0 ? persona.allowedTools : [],
           mcpServers: {
             agentops: {
               command: "node",
@@ -213,7 +227,8 @@ export class ClaudeExecutor implements AgentExecutor {
                 PERSONA_NAME: persona.name,
                 PERSONA_ID: persona.id,
                 PROJECT_ID: project.id,
-                ALLOWED_TOOLS: options.tools.join(","),
+                // MCP tools: pass persona's mcpTools for server-side filtering
+                ALLOWED_TOOLS: persona.mcpTools.join(","),
               },
             },
           },

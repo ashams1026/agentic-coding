@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — FX.P6: Verify SDK tool names and fix executor tool wiring
+
+**Task:** Verify SDK tool name format, fix the executor to pass tools correctly, document available tools.
+
+**Done:**
+- **Verified SDK tool names**: The `@anthropic-ai/claude-agent-sdk` `tools` option expects short names (`['Bash', 'Read', 'Edit']`). Our persona `allowedTools` arrays already use the correct format. No renaming needed.
+- **Critical bug fixed in `claude-executor.ts`**: SDK's `tools` was hardcoded to `[]` (disables ALL built-in tools). Changed to `persona.allowedTools` so agents actually have Read/Write/Bash/etc. available. This means agents were previously only able to use MCP tools, not SDK built-in tools like file editing.
+- **Fixed MCP tools env var**: `ALLOWED_TOOLS` env passed to MCP server was `options.tools` (persona's SDK tool names) instead of `persona.mcpTools` (MCP tool names). Fixed to `persona.mcpTools.join(",")`.
+- **Fixed `router.ts` fallback**: Same bug as seed.ts Router — MCP names in `allowedTools`, empty `mcpTools`. Fixed to `allowedTools: []`, `mcpTools: ["route_to_state", "list_items", "get_context", "post_comment"]`.
+- **Added SDK tool reference comment**: Documented all available SDK tool names in `claude-executor.ts` (Read, Edit, Write, NotebookEdit, Glob, Grep, Bash, WebFetch, WebSearch, Agent, TodoWrite, AskUserQuestion).
+- **Updated `SpawnOptions.tools` comment** to clarify it refers to SDK built-in tools.
+- Build passes
+
+**Files modified:** `packages/backend/src/agent/claude-executor.ts`, `packages/backend/src/agent/types.ts`, `packages/backend/src/agent/router.ts`
+
+**Notes:** This was a significant functional bug — agents had zero built-in tools available due to `tools: []`. They could only use MCP server tools. Now personas get exactly the SDK tools listed in their `allowedTools` array.
+
+---
+
 ## 2026-03-30 — Review: FX.P5 (approved)
 
 **Reviewed:** Router persona audit and overhaul.
