@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — AI.26: Execute settings-appearance.md E2E test
+
+**Task:** Execute settings-appearance test plan via chrome-devtools MCP.
+
+**Done:**
+- Executed all 11 steps in browser against http://localhost:5174/settings → Appearance
+- 11/11 steps PASS, 0 FAIL
+- 4 screenshot checkpoints taken — all visual checks PASS
+- Data Source: Mock/Live card buttons with amber/green colored dots
+- Theme: Light/Dark/System — dark mode applies globally (dark bg, light text), light mode restores cleanly
+- Density: Compact visibly reduces spacing, Comfortable restores normal spacing
+- All active cards show highlighted borders
+
+**Files created:** `tests/e2e/results/settings-appearance.md`, 5 screenshot PNGs in `tests/e2e/results/`
+
+**Notes:** All appearance settings work correctly. Theme switching is instant with no flash.
+
+---
+
 ## 2026-03-30 — Review: AI.25 (approved)
 
 **Reviewed:** E2E test execution of settings-workflow.md.
