@@ -19,6 +19,7 @@ import {
   X,
   Pencil,
   Slash,
+  Users,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -32,6 +33,7 @@ import { MarkdownPreview } from "./system-prompt-editor";
 import { SystemPromptEditor } from "./system-prompt-editor";
 import { ToolConfiguration } from "./tool-configuration";
 import { SkillBrowser } from "./skill-browser";
+import { SubagentBrowser } from "./subagent-browser";
 import type { PersonaId, PersonaModel } from "@agentops/shared";
 
 // ── Icon options ────────────────────────────────────────────────
@@ -131,6 +133,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
   const updateMutation = useUpdatePersona();
   const [editing, setEditing] = useState(false);
   const [skillBrowserOpen, setSkillBrowserOpen] = useState(false);
+  const [subagentBrowserOpen, setSubagentBrowserOpen] = useState(false);
 
   // ── Local form state ──────────────────────────────────────────
   const [name, setName] = useState("");
@@ -142,6 +145,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
   const [allowedTools, setAllowedTools] = useState<string[]>([]);
   const [mcpTools, setMcpTools] = useState<string[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
+  const [subagents, setSubagents] = useState<string[]>([]);
   const [maxBudget, setMaxBudget] = useState("1.00");
 
   // Sync form state when persona data loads or personaId changes
@@ -162,6 +166,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
     setAllowedTools([...persona.allowedTools]);
     setMcpTools([...persona.mcpTools]);
     setSkills([...persona.skills]);
+    setSubagents([...(persona.subagents ?? [])]);
     setMaxBudget(persona.maxBudgetPerRun.toFixed(2));
   }
 
@@ -178,11 +183,12 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
       allowedTools,
       mcpTools,
       skills,
+      subagents,
       maxBudgetPerRun: isNaN(budget) ? 1.0 : budget,
     }, {
       onSuccess: () => setEditing(false),
     });
-  }, [persona, personaId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, skills, maxBudget, updateMutation]);
+  }, [persona, personaId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, skills, subagents, maxBudget, updateMutation]);
 
   const handleCancel = () => {
     syncFromPersona();
@@ -435,6 +441,51 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
 
             <Separator />
 
+            {/* ── Subagents ──────────────────────────────────── */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Subagents</h3>
+              {subagents.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {subagents.map((agent) => (
+                    <Badge
+                      key={agent}
+                      variant="secondary"
+                      className="text-xs px-2 py-0.5 gap-1 group/pill"
+                    >
+                      {agent}
+                      <button
+                        onClick={() => setSubagents(subagents.filter((a) => a !== agent))}
+                        className="ml-0.5 opacity-50 hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-2.5 w-2.5" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 text-xs"
+                onClick={() => setSubagentBrowserOpen(true)}
+              >
+                <Users className="h-3.5 w-3.5" />
+                Browse subagents...
+              </Button>
+              <SubagentBrowser
+                open={subagentBrowserOpen}
+                onClose={() => setSubagentBrowserOpen(false)}
+                onAdd={(name) => {
+                  if (!subagents.includes(name)) {
+                    setSubagents([...subagents, name]);
+                  }
+                }}
+                existingSubagents={subagents}
+              />
+            </section>
+
+            <Separator />
+
             {/* ── Budget ───────────────────────────────────────── */}
             <section>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Budget</h3>
@@ -567,6 +618,23 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
                         </Badge>
                       );
                     })}
+                  </div>
+                </section>
+              </>
+            )}
+
+            {/* ── Subagents ──────────────────────────────────── */}
+            {(persona.subagents ?? []).length > 0 && (
+              <>
+                <Separator />
+                <section>
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Subagents</h3>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(persona.subagents ?? []).map((agent) => (
+                      <Badge key={agent} variant="outline" className="text-xs px-2 py-0.5">
+                        {agent}
+                      </Badge>
+                    ))}
                   </div>
                 </section>
               </>

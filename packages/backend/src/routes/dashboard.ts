@@ -164,6 +164,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
             allowedTools: persona.allowedTools,
             mcpTools: persona.mcpTools,
             skills: persona.skills,
+            subagents: persona.subagents ?? [],
             maxBudgetPerRun: persona.maxBudgetPerRun,
             settings: persona.settings,
           }

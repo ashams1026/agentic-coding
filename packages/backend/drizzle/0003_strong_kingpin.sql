@@ -1,0 +1,1 @@
+ALTER TABLE `personas` ADD `subagents` text DEFAULT '[]' NOT NULL;

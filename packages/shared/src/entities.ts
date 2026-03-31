@@ -101,6 +101,7 @@ export interface Persona {
   allowedTools: string[];
   mcpTools: string[];
   skills: string[];
+  subagents: string[];
   maxBudgetPerRun: number;
   settings: PersonaSettings;
 }

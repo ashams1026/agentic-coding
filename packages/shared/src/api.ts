@@ -119,6 +119,7 @@ export interface CreatePersonaRequest {
   allowedTools?: string[];
   mcpTools?: string[];
   skills?: string[];
+  subagents?: string[];
   maxBudgetPerRun?: number;
 }
 
@@ -131,6 +132,7 @@ export interface UpdatePersonaRequest {
   allowedTools?: string[];
   mcpTools?: string[];
   skills?: string[];
+  subagents?: string[];
   maxBudgetPerRun?: number;
 }
 

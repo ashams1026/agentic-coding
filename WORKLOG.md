@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-31 — FX.SDK6: Expose available subagents in persona config
+
+**Task:** Add subagents field to Persona entity and create a subagent browser in the persona editor using SDK capabilities.
+
+**Done:**
+- Added `subagents: string[]` to `Persona` interface in `packages/shared/src/entities.ts`
+- Added `subagents?: string[]` to `CreatePersonaRequest` and `UpdatePersonaRequest` in `packages/shared/src/api.ts`
+- Added `subagents` column to personas table in `packages/backend/src/db/schema.ts` (JSON text, default `[]`)
+- Generated Drizzle migration `0003_strong_kingpin.sql`
+- Updated `packages/backend/src/routes/personas.ts`: serializer, create handler, update handler all include `subagents`
+- Fixed `packages/backend/src/agent/execution-manager.ts` and `packages/backend/src/routes/dashboard.ts`: added `subagents` to Persona construction (with `?? []` fallback for existing rows)
+- Created `packages/frontend/src/features/persona-manager/subagent-browser.tsx`: dialog fetching `agents` from `GET /api/sdk/capabilities`, searchable list with name/description/model badge, click for description panel, Add button
+- Updated `packages/frontend/src/features/persona-manager/persona-detail-panel.tsx`:
+  - Edit mode: `subagents` state, sync, save, Subagents section with pills + browse button + SubagentBrowser dialog
+  - Read-only mode: shows subagent names as outline badges when populated
+
+**Files created:** `packages/frontend/src/features/persona-manager/subagent-browser.tsx`, `packages/backend/drizzle/0003_strong_kingpin.sql`
+**Files modified:** `packages/shared/src/entities.ts`, `packages/shared/src/api.ts`, `packages/backend/src/db/schema.ts`, `packages/backend/src/routes/personas.ts`, `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/routes/dashboard.ts`, `packages/frontend/src/features/persona-manager/persona-detail-panel.tsx`
+
+**Notes for next agent:** Subagents are stored as `string[]` on the Persona entity — the values are SDK agent names (e.g., "Explore", "code-reviewer"). Currently they're stored but NOT yet passed to `query()` options. SDK.SA.1 in Sprint 19 should wire these into the executor as `AgentDefinition` entries in the `agents` option. The SubagentBrowser component follows the same pattern as SkillBrowser — fetches from capabilities on dialog open.
+
+---
+
 ## 2026-03-31 — Review: FX.SDK4 (approved)
 
 **Reviewed:** Replaced filesystem skill browser with SDK capabilities-driven skill picker.
