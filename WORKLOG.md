@@ -5,6 +5,33 @@
 
 ---
 
+## 2026-03-31 — SDK.V2.1: Create persistent SDK session manager
+
+**Task:** Create a long-lived V2 SDK session singleton for discovery and Pico backbone.
+
+**Done:**
+- Created `packages/backend/src/agent/sdk-session.ts`:
+  - `getSdkSession()`: lazy singleton — creates session on first call, returns cached instance thereafter
+  - Uses `unstable_v2_createSession()` with sonnet model, bypassPermissions mode, core tools (Read, Glob, Grep, Bash, WebSearch)
+  - Deduplicates concurrent init calls via `initPromise`
+  - `createSessionWithRetry()`: exponential backoff (1s, 2s, 4s), max 3 retries
+  - Reads first message from `session.stream()` to initialize and capture `sessionId`
+  - `closeSdkSession()`: closes session cleanly, called during shutdown
+  - `reconnectSdkSession()`: tries to resume existing session via `unstable_v2_resumeSession()`, falls back to new session
+  - `getSdkSessionId()`, `isSdkSessionReady()`: read-only state accessors
+  - API key check: skips session creation if no key configured (logs warning)
+  - All lifecycle events logged with session ID and attempt number
+- Updated `packages/backend/src/start.ts`:
+  - Added `closeSdkSession()` to graceful shutdown handler (before DB close)
+  - Imported from new sdk-session module
+
+**Files created:** `packages/backend/src/agent/sdk-session.ts`
+**Files modified:** `packages/backend/src/start.ts`
+
+**Notes for next agent:** SDK.V2.2 should use `getSdkSession()` to implement the capabilities discovery endpoint. The session is lazy — it's NOT created on server startup but on first access. This means no startup delay if no one calls discovery or Pico. SDK.V2.3 should refactor Pico's chat route to use `session.send()` + `session.stream()` instead of spinning up a new `query()` per message. The session's `sessionId` can be retrieved via `getSdkSessionId()` for logging.
+
+---
+
 ## 2026-03-31 — Review: PICO.10 (approved)
 
 **Reviewed:** Pico personality polish and onboarding — welcome message, quick-action buttons, backend personality guidelines.
