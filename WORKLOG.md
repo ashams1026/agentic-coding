@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — Review: FX.DB3 (approved)
+
+**Reviewed:** Executor selection by environment across backend and frontend.
+- `getExecutorMode()`: clean priority chain — test→"mock", production→"claude", dev→`AGENTOPS_EXECUTOR` override or default "claude". Pure function, safe for re-use in server.ts.
+- `createExecutor()`: factory creates singleton, logs choice. Pattern preserved from original.
+- `/api/health` response: `executor` field added alongside existing fields. Correct.
+- `fetchHealth()`: separate from shared `get()` helper — no toast on health failures, appropriate.
+- `useHealth()`: 30s refetch, `retry: false` — correct, avoids hammering a down server.
+- `HealthResponse` interface: matches backend shape exactly (status, uptime, activeExecutions, executor, version).
+- Status bar: `isHealthy = health?.status === "ok"` replaces `true` TODO. `executorMode === "mock"` shows amber "Simulated" badge. Consistent amber styling with auto-routing paused state.
+- Minor cosmetic: line 110 has `/ Dev:` instead of `// Dev:` — missing slash in comment, not a bug.
+- All imports clean, no dead code.
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.DB3: Wire executor selection by environment
 
 **Task:** Select executor (Claude vs Mock) based on NODE_ENV and config. Add executor mode to health endpoint. Show "Simulated" badge in frontend.
