@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: FX.SEC1 (approved)
+
+**Reviewed:** Command sandbox for agent directory protection.
+- `sandbox.ts` with `validateCommand()` — validates dangerous commands, cd escapes, system paths, home dir writes, absolute write paths ✓
+- Uses `path.resolve()` + `startsWith()` for path comparison ✓
+- `buildSandboxPrompt()` injects sandbox rules into system prompt ✓
+- Wired into executor: Bash tool_use validated in event stream, abort on violation ✓
+- Build passes ✓
+- Minor gaps: system comment and audit trail logging not implemented (acceptable for best-effort safeguard) ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.SEC1: Add command sandbox for agent directory protection
 
 **Task:** Block agent commands that escape the project directory.
