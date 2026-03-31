@@ -165,7 +165,7 @@
 
 - [x] **AI.V6** — Update `work-items-filtering.md` and `work-items-sorting.md` with visual inspection steps. Add screenshot + examine after: search input, each filter applied, filter cleared, sort changed, sort direction toggled. Check: filter bar layout, dropdown rendering, result list updates.
 
-- [review] **AI.V7** — Update `agent-monitor-layout.md` and `agent-monitor-history.md` with visual inspection steps. Add screenshot + examine after: page load, tab switch, selecting an agent, expanding a history row. Check: terminal rendering, sidebar layout, table alignment, control bar.
+- [x] **AI.V7** — Update `agent-monitor-layout.md` and `agent-monitor-history.md` with visual inspection steps. Add screenshot + examine after: page load, tab switch, selecting an agent, expanding a history row. Check: terminal rendering, sidebar layout, table alignment, control bar.
 
 - [ ] **AI.V8** — Update `activity-feed.md` with visual inspection steps. Add screenshot + examine after: feed loads, filter applied, filter cleared. Check: event card layout, icon alignment, date grouping headers, spacing.
 
