@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — FX.PM1: Add inline system prompt preview to persona cards
+
+**Task:** Add expand/collapse interaction to persona cards showing system prompt and tool details.
+
+**Done:**
+- Exported `MarkdownPreview` from `system-prompt-editor.tsx` for reuse
+- Added expand/collapse to `PersonaCard`: "View prompt" button with chevron at bottom of each card
+- Expanded card spans full grid width (`col-span-full`), pushes cards below down
+- Expanded view shows: system prompt rendered as markdown (scrollable, max-height 400px), MCP tools as secondary badges, SDK tools as outline badges, model badge, budget per run
+- Only one card expanded at a time — expanding another collapses the current one (`expandedId` state)
+- Chevron rotates 180deg when expanded, smooth `transition-all duration-200`
+- Build passes
+
+**Files modified:** `packages/frontend/src/features/persona-manager/persona-list.tsx`, `packages/frontend/src/features/persona-manager/system-prompt-editor.tsx`
+
+**Notes:** Skills list not shown yet — `skills` field doesn't exist on Persona until FX.P7 adds it. Will be added when that task is done.
+
+---
+
 ## 2026-03-30 — Review: FX.NAV1 (approved)
 
 **Reviewed:** Sidebar nav layout and interaction states.

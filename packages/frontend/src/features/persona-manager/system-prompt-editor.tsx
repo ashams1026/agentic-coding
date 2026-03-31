@@ -29,7 +29,7 @@ Use them to accomplish your assigned tasks efficiently.
 
 // ── Markdown preview ────────────────────────────────────────────
 
-function MarkdownPreview({ text }: { text: string }) {
+export function MarkdownPreview({ text }: { text: string }) {
   // Minimal markdown rendering: paragraphs, headers, bold, inline code, bullet lists, code blocks
   const lines = text.split("\n");
   const elements: React.ReactNode[] = [];

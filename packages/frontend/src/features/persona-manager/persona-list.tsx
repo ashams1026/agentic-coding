@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  ChevronDown,
   ClipboardList,
   Code,
   Copy,
@@ -11,6 +12,7 @@ import {
   Bot,
   Pencil,
   Users,
+  DollarSign,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +29,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { usePersonas, useCreatePersona, useDeletePersona } from "@/hooks";
 import { cn } from "@/lib/utils";
+import { MarkdownPreview } from "./system-prompt-editor";
 import type { Persona, PersonaId, PersonaModel } from "@agentops/shared";
 
 // ── Icon map ────────────────────────────────────────────────────
@@ -82,12 +85,14 @@ interface PersonaListProps {
 interface PersonaCardProps {
   persona: Persona;
   isBuiltIn: boolean;
+  isExpanded: boolean;
+  onToggleExpand: () => void;
   onEdit: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
 }
 
-function PersonaCard({ persona, isBuiltIn, onEdit, onDuplicate, onDelete }: PersonaCardProps) {
+function PersonaCard({ persona, isBuiltIn, isExpanded, onToggleExpand, onEdit, onDuplicate, onDelete }: PersonaCardProps) {
   const Icon = getPersonaIcon(persona.avatar.icon);
   const model = MODEL_CONFIG[persona.model];
   const toolCount = persona.allowedTools.length + persona.mcpTools.length;
@@ -95,78 +100,154 @@ function PersonaCard({ persona, isBuiltIn, onEdit, onDuplicate, onDelete }: Pers
   return (
     <div
       className={cn(
-        "group relative rounded-lg border border-border bg-card p-4 transition-shadow",
+        "group relative rounded-lg border border-border bg-card transition-all duration-200",
         "hover:shadow-md hover:border-border/80",
+        isExpanded && "col-span-full shadow-md border-primary/30",
       )}
     >
-      {/* Hover actions */}
-      <div className="absolute top-2 right-2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7"
-          onClick={onEdit}
-          title="Edit"
+      <div className="p-4">
+        {/* Hover actions */}
+        <div className="absolute top-2 right-2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={onEdit}
+            title="Edit"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7"
+            onClick={onDuplicate}
+            title="Duplicate"
+          >
+            <Copy className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-destructive hover:text-destructive"
+            onClick={onDelete}
+            title="Delete"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
+
+        {/* Avatar */}
+        <div
+          className="h-10 w-10 rounded-full flex items-center justify-center mb-3"
+          style={{ backgroundColor: persona.avatar.color + "20" }}
         >
-          <Pencil className="h-3.5 w-3.5" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7"
-          onClick={onDuplicate}
-          title="Duplicate"
+          <Icon className="h-5 w-5" style={{ color: persona.avatar.color }} />
+        </div>
+
+        {/* Name + badges */}
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="text-sm font-semibold truncate">{persona.name}</h3>
+          {isBuiltIn && (
+            <Badge variant="outline" className="text-xs px-1.5 py-0 shrink-0">
+              Built-in
+            </Badge>
+          )}
+        </div>
+
+        {/* Model badge */}
+        <Badge
+          variant="outline"
+          className={cn("text-xs px-1.5 py-0 border-0 mb-2", model.className)}
         >
-          <Copy className="h-3.5 w-3.5" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 text-destructive hover:text-destructive"
-          onClick={onDelete}
-          title="Delete"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
-      </div>
-
-      {/* Avatar */}
-      <div
-        className="h-10 w-10 rounded-full flex items-center justify-center mb-3"
-        style={{ backgroundColor: persona.avatar.color + "20" }}
-      >
-        <Icon className="h-5 w-5" style={{ color: persona.avatar.color }} />
-      </div>
-
-      {/* Name + badges */}
-      <div className="flex items-center gap-2 mb-1">
-        <h3 className="text-sm font-semibold truncate">{persona.name}</h3>
-        {isBuiltIn && (
-          <Badge variant="outline" className="text-xs px-1.5 py-0 shrink-0">
-            Built-in
-          </Badge>
-        )}
-      </div>
-
-      {/* Model badge */}
-      <Badge
-        variant="outline"
-        className={cn("text-xs px-1.5 py-0 border-0 mb-2", model.className)}
-      >
-        {model.label}
-      </Badge>
-
-      {/* Description — 2 lines */}
-      <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">
-        {persona.description}
-      </p>
-
-      {/* Tool count pill */}
-      <div className="mt-3 flex items-center gap-1.5">
-        <Badge variant="secondary" className="text-xs px-1.5 py-0">
-          {toolCount} tool{toolCount !== 1 ? "s" : ""}
+          {model.label}
         </Badge>
+
+        {/* Description — 2 lines */}
+        <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">
+          {persona.description}
+        </p>
+
+        {/* Tool count pill + view prompt button */}
+        <div className="mt-3 flex items-center gap-2">
+          <Badge variant="secondary" className="text-xs px-1.5 py-0">
+            {toolCount} tool{toolCount !== 1 ? "s" : ""}
+          </Badge>
+          <button
+            onClick={onToggleExpand}
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors ml-auto"
+          >
+            {isExpanded ? "Collapse" : "View prompt"}
+            <ChevronDown className={cn(
+              "h-3 w-3 transition-transform duration-200",
+              isExpanded && "rotate-180",
+            )} />
+          </button>
+        </div>
       </div>
+
+      {/* Expanded prompt preview */}
+      {isExpanded && (
+        <div className="border-t border-border px-4 py-4 space-y-4">
+          {/* System prompt */}
+          <div>
+            <p className="text-xs font-medium mb-2">System Prompt</p>
+            <div className="max-h-[400px] overflow-y-auto rounded-md border border-border bg-muted/20 p-3">
+              {persona.systemPrompt.trim() ? (
+                <MarkdownPreview text={persona.systemPrompt} />
+              ) : (
+                <p className="text-xs text-muted-foreground italic">No system prompt.</p>
+              )}
+            </div>
+          </div>
+
+          {/* MCP tools */}
+          {persona.mcpTools.length > 0 && (
+            <div>
+              <p className="text-xs font-medium mb-1.5">MCP Tools</p>
+              <div className="flex flex-wrap gap-1.5">
+                {persona.mcpTools.map((tool) => (
+                  <Badge key={tool} variant="secondary" className="text-xs px-2 py-0.5 font-mono">
+                    {tool}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* SDK tools */}
+          {persona.allowedTools.length > 0 && (
+            <div>
+              <p className="text-xs font-medium mb-1.5">SDK Tools</p>
+              <div className="flex flex-wrap gap-1.5">
+                {persona.allowedTools.map((tool) => (
+                  <Badge key={tool} variant="outline" className="text-xs px-2 py-0.5 font-mono">
+                    {tool}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Model + budget row */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <Badge
+                variant="outline"
+                className={cn("text-xs px-1.5 py-0 border-0", model.className)}
+              >
+                {model.label}
+              </Badge>
+            </div>
+            {persona.maxBudgetPerRun > 0 && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <DollarSign className="h-3 w-3" />
+                <span>${persona.maxBudgetPerRun.toFixed(2)}/run</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -207,6 +288,7 @@ export function PersonaList({ onEdit }: PersonaListProps) {
   const createMutation = useCreatePersona();
   const deleteMutation = useDeletePersona();
   const [deleteTarget, setDeleteTarget] = useState<Persona | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const handleCreate = () => {
     createMutation.mutate(
@@ -290,6 +372,8 @@ export function PersonaList({ onEdit }: PersonaListProps) {
             key={p.id as string}
             persona={p}
             isBuiltIn={BUILT_IN_IDS.has(p.id as string)}
+            isExpanded={expandedId === (p.id as string)}
+            onToggleExpand={() => setExpandedId(expandedId === (p.id as string) ? null : (p.id as string))}
             onEdit={() => onEdit(p.id)}
             onDuplicate={() => handleDuplicate(p)}
             onDelete={() => setDeleteTarget(p)}
