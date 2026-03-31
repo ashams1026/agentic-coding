@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — AI.V9: Update settings test plans with visual inspection
+
+**Task:** Add visual inspection steps to `settings-projects.md`, `settings-workflow.md`, and `settings-appearance.md`.
+
+**Done:**
+- `settings-projects.md`: Added protocol blockquote, 4 screenshot checkpoints (page load, add form, new project in list, after delete), Visual Quality (5 criteria: sidebar, project list, hover states, form, overall), Visual Failure Criteria (6 defects), updated prerequisites
+- `settings-workflow.md`: Added protocol blockquote, 3 screenshot checkpoints (auto-routing toggle, persona table, state diagram), Visual Quality (6 criteria: auto-routing card, toggle interaction, table, model badges, diagram, overall), Visual Failure Criteria (7 defects), updated prerequisites
+- `settings-appearance.md`: Added protocol blockquote, 4 screenshot checkpoints (theme section, dark mode, light mode, compact density), Visual Quality (7 criteria: card buttons, theme switching, dark mode, light mode, density, section layout, overall), Visual Failure Criteria (7 defects), updated prerequisites
+
+**Files changed:** `tests/e2e/plans/settings-projects.md`, `tests/e2e/plans/settings-workflow.md`, `tests/e2e/plans/settings-appearance.md`
+
+**Notes:** No code changes — build unaffected. Original steps preserved (11 projects, 12 workflow, 11 appearance).
+
+---
+
 ## 2026-03-30 — Review: AI.V8 (approved)
 
 **Reviewed:** Activity feed test plan visual inspection update.

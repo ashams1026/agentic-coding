@@ -169,7 +169,7 @@
 
 - [x] **AI.V8** — Update `activity-feed.md` with visual inspection steps. Add screenshot + examine after: feed loads, filter applied, filter cleared. Check: event card layout, icon alignment, date grouping headers, spacing.
 
-- [ ] **AI.V9** — Update `settings-projects.md`, `settings-workflow.md`, and `settings-appearance.md` with visual inspection steps. Add screenshot + examine after: settings page loads, each section renders, form interactions. Check: form alignment, toggle rendering, table layout, section spacing.
+- [review] **AI.V9** — Update `settings-projects.md`, `settings-workflow.md`, and `settings-appearance.md` with visual inspection steps. Add screenshot + examine after: settings page loads, each section renders, form interactions. Check: form alignment, toggle rendering, table layout, section spacing.
 
 - [ ] **AI.V10** — Update `persona-manager.md` with visual inspection steps. Add screenshot + examine after: persona grid loads, opening editor, each field section. Check: card grid alignment, editor layout, field spacing.
 

@@ -6,10 +6,13 @@ Verify the Settings Appearance section supports toggling between light/dark/syst
 
 ## Prerequisites
 
-- Backend running on `:3001`, frontend on `:5173`
+- Backend running on `:3001`, frontend on `:5173` or `:5174`
 - API mode set to "api"
+- chrome-devtools MCP connected
 
 ## Steps
+
+> **Visual inspection protocol:** After each major navigation or UI interaction step, take a screenshot using `take_screenshot`. Examine the screenshot visually using the `Read` tool. Note any visual issues (misalignment, clipping, bad spacing, broken layout, invisible text, wrong colors, overlapping elements, truncated content) in the results alongside the functional pass/fail. A step can functionally pass but have visual defects — record both.
 
 1. **Navigate** to `http://localhost:5173/settings`
    - Verify: the Settings page loads
@@ -27,18 +30,21 @@ Verify the Settings Appearance section supports toggling between light/dark/syst
    - Look for: a heading "Theme" with description "Choose the color scheme for the interface."
    - Expected: three card buttons labeled "Light" (sun icon), "Dark" (moon icon), and "System" (monitor icon)
    - One should be active (highlighted border)
+   - **Screenshot checkpoint:** Take screenshot. Examine: appearance section layout, Data Source and Theme card buttons evenly sized, active button border clearly visible, icons centered within cards, section headings and descriptions readable.
 
 5. **Click** the "Dark" theme button
    - Target: the "Dark" card button with the moon icon
    - Expected: the "Dark" button becomes active (highlighted border)
    - The page background should change to a dark color scheme
    - Text should become light-colored on dark background
+   - **Screenshot checkpoint:** Take screenshot. Examine: dark mode applied globally, background dark, text light and readable, sidebar colors updated, card borders visible against dark background, no invisible elements.
 
 6. **Click** the "Light" theme button
    - Target: the "Light" card button with the sun icon
    - Expected: the "Light" button becomes active
    - The page background should change to a light/white color scheme
    - Text should become dark-colored on light background
+   - **Screenshot checkpoint:** Take screenshot. Examine: light mode applied globally, background light, text dark and readable, all elements visible, card borders and active states clear.
 
 7. **Click** the "System" theme button
    - Target: the "System" card button with the monitor icon
@@ -55,6 +61,7 @@ Verify the Settings Appearance section supports toggling between light/dark/syst
    - Target: the "Compact" card button
    - Expected: the "Compact" button becomes active
    - UI elements should appear more tightly spaced (reduced padding/margins)
+   - **Screenshot checkpoint:** Take screenshot. Examine: compact density applied, reduced spacing visible in card buttons and sections, no elements overlapping due to tighter spacing, text still readable.
 
 10. **Click** the "Comfortable" density button
     - Target: the "Comfortable" card button
@@ -75,6 +82,16 @@ Verify the Settings Appearance section supports toggling between light/dark/syst
 - Clicking "Comfortable" restores normal spacing
 - Each active option shows highlighted border styling
 
+### Visual Quality
+
+- Card buttons: evenly sized within each section, icons centered, active border clearly distinguished from inactive, consistent padding
+- Theme switching: background and text colors update globally without flash or partial update, sidebar and content area both reflect the theme
+- Dark mode: all text readable against dark background, no invisible elements, card borders visible, icons not lost against background
+- Light mode: all text readable, no washed-out elements, proper contrast maintained
+- Density: compact mode visibly reduces spacing without overlapping or clipping elements, comfortable mode restores default spacing
+- Section layout: Data Source, Theme, and Density sections evenly spaced with clear headings, descriptions readable
+- Overall: no horizontal overflow, consistent spacing between all sections and cards
+
 ## Failure Criteria
 
 - The Appearance section does not load
@@ -85,3 +102,13 @@ Verify the Settings Appearance section supports toggling between light/dark/syst
 - Clicking "Compact" does not change UI spacing
 - The Data Source section is missing
 - Any action causes a JavaScript error
+
+### Visual Failure Criteria
+
+- Card buttons different sizes within the same section or icons misaligned
+- Active card border indistinguishable from inactive cards
+- Dark mode leaves some text invisible or elements with white backgrounds
+- Light mode leaves some elements invisible or with dark backgrounds
+- Theme switch causes partial update (sidebar in one theme, content in another)
+- Compact density causes elements to overlap or text to be clipped
+- Density preview bars (mini lines) not visible or different sizes than expected

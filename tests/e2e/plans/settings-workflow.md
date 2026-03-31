@@ -6,11 +6,14 @@ Verify the Settings Workflow section renders the persona-per-state assignment ta
 
 ## Prerequisites
 
-- Backend running on `:3001`, frontend on `:5173`
+- Backend running on `:3001`, frontend on `:5173` or `:5174`
 - API mode set to "api"
 - Database seeded with test data (project with persona assignments)
+- chrome-devtools MCP connected
 
 ## Steps
+
+> **Visual inspection protocol:** After each major navigation or UI interaction step, take a screenshot using `take_screenshot`. Examine the screenshot visually using the `Read` tool. Note any visual issues (misalignment, clipping, bad spacing, broken layout, invisible text, wrong colors, overlapping elements, truncated content) in the results alongside the functional pass/fail. A step can functionally pass but have visual defects — record both.
 
 1. **Navigate** to `http://localhost:5173/settings`
    - Verify: the Settings page loads
@@ -23,6 +26,7 @@ Verify the Settings Workflow section renders the persona-per-state assignment ta
    - Look for: a bordered card with "Auto-routing" heading
    - Expected: description text shows either "Auto-routing: ON — Router agent will automatically transition work items" or "Auto-routing: OFF — Manual transitions only"
    - A toggle switch (role="switch") should be visible, colored green if ON or gray if OFF
+   - **Screenshot checkpoint:** Take screenshot. Examine: workflow section layout, auto-routing card border and padding, toggle switch rendering and color, description text readability.
 
 4. **Toggle** auto-routing
    - Click the toggle switch
@@ -43,6 +47,7 @@ Verify the Settings Workflow section renders the persona-per-state assignment ta
    - Look for: rows for "Planning", "Decomposition", "Ready", "In Progress", and "In Review"
    - Expected: each row shows a colored dot matching the state color, the state name, a persona dropdown, and a model badge
    - Note: "Backlog", "Done", and "Blocked" should NOT appear as rows — they are excluded
+   - **Screenshot checkpoint:** Take screenshot. Examine: table column alignment (State, Persona, Model headers aligned with data), colored dots correct size, persona dropdowns consistent width, model badges styled correctly, consistent row heights.
 
 8. **Verify** the non-configurable states note
    - Look for: a footer note at the bottom of the table
@@ -59,6 +64,7 @@ Verify the Settings Workflow section renders the persona-per-state assignment ta
 11. **Verify** the workflow state machine diagram renders
     - Look for: an SVG diagram below the table labeled "Workflow State Machine"
     - Expected: node rectangles for all 8 states with lines/arrows between them
+    - **Screenshot checkpoint:** Take screenshot. Examine: SVG diagram renders within content area, node labels readable, arrows not clipped, diagram not overflowing container.
 
 12. **Take screenshot** of the workflow settings for evidence
 
@@ -71,6 +77,15 @@ Verify the Settings Workflow section renders the persona-per-state assignment ta
 - The note about Backlog/Done/Blocked excluded states is visible
 - The workflow state machine diagram renders with all 8 states
 
+### Visual Quality
+
+- Auto-routing card: bordered card with consistent padding, toggle switch properly sized and colored (green/gray), description text readable
+- Toggle interaction: smooth color transition on toggle, no flicker or layout shift
+- Persona table: columns aligned (State, Persona, Model), consistent row heights, colored dots same size across rows, dropdowns same width
+- Model badges: correct color coding (purple opus, blue sonnet, green haiku), readable text, consistent badge sizing
+- State diagram: SVG fits within container, nodes evenly spaced, labels readable, arrows properly connected
+- Overall: sections visually separated, consistent spacing between auto-routing card, table, and diagram
+
 ## Failure Criteria
 
 - The Workflow section does not load or shows a white screen
@@ -81,3 +96,13 @@ Verify the Settings Workflow section renders the persona-per-state assignment ta
 - Model badges show wrong colors or are missing for assigned personas
 - The non-configurable states note is missing
 - Any action causes a JavaScript error
+
+### Visual Failure Criteria
+
+- Auto-routing toggle misaligned with card content or wrong color for state
+- Toggle causes layout shift or description text flickers during state change
+- Table columns misaligned — headers don't line up with data cells
+- Colored state dots inconsistent sizes or wrong colors
+- Persona dropdowns different widths across rows
+- Model badges text invisible against badge background or inconsistent sizing
+- SVG diagram overflows container, nodes clipped, or arrow labels unreadable
