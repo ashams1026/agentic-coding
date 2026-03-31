@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-31 — Review: SDK.V2.2 (approved)
+
+**Reviewed:** SDK capabilities discovery endpoint — `GET /api/sdk/capabilities` and `POST /api/sdk/reload`.
+- Correct use of `initializationResult()` and `reloadPlugins()` Query control methods. These are on the `Query` interface, not `SDKSession`, so the worker correctly used temporary `query()` instances instead of the V2 persistent session — valid deviation from task description.
+- `withDiscoveryQuery()` lifecycle is clean: API key guard → create minimal query → read first message (ensures subprocess running) → control method → interrupt → drain. Error path has proper cleanup.
+- Cache-on-first-call pattern avoids unnecessary subprocess creation. Reload handler's fallback for models is slightly heavy but correct.
+- Route registration follows existing patterns. Import types verified against SDK d.ts.
+- FX.SDK1 correctly marked superseded. FX.SDK3-6 unblocked.
+- Build passes.
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — SDK.V2.2: Unblock FX.SDK1 with SDK capabilities endpoint
 
 **Task:** Create `GET /api/sdk/capabilities` and `POST /api/sdk/reload` routes using Query control methods.
