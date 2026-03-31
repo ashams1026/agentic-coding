@@ -222,5 +222,15 @@
 - [x] **AI.V10** — Update `persona-manager.md` with visual inspection steps. *(completed 2026-03-30)*
 - [x] **AI.V11** — Update `navigation.md`, `dark-mode.md`, and `keyboard-shortcuts.md` with visual inspection steps. *(completed 2026-03-30)*
 
-### Phase 2: Execute Test Plans (AI.18)
+### Phase 2: Execute Test Plans (AI.18–AI.28)
 - [x] **AI.18** — Execute `detail-panel-edit.md` — 15/17 PASS, 2 FAIL (list reactivity, mock-mode persistence). *(completed 2026-03-30)*
+- [x] **AI.19** — Execute `work-items-filtering.md` — 14/14 PASS. *(completed 2026-03-30)*
+- [x] **AI.20** — Execute `work-items-sorting.md` — 12/12 PASS. *(completed 2026-03-30)*
+- [x] **AI.21** — Execute `agent-monitor-layout.md` — 7/9 PASS, 2 N/A (empty state). *(completed 2026-03-30)*
+- [x] **AI.22** — Execute `agent-monitor-history.md` — 14/14 PASS. *(completed 2026-03-30)*
+- [x] **AI.23** — Execute `activity-feed.md` — 14/14 PASS. *(completed 2026-03-30)*
+- [x] **AI.24** — Execute `settings-projects.md` — 11/11 PASS. *(completed 2026-03-30)*
+- [x] **AI.25** — Execute `settings-workflow.md` — 12/12 PASS. *(completed 2026-03-30)*
+- [x] **AI.26** — Execute `settings-appearance.md` — 11/11 PASS. *(completed 2026-03-30)*
+- [x] **AI.27** — Execute `persona-manager.md` — 19/19 PASS. *(completed 2026-03-30)*
+- [x] **AI.28** — Execute `navigation.md` — 17/19 PASS, 2 N/A (tooltip, backdrop). *(completed 2026-03-30)*

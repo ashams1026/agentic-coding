@@ -236,3 +236,32 @@
 **Visual inspection template (AI.V1–AI.V2, both approved):**
 *AI.V1:* Updated `_template.md` with visual inspection protocol: blockquote, screenshot checkpoint annotations, Visual Quality subsection (7 criteria), Visual Failure Criteria subsection (7 defects).
 *AI.V2:* Updated `dashboard-stats.md` (6 checkpoints) and `dashboard-navigation.md` (7 checkpoints) with visual inspection steps, Visual Quality/Failure sections.
+
+---
+
+## Sprint 16 (continued): AI.V3–AI.V11, AI.18–AI.28 — Visual Inspection + Test Execution (2026-03-30)
+
+**Visual inspection updates (AI.V3–AI.V11, all approved):**
+*AI.V3:* `work-items-list-view.md` + `work-items-create.md` — 4+3 checkpoints.
+*AI.V4:* `work-items-flow-view.md` — 4 checkpoints.
+*AI.V5:* `detail-panel-view.md` + `detail-panel-edit.md` — 5+7 checkpoints.
+*AI.V6:* `work-items-filtering.md` + `work-items-sorting.md` — 6+3 checkpoints.
+*AI.V7:* `agent-monitor-layout.md` + `agent-monitor-history.md` — 4+5 checkpoints.
+*AI.V8:* `activity-feed.md` — 5 checkpoints.
+*AI.V9:* `settings-projects.md` + `settings-workflow.md` + `settings-appearance.md` — 4+3+4 checkpoints.
+*AI.V10:* `persona-manager.md` — 5 checkpoints.
+*AI.V11:* `navigation.md` + `dark-mode.md` + `keyboard-shortcuts.md` — 4+4+3 checkpoints.
+Phase 1.5 completed — all test plans now have visual inspection protocol.
+
+**Test execution (AI.18–AI.28, all approved):**
+*AI.18:* `detail-panel-edit.md` — 15/17 PASS, 2 FAIL (list reactivity bug, mock-mode persistence). Critical: edits don't persist in mock mode.
+*AI.19:* `work-items-filtering.md` — 14/14 PASS. Search, state/priority filters, combined filters, empty state, Clear.
+*AI.20:* `work-items-sorting.md` — 12/12 PASS. Priority/created/updated sort, direction toggle.
+*AI.21:* `agent-monitor-layout.md` — 7/9 PASS, 2 N/A (empty state untestable with running agents).
+*AI.22:* `agent-monitor-history.md` — 14/14 PASS. Stats bar, table, expand/collapse, outcome filter, cost sort.
+*AI.23:* `activity-feed.md` — 14/14 PASS. Events, date grouping, type/persona/date filters.
+*AI.24:* `settings-projects.md` — 11/11 PASS. Full CRUD cycle (list, create, delete).
+*AI.25:* `settings-workflow.md` — 12/12 PASS. Auto-routing toggle, persona table, SVG diagram.
+*AI.26:* `settings-appearance.md` — 11/11 PASS. Theme (Light/Dark/System), density (Comfortable/Compact).
+*AI.27:* `persona-manager.md` — 19/19 PASS. Card grid, editor (7 sections), edit/save/verify/revert.
+*AI.28:* `navigation.md` — 17/19 PASS, 2 N/A. 6 nav links, collapse/expand, mobile hamburger. Known: FX.NAV1 icon layout.
