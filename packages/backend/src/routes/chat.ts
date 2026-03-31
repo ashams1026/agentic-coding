@@ -125,6 +125,36 @@ export async function chatRoutes(app: FastifyInstance) {
     return { data: rows.map(serializeMessage), total: rows.length };
   });
 
+  // PATCH /api/chat/sessions/:id — update session (title)
+  app.patch<{
+    Params: { id: string };
+    Body: { title?: string };
+  }>("/api/chat/sessions/:id", async (request, reply) => {
+    const { id } = request.params;
+    const { title } = request.body;
+
+    const [session] = await db
+      .select()
+      .from(chatSessions)
+      .where(eq(chatSessions.id, id));
+
+    if (!session) {
+      return reply.status(404).send({ error: "Session not found" });
+    }
+
+    const updates: Record<string, unknown> = { updatedAt: new Date() };
+    if (title !== undefined) updates.title = title.trim().slice(0, 100);
+
+    await db.update(chatSessions).set(updates).where(eq(chatSessions.id, id));
+
+    const [updated] = await db
+      .select()
+      .from(chatSessions)
+      .where(eq(chatSessions.id, id));
+
+    return { data: serializeSession(updated!) };
+  });
+
   // DELETE /api/chat/sessions/:id — delete session (cascades messages)
   app.delete<{
     Params: { id: string };

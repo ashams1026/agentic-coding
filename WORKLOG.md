@@ -5,6 +5,40 @@
 
 ---
 
+## 2026-03-31 — PICO.9: Add session management
+
+**Task:** Session dropdown, switching, title editing, clear all.
+
+**Done:**
+- Updated `packages/frontend/src/hooks/use-pico-chat.ts`:
+  - Added `sessions` state (list of `ChatSession[]`), populated via `refreshSessions()`
+  - `refreshSessions()`: fetches session list from `getChatSessions()`, called on panel open and after creating/completing messages
+  - `switchSession(sessionId)`: switches to an existing session, triggers history load via existing `currentSessionId` effect
+  - `renameSession(sessionId, title)`: calls `updateChatSessionTitle()`, updates local sessions list optimistically
+  - `clearAllSessions()`: deletes all sessions, clears state
+  - `currentSession`: derived from sessions list, exposes title/metadata for header
+  - `newSession()` now also refreshes session list after creation
+  - `sendMessage()` refreshes sessions after streaming completes (picks up auto-generated title from first message)
+- Updated `packages/frontend/src/features/pico/chat-panel.tsx`:
+  - Session dropdown in header using shadcn `DropdownMenu` — shows last 10 sessions sorted by most recent
+  - Each session item: `MessageSquare` icon, truncated title, relative time (now/5m/2h/3d/Mar 5)
+  - Active session highlighted with `bg-accent`
+  - "Rename current chat" option opens inline title editor (input with check button, Enter to save, Escape to cancel, blur to save)
+  - "Clear all sessions" with red styling + Trash2 icon
+  - Click-outside handler updated: dropdown menu content excluded from panel dismiss via `data-slot` selector
+  - Session title shown as dropdown trigger (chevron down icon), editable on click
+  - `formatSessionDate()` helper for relative timestamps
+- Added `PATCH /api/chat/sessions/:id` route in `packages/backend/src/routes/chat.ts`:
+  - Accepts `{ title?: string }`, trims and caps at 100 chars
+  - Returns serialized updated session
+- Added `updateChatSessionTitle()` to `packages/frontend/src/api/client.ts` and re-exported from `api/index.ts`
+
+**Files modified:** `packages/frontend/src/features/pico/chat-panel.tsx`, `packages/frontend/src/hooks/use-pico-chat.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`, `packages/backend/src/routes/chat.ts`
+
+**Notes for next agent:** PICO.10 (personality polish) should add quick-action suggestion buttons to the empty state in `chat-panel.tsx`. The session management is complete — session titles auto-generate from first user message (backend logic), can be renamed via dropdown → "Rename current chat", and sessions can be switched or cleared. The `formatSessionDate()` helper is already in chat-panel.tsx for relative time display.
+
+---
+
 ## 2026-03-31 — Review: PICO.8 (approved)
 
 **Reviewed:** Streaming chat hook, pico-store session state, chat panel wiring, API client chat functions.

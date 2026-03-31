@@ -1,11 +1,31 @@
 import { useRef, useEffect, useState } from "react";
-import { Dog, X, Plus, Send, AlertCircle, RotateCcw, Loader2 } from "lucide-react";
+import {
+  Dog,
+  X,
+  Plus,
+  Send,
+  AlertCircle,
+  RotateCcw,
+  Loader2,
+  ChevronDown,
+  MessageSquare,
+  Trash2,
+  Check,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { usePicoStore } from "./pico-store";
 import { ChatMessage } from "./chat-message";
 import { usePicoChat } from "@/hooks/use-pico-chat";
+import type { ChatSessionId } from "@agentops/shared";
 
 // ── Component ─────────────────────────────────────────────────────
 
@@ -14,16 +34,26 @@ export function ChatPanel() {
   const [input, setInput] = useState("");
   const {
     messages,
+    sessions,
+    currentSession,
     isStreaming,
     isLoadingHistory,
     error,
     sendMessage,
     newSession,
+    switchSession,
+    renameSession,
+    clearAllSessions,
     retry,
   } = usePicoChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // Editable title state
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -45,6 +75,8 @@ export function ChatPanel() {
       const target = e.target as HTMLElement;
       // Don't close if clicking the chat bubble (it has its own toggle)
       if (target.closest("[aria-label*='Pico']")) return;
+      // Don't close if clicking a dropdown menu
+      if (target.closest("[data-slot='dropdown-menu-content']")) return;
       if (panelRef.current && !panelRef.current.contains(target)) {
         setOpen(false);
       }
@@ -52,6 +84,14 @@ export function ChatPanel() {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [isOpen, setOpen]);
+
+  // Focus title input when editing starts
+  useEffect(() => {
+    if (isEditingTitle) {
+      titleInputRef.current?.focus();
+      titleInputRef.current?.select();
+    }
+  }, [isEditingTitle]);
 
   const handleSend = () => {
     if (!input.trim() || isStreaming) return;
@@ -66,6 +106,34 @@ export function ChatPanel() {
       handleSend();
     }
   };
+
+  const handleTitleClick = () => {
+    if (!currentSession) return;
+    setEditTitle(currentSession.title);
+    setIsEditingTitle(true);
+  };
+
+  const handleTitleSave = () => {
+    if (!currentSession || !editTitle.trim()) {
+      setIsEditingTitle(false);
+      return;
+    }
+    renameSession(currentSession.id as ChatSessionId, editTitle.trim());
+    setIsEditingTitle(false);
+  };
+
+  const handleTitleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleTitleSave();
+    }
+    if (e.key === "Escape") {
+      setIsEditingTitle(false);
+    }
+  };
+
+  const sessionTitle = currentSession?.title ?? "New conversation";
+  const recentSessions = sessions.slice(0, 10);
 
   if (!isOpen) return null;
 
@@ -90,9 +158,84 @@ export function ChatPanel() {
         </div>
         <div className="flex-1 min-w-0">
           <span className="text-sm font-semibold">Pico</span>
-          <span className="ml-2 text-xs text-muted-foreground truncate">
-            {messages.length > 0 ? "Chat" : "New conversation"}
-          </span>
+          {isEditingTitle ? (
+            <span className="ml-2 inline-flex items-center gap-1">
+              <input
+                ref={titleInputRef}
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                onKeyDown={handleTitleKeyDown}
+                onBlur={handleTitleSave}
+                className="w-32 rounded border border-input bg-transparent px-1 py-0.5 text-xs outline-none focus-visible:border-ring"
+                maxLength={100}
+              />
+              <button
+                type="button"
+                onClick={handleTitleSave}
+                className="rounded p-0.5 hover:bg-muted"
+              >
+                <Check className="h-3 w-3 text-muted-foreground" />
+              </button>
+            </span>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="ml-2 inline-flex items-center gap-0.5 text-xs text-muted-foreground hover:text-foreground transition-colors max-w-[180px]"
+                >
+                  <span className="truncate">{sessionTitle}</span>
+                  <ChevronDown className="h-3 w-3 shrink-0" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="start"
+                className="w-64"
+                onCloseAutoFocus={(e) => e.preventDefault()}
+              >
+                {recentSessions.length === 0 && (
+                  <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                    No conversations yet
+                  </div>
+                )}
+                {recentSessions.map((s) => (
+                  <DropdownMenuItem
+                    key={s.id}
+                    onClick={() => switchSession(s.id as ChatSessionId)}
+                    className={cn(
+                      "flex items-center gap-2 text-xs",
+                      s.id === currentSession?.id && "bg-accent",
+                    )}
+                  >
+                    <MessageSquare className="h-3 w-3 shrink-0 text-muted-foreground" />
+                    <span className="flex-1 truncate">{s.title}</span>
+                    <span className="shrink-0 text-[10px] text-muted-foreground">
+                      {formatSessionDate(s.updatedAt)}
+                    </span>
+                  </DropdownMenuItem>
+                ))}
+                {recentSessions.length > 0 && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={handleTitleClick}
+                      className="text-xs"
+                      disabled={!currentSession}
+                    >
+                      Rename current chat
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={clearAllSessions}
+                      className="text-xs text-red-400 focus:text-red-400"
+                    >
+                      <Trash2 className="h-3 w-3 mr-1" />
+                      Clear all sessions
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
         <Button
           variant="ghost"
@@ -236,4 +379,21 @@ function TypingIndicator() {
       />
     </div>
   );
+}
+
+// ── Helpers ───────────────────────────────────────────────────────
+
+function formatSessionDate(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60_000);
+
+  if (diffMins < 1) return "now";
+  if (diffMins < 60) return `${diffMins}m`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays}d`;
+  return date.toLocaleDateString([], { month: "short", day: "numeric" });
 }

@@ -533,6 +533,11 @@ export async function createChatSession(projectId: string): Promise<ChatSession>
   return res.data;
 }
 
+export async function updateChatSessionTitle(id: ChatSessionId, title: string): Promise<ChatSession> {
+  const res = await patch<{ data: ChatSession }>(`/api/chat/sessions/${id}`, { title });
+  return res.data;
+}
+
 export async function deleteChatSession(id: ChatSessionId): Promise<boolean> {
   return del(`/api/chat/sessions/${id}`);
 }

@@ -1,8 +1,10 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import type { ChatSessionId } from "@agentops/shared";
+import type { ChatSessionId, ChatSession } from "@agentops/shared";
 import {
   getChatSessions,
   createChatSession,
+  updateChatSessionTitle,
+  deleteChatSession,
   getChatMessages,
   sendChatMessageSSE,
 } from "@/api";
@@ -159,6 +161,7 @@ export function usePicoChat() {
   const selectedProjectId = useUIStore((s) => s.selectedProjectId);
 
   const [messages, setMessages] = useState<PicoChatMessage[]>([]);
+  const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
@@ -193,24 +196,30 @@ export function usePicoChat() {
     };
   }, [currentSessionId, setCurrentSessionId]);
 
+  // Refresh session list
+  const refreshSessions = useCallback(async () => {
+    if (!selectedProjectId) return;
+    const list = await getChatSessions(selectedProjectId);
+    setSessions(list);
+    return list;
+  }, [selectedProjectId]);
+
   // Auto-create or restore session when panel opens
   useEffect(() => {
-    if (!isOpen || !selectedProjectId || currentSessionId) return;
+    if (!isOpen || !selectedProjectId) return;
 
-    // Try to find an existing session, or create one
     let cancelled = false;
-    getChatSessions(selectedProjectId).then((sessions) => {
-      if (cancelled) return;
-      if (sessions.length > 0) {
-        setCurrentSessionId(sessions[0]!.id as ChatSessionId);
+    refreshSessions().then((list) => {
+      if (cancelled || !list) return;
+      if (!currentSessionId && list.length > 0) {
+        setCurrentSessionId(list[0]!.id as ChatSessionId);
       }
-      // Don't auto-create — let the user send a message to trigger creation
     });
 
     return () => {
       cancelled = true;
     };
-  }, [isOpen, selectedProjectId, currentSessionId, setCurrentSessionId]);
+  }, [isOpen, selectedProjectId, currentSessionId, setCurrentSessionId, refreshSessions]);
 
   // Ensure a session exists, creating one if needed
   const ensureSession = useCallback(async (): Promise<ChatSessionId> => {
@@ -355,6 +364,9 @@ export function usePicoChat() {
         if (!usePicoStore.getState().isOpen) {
           setHasUnread(true);
         }
+
+        // Refresh sessions to pick up auto-generated title
+        refreshSessions();
       } catch (err) {
         if ((err as Error).name === "AbortError") return;
         const msg = err instanceof Error ? err.message : String(err);
@@ -364,7 +376,7 @@ export function usePicoChat() {
         abortRef.current = null;
       }
     },
-    [isStreaming, ensureSession, setHasUnread],
+    [isStreaming, ensureSession, setHasUnread, refreshSessions],
   );
 
   // Create a new session (for "new chat" button)
@@ -374,7 +386,42 @@ export function usePicoChat() {
     setCurrentSessionId(session.id as ChatSessionId);
     setMessages([]);
     setError(null);
-  }, [selectedProjectId, setCurrentSessionId]);
+    await refreshSessions();
+  }, [selectedProjectId, setCurrentSessionId, refreshSessions]);
+
+  // Switch to an existing session
+  const switchSession = useCallback(
+    (sessionId: ChatSessionId) => {
+      if (sessionId === currentSessionId) return;
+      setCurrentSessionId(sessionId);
+      setError(null);
+    },
+    [currentSessionId, setCurrentSessionId],
+  );
+
+  // Rename a session
+  const renameSession = useCallback(
+    async (sessionId: ChatSessionId, title: string) => {
+      await updateChatSessionTitle(sessionId, title);
+      setSessions((prev) =>
+        prev.map((s) =>
+          (s.id as ChatSessionId) === sessionId ? { ...s, title } : s,
+        ),
+      );
+    },
+    [],
+  );
+
+  // Delete all sessions
+  const clearAllSessions = useCallback(async () => {
+    for (const s of sessions) {
+      await deleteChatSession(s.id as ChatSessionId);
+    }
+    setSessions([]);
+    setCurrentSessionId(null);
+    setMessages([]);
+    setError(null);
+  }, [sessions, setCurrentSessionId]);
 
   // Retry after error — resend the last user message
   const retry = useCallback(() => {
@@ -402,14 +449,24 @@ export function usePicoChat() {
     sendMessage(text);
   }, [messages, sendMessage]);
 
+  // Find current session metadata
+  const currentSession = sessions.find(
+    (s) => (s.id as ChatSessionId) === currentSessionId,
+  ) ?? null;
+
   return {
     messages,
+    sessions,
+    currentSession,
+    currentSessionId,
     isStreaming,
     isLoadingHistory,
     error,
     sendMessage,
     newSession,
+    switchSession,
+    renameSession,
+    clearAllSessions,
     retry,
-    currentSessionId,
   };
 }

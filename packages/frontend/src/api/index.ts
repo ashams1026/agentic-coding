@@ -70,6 +70,7 @@ export {
   // Chat
   getChatSessions,
   createChatSession,
+  updateChatSessionTitle,
   deleteChatSession,
   getChatMessages,
   sendChatMessageSSE,
