@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — AI.24: Execute settings-projects.md E2E test
+
+**Task:** Execute settings-projects test plan via chrome-devtools MCP.
+
+**Done:**
+- Executed all 11 steps in browser against http://localhost:5174/settings
+- 11/11 steps PASS, 0 FAIL
+- 4 screenshot checkpoints taken — all visual checks PASS
+- Projects section is default active section with 1 seeded project ("AgentOps")
+- Add project form: name + path inputs, Browse button, path validation ("Valid path format")
+- Created "Test E2E Project" at "/tmp/test-e2e-project" — appeared in list
+- Deleted new project — removed cleanly from list
+
+**Files created:** `tests/e2e/results/settings-projects.md`, 5 screenshot PNGs in `tests/e2e/results/`
+
+**Notes:** All project CRUD operations work correctly in mock mode. Settings sidebar has 8 sections.
+
+---
+
 ## 2026-03-30 — Review: AI.23 (approved)
 
 **Reviewed:** E2E test execution of activity-feed.md.
