@@ -39,7 +39,7 @@ const BUILT_IN_PERSONAS: DefaultPersona[] = [
     avatar: { color: "#059669", icon: "code" },
     model: "sonnet",
     allowedTools: ["Read", "Edit", "Write", "Glob", "Grep", "Bash", "WebFetch"],
-    mcpTools: ["post_comment", "flag_blocked", "route_to_state"],
+    mcpTools: ["post_comment", "flag_blocked", "get_context"],
     maxBudgetPerRun: 200,
   },
   {

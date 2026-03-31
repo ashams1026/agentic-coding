@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — FX.P3: Audit and overhaul Engineer persona
+
+**Task:** Fix mcpTools, verify allowedTools, overhaul systemPrompt for Engineer persona.
+
+**Done:**
+- **mcpTools**: Changed from `["post_comment", "flag_blocked", "route_to_state"]` → `["post_comment", "flag_blocked", "get_context"]`. Removed `route_to_state` (Router's job), added `get_context`.
+- **allowedTools**: Verified correct — `["Read", "Edit", "Write", "Glob", "Grep", "Bash", "WebFetch"]` with both Write and Edit present.
+- **systemPrompt**: Complete overhaul to ~60-line prompt. 4-step workflow: read before writing (get_context, Glob/Grep, read files) → implement (TS strict, shadcn/ui, Tailwind, dark mode, named exports, kebab-case) → verify build (pnpm build mandatory) → post completion comment. Includes: rejection feedback handling (address EVERY point), when to use flag_blocked (dependency, unclear req, infra issue), anti-patterns (don't refactor, don't add features beyond scope, don't skip build).
+- Updated both `seed.ts` and `default-personas.ts`
+- Build passes
+
+**Files modified:** `packages/backend/src/db/seed.ts`, `packages/backend/src/db/default-personas.ts`
+
+**Notes:** Prompt mirrors the coding conventions from CLAUDE.md so the Engineer has them in-context even without reading the file. Rejection handling section ensures the review loop doesn't stall.
+
+---
+
 ## 2026-03-30 — Review: FX.P2 (approved)
 
 **Reviewed:** Tech Lead persona audit and overhaul.
