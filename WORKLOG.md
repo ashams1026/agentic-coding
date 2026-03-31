@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: FX.MOCK3 (approved)
+
+**Reviewed:** E2E test database script.
+- `seed-e2e.ts`: sets env before dynamic import, reuses existing seed data ✓
+- `test-e2e.sh`: setup/teardown/seed commands, port detection, PID management ✓
+- `package.json`: 3 scripts added (test:e2e:setup/teardown/seed) ✓
+- Configurable via env vars (DB path, ports) ✓
+- Teardown cleans DB + WAL/SHM files ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.MOCK3: Create E2E test database script
 
 **Task:** Create scripts to set up/tear down E2E test environment with a temp DB.
