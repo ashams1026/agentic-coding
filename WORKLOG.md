@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-31 — Review: PICO.3 (approved)
+
+**Reviewed:** Chat streaming endpoint — SSE-based Pico chat via Claude SDK.
+- Route: `POST /api/chat/sessions/:id/messages` accepts `{ content }`, validates session + API key.
+- User message saved to DB before streaming. Session title auto-generated from first message (40 char truncation).
+- Pico persona loaded by `isAssistant` flag — consistent with PICO.1 pattern.
+- System prompt: 3 sections (personality + project context + chat instructions). Conversation history assembled from all messages.
+- SDK integration: `query()` with `agents`/`agent` pattern matching `claude-executor.ts`. MCP server path `../agent/mcp-server.ts` resolves correctly from `routes/`.
+- SSE: correct headers (`text/event-stream`, `no-cache`, `keep-alive`), 6 event types (text, thinking, tool_use, tool_result, error, done).
+- Assistant message saved with metadata (thinking blocks, tool calls, cost/duration) on completion.
+- `maxBudgetPerRun` passed as dollars (correct — matches executor, not stored as cents).
+- Build passes.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — PICO.3: Create chat streaming endpoint
 
 **Task:** Add `POST /api/chat/sessions/:id/messages` — streaming endpoint for Pico chat.
