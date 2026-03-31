@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — FX.SET2: Remove workflow state machine diagram from settings
+
+**Task:** Remove the SVG state machine diagram from Settings → Workflow.
+
+**Done:**
+- Deleted entire `WorkflowDiagram` component (~135 lines of SVG layout/rendering code)
+- Removed `<Separator />` and `<WorkflowDiagram />` from `WorkflowConfigSection` render
+- Removed unused `Separator` import
+- Workflow settings now shows only: auto-routing toggle + persona-per-state assignment table
+- Build passes
+
+**Files modified:** `packages/frontend/src/features/settings/workflow-config-section.tsx`
+
+**Notes:** Diagram was redundant with the Flow view on the Work Items page. Section is now cleaner.
+
+---
+
 ## 2026-03-30 — Review: FX.SET1 (approved)
 
 **Reviewed:** Settings nav dedup and rename.

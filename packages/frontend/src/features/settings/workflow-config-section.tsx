@@ -7,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { useProjects, useUpdateProject, usePersonas, usePersonaAssignments, useUpdatePersonaAssignment, useSelectedProject } from "@/hooks";
 import { WORKFLOW } from "@agentops/shared";
 import type { PersonaId, Persona } from "@agentops/shared";
@@ -182,145 +181,6 @@ function PersonaStateTable() {
   );
 }
 
-// ── State machine diagram (read-only SVG) ───────────────────────
-
-function WorkflowDiagram() {
-  const states = WORKFLOW.states;
-  const transitions = WORKFLOW.transitions;
-
-  // Layout: horizontal flow with Blocked below
-  const mainStates = states.filter((s) => s.name !== "Blocked");
-  const blockedState = states.find((s) => s.name === "Blocked");
-
-  const nodeWidth = 100;
-  const nodeHeight = 32;
-  const gap = 20;
-  const startX = 10;
-  const startY = 30;
-  const svgWidth = mainStates.length * (nodeWidth + gap) + startX;
-  const svgHeight = blockedState ? 140 : 80;
-
-  const statePositions = new Map<string, { x: number; y: number }>();
-  mainStates.forEach((s, i) => {
-    statePositions.set(s.name, { x: startX + i * (nodeWidth + gap), y: startY });
-  });
-  if (blockedState) {
-    statePositions.set("Blocked", { x: svgWidth / 2 - nodeWidth / 2, y: startY + 70 });
-  }
-
-  return (
-    <div className="rounded-lg border p-4 bg-muted/10">
-      <p className="text-xs font-medium text-muted-foreground mb-3">Workflow State Machine</p>
-      <div className="overflow-x-auto">
-        <svg
-          width={svgWidth + 10}
-          height={svgHeight}
-          className="text-foreground"
-          style={{ minWidth: svgWidth + 10 }}
-        >
-          <defs>
-            <marker
-              id="arrowhead"
-              markerWidth="8"
-              markerHeight="6"
-              refX="8"
-              refY="3"
-              orient="auto"
-            >
-              <polygon
-                points="0 0, 8 3, 0 6"
-                className="fill-muted-foreground/50"
-              />
-            </marker>
-          </defs>
-
-          {/* Transition arrows */}
-          {Object.entries(transitions).map(([from, tos]) =>
-            tos.map((to) => {
-              const fromPos = statePositions.get(from);
-              const toPos = statePositions.get(to as string);
-              if (!fromPos || !toPos) return null;
-
-              const fromCx = fromPos.x + nodeWidth / 2;
-              const fromCy = fromPos.y + nodeHeight / 2;
-              const toCx = toPos.x + nodeWidth / 2;
-              const toCy = toPos.y + nodeHeight / 2;
-
-              // Determine edge connection points
-              let x1: number, y1: number, x2: number, y2: number;
-              if (fromCy === toCy) {
-                // Same row — horizontal
-                x1 = fromPos.x + nodeWidth;
-                y1 = fromCy;
-                x2 = toPos.x;
-                y2 = toCy;
-              } else if (toCy > fromCy) {
-                // Going down (to Blocked)
-                x1 = fromCx;
-                y1 = fromPos.y + nodeHeight;
-                x2 = toCx;
-                y2 = toPos.y;
-              } else {
-                // Going up (from Blocked)
-                x1 = fromCx;
-                y1 = fromPos.y;
-                x2 = toCx;
-                y2 = toPos.y + nodeHeight;
-              }
-
-              return (
-                <line
-                  key={`${from}-${to}`}
-                  x1={x1}
-                  y1={y1}
-                  x2={x2}
-                  y2={y2}
-                  className="stroke-muted-foreground/30"
-                  strokeWidth="1.5"
-                  markerEnd="url(#arrowhead)"
-                />
-              );
-            }),
-          )}
-
-          {/* State nodes */}
-          {states.map((state) => {
-            const pos = statePositions.get(state.name);
-            if (!pos) return null;
-
-            return (
-              <g key={state.name}>
-                <rect
-                  x={pos.x}
-                  y={pos.y}
-                  width={nodeWidth}
-                  height={nodeHeight}
-                  rx={6}
-                  ry={6}
-                  fill={`${state.color}20`}
-                  stroke={state.color}
-                  strokeWidth={1.5}
-                />
-                <text
-                  x={pos.x + nodeWidth / 2}
-                  y={pos.y + nodeHeight / 2}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  className="fill-foreground"
-                  fontSize={10}
-                  fontWeight={500}
-                >
-                  {state.name}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-    </div>
-  );
-}
-
 // ── Main component ──────────────────────────────────────────────
 
 export function WorkflowConfigSection() {
@@ -335,10 +195,6 @@ export function WorkflowConfigSection() {
         </p>
         <PersonaStateTable />
       </div>
-
-      <Separator />
-
-      <WorkflowDiagram />
     </div>
   );
 }
