@@ -72,3 +72,15 @@
 ### Settings Fixes
 - [x] **FX.SET1** — Removed duplicate "Concurrency" nav, renamed "API Keys" → "Agent Configuration". *(completed 2026-03-30)*
 - [x] **FX.SET2** — Removed workflow state machine diagram from settings (~135 lines SVG). *(completed 2026-03-30)*
+
+### Settings, UI, Bug Fixes & Persona Overhaul
+- [x] **FX.SET3** — Replaced auto-routing toggle with play/pause button (status bar, settings, work items header). *(completed 2026-03-30)*
+- [x] **FX.RST1** — Added graceful restart flow with active agent modal, polling, force restart. *(completed 2026-03-30)*
+- [x] **FX.FLOW1** — Redesigned Flow view as vertical state machine (CSS flex, Router pills, Blocked branch). *(completed 2026-03-30)*
+- [x] **FX.NAV1** — Fixed sidebar nav icon/label stacking, added hover/active states, rounded corners. *(completed 2026-03-30)*
+- [x] **FX.PM1** — Added inline system prompt preview to persona cards (expand/collapse, markdown, tool badges). *(completed 2026-03-30)*
+- [x] **FX.0** — Fixed `transition_state` → `route_to_state` and `create_tasks` → `create_children` mismatch in all seed files. *(completed 2026-03-30)*
+- [x] **FX.P1** — PM persona overhaul: mcpTools fixed, systemPrompt with AC template and anti-patterns. *(completed 2026-03-30)*
+- [x] **FX.P2** — TL persona overhaul: mcpTools fixed, systemPrompt with 3-step decomposition workflow. *(completed 2026-03-30)*
+- [x] **FX.P3** — Engineer persona overhaul: mcpTools fixed, systemPrompt with 4-step implementation workflow. *(completed 2026-03-30)*
+- [x] **FX.P4** — Code Reviewer persona overhaul: mcpTools fixed, systemPrompt with 5-step review workflow. *(completed 2026-03-30)*
