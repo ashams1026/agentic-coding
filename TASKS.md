@@ -151,37 +151,13 @@
 > All test plans live in `tests/e2e/plans/`. Each plan is a markdown file with step-by-step instructions, expected outcomes, and pass/fail criteria.
 > Test execution requires: backend running on :3001, frontend on :5173/:5174, API mode set to "api", chrome-devtools MCP connected.
 
-> QF.1, AI.1–AI.9, AI.10–AI.11, AI.V1–AI.V2, AI.12–AI.17 complete and archived.
-
-### Phase 1.5: Update Test Plans for Visual Inspection
-
-> Update remaining test plans with visual inspection protocol (screenshot checkpoints, visual quality/failure criteria).
-
-- [x] **AI.V3** — Update `work-items-list-view.md` and `work-items-create.md` with visual inspection steps. Add screenshot + examine after: list renders, expanding a parent, opening detail panel, creating a new item. Check: row alignment, badge sizing, indentation, panel transition.
-
-- [x] **AI.V4** — Update `work-items-flow-view.md` with visual inspection steps. Add screenshot + examine after: flow view renders, clicking a state node. Check: node layout, arrow rendering, label readability, no clipping or overflow.
-
-- [x] **AI.V5** — Update `detail-panel-view.md` and `detail-panel-edit.md` with visual inspection steps. Add screenshot + examine after: panel opens, each section renders, each edit interaction (title edit, description edit, priority change, label add, state change). Check: panel sizing, input alignment, button placement, markdown preview rendering.
-
-- [x] **AI.V6** — Update `work-items-filtering.md` and `work-items-sorting.md` with visual inspection steps. Add screenshot + examine after: search input, each filter applied, filter cleared, sort changed, sort direction toggled. Check: filter bar layout, dropdown rendering, result list updates.
-
-- [x] **AI.V7** — Update `agent-monitor-layout.md` and `agent-monitor-history.md` with visual inspection steps. Add screenshot + examine after: page load, tab switch, selecting an agent, expanding a history row. Check: terminal rendering, sidebar layout, table alignment, control bar.
-
-- [x] **AI.V8** — Update `activity-feed.md` with visual inspection steps. Add screenshot + examine after: feed loads, filter applied, filter cleared. Check: event card layout, icon alignment, date grouping headers, spacing.
-
-- [x] **AI.V9** — Update `settings-projects.md`, `settings-workflow.md`, and `settings-appearance.md` with visual inspection steps. Add screenshot + examine after: settings page loads, each section renders, form interactions. Check: form alignment, toggle rendering, table layout, section spacing.
-
-- [x] **AI.V10** — Update `persona-manager.md` with visual inspection steps. Add screenshot + examine after: persona grid loads, opening editor, each field section. Check: card grid alignment, editor layout, field spacing.
-
-- [x] **AI.V11** — Update `navigation.md`, `dark-mode.md`, and `keyboard-shortcuts.md` with visual inspection steps. Add screenshot + examine after: each nav click, sidebar collapse/expand, theme toggle on each page, command palette open. Check: sidebar layout, active state highlighting, theme color transitions, palette rendering.
+> QF.1, AI.1–AI.9, AI.10–AI.11, AI.V1–AI.V2, AI.12–AI.18, AI.V3–AI.V11 complete and archived.
 
 ### Phase 2: Execute Test Plans
 
 > One test plan per task. Agent reads the plan, launches the app in a browser via chrome-devtools MCP, follows every step, takes screenshots, records pass/fail.
 > Prerequisites for every execution task: backend running on :3001, frontend on :5173 or :5174, API mode set to "api", seeded data, chrome-devtools MCP connected.
 > Results go to `tests/e2e/results/{plan-name}.md` — same name as the plan file.
-
-- [x] **AI.18** — Execute `detail-panel-edit.md`. Read `tests/e2e/plans/detail-panel-edit.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/detail-panel-edit.md`.
 
 - [ ] **AI.19** — Execute `work-items-filtering.md`. Read `tests/e2e/plans/work-items-filtering.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/work-items-filtering.md`.
 

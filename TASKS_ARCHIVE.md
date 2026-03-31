@@ -210,3 +210,17 @@
 - [x] **AI.15** — Execute `work-items-create.md` — 9/9 PASS. *(completed 2026-03-30)*
 - [x] **AI.16** — Execute `work-items-flow-view.md` — 13/13 PASS. *(completed 2026-03-30)*
 - [x] **AI.17** — Execute `detail-panel-view.md` — 16/16 PASS. *(completed 2026-03-30)*
+
+### Phase 1.5: Visual Inspection Updates (AI.V3–AI.V11)
+- [x] **AI.V3** — Update `work-items-list-view.md` and `work-items-create.md` with visual inspection steps. *(completed 2026-03-30)*
+- [x] **AI.V4** — Update `work-items-flow-view.md` with visual inspection steps. *(completed 2026-03-30)*
+- [x] **AI.V5** — Update `detail-panel-view.md` and `detail-panel-edit.md` with visual inspection steps. *(completed 2026-03-30)*
+- [x] **AI.V6** — Update `work-items-filtering.md` and `work-items-sorting.md` with visual inspection steps. *(completed 2026-03-30)*
+- [x] **AI.V7** — Update `agent-monitor-layout.md` and `agent-monitor-history.md` with visual inspection steps. *(completed 2026-03-30)*
+- [x] **AI.V8** — Update `activity-feed.md` with visual inspection steps. *(completed 2026-03-30)*
+- [x] **AI.V9** — Update `settings-projects.md`, `settings-workflow.md`, and `settings-appearance.md` with visual inspection steps. *(completed 2026-03-30)*
+- [x] **AI.V10** — Update `persona-manager.md` with visual inspection steps. *(completed 2026-03-30)*
+- [x] **AI.V11** — Update `navigation.md`, `dark-mode.md`, and `keyboard-shortcuts.md` with visual inspection steps. *(completed 2026-03-30)*
+
+### Phase 2: Execute Test Plans (AI.18)
+- [x] **AI.18** — Execute `detail-panel-edit.md` — 15/17 PASS, 2 FAIL (list reactivity, mock-mode persistence). *(completed 2026-03-30)*

@@ -216,3 +216,23 @@
 *AI.8 (work + approved):* Activity Feed test plan — `activity-feed.md` (14 steps: events, date groups, 11-type filter, persona/date filters).
 
 *AI.9 (work + approved):* Settings test plans — `settings-projects.md` (11 steps), `settings-workflow.md` (12 steps), `settings-appearance.md` (11 steps).
+
+---
+
+## Sprint 16 (continued): AI.10–AI.V2 — Test Plans, Execution, Visual Inspection (2026-03-30)
+
+**Test plan writing (AI.10–AI.11):**
+*AI.10 (work + approved):* Persona Manager test plan — `persona-manager.md` (19 steps: card grid, editor, 6 field sections, edit+save, persistence).
+*AI.11 (work + approved):* Cross-cutting test plans — `navigation.md` (19 steps: 6 nav items, collapse/expand, mobile hamburger), `dark-mode.md` (19 steps: System/Light/Dark toggle, 5-page dark mode check, Settings sync), `keyboard-shortcuts.md` (17 steps: Cmd+K palette, search, arrow nav, enter select, escape).
+
+**Test execution (AI.12–AI.17, all approved):**
+*AI.12:* `dashboard-stats.md` — 11/11 PASS. All stat cards, agent strip, cost chart, recent activity, upcoming work.
+*AI.13:* `dashboard-navigation.md` — 12/12 PASS. All 6 nav items link correctly, back navigation works.
+*AI.14:* `work-items-list-view.md` — 14/14 PASS. Group headers, expand/collapse children, detail panel open.
+*AI.15:* `work-items-create.md` — 9/9 PASS. Add item form, validation, new item appears in list.
+*AI.16:* `work-items-flow-view.md` — 13/13 PASS. 8 state nodes, 16 SVG arrows, count match, node click filtering.
+*AI.17:* `detail-panel-view.md` — 16/16 PASS. All 11 panel sections + bonus "Pending Proposals".
+
+**Visual inspection template (AI.V1–AI.V2, both approved):**
+*AI.V1:* Updated `_template.md` with visual inspection protocol: blockquote, screenshot checkpoint annotations, Visual Quality subsection (7 criteria), Visual Failure Criteria subsection (7 defects).
+*AI.V2:* Updated `dashboard-stats.md` (6 checkpoints) and `dashboard-navigation.md` (7 checkpoints) with visual inspection steps, Visual Quality/Failure sections.
