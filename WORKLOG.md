@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-31 — Review: FX.EDIT1 (approved)
+
+**Reviewed:** Optimistic list cache update in `use-work-items.ts`.
+- `setQueriesData<WorkItem[]>({ queryKey: ["workItems"] }, ...)`: correctly updates all list query variants (any parentId/projectId combo) via prefix matching. The `old?.map()` callback safely maps over arrays and returns undefined for non-array entries (single-item queries also matched by prefix — harmless, TanQuery treats undefined as no-op).
+- List queries cancelled before optimistic update — prevents stale refetch from overwriting.
+- Error rollback: single-item reverted from context, lists invalidated to refetch truth. Correct approach.
+- `onSettled` still invalidates both — ensures server data replaces optimistic data after mutation completes.
+- Build passes.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — FX.EDIT1: Fix list row not updating when title edited
 
 **Task:** List row showed old title after editing in detail panel. Panel updated immediately (optimistic) but list waited for refetch.

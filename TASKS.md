@@ -38,7 +38,7 @@
 
 - [x] **FX.CMD1** — Fix command palette work item navigation route. In `packages/frontend/src/features/command-palette/` (or wherever the command palette component lives): clicking a work item navigates to `/work-items/:id` which is a 404. The route doesn't exist in the React Router config. Fix: change the navigation target to `/items` with the work item selected (e.g., via URL search param `?selected=:id` or by setting the selected item in the Zustand store before navigating to `/items`). Verify that clicking a work item in the palette opens the detail panel for that item.
 
-- [review] **FX.EDIT1** — Fix list row not updating when title edited in detail panel. In the Work Items list view: when a title is edited in the detail panel, the list row on the left still shows the old title. The panel heading updates but the list doesn't reactively sync. Fix: ensure the list query data is invalidated or updated when a work item mutation completes, so the list row reflects the new title immediately.
+- [x] **FX.EDIT1** — Fix list row not updating when title edited in detail panel. In the Work Items list view: when a title is edited in the detail panel, the list row on the left still shows the old title. The panel heading updates but the list doesn't reactively sync. Fix: ensure the list query data is invalidated or updated when a work item mutation completes, so the list row reflects the new title immediately.
 
 ### Activity Feed Improvements
 
