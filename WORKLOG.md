@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: FX.P7 (approved)
+
+**Reviewed:** Skills field added to persona schema.
+- entities.ts: `skills: string[]` on Persona interface ✓
+- api.ts: `skills?: string[]` on Create/Update requests ✓
+- schema.ts: JSON text column with `default([])`, consistent with mcpTools pattern ✓
+- personas.ts route: serialize, create, update all handle skills ✓
+- execution-manager.ts + dashboard.ts: Persona construction includes skills ✓
+- Default [] — no migration data issues ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.P7: Add skills field to persona schema
 
 **Task:** Add `skills: string[]` to Persona entity, DB schema, and API contracts.
