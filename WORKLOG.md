@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: FX.RST1 (approved)
+
+**Reviewed:** Graceful restart flow with active agent modal.
+- Backend `GET /api/service/status` returns active executions with persona name, work item title, elapsed time via join ✓
+- Backend `POST /api/service/restart` with `?force=true` support, 409 on active agents, `process.exit(0)` for pm2 restart ✓
+- Frontend checks status before restart, shows modal if agents active ✓
+- Modal: agent list, 3s polling, auto-restart on completion, force restart with double-click confirm, cancel ✓
+- API client exports correct, cleanup on unmount ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.RST1: Add graceful restart flow with active agent modal
 
 **Task:** Add restart flow that checks for active agents before restarting the service.
