@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-30 — FX.4: Add transition loop detection
+
+**Task:** Track recent state transitions per work item. If a state appears 3+ times in recent history, halt the chain and transition to Blocked.
+
+**Done:**
+- Added `stateHistory` Map (`workItemId → string[]`) to track recent states per work item
+- `recordStateForLoop(workItemId, state)`: appends state, keeps last 6 entries (enough to detect A→B→A→B→A→B)
+- `detectLoop(workItemId)`: returns true if any state appears 3+ times in the history window
+- `clearStateHistory()`: exported for test cleanup
+- In `runExecutionStream()`, after Router completes and `currentState` is read: calls `recordStateForLoop()` then `detectLoop()`. If loop detected:
+  - Logs `logger.warn` with workItemId and currentState
+  - Updates work item to `currentState: "Blocked"` in DB
+  - Posts system comment: "Detected routing loop — halting automatic transitions. Manual intervention required." (metadata includes full state history)
+  - Broadcasts `state_change` WS event (fromState → Blocked)
+  - Broadcasts `comment_created` WS event
+  - Does NOT call `dispatchForState()` — chain is halted
+- If no loop detected: dispatches normally (existing behavior)
+- Build passes
+
+**Files modified:** `packages/backend/src/agent/execution-manager.ts`
+
+**Notes:** This is the third and final layer of routing loop defense: FX.1 (same-state rejection) → FX.2 (transition history in Router prompt) → FX.4 (automatic loop detection with Blocked). The 6-entry window with 3-occurrence threshold catches patterns like In Progress → In Review → In Progress → In Review → In Progress → In Review.
+
+---
+
 ## 2026-03-30 — Review: FX.3 (approved)
 
 **Reviewed:** Rate limiter logging in `packages/backend/src/agent/execution-manager.ts`.

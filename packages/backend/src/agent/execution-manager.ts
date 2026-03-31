@@ -62,6 +62,45 @@ export function clearTransitionLog(): void {
   transitionLog.clear();
 }
 
+// ── Transition loop detection ────────────────────────────────────
+
+const LOOP_HISTORY_SIZE = 6;
+const stateHistory = new Map<string, string[]>(); // workItemId → recent states
+
+/** Record a state transition for loop detection. */
+export function recordStateForLoop(workItemId: string, state: string): void {
+  const history = stateHistory.get(workItemId) ?? [];
+  history.push(state);
+  // Keep only the last LOOP_HISTORY_SIZE entries
+  if (history.length > LOOP_HISTORY_SIZE) {
+    history.splice(0, history.length - LOOP_HISTORY_SIZE);
+  }
+  stateHistory.set(workItemId, history);
+}
+
+/**
+ * Detect if a routing loop is occurring.
+ * Returns true if any state appears 3+ times in the recent history,
+ * which indicates an A→B→A→B→A→B oscillation pattern.
+ */
+export function detectLoop(workItemId: string): boolean {
+  const history = stateHistory.get(workItemId) ?? [];
+  if (history.length < 3) return false;
+
+  const counts = new Map<string, number>();
+  for (const state of history) {
+    const count = (counts.get(state) ?? 0) + 1;
+    if (count >= 3) return true;
+    counts.set(state, count);
+  }
+  return false;
+}
+
+/** Clear loop detection state. Exported for test cleanup. */
+export function clearStateHistory(): void {
+  stateHistory.clear();
+}
+
 const executor = new ClaudeExecutor();
 
 // ── Execution context helpers ────────────────────────────────────
@@ -449,9 +488,56 @@ async function runExecutionStream(
           .from(workItems)
           .where(eq(workItems.id, task.workItemId));
         if (updated) {
-          dispatchForState(task.workItemId, updated.currentState).catch((err) => {
-            logger.error({ err, workItemId: task.workItemId }, "Dispatch after routing failed");
-          });
+          // Record state and check for loop before dispatching
+          recordStateForLoop(task.workItemId, updated.currentState);
+
+          if (detectLoop(task.workItemId)) {
+            // Loop detected — halt chain, post comment, transition to Blocked
+            logger.warn(
+              { workItemId: task.workItemId, currentState: updated.currentState },
+              "Detected routing loop — halting automatic transitions",
+            );
+
+            const now = new Date();
+            await db
+              .update(workItems)
+              .set({ currentState: "Blocked", updatedAt: now })
+              .where(eq(workItems.id, task.workItemId));
+
+            const loopCommentId = createId.comment();
+            await db.insert(comments).values({
+              id: loopCommentId,
+              workItemId: task.workItemId,
+              authorType: "system",
+              authorId: null,
+              authorName: "System",
+              content: "Detected routing loop — halting automatic transitions. Manual intervention required.",
+              metadata: { coordination: "loop_detected", history: stateHistory.get(task.workItemId) },
+              createdAt: now,
+            });
+
+            broadcast({
+              type: "state_change",
+              workItemId: task.workItemId as WorkItemId,
+              fromState: updated.currentState,
+              toState: "Blocked",
+              triggeredBy: "system",
+              timestamp: now.toISOString(),
+            });
+
+            broadcast({
+              type: "comment_created",
+              commentId: loopCommentId as CommentId,
+              workItemId: task.workItemId as WorkItemId,
+              authorName: "System",
+              contentPreview: "Detected routing loop — halting automatic transitions.",
+              timestamp: now.toISOString(),
+            });
+          } else {
+            dispatchForState(task.workItemId, updated.currentState).catch((err) => {
+              logger.error({ err, workItemId: task.workItemId }, "Dispatch after routing failed");
+            });
+          }
         }
       } else {
         // Regular persona completed — run the router to decide next state
