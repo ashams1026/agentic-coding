@@ -210,6 +210,28 @@ body {
   animation: slide-down 0.3s ease-out;
 }
 
+/* Pico chat bubble — bounce-in on first load */
+@keyframes pico-bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-pico-bounce-in {
+  animation: pico-bounce-in 0.5s ease-out;
+}
+
 /* ── Compact density overrides ──────────────────────────────────── */
 
 [data-density="compact"] {

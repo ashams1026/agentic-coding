@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-03-31 — PICO.5: Build floating chat bubble
+
+**Task:** Create a floating chat bubble for Pico, available on every page.
+
+**Done:**
+- Created `packages/frontend/src/features/pico/chat-bubble.tsx`:
+  - 56px circular button fixed at `bottom-6 right-6` with `z-50`
+  - Amber `#f59e0b` background (Pico's avatar color), white Dog icon (lucide-react)
+  - `hover:scale-110` / `active:scale-95` for interaction feedback
+  - Unread dot indicator (destructive color, 3.5px) visible when `hasUnread && !isOpen`
+  - Bounce-in animation on first load via custom `animate-pico-bounce-in`
+  - Toggles chat open/closed via `usePicoStore().toggleOpen`
+- Created `packages/frontend/src/features/pico/pico-store.ts`:
+  - Zustand + persist store (key: `pico-chat`)
+  - `isOpen`, `hasUnread` state
+  - `setOpen` clears unread when opening, `toggleOpen` does the same
+- Added `@keyframes pico-bounce-in` to `index.css`: scale 0.3→1.1→0.9→1 over 0.5s
+- Added `<ChatBubble />` to `root-layout.tsx` after `<ToastRenderer />`
+
+**Files created:** `packages/frontend/src/features/pico/chat-bubble.tsx`, `packages/frontend/src/features/pico/pico-store.ts`
+**Files modified:** `packages/frontend/src/layouts/root-layout.tsx`, `packages/frontend/src/index.css`
+
+**Notes for next agent:** The bubble toggles `isOpen` in the store. PICO.6 (chat panel) should read `isOpen` from `usePicoStore()` to show/hide itself. The `hasUnread` flag should be set by the streaming hook (PICO.8) when Pico responds and the panel is closed.
+
+---
+
 ## 2026-03-31 — Review: PICO.4 (approved)
 
 **Reviewed:** Pico project knowledge skill file + injection into system prompt.
