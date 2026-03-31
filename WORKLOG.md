@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-31 — Review: FX.NAV2 (approved)
+
+**Reviewed:** Sidebar navigation ground-up fix in `sidebar.tsx` and `index.css`.
+- NavLink→Link swap with manual `isActive`: correct fix for Radix `asChild` incompatibility. `location.pathname === "/"` for exact match on Dashboard, `startsWith(to)` for all others — matches React Router's NavLink `end` behavior.
+- `@layer base` wrapper on global `* { border-color }`: correct fix. Un-layered styles beat all `@layer` rules in CSS cascade. Wrapping in `@layer base` lets `@layer utilities` override it. No side effects — other borders still get the default from base, utilities still override when needed.
+- `flex flex-col gap-1` on nav: better than `space-y-1` for explicit vertical stacking. `w-full` on links ensures no horizontal wrapping.
+- All 8 task requirements met (20px icons, 224px width, hover/active states, rounded-md, badges, spacing, screenshot verification).
+- Build passes.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — FX.NAV2: Redo sidebar navigation fix
 
 **Task:** Ground-up fix for sidebar nav — icons stacked above labels, no hover/active states due to Radix `asChild` incompatibility with React Router's function-based `className`.
