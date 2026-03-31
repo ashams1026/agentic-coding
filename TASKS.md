@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-16 complete and archived. Sprint 17 partially archived (FX.SEC1, FX.MOCK1-4, FX.SET1-3, FX.RST1, FX.FLOW1, FX.NAV1, FX.PM1, FX.0, FX.P1-P9, FX.PM2-PM3, FX.1-FX.3, FX.4-FX.8, FX.DB1-DB4, FX.DEV1).
+> Sprints 1-16 complete and archived. Sprint 17 fully archived except blocked SDK tasks (FX.SDK1, FX.SDK3-6). Sprint 18 partially archived (PICO.1-4).
 
 ---
 
@@ -18,7 +18,6 @@
 
 - [blocked: SDK discovery APIs (initializationResult, supportedAgents, reloadPlugins) are Query control methods requiring a live streaming session + API key — can't call standalone. Need persistent SDK session or standalone discovery API.] **FX.SDK1** — Create SDK discovery endpoint. Add `GET /api/sdk/capabilities` route in `packages/backend/src/routes/sdk.ts`. On startup (or first call, cached), spin up a minimal `query()` instance and call `initializationResult()` to get: available built-in tools (with names/descriptions), available skills/commands (with names/descriptions/argument hints), available subagents (with names/descriptions). Return the combined result as JSON. Cache for the lifetime of the server process. Also expose `POST /api/sdk/reload` that calls `reloadPlugins()` and refreshes the cache.
 
-- [x] **FX.SDK2** — Replace custom skill injection with SDK native `skills` param. In `packages/backend/src/agent/claude-executor.ts`: remove section (5) "Persona skills" from `buildSystemPrompt()` (lines 76-101 — the manual `readFileSync` + 8K char cap logic). Instead, pass `skills: persona.skills` directly in the `query()` options alongside `tools`. The SDK handles loading, tokenization, and context management natively. Update the `Persona` entity: `skills` field now holds SDK skill names (e.g., `["commit", "review-pr"]`) not file paths. Add a migration to clear any existing file-path skill values.
 
 - [blocked: depends on FX.SDK1 — GET /api/sdk/capabilities endpoint not yet available] **FX.SDK3** — Replace hardcoded tool list with SDK discovery in persona editor. In the persona editor UI (`packages/frontend/src/features/persona-manager/`): replace any freeform text input or hardcoded tool checkboxes for `allowedTools` with a multi-select populated from `GET /api/sdk/capabilities`. Show each tool with its name and description. Group by category: File tools, Search tools, Execution, Web, Agent, Other. Same for `mcpTools` — show available MCP tools from the discovery response. Validate on save: warn if a selected tool isn't in the available set.
 
@@ -28,22 +27,6 @@
 
 - [blocked: depends on FX.SDK1 — SDK discovery (supportedAgents) not yet available] **FX.SDK6** — Expose available subagents in persona config. The SDK provides `supportedAgents()` returning agent name, description, and model. In the persona editor: add a "Subagents" section showing available agents from the SDK discovery. Allow personas to reference specific subagents (e.g., the Engineer persona might use the `code-reviewer` subagent). Store as `subagents: string[]` on the Persona entity. Pass via query options if the SDK supports it, otherwise inject as guidance in the system prompt.
 
-### Sidebar Navigation Redo
-
-- [x] **FX.NAV2** — Redo sidebar navigation fix (FX.NAV1 didn't work). The sidebar still shows icons stacked above labels with no hover/active states (confirmed in e2e screenshots). This needs a ground-up fix, not a tweak. In `packages/frontend/src/components/sidebar.tsx`: (1) Each nav item must be a single horizontal row: 20px icon on the left, label text to the right, `flex items-center gap-3`, `py-2 px-3`. Verify with chrome-devtools MCP by taking a screenshot after the fix. (2) Set a fixed sidebar width (`w-56` / 224px) in expanded mode so items don't compress. (3) Add hover: `hover:bg-muted` with `transition-colors duration-150`. (4) Add active/selected: `bg-muted font-semibold` with a 3px left border in primary color. (5) Add `rounded-md` to each item. (6) Ensure badges (proposal count, agent count, unread) sit on the right side of the row, not overlapping the icon. (7) Spacing between items: `space-y-1`. (8) After fixing, take a screenshot via chrome-devtools MCP and visually confirm: icons and labels are inline, hover works, active state is distinct, items are not cramped. This task is not complete until the screenshot looks correct.
-
-### E2E Triage Bugs
-
-- [x] **FX.AM1** — Fix agent monitor empty state button. In the agent monitor page (`packages/frontend/src/features/agent-monitor/`): the empty state shows a "Go to Story Board" button which links to a route that doesn't exist (Story Board was renamed to Work Items). Change the button text to "Go to Work Items" and update the link target to `/items`.
-
-- [x] **FX.CMD1** — Fix command palette work item navigation route. In `packages/frontend/src/features/command-palette/` (or wherever the command palette component lives): clicking a work item navigates to `/work-items/:id` which is a 404. The route doesn't exist in the React Router config. Fix: change the navigation target to `/items` with the work item selected (e.g., via URL search param `?selected=:id` or by setting the selected item in the Zustand store before navigating to `/items`). Verify that clicking a work item in the palette opens the detail panel for that item.
-
-- [x] **FX.EDIT1** — Fix list row not updating when title edited in detail panel. In the Work Items list view: when a title is edited in the detail panel, the list row on the left still shows the old title. The panel heading updates but the list doesn't reactively sync. Fix: ensure the list query data is invalidated or updated when a work item mutation completes, so the list row reflects the new title immediately.
-
-### Activity Feed Improvements
-
-- [x] **FX.9** — Enrich activity feed event descriptions. In `packages/frontend/src/features/activity-feed/activity-feed.tsx`: for base (historical) events, look up the persona name and work item title from the available query data. Replace generic descriptions: "Agent started working on work item" → "[Persona Name] started work on [Work Item Title]", "Agent completed" → "[Persona Name] completed work on [Work Item Title] (success/failed)", "State changed" → "[Work Item Title] moved from [Old State] to [New State]", "Router decision" → "Router moved [Work Item Title] to [New State]: [reasoning excerpt]". Ensure live WS events use the same enriched format (some already do — make it consistent).
-
 ---
 
 ## Sprint 18: Pico — Project Assistant
@@ -52,16 +35,6 @@
 > Pico is always available via a floating chat bubble, can answer questions about the project, help manage work items, and search documentation.
 > Pico is a special built-in persona: not editable, not triggered by workflow state changes, only invoked by user chat.
 > Pico's chat supports rich rendering: markdown, collapsible thinking, tool call cards, and a warm conversational tone.
-
-### Backend: Pico Persona & Chat API
-
-- [x] **PICO.1** — Add Pico as a built-in system persona. In `packages/backend/src/db/seed.ts`: add a Pico persona with `id: "ps-pico"`, `name: "Pico"`, `description: "Your friendly project assistant. Woof!"`, `avatar: { color: "#f59e0b", icon: "dog" }`, `model: "sonnet"`, `settings: { isSystem: true, isAssistant: true }`. The `isAssistant` flag distinguishes Pico from workflow personas. System prompt should establish Pico's personality: friendly, enthusiastic, helpful dog who loves the project. Pico uses casual language, occasionally says "woof" or dog-related expressions, but stays professional and accurate about technical content. Pico knows the project deeply — its architecture, workflow states, personas, and codebase. In `packages/shared/src/entities.ts`: add `isAssistant?: boolean` to Persona settings type. Pico should NOT appear in persona-per-state assignment dropdowns. Pico should NOT be editable or deletable in the Persona Manager (show a "Built-in assistant" badge, disable edit/delete).
-
-- [x] **PICO.2** — Create chat session API. Add `packages/backend/src/routes/chat.ts` with routes: `POST /api/chat/sessions` — create a new chat session `{ projectId }`, returns `{ sessionId }`. `GET /api/chat/sessions?projectId=` — list sessions (most recent first). `GET /api/chat/sessions/:id/messages` — get message history. `DELETE /api/chat/sessions/:id` — delete session. Add a `chat_sessions` table to schema: `id`, `projectId`, `title` (auto-generated from first message), `createdAt`, `updatedAt`. Add a `chat_messages` table: `id`, `sessionId`, `role` ("user" | "assistant"), `content` (text), `metadata` (JSON — tool calls, thinking blocks, timestamps), `createdAt`.
-
-- [x] **PICO.3** — Create chat streaming endpoint. Add `POST /api/chat/sessions/:id/messages` route: accepts `{ content: string }`, saves the user message to DB, spawns Pico via the Claude executor with the full conversation history as context, streams the response via Server-Sent Events (SSE) — each chunk includes `{ type: "text" | "thinking" | "tool_use" | "tool_result", content }`. On completion, saves the assistant message (with metadata for thinking/tool calls) to DB. Pico's system prompt is assembled from: base personality + project context (from `get_context`) + conversation history. Pico has access to SDK tools: Read, Glob, Grep, WebSearch, and MCP tools: `list_items`, `get_context`, `post_comment`.
-
-- [x] **PICO.4** — Author Pico's project knowledge skill. Create `packages/backend/src/agent/pico-skill.md`: a comprehensive skill file that teaches Pico about AgentOps. Include: what AgentOps is (one paragraph), the workflow states and what each means, the 5 workflow personas and their roles, how work items flow through the pipeline, how to interpret execution history and comments, common user questions (how do I create a work item? how do I trigger an agent? why is my item stuck? what does Blocked mean? how do I change the assigned persona?). This file is injected into Pico's system prompt on every chat. Keep it under 1500 tokens. Also give Pico access to the `docs/` directory — the system prompt should instruct Pico to use Read/Glob to search docs when answering architecture or API questions.
 
 ### Frontend: Chat Interface
 

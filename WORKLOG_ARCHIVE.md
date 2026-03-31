@@ -108,3 +108,31 @@ All personas updated in both seed.ts and default-personas.ts. Key pattern: no pe
 **FX.DB1-DB4 (DB & Executor):** Dev/prod DB separation by NODE_ENV (`agentops-dev.db` local, `~/.agentops/data/agentops.db` prod). MockExecutor (6 events, configurable delay, zero cost). Executor selection by NODE_ENV with health endpoint indicator. Settings toggle for executor mode (runtime swapping, hidden in production).
 
 **FX.DEV1:** Port-check wrapper `scripts/dev.sh` — skips backend/frontend if already running.
+
+**FX.SDK2:** Replaced custom skill file injection with SDK native `skills` param. Skills are now SDK skill names on `AgentDefinition`, not file paths. Key pattern: `agent`/`agents` option in `query()`.
+
+---
+
+## Sprint 17 (final): Sidebar, E2E Bugs, Activity Feed — 2026-03-31
+
+**FX.NAV2:** Ground-up sidebar redo — Radix `asChild` + NavLink incompatibility (stringified className function). Fixed with `Link` + manual `isActive`. CSS cascade: global `*` border-color outside `@layer` beat utilities — moved to `@layer base`. Sidebar 224px, `flex flex-col gap-1`, 3px primary left border active state.
+
+**FX.AM1:** Agent monitor empty state: "Go to Story Board" → "Go to Work Items", `/board` → `/items`.
+
+**FX.CMD1:** Command palette: `setSelectedItemId(wi.id); navigate("/items")` instead of 404 route. NAV_ITEMS updated (removed Story Board, Workflow Designer; added Work Items). `Kanban` → `ListTodo` icon.
+
+**FX.EDIT1:** List row reactivity: `setQueriesData<WorkItem[]>({ queryKey: ["workItems"] }, ...)` for optimistic updates across all cached list variants.
+
+**FX.9:** Activity feed enrichment: `personaMap`/`itemTitleMap` lookup maps, `wsEventToActivity(event, maps)` with enriched formats like "[Persona] started work on [Title]", "[Title] moved from [Old] to [New]".
+
+---
+
+## Sprint 18 (partial): Pico Backend — 2026-03-31
+
+**PICO.1:** Pico as built-in assistant persona. `PersonaSettings` interface with `isAssistant?` flag. Seed: `ps-pico`, amber #f59e0b, dog icon, sonnet, $5 budget. System prompt: personality + knowledge + capabilities + guidelines. Excluded from workflow assignments, non-editable/deletable in UI.
+
+**PICO.2:** Chat session API. `chat_sessions` + `chat_messages` tables (Drizzle migration). 4 endpoints: create session, list sessions, get messages, delete session. `ChatSessionId`/`ChatMessageId` shared types.
+
+**PICO.3:** Chat streaming endpoint. `POST /api/chat/sessions/:id/messages` — saves user message, assembles conversation history, spawns Claude SDK `query()` with Pico config, streams SSE (text/thinking/tool_use/tool_result/error/done). Saves assistant message with metadata on completion. Auto-generates session title from first message.
+
+**PICO.4:** Project knowledge skill. `pico-skill.md` (~700 tokens): AgentOps description, 8 workflow states, 5 personas, work item lifecycle, execution history, 5 common Q&A, docs/ directory pointer. Loaded at module level in chat.ts, injected into system prompt. Also fixed seed prompt: "Triage" → "Backlog", added docs/ instruction.

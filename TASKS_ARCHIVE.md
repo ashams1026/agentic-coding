@@ -112,3 +112,25 @@
 
 ### Dev Server — archived 2026-03-30
 - [x] **FX.DEV1** — Port-check wrapper `scripts/dev.sh`: skips backend/frontend if already running. *(completed 2026-03-30)*
+
+### SDK Skills — archived 2026-03-31
+- [x] **FX.SDK2** — Replaced custom skill file injection with SDK native `skills` param in `query()` options. Skills are now SDK skill names, not file paths. *(completed 2026-03-30)*
+
+### Sidebar & E2E Bug Fixes — archived 2026-03-31
+- [x] **FX.NAV2** — Ground-up sidebar navigation fix: horizontal layout, hover/active states, 3px primary left border, fixed 224px width. *(completed 2026-03-31)*
+- [x] **FX.AM1** — Agent monitor empty state: "Go to Story Board" → "Go to Work Items", link target `/board` → `/items`. *(completed 2026-03-31)*
+- [x] **FX.CMD1** — Command palette: work item navigation via Zustand `setSelectedItemId` + navigate to `/items`. *(completed 2026-03-31)*
+- [x] **FX.EDIT1** — List row reactivity: optimistic update via `setQueriesData` with prefix key matching. *(completed 2026-03-31)*
+
+### Activity Feed — archived 2026-03-31
+- [x] **FX.9** — Enriched event descriptions: persona names, work item titles, state change details via lookup maps. *(completed 2026-03-31)*
+
+---
+
+## Sprint 18: Pico — Project Assistant (partial) — archived 2026-03-31
+
+### Backend: Pico Persona & Chat API — archived 2026-03-31
+- [x] **PICO.1** — Added Pico as built-in system persona: `isAssistant` flag, seed data, non-editable/non-deletable in UI. *(completed 2026-03-31)*
+- [x] **PICO.2** — Chat session API: `chat_sessions`/`chat_messages` tables, 4 CRUD endpoints, Drizzle migration. *(completed 2026-03-31)*
+- [x] **PICO.3** — Chat streaming endpoint: `POST /api/chat/sessions/:id/messages`, SSE streaming via Claude SDK `query()`, 6 event types. *(completed 2026-03-31)*
+- [x] **PICO.4** — Pico project knowledge skill: `pico-skill.md` (~700 tokens), injected into system prompt, docs/ directory guidance. *(completed 2026-03-31)*
