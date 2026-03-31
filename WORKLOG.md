@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — AI.25: Execute settings-workflow.md E2E test
+
+**Task:** Execute settings-workflow test plan via chrome-devtools MCP.
+
+**Done:**
+- Executed all 12 steps in browser against http://localhost:5174/settings → Workflow
+- 12/12 steps PASS, 0 FAIL
+- 3 screenshot checkpoints taken — all visual checks PASS
+- Auto-routing toggle: ON/OFF works, description text updates, green/gray color changes
+- Persona table: 5 configurable states (Planning/PM, Decomposition/Tech Lead, Ready/unassigned, In Progress/Engineer, In Review/Reviewer)
+- Model badges: sonnet, opus, — (dash for unassigned)
+- Non-configurable states note present
+- SVG state machine diagram with all 8 states and arrows
+
+**Files created:** `tests/e2e/results/settings-workflow.md`, 3 screenshot PNGs in `tests/e2e/results/`
+
+**Notes:** All workflow settings features work correctly.
+
+---
+
 ## 2026-03-30 — Review: AI.24 (approved)
 
 **Reviewed:** E2E test execution of settings-projects.md.
