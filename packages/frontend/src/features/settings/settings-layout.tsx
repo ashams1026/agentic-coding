@@ -1,13 +1,12 @@
 import { useState } from "react";
 import {
   FolderOpen,
-  Key,
-  Gauge,
   DollarSign,
   Palette,
   Server,
   Database,
   GitBranch,
+  Settings2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -29,8 +28,7 @@ interface SectionDef {
 const SECTIONS: SectionDef[] = [
   { id: "projects", label: "Projects", icon: FolderOpen },
   { id: "workflow", label: "Workflow", icon: GitBranch },
-  { id: "api-keys", label: "API Keys", icon: Key },
-  { id: "concurrency", label: "Concurrency", icon: Gauge },
+  { id: "agent-config", label: "Agent Configuration", icon: Settings2 },
   { id: "costs", label: "Costs", icon: DollarSign },
   { id: "appearance", label: "Appearance", icon: Palette },
   { id: "service", label: "Service", icon: Server },
@@ -101,7 +99,7 @@ export function SettingsLayout() {
             <ProjectsSection />
           ) : activeSection === "workflow" ? (
             <WorkflowConfigSection />
-          ) : activeSection === "api-keys" || activeSection === "concurrency" ? (
+          ) : activeSection === "agent-config" ? (
             <ApiKeysSection />
           ) : activeSection === "costs" ? (
             <CostsSection />

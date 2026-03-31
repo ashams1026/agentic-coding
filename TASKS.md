@@ -30,7 +30,7 @@
 
 ### Settings Navigation Fix
 
-- [ ] **FX.SET1** — Remove duplicate settings nav item and rename section. In `packages/frontend/src/features/settings/settings-layout.tsx`: the "API Keys" and "Concurrency" sidebar links both render the same `ApiKeysSection` component (which contains both the API key input and the concurrency slider). Remove the "Concurrency" nav entry. Rename the remaining section from "API Keys" to "API & Execution" (or "Agent Configuration") to better reflect that it covers both API key management and concurrency/execution settings. Update the section `id` and any references. Verify only one link appears in the settings sidebar and it renders the combined content.
+- [review] **FX.SET1** — Remove duplicate settings nav item and rename section. In `packages/frontend/src/features/settings/settings-layout.tsx`: the "API Keys" and "Concurrency" sidebar links both render the same `ApiKeysSection` component (which contains both the API key input and the concurrency slider). Remove the "Concurrency" nav entry. Rename the remaining section from "API Keys" to "API & Execution" (or "Agent Configuration") to better reflect that it covers both API key management and concurrency/execution settings. Update the section `id` and any references. Verify only one link appears in the settings sidebar and it renders the combined content.
 
 - [ ] **FX.SET2** — Remove workflow state machine diagram from settings. In the Settings → Workflow section: remove the SVG state machine diagram. It's redundant with the Flow view on the Work Items page and doesn't look good. The Workflow settings section should only contain the auto-routing toggle and the persona-per-state assignment table. Delete the diagram component and any related layout code.
 

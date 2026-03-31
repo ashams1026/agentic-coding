@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — FX.SET1: Remove duplicate settings nav and rename section
+
+**Task:** Remove duplicate "Concurrency" settings nav entry and rename "API Keys" to "Agent Configuration".
+
+**Done:**
+- Removed "Concurrency" entry from SECTIONS array (was duplicate — both rendered ApiKeysSection)
+- Renamed "API Keys" to "Agent Configuration" with id `agent-config` and `Settings2` icon
+- Updated section content rendering to match new id
+- Removed unused imports (`Key`, `Gauge`)
+- Settings sidebar now shows 7 sections (was 8): Projects, Workflow, Agent Configuration, Costs, Appearance, Service, Data
+- Build passes
+
+**Files modified:** `packages/frontend/src/features/settings/settings-layout.tsx`
+
+**Notes:** The ApiKeysSection component already contained both API key input and concurrency slider — only the nav had the duplicate entry.
+
+---
+
 ## 2026-03-30 — Review: FX.MOCK4 (approved)
 
 **Reviewed:** Demo seed snapshot.
