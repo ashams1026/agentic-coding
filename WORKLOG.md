@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — FX.3: Log when rate limiter triggers
+
+**Task:** When `canTransition()` returns false, log a warning, post a system comment, and broadcast a WS event.
+
+**Done:**
+- Added `comments` to schema import and `CommentId` to shared type imports
+- Added `getTransitionCount(workItemId)` helper to expose the current transition count for a work item (filters timestamps within the last hour)
+- Added `else if (finalOutcome === "success")` branch in `runExecutionStream()` after the `canTransition()` check — this fires when the execution succeeded but the rate limiter blocked further chaining
+- When triggered: (1) logs `logger.warn` with `workItemId`, `transitionCount`, and `max`, (2) inserts a system comment on the work item with details and instructions ("Resume manually or wait for the cooldown"), (3) broadcasts a `comment_created` WS event so the UI updates immediately
+- Comment metadata includes `{ coordination: "rate_limit", transitionCount, max }` for easy filtering
+- Build passes
+
+**Files modified:** `packages/backend/src/agent/execution-manager.ts`
+
+**Notes:** This makes rate limiting visible to users — previously the chain silently stopped. The system comment appears in the work item's comment stream, and the WS event means the dashboard/activity feed can react in real time.
+
+---
+
 ## 2026-03-30 — Review: FX.2 (approved)
 
 **Reviewed:** Router transition history awareness in `packages/backend/src/agent/router.ts`.

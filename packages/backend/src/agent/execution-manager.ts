@@ -7,13 +7,14 @@
 
 import { eq } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { executions, workItems, personas, projects } from "../db/schema.js";
+import { executions, workItems, personas, projects, comments } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import type {
   ExecutionId,
   WorkItemId,
   PersonaId,
   ProjectId,
+  CommentId,
   ExecutionOutcome,
   ExecutionContextEntry,
 } from "@agentops/shared";
@@ -46,6 +47,14 @@ export function recordTransition(workItemId: string): void {
   const timestamps = transitionLog.get(workItemId) ?? [];
   timestamps.push(Date.now());
   transitionLog.set(workItemId, timestamps);
+}
+
+/** Get the number of recent transitions in the last hour for a work item. */
+export function getTransitionCount(workItemId: string): number {
+  const now = Date.now();
+  const oneHourAgo = now - 60 * 60 * 1000;
+  const timestamps = transitionLog.get(workItemId) ?? [];
+  return timestamps.filter((t) => t > oneHourAgo).length;
 }
 
 /** Clear all transition log entries. Exported for test cleanup. */
@@ -450,6 +459,35 @@ async function runExecutionStream(
           logger.error({ err, workItemId: task.workItemId }, "Router failed");
         });
       }
+    } else if (finalOutcome === "success") {
+      // Rate limiter triggered — log, comment, and broadcast
+      const count = getTransitionCount(task.workItemId);
+      logger.warn(
+        { workItemId: task.workItemId, transitionCount: count, max: MAX_TRANSITIONS_PER_HOUR },
+        "Rate limiter triggered — max transitions per hour reached",
+      );
+
+      const now = new Date();
+      const commentId = createId.comment();
+      await db.insert(comments).values({
+        id: commentId,
+        workItemId: task.workItemId,
+        authorType: "system",
+        authorId: null,
+        authorName: "System",
+        content: `Rate limiter triggered — ${count} transitions in the last hour (max ${MAX_TRANSITIONS_PER_HOUR}). Automatic chaining paused. Resume manually or wait for the cooldown.`,
+        metadata: { coordination: "rate_limit", transitionCount: count, max: MAX_TRANSITIONS_PER_HOUR },
+        createdAt: now,
+      });
+
+      broadcast({
+        type: "comment_created",
+        commentId: commentId as CommentId,
+        workItemId: task.workItemId as WorkItemId,
+        authorName: "System",
+        contentPreview: "Rate limiter triggered — automatic chaining paused.",
+        timestamp: now.toISOString(),
+      });
     }
   } catch (err) {
     // On error: set status failed, preserve partial logs
