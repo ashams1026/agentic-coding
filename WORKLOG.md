@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — FX.2: Add Router transition history awareness
+
+**Task:** Include last 3 state transitions in Router's system prompt to prevent routing loops.
+
+**Done:**
+- In `packages/backend/src/agent/router.ts`: renamed `ROUTER_SYSTEM_PROMPT` → `ROUTER_BASE_PROMPT` (base content unchanged)
+- Added `getRecentTransitions(workItemId, limit)`: queries the comments table for Router comments with `fromState`/`toState` metadata, returns the last N transitions (default 3)
+- Added `buildRouterSystemPrompt(transitions)`: assembles the base prompt + a "Recent State Transitions" section listing each transition + the anti-loop instruction ("Do NOT route to a state this item was just in")
+- Modified `runRouter()`: before calling `runExecution`, queries recent transitions and updates the Router persona's `systemPrompt` in the DB with the dynamic prompt
+- The anti-loop instruction is always present (even with no transitions): "If the persona's work appears incomplete, route to Blocked with a reason rather than re-triggering the same persona."
+- Added imports: `and`, `desc` from drizzle-orm, `comments` from schema
+- Build passes
+
+**Files modified:** `packages/backend/src/agent/router.ts`
+
+**Notes:** This is the second layer of loop defense (after FX.1's same-state rejection). The Router now sees recent transition history and has explicit guidance to use Blocked state instead of re-triggering. FX.4 will add the third layer — automatic loop detection that halts chains.
+
+---
+
 ## 2026-03-30 — Review: FX.1 (approved)
 
 **Reviewed:** Same-state routing rejection in `route_to_state` tool.

@@ -6,9 +6,9 @@
  * Skips if auto-routing is disabled in project settings.
  */
 
-import { eq } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { workItems, projects } from "../db/schema.js";
+import { workItems, projects, comments } from "../db/schema.js";
 import { runExecution } from "./execution-manager.js";
 import { createId } from "@agentops/shared";
 import { personas } from "../db/schema.js";
@@ -21,7 +21,7 @@ const ROUTER_MCP_TOOLS = [
   "post_comment",
 ];
 
-const ROUTER_SYSTEM_PROMPT = `You are a routing agent for the AgentOps workflow system.
+const ROUTER_BASE_PROMPT = `You are a routing agent for the AgentOps workflow system.
 
 Your job is to decide the next workflow state for a work item after a persona has completed work on it.
 
@@ -37,6 +37,69 @@ Guidelines:
 - If review finds issues, route back to "In Progress" (rejection)
 - If a work item is stuck or has unresolvable issues, route to "Blocked"
 - Consider the execution outcome and summary when making your decision`;
+
+// ── Transition history helpers ──────────────────────────────────
+
+interface TransitionRecord {
+  from: string;
+  to: string;
+}
+
+/**
+ * Query the last N state transitions for a work item from Router comments.
+ * Router posts a comment with { fromState, toState } metadata on each transition.
+ */
+async function getRecentTransitions(
+  workItemId: string,
+  limit = 3,
+): Promise<TransitionRecord[]> {
+  const rows = await db
+    .select({ metadata: comments.metadata, createdAt: comments.createdAt })
+    .from(comments)
+    .where(
+      and(
+        eq(comments.workItemId, workItemId),
+        eq(comments.authorName, "Router"),
+      ),
+    )
+    .orderBy(desc(comments.createdAt))
+    .limit(limit);
+
+  return rows
+    .filter(
+      (r) =>
+        r.metadata &&
+        typeof r.metadata === "object" &&
+        "fromState" in r.metadata &&
+        "toState" in r.metadata,
+    )
+    .map((r) => ({
+      from: (r.metadata as Record<string, unknown>).fromState as string,
+      to: (r.metadata as Record<string, unknown>).toState as string,
+    }));
+}
+
+/**
+ * Build a Router system prompt with transition history context.
+ */
+function buildRouterSystemPrompt(transitions: TransitionRecord[]): string {
+  const parts = [ROUTER_BASE_PROMPT];
+
+  if (transitions.length > 0) {
+    const lines = transitions.map((t) => `- ${t.from} → ${t.to}`);
+    parts.push(
+      `## Recent State Transitions for This Work Item\n\n${lines.join("\n")}`,
+    );
+  }
+
+  parts.push(
+    "IMPORTANT: Do NOT route to a state this item was just in. " +
+      "If the persona's work appears incomplete, route to Blocked with a reason " +
+      "rather than re-triggering the same persona.",
+  );
+
+  return parts.join("\n\n");
+}
 
 /**
  * Run the router agent to decide the next state for a work item.
@@ -67,6 +130,16 @@ export async function runRouter(workItemId: string): Promise<boolean> {
   // Find or create a router persona for this project
   const routerPersonaId = await getOrCreateRouterPersona();
 
+  // Query recent transitions and build dynamic system prompt
+  const transitions = await getRecentTransitions(workItemId);
+  const dynamicPrompt = buildRouterSystemPrompt(transitions);
+
+  // Update the Router persona's systemPrompt with transition context
+  await db
+    .update(personas)
+    .set({ systemPrompt: dynamicPrompt })
+    .where(eq(personas.id, routerPersonaId));
+
   // Spawn the router execution
   await runExecution(workItemId, routerPersonaId);
 
@@ -93,7 +166,7 @@ async function getOrCreateRouterPersona(): Promise<string> {
     name: "Router",
     description: "Built-in routing agent that decides workflow state transitions",
     avatar: { color: "#6366f1", icon: "route" },
-    systemPrompt: ROUTER_SYSTEM_PROMPT,
+    systemPrompt: buildRouterSystemPrompt([]),
     model: "haiku",
     allowedTools: [],
     mcpTools: ROUTER_MCP_TOOLS,
