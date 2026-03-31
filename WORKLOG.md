@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: FX.P8 (approved)
+
+**Reviewed:** Skill browser in persona editor.
+- Backend: `browse-directory` extended with `includeFiles`/`fileFilter` — backward-compatible, existing FolderBrowser unaffected
+- Backend: `read-file` endpoint for preview — proper error handling, `readFileSync` import added
+- `skill-browser.tsx`: Modal scoped to project path, `.md` filter, directory navigation, file preview (20 lines), "+" to add, "Added" badge for duplicates, manual path input with Enter support
+- `path-utils.ts`: Simple browser-safe `relative()` — handles prefix case correctly, falls back to absolute
+- `persona-detail-panel.tsx`: `skills` state synced from persona, included in save mutation, Skills section with removable pills + browse button between Tools and Budget, disabled when no project path
+- API client: `browseDirectory()` options, `readFilePreview()`, both exported from index
+- Naming: kebab-case, named exports, shadcn/ui components, dark mode classes present
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.P8: Build skill browser in persona editor
 
 **Task:** Add Skills section to persona editor with file browser modal for `.md` files.
