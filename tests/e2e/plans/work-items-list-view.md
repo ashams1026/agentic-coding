@@ -6,15 +6,19 @@ Verify the Work Items page renders in list view by default, displays work items 
 
 ## Prerequisites
 
-- Backend running on `:3001`, frontend on `:5173`
+- Backend running on `:3001`, frontend on `:5173` or `:5174`
 - API mode set to "api"
 - Database seeded with test data (work items including at least one parent with children)
+- chrome-devtools MCP connected
 
 ## Steps
+
+> **Visual inspection protocol:** After each major navigation or UI interaction step, take a screenshot using `take_screenshot`. Examine the screenshot visually using the `Read` tool. Note any visual issues (misalignment, clipping, bad spacing, broken layout, invisible text, wrong colors, overlapping elements, truncated content) in the results alongside the functional pass/fail. A step can functionally pass but have visual defects — record both.
 
 1. **Navigate** to `http://localhost:5173/items`
    - Verify: "Work Items" heading is visible
    - Verify: subheading "Manage and track all work across your project." is visible
+   - **Screenshot checkpoint:** Take screenshot. Examine: overall page layout, heading alignment, sidebar rendering, list view structure.
 
 2. **Verify** list view is the default active view
    - Look for: the view toggle bar with "List" and "Flow" buttons
@@ -27,10 +31,12 @@ Verify the Work Items page renders in list view by default, displays work items 
    - Look for: a "Persona" button
    - Look for: a "Group by" dropdown
    - Look for: a "Sort by" dropdown with a sort direction toggle button (arrow icon)
+   - **Screenshot checkpoint:** Take screenshot. Examine: filter bar layout, input/dropdown alignment, consistent sizing, no overlapping controls, readable labels.
 
 4. **Verify** work items render in the list
    - Look for: multiple rows, each containing a state badge, priority badge, and title text
    - Expected: at least 3 work items visible (seeded data should include multiple items)
+   - **Screenshot checkpoint:** Take screenshot. Examine: row alignment, consistent row heights, badge sizing, title text readability, group header styling, spacing between rows.
 
 5. **Verify** state badges are present and colored
    - Look for: badges showing state names such as "Backlog", "Planning", "Ready", "In Progress", "In Review", or "Done"
@@ -47,6 +53,7 @@ Verify the Work Items page renders in list view by default, displays work items 
 8. **Click** the chevron icon on the parent item to expand it
    - Target: the chevron (▶) button on the left of the parent row
    - Expected: the chevron rotates 90° to point downward, and child items appear indented below the parent
+   - **Screenshot checkpoint:** Take screenshot. Examine: child item indentation depth, badge alignment with parent badges, row spacing, no overlapping text or clipped content.
 
 9. **Verify** child items render indented under the parent
    - Look for: items appearing below the parent with extra left padding
@@ -58,6 +65,7 @@ Verify the Work Items page renders in list view by default, displays work items 
 11. **Click** a work item row (not the chevron) to open the detail panel
     - Target: click on the title text of any work item
     - Expected: a detail panel slides in from the right side of the page, and the clicked item's row gets highlighted (accent background with ring)
+    - **Screenshot checkpoint:** Take screenshot. Examine: panel transition (no broken intermediate state), panel width proportion, list narrowing to accommodate panel, no overlapping content.
 
 12. **Verify** the detail panel shows correct item data
     - Look for: the item's title displayed as a heading in the panel
@@ -75,7 +83,7 @@ Verify the Work Items page renders in list view by default, displays work items 
     - Click it
     - Expected: the detail panel closes and the item row loses its highlighted styling
 
-14. **Take screenshot** of the list view with items visible for evidence
+14. **Take final screenshot** of the list view with items visible for evidence (full page)
 
 ## Expected Results
 
@@ -88,6 +96,16 @@ Verify the Work Items page renders in list view by default, displays work items 
 - Clicking a work item row opens the detail panel with title, state, priority, description, children, comments, execution history, and metadata
 - The detail panel can be closed via the X button
 
+### Visual Quality
+
+- Row alignment: all rows have consistent heights, badges align vertically across rows
+- Badge sizing: state and priority badges are consistently sized, not clipped or oversized
+- Indentation: child items clearly indented from parents, badges still align
+- Filter bar: controls evenly spaced, dropdowns same height, search input proportional
+- Detail panel: smooth slide-in, panel and list share space without overlap
+- Group headers: state group headers visually distinct, count badges readable
+- Overall: no horizontal scrolling, consistent spacing, sidebar properly rendered
+
 ## Failure Criteria
 
 - "Work Items" heading is not visible after page load
@@ -98,3 +116,13 @@ Verify the Work Items page renders in list view by default, displays work items 
 - Clicking a work item does not open the detail panel
 - Detail panel is missing any of: title, state badge, priority, description section, children section, comments section, execution history section
 - The page shows a JavaScript error or white screen
+
+### Visual Failure Criteria
+
+- Row heights inconsistent within the same group
+- Badges clipped, overflowing, or invisible against their background
+- Child items not visually distinguishable from parents (no indentation or grouping)
+- Filter bar controls overlap or wrap to a second line unexpectedly
+- Detail panel overlaps list content or causes layout breakage
+- Group headers misaligned with row content below them
+- Text truncated without ellipsis or tooltip on important content

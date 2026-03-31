@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — AI.V3: Update work items test plans with visual inspection
+
+**Task:** Add visual inspection steps to `work-items-list-view.md` and `work-items-create.md`.
+
+**Done:**
+- `work-items-list-view.md`: Added visual inspection protocol blockquote, 5 screenshot checkpoints (initial load, filter bar, item rows, expand children, detail panel open), "Visual Quality" section (row alignment, badge sizing, indentation, filter bar, detail panel, group headers), "Visual Failure Criteria" section (7 defects), updated prerequisites (port 5174, chrome-devtools MCP)
+- `work-items-create.md`: Added visual inspection protocol blockquote, 3 screenshot checkpoints (initial load, after add click, after panel open), "Visual Quality" section (new item styling, layout shift, panel transition, badge colors), "Visual Failure Criteria" section (5 defects), updated prerequisites
+
+**Files changed:** `tests/e2e/plans/work-items-list-view.md`, `tests/e2e/plans/work-items-create.md`
+
+**Notes:** Build passes (no code changes). Original functional steps preserved — visual inspection is additive.
+
+---
+
 ## 2026-03-30 — Review: AI.V2 (approved)
 
 **Reviewed:** Dashboard test plans visual inspection update.

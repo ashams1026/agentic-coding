@@ -14,6 +14,16 @@
 > Critical fixes from first real-world test run. Router loop, cost display, agent monitor readability, activity feed descriptions.
 > Also includes persona audit, skills system, and UX improvements.
 
+### Remove Mock Layer & E2E Test DB
+
+- [ ] **FX.MOCK1** — Remove mock API mode from frontend. Delete the `apiMode` field from `useUIStore` (and its localStorage persistence). Remove the mock/real branching in `packages/frontend/src/api/index.ts` — all exports should point directly to the real API client. Remove the `initWsConnection` mode check — always connect to the real WebSocket. Remove the QF.1 status bar mock/live toggle. Remove the demo controls that rely on mock WS (`features/demo/demo-controls.tsx`). The frontend now always talks to the real backend. Keep the `mocks/` directory for now (next task deletes it).
+
+- [ ] **FX.MOCK2** — Delete mock data layer. Delete `packages/frontend/src/mocks/` directory entirely (api.ts, fixtures.ts, ws.ts, demo.ts). Remove any imports of mock functions throughout the codebase. Clean up any dead code that only existed to support the mock layer (mock WS event simulation, demo mode hooks, etc.).
+
+- [ ] **FX.MOCK3** — Create E2E test database script. Create `scripts/test-e2e.sh` (and/or `packages/backend/src/db/seed-e2e.ts`): starts the backend with `AGENTOPS_DB_PATH=/tmp/agentops-e2e-test.db` (or a configurable temp path), runs migrations on the test DB, seeds it with E2E test fixtures (same data the mock fixtures had — projects, personas, work items in various states, executions, comments), starts the frontend pointing at this backend, prints the URLs. Add `"test:e2e:setup"` and `"test:e2e:teardown"` scripts to root `package.json`. E2E test plan prerequisites should reference this script. On teardown: delete the temp DB file.
+
+- [ ] **FX.MOCK4** — Create demo seed snapshot. For showcasing the app without running real agents: create `packages/backend/src/db/seed-demo.ts` with a rich dataset (multiple projects, work items in all states, realistic execution history with comments, cost data, proposals). Add `"db:seed:demo"` script. Users can run `pnpm db:seed:demo` to populate their local DB with demo data. This replaces the old in-memory mock "Watch Demo" feature with persistent real data.
+
 ### Settings Navigation Fix
 
 - [ ] **FX.SET1** — Remove duplicate settings nav item and rename section. In `packages/frontend/src/features/settings/settings-layout.tsx`: the "API Keys" and "Concurrency" sidebar links both render the same `ApiKeysSection` component (which contains both the API key input and the concurrency slider). Remove the "Concurrency" nav entry. Rename the remaining section from "API Keys" to "API & Execution" (or "Agent Configuration") to better reflect that it covers both API key management and concurrency/execution settings. Update the section `id` and any references. Verify only one link appears in the settings sidebar and it renders the combined content.
@@ -143,7 +153,7 @@
 
 > Update remaining test plans with visual inspection protocol (screenshot checkpoints, visual quality/failure criteria).
 
-- [ ] **AI.V3** — Update `work-items-list-view.md` and `work-items-create.md` with visual inspection steps. Add screenshot + examine after: list renders, expanding a parent, opening detail panel, creating a new item. Check: row alignment, badge sizing, indentation, panel transition.
+- [review] **AI.V3** — Update `work-items-list-view.md` and `work-items-create.md` with visual inspection steps. Add screenshot + examine after: list renders, expanding a parent, opening detail panel, creating a new item. Check: row alignment, badge sizing, indentation, panel transition.
 
 - [ ] **AI.V4** — Update `work-items-flow-view.md` with visual inspection steps. Add screenshot + examine after: flow view renders, clicking a state node. Check: node layout, arrow rendering, label readability, no clipping or overflow.
 
