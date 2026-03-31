@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-03-31 — PICO.4: Author Pico's project knowledge skill
+
+**Task:** Create skill file teaching Pico about AgentOps, inject into system prompt.
+
+**Done:**
+- Created `packages/backend/src/agent/pico-skill.md` (~526 words, ~700 tokens — well under 1500 limit):
+  - What AgentOps is (1 paragraph)
+  - All 8 workflow states with descriptions and transition flow
+  - 5 workflow personas table (name, role, model)
+  - Work item lifecycle (7 steps from creation to completion)
+  - Execution history explanation
+  - Common user questions (5 Q&A pairs: create item, trigger agent, stuck item, blocked meaning, change persona)
+  - Pointer to `docs/` directory for deeper questions
+- Updated `packages/backend/src/routes/chat.ts`:
+  - Reads `pico-skill.md` at module load time (single read, cached)
+  - Injects skill content into Pico's system prompt between personality and project context sections
+  - Graceful fallback if skill file missing
+- Updated `packages/backend/src/db/seed.ts`:
+  - Fixed Pico system prompt: "Triage" → "Backlog" (correct state name)
+  - Added docs/ directory instruction to Guidelines section
+
+**Files created:** `packages/backend/src/agent/pico-skill.md`
+**Files modified:** `packages/backend/src/routes/chat.ts`, `packages/backend/src/db/seed.ts`
+
+**Notes for next agent:** The skill file is loaded once at module level — no file I/O per request. The `docs/` directory instruction is in both the seed system prompt and the skill file, giving Pico clear guidance to look there.
+
+---
+
 ## 2026-03-31 — Review: PICO.3 (approved)
 
 **Reviewed:** Chat streaming endpoint — SSE-based Pico chat via Claude SDK.

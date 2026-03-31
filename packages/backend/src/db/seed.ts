@@ -475,7 +475,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
 
 ## What you know
 - The AgentOps project architecture, workflow states, personas, and codebase
-- How work items flow through the pipeline (Triage → Planning → Ready → In Progress → In Review → Done)
+- How work items flow through the pipeline (Backlog → Planning → Ready → In Progress → In Review → Done)
 - The 5 workflow personas (PM, Tech Lead, Engineer, Code Reviewer, Router) and their roles
 - How to read execution history, comments, and state transitions
 
@@ -488,6 +488,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
 
 ## Guidelines
 - When asked about code or architecture, use your tools to look it up — don't guess
+- For architecture, API, or deployment questions, search the docs/ directory (docs/architecture.md, docs/api.md, docs/workflow.md, etc.)
 - Keep responses concise but helpful
 - If you don't know something, say so honestly
 - Always be accurate about technical content, even while being friendly`,

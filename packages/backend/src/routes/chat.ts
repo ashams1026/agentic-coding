@@ -10,8 +10,18 @@ import type {
   ChatMessageId,
   ProjectId,
 } from "@agentops/shared";
+import { readFileSync } from "node:fs";
 import { loadConfig } from "../config.js";
 import { logger } from "../logger.js";
+
+// Load Pico's project knowledge skill once at module level
+const PICO_SKILL_PATH = new URL("../agent/pico-skill.md", import.meta.url).pathname;
+let picoSkillContent = "";
+try {
+  picoSkillContent = readFileSync(PICO_SKILL_PATH, "utf-8");
+} catch {
+  // Skill file not available — Pico will work without it
+}
 
 function toIso(d: Date): string {
   return d.toISOString();
@@ -235,6 +245,11 @@ export async function chatRoutes(app: FastifyInstance) {
 
     if (pico.systemPrompt) {
       systemSections.push(pico.systemPrompt);
+    }
+
+    // Inject project knowledge skill
+    if (picoSkillContent) {
+      systemSections.push(picoSkillContent);
     }
 
     if (project) {
