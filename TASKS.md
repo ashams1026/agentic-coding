@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-16 complete and archived. Sprint 17 partially archived (FX.SEC1, FX.MOCK1-4, FX.SET1-3, FX.RST1, FX.FLOW1, FX.NAV1, FX.PM1, FX.0, FX.P1-P4).
+> Sprints 1-16 complete and archived. Sprint 17 partially archived (FX.SEC1, FX.MOCK1-4, FX.SET1-3, FX.RST1, FX.FLOW1, FX.NAV1, FX.PM1, FX.0, FX.P1-P9, FX.PM2-PM3, FX.1-FX.3).
 
 ---
 
@@ -14,33 +14,7 @@
 > Critical fixes from first real-world test run. Router loop, cost display, agent monitor readability, activity feed descriptions.
 > Also includes persona audit, skills system, security, and UX improvements.
 
-### Persona Audit & Prompt Overhaul (remaining)
-
-- [x] **FX.P5** — Audit and overhaul Router persona. In seed.ts Router entry: (1) Verify `allowedTools` — Router uses MCP tools only, not SDK tools. Should be empty array `[]` for `allowedTools`. (2) Verify `mcpTools` — should be: `route_to_state`, `list_items`, `get_context`, `post_comment`. Router needs `post_comment` to explain its routing decision. (3) Overhaul `systemPrompt` — make routing rules explicit and unambiguous: after Planning → route to Decomposition (if item needs children) or Ready (if small enough), after Decomposition → route to Ready, after Ready → no action (dispatch handles In Progress), after In Progress → route to In Review, after In Review with approval → route to Done, after In Review with rejection → route to In Progress (include rejection context), if stuck or unclear → route to Blocked with reason. Add: NEVER route to the current state, NEVER route backwards more than one step, check execution outcome and summary before deciding, post a one-line comment explaining the routing decision. Include the valid transitions map from the workflow so the Router has it in context.
-
-- [x] **FX.P6** — Verify SDK tool names match what the SDK expects. In `packages/backend/src/agent/claude-executor.ts`: the SDK type definitions show tool input types like `FileReadInput`, `FileEditInput`, `FileWriteInput`, `BashInput`, `GlobInput`, `GrepInput`, `WebFetchInput`, `WebSearchInput`, `AgentInput`, `NotebookEditInput`, `TodoWriteInput`, `AskUserQuestionInput`. Verify whether the SDK's `allowedTools` option expects the short names (`Read`, `Edit`, `Write`) or the full type names (`FileRead`, `FileEdit`, `FileWrite`). Test by spawning a minimal executor with a known tool list and checking if the agent actually has access. Fix all persona `allowedTools` arrays to use the correct names. Document the full list of available SDK tools as a comment in `claude-executor.ts` for reference.
-
-### Persona Detail Panel Redesign
-
-- [x] **FX.PM2** — *(completed but needs fix — see FX.PM3)*
-
-- [x] **FX.PM3** — Fix persona side panel to open in read-only mode first. The panel from FX.PM2 opens immediately with all fields editable. Instead: the panel should open as a **read-only view** by default — name, description, model badge, system prompt rendered as markdown, tools as badges, skills as pills, budget — all displayed as static text, not inputs. Add an "Edit" button in the panel header. Clicking "Edit" switches the panel to edit mode: name becomes a text input, description becomes a textarea, system prompt gets Write/Preview tabs, model becomes a dropdown, tools become checkboxes, budget becomes an input. Add "Save" and "Cancel" buttons at the bottom in edit mode. "Save" persists and returns to read-only. "Cancel" discards and returns to read-only. The default experience is: click a card to inspect, explicitly choose to edit.
-
-### Persona Skills System
-
-- [x] **FX.P7** — Add skills field to persona schema. In `packages/shared/src/entities.ts`: add `skills: string[]` to the `Persona` interface — an array of skill file paths (relative to the project directory, e.g., `skills/review-checklist.md`, `skills/coding-standards.md`). In `packages/backend/src/db/schema.ts`: add `skills` column to personas table (text, JSON serialized array, default `[]`). Run migration.
-
-- [x] **FX.P8** — Build skill browser in persona editor. In the Persona Editor UI (`packages/frontend/src/features/persona-manager/`): add a "Skills" section below the Tools section. Show currently assigned skills as removable pills. Add a "Browse skills..." button that opens a modal: the modal uses the `POST /api/settings/browse-directory` endpoint (from PS.10) scoped to the project directory, filtered to show only `.md` files. User can navigate folders, select files, and add them. Also allow typing a path directly. Show a preview of the skill file content when selected (first 20 lines). Skills are saved as relative paths in the persona's `skills` array.
-
-- [x] **FX.P9** — Inject persona skills into system prompt. In `packages/backend/src/agent/claude-executor.ts` `buildSystemPrompt()`: after the persona's base system prompt, append a "Skills" section. For each skill path in `persona.skills`: read the file from the project directory (`path.join(project.path, skillPath)`), append its content wrapped in a header: `\n\n## Skill: {filename}\n\n{content}`. Cap total injected skill content at ~2000 tokens to avoid blowing the context. If a skill file doesn't exist, skip it and log a warning. This gives each persona custom reference material (coding standards, review checklists, architecture guides, etc.) that the user curates per-persona.
-
-### Router & Dispatch Fixes
-
-- [x] **FX.1** — Prevent Router from re-routing to the same state. In `packages/backend/src/agent/mcp-server.ts` `route_to_state` tool: reject transitions where `targetState === currentState` with an error message "Cannot route to the current state." This prevents the PM→Router→PM loop where the Router keeps picking the same state.
-
-- [x] **FX.2** — Add Router transition history awareness. In `packages/backend/src/agent/router.ts`: when building the Router's system prompt, include the last 3 state transitions for this work item (from DB or audit log). Add an explicit instruction: "Do NOT route to a state this item was just in. If the persona's work appears incomplete, route to Blocked with a reason rather than re-triggering the same persona." This gives the Router enough context to break cycles.
-
-- [x] **FX.3** — Log when rate limiter triggers. In `packages/backend/src/agent/execution-manager.ts`: when `canTransition()` returns false, log a warning with the workItemId, current transition count, and a message: "Rate limiter triggered — max transitions per hour reached." Post a system comment on the work item so the user can see it in the UI. Broadcast a WS event so the dashboard can reflect it.
+### Router & Dispatch Fixes (remaining)
 
 - [ ] **FX.4** — Add transition loop detection. In `execution-manager.ts` or `dispatch.ts`: track the last 3 state transitions per work item in memory. If the same state appears 3 times in the recent history (A→B→A→B pattern), halt the chain and post a system comment: "Detected routing loop — halting automatic transitions. Manual intervention required." Transition the item to Blocked.
 

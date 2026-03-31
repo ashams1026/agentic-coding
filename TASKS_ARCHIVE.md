@@ -84,3 +84,15 @@
 - [x] **FX.P2** — TL persona overhaul: mcpTools fixed, systemPrompt with 3-step decomposition workflow. *(completed 2026-03-30)*
 - [x] **FX.P3** — Engineer persona overhaul: mcpTools fixed, systemPrompt with 4-step implementation workflow. *(completed 2026-03-30)*
 - [x] **FX.P4** — Code Reviewer persona overhaul: mcpTools fixed, systemPrompt with 5-step review workflow. *(completed 2026-03-30)*
+
+### Persona Detail Panel, Skills System & Router Fixes — archived 2026-03-30
+- [x] **FX.P5** — Router persona audit: fixed swapped allowedTools/mcpTools, overhauled systemPrompt with valid transitions map. *(completed 2026-03-30)*
+- [x] **FX.P6** — SDK tool name verification: confirmed short names, fixed executor `tools: []` bug, fixed MCP env var. *(completed 2026-03-30)*
+- [x] **FX.PM2** — Replaced persona card expand with side detail panel (45%/55% split layout). *(completed 2026-03-30)*
+- [x] **FX.PM3** — Fixed persona panel to open read-only by default with explicit Edit button. *(completed 2026-03-30)*
+- [x] **FX.P7** — Added `skills: string[]` to Persona entity, DB schema, and API contracts. *(completed 2026-03-30)*
+- [x] **FX.P8** — Built skill browser modal in persona editor (`.md` file browser, preview, relative paths). *(completed 2026-03-30)*
+- [x] **FX.P9** — Skill injection into system prompt (`buildSystemPrompt` section 5, 8000 char cap). *(completed 2026-03-30)*
+- [x] **FX.1** — Same-state routing rejection in `route_to_state` MCP tool. *(completed 2026-03-30)*
+- [x] **FX.2** — Router transition history awareness (last 3 transitions in dynamic system prompt). *(completed 2026-03-30)*
+- [x] **FX.3** — Rate limiter logging: `logger.warn` + system comment + `comment_created` WS broadcast. *(completed 2026-03-30)*
