@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — FX.SET3: Replace auto-routing toggle with play/pause button
+
+**Task:** Replace ON/OFF toggle with play/pause metaphor across 3 locations.
+
+**Done:**
+- **Settings → Workflow:** Replaced toggle switch with large play/pause button (emerald/amber colors) + descriptive text + tooltip
+- **Status bar:** Added play/pause icon button next to "AgentOps" with tooltip (Play green = active, Pause amber = paused). Clicking toggles autoRouting via PATCH
+- **Work Items page header:** Added small pill badge next to "Work Items" title showing "Auto" (play, green) or "Manual" (pause, amber) with tooltip
+- All 3 locations read autoRouting from project settings and stay in sync via TanStack Query
+- Build passes
+
+**Files modified:** `features/settings/workflow-config-section.tsx`, `components/status-bar.tsx`, `pages/work-items.tsx`
+
+**Notes:** Play/pause metaphor: play = work flows automatically through pipeline, pause = manual control. All locations use consistent emerald (active) / amber (paused) color scheme. Tooltips explain the behavior.
+
+---
+
 ## 2026-03-30 — Review: FX.SET2 (approved)
 
 **Reviewed:** Workflow diagram removal from settings.

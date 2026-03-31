@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Play, Pause } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -7,11 +8,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useProjects, useUpdateProject, usePersonas, usePersonaAssignments, useUpdatePersonaAssignment, useSelectedProject } from "@/hooks";
 import { WORKFLOW } from "@agentops/shared";
 import type { PersonaId, Persona } from "@agentops/shared";
+import { cn } from "@/lib/utils";
 
-// ── Auto-routing toggle ─────────────────────────────────────────
+// ── Auto-routing play/pause ─────────────────────────────────────
 
 function AutoRoutingToggle() {
   const { data: projectsList } = useProjects();
@@ -30,30 +33,38 @@ function AutoRoutingToggle() {
   };
 
   return (
-    <div className="flex items-center justify-between rounded-lg border p-4">
-      <div className="flex-1 mr-4">
-        <p className="text-sm font-medium">Auto-routing</p>
+    <div className="flex items-center gap-4 rounded-lg border p-4">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            onClick={handleToggle}
+            disabled={!project}
+            className={cn(
+              "flex h-12 w-12 items-center justify-center rounded-full transition-colors disabled:opacity-50",
+              autoRouting
+                ? "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 dark:text-emerald-400"
+                : "bg-amber-500/15 text-amber-600 hover:bg-amber-500/25 dark:text-amber-400",
+            )}
+          >
+            {autoRouting ? <Play className="h-5 w-5 ml-0.5" /> : <Pause className="h-5 w-5" />}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {autoRouting
+            ? "Auto-routing: active — agents automatically transition work items"
+            : "Auto-routing: paused — manual transitions only"}
+        </TooltipContent>
+      </Tooltip>
+      <div className="flex-1">
+        <p className="text-sm font-medium">
+          Auto-routing: {autoRouting ? "Active" : "Paused"}
+        </p>
         <p className="text-xs text-muted-foreground mt-0.5">
           {autoRouting
-            ? "Auto-routing: ON \u2014 Router agent will automatically transition work items"
-            : "Auto-routing: OFF \u2014 Manual transitions only"}
+            ? "Work flows automatically through the pipeline. Agents transition items between states."
+            : "Pipeline is paused. You control all state transitions manually."}
         </p>
       </div>
-      <button
-        onClick={handleToggle}
-        disabled={!project}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors disabled:opacity-50 ${
-          autoRouting ? "bg-emerald-500" : "bg-muted-foreground/30"
-        }`}
-        role="switch"
-        aria-checked={autoRouting}
-      >
-        <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-            autoRouting ? "translate-x-6" : "translate-x-1"
-          }`}
-        />
-      </button>
     </div>
   );
 }

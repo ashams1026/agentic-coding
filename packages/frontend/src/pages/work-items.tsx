@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { List, GitBranch, Plus } from "lucide-react";
+import { List, GitBranch, Plus, Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
@@ -9,7 +9,7 @@ import { ListView } from "@/features/work-items/list-view";
 import { FlowView } from "@/features/work-items/flow-view";
 import { DetailPanel } from "@/features/work-items/detail-panel";
 import { useWorkItemsStore, type WorkItemView } from "@/stores/work-items-store";
-import { useCreateWorkItem, useSelectedProject } from "@/hooks";
+import { useCreateWorkItem, useSelectedProject, useProjects } from "@/hooks";
 
 const viewOptions: { value: WorkItemView; label: string; icon: typeof List }[] = [
   { value: "list", label: "List", icon: List },
@@ -22,6 +22,9 @@ export function WorkItemsPage() {
   const { view, setView, searchQuery, setSearchQuery, sortDir, setSortDir, filterPersonas, filterLabels, selectedItemId, detailPanelWidth, setDetailPanelWidth } = store;
   const { projectId } = useSelectedProject();
   const createWorkItem = useCreateWorkItem();
+  const { data: projectsList } = useProjects();
+  const projectSettings = projectsList?.[0]?.settings as Record<string, unknown> | undefined;
+  const autoRouting = projectSettings?.autoRouting !== false;
 
   // Sync URL params → store on mount
   useEffect(() => {
@@ -122,7 +125,27 @@ export function WorkItemsPage() {
       <div className="shrink-0 p-6 pb-0">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Work Items</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold">Work Items</h1>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className={cn(
+                    "flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
+                    autoRouting
+                      ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                      : "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+                  )}>
+                    {autoRouting ? <Play className="h-3 w-3" /> : <Pause className="h-3 w-3" />}
+                    {autoRouting ? "Auto" : "Manual"}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {autoRouting
+                    ? "Auto-routing active — agents transition work items automatically"
+                    : "Auto-routing paused — manual transitions only"}
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <p className="text-muted-foreground mt-1">
               Manage and track all work across your project.
             </p>
