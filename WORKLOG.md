@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — Review: FX.FLOW1 (approved)
+
+**Reviewed:** Flow view redesign as vertical state machine.
+- Vertical column: 7 main states top-to-bottom with Router pills between each pair ✓
+- State node cards: colored header, item count, active agents with pulse, persona avatars, progress bar ✓
+- Blocked branches right with dashed connector and dashed red border ✓
+- Old SVG `computeLayout`/`computeArrowPath` removed, replaced with pure flex CSS ✓
+- Added `usePersonaAssignments` for assigned personas per state ✓
+- Click state filters detail panel (existing behavior preserved) ✓
+- Dark mode, centered, scrollable ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — Review: FX.RST1 (approved)
 
 **Reviewed:** Graceful restart flow with active agent modal.
