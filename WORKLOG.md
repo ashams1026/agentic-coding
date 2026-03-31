@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — AI.23: Execute activity-feed.md E2E test
+
+**Task:** Execute activity-feed test plan via chrome-devtools MCP.
+
+**Done:**
+- Executed all 14 steps in browser against http://localhost:5174/activity
+- 14/14 steps PASS, 0 FAIL
+- 5 screenshot checkpoints taken — all visual checks PASS
+- 25+ events across 6 date groups (Mar 21–27), all with valid structure
+- Event types found: Comment, Agent Started, Agent Completed, Agent Failed, State Change, Proposal Created, Approved
+- Types filter: 11 checkboxes, uncheck removes matching events, "Select all" restores
+- Persona filter: "Engineer" narrows to 4 events
+- Date filter: "Today" combined with Engineer shows empty state message
+- Clear button resets all filters correctly
+
+**Files created:** `tests/e2e/results/activity-feed.md`, 4 screenshot PNGs in `tests/e2e/results/`
+
+**Notes:** All activity feed features work correctly. Rich event data from seeded mock fixtures.
+
+---
+
 ## 2026-03-30 — Review: AI.22 (approved)
 
 **Reviewed:** E2E test execution of agent-monitor-history.md.
