@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: AI.29 (approved)
+
+**Reviewed:** E2E test execution of dark-mode.md.
+- Results file well-structured: summary, step-by-step table, screenshot table (4 checkpoints), visual quality (7 criteria), evidence ✓
+- All 19 steps executed, 12 screenshots captured ✓
+- 19/19 PASS — theme toggle cycles Light→Dark→System, all 6 pages verified in dark mode ✓
+- Settings ↔ sidebar toggle bidirectional sync confirmed ✓
+- HTML class verified via JS eval at each transition ✓
+- Fixed summary count: was 18 PASS + 1 N/A, corrected to 19 PASS + 0 N/A (tooltip was verified in Step 3) ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.29: Execute dark-mode.md E2E test
 
 **Task:** Execute dark-mode test plan via chrome-devtools MCP.

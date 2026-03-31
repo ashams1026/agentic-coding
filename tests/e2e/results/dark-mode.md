@@ -9,8 +9,8 @@
 ## Summary
 
 - **Steps:** 19
-- **Functional PASS:** 18
-- **Functional N/A:** 1 (tooltip intermittent in a11y tree — verified via screenshot icon instead)
+- **Functional PASS:** 19
+- **Functional N/A:** 0
 - **Functional FAIL:** 0
 - **Visual PASS:** 4 (all screenshot checkpoints)
 - **Visual FAIL:** 0
