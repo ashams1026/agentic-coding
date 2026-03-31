@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: AI.22 (approved)
+
+**Reviewed:** E2E test execution of agent-monitor-history.md.
+- Results file well-structured: summary, step-by-step table, screenshot table (5 checkpoints), visual quality (8 criteria), evidence ✓
+- All 14 steps executed, 4 screenshots captured ✓
+- 14/14 PASS — stats bar, filter bar, table, expand/collapse, outcome filter, cost sort all verified ✓
+- Sort verification thorough: exact cost order documented for both directions ✓
+- Filter verification thorough: stats update documented (6→5 runs, 83→100%, $2.74→$2.52) ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.22: Execute agent-monitor-history.md E2E test
 
 **Task:** Execute agent-monitor-history test plan via chrome-devtools MCP.
