@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-30 — FX.DB2: Create mock/simulated executor
+
+**Task:** Implement a mock executor matching the `AgentExecutor` interface for test and dev environments.
+
+**Done:**
+- Created `packages/backend/src/agent/mock-executor.ts` implementing `AgentExecutor`
+- `MockExecutor` class with configurable `delayMs` (default 2000) via constructor options
+- `spawn()` yields 6 events in sequence with staggered delays (`delayMs / 5` per step):
+  1. **thinking**: analyzes work item title and current state
+  2. **text**: announces approach referencing task context
+  3. **tool_use**: `post_comment` with `workItemId` and summary content, synthetic `toolCallId`
+  4. **tool_result**: success response with mock comment ID
+  5. **text**: completion message
+  6. **result**: `outcome: "success"`, `costUsd: 0`, `durationMs` matching actual elapsed time
+- All events reference the work item title for realistic output
+- `sleep()` helper for async delays
+- Unused parameters prefixed with `_` to satisfy TS strict mode
+- Build passes
+
+**Files created:** `packages/backend/src/agent/mock-executor.ts`
+
+**Notes:** The mock executor exercises the full execution pipeline (DB records, WS streaming, router chain) without API calls. FX.DB3 will wire the executor selection by environment.
+
+---
+
 ## 2026-03-30 — Review: FX.DB1 (approved)
 
 **Reviewed:** Dev/prod database separation in `packages/backend/src/db/connection.ts` and related files.
