@@ -83,7 +83,7 @@
   --color-attention: #dc2626;
 
   /* Sidebar width */
-  --spacing-sidebar: 16rem;
+  --spacing-sidebar: 14rem;
   --spacing-sidebar-collapsed: 4rem;
 }
 
@@ -170,8 +170,10 @@
 /*
  * Base styles
  */
-* {
-  border-color: hsl(var(--border));
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
 }
 
 body {

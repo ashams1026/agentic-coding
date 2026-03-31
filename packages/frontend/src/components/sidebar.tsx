@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { NavLink, useLocation } from "react-router";
+import { Link, useLocation } from "react-router";
 import {
   LayoutDashboard,
   ListTodo,
@@ -110,88 +110,91 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 overflow-y-auto p-2">
-        {navItems.map(({ to, icon: Icon, label }) => (
-          <Tooltip key={to}>
-            <TooltipTrigger asChild>
-              <NavLink
-                to={to}
-                end={to === "/"}
-                className={({ isActive }) =>
-                  cn(
-                    "flex flex-row items-center rounded-lg text-sm transition-all duration-200",
-                    "hover:bg-accent/80 hover:text-accent-foreground",
+      <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-2">
+        {navItems.map(({ to, icon: Icon, label }) => {
+          const isActive = to === "/"
+            ? location.pathname === "/"
+            : location.pathname.startsWith(to);
+
+          return (
+            <Tooltip key={to}>
+              <TooltipTrigger asChild>
+                <Link
+                  to={to}
+                  className={cn(
+                    "flex w-full items-center rounded-md text-sm transition-colors duration-150",
+                    "hover:bg-muted",
                     isActive
-                      ? "bg-accent/80 text-foreground font-semibold border-l-2 border-primary"
-                      : "text-muted-foreground font-medium border-l-2 border-transparent",
+                      ? "bg-muted text-foreground font-semibold border-l-[3px] border-l-primary"
+                      : "text-muted-foreground font-medium border-l-[3px] border-l-transparent",
                     sidebarCollapsed
                       ? "justify-center px-2 py-2"
                       : "gap-3 px-3 py-2",
-                  )
-                }
-              >
-                <span className="relative shrink-0 inline-flex">
-                  <Icon className="h-4 w-4" />
-                  {/* Collapsed badges */}
-                  {to === "/items" && pendingProposalCount > 0 && (
-                    <span
-                      className={cn(
-                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-0.5 text-xs font-bold text-white transition-all duration-200",
-                        sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
-                      )}
-                    >
-                      {pendingProposalCount}
-                    </span>
                   )}
-                  {to === "/agents" && activeAgentCount > 0 && (
-                    <span
-                      className={cn(
-                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-0.5 text-xs font-bold text-white transition-all duration-200",
-                        sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
-                      )}
-                    >
-                      {activeAgentCount}
-                    </span>
-                  )}
-                  {to === "/activity" && unreadActivityCount > 0 && (
-                    <span
-                      className={cn(
-                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-500 px-0.5 text-xs font-bold text-white transition-all duration-200",
-                        sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
-                      )}
-                    >
-                      {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
-                    </span>
-                  )}
-                </span>
-                {/* Label + expanded badges */}
-                {!sidebarCollapsed && (
-                  <>
-                    <span className="flex-1 truncate">{label}</span>
+                >
+                  <span className="relative shrink-0 inline-flex">
+                    <Icon className="h-5 w-5" />
+                    {/* Collapsed badges */}
                     {to === "/items" && pendingProposalCount > 0 && (
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-xs font-bold text-white shrink-0">
+                      <span
+                        className={cn(
+                          "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-0.5 text-xs font-bold text-white transition-all duration-200",
+                          sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
+                        )}
+                      >
                         {pendingProposalCount}
                       </span>
                     )}
                     {to === "/agents" && activeAgentCount > 0 && (
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-xs font-bold text-white shrink-0">
+                      <span
+                        className={cn(
+                          "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-0.5 text-xs font-bold text-white transition-all duration-200",
+                          sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
+                        )}
+                      >
                         {activeAgentCount}
                       </span>
                     )}
                     {to === "/activity" && unreadActivityCount > 0 && (
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1 text-xs font-bold text-white shrink-0">
+                      <span
+                        className={cn(
+                          "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-500 px-0.5 text-xs font-bold text-white transition-all duration-200",
+                          sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
+                        )}
+                      >
                         {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
                       </span>
                     )}
-                  </>
-                )}
-              </NavLink>
-            </TooltipTrigger>
-            {sidebarCollapsed && (
-              <TooltipContent side="right">{label}</TooltipContent>
-            )}
-          </Tooltip>
-        ))}
+                  </span>
+                  {/* Label + expanded badges */}
+                  {!sidebarCollapsed && (
+                    <>
+                      <span className="flex-1 truncate">{label}</span>
+                      {to === "/items" && pendingProposalCount > 0 && (
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-xs font-bold text-white shrink-0">
+                          {pendingProposalCount}
+                        </span>
+                      )}
+                      {to === "/agents" && activeAgentCount > 0 && (
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-xs font-bold text-white shrink-0">
+                          {activeAgentCount}
+                        </span>
+                      )}
+                      {to === "/activity" && unreadActivityCount > 0 && (
+                        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1 text-xs font-bold text-white shrink-0">
+                          {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </Link>
+              </TooltipTrigger>
+              {sidebarCollapsed && (
+                <TooltipContent side="right">{label}</TooltipContent>
+              )}
+            </Tooltip>
+          );
+        })}
       </nav>
 
       <Separator />

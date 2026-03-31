@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-31 — FX.NAV2: Redo sidebar navigation fix
+
+**Task:** Ground-up fix for sidebar nav — icons stacked above labels, no hover/active states due to Radix `asChild` incompatibility with React Router's function-based `className`.
+
+**Root causes found & fixed:**
+1. **NavLink + Radix `asChild` incompatibility**: Radix's `Slot` component stringified React Router NavLink's function-based `className` prop instead of calling it, resulting in the literal function source code as the CSS class. Fix: replaced `NavLink` with `Link` + manual `isActive` computation using `useLocation()`.
+2. **Global `* { border-color }` outside `@layer`**: Un-layered `* { border-color: hsl(var(--border)) }` in `index.css` had higher cascade priority than all `@layer utilities` rules, preventing any Tailwind border-color utility from working. Fix: wrapped in `@layer base {}`.
+3. **Nav items not stacking**: Changed `<nav>` from `space-y-1` to `flex flex-col gap-1` with `w-full` on each link.
+4. **Sidebar width**: Changed from 16rem (256px) to 14rem (224px) per task spec.
+5. **Visual polish**: `rounded-md`, `hover:bg-muted`, `transition-colors duration-150`, 3px primary left border on active, `h-5 w-5` icons (20px).
+
+**Files modified:** `packages/frontend/src/components/sidebar.tsx`, `packages/frontend/src/index.css`
+
+**Also in this commit:** Marked FX.SDK3-6 as blocked (depend on FX.SDK1's GET /api/sdk/capabilities endpoint).
+
+**Verified:** Screenshots confirm icons inline with labels, active state (muted bg + dark left border + bold), hover state, collapsed mode, navigation switching active state correctly. Build passes.
+
+---
+
 ## 2026-03-30 — Review: FX.SDK2 (approved)
 
 **Reviewed:** SDK-native skill injection in `packages/backend/src/agent/claude-executor.ts`.
