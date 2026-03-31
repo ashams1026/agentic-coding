@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-30 — FX.7: Render agent output as chat thread
+
+**Task:** Restructure the terminal renderer to display output as a conversation with grouped messages, collapsible thinking, and timestamps.
+
+**Done:**
+- Replaced flat `DisplayItem[]` model with `MessageGroup` union type: `agent-text` (grouped text/code bubbles), `thinking` (collapsible accordion), `tool` (paired call+result cards)
+- New `groupIntoMessages()` function: walks chunks sequentially, groups consecutive text/code chunks into single agent message bubbles, flushes text group on thinking/tool boundaries, pairs tool_call + tool_result by toolCallId
+- `AgentTextBubble`: rounded-lg container with zinc-900 background and zinc-800 border, renders mixed text/code chunks within one bubble
+- `ThinkingAccordion`: collapsed by default, "Thinking..." label with chevron toggle, expands to show italic muted text with left border
+- `ToolMessage`: wraps existing `ToolCallSection` with timestamp
+- `MessageTimestamp`: compact HH:MM:SS timestamp below each message group
+- Chat area uses `space-y-3` for visual separation between message groups
+- Removed old `ChunkRenderer`, `TextBlock`, `ThinkingBlock`, `processChunks`, `DisplayItem` — all replaced
+- Kept persona header, toolbar, scroll lock, and WS subscription unchanged
+- Added `cn` utility import, `ChevronDown` from lucide-react
+- Build passes
+
+**Files modified:** `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`
+
+**Notes:** The chat thread model groups consecutive text chunks into single message bubbles, which reduces visual noise when agents emit multiple small text chunks. Thinking blocks default to collapsed since they can be very long. Tool calls reuse the existing ToolCallSection for consistency.
+
+---
+
 ## 2026-03-30 — Review: FX.6 (approved)
 
 **Reviewed:** Persona identity header in `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`.
