@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: FX.P1 (approved)
+
+**Reviewed:** Product Manager persona audit and overhaul.
+- mcpTools: `route_to_state` removed, `list_items`/`get_context`/`request_review` added ✓
+- allowedTools: `["Read", "Glob", "Grep", "WebSearch"]` valid SDK names ✓
+- systemPrompt: comprehensive overhaul with workflow context, AC template, "done" criteria, anti-patterns ✓
+- default-personas.ts updated in sync ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.P1: Audit and overhaul Product Manager persona
 
 **Task:** Fix mcpTools, verify allowedTools, overhaul systemPrompt for PM persona.
