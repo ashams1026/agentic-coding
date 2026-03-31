@@ -56,8 +56,8 @@ const BUILT_IN_PERSONAS: DefaultPersona[] = [
     description: "Routes work items between workflow states based on execution outcomes.",
     avatar: { color: "#6366f1", icon: "route" },
     model: "haiku",
-    allowedTools: ["list_items", "get_context", "route_to_state"],
-    mcpTools: [],
+    allowedTools: [],
+    mcpTools: ["route_to_state", "list_items", "get_context", "post_comment"],
     maxBudgetPerRun: 10,
   },
 ];

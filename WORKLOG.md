@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-03-30 — FX.P5: Audit and overhaul Router persona
+
+**Task:** Fix allowedTools/mcpTools swap, overhaul systemPrompt for Router persona.
+
+**Done:**
+- **Critical bug: allowedTools/mcpTools were swapped.** Router had `allowedTools: ["list_items", "get_context", "route_to_state"]` (MCP names in SDK field) and `mcpTools: []` (empty). Fixed to `allowedTools: []` (Router needs no SDK tools) and `mcpTools: ["route_to_state", "list_items", "get_context", "post_comment"]`. Added `post_comment` so Router can explain its decisions.
+- **systemPrompt**: Complete overhaul from ~18-line basic guidelines to comprehensive ~60-line prompt. Includes: full valid transitions map from workflow.ts, 5-step workflow (get_context → list_items if children → decide → post_comment → route_to_state), per-state routing rules based on actual transition map, critical rules (never same-state, never skip states, check execution outcome), anti-patterns (no code reading, no long comments, no loops).
+- Key difference from task description: the task said "Planning → Decomposition" but the actual transition map has `Planning → [Ready, Blocked]` — Decomposition is reached from Ready. Prompt follows the real transition map.
+- Updated both `seed.ts` and `default-personas.ts`
+- Build passes
+
+**Files modified:** `packages/backend/src/db/seed.ts`, `packages/backend/src/db/default-personas.ts`
+
+**Notes:** The swapped allowedTools/mcpTools was likely a major contributor to the Router not functioning correctly — it had SDK tool filtering set to MCP tool names, and no MCP tools available at all.
+
+---
+
 ## 2026-03-30 — Review: FX.P4 (approved)
 
 **Reviewed:** Code Reviewer persona audit and overhaul.
