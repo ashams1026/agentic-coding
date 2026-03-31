@@ -12,7 +12,11 @@
 ## Sprint 17: Agent Pipeline Fixes & Monitor UX
 
 > Critical fixes from first real-world test run. Router loop, cost display, agent monitor readability, activity feed descriptions.
-> Also includes persona audit, skills system, and UX improvements.
+> Also includes persona audit, skills system, security, and UX improvements.
+
+### Project Directory Protection
+
+- [ ] **FX.SEC1** — Block agent commands that escape the project directory. In `packages/backend/src/agent/claude-executor.ts`: the executor sets `cwd` to the project's path when spawning agents. Add a command validation layer that intercepts Bash tool calls before they execute. Reject any command that attempts to navigate outside the project root: `cd ..` beyond the root, `cd /absolute/path` outside the project, paths with `../` that resolve above the project root. Use `path.resolve(projectPath, targetPath)` and verify the result starts with `projectPath`. Also block: `rm -rf /`, writes to system directories, and any command referencing paths outside the project (e.g., `cat /etc/passwd`, `cp file ~/`). Implementation: add a `validateCommand(command: string, projectRoot: string): { allowed: boolean, reason?: string }` function in a new `packages/backend/src/agent/sandbox.ts`. Wire it into the executor as a pre-execution hook — if the command is blocked, return an error result to the agent instead of executing it, and post a system comment noting the blocked command. Log blocked commands to the audit trail. Note: this is a best-effort safeguard, not a full sandbox — it catches common escape patterns but won't stop all possible evasion.
 
 ### Remove Mock Layer & E2E Test DB
 
@@ -157,7 +161,7 @@
 
 - [x] **AI.V4** — Update `work-items-flow-view.md` with visual inspection steps. Add screenshot + examine after: flow view renders, clicking a state node. Check: node layout, arrow rendering, label readability, no clipping or overflow.
 
-- [review] **AI.V5** — Update `detail-panel-view.md` and `detail-panel-edit.md` with visual inspection steps. Add screenshot + examine after: panel opens, each section renders, each edit interaction (title edit, description edit, priority change, label add, state change). Check: panel sizing, input alignment, button placement, markdown preview rendering.
+- [x] **AI.V5** — Update `detail-panel-view.md` and `detail-panel-edit.md` with visual inspection steps. Add screenshot + examine after: panel opens, each section renders, each edit interaction (title edit, description edit, priority change, label add, state change). Check: panel sizing, input alignment, button placement, markdown preview rendering.
 
 - [ ] **AI.V6** — Update `work-items-filtering.md` and `work-items-sorting.md` with visual inspection steps. Add screenshot + examine after: search input, each filter applied, filter cleared, sort changed, sort direction toggled. Check: filter bar layout, dropdown rendering, result list updates.
 
