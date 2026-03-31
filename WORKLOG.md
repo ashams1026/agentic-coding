@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-30 — Review: FX.SET2 (approved)
+
+**Reviewed:** Workflow diagram removal from settings.
+- WorkflowDiagram component fully deleted (~135 lines) ✓
+- No remaining references to diagram or Separator ✓
+- Section shows only auto-routing toggle + persona table ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.SET2: Remove workflow state machine diagram from settings
 
 **Task:** Remove the SVG state machine diagram from Settings → Workflow.
