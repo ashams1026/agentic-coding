@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-31 — Review: PICO.9 (approved)
+
+**Reviewed:** Session management — dropdown, switching, title editing, clear all, backend PATCH route.
+- All spec requirements met: dropdown shows last 10 sessions (sorted by most recent via backend `orderBy(desc(updatedAt))`), click to switch sessions triggers history load, "New chat" creates fresh session, "Clear all sessions" deletes all with red styling.
+- Session title editable: "Rename current chat" opens inline input, Enter/Escape/blur all handled. Minor note: Enter+blur can double-fire renameSession (same title sent twice) — cosmetic, not a bug.
+- Backend PATCH route: validates existence, trims title to 100 chars, returns serialized session, follows existing route patterns.
+- `refreshSessions()` called at correct points: panel open, after new session, after sendMessage completes (picks up auto-generated title).
+- `currentSession` derived from sessions list — properly null when no match.
+- Click-outside handler updated to exclude dropdown via `data-slot` selector — prevents panel dismiss during dropdown interaction.
+- `formatSessionDate()` handles all time ranges (now/m/h/d/date) correctly.
+- Uses shadcn DropdownMenu (existing component), cn(), theme tokens — conventions followed.
+- Both frontend and backend builds pass cleanly.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — PICO.9: Add session management
 
 **Task:** Session dropdown, switching, title editing, clear all.
