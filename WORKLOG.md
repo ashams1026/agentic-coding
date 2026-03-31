@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — FX.DB3: Wire executor selection by environment
+
+**Task:** Select executor (Claude vs Mock) based on NODE_ENV and config. Add executor mode to health endpoint. Show "Simulated" badge in frontend.
+
+**Done:**
+- **`execution-manager.ts`**: Replaced `const executor = new ClaudeExecutor()` with `createExecutor()` function. Added `getExecutorMode()` (exported): test → "mock", production → "claude", dev → checks `AGENTOPS_EXECUTOR` env var ("mock" or default "claude"). Logs which executor is selected at startup.
+- **`server.ts`**: Added `executor: getExecutorMode()` to `/api/health` response. Imported `getExecutorMode` from execution-manager.
+- **`api/client.ts`**: Added `HealthResponse` interface and `fetchHealth()` function hitting `/api/health`.
+- **`hooks/use-health.ts`** (new): `useHealth()` TanStack Query hook with 30s refetch interval, `retry: false`.
+- **`hooks/index.ts`**: Exported `useHealth`.
+- **`status-bar.tsx`**: Wired real health check (replaced `isHealthy = true` TODO). Added "Simulated" badge (amber background) shown only when `executorMode === "mock"`. Badge appears next to the health indicator so users know agents aren't real.
+- Build passes
+
+**Files created:** `packages/frontend/src/hooks/use-health.ts`
+**Files modified:** `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/server.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/hooks/index.ts`, `packages/frontend/src/components/status-bar.tsx`
+
+**Notes:** The `AGENTOPS_EXECUTOR=mock` env var override only works in dev mode. Production always uses Claude. Test always uses mock. The status bar health check also wires up the previously TODO'd `isHealthy` state.
+
+---
+
 ## 2026-03-30 — Review: FX.DB2 (approved)
 
 **Reviewed:** Mock executor in `packages/backend/src/agent/mock-executor.ts`.

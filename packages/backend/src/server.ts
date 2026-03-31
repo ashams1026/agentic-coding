@@ -13,6 +13,7 @@ import { auditRoutes } from "./routes/audit.js";
 import { settingsRoutes } from "./routes/settings.js";
 import { registerWebSocket } from "./ws.js";
 import { getActiveCount } from "./agent/concurrency.js";
+import { getExecutorMode } from "./agent/execution-manager.js";
 import { loggerConfig } from "./logger.js";
 
 export async function buildServer() {
@@ -22,7 +23,7 @@ export async function buildServer() {
 
   // CORS — allow frontend dev server
   await server.register(cors, {
-    origin: ["http://localhost:5173", "http://localhost:4173"],
+    origin: ["http://localhost:5173", "http://localhost:5174", "http://localhost:4173"],
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
   });
 
@@ -32,6 +33,7 @@ export async function buildServer() {
       status: "ok",
       uptime: Math.floor(process.uptime()),
       activeExecutions: getActiveCount(),
+      executor: getExecutorMode(),
       version: "0.0.1",
     };
   });

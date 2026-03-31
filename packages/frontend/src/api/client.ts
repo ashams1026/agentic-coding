@@ -488,6 +488,22 @@ export async function importSettings(data: Record<string, unknown>): Promise<{ i
   return res.json();
 }
 
+// ── Health check ─────────────────────────────────────────────────
+
+export interface HealthResponse {
+  status: string;
+  uptime: number;
+  activeExecutions: number;
+  executor: "mock" | "claude";
+  version: string;
+}
+
+export async function fetchHealth(): Promise<HealthResponse> {
+  const res = await fetch(`${BASE_URL}/api/health`);
+  if (!res.ok) throw new Error(`Health check failed: ${res.status}`);
+  return res.json();
+}
+
 // ── Bundled API (mirrors mockApi shape) ──────────────────────────
 
 export const apiClient = {

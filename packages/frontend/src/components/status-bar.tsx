@@ -1,7 +1,7 @@
 import { Play, Pause, Bot, Circle } from "lucide-react";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { useDashboardStats, useSelectedProject, useProjects, useUpdateProject } from "@/hooks";
+import { useDashboardStats, useSelectedProject, useProjects, useUpdateProject, useHealth } from "@/hooks";
 
 export function StatusBar() {
   const { projectId } = useSelectedProject();
@@ -13,9 +13,12 @@ export function StatusBar() {
   const settings = project?.settings as Record<string, unknown> | undefined;
   const autoRouting = settings?.autoRouting !== false;
 
+  const { data: health } = useHealth();
+
   const activeAgents = stats?.activeAgents ?? 0;
   const todayCost = stats?.todayCostUsd ?? 0;
-  const isHealthy = true; // TODO: wire to real health check
+  const isHealthy = health?.status === "ok";
+  const executorMode = health?.executor;
 
   const handleToggleRouting = () => {
     if (!project) return;
@@ -65,6 +68,11 @@ export function StatusBar() {
           {activeAgents} agent{activeAgents !== 1 ? "s" : ""}
         </span>
         <span>${todayCost.toFixed(2)} today</span>
+        {executorMode === "mock" && (
+          <span className="rounded bg-amber-500/15 px-1.5 py-0.5 text-amber-600 dark:text-amber-400 font-medium">
+            Simulated
+          </span>
+        )}
         <span className="flex items-center gap-1.5">
           <Circle
             className={cn(

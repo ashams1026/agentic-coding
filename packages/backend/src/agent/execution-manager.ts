@@ -20,14 +20,15 @@ import type {
 } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 import { ClaudeExecutor } from "./claude-executor.js";
+import { MockExecutor } from "./mock-executor.js";
 import { runRouter } from "./router.js";
 import { dispatchForState } from "./dispatch.js";
 import { trackExecution, onComplete, getProjectCostSummary } from "./concurrency.js";
-import type { AgentTask, AgentEvent } from "./types.js";
+import type { AgentExecutor, AgentTask, AgentEvent } from "./types.js";
 import { logger } from "../logger.js";
 import { auditAgentDispatch, auditAgentComplete, auditCostEvent } from "../audit.js";
 
-// ── Singleton executor ────────────────────────────────────────────
+// ── Executor selection ────────────────────────────────────────────
 
 // ── Transition rate limiter ───────────────────────────────────────
 
@@ -101,7 +102,27 @@ export function clearStateHistory(): void {
   stateHistory.clear();
 }
 
-const executor = new ClaudeExecutor();
+/** Resolve executor mode: "mock" or "claude". */
+export function getExecutorMode(): "mock" | "claude" {
+  const nodeEnv = process.env["NODE_ENV"] ?? "development";
+  if (nodeEnv === "test") return "mock";
+  if (nodeEnv === "production") return "claude";
+  // Dev: check env var override
+  const override = process.env["AGENTOPS_EXECUTOR"];
+  if (override === "mock") return "mock";
+  return "claude";
+}
+
+function createExecutor(): AgentExecutor {
+  const mode = getExecutorMode();
+  if (mode === "mock") {
+    logger.info("Using MockExecutor (simulated agent runs)");
+    return new MockExecutor();
+  }
+  return new ClaudeExecutor();
+}
+
+const executor = createExecutor();
 
 // ── Execution context helpers ────────────────────────────────────
 
