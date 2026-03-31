@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — FX.MOCK2: Delete mock data layer
+
+**Task:** Delete mocks directory and all dead mock-related code.
+
+**Done:**
+- Deleted `packages/frontend/src/mocks/` directory (api.ts, fixtures.ts, ws.ts, demo.ts)
+- Deleted `packages/frontend/src/hooks/use-demo.ts` (dead code — no longer imported)
+- Deleted `packages/frontend/src/features/demo/demo-controls.tsx` (dead code — no longer imported)
+- Removed empty `features/demo/` directory
+- Verified no remaining references to mocks, demo, mockWs, useDemo in frontend codebase
+- Build passes
+
+**Files deleted:** `mocks/api.ts`, `mocks/fixtures.ts`, `mocks/ws.ts`, `mocks/demo.ts`, `hooks/use-demo.ts`, `features/demo/demo-controls.tsx`
+
+**Notes:** Mock layer fully removed. Frontend is now 100% wired to the real backend.
+
+---
+
 ## 2026-03-30 — Review: FX.MOCK1 (approved)
 
 **Reviewed:** Mock API mode removal from frontend.
