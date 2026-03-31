@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — FX.6: Show persona identity in terminal renderer
+
+**Task:** Add a header bar above terminal output showing persona name (colored avatar), model badge, and work item title.
+
+**Done:**
+- Added `usePersona(execution?.personaId)` and `useWorkItem(execution?.workItemId)` hooks to `TerminalRenderer`
+- Added imports: `usePersona`, `useWorkItem` from hooks, `PersonaId`, `WorkItemId` from shared
+- New header bar above the toolbar: colored circular avatar (persona's avatar color, first letter of name), persona name (semibold), model badge (Opus/Sonnet/Haiku), and "working on {work item title}" subtext
+- Header conditionally rendered only when persona data is loaded
+- Work item title truncated with `truncate` class for long titles
+- `MODEL_LABELS` map converts internal model names to display labels
+- Build passes
+
+**Files modified:** `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`
+
+**Notes:** The header is the first thing visible — "Product Manager (Sonnet) working on Build TicTacToe App" pattern as specified. Uses persona.avatar.color for the avatar background, consistent with persona cards in the persona manager.
+
+---
+
 ## 2026-03-30 — Review: FX.5 (approved)
 
 **Reviewed:** Cost aggregation audit and cents→dollars fix in `dashboard.ts` and `executions.ts`.

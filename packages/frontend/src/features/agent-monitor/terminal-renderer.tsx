@@ -3,7 +3,8 @@ import { ArrowDown, Lock, Unlock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { subscribe } from "@/api/ws";
-import { useExecution } from "@/hooks";
+import { useExecution, usePersona, useWorkItem } from "@/hooks";
+import type { PersonaId, WorkItemId } from "@agentops/shared";
 import {
   ToolCallSection,
   parseToolJson,
@@ -124,6 +125,8 @@ interface TerminalRendererProps {
 
 export function TerminalRenderer({ executionId }: TerminalRendererProps) {
   const { data: execution } = useExecution(executionId);
+  const { data: persona } = usePersona(execution?.personaId as PersonaId);
+  const { data: workItem } = useWorkItem(execution?.workItemId as WorkItemId);
   const [chunks, setChunks] = useState<OutputChunk[]>([]);
   const [scrollLocked, setScrollLocked] = useState(false);
   const [hasNewOutput, setHasNewOutput] = useState(false);
@@ -201,8 +204,39 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
   // Process chunks to pair tool_call + tool_result
   const displayItems = useMemo(() => processChunks(chunks), [chunks]);
 
+  const MODEL_LABELS: Record<string, string> = {
+    opus: "Opus",
+    sonnet: "Sonnet",
+    haiku: "Haiku",
+  };
+
   return (
     <div className="flex flex-col h-full">
+      {/* Persona identity header */}
+      {persona && (
+        <div className="flex items-center gap-3 px-4 py-2.5 border-b bg-muted/50">
+          <div
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white text-xs font-bold"
+            style={{ backgroundColor: persona.avatar.color }}
+          >
+            {persona.name.charAt(0).toUpperCase()}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-sm truncate">{persona.name}</span>
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                {MODEL_LABELS[persona.model] ?? persona.model}
+              </Badge>
+            </div>
+            {workItem && (
+              <p className="text-xs text-muted-foreground truncate">
+                working on {workItem.title}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Toolbar */}
       <div className="flex items-center justify-between px-4 py-2 border-b bg-muted/30">
         <div className="flex items-center gap-2">
