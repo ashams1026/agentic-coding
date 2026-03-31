@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-31 — Review: PICO.7 (approved)
+
+**Reviewed:** Chat message components — chat-message.tsx, chat-panel.tsx updates.
+- All spec requirements met: user bubbles (right, primary), assistant bubbles (left, muted + avatar), markdown, thinking blocks, tool cards, code blocks with copy, timestamps on hover, grouping.
+- `PicoMarkdown` extends MarkdownPreview patterns with chat-appropriate styling: paragraphs, bold, inline code, lists, headers, links, code blocks with language label and copy button.
+- `ThinkingBlock`: collapsible with Brain icon, collapsed by default, muted italic text — correct.
+- `ToolCallCard`: reuses icon map from agent-monitor, status indicators (running/success/error), collapsible input/output — theme tokens used (not hardcoded zinc colors).
+- Grouping logic in chat-panel: `showAvatar` based on previous message role, `mt-1` vs `mt-3` spacing, `pl-9` indent for grouped messages.
+- Rich mock data demonstrates all content types: plain text, thinking + tool_use + markdown with embedded code block.
+- Conventions followed: named exports, kebab-case, cn(), theme tokens, feature collocation.
+- Build passes cleanly.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — PICO.7: Build chat message components
 
 **Task:** Create rich chat message components with markdown, thinking blocks, tool call cards, and grouping.
