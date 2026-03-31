@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-15 complete and archived.
+> Sprints 1-16 complete and archived. Sprint 17 partially archived (FX.SEC1, FX.MOCK1-4, FX.SET1-2).
 
 ---
 
@@ -14,25 +14,9 @@
 > Critical fixes from first real-world test run. Router loop, cost display, agent monitor readability, activity feed descriptions.
 > Also includes persona audit, skills system, security, and UX improvements.
 
-### Project Directory Protection
+> FX.SEC1, FX.MOCK1-4, FX.SET1-2 complete and archived.
 
-- [x] **FX.SEC1** — Block agent commands that escape the project directory. In `packages/backend/src/agent/claude-executor.ts`: the executor sets `cwd` to the project's path when spawning agents. Add a command validation layer that intercepts Bash tool calls before they execute. Reject any command that attempts to navigate outside the project root: `cd ..` beyond the root, `cd /absolute/path` outside the project, paths with `../` that resolve above the project root. Use `path.resolve(projectPath, targetPath)` and verify the result starts with `projectPath`. Also block: `rm -rf /`, writes to system directories, and any command referencing paths outside the project (e.g., `cat /etc/passwd`, `cp file ~/`). Implementation: add a `validateCommand(command: string, projectRoot: string): { allowed: boolean, reason?: string }` function in a new `packages/backend/src/agent/sandbox.ts`. Wire it into the executor as a pre-execution hook — if the command is blocked, return an error result to the agent instead of executing it, and post a system comment noting the blocked command. Log blocked commands to the audit trail. Note: this is a best-effort safeguard, not a full sandbox — it catches common escape patterns but won't stop all possible evasion.
-
-### Remove Mock Layer & E2E Test DB
-
-- [x] **FX.MOCK1** — Remove mock API mode from frontend. Delete the `apiMode` field from `useUIStore` (and its localStorage persistence). Remove the mock/real branching in `packages/frontend/src/api/index.ts` — all exports should point directly to the real API client. Remove the `initWsConnection` mode check — always connect to the real WebSocket. Remove the QF.1 status bar mock/live toggle. Remove the demo controls that rely on mock WS (`features/demo/demo-controls.tsx`). The frontend now always talks to the real backend. Keep the `mocks/` directory for now (next task deletes it).
-
-- [x] **FX.MOCK2** — Delete mock data layer. Delete `packages/frontend/src/mocks/` directory entirely (api.ts, fixtures.ts, ws.ts, demo.ts). Remove any imports of mock functions throughout the codebase. Clean up any dead code that only existed to support the mock layer (mock WS event simulation, demo mode hooks, etc.).
-
-- [x] **FX.MOCK3** — Create E2E test database script. Create `scripts/test-e2e.sh` (and/or `packages/backend/src/db/seed-e2e.ts`): starts the backend with `AGENTOPS_DB_PATH=/tmp/agentops-e2e-test.db` (or a configurable temp path), runs migrations on the test DB, seeds it with E2E test fixtures (same data the mock fixtures had — projects, personas, work items in various states, executions, comments), starts the frontend pointing at this backend, prints the URLs. Add `"test:e2e:setup"` and `"test:e2e:teardown"` scripts to root `package.json`. E2E test plan prerequisites should reference this script. On teardown: delete the temp DB file.
-
-- [x] **FX.MOCK4** — Create demo seed snapshot. For showcasing the app without running real agents: create `packages/backend/src/db/seed-demo.ts` with a rich dataset (multiple projects, work items in all states, realistic execution history with comments, cost data, proposals). Add `"db:seed:demo"` script. Users can run `pnpm db:seed:demo` to populate their local DB with demo data. This replaces the old in-memory mock "Watch Demo" feature with persistent real data.
-
-### Settings Navigation Fix
-
-- [x] **FX.SET1** — Remove duplicate settings nav item and rename section. In `packages/frontend/src/features/settings/settings-layout.tsx`: the "API Keys" and "Concurrency" sidebar links both render the same `ApiKeysSection` component (which contains both the API key input and the concurrency slider). Remove the "Concurrency" nav entry. Rename the remaining section from "API Keys" to "API & Execution" (or "Agent Configuration") to better reflect that it covers both API key management and concurrency/execution settings. Update the section `id` and any references. Verify only one link appears in the settings sidebar and it renders the combined content.
-
-- [x] **FX.SET2** — Remove workflow state machine diagram from settings. In the Settings → Workflow section: remove the SVG state machine diagram. It's redundant with the Flow view on the Work Items page and doesn't look good. The Workflow settings section should only contain the auto-routing toggle and the persona-per-state assignment table. Delete the diagram component and any related layout code.
+### Settings — Remaining
 
 - [ ] **FX.SET3** — Replace auto-routing toggle with play/pause button. Replace the current ON/OFF toggle switch for auto-routing with a prominent play/pause button. In the **status bar** (bottom of the app): add a play/pause icon button next to the project name — Play (triangle) when auto-routing is active (green tint), Pause (two bars) when paused (amber tint). Tooltip: "Auto-routing: active — agents automatically transition work items" or "Auto-routing: paused — manual transitions only". Clicking toggles `autoRouting` via `PATCH /api/projects/:id`. In **Settings → Workflow**: replace the toggle switch with the same play/pause button (larger, with descriptive text beside it). In the **Work Items page header**: show a small play/pause indicator next to the page title so the user always knows the current mode. The play/pause metaphor should feel like controlling a pipeline — play means work flows automatically, pause means you're driving manually.
 
@@ -151,28 +135,3 @@
 
 - [ ] **PICO.10** — Polish Pico's personality and onboarding. First-time experience: when the user opens the chat for the first time (no sessions exist), show a welcome message from Pico: "Woof! I'm Pico, your project assistant. I know everything about this project — the architecture, the workflow, all the agents. Ask me anything, or I can help you manage work items. What can I help with?" Add 3-4 suggested quick-action buttons below the welcome message: "What's the project status?", "Explain the workflow", "Show recent activity", "Help me create a work item". Clicking a suggestion sends it as a message. Pico's tone: enthusiastic but not annoying, technically accurate, occasionally uses dog puns ("let me dig into that", "I'll fetch that for you", "good boy status: all tests passing").
 
----
-
-## Sprint 16: AI-Based E2E Testing
-
-> AI-driven end-to-end testing via browser automation. Two phases:
-> Phase 1: Generate test plan files — each is a self-contained prompt an AI agent can follow using browser DevTools (chrome-devtools MCP).
-> Phase 2: Execute each test plan, interact with the real app in a browser, and report results.
-> All test plans live in `tests/e2e/plans/`. Each plan is a markdown file with step-by-step instructions, expected outcomes, and pass/fail criteria.
-> Test execution requires: backend running on :3001, frontend on :5173/:5174, API mode set to "api", chrome-devtools MCP connected.
-
-> QF.1, AI.1–AI.9, AI.10–AI.11, AI.V1–AI.V2, AI.12–AI.28, AI.V3–AI.V11 complete and archived.
-
-### Phase 2: Execute Test Plans
-
-> One test plan per task. Agent reads the plan, launches the app in a browser via chrome-devtools MCP, follows every step, takes screenshots, records pass/fail.
-> Prerequisites for every execution task: backend running on :3001, frontend on :5173 or :5174, API mode set to "api", seeded data, chrome-devtools MCP connected.
-> Results go to `tests/e2e/results/{plan-name}.md` — same name as the plan file.
-
-- [x] **AI.29** — Execute `dark-mode.md`. Read `tests/e2e/plans/dark-mode.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/dark-mode.md`.
-
-- [x] **AI.30** — Execute `keyboard-shortcuts.md`. Read `tests/e2e/plans/keyboard-shortcuts.md`, follow all steps in browser, take screenshots, write results to `tests/e2e/results/keyboard-shortcuts.md`.
-
-### Phase 3: Triage
-
-- [x] **AI.31** — Triage and file bugs from test results. Read all files in `tests/e2e/results/`. For each failure: assess severity (critical, major, minor), categorize (UI bug, data bug, integration bug, missing feature). Write a summary to `tests/e2e/results/SUMMARY.md` with a table of all failures sorted by severity. Add any critical/major bugs as new tasks to TASKS.md for the next sprint.

@@ -8,229 +8,67 @@
 
 **Sprint 1 (T1.x):** 16 tasks. Monorepo setup (pnpm workspaces, TS strict, ESLint/Prettier), frontend foundation (Vite+React 19, Tailwind CSS, shadcn/ui, React Router, TanStack Query+Zustand, app shell, dark mode), shared types (entities, API contracts), mock data layer (fixtures, API service, hooks, WebSocket, demo mode).
 
-**Sprint 2 (T2.x):** 23 tasks. Dashboard (stat cards, cost chart, agent strip, health indicators, upcoming work), kanban board (columns, drag-and-drop, filters, inline form, transition prompt), story detail (header, description, child tasks, proposals, metadata), task detail (inherited context, dependencies, execution context, rejection history), agent monitor (terminal renderer, split view, active sidebar, history, control bar), activity feed, workflow designer (canvas, state/transition panels, validation, sidebar), persona manager (list, editor, prompt editor, tool config, test run).
+**Sprint 2 (T2.x):** 23 tasks. Dashboard, kanban board, story/task detail, agent monitor, activity feed, workflow designer, persona manager.
 
-**Sprint 3 (T2.9-T2.12 + R.1-R.6):** 11 tasks. Settings page (layout, projects, API keys, cost management, appearance), global components (command palette, toast notifications, loading skeletons, nav badges), WebSocket integration, demo mode, sidebar refinements (spacing, transitions, mobile responsiveness), shared component extraction, story list master-detail view, nested task detail panel.
+**Sprint 3 (T2.9-T2.12 + R.1-R.6):** 11 tasks. Settings page, global components (command palette, toasts, skeletons, badges), WebSocket, sidebar refinements.
 
-**Sprint 4 (T3.1.1):** 1 task. Fastify backend scaffold — `buildServer()` factory with CORS, health check, pino-pretty. Port 3001.
-
----
-
-## Sprint 6: Data Model & UI Overhaul (O.1–O.20) — completed 2026-03-29
-
-**Types & data (O.1–O.6):** 6 tasks. Replaced Story+Task with unified WorkItem, WORKFLOW constant (8 states), mock fixtures (16 items), mock API (WorkItem CRUD), refactored hooks.
-
-**Multi-view UI (O.7–O.11):** 5 tasks. Work items page with List/Board/Tree toggle, list view (tree-indented rows, badges, progress), board view (dnd-kit columns), tree view (hierarchy), detail panel (header, breadcrumb, children, proposals, comments, executions, metadata).
-
-**Nav, dashboard, settings (O.12–O.16):** 5 tasks. Sidebar/router cleanup ("Story Board"→"Work Items"), dashboard updated for WorkItem model, activity feed with router_decision events, workflow configuration section (auto-routing toggle, persona-per-state table, SVG diagram).
-
-**Cleanup & backend (O.17–O.20):** 4 tasks. Deleted 26 old files, Drizzle schema (9 tables), seed script (16 work items, 5 personas), CRUD routes (10 routes across 3 files).
+**Sprint 4 (T3.1.1):** 1 task. Fastify backend scaffold.
 
 ---
 
-## Sprints 5, 7: Backend API + UI Refinements (consolidated) — completed 2026-03-29
+## Sprints 5-10: Backend + UI Polish (consolidated) — completed 2026-03-30
 
-**Sprint 5 (T3.x):** 10 tasks. Drizzle migrations/seed, 5 resource route sets (comments, personas, executions, proposals, dashboard), WebSocket server, API client (32 functions), API mode toggle (Zustand), real WebSocket client.
+**Sprint 5 (T3.x):** 10 tasks. Drizzle migrations/seed, 5 resource route sets, WebSocket server, API client (32 functions), API mode toggle.
 
-**Sprint 7 (U.x):** 9 tasks. Removed tree view, built Flow view (state machine graph), view toggle, inline editing (title, description, priority, labels), state transition control, agent monitor chrome polish, status bar padding.
+**Sprint 6 (O.1-O.20):** 20 tasks. Replaced Story+Task with WorkItem, 8-state workflow, multi-view UI (list/board/tree), detail panel, sidebar/router cleanup, Drizzle schema (9 tables), seed (16 items), CRUD routes.
 
----
+**Sprint 7 (U.x):** 9 tasks. Flow view (state machine graph), inline editing, state transitions, agent monitor polish.
 
-## Sprint 8: Agent Execution Engine (consolidated) — completed 2026-03-30
+**Sprint 8 (A.1-A.18):** 18 tasks. MCP server (7 tools), ClaudeExecutor, dispatch/router, rate limiter, concurrency, cost tracking, project memory.
 
-**MCP Server (A.1–A.5):** 5 tasks. 7 tools (post_comment, create_children, route_to_state, list_items, get_context, flag_blocked, request_review) with Zod v4 schemas, stdio entry point.
+**Sprint 9 (Q.1-Q.13):** 13 tasks. 118 tests — workflow state machine (24), API integration (49), agent logic unit tests (45).
 
-**Executor (A.6–A.9):** 4 tasks. AgentEvent types, ClaudeExecutor with SDK, 4-layer system prompt assembly, execution lifecycle with DB/WS streaming.
-
-**Dispatch & Router (A.10–A.12):** 3 tasks. Persona dispatch on state entry, Router agent (haiku model, autoRouting check), rate limiter (10/hour), execution chain.
-
-**Coordination (A.13–A.14):** 2 tasks. Parent-child auto-advance, rejection retry (max 3→Blocked).
-
-**Infrastructure (A.15–A.18):** 4 tasks. Concurrency limiter (priority FIFO queue), cost tracking/caps, project memory creation (haiku summary), memory consolidation.
+**Sprint 10 (P.1-P.12):** 12 tasks. Design system, filtering/search, resizable detail panel, micro-interactions.
 
 ---
 
-## Sprint 9: Testing (consolidated) — completed 2026-03-30
+## Sprints 11-15: Integration + Docs + Settings (consolidated) — completed 2026-03-30
 
-**Q.1–Q.3:** Test infrastructure — Vitest setup, in-memory test DB helper, 24 workflow state machine tests.
+**Sprint 11 (E.1-E.10):** 10 tasks. API client fixes, TanStack cache invalidation, agent monitor WS, activity feed, dev seed, pipeline walkthrough, dispatch trigger fix, parent-child coordination, error handling, stale execution cleanup.
 
-**Q.4–Q.8:** API integration tests — 49 tests across work items, personas, assignments, comments, executions, proposals, edges, dashboard. Found & fixed double-encoding bugs.
+**Sprint 12 (S.1-S.9):** 9 tasks. CLI (start/stop/status/dev), pm2 ecosystem, setup.sh, logging (pino + audit trail), config file.
 
-**Q.9–Q.13:** Agent logic unit tests — 45 tests across concurrency limiter, parent-child coordination, dispatch, MCP tools, execution manager lifecycle.
+**Sprint 13 (W.1-W.8):** 8 tasks. API key management, concurrency slider, cost settings, auto-routing toggle, density, data export/import.
 
----
+**Sprint 14 (D.1-D.10):** 10 docs. README, getting started, architecture, data model, workflow, personas, REST API (48 endpoints), MCP tools, deployment, frontend.
 
-## Sprint 10: UI Polish (consolidated) — completed 2026-03-30
-
-**P.1–P.4:** Design system — typography scale utilities, button/badge sizing, spacing alignment, 600-level color palette with 5-layer dark mode surfaces.
-
-**P.5–P.7:** Filtering — text search (debounced), persona/label multi-select filters, sort direction toggle with URL sync.
-
-**P.8–P.9:** Detail panel — resizable (30-70%, persisted), CSS transitions on open/close.
-
-**P.10–P.12:** Micro-interactions — Radix tooltips, skeleton/empty states, hover polish and focus-visible rings.
+**Sprint 15 (PS.1-PS.10):** 10 tasks. Project scoping (all queries scoped to selected project), empty states, auto-seed personas, folder browser. + QF.1 (API mode toggle).
 
 ---
 
-## Sprint 12: System Service & CLI (S.1–S.8, consolidated) — completed 2026-03-30
+## Sprint 16: AI-Based E2E Testing — completed 2026-03-30
 
-**S.1–S.3:** CLI foundation — command parser with start/stop/status/dev, PID file, graceful shutdown (30s drain), crash recovery (orphaned execution reset).
+**Phase 1 (AI.1-AI.11):** 11 tasks. Test plan directory + template, 17 test plan files covering all UI screens.
 
-**S.4–S.6:** pm2 service — ecosystem config, setup.sh script, CLI install/uninstall/logs/restart commands.
+**Phase 1.5 (AI.V1-AI.V11):** 11 tasks. Visual inspection protocol added to all test plans (screenshot checkpoints, Visual Quality/Failure criteria).
 
-**S.7–S.8:** Logging — pino structured logger (dev pretty-print, prod daily-rotated), execution audit trail (4 emitters, audit.log, GET /api/audit).
+**Phase 2 (AI.12-AI.28):** 17 tasks. Executed all test plans via chrome-devtools MCP. 243/253 PASS, 2 FAIL, 4 N/A across 17 suites.
 
----
+**Phase 2 (AI.29-AI.30):** 2 tasks. dark-mode (19/19 PASS), keyboard-shortcuts (16/17 PASS, 1 FAIL — work item route 404).
 
-## Sprint 11: End-to-End Integration — completed 2026-03-30
-
-### Error Handling & Recovery
-
-- [x] **E.9** — Add execution error handling and UI feedback. Toast on failure, retry button, execution DB/WS/UI verification. *(completed 2026-03-30)*
-- [x] **E.10** — Handle stale execution cleanup on server restart. Orphaned running executions → failed, clear concurrency tracker. *(completed 2026-03-30)*
-
-### Frontend ↔ Backend Wiring
-
-- [x] **E.1** — Fix API client response parsing. Audited client.ts response shapes, fixed mismatches with backend, added error handling with toast notifications. *(completed 2026-03-30)*
-- [x] **E.2** — Wire TanStack Query cache invalidation to WebSocket events. state_change→workItems+dashboardStats, comment_created→comments, agent events→executions+dashboardStats. *(completed 2026-03-30)*
-- [x] **E.3** — Wire agent monitor to real WebSocket streaming. Connected terminal renderer to real agent_output_chunk events, mapped payloads to DisplayItem types. *(completed 2026-03-30)*
-- [x] **E.4** — Wire activity feed to real WebSocket events. Replaced mock-based useBaseActivityEvents() with real API call + WS event conversion. *(completed 2026-03-30)*
-
-### Pipeline Smoke Test
-
-- [x] **E.5** — Create development seed with realistic pipeline data. 5 personas with real system prompts, persona assignments for all workflow states, autoRouting:true, Router persona. *(completed 2026-03-30)*
-- [x] **E.6** — Manual pipeline walkthrough and fix. Fixed state transition validation (isValidTransition) and WS state_change broadcast in PATCH route. *(completed 2026-03-30)*
-- [x] **E.7** — Fix dispatch trigger on state change. Fixed settings field name mismatch (maxConcurrentAgents→maxConcurrent, monthlyCostCap→monthCap). Monthly cost cap was never enforced. Added router auto-routing tests. *(completed 2026-03-30)*
-- [x] **E.8** — Fix parent-child coordination in real flow. Added dispatchForState() call after parent auto-advances to "In Review" so reviewer persona actually gets dispatched. *(completed 2026-03-30)*
+**Phase 3 (AI.31):** 1 task. Triage — 263 total steps, 256 PASS, 3 FAIL, 4 N/A (97.3%). Filed FX.CMD1 (Major), FX.EDIT1 (Minor). FX.MOCK1 already tracked.
 
 ---
 
-## Sprint 12: System Service & CLI (continued) — completed 2026-03-30
+## Sprint 17: Agent Pipeline Fixes (partial) — archived 2026-03-30
 
-### Configuration
+### Security & Mock Layer Removal
+- [x] **FX.SEC1** — Command sandbox (`sandbox.ts`): validates Bash commands against project directory escapes. *(completed 2026-03-30)*
+- [x] **FX.MOCK1** — Removed mock API mode from frontend (apiMode, pick(), status bar toggle, demo controls). *(completed 2026-03-30)*
+- [x] **FX.MOCK2** — Deleted mock data layer (mocks/ directory, use-demo.ts, demo-controls.tsx — 2283 lines). *(completed 2026-03-30)*
+- [x] **FX.MOCK3** — E2E test database script (seed-e2e.ts, test-e2e.sh, pnpm scripts). *(completed 2026-03-30)*
+- [x] **FX.MOCK4** — Demo seed (3 projects, 14 work items, all 8 states, 14 executions). *(completed 2026-03-30)*
 
-- [x] **S.9** — Implement configuration file. `config.ts` — loads from `~/.agentops/config.json`, 4 fields (port, dbPath, logLevel, anthropicApiKey), env var overrides. `agentops config` and `agentops config set` CLI commands. *(completed 2026-03-30)*
-
----
-
-## Sprint 13: Settings Wiring — completed 2026-03-30
-
-### API Key Management
-
-- [x] **W.1** — Implement API key storage and validation. Backend settings routes (GET/POST/DELETE `/api/settings/api-key`), Anthropic API validation, frontend ApiKeySection wired. *(completed 2026-03-30)*
-- [x] **W.2** — Wire API key into agent executor. `claude-executor.ts` reads key from config on each execution, rejects with clear error if not configured. *(completed 2026-03-30)*
-
-### Project Settings Wiring
-
-- [x] **W.3** — Wire project CRUD in settings. 5 CRUD routes with `existsSync()` path validation, settings form with error display, sidebar project switcher. *(completed 2026-03-30)*
-- [x] **W.4** — Wire concurrency settings. Slider (1-10) updates `maxConcurrent` via PATCH, `GET /api/settings/concurrency` for live active/queued counts. *(completed 2026-03-30)*
-- [x] **W.5** — Wire cost management settings. `monthCap`, `warningThreshold`, `dailyLimit` in project settings. Cost chart wired to `GET /api/dashboard/cost-summary`. Progress bar with real monthly spend. *(completed 2026-03-30)*
-- [x] **W.6** — Wire auto-routing toggle. Reads/writes `autoRouting` from project settings. ON/OFF descriptive text. Backend `router.ts` already checked this setting. *(completed 2026-03-30)*
-
-### Appearance & Data
-
-- [x] **W.7** — Wire appearance settings. Density (comfortable/compact) in Zustand store + localStorage, `data-density` attribute, CSS compact overrides. *(completed 2026-03-30)*
-- [x] **W.8** — Wire data management settings. `GET /api/settings/db-stats`, `DELETE /api/settings/executions` (>30 days), `GET /api/settings/export`, `POST /api/settings/import`. DatabaseInfo, export download, import upload, 2-click clear confirmation. *(completed 2026-03-30)*
-
----
-
-## Sprint 14: Documentation (D.1–D.10) — completed 2026-03-30
-
-10 documentation files created in `docs/`, each reviewed and approved.
-
-- [x] **D.1** — Project README (`README.md`). Overview, 8 features, architecture diagram, quick start, docs links. *(completed 2026-03-30)*
-- [x] **D.2** — Getting started guide (`docs/getting-started.md`). 8-section walkthrough: prerequisites, install, first run, API key, project, work item, manual states, auto-routing. *(completed 2026-03-30)*
-- [x] **D.3** — Architecture (`docs/architecture.md`). System diagram, 3 packages, agent engine (9 modules), request lifecycle, agent execution lifecycle, 9 WS events. *(completed 2026-03-30)*
-- [x] **D.4** — Data model (`docs/data-model.md`). 9 entities with field tables, ER diagram, hierarchy, edges, executionContext, RejectionPayload, ID format. *(completed 2026-03-30)*
-- [x] **D.5** — Workflow system (`docs/workflow.md`). 8 states, transitions, rate limiting, auto-routing, persona assignments, Router, parent-child coordination, rejection/retry (max 3). *(completed 2026-03-30)*
-- [x] **D.6** — Agent personas (`docs/personas.md`). 5 built-in personas, system prompt layering (4 layers), MCP tool allowlists, Router as special persona. *(completed 2026-03-30)*
-- [x] **D.7** — REST API (`docs/api.md`). 48 endpoints across 11 route files, TypeScript request/response types, curl examples, 9-event WebSocket protocol. *(completed 2026-03-30)*
-- [x] **D.8** — MCP tools (`docs/mcp-tools.md`). 7 tools with Zod schemas, output formats, side effects, persona access matrix, MCP server attachment mechanism. *(completed 2026-03-30)*
-- [x] **D.9** — Configuration & deployment (`docs/deployment.md`). ~/.agentops/ structure, 4 config fields, 5 env vars, 10 CLI commands, pm2, logging, database, graceful shutdown, crash recovery. *(completed 2026-03-30)*
-- [x] **D.10** — Frontend (`docs/frontend.md`). Directory structure, feature pattern, list/flow views, mock data layer, TanStack Query + Zustand, design system (color tokens, typography, 18 shadcn/ui components). *(completed 2026-03-30)*
-
----
-
-## Sprint 15: Project Scoping (PS.1–PS.10) — completed 2026-03-30
-
-> Fixed critical bug: all queries returned data from all projects. Scoped every data-fetching hook and backend route to the selected project.
-
-### Core Wiring (PS.1–PS.6)
-- [x] **PS.1** — Wire project switcher to selectedProjectId (sidebar.tsx). *(completed 2026-03-30)*
-- [x] **PS.2** — Create useSelectedProject hook (use-selected-project.ts). *(completed 2026-03-30)*
-- [x] **PS.3** — Scope useWorkItems() to selected project (10 call sites). *(completed 2026-03-30)*
-- [x] **PS.4** — Scope dashboard queries (4 backend routes + hooks + call sites). *(completed 2026-03-30)*
-- [x] **PS.5** — Scope executions/comments/proposals (3 backend routes + hooks + 9 call sites). *(completed 2026-03-30)*
-- [x] **PS.6** — Scope persona assignments, remove all hardcoded `pj-agntops`. *(completed 2026-03-30)*
-
-### New Project Experience (PS.7–PS.8, PS.10)
-- [x] **PS.7** — Empty states for new projects (work items, activity feed, dashboard). *(completed 2026-03-30)*
-- [x] **PS.8** — Auto-seed 5 default personas + assignments on project creation. *(completed 2026-03-30)*
-- [x] **PS.10** — Folder browser modal for project path in Settings. *(completed 2026-03-30)*
-
-### Backend Scoping Audit (PS.9)
-- [x] **PS.9** — Verified all 8 list routes have ?projectId= filtering. No fixes needed. *(completed 2026-03-30)*
-
----
-
-## Backlog: Quick Fixes — completed 2026-03-30
-
-- [x] **QF.1** — Add API mode toggle to status bar (Mock/Live with amber/green indicators) and Settings → Appearance. Health check on switch to Live, toast + revert on failure. *(completed 2026-03-30)*
-
----
-
-## Sprint 16: AI-Based E2E Testing — Phase 1: Generate Test Plans (AI.1–AI.9) — completed 2026-03-30
-
-- [x] **AI.1** — Test plan directory structure and template (`tests/e2e/plans/`, README, `_template.md`). *(completed 2026-03-30)*
-- [x] **AI.2** — Dashboard test plans (`dashboard-stats.md`, `dashboard-navigation.md`). *(completed 2026-03-30)*
-- [x] **AI.3** — Work Items List View test plans (`work-items-list-view.md`, `work-items-create.md`). *(completed 2026-03-30)*
-- [x] **AI.4** — Work Items Flow View test plan (`work-items-flow-view.md`). *(completed 2026-03-30)*
-- [x] **AI.5** — Detail Panel test plans (`detail-panel-view.md`, `detail-panel-edit.md`). *(completed 2026-03-30)*
-- [x] **AI.6** — Filtering and Search test plans (`work-items-filtering.md`, `work-items-sorting.md`). *(completed 2026-03-30)*
-- [x] **AI.7** — Agent Monitor test plans (`agent-monitor-layout.md`, `agent-monitor-history.md`). *(completed 2026-03-30)*
-- [x] **AI.8** — Activity Feed test plan (`activity-feed.md`). *(completed 2026-03-30)*
-- [x] **AI.9** — Settings test plans (`settings-projects.md`, `settings-workflow.md`, `settings-appearance.md`). *(completed 2026-03-30)*
-
----
-
-## Sprint 16 (continued): Phase 1 (AI.10–AI.11) + Phase 1.5 (AI.V1–AI.V2) + Phase 2 (AI.12–AI.17) — archived 2026-03-30
-
-### Phase 1: Generate Test Plans (AI.10–AI.11)
-- [x] **AI.10** — Persona Manager test plan (`persona-manager.md`). *(completed 2026-03-30)*
-- [x] **AI.11** — Cross-cutting concerns test plans (`navigation.md`, `dark-mode.md`, `keyboard-shortcuts.md`). *(completed 2026-03-30)*
-
-### Phase 1.5: Visual Inspection Updates (AI.V1–AI.V2)
-- [x] **AI.V1** — Updated test plan template with visual inspection protocol (screenshot checkpoints, Visual Quality/Failure sections). *(completed 2026-03-30)*
-- [x] **AI.V2** — Updated `dashboard-stats.md` and `dashboard-navigation.md` with 6+7 visual inspection checkpoints. *(completed 2026-03-30)*
-
-### Phase 2: Execute Test Plans (AI.12–AI.17)
-- [x] **AI.12** — Execute `dashboard-stats.md` — 11/11 PASS. *(completed 2026-03-30)*
-- [x] **AI.13** — Execute `dashboard-navigation.md` — 12/12 PASS. *(completed 2026-03-30)*
-- [x] **AI.14** — Execute `work-items-list-view.md` — 14/14 PASS. *(completed 2026-03-30)*
-- [x] **AI.15** — Execute `work-items-create.md` — 9/9 PASS. *(completed 2026-03-30)*
-- [x] **AI.16** — Execute `work-items-flow-view.md` — 13/13 PASS. *(completed 2026-03-30)*
-- [x] **AI.17** — Execute `detail-panel-view.md` — 16/16 PASS. *(completed 2026-03-30)*
-
-### Phase 1.5: Visual Inspection Updates (AI.V3–AI.V11)
-- [x] **AI.V3** — Update `work-items-list-view.md` and `work-items-create.md` with visual inspection steps. *(completed 2026-03-30)*
-- [x] **AI.V4** — Update `work-items-flow-view.md` with visual inspection steps. *(completed 2026-03-30)*
-- [x] **AI.V5** — Update `detail-panel-view.md` and `detail-panel-edit.md` with visual inspection steps. *(completed 2026-03-30)*
-- [x] **AI.V6** — Update `work-items-filtering.md` and `work-items-sorting.md` with visual inspection steps. *(completed 2026-03-30)*
-- [x] **AI.V7** — Update `agent-monitor-layout.md` and `agent-monitor-history.md` with visual inspection steps. *(completed 2026-03-30)*
-- [x] **AI.V8** — Update `activity-feed.md` with visual inspection steps. *(completed 2026-03-30)*
-- [x] **AI.V9** — Update `settings-projects.md`, `settings-workflow.md`, and `settings-appearance.md` with visual inspection steps. *(completed 2026-03-30)*
-- [x] **AI.V10** — Update `persona-manager.md` with visual inspection steps. *(completed 2026-03-30)*
-- [x] **AI.V11** — Update `navigation.md`, `dark-mode.md`, and `keyboard-shortcuts.md` with visual inspection steps. *(completed 2026-03-30)*
-
-### Phase 2: Execute Test Plans (AI.18–AI.28)
-- [x] **AI.18** — Execute `detail-panel-edit.md` — 15/17 PASS, 2 FAIL (list reactivity, mock-mode persistence). *(completed 2026-03-30)*
-- [x] **AI.19** — Execute `work-items-filtering.md` — 14/14 PASS. *(completed 2026-03-30)*
-- [x] **AI.20** — Execute `work-items-sorting.md` — 12/12 PASS. *(completed 2026-03-30)*
-- [x] **AI.21** — Execute `agent-monitor-layout.md` — 7/9 PASS, 2 N/A (empty state). *(completed 2026-03-30)*
-- [x] **AI.22** — Execute `agent-monitor-history.md` — 14/14 PASS. *(completed 2026-03-30)*
-- [x] **AI.23** — Execute `activity-feed.md` — 14/14 PASS. *(completed 2026-03-30)*
-- [x] **AI.24** — Execute `settings-projects.md` — 11/11 PASS. *(completed 2026-03-30)*
-- [x] **AI.25** — Execute `settings-workflow.md` — 12/12 PASS. *(completed 2026-03-30)*
-- [x] **AI.26** — Execute `settings-appearance.md` — 11/11 PASS. *(completed 2026-03-30)*
-- [x] **AI.27** — Execute `persona-manager.md` — 19/19 PASS. *(completed 2026-03-30)*
-- [x] **AI.28** — Execute `navigation.md` — 17/19 PASS, 2 N/A (tooltip, backdrop). *(completed 2026-03-30)*
+### Settings Fixes
+- [x] **FX.SET1** — Removed duplicate "Concurrency" nav, renamed "API Keys" → "Agent Configuration". *(completed 2026-03-30)*
+- [x] **FX.SET2** — Removed workflow state machine diagram from settings (~135 lines SVG). *(completed 2026-03-30)*
