@@ -1,95 +1,22 @@
 import { useMemo, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { useWorkItems, usePersonas, useExecutions, useSelectedProject } from "@/hooks";
+import { useWorkItems, usePersonas, useExecutions, useSelectedProject, usePersonaAssignments } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { WORKFLOW } from "@agentops/shared";
 import type { WorkItem, Persona, WorkItemId, Priority } from "@agentops/shared";
 
-// ── Layout constants ─────────────────────────────────────────────
-
-const NODE_W = 168;
-const NODE_H = 130;
-const GAP_X = 40;
-const GAP_Y = 64;
-const PAD = 24;
-
-// ── Static layout (computed once at module level) ────────────────
+// ── Workflow order (excluding Blocked) ──────────────────────────
 
 const mainStates = WORKFLOW.states.filter((s) => s.name !== "Blocked");
-const TOTAL_MAIN_W =
-  mainStates.length * NODE_W + (mainStates.length - 1) * GAP_X;
+const blockedState = WORKFLOW.states.find((s) => s.name === "Blocked")!;
 
-const positions = new Map<string, { x: number; y: number }>();
-mainStates.forEach((s, i) => {
-  positions.set(s.name, { x: PAD + i * (NODE_W + GAP_X), y: PAD });
-});
-positions.set("Blocked", {
-  x: PAD + TOTAL_MAIN_W / 2 - NODE_W / 2,
-  y: PAD + NODE_H + GAP_Y,
-});
+// States that can transition to Blocked
+const blockedSources = Object.entries(WORKFLOW.transitions)
+  .filter(([, targets]) => (targets as readonly string[]).includes("Blocked"))
+  .map(([source]) => source);
 
-const CANVAS_W = PAD * 2 + TOTAL_MAIN_W;
-const CANVAS_H = PAD * 2 + NODE_H * 2 + GAP_Y;
-
-// ── Arrow path computation ───────────────────────────────────────
-
-function computeArrowPath(from: string, to: string): string | null {
-  const fp = positions.get(from);
-  const tp = positions.get(to);
-  if (!fp || !tp) return null;
-
-  const sameRow = fp.y === tp.y;
-
-  if (sameRow) {
-    const isForward = tp.x > fp.x;
-    if (isForward) {
-      // Forward: right edge → left edge, curve up slightly for non-adjacent
-      const x1 = fp.x + NODE_W;
-      const y1 = fp.y + NODE_H / 2;
-      const x2 = tp.x;
-      const y2 = tp.y + NODE_H / 2;
-      const dist = x2 - x1;
-      const cpY = dist > GAP_X + 10 ? -16 : 0;
-      return `M ${x1} ${y1} C ${x1 + 20} ${y1 + cpY}, ${x2 - 20} ${y2 + cpY}, ${x2} ${y2}`;
-    }
-    // Backward: smooth arc below the main row
-    const x1 = fp.x + NODE_W / 2;
-    const y1 = fp.y + NODE_H;
-    const x2 = tp.x + NODE_W / 2;
-    const y2 = tp.y + NODE_H;
-    const arcY = y1 + 30;
-    return `M ${x1} ${y1} C ${x1} ${arcY}, ${x2} ${arcY}, ${x2} ${y2}`;
-  }
-
-  if (tp.y > fp.y) {
-    // Down to Blocked
-    const x1 = fp.x + NODE_W / 2;
-    const y1 = fp.y + NODE_H;
-    const x2 = tp.x + NODE_W / 2;
-    const y2 = tp.y;
-    return `M ${x1} ${y1} C ${x1} ${y1 + 25}, ${x2} ${y2 - 25}, ${x2} ${y2}`;
-  }
-
-  // Up from Blocked
-  const x1 = fp.x + NODE_W / 2;
-  const y1 = fp.y;
-  const x2 = tp.x + NODE_W / 2;
-  const y2 = tp.y + NODE_H;
-  return `M ${x1} ${y1} C ${x1} ${y1 - 25}, ${x2} ${y2 + 25}, ${x2} ${y2}`;
-}
-
-// Precompute all arrows
-const arrows: { key: string; d: string }[] = [];
-for (const [from, tos] of Object.entries(WORKFLOW.transitions)) {
-  for (const to of tos) {
-    const d = computeArrowPath(from, to);
-    if (d) arrows.push({ key: `${from}-${to}`, d });
-  }
-}
-
-// ── Priority config ──────────────────────────────────────────────
+// ── Priority config ─────────────────────────────────────────────
 
 const priorityConfig: Record<Priority, { label: string; color: string }> = {
   p0: { label: "P0", color: "text-red-600 dark:text-red-400" },
@@ -98,7 +25,7 @@ const priorityConfig: Record<Priority, { label: string; color: string }> = {
   p3: { label: "P3", color: "text-slate-500 dark:text-slate-400" },
 };
 
-// ── Avatar stack ─────────────────────────────────────────────────
+// ── Avatar stack ────────────────────────────────────────────────
 
 function AvatarStack({ personas }: { personas: Persona[] }) {
   if (personas.length === 0) return null;
@@ -123,7 +50,7 @@ function AvatarStack({ personas }: { personas: Persona[] }) {
   );
 }
 
-// ── Progress bar ─────────────────────────────────────────────────
+// ── Progress bar ────────────────────────────────────────────────
 
 function ProgressBar({ done, total }: { done: number; total: number }) {
   if (total === 0) return null;
@@ -131,9 +58,7 @@ function ProgressBar({ done, total }: { done: number; total: number }) {
   return (
     <div className="w-full">
       <div className="flex justify-between text-xs text-muted-foreground mb-0.5">
-        <span>
-          {done}/{total} items
-        </span>
+        <span>{done}/{total} items</span>
         <span>{pct}%</span>
       </div>
       <div className="h-1.5 w-full rounded-full bg-muted">
@@ -149,19 +74,50 @@ function ProgressBar({ done, total }: { done: number; total: number }) {
   );
 }
 
-// ── State node data ──────────────────────────────────────────────
+// ── State node data ─────────────────────────────────────────────
 
 interface StateNodeData {
   items: WorkItem[];
   activeAgents: number;
   activePersonas: Persona[];
+  assignedPersonas: Persona[];
   childrenDone: number;
   childrenTotal: number;
 }
 
-// ── State node component ─────────────────────────────────────────
+// ── Router pill (between states) ────────────────────────────────
 
-function StateNode({
+function RouterPill() {
+  return (
+    <div className="flex items-center justify-center py-1">
+      <div className="flex h-6 items-center gap-1 rounded-full bg-indigo-500/15 px-2.5 text-indigo-600 dark:text-indigo-400">
+        <svg viewBox="0 0 8 8" className="h-2 w-2 fill-current">
+          <polygon points="4,0 8,4 4,8 0,4" />
+        </svg>
+        <span className="text-[10px] font-medium">Router</span>
+      </div>
+    </div>
+  );
+}
+
+// ── Down arrow connector ────────────────────────────────────────
+
+function DownArrow() {
+  return (
+    <div className="flex justify-center">
+      <div className="flex flex-col items-center">
+        <div className="h-3 w-px bg-border" />
+        <svg viewBox="0 0 8 6" className="h-1.5 w-2 text-border fill-current">
+          <polygon points="0,0 8,0 4,6" />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+// ── State node card ─────────────────────────────────────────────
+
+function StateNodeCard({
   stateName,
   stateColor,
   data,
@@ -174,17 +130,13 @@ function StateNode({
   isSelected: boolean;
   onClick: () => void;
 }) {
-  const pos = positions.get(stateName);
-  if (!pos) return null;
-
   return (
     <button
       onClick={onClick}
       className={cn(
-        "absolute rounded-lg border bg-card text-left transition-all hover:shadow-md hover:border-primary/30 overflow-hidden",
+        "w-full max-w-xs rounded-lg border bg-card text-left transition-all hover:shadow-md hover:border-primary/30 overflow-hidden",
         isSelected && "ring-2 ring-primary border-primary shadow-md",
       )}
-      style={{ width: NODE_W, left: pos.x, top: pos.y }}
     >
       {/* Colored header */}
       <div
@@ -193,7 +145,7 @@ function StateNode({
       >
         <div className="flex items-center gap-1.5 min-w-0">
           <div
-            className="h-2 w-2 rounded-full shrink-0"
+            className="h-2.5 w-2.5 rounded-full shrink-0"
             style={{ backgroundColor: stateColor }}
           />
           <span className="text-xs font-semibold truncate">{stateName}</span>
@@ -222,7 +174,7 @@ function StateNode({
               <span className="text-xs text-muted-foreground">idle</span>
             )}
           </div>
-          <AvatarStack personas={data.activePersonas} />
+          <AvatarStack personas={data.assignedPersonas.length > 0 ? data.assignedPersonas : data.activePersonas} />
         </div>
 
         {/* Progress bar */}
@@ -232,7 +184,7 @@ function StateNode({
   );
 }
 
-// ── Filtered items list ──────────────────────────────────────────
+// ── Filtered items list ─────────────────────────────────────────
 
 function FilteredItemsList({
   items,
@@ -288,13 +240,14 @@ function FilteredItemsList({
   );
 }
 
-// ── Main flow view ───────────────────────────────────────────────
+// ── Main flow view ──────────────────────────────────────────────
 
 export function FlowView() {
   const { projectId } = useSelectedProject();
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined);
   const { data: personas } = usePersonas();
   const { data: executions } = useExecutions(undefined, projectId ?? undefined);
+  const { data: assignments } = usePersonaAssignments(projectId);
   const { filterState, setFilterState, selectedItemId, setSelectedItemId } =
     useWorkItemsStore();
 
@@ -303,6 +256,21 @@ export function FlowView() {
     personas?.forEach((p) => map.set(p.id, p));
     return map;
   }, [personas]);
+
+  // Map state → assigned personas (from persona assignments)
+  const statePersonaMap = useMemo(() => {
+    const map = new Map<string, Persona[]>();
+    if (!assignments) return map;
+    for (const a of assignments) {
+      const persona = personaMap.get(a.personaId);
+      if (persona) {
+        const list = map.get(a.stateName) ?? [];
+        list.push(persona);
+        map.set(a.stateName, list);
+      }
+    }
+    return map;
+  }, [assignments, personaMap]);
 
   // Compute per-state data
   const stateData = useMemo(() => {
@@ -313,6 +281,7 @@ export function FlowView() {
         items: [],
         activeAgents: 0,
         activePersonas: [],
+        assignedPersonas: statePersonaMap.get(state.name) ?? [],
         childrenDone: 0,
         childrenTotal: 0,
       });
@@ -354,7 +323,7 @@ export function FlowView() {
       }
     }
 
-    // Child progress: aggregate children done/total for items in each state
+    // Child progress
     const childStats = new Map<string, { done: number; total: number }>();
     for (const item of allItems) {
       if (!item.parentId) continue;
@@ -379,7 +348,7 @@ export function FlowView() {
     }
 
     return map;
-  }, [allItems, executions, personaMap]);
+  }, [allItems, executions, personaMap, statePersonaMap]);
 
   const handleNodeClick = useCallback(
     (stateName: string) => {
@@ -394,84 +363,139 @@ export function FlowView() {
     return stateData.get(filterState)?.items ?? [];
   }, [filterState, stateData]);
 
+  // Index of "Blocked" branching point (roughly mid-pipeline)
+  const blockedBranchIndex: number = useMemo(() => {
+    const sourceIndices = blockedSources.map((s) =>
+      mainStates.findIndex((ms) => ms.name === s),
+    ).filter((i) => i >= 0);
+    if (sourceIndices.length === 0) return 3;
+    return sourceIndices[Math.floor(sourceIndices.length / 2)] ?? 3;
+  }, []);
+
   if (isLoading) {
     return (
-      <div className="flex gap-4 p-4">
-        {mainStates.map((s) => (
-          <div
-            key={s.name}
-            className="shrink-0 rounded-lg bg-muted/30 animate-pulse"
-            style={{ width: NODE_W, height: NODE_H }}
-          />
-        ))}
+      <div className="flex justify-center py-8">
+        <div className="flex flex-col items-center gap-3">
+          {mainStates.slice(0, 4).map((s) => (
+            <div
+              key={s.name}
+              className="rounded-lg bg-muted/30 animate-pulse"
+              style={{ width: 280, height: 72 }}
+            />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      {/* State machine graph */}
-      <ScrollArea className="shrink-0">
-        <div
-          className="relative"
-          style={{ width: CANVAS_W, height: CANVAS_H, minWidth: CANVAS_W }}
-        >
-          {/* SVG arrows */}
-          <svg
-            className="absolute inset-0 pointer-events-none"
-            width={CANVAS_W}
-            height={CANVAS_H}
-          >
-            <defs>
-              <marker
-                id="flow-arrow"
-                markerWidth="8"
-                markerHeight="6"
-                refX="8"
-                refY="3"
-                orient="auto"
-              >
-                <polygon
-                  points="0 0, 8 3, 0 6"
-                  className="fill-muted-foreground/40"
-                />
-              </marker>
-            </defs>
-            {arrows.map(({ key, d }) => (
-              <path
-                key={key}
-                d={d}
-                fill="none"
-                className="stroke-muted-foreground/25"
-                strokeWidth="1.5"
-                markerEnd="url(#flow-arrow)"
-              />
-            ))}
-          </svg>
+    <div className="flex h-full overflow-y-auto">
+      {/* Main vertical pipeline */}
+      <div className="flex-1 flex flex-col items-center py-4 min-w-0">
+        <div className="flex">
+          {/* Main column */}
+          <div className="flex flex-col items-center" style={{ width: 280 }}>
+            {mainStates.map((state, i) => {
+              const data = stateData.get(state.name);
+              if (!data) return null;
+              return (
+                <div key={state.name} className="flex flex-col items-center w-full">
+                  <StateNodeCard
+                    stateName={state.name}
+                    stateColor={state.color}
+                    data={data}
+                    isSelected={filterState === state.name}
+                    onClick={() => handleNodeClick(state.name)}
+                  />
+                  {/* Arrow + Router between states */}
+                  {i < mainStates.length - 1 && (
+                    <div className="flex flex-col items-center">
+                      <DownArrow />
+                      <RouterPill />
+                      <DownArrow />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
 
-          {/* State nodes */}
-          {WORKFLOW.states.map((state) => {
-            const data = stateData.get(state.name);
-            if (!data) return null;
-            return (
-              <StateNode
-                key={state.name}
-                stateName={state.name}
-                stateColor={state.color}
-                data={data}
-                isSelected={filterState === state.name}
-                onClick={() => handleNodeClick(state.name)}
-              />
-            );
-          })}
+          {/* Blocked branch — positioned to the right */}
+          <div className="relative" style={{ width: 180 }}>
+            {/* Dashed horizontal connector from main column to Blocked */}
+            <div
+              className="absolute left-0"
+              style={{
+                // Position at the branching point: after the Nth state node + connectors
+                // Each state node is ~72px, each connector section is ~48px
+                top: blockedBranchIndex * (72 + 48) + 36, // center of the source state
+              }}
+            >
+              <div className="flex items-center">
+                <div className="w-8 border-t-2 border-dashed border-red-400/40" />
+                <svg viewBox="0 0 6 8" className="h-2 w-1.5 text-red-400/40 fill-current -ml-px">
+                  <polygon points="0,0 6,4 0,8" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Blocked state card */}
+            <div
+              className="absolute left-10"
+              style={{
+                top: blockedBranchIndex * (72 + 48) + 12,
+                width: 160,
+              }}
+            >
+              {(() => {
+                const data = stateData.get("Blocked");
+                if (!data) return null;
+                return (
+                  <button
+                    onClick={() => handleNodeClick("Blocked")}
+                    className={cn(
+                      "w-full rounded-lg border border-dashed border-red-300 dark:border-red-800 bg-card text-left transition-all hover:shadow-md hover:border-red-400 overflow-hidden",
+                      filterState === "Blocked" && "ring-2 ring-red-500 border-red-500 shadow-md",
+                    )}
+                  >
+                    <div
+                      className="px-3 py-1.5 flex items-center justify-between"
+                      style={{ backgroundColor: blockedState.color + "15" }}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        <div
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ backgroundColor: blockedState.color }}
+                        />
+                        <span className="text-xs font-semibold">Blocked</span>
+                      </div>
+                      <Badge variant="secondary" className="text-xs px-1.5 py-0 h-4">
+                        {data.items.length}
+                      </Badge>
+                    </div>
+                    <div className="px-3 py-2">
+                      <div className="flex items-center gap-1.5">
+                        {data.items.length > 0 ? (
+                          <span className="text-xs text-red-600 dark:text-red-400 font-medium">
+                            {data.items.length} blocked
+                          </span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">none</span>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })()}
+            </div>
+          </div>
         </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      </div>
 
       {/* Filtered items panel (shown when a state is selected) */}
       {filterState && (
-        <div className="border-t pt-3 px-1 flex-1 overflow-y-auto">
-          <div className="flex items-center gap-2 mb-2">
+        <div className="border-l pl-4 pr-2 w-64 shrink-0 overflow-y-auto">
+          <div className="flex items-center gap-2 mb-2 pt-4">
             <div
               className="h-2.5 w-2.5 rounded-full"
               style={{

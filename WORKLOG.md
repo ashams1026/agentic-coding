@@ -18,6 +18,28 @@
 
 ---
 
+## 2026-03-30 — FX.FLOW1: Redesign Flow view as vertical state machine
+
+**Task:** Replace horizontal BFS-layout SVG graph with clean vertical CSS layout.
+
+**Done:**
+- Replaced entire `flow-view.tsx` — removed `computeLayout`, `computeArrowPath`, SVG arrows, absolute positioning, ScrollArea horizontal scroll
+- New vertical layout: state nodes flow top-to-bottom in workflow order (Backlog → Planning → Decomposition → Ready → In Progress → In Review → Done)
+- **Router pills** between each state pair — small indigo pill with diamond icon + "Router" label
+- **Down arrows** between nodes using CSS borders + SVG triangle
+- **Blocked state** branches off to the right with dashed horizontal connector and dashed red border card
+- Each state node card shows: colored header with state name + dot + item count badge, active agent count with pulse indicator, persona avatar stack (assigned personas from persona assignments, falls back to active), progress bar
+- Added `usePersonaAssignments` hook to show who's assigned per state
+- Filtered items panel moved to right sidebar (border-left separator) when state clicked
+- Centered vertically scrollable layout, no horizontal scroll needed
+- Build passes
+
+**Files modified:** `packages/frontend/src/features/work-items/flow-view.tsx`
+
+**Notes:** Removed ~140 lines of SVG arrow/layout computation. New layout is pure flex/grid CSS with Tailwind. Blocked branch position is computed from the middle of states that can transition to Blocked.
+
+---
+
 ## 2026-03-30 — FX.RST1: Add graceful restart flow with active agent modal
 
 **Task:** Add restart flow that checks for active agents before restarting the service.
