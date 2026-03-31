@@ -110,7 +110,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-0.5 overflow-y-auto p-2">
+      <nav className="flex-1 space-y-1 overflow-y-auto p-2">
         {navItems.map(({ to, icon: Icon, label }) => (
           <Tooltip key={to}>
             <TooltipTrigger asChild>
@@ -119,22 +119,24 @@ export function Sidebar() {
                 end={to === "/"}
                 className={({ isActive }) =>
                   cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-300 ease-in-out",
-                    "hover:bg-accent hover:text-accent-foreground",
+                    "flex flex-row items-center rounded-lg text-sm transition-all duration-200",
+                    "hover:bg-accent/80 hover:text-accent-foreground",
                     isActive
-                      ? "bg-accent text-accent-foreground"
-                      : "text-muted-foreground",
-                    sidebarCollapsed && "justify-center px-2 py-2",
+                      ? "bg-accent/80 text-foreground font-semibold border-l-2 border-primary"
+                      : "text-muted-foreground font-medium border-l-2 border-transparent",
+                    sidebarCollapsed
+                      ? "justify-center px-2 py-2"
+                      : "gap-3 px-3 py-2",
                   )
                 }
               >
-                <span className="relative">
-                  <Icon className="h-4 w-4 shrink-0" />
-                  {/* Collapsed badges — fade in/out with transition */}
+                <span className="relative shrink-0 inline-flex">
+                  <Icon className="h-4 w-4" />
+                  {/* Collapsed badges */}
                   {to === "/items" && pendingProposalCount > 0 && (
                     <span
                       className={cn(
-                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-0.5 text-xs font-bold text-white transition-all duration-300 ease-in-out",
+                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-0.5 text-xs font-bold text-white transition-all duration-200",
                         sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
                       )}
                     >
@@ -144,7 +146,7 @@ export function Sidebar() {
                   {to === "/agents" && activeAgentCount > 0 && (
                     <span
                       className={cn(
-                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-0.5 text-xs font-bold text-white transition-all duration-300 ease-in-out",
+                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-0.5 text-xs font-bold text-white transition-all duration-200",
                         sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
                       )}
                     >
@@ -154,7 +156,7 @@ export function Sidebar() {
                   {to === "/activity" && unreadActivityCount > 0 && (
                     <span
                       className={cn(
-                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-500 px-0.5 text-xs font-bold text-white transition-all duration-300 ease-in-out",
+                        "absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-500 px-0.5 text-xs font-bold text-white transition-all duration-200",
                         sidebarCollapsed ? "scale-100 opacity-100" : "scale-0 opacity-0",
                       )}
                     >
@@ -162,30 +164,27 @@ export function Sidebar() {
                     </span>
                   )}
                 </span>
-                {/* Labels + expanded badges — animate opacity separately */}
-                <span
-                  className={cn(
-                    "flex flex-1 items-center gap-3 overflow-hidden transition-all duration-300 ease-in-out",
-                    sidebarCollapsed ? "w-0 opacity-0" : "w-auto opacity-100",
-                  )}
-                >
-                  <span className="flex-1 truncate">{label}</span>
-                  {to === "/items" && pendingProposalCount > 0 && (
-                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-xs font-bold text-white shrink-0">
-                      {pendingProposalCount}
-                    </span>
-                  )}
-                  {to === "/agents" && activeAgentCount > 0 && (
-                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-xs font-bold text-white shrink-0">
-                      {activeAgentCount}
-                    </span>
-                  )}
-                  {to === "/activity" && unreadActivityCount > 0 && (
-                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1 text-xs font-bold text-white shrink-0">
-                      {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
-                    </span>
-                  )}
-                </span>
+                {/* Label + expanded badges */}
+                {!sidebarCollapsed && (
+                  <>
+                    <span className="flex-1 truncate">{label}</span>
+                    {to === "/items" && pendingProposalCount > 0 && (
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-xs font-bold text-white shrink-0">
+                        {pendingProposalCount}
+                      </span>
+                    )}
+                    {to === "/agents" && activeAgentCount > 0 && (
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-emerald-500 px-1 text-xs font-bold text-white shrink-0">
+                        {activeAgentCount}
+                      </span>
+                    )}
+                    {to === "/activity" && unreadActivityCount > 0 && (
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-sky-500 px-1 text-xs font-bold text-white shrink-0">
+                        {unreadActivityCount > 9 ? "9+" : unreadActivityCount}
+                      </span>
+                    )}
+                  </>
+                )}
               </NavLink>
             </TooltipTrigger>
             {sidebarCollapsed && (

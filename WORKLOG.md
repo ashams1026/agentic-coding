@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — FX.NAV1: Fix sidebar nav item layout and interaction states
+
+**Task:** Fix icon/label stacking issue and improve hover/active states in sidebar.
+
+**Done:**
+- **Fixed icon/label stacking**: Replaced animated `w-0`/`w-auto` label wrapper (caused layout issues) with conditional render `{!sidebarCollapsed && ...}`. Added explicit `flex-row` and `shrink-0 inline-flex` on icon span.
+- **Active state**: Added left border accent (`border-l-2 border-primary`), stronger background (`bg-accent/80`), `font-semibold`, `text-foreground` — active page clearly distinguishable at a glance
+- **Hover state**: `hover:bg-accent/80` for visible hover background
+- **Softer corners**: `rounded-lg` instead of `rounded-md`
+- **No layout shift**: All items have `border-l-2 border-transparent` by default so the active border doesn't cause shift
+- Build passes
+
+**Files modified:** `packages/frontend/src/components/sidebar.tsx`
+
+**Notes:** Root cause of stacking: the label wrapper used `w-0 opacity-0` / `w-auto opacity-100` with transition for collapse animation. This CSS approach allowed the label span to collapse to zero width while keeping it in the DOM, but it interfered with flex layout in some render states. Replaced with simple conditional rendering which is more robust.
+
+---
+
 ## 2026-03-30 — Review: FX.FLOW1 (approved)
 
 **Reviewed:** Flow view redesign as vertical state machine.
