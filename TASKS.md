@@ -38,7 +38,7 @@
 
 ### Bug: MCP Tool Name Mismatch
 
-- [review] **FX.0** — Fix `transition_state` → `route_to_state` mismatch in seed personas. In `packages/backend/src/db/seed.ts`: the Product Manager, Engineer, and Code Reviewer personas list `"transition_state"` in their `mcpTools` array, but the MCP server tool is actually called `"route_to_state"`. This means these personas silently fail when trying to signal state transitions, which likely caused the PM to never properly signal "planning is done" — leading to the Router re-routing back to Planning in a loop. Fix: replace `"transition_state"` with `"route_to_state"` in all persona seed data. Also audit `packages/backend/src/agent/mcp-server.ts` to confirm the tool allowlist filtering uses these exact names — if a persona's `mcpTools` doesn't match the registered tool name, the tool is silently unavailable.
+- [x] **FX.0** — Fix `transition_state` → `route_to_state` mismatch in seed personas. In `packages/backend/src/db/seed.ts`: the Product Manager, Engineer, and Code Reviewer personas list `"transition_state"` in their `mcpTools` array, but the MCP server tool is actually called `"route_to_state"`. This means these personas silently fail when trying to signal state transitions, which likely caused the PM to never properly signal "planning is done" — leading to the Router re-routing back to Planning in a loop. Fix: replace `"transition_state"` with `"route_to_state"` in all persona seed data. Also audit `packages/backend/src/agent/mcp-server.ts` to confirm the tool allowlist filtering uses these exact names — if a persona's `mcpTools` doesn't match the registered tool name, the tool is silently unavailable.
 
 ### Persona Audit & Prompt Overhaul
 

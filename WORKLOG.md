@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-30 — Review: FX.0 (approved)
+
+**Reviewed:** MCP tool name mismatch fix in seed personas.
+- seed.ts: PM, Engineer, Reviewer `transition_state` → `route_to_state`; TL `create_tasks` → `create_children` ✓
+- default-personas.ts: Same 4 fixes ✓
+- test/setup.ts: TL `create_tasks` → `create_children` ✓
+- Zero remaining mismatches (grep verified) ✓
+- MCP server audit: 7 tools confirmed in TOOL_NAMES ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.0: Fix MCP tool name mismatch in seed personas
 
 **Task:** Fix `transition_state` → `route_to_state` and `create_tasks` → `create_children` mismatch.
