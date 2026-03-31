@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — Review: FX.5 (approved)
+
+**Reviewed:** Cost aggregation audit and cents→dollars fix in `dashboard.ts` and `executions.ts`.
+- Root cause confirmed: DB stores cents, routes returned cents as if dollars — 100x inflation in frontend display
+- `dashboard.ts`: 4 aggregations use clean rename pattern (`todayCostCents`, `costCents`, `monthTotalCents`, `totalCostCents`) with `/ 100` at return — clear intent, consistent
+- `executions.ts`: `row.costUsd / 100` with comment in serializer — correct
+- WS `cost_update` from `concurrency.ts` was already correct — no change, now consistent across all paths
+- `monthCap` is already in dollars (default 50) — progress bar comparison now correct
+- Frontend unchanged — API contract now consistently returns dollars, which frontend already expected
+- Seed data verified: cents values (22-92) are realistic ($0.22-$0.92), not inflated
+- Project scoping verified: all routes accept `projectId`, filter through work item ownership
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.5: Audit cost aggregation and display
 
 **Task:** Verify cents-to-dollars conversion in dashboard routes and frontend display. Check project scoping.
