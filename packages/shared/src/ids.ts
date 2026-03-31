@@ -8,6 +8,8 @@ export type ExecutionId = `ex-${string}`;
 export type CommentId = `cm-${string}`;
 export type ProjectMemoryId = `pm-${string}`;
 export type ProposalId = `pp-${string}`;
+export type ChatSessionId = `cs-${string}`;
+export type ChatMessageId = `msg-${string}`;
 
 export type EntityId =
   | ProjectId
@@ -17,7 +19,9 @@ export type EntityId =
   | ExecutionId
   | CommentId
   | ProjectMemoryId
-  | ProposalId;
+  | ProposalId
+  | ChatSessionId
+  | ChatMessageId;
 
 const ID_LENGTH = 7;
 
@@ -34,4 +38,6 @@ export const createId = {
   comment: () => makeId<CommentId>("cm"),
   projectMemory: () => makeId<ProjectMemoryId>("pm"),
   proposal: () => makeId<ProposalId>("pp"),
+  chatSession: () => makeId<ChatSessionId>("cs"),
+  chatMessage: () => makeId<ChatMessageId>("msg"),
 };

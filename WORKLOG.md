@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-31 — PICO.2: Create chat session API
+
+**Task:** Add chat session DB tables and CRUD routes for Pico chat.
+
+**Done:**
+- `shared/ids.ts`: Added `ChatSessionId` (`cs-` prefix) and `ChatMessageId` (`msg-` prefix) types + `createId.chatSession()` / `createId.chatMessage()` factories.
+- `shared/entities.ts`: Added `ChatSession` and `ChatMessage` interfaces, `ChatMessageRole` type.
+- `backend/db/schema.ts`: Added `chatSessions` table (id, projectId, title, createdAt, updatedAt) and `chatMessages` table (id, sessionId, role, content, metadata JSON, createdAt). Messages cascade delete with session. Relations defined.
+- `backend/routes/chat.ts`: Four endpoints:
+  - `POST /api/chat/sessions` — create session with projectId
+  - `GET /api/chat/sessions?projectId=` — list sessions (most recent first)
+  - `GET /api/chat/sessions/:id/messages` — get message history
+  - `DELETE /api/chat/sessions/:id` — delete session + messages
+- `backend/server.ts`: Registered `chatRoutes`.
+- Drizzle migration generated (`0002_military_shotgun.sql`).
+
+**Files created:** `packages/backend/src/routes/chat.ts`, `packages/backend/drizzle/0002_military_shotgun.sql`
+**Files modified:** `packages/shared/src/ids.ts`, `packages/shared/src/entities.ts`, `packages/backend/src/db/schema.ts`, `packages/backend/src/server.ts`
+
+---
+
 ## 2026-03-31 — Review: PICO.1 (approved)
 
 **Reviewed:** Pico built-in assistant persona across 6 files.

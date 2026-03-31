@@ -232,3 +232,39 @@ export const projectMemoriesRelations = relations(projectMemories, ({ one }) => 
     references: [workItems.id],
   }),
 }));
+
+// ── Chat Sessions ─────────────────────────────────────────────────
+
+export const chatSessions = sqliteTable("chat_sessions", {
+  id: text("id").primaryKey(), // ChatSessionId
+  projectId: text("project_id").notNull().references(() => projects.id),
+  title: text("title").notNull().default("New chat"),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+export const chatSessionsRelations = relations(chatSessions, ({ one, many }) => ({
+  project: one(projects, {
+    fields: [chatSessions.projectId],
+    references: [projects.id],
+  }),
+  messages: many(chatMessages),
+}));
+
+// ── Chat Messages ─────────────────────────────────────────────────
+
+export const chatMessages = sqliteTable("chat_messages", {
+  id: text("id").primaryKey(), // ChatMessageId
+  sessionId: text("session_id").notNull().references(() => chatSessions.id, { onDelete: "cascade" }),
+  role: text("role").notNull(), // "user" | "assistant"
+  content: text("content").notNull(),
+  metadata: text("metadata", { mode: "json" }).notNull().$type<Record<string, unknown>>().default({}),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
+  session: one(chatSessions, {
+    fields: [chatMessages.sessionId],
+    references: [chatSessions.id],
+  }),
+}));

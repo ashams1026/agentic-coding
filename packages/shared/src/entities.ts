@@ -7,6 +7,8 @@ import type {
   CommentId,
   ProjectMemoryId,
   ProposalId,
+  ChatSessionId,
+  ChatMessageId,
 } from "./ids.js";
 
 // ── Enums ──────────────────────────────────────────────────────────
@@ -147,5 +149,26 @@ export interface Proposal {
   type: ProposalType;
   payload: Record<string, unknown>;
   status: ProposalStatus;
+  createdAt: string;
+}
+
+// ── Chat ──────────────────────────────────────────────────────────
+
+export type ChatMessageRole = "user" | "assistant";
+
+export interface ChatSession {
+  id: ChatSessionId;
+  projectId: ProjectId;
+  title: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ChatMessage {
+  id: ChatMessageId;
+  sessionId: ChatSessionId;
+  role: ChatMessageRole;
+  content: string;
+  metadata: Record<string, unknown>;
   createdAt: string;
 }
