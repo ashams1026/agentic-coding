@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — AI.V7: Update agent monitor test plans with visual inspection
+
+**Task:** Add visual inspection steps to `agent-monitor-layout.md` and `agent-monitor-history.md`.
+
+**Done:**
+- `agent-monitor-layout.md`: Added protocol blockquote, 4 screenshot checkpoints (page load, tab bar, empty state, tab switch), "Visual Quality" (6 criteria: tab bar, badge, empty state, tab switching, sidebar, overall), "Visual Failure Criteria" (6 defects), updated prerequisites
+- `agent-monitor-history.md`: Added protocol blockquote, 5 screenshot checkpoints (history view, stats bar, table structure, expanded row, filtered results), "Visual Quality" (8 criteria: stats bar, filter bar, table, avatars, badges, expanded row, sort indicators, overall), "Visual Failure Criteria" (7 defects), updated prerequisites
+
+**Files changed:** `tests/e2e/plans/agent-monitor-layout.md`, `tests/e2e/plans/agent-monitor-history.md`
+
+**Notes:** Build passes (no code changes). Original steps preserved (9 layout, 14 history).
+
+---
+
 ## 2026-03-30 — Review: AI.V6 (approved)
 
 **Reviewed:** Filtering/sorting test plans visual inspection update.
