@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-31 — Review: PICO.6 (approved)
+
+**Reviewed:** Chat panel — chat-panel.tsx, root-layout.tsx, index.css.
+- All spec requirements met: 400px x 500px panel, rounded-xl + shadow-lg, header with Pico avatar/title/minimize/new-session, scrollable messages with auto-scroll, textarea + Send + Cmd+Enter, typing indicator, click-outside dismiss, scale+opacity animation.
+- Good responsive handling: width/height caps prevent overflow on small screens.
+- Mock data layer correctly drives the UI (3 messages, proper roles).
+- Conventions followed: named exports, kebab-case, cn(), theme tokens for dark mode, feature collocation.
+- Click-outside handler correctly excludes chat bubble via aria-label selector.
+- Focus management: textarea focuses on open with cleanup timer.
+- Streaming stubs in place for PICO.8 (isStreaming state, disabled input, typing indicator).
+- Build passes cleanly.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — PICO.6: Build chat panel
 
 **Task:** Create the Pico chat panel that opens above the floating bubble.
