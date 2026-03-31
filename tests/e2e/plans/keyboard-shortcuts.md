@@ -6,11 +6,14 @@ Verify the command palette opens with Cmd+K (or Ctrl+K), allows searching for na
 
 ## Prerequisites
 
-- Backend running on `:3001`, frontend on `:5173`
+- Backend running on `:3001`, frontend on `:5173` or `:5174`
 - API mode set to "api"
 - Database seeded with test data (work items with distinct titles for search testing)
+- chrome-devtools MCP connected
 
 ## Steps
+
+> **Visual inspection protocol:** After each major navigation or UI interaction step, take a screenshot using `take_screenshot`. Examine the screenshot visually using the `Read` tool. Note any visual issues (misalignment, clipping, bad spacing, broken layout, invisible text, wrong colors, overlapping elements, truncated content) in the results alongside the functional pass/fail. A step can functionally pass but have visual defects — record both.
 
 1. **Navigate** to `http://localhost:5173/`
    - Verify: the Dashboard page loads without errors
@@ -21,6 +24,7 @@ Verify the command palette opens with Cmd+K (or Ctrl+K), allows searching for na
 3. **Verify** the command palette search input
    - Look for: a search input with placeholder text "Type a command or search..."
    - Expected: the input is auto-focused and ready for typing, an "ESC" badge is visible to the right of the input
+   - **Screenshot checkpoint:** Take screenshot. Examine: command palette centered as modal overlay, backdrop dimming visible, search input rendered with placeholder text, ESC badge positioned correctly, category headers and items listed below, overall palette sizing and spacing.
 
 4. **Verify** the command palette shows default categories
    - Look for: category headers in uppercase: "NAVIGATION", "QUICK ACTIONS", "WORK ITEMS"
@@ -41,6 +45,7 @@ Verify the command palette opens with Cmd+K (or Ctrl+K), allows searching for na
 8. **Verify** the filtered results
    - Look for: only items whose labels contain the typed text
    - Expected: navigation items, actions, and work items all filter by the query
+   - **Screenshot checkpoint:** Take screenshot. Examine: filtered results shown correctly, non-matching items removed, search text visible in input, result items readable, highlight on first match, no layout shift during filter.
 
 9. **Type** a query with no matches (e.g., "xyznonexistent")
    - Expected: the list shows "No results found." centered in the results area
@@ -50,6 +55,7 @@ Verify the command palette opens with Cmd+K (or Ctrl+K), allows searching for na
 
 11. **Press** ArrowDown to move the selection
     - Expected: the highlight moves to the next item in the list
+    - **Screenshot checkpoint:** Take screenshot. Examine: selection highlight moved to next item, previous item deselected, "Enter" badge follows highlighted item, scroll behavior if item is below visible area.
 
 12. **Press** ArrowUp to move the selection back
     - Expected: the highlight moves back to the previous item
@@ -83,6 +89,17 @@ Verify the command palette opens with Cmd+K (or Ctrl+K), allows searching for na
 - Escape closes the palette without navigation
 - Reopening resets the search query to empty
 
+### Visual Quality
+
+- Palette modal: centered on screen, appropriate width (~600px), rounded corners, shadow for depth, backdrop dimming behind
+- Search input: full width of palette, placeholder text readable, ESC badge right-aligned, auto-focused cursor visible
+- Category headers: uppercase, small, bold, clearly separated from items
+- Result items: consistent row heights, icons aligned, labels readable, "Enter" badge on highlighted item
+- Selection highlight: clear accent background on highlighted item, moves smoothly with arrow keys
+- Footer: keyboard hints evenly spaced, text readable, positioned at bottom of palette
+- Empty state: "No results found." centered, readable, not too large or small
+- Overall: palette doesn't overflow viewport, scrollable if many results, no clipping of item labels
+
 ## Failure Criteria
 
 - Cmd+K does not open the command palette
@@ -94,3 +111,14 @@ Verify the command palette opens with Cmd+K (or Ctrl+K), allows searching for na
 - Escape does not close the palette
 - Work items from the database are not listed
 - Any action causes a JavaScript error or blank screen
+
+### Visual Failure Criteria
+
+- Palette modal not centered or overflows viewport edges
+- Backdrop missing or not dimming behind palette
+- Search input not full width or placeholder text invisible
+- Category headers misaligned or indistinguishable from items
+- Selection highlight invisible or wrong color
+- Result items different heights or icons misaligned with labels
+- Footer keyboard hints clipped or overlapping
+- Empty state text mispositioned or invisible

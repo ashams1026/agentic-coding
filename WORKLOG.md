@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-03-30 — AI.V11: Update navigation, dark-mode, keyboard-shortcuts test plans with visual inspection
+
+**Task:** Add visual inspection steps to `navigation.md`, `dark-mode.md`, and `keyboard-shortcuts.md`.
+
+**Done:**
+- `navigation.md`: Added protocol blockquote, 4 screenshot checkpoints (page load/sidebar, after nav click, collapsed mode, mobile overlay), Visual Quality (6 criteria: expanded, active state, collapsed, tooltips, mobile, transitions), Visual Failure Criteria (7 defects), updated prerequisites
+- `dark-mode.md`: Added protocol blockquote, 4 screenshot checkpoints (light mode dashboard, dark mode dashboard, personas dark, settings theme switch), Visual Quality (7 criteria: toggle, light mode, dark mode, cross-page, transitions, badges, settings sync), Visual Failure Criteria (7 defects), updated prerequisites
+- `keyboard-shortcuts.md`: Added protocol blockquote, 3 screenshot checkpoints (palette open, filtered results, arrow key selection), Visual Quality (8 criteria: modal, search input, headers, items, highlight, footer, empty state, overall), Visual Failure Criteria (8 defects), updated prerequisites
+
+**Files changed:** `tests/e2e/plans/navigation.md`, `tests/e2e/plans/dark-mode.md`, `tests/e2e/plans/keyboard-shortcuts.md`
+
+**Notes:** No code changes — build unaffected. Original steps preserved (19 navigation, 19 dark-mode, 17 keyboard-shortcuts). This completes Phase 1.5 — all test plans now have visual inspection protocol.
+
+---
+
 ## 2026-03-30 — Review: AI.V10 (approved)
 
 **Reviewed:** Persona manager test plan visual inspection update.

@@ -173,7 +173,7 @@
 
 - [x] **AI.V10** — Update `persona-manager.md` with visual inspection steps. Add screenshot + examine after: persona grid loads, opening editor, each field section. Check: card grid alignment, editor layout, field spacing.
 
-- [ ] **AI.V11** — Update `navigation.md`, `dark-mode.md`, and `keyboard-shortcuts.md` with visual inspection steps. Add screenshot + examine after: each nav click, sidebar collapse/expand, theme toggle on each page, command palette open. Check: sidebar layout, active state highlighting, theme color transitions, palette rendering.
+- [review] **AI.V11** — Update `navigation.md`, `dark-mode.md`, and `keyboard-shortcuts.md` with visual inspection steps. Add screenshot + examine after: each nav click, sidebar collapse/expand, theme toggle on each page, command palette open. Check: sidebar layout, active state highlighting, theme color transitions, palette rendering.
 
 ### Phase 2: Execute Test Plans
 

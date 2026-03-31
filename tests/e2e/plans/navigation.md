@@ -6,14 +6,18 @@ Verify the sidebar navigation links to correct pages, highlights the active item
 
 ## Prerequisites
 
-- Backend running on `:3001`, frontend on `:5173`
+- Backend running on `:3001`, frontend on `:5173` or `:5174`
 - API mode set to "api"
 - Database seeded with test data (at least one project, work items, executions)
+- chrome-devtools MCP connected
 
 ## Steps
 
+> **Visual inspection protocol:** After each major navigation or UI interaction step, take a screenshot using `take_screenshot`. Examine the screenshot visually using the `Read` tool. Note any visual issues (misalignment, clipping, bad spacing, broken layout, invisible text, wrong colors, overlapping elements, truncated content) in the results alongside the functional pass/fail. A step can functionally pass but have visual defects — record both.
+
 1. **Navigate** to `http://localhost:5173/`
    - Verify: the Dashboard page loads and the sidebar is visible on the left
+   - **Screenshot checkpoint:** Take screenshot. Examine: sidebar layout, icon + label alignment, active item highlighting for Dashboard, project switcher rendering, overall sidebar structure.
 
 2. **Verify** the sidebar shows 6 navigation items
    - Look for: a vertical nav list with items "Dashboard", "Work Items", "Agent Monitor", "Activity Feed", "Personas", "Settings"
@@ -26,6 +30,7 @@ Verify the sidebar navigation links to correct pages, highlights the active item
 4. **Click** "Work Items" in the sidebar
    - Target: the nav link labeled "Work Items"
    - Expected: navigates to `/items`, page shows the Work Items heading, "Work Items" nav item is now highlighted
+   - **Screenshot checkpoint:** Take screenshot. Examine: active state switched to Work Items, previous item deactivated, page content loaded correctly, no flash or layout shift during navigation.
 
 5. **Click** "Agent Monitor" in the sidebar
    - Target: the nav link labeled "Agent Monitor"
@@ -58,6 +63,7 @@ Verify the sidebar navigation links to correct pages, highlights the active item
 12. **Verify** collapsed sidebar shows only icons
     - Look for: the 6 nav icons without any label text
     - Expected: icons are centered, no text labels visible, project switcher shows only a folder icon
+    - **Screenshot checkpoint:** Take screenshot. Examine: collapsed sidebar width narrow, icons centered vertically in nav items, no label text leaking, active item still distinguishable, content area expanded to fill space.
 
 13. **Hover** over a nav icon in collapsed mode
     - Target: hover over the "Work Items" icon
@@ -73,6 +79,7 @@ Verify the sidebar navigation links to correct pages, highlights the active item
 16. **Click** the hamburger menu icon
     - Target: the menu button in the mobile top bar
     - Expected: the sidebar slides in from the left as an overlay with a dark backdrop
+    - **Screenshot checkpoint:** Take screenshot. Examine: mobile sidebar overlay renders cleanly, dark backdrop visible behind, nav items readable, sidebar doesn't overflow viewport width, close/dismiss affordance visible.
 
 17. **Click** a nav item in the mobile sidebar (e.g., "Settings")
     - Target: the "Settings" nav link in the overlay sidebar
@@ -96,6 +103,15 @@ Verify the sidebar navigation links to correct pages, highlights the active item
 - Clicking a nav item on mobile navigates and closes the overlay
 - Clicking the backdrop dismisses the mobile sidebar
 
+### Visual Quality
+
+- Sidebar expanded: icon and label on same row, consistent spacing between nav items, active item clearly highlighted with accent background, project switcher aligned at top
+- Active state: distinct background color, other items muted, active state switches instantly on navigation with no flash
+- Collapsed mode: sidebar narrow, icons centered, no label text visible, active icon still distinguishable, content area expands to fill
+- Tooltips: appear on hover in collapsed mode, positioned to the right of icon, readable text, no clipping
+- Mobile: hamburger icon visible in top bar, sidebar overlay slides in smoothly, dark backdrop behind, nav items full-width and tappable
+- Transitions: sidebar collapse/expand animates smoothly, mobile overlay slide-in/out clean, no layout jump during navigation
+
 ## Failure Criteria
 
 - Any nav item links to the wrong page or causes a navigation error
@@ -107,3 +123,13 @@ Verify the sidebar navigation links to correct pages, highlights the active item
 - The mobile sidebar does not slide in or the backdrop is missing
 - Navigating on mobile does not close the sidebar overlay
 - Any action causes a JavaScript error or blank screen
+
+### Visual Failure Criteria
+
+- Nav items icon and label stacked vertically instead of inline (horizontal)
+- Active item indistinguishable from inactive items (no visual highlight)
+- Collapsed sidebar shows partial label text or icons misaligned
+- Tooltips clipped at viewport edge or positioned incorrectly
+- Mobile sidebar overlay doesn't cover full height or backdrop missing
+- Sidebar collapse/expand causes content area to jump or flash
+- Project switcher text truncated or overlapping nav items
