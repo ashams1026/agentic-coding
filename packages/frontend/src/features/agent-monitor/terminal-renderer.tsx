@@ -23,6 +23,75 @@ interface OutputChunk {
   timestamp: string;
 }
 
+// ── Known SDK + MCP tool names for historical log detection ────
+
+const KNOWN_TOOLS = new Set([
+  "Read", "Edit", "Write", "Glob", "Grep", "Bash",
+  "WebFetch", "WebSearch", "Agent", "NotebookEdit",
+  "TodoWrite", "AskUserQuestion", "MultiEdit",
+  "route_to_state", "list_items", "get_context", "post_comment",
+  "get_work_item", "update_work_item", "create_work_item",
+]);
+
+// Regex: ToolName(anything) — tool call format from eventToChunk
+const TOOL_CALL_RE = /^([A-Za-z_]\w*)\((.+)\)$/s;
+
+function parseLogLine(
+  line: string,
+  id: string,
+  timestamp: string,
+): OutputChunk {
+  // 1. JSON line with embedded chunkType
+  if (line.startsWith("{")) {
+    try {
+      const obj = JSON.parse(line);
+      if (obj.chunkType && typeof obj.content === "string") {
+        return { id, content: obj.content, chunkType: obj.chunkType, timestamp };
+      }
+      // ToolCallData / ToolResultData shape
+      if (obj.toolCallId && obj.toolName) {
+        const type = "status" in obj ? "tool_result" as const : "tool_call" as const;
+        return { id, content: line, chunkType: type, timestamp };
+      }
+    } catch { /* not JSON */ }
+  }
+
+  // 2. Tool call pattern: ToolName({...})
+  const toolMatch = line.match(TOOL_CALL_RE);
+  if (toolMatch && toolMatch[1] && toolMatch[2]) {
+    const toolName = toolMatch[1];
+    const rawInput = toolMatch[2];
+    if (KNOWN_TOOLS.has(toolName)) {
+      let input: Record<string, unknown> | string;
+      try {
+        input = JSON.parse(rawInput);
+      } catch {
+        input = rawInput;
+      }
+      const data: ToolCallData = {
+        toolCallId: id,
+        toolName,
+        input: typeof input === "object" && input !== null
+          ? (input as Record<string, unknown>)
+          : rawInput,
+        summary: toolName,
+      };
+      return { id, content: JSON.stringify(data), chunkType: "tool_call", timestamp };
+    }
+  }
+
+  // 3. Thinking: <thinking> tags
+  if (line.startsWith("<thinking>") || line.endsWith("</thinking>")) {
+    const content = line.replace(/<\/?thinking>/g, "").trim();
+    if (content) {
+      return { id, content, chunkType: "thinking", timestamp };
+    }
+  }
+
+  // 4. Default: text
+  return { id, content: line, chunkType: "text", timestamp };
+}
+
 // ── Message groups (chat thread model) ─────────────────────────
 
 type MessageGroup =
@@ -292,12 +361,9 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
     const initialChunks: OutputChunk[] = execution.logs
       .split("\n")
       .filter((line) => line.length > 0)
-      .map((line) => ({
-        id: `init-${chunkCounter.current++}`,
-        content: line,
-        chunkType: "text" as const,
-        timestamp: execution.startedAt,
-      }));
+      .map((line) =>
+        parseLogLine(line, `init-${chunkCounter.current++}`, execution.startedAt),
+      );
 
     setChunks(initialChunks);
   }, [execution?.logs, execution?.startedAt]);

@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — FX.8: Fix historical log chunk type detection
+
+**Task:** Parse historical log lines to detect chunk types instead of marking all as "text".
+
+**Done:**
+- Added `parseLogLine()` function in `terminal-renderer.tsx` with 3 detection layers:
+  1. **JSON lines**: If line starts with `{`, try parsing as JSON. If it has a `chunkType` field, use it directly. If it has `toolCallId` + `toolName`, classify as tool_call or tool_result.
+  2. **Tool call pattern**: Regex matches `ToolName({...})` format (from `eventToChunk`). Validates against `KNOWN_TOOLS` set (12 SDK tools + 7 MCP tools). Reconstructs proper `ToolCallData` JSON so `ToolCallSection` can render it with icon, name, and collapsible input.
+  3. **Thinking tags**: Detects `<thinking>` / `</thinking>` wrapped content, strips tags, returns as thinking chunk.
+  4. Default: falls through to `"text"`.
+- `KNOWN_TOOLS` set: Read, Edit, Write, Glob, Grep, Bash, WebFetch, WebSearch, Agent, NotebookEdit, TodoWrite, AskUserQuestion, MultiEdit, route_to_state, list_items, get_context, post_comment, get_work_item, update_work_item, create_work_item
+- `TOOL_CALL_RE` regex: `/^([A-Za-z_]\w*)\((.+)\)$/s` with `s` flag for multiline JSON
+- Updated initial log loading useEffect: replaced hardcoded `chunkType: "text"` with `parseLogLine()` call
+- Build passes
+
+**Files modified:** `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`
+
+**Notes:** Tool results in historical logs can't be reliably distinguished from regular text (they're raw output like file contents). They'll render as text bubbles, which is acceptable. The main win is tool calls now render as proper ToolCallSection cards with icon + name + collapsible input, and thinking blocks render as collapsible accordions.
+
+---
+
 ## 2026-03-30 — Review: FX.7 (approved)
 
 **Reviewed:** Chat thread restructure in `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`.
