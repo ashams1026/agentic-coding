@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-30 — Review: AI.V11 (approved)
+
+**Reviewed:** Navigation, dark-mode, keyboard-shortcuts test plans visual inspection update (3 files).
+- `navigation.md`: Protocol blockquote, 4 screenshot checkpoints (page load, nav click, collapsed, mobile), Visual Quality (6 criteria), Visual Failure Criteria (7 defects), 19 steps preserved ✓
+- `dark-mode.md`: Protocol blockquote, 4 screenshot checkpoints (light dashboard, dark dashboard, personas dark, settings switch), Visual Quality (7 criteria), Visual Failure Criteria (7 defects), 19 steps preserved ✓
+- `keyboard-shortcuts.md`: Protocol blockquote, 3 screenshot checkpoints (palette open, filtered, arrow key), Visual Quality (8 criteria), Visual Failure Criteria (8 defects), 17 steps preserved ✓
+- All three: prerequisites updated, template pattern followed, no code changes ✓
+- **Phase 1.5 complete** — all test plans now have visual inspection protocol
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — AI.V11: Update navigation, dark-mode, keyboard-shortcuts test plans with visual inspection
 
 **Task:** Add visual inspection steps to `navigation.md`, `dark-mode.md`, and `keyboard-shortcuts.md`.
