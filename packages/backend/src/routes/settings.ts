@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { lt } from "drizzle-orm";
-import { readdirSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 import { loadConfig, setConfigValue } from "../config.js";
@@ -158,28 +158,69 @@ export async function settingsRoutes(app: FastifyInstance) {
     };
   });
 
-  // POST /api/settings/browse-directory — list directories for folder picker
+  // POST /api/settings/browse-directory — list directories (and optionally files) for picker
   app.post<{
-    Body: { startPath?: string };
+    Body: { startPath?: string; includeFiles?: boolean; fileFilter?: string };
   }>("/api/settings/browse-directory", async (request, reply) => {
     const startPath = request.body?.startPath || homedir();
+    const includeFiles = request.body?.includeFiles ?? false;
+    const fileFilter = request.body?.fileFilter; // e.g. ".md"
     const dirPath = resolve(startPath);
 
     try {
-      const entries = readdirSync(dirPath, { withFileTypes: true })
-        .filter((entry) => entry.isDirectory() && !entry.name.startsWith("."))
+      const raw = readdirSync(dirPath, { withFileTypes: true })
+        .filter((entry) => !entry.name.startsWith("."));
+
+      const dirs = raw
+        .filter((entry) => entry.isDirectory())
         .map((entry) => ({
           name: entry.name,
           path: resolve(dirPath, entry.name),
           isDirectory: true,
-        }))
-        .sort((a, b) => a.name.localeCompare(b.name));
+        }));
+
+      const files = includeFiles
+        ? raw
+            .filter((entry) => entry.isFile() && (!fileFilter || entry.name.endsWith(fileFilter)))
+            .map((entry) => ({
+              name: entry.name,
+              path: resolve(dirPath, entry.name),
+              isDirectory: false,
+            }))
+        : [];
+
+      const entries = [
+        ...dirs.sort((a, b) => a.name.localeCompare(b.name)),
+        ...files.sort((a, b) => a.name.localeCompare(b.name)),
+      ];
 
       return { currentPath: dirPath, entries };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       return reply.status(400).send({
         error: { code: "BROWSE_ERROR", message: `Cannot read directory: ${message}` },
+      });
+    }
+  });
+
+  // POST /api/settings/read-file — read first N lines of a file for preview
+  app.post<{
+    Body: { filePath: string; maxLines?: number };
+  }>("/api/settings/read-file", async (request, reply) => {
+    const { filePath, maxLines = 20 } = request.body ?? {};
+    if (!filePath) {
+      return reply.status(400).send({ error: { code: "MISSING_PATH", message: "filePath is required" } });
+    }
+
+    try {
+      const resolved = resolve(filePath);
+      const content = readFileSync(resolved, "utf-8");
+      const lines = content.split("\n").slice(0, maxLines);
+      return { filePath: resolved, content: lines.join("\n"), totalLines: content.split("\n").length };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      return reply.status(400).send({
+        error: { code: "READ_ERROR", message: `Cannot read file: ${message}` },
       });
     }
   });

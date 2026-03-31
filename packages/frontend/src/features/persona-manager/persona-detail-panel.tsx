@@ -18,6 +18,7 @@ import {
   Save,
   X,
   Pencil,
+  FolderSearch,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -26,10 +27,12 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { usePersona, useUpdatePersona } from "@/hooks";
+import { useSelectedProject } from "@/hooks/use-selected-project";
 import { cn } from "@/lib/utils";
 import { MarkdownPreview } from "./system-prompt-editor";
 import { SystemPromptEditor } from "./system-prompt-editor";
 import { ToolConfiguration } from "./tool-configuration";
+import { SkillBrowser } from "./skill-browser";
 import type { PersonaId, PersonaModel } from "@agentops/shared";
 
 // ── Icon options ────────────────────────────────────────────────
@@ -127,7 +130,9 @@ interface PersonaDetailPanelProps {
 export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelProps) {
   const { data: persona } = usePersona(personaId);
   const updateMutation = useUpdatePersona();
+  const { project } = useSelectedProject();
   const [editing, setEditing] = useState(false);
+  const [skillBrowserOpen, setSkillBrowserOpen] = useState(false);
 
   // ── Local form state ──────────────────────────────────────────
   const [name, setName] = useState("");
@@ -138,6 +143,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
   const [systemPrompt, setSystemPrompt] = useState("");
   const [allowedTools, setAllowedTools] = useState<string[]>([]);
   const [mcpTools, setMcpTools] = useState<string[]>([]);
+  const [skills, setSkills] = useState<string[]>([]);
   const [maxBudget, setMaxBudget] = useState("1.00");
 
   // Sync form state when persona data loads or personaId changes
@@ -157,6 +163,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
     setSystemPrompt(persona.systemPrompt);
     setAllowedTools([...persona.allowedTools]);
     setMcpTools([...persona.mcpTools]);
+    setSkills([...persona.skills]);
     setMaxBudget(persona.maxBudgetPerRun.toFixed(2));
   }
 
@@ -172,11 +179,12 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
       systemPrompt,
       allowedTools,
       mcpTools,
+      skills,
       maxBudgetPerRun: isNaN(budget) ? 1.0 : budget,
     }, {
       onSuccess: () => setEditing(false),
     });
-  }, [persona, personaId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, maxBudget, updateMutation]);
+  }, [persona, personaId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, skills, maxBudget, updateMutation]);
 
   const handleCancel = () => {
     syncFromPersona();
@@ -375,6 +383,60 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
                 onAllowedToolsChange={setAllowedTools}
                 onMcpToolsChange={setMcpTools}
               />
+            </section>
+
+            <Separator />
+
+            {/* ── Skills ──────────────────────────────────────── */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Skills</h3>
+              {skills.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {skills.map((skill) => (
+                    <Badge
+                      key={skill}
+                      variant="secondary"
+                      className="text-xs px-2 py-0.5 font-mono gap-1 group/pill"
+                    >
+                      {skill}
+                      <button
+                        onClick={() => setSkills(skills.filter((s) => s !== skill))}
+                        className="ml-0.5 opacity-50 hover:opacity-100 transition-opacity"
+                      >
+                        <X className="h-2.5 w-2.5" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-1.5 text-xs"
+                onClick={() => setSkillBrowserOpen(true)}
+                disabled={!project?.path}
+              >
+                <FolderSearch className="h-3.5 w-3.5" />
+                Browse skills...
+              </Button>
+              {!project?.path && (
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  Set a project path in Settings to browse skill files.
+                </p>
+              )}
+              {project?.path && (
+                <SkillBrowser
+                  open={skillBrowserOpen}
+                  onClose={() => setSkillBrowserOpen(false)}
+                  onAdd={(path) => {
+                    if (!skills.includes(path)) {
+                      setSkills([...skills, path]);
+                    }
+                  }}
+                  projectPath={project.path}
+                  existingSkills={skills}
+                />
+              )}
             </section>
 
             <Separator />

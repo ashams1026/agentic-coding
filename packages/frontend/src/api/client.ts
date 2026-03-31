@@ -418,8 +418,24 @@ export interface BrowseDirectoryResult {
   entries: DirectoryEntry[];
 }
 
-export async function browseDirectory(startPath?: string): Promise<BrowseDirectoryResult> {
-  return post<BrowseDirectoryResult>("/api/settings/browse-directory", { startPath });
+export async function browseDirectory(
+  startPath?: string,
+  options?: { includeFiles?: boolean; fileFilter?: string },
+): Promise<BrowseDirectoryResult> {
+  return post<BrowseDirectoryResult>("/api/settings/browse-directory", {
+    startPath,
+    ...options,
+  });
+}
+
+export interface FilePreview {
+  filePath: string;
+  content: string;
+  totalLines: number;
+}
+
+export async function readFilePreview(filePath: string, maxLines = 20): Promise<FilePreview> {
+  return post<FilePreview>("/api/settings/read-file", { filePath, maxLines });
 }
 
 export async function exportSettings(): Promise<Record<string, unknown>> {

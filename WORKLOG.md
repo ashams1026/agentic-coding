@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-03-30 — FX.P8: Build skill browser in persona editor
+
+**Task:** Add Skills section to persona editor with file browser modal for `.md` files.
+
+**Done:**
+- **Backend**: Extended `POST /api/settings/browse-directory` to accept `includeFiles` (boolean) and `fileFilter` (string, e.g. `.md`). Now returns both directories and matching files (dirs first, then files, both sorted). Added `POST /api/settings/read-file` endpoint for previewing file content (first N lines).
+- **Frontend API**: Updated `browseDirectory()` to accept options `{ includeFiles, fileFilter }`. Added `readFilePreview()` function and `FilePreview` type. Exported both from `api/index.ts`.
+- **`skill-browser.tsx`** (new): Modal dialog with directory/file browser scoped to the project path. Shows `.md` files alongside directories. Click a file to preview (first 20 lines shown in a collapsible pre block). "+" button to add a file as a skill. Already-added files show "Added" badge. Manual path input at top for typing relative paths directly. Breadcrumb navigation, go-up button. Uses `relative()` from new `path-utils.ts` to compute relative paths from project root.
+- **`path-utils.ts`** (new): Browser-safe `relative(from, to)` utility for POSIX paths.
+- **`persona-detail-panel.tsx`**: Added `skills` state + `skillBrowserOpen` state. Skills synced from persona on load. Skills included in save mutation. New "Skills" section in edit mode between Tools and Budget: shows assigned skills as removable pills (X to remove), "Browse skills..." button opens SkillBrowser modal, disabled with helper text when no project path configured.
+- Build passes
+
+**Files created:** `packages/frontend/src/features/persona-manager/skill-browser.tsx`, `packages/frontend/src/lib/path-utils.ts`
+**Files modified:** `packages/backend/src/routes/settings.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`, `packages/frontend/src/features/persona-manager/persona-detail-panel.tsx`
+
+**Notes:** The SkillBrowser reuses the same browse-directory endpoint pattern as the FolderBrowser in projects-section.tsx but extends it with file listing. The read-file endpoint is minimal — just reads first N lines for preview.
+
+---
+
 ## 2026-03-30 — Review: FX.PM3 (approved)
 
 **Reviewed:** Persona detail panel read-only mode fix.

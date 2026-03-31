@@ -58,6 +58,9 @@ export {
   clearExecutionHistory,
   exportSettings,
   importSettings,
+  // Browse / Files
+  browseDirectory,
+  readFilePreview,
   // Service
   getServiceStatus,
   restartService,
