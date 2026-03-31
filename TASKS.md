@@ -22,7 +22,9 @@
 
 ### Persona Detail Panel Redesign
 
-- [x] **FX.PM2** — Replace persona card expand with a click-to-open side panel. Remove the inline expand/collapse behavior from FX.PM1. Instead: clicking a persona card opens a right-side detail panel (same pattern as work items — card grid on the left, panel on the right at ~50-60% width). The panel shows all persona details in a readable layout: name + avatar header, description, model badge, system prompt rendered as markdown (scrollable), MCP tools as badges, SDK tools as badges, skills as file path pills, budget. All fields are inline-editable: click the name to edit, click the description to edit, system prompt has a Write/Preview tab (same as work item description editing), model is a dropdown, tools are checkboxes, budget is an input. Save happens on blur/Enter for simple fields, explicit Save/Cancel for the system prompt. Built-in personas (isSystem: true) show a "Built-in" badge and disable the delete button but still allow editing. Remove the old separate persona editor Sheet — this panel replaces it entirely.
+- [x] **FX.PM2** — *(completed but needs fix — see FX.PM3)*
+
+- [review] **FX.PM3** — Fix persona side panel to open in read-only mode first. The panel from FX.PM2 opens immediately with all fields editable. Instead: the panel should open as a **read-only view** by default — name, description, model badge, system prompt rendered as markdown, tools as badges, skills as pills, budget — all displayed as static text, not inputs. Add an "Edit" button in the panel header. Clicking "Edit" switches the panel to edit mode: name becomes a text input, description becomes a textarea, system prompt gets Write/Preview tabs, model becomes a dropdown, tools become checkboxes, budget becomes an input. Add "Save" and "Cancel" buttons at the bottom in edit mode. "Save" persists and returns to read-only. "Cancel" discards and returns to read-only. The default experience is: click a card to inspect, explicitly choose to edit.
 
 ### Persona Skills System
 

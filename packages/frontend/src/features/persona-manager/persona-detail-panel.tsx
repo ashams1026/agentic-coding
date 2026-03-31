@@ -17,6 +17,7 @@ import {
   DollarSign,
   Save,
   X,
+  Pencil,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { usePersona, useUpdatePersona } from "@/hooks";
 import { cn } from "@/lib/utils";
+import { MarkdownPreview } from "./system-prompt-editor";
 import { SystemPromptEditor } from "./system-prompt-editor";
 import { ToolConfiguration } from "./tool-configuration";
 import type { PersonaId, PersonaModel } from "@agentops/shared";
@@ -98,6 +100,21 @@ const MODEL_OPTIONS: ModelOption[] = [
   },
 ];
 
+const MODEL_BADGE_CONFIG: Record<PersonaModel, { label: string; className: string }> = {
+  opus: {
+    label: "Opus",
+    className: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
+  },
+  sonnet: {
+    label: "Sonnet",
+    className: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  },
+  haiku: {
+    label: "Haiku",
+    className: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  },
+};
+
 // ── Props ───────────────────────────────────────────────────────
 
 interface PersonaDetailPanelProps {
@@ -110,6 +127,7 @@ interface PersonaDetailPanelProps {
 export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelProps) {
   const { data: persona } = usePersona(personaId);
   const updateMutation = useUpdatePersona();
+  const [editing, setEditing] = useState(false);
 
   // ── Local form state ──────────────────────────────────────────
   const [name, setName] = useState("");
@@ -122,8 +140,14 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
   const [mcpTools, setMcpTools] = useState<string[]>([]);
   const [maxBudget, setMaxBudget] = useState("1.00");
 
-  // Sync form state when persona data loads or changes
+  // Sync form state when persona data loads or personaId changes
   useEffect(() => {
+    if (!persona) return;
+    syncFromPersona();
+    setEditing(false);
+  }, [persona?.id]);
+
+  function syncFromPersona() {
     if (!persona) return;
     setName(persona.name);
     setDescription(persona.description);
@@ -134,7 +158,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
     setAllowedTools([...persona.allowedTools]);
     setMcpTools([...persona.mcpTools]);
     setMaxBudget(persona.maxBudgetPerRun.toFixed(2));
-  }, [persona]);
+  }
 
   const handleSave = useCallback(() => {
     if (!persona) return;
@@ -149,10 +173,18 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
       allowedTools,
       mcpTools,
       maxBudgetPerRun: isNaN(budget) ? 1.0 : budget,
+    }, {
+      onSuccess: () => setEditing(false),
     });
   }, [persona, personaId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, maxBudget, updateMutation]);
 
-  const AvatarIcon = getIcon(avatarIcon);
+  const handleCancel = () => {
+    syncFromPersona();
+    setEditing(false);
+  };
+
+  const AvatarIcon = getIcon(editing ? avatarIcon : (persona?.avatar.icon ?? "bot"));
+  const displayColor = editing ? avatarColor : (persona?.avatar.color ?? "#6b7280");
   const isBuiltIn = persona?.settings?.isSystem === true;
 
   if (!persona) {
@@ -163,6 +195,8 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
     );
   }
 
+  const modelBadge = MODEL_BADGE_CONFIG[persona.model];
+
   return (
     <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
@@ -170,12 +204,12 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
         <div className="flex items-center gap-3 min-w-0">
           <div
             className="h-9 w-9 rounded-full flex items-center justify-center shrink-0"
-            style={{ backgroundColor: avatarColor + "20" }}
+            style={{ backgroundColor: displayColor + "20" }}
           >
-            <AvatarIcon className="h-4.5 w-4.5" style={{ color: avatarColor }} />
+            <AvatarIcon className="h-4.5 w-4.5" style={{ color: displayColor }} />
           </div>
           <div className="min-w-0">
-            <h2 className="text-sm font-semibold truncate">{name || "Untitled"}</h2>
+            <h2 className="text-sm font-semibold truncate">{editing ? (name || "Untitled") : persona.name}</h2>
             <p className="text-xs text-muted-foreground truncate">
               {isBuiltIn ? "Built-in persona" : "Custom persona"}
             </p>
@@ -187,15 +221,17 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
           )}
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
-          <Button
-            size="sm"
-            className="h-7 gap-1 text-xs"
-            onClick={handleSave}
-            disabled={updateMutation.isPending || !name.trim()}
-          >
-            <Save className="h-3 w-3" />
-            Save
-          </Button>
+          {!editing && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-7 gap-1 text-xs"
+              onClick={() => setEditing(true)}
+            >
+              <Pencil className="h-3 w-3" />
+              Edit
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -209,153 +245,275 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-5">
-        {/* ── Identity ─────────────────────────────────────── */}
-        <section className="space-y-3">
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Identity</h3>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Name</label>
-            <Input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Persona name"
-              className="h-8 text-sm"
-            />
-          </div>
-          <div>
-            <label className="text-xs text-muted-foreground mb-1 block">Description</label>
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Brief description of this persona's role"
-              className="min-h-[50px] resize-none text-sm"
-              rows={2}
-            />
-          </div>
+        {editing ? (
+          /* ═══════════════ EDIT MODE ═══════════════ */
+          <>
+            {/* ── Identity ─────────────────────────────────────── */}
+            <section className="space-y-3">
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Identity</h3>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Name</label>
+                <Input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Persona name"
+                  className="h-8 text-sm"
+                />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Description</label>
+                <Textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Brief description of this persona's role"
+                  className="min-h-[50px] resize-none text-sm"
+                  rows={2}
+                />
+              </div>
 
-          {/* Avatar picker */}
-          <div>
-            <label className="text-xs text-muted-foreground mb-2 block">Avatar</label>
-            <div className="flex items-start gap-3">
-              <div
-                className="h-12 w-12 rounded-full flex items-center justify-center shrink-0 border-2"
-                style={{
-                  backgroundColor: avatarColor + "20",
-                  borderColor: avatarColor + "40",
-                }}
+              {/* Avatar picker */}
+              <div>
+                <label className="text-xs text-muted-foreground mb-2 block">Avatar</label>
+                <div className="flex items-start gap-3">
+                  <div
+                    className="h-12 w-12 rounded-full flex items-center justify-center shrink-0 border-2"
+                    style={{
+                      backgroundColor: avatarColor + "20",
+                      borderColor: avatarColor + "40",
+                    }}
+                  >
+                    <AvatarIcon className="h-6 w-6" style={{ color: avatarColor }} />
+                  </div>
+                  <div className="space-y-2 flex-1">
+                    <div className="flex flex-wrap gap-1.5">
+                      {COLOR_OPTIONS.map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => setAvatarColor(color)}
+                          className={cn(
+                            "h-5 w-5 rounded-full transition-all",
+                            avatarColor === color
+                              ? "ring-2 ring-offset-1 ring-offset-background"
+                              : "hover:scale-110",
+                          )}
+                          style={{
+                            backgroundColor: color,
+                            ...(avatarColor === color ? { ringColor: color } : {}),
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {ICON_OPTIONS.map((opt) => {
+                        const Ic = opt.icon;
+                        return (
+                          <button
+                            key={opt.name}
+                            onClick={() => setAvatarIcon(opt.name)}
+                            className={cn(
+                              "h-6 w-6 rounded-md flex items-center justify-center transition-colors",
+                              avatarIcon === opt.name
+                                ? "bg-accent text-accent-foreground ring-1 ring-ring"
+                                : "hover:bg-accent/50 text-muted-foreground",
+                            )}
+                          >
+                            <Ic className="h-3 w-3" />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <Separator />
+
+            {/* ── Model ────────────────────────────────────────── */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Model</h3>
+              <div className="grid grid-cols-3 gap-2">
+                {MODEL_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setModel(opt.value)}
+                    className={cn(
+                      "rounded-lg border-2 p-2.5 text-left transition-colors",
+                      model === opt.value ? opt.className : "border-border hover:border-border/80",
+                    )}
+                  >
+                    <div className="flex items-center justify-between mb-0.5">
+                      <span className="text-xs font-semibold">{opt.label}</span>
+                      <Badge variant="outline" className="text-[10px] px-1 py-0">
+                        {opt.costLabel}
+                      </Badge>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground leading-relaxed">
+                      {opt.description}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <Separator />
+
+            {/* ── System Prompt ────────────────────────────────── */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">System Prompt</h3>
+              <SystemPromptEditor value={systemPrompt} onChange={setSystemPrompt} />
+            </section>
+
+            <Separator />
+
+            {/* ── Tools ────────────────────────────────────────── */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Tools</h3>
+              <ToolConfiguration
+                allowedTools={allowedTools}
+                mcpTools={mcpTools}
+                onAllowedToolsChange={setAllowedTools}
+                onMcpToolsChange={setMcpTools}
+              />
+            </section>
+
+            <Separator />
+
+            {/* ── Budget ───────────────────────────────────────── */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Budget</h3>
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-muted-foreground shrink-0" />
+                <Input
+                  type="number"
+                  min="0"
+                  step="0.10"
+                  value={maxBudget}
+                  onChange={(e) => setMaxBudget(e.target.value)}
+                  className="h-8 w-28 text-sm"
+                />
+                <span className="text-xs text-muted-foreground">per run</span>
+              </div>
+            </section>
+
+            {/* ── Save / Cancel ─────────────────────────────────── */}
+            <div className="flex items-center gap-2 pt-2">
+              <Button
+                size="sm"
+                className="gap-1"
+                onClick={handleSave}
+                disabled={updateMutation.isPending || !name.trim()}
               >
-                <AvatarIcon className="h-6 w-6" style={{ color: avatarColor }} />
-              </div>
-              <div className="space-y-2 flex-1">
-                <div className="flex flex-wrap gap-1.5">
-                  {COLOR_OPTIONS.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => setAvatarColor(color)}
-                      className={cn(
-                        "h-5 w-5 rounded-full transition-all",
-                        avatarColor === color
-                          ? "ring-2 ring-offset-1 ring-offset-background"
-                          : "hover:scale-110",
-                      )}
-                      style={{
-                        backgroundColor: color,
-                        ...(avatarColor === color ? { ringColor: color } : {}),
-                      }}
-                    />
-                  ))}
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {ICON_OPTIONS.map((opt) => {
-                    const Ic = opt.icon;
-                    return (
-                      <button
-                        key={opt.name}
-                        onClick={() => setAvatarIcon(opt.name)}
-                        className={cn(
-                          "h-6 w-6 rounded-md flex items-center justify-center transition-colors",
-                          avatarIcon === opt.name
-                            ? "bg-accent text-accent-foreground ring-1 ring-ring"
-                            : "hover:bg-accent/50 text-muted-foreground",
-                        )}
-                      >
-                        <Ic className="h-3 w-3" />
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+                <Save className="h-3.5 w-3.5" />
+                Save
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
             </div>
-          </div>
-        </section>
+          </>
+        ) : (
+          /* ═══════════════ READ-ONLY MODE ═══════════════ */
+          <>
+            {/* ── Description ──────────────────────────────── */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Description</h3>
+              <p className="text-sm text-foreground">
+                {persona.description || <span className="italic text-muted-foreground">No description.</span>}
+              </p>
+            </section>
 
-        <Separator />
+            <Separator />
 
-        {/* ── Model ────────────────────────────────────────── */}
-        <section>
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Model</h3>
-          <div className="grid grid-cols-3 gap-2">
-            {MODEL_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => setModel(opt.value)}
-                className={cn(
-                  "rounded-lg border-2 p-2.5 text-left transition-colors",
-                  model === opt.value ? opt.className : "border-border hover:border-border/80",
+            {/* ── Model + Budget ────────────────────────────── */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Model & Budget</h3>
+              <div className="flex items-center gap-3">
+                <Badge
+                  variant="outline"
+                  className={cn("text-xs px-2 py-0.5 border-0", modelBadge.className)}
+                >
+                  {modelBadge.label}
+                </Badge>
+                {persona.maxBudgetPerRun > 0 && (
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <DollarSign className="h-3 w-3" />
+                    <span>${persona.maxBudgetPerRun.toFixed(2)}/run</span>
+                  </div>
                 )}
-              >
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-xs font-semibold">{opt.label}</span>
-                  <Badge variant="outline" className="text-[10px] px-1 py-0">
-                    {opt.costLabel}
-                  </Badge>
+              </div>
+            </section>
+
+            <Separator />
+
+            {/* ── System Prompt ─────────────────────────────── */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">System Prompt</h3>
+              <div className="max-h-[400px] overflow-y-auto rounded-md border border-border bg-muted/20 p-3">
+                {persona.systemPrompt.trim() ? (
+                  <MarkdownPreview text={persona.systemPrompt} />
+                ) : (
+                  <p className="text-xs text-muted-foreground italic">No system prompt.</p>
+                )}
+              </div>
+            </section>
+
+            <Separator />
+
+            {/* ── Tools ────────────────────────────────────── */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Tools</h3>
+              {persona.mcpTools.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5">MCP Tools</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {persona.mcpTools.map((tool) => (
+                      <Badge key={tool} variant="secondary" className="text-xs px-2 py-0.5 font-mono">
+                        {tool}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-                <p className="text-[10px] text-muted-foreground leading-relaxed">
-                  {opt.description}
-                </p>
-              </button>
-            ))}
-          </div>
-        </section>
+              )}
+              {persona.allowedTools.length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5">SDK Tools</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {persona.allowedTools.map((tool) => (
+                      <Badge key={tool} variant="outline" className="text-xs px-2 py-0.5 font-mono">
+                        {tool}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {persona.mcpTools.length === 0 && persona.allowedTools.length === 0 && (
+                <p className="text-xs text-muted-foreground italic">No tools configured.</p>
+              )}
+            </section>
 
-        <Separator />
-
-        {/* ── System Prompt ────────────────────────────────── */}
-        <section>
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">System Prompt</h3>
-          <SystemPromptEditor value={systemPrompt} onChange={setSystemPrompt} />
-        </section>
-
-        <Separator />
-
-        {/* ── Tools ────────────────────────────────────────── */}
-        <section>
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Tools</h3>
-          <ToolConfiguration
-            allowedTools={allowedTools}
-            mcpTools={mcpTools}
-            onAllowedToolsChange={setAllowedTools}
-            onMcpToolsChange={setMcpTools}
-          />
-        </section>
-
-        <Separator />
-
-        {/* ── Budget ───────────────────────────────────────── */}
-        <section>
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Budget</h3>
-          <div className="flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-muted-foreground shrink-0" />
-            <Input
-              type="number"
-              min="0"
-              step="0.10"
-              value={maxBudget}
-              onChange={(e) => setMaxBudget(e.target.value)}
-              className="h-8 w-28 text-sm"
-            />
-            <span className="text-xs text-muted-foreground">per run</span>
-          </div>
-        </section>
+            {/* ── Skills ───────────────────────────────────── */}
+            {persona.skills.length > 0 && (
+              <>
+                <Separator />
+                <section>
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Skills</h3>
+                  <div className="flex flex-wrap gap-1.5">
+                    {persona.skills.map((skill) => (
+                      <Badge key={skill} variant="secondary" className="text-xs px-2 py-0.5 font-mono">
+                        {skill}
+                      </Badge>
+                    ))}
+                  </div>
+                </section>
+              </>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

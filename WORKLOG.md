@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-30 — FX.PM3: Fix persona side panel read-only mode
+
+**Task:** Panel opens in read-only mode by default, with explicit Edit button to switch to edit mode.
+
+**Done:**
+- Added `editing` state (default `false`), resets to `false` when `personaId` changes
+- **Read-only mode**: Shows description as text, model as colored badge, system prompt rendered as markdown (scrollable, max-h 400px), MCP tools as secondary badges, SDK tools as outline badges, skills as badge pills, budget with dollar icon. All static display — no inputs.
+- **Edit mode**: Name input, description textarea, avatar color/icon pickers, model selector cards, SystemPromptEditor (Write/Preview tabs), ToolConfiguration checkboxes, budget input. Save + Cancel buttons at bottom.
+- **Header**: Shows "Edit" button in read-only mode. Save button removed from header (now at bottom of edit content). Close (X) always visible.
+- **Save**: Calls `updateMutation.mutate()` with `onSuccess: () => setEditing(false)` — returns to read-only on save.
+- **Cancel**: Calls `syncFromPersona()` to reset form state, then `setEditing(false)`.
+- Added `MarkdownPreview` import for read-only system prompt rendering.
+- Build passes
+
+**Files modified:** `packages/frontend/src/features/persona-manager/persona-detail-panel.tsx`
+
+**Notes:** The `useEffect` dependency changed from `[persona]` to `[persona?.id]` to prevent resetting form state on every TanStack Query refetch (which would clear in-progress edits).
+
+---
+
 ## 2026-03-30 — Review: FX.P7 (approved)
 
 **Reviewed:** Skills field added to persona schema.
