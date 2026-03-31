@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — AI.18: Execute detail-panel-edit.md E2E test
+
+**Task:** Execute detail-panel-edit test plan via chrome-devtools MCP.
+
+**Done:**
+- Executed all 17 steps in browser against http://localhost:5174/items
+- 12/17 steps PASS, 3 FAIL (step 6: list row doesn't update on title edit, step 16: all 5 edits lost on reload)
+- 5 screenshot checkpoints taken — all visual checks PASS
+- Critical finding: app running in mock mode — edits work in-session but 0/5 persist across reload
+- Root cause: mock mode stores edits in-memory only, not via real API (known limitation, tracked as FX.MOCK1)
+- Minor bug: list row title doesn't reactively update when edited in detail panel
+
+**Files created:** `tests/e2e/results/detail-panel-edit.md`, 8 screenshot PNGs in `tests/e2e/results/`
+
+**Notes:** All edit UI interactions (title, description, priority, labels, state) work correctly in-session. The persistence failure is a mock-mode infrastructure issue, not a UI code bug. Sidebar nav shows icons stacked above labels (known FX.NAV1 issue).
+
+---
+
 ## 2026-03-30 — Review: AI.V11 (approved)
 
 **Reviewed:** Navigation, dark-mode, keyboard-shortcuts test plans visual inspection update (3 files).
