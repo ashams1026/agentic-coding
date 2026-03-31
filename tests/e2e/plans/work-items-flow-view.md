@@ -6,20 +6,25 @@ Verify the Flow View renders state machine nodes for all 8 workflow states with 
 
 ## Prerequisites
 
-- Backend running on `:3001`, frontend on `:5173`
+- Backend running on `:3001`, frontend on `:5173` or `:5174`
 - API mode set to "api"
 - Database seeded with test data (work items spread across multiple workflow states)
+- chrome-devtools MCP connected
 
 ## Steps
+
+> **Visual inspection protocol:** After each major navigation or UI interaction step, take a screenshot using `take_screenshot`. Examine the screenshot visually using the `Read` tool. Note any visual issues (misalignment, clipping, bad spacing, broken layout, invisible text, wrong colors, overlapping elements, truncated content) in the results alongside the functional pass/fail. A step can functionally pass but have visual defects — record both.
 
 1. **Navigate** to `http://localhost:5173/items?view=flow`
    - Verify: "Work Items" heading is visible
    - Verify: the "Flow" button in the view toggle has active styling (solid background with shadow)
+   - **Screenshot checkpoint:** Take screenshot. Examine: overall flow view layout, node positioning, arrow rendering, sidebar alignment, no clipping or overflow of the graph area.
 
 2. **Verify** all 8 workflow state nodes are rendered
    - Look for: nodes labeled "Backlog", "Planning", "Decomposition", "Ready", "In Progress", "In Review", "Done", and "Blocked"
    - Expected: 7 nodes in a horizontal row (Backlog through Done), with "Blocked" positioned below the center
    - Each node should have a colored header bar with a colored dot and the state name
+   - **Screenshot checkpoint:** Take screenshot. Examine: node layout symmetry, consistent node sizes, colored headers visible and distinct, state labels readable, Blocked node clearly separated.
 
 3. **Verify** each state node displays an item count
    - Look for: a small badge inside each node's header showing a number
@@ -41,6 +46,7 @@ Verify the Flow View renders state machine nodes for all 8 workflow states with 
      - In Review → Done, In Review → In Progress
      - Blocked → Planning, Blocked → Decomposition, Blocked → Ready, Blocked → In Progress
    - Verify at least several visible arrow paths with arrowhead markers
+   - **Screenshot checkpoint:** Take screenshot. Examine: arrow path rendering (smooth curves, no jagged lines), arrowheads visible, arrows don't overlap node content, no stray paths or visual artifacts.
 
 6. **Verify** item counts across nodes are consistent
    - Add up the item count badges from all 8 state nodes
@@ -53,6 +59,7 @@ Verify the Flow View renders state machine nodes for all 8 workflow states with 
 8. **Click** a state node that has items (count > 0)
    - Target: click on a node like "In Progress" or "Ready" that shows a non-zero count
    - Expected: the node gets a highlighted ring/border (selected styling), and a filtered items panel appears below the state machine graph
+   - **Screenshot checkpoint:** Take screenshot. Examine: selected node highlight styling, filtered panel layout below graph, panel header alignment, item rows rendering, no overlap between graph and panel.
 
 9. **Verify** the filtered items panel content
    - Look for: a header with a colored dot, the state name, and an item count badge
@@ -71,7 +78,7 @@ Verify the Flow View renders state machine nodes for all 8 workflow states with 
     - Target: click a node showing count "0"
     - Expected: the filtered items panel appears with the message "No items in this state."
 
-13. **Take screenshot** of the flow view with all nodes visible for evidence
+13. **Take final screenshot** of the flow view with all nodes visible for evidence (full page)
 
 ## Expected Results
 
@@ -85,6 +92,16 @@ Verify the Flow View renders state machine nodes for all 8 workflow states with 
 - Clicking the same state node again deselects it and hides the filtered panel
 - Clicking a node with zero items shows "No items in this state."
 
+### Visual Quality
+
+- Node layout: all 7 main nodes evenly spaced in a row, consistent widths and heights
+- Node styling: colored headers distinct per state, state labels readable, count badges visible
+- Blocked node: clearly offset below the main row, visually connected via dashed or distinct arrows
+- Arrows: smooth SVG paths, arrowheads visible, no overlapping node content or labels
+- Agent indicators: green pulsing dots visible, "idle" text readable, consistent placement within nodes
+- Filtered panel: appears below graph without overlapping, header aligned, item rows evenly spaced
+- Overall: graph centered in content area, no horizontal scrolling, no clipping at edges
+
 ## Failure Criteria
 
 - Fewer than 8 state nodes are rendered
@@ -96,3 +113,13 @@ Verify the Flow View renders state machine nodes for all 8 workflow states with 
 - The filtered items panel shows incorrect items (wrong state)
 - Clicking a node with zero items causes an error instead of showing the empty message
 - The page shows a JavaScript error or white screen
+
+### Visual Failure Criteria
+
+- Nodes have inconsistent sizes or are unevenly spaced in the row
+- State labels or count badges clipped or invisible against node background
+- Arrows overlap node content, labels, or count badges
+- Arrow paths are jagged, broken, or missing arrowheads
+- Blocked node overlaps the main row or is not visually distinguished
+- Filtered panel overlaps the state machine graph
+- Node colors are wrong or indistinguishable from each other

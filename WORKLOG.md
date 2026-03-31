@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-30 — AI.V4: Update flow view test plan with visual inspection
+
+**Task:** Add visual inspection steps to `work-items-flow-view.md`.
+
+**Done:**
+- Added visual inspection protocol blockquote, 4 screenshot checkpoints (initial flow view load, node layout/state labels, arrow rendering, node click with filtered panel)
+- Added "Visual Quality" section (7 criteria: node layout, node styling, Blocked node, arrows, agent indicators, filtered panel, overall)
+- Added "Visual Failure Criteria" section (7 defects: inconsistent node sizes, clipped labels, arrow overlaps, jagged paths, Blocked overlap, panel overlap, wrong colors)
+- Updated prerequisites (port 5174, chrome-devtools MCP)
+
+**Files changed:** `tests/e2e/plans/work-items-flow-view.md`
+
+**Notes:** Build passes (no code changes). Original 13 functional steps preserved — visual inspection is additive.
+
+---
+
 ## 2026-03-30 — Review: AI.V3 (approved)
 
 **Reviewed:** Work items test plans visual inspection update.

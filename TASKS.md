@@ -155,7 +155,7 @@
 
 - [x] **AI.V3** — Update `work-items-list-view.md` and `work-items-create.md` with visual inspection steps. Add screenshot + examine after: list renders, expanding a parent, opening detail panel, creating a new item. Check: row alignment, badge sizing, indentation, panel transition.
 
-- [ ] **AI.V4** — Update `work-items-flow-view.md` with visual inspection steps. Add screenshot + examine after: flow view renders, clicking a state node. Check: node layout, arrow rendering, label readability, no clipping or overflow.
+- [review] **AI.V4** — Update `work-items-flow-view.md` with visual inspection steps. Add screenshot + examine after: flow view renders, clicking a state node. Check: node layout, arrow rendering, label readability, no clipping or overflow.
 
 - [ ] **AI.V5** — Update `detail-panel-view.md` and `detail-panel-edit.md` with visual inspection steps. Add screenshot + examine after: panel opens, each section renders, each edit interaction (title edit, description edit, priority change, label add, state change). Check: panel sizing, input alignment, button placement, markdown preview rendering.
 
