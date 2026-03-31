@@ -4,38 +4,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { usePicoStore } from "./pico-store";
-
-// ── Mock messages for UI development — PICO.8 will wire real data ──
-
-interface ChatMessage {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-  timestamp: Date;
-}
-
-const MOCK_MESSAGES: ChatMessage[] = [
-  {
-    id: "1",
-    role: "assistant",
-    content:
-      "Woof! I'm Pico, your project assistant. I know everything about this project — the architecture, the workflow, all the agents. What can I help with?",
-    timestamp: new Date(Date.now() - 120_000),
-  },
-  {
-    id: "2",
-    role: "user",
-    content: "What's the current project status?",
-    timestamp: new Date(Date.now() - 60_000),
-  },
-  {
-    id: "3",
-    role: "assistant",
-    content:
-      "Let me dig into that! The project has 5 active work items, 2 agents running, and all builds are passing. The current sprint is focused on the Pico chat interface — that's me!",
-    timestamp: new Date(Date.now() - 30_000),
-  },
-];
+import { ChatMessage, MOCK_MESSAGES } from "./chat-message";
+import type { PicoChatMessage } from "./chat-message";
 
 // ── Component ─────────────────────────────────────────────────────
 
@@ -43,7 +13,7 @@ export function ChatPanel() {
   const { isOpen, setOpen } = usePicoStore();
   const [input, setInput] = useState("");
   const [isStreaming] = useState(false); // PICO.8 will control this
-  const [messages] = useState<ChatMessage[]>(MOCK_MESSAGES);
+  const [messages] = useState<PicoChatMessage[]>(MOCK_MESSAGES);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -140,21 +110,24 @@ export function ChatPanel() {
 
       {/* Messages */}
       <ScrollArea className="flex-1">
-        <div className="flex flex-col gap-3 p-4">
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={cn(
-                "max-w-[85%] rounded-lg px-3 py-2 text-sm",
-                msg.role === "user"
-                  ? "ml-auto bg-primary text-primary-foreground"
-                  : "mr-auto bg-muted text-foreground",
-              )}
-            >
-              {msg.content}
+        <div className="flex flex-col p-4">
+          {messages.map((msg, i) => {
+            const prev = i > 0 ? messages[i - 1] : null;
+            const showAvatar = !prev || prev.role !== msg.role;
+            return (
+              <div
+                key={msg.id}
+                className={i === 0 ? "" : showAvatar ? "mt-3" : "mt-1"}
+              >
+                <ChatMessage message={msg} showAvatar={showAvatar} />
+              </div>
+            );
+          })}
+          {isStreaming && (
+            <div className="mt-1">
+              <TypingIndicator />
             </div>
-          ))}
-          {isStreaming && <TypingIndicator />}
+          )}
           <div ref={messagesEndRef} />
         </div>
       </ScrollArea>

@@ -5,6 +5,33 @@
 
 ---
 
+## 2026-03-31 — PICO.7: Build chat message components
+
+**Task:** Create rich chat message components with markdown, thinking blocks, tool call cards, and grouping.
+
+**Done:**
+- Created `packages/frontend/src/features/pico/chat-message.tsx`:
+  - `PicoChatMessage` type with `ContentBlock` union: `text`, `thinking`, `tool_use`
+  - `ChatMessage` component: user messages (right-aligned, primary bg), assistant messages (left-aligned, muted bg with Pico avatar)
+  - `showAvatar` prop for consecutive message grouping — only first in group shows avatar
+  - Timestamp shown on hover via group-hover opacity transition
+  - `PicoMarkdown` renderer (extends MarkdownPreview patterns): paragraphs, bold, inline code, bullet lists, headers, links, code blocks with copy button and language label
+  - `ThinkingBlock`: collapsible accordion with Brain icon, "Pico is thinking..." label, collapsed by default
+  - `ToolCallCard`: compact collapsible card with tool icon (reuses icon map from agent-monitor), status indicator (running/success/error), expandable input/output — uses theme tokens for chat context
+  - `CodeBlock`: copy-to-clipboard button, language label, monospace rendering
+  - `MOCK_MESSAGES` export: 3 messages demonstrating all content types (plain text, thinking + tool_use + rich markdown with code block)
+- Updated `packages/frontend/src/features/pico/chat-panel.tsx`:
+  - Replaced inline message rendering with `ChatMessage` component
+  - Added grouping logic: consecutive same-role messages get `mt-1` gap, different-role get `mt-3`
+  - Imported `PicoChatMessage` type and `MOCK_MESSAGES` from chat-message
+
+**Files created:** `packages/frontend/src/features/pico/chat-message.tsx`
+**Files modified:** `packages/frontend/src/features/pico/chat-panel.tsx`
+
+**Notes for next agent:** PICO.8 will replace `MOCK_MESSAGES` with real API data. The `ContentBlock` type maps to SSE event types from the backend streaming endpoint (text, thinking, tool_use). The `PicoChatMessage` interface should align with what `use-pico-chat.ts` builds from streamed events. PICO.9 needs session management in the panel header.
+
+---
+
 ## 2026-03-31 — Review: PICO.6 (approved)
 
 **Reviewed:** Chat panel — chat-panel.tsx, root-layout.tsx, index.css.
