@@ -58,7 +58,7 @@
 
 ### Dev Server Deduplication
 
-- [review] **FX.DEV1** — Skip server start if already running. In the agent's build/verify workflow and any dev scripts: before starting the backend (`pnpm --filter backend dev`), check if port 3001 is already responding (`curl -s http://localhost:3001/api/health`). If it responds with `status: "ok"`, skip starting — the existing server has hot reload via `tsx watch` and will pick up code changes automatically. Same for the frontend: check if port 5173 or 5174 is already serving before running `pnpm --filter frontend dev` — Vite HMR handles file changes. Implement as a wrapper script `scripts/dev.sh` (or update existing `pnpm dev`): check ports first, only start what's not already running. This prevents agents from spawning duplicate servers across sessions.
+- [x] **FX.DEV1** — Skip server start if already running. In the agent's build/verify workflow and any dev scripts: before starting the backend (`pnpm --filter backend dev`), check if port 3001 is already responding (`curl -s http://localhost:3001/api/health`). If it responds with `status: "ok"`, skip starting — the existing server has hot reload via `tsx watch` and will pick up code changes automatically. Same for the frontend: check if port 5173 or 5174 is already serving before running `pnpm --filter frontend dev` — Vite HMR handles file changes. Implement as a wrapper script `scripts/dev.sh` (or update existing `pnpm dev`): check ports first, only start what's not already running. This prevents agents from spawning duplicate servers across sessions.
 
 ### Sidebar Navigation Redo
 

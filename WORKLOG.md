@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: FX.DEV1 (approved)
+
+**Reviewed:** Dev server deduplication script `scripts/dev.sh` and root `package.json` changes.
+- `check_backend()`: `curl -sf` to `/api/health` — silent, fails on HTTP errors, `/dev/null` redirect. Correct.
+- `check_frontend()`: checks both 5173 and 5174 with `||` — handles Vite port fallback. Correct.
+- Four-branch logic: both need starting (parallel `pnpm -r dev`), backend-only, frontend-only, none (exit 0). All cases covered.
+- `pnpm --filter backend dev` / `pnpm --filter frontend dev` — correct pnpm filter syntax for individual starts.
+- Script is executable (`-rwxr-xr-x`). `set -e` for fail-fast. Clear user messages with checkmarks.
+- Root `package.json`: `"dev"` → `./scripts/dev.sh`, `"dev:force"` → unconditional parallel start. Good escape hatch.
+- Build passes
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.DEV1: Skip server start if already running
 
 **Task:** Create a wrapper script that checks ports before starting dev servers to prevent duplicates.
