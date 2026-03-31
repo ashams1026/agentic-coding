@@ -44,11 +44,11 @@ export async function dashboardRoutes(app: FastifyInstance) {
     const needsAttention = blockedItems + pendingProposals;
 
     const today = new Date().toISOString().slice(0, 10);
-    const todayCostUsd = allExecutions
+    const todayCostCents = allExecutions
       .filter((e) => toIso(e.startedAt).startsWith(today))
       .reduce((sum, e) => sum + e.costUsd, 0);
 
-    return { activeAgents, pendingProposals, needsAttention, todayCostUsd };
+    return { activeAgents, pendingProposals, needsAttention, todayCostUsd: todayCostCents / 100 };
   });
 
   // GET /api/dashboard/cost-summary
@@ -69,14 +69,14 @@ export async function dashboardRoutes(app: FastifyInstance) {
       const d = new Date(now);
       d.setDate(d.getDate() - i);
       const dateStr = d.toISOString().slice(0, 10);
-      const costUsd = allExecutions
+      const costCents = allExecutions
         .filter((e) => toIso(e.startedAt).startsWith(dateStr))
         .reduce((sum, e) => sum + e.costUsd, 0);
-      dailySpend.push({ date: dateStr, costUsd });
+      dailySpend.push({ date: dateStr, costUsd: costCents / 100 });
     }
 
     const monthStart = now.toISOString().slice(0, 7);
-    const monthTotal = allExecutions
+    const monthTotalCents = allExecutions
       .filter((e) => toIso(e.startedAt).startsWith(monthStart))
       .reduce((sum, e) => sum + e.costUsd, 0);
 
@@ -90,7 +90,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
     }
     const monthCap = (project?.settings as Record<string, unknown>)?.monthCap as number ?? 50;
 
-    return { dailySpend, monthTotal, monthCap };
+    return { dailySpend, monthTotal: monthTotalCents / 100, monthCap };
   });
 
   // GET /api/dashboard/execution-stats
@@ -107,13 +107,13 @@ export async function dashboardRoutes(app: FastifyInstance) {
     const completed = allExecutions.filter((e) => e.status === "completed");
 
     const totalRuns = completed.length;
-    const totalCostUsd = completed.reduce((sum, e) => sum + e.costUsd, 0);
+    const totalCostCents = completed.reduce((sum, e) => sum + e.costUsd, 0);
     const successes = completed.filter((e) => e.outcome === "success").length;
     const successRate = totalRuns > 0 ? successes / totalRuns : 0;
     const averageDurationMs =
       totalRuns > 0 ? completed.reduce((sum, e) => sum + e.durationMs, 0) / totalRuns : 0;
 
-    return { totalRuns, totalCostUsd, successRate, averageDurationMs };
+    return { totalRuns, totalCostUsd: totalCostCents / 100, successRate, averageDurationMs };
   });
 
   // GET /api/dashboard/ready-work

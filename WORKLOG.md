@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-30 — FX.5: Audit cost aggregation and display
+
+**Task:** Verify cents-to-dollars conversion in dashboard routes and frontend display. Check project scoping.
+
+**Audit findings:**
+- **Root cause**: DB column `costUsd` stores **cents** (integer). `execution-manager.ts` correctly writes `Math.round(finalCostUsd * 100)`. But all dashboard routes returned raw cent values without dividing by 100, so the frontend displayed costs 100x higher than actual (e.g., 85 cents showed as "$85.00").
+- **Affected routes**: `GET /api/dashboard/stats` (`todayCostUsd`), `GET /api/dashboard/cost-summary` (`dailySpend[].costUsd`, `monthTotal`), `GET /api/dashboard/execution-stats` (`totalCostUsd`), execution serializer in `GET /api/executions`.
+- **WS `cost_update`**: Already correct — `concurrency.ts` `getProjectCostSummary` divides by 100.
+- **Seed data**: Values like `costUsd: 85` are cents ($0.85) — realistic for AI agent runs. Not inflated.
+- **Project scoping**: Already in place — all dashboard routes accept `projectId` param and filter.
+
+**Fix:**
+- `dashboard.ts`: All 4 cost aggregations now divide by 100 before returning (`todayCostCents / 100`, `costCents / 100`, `monthTotalCents / 100`, `totalCostCents / 100`)
+- `executions.ts`: Serializer now returns `row.costUsd / 100` with comment
+- Frontend: No changes needed — correctly displays the values from the API with `$` + `.toFixed(2)`
+- Build passes
+
+**Files modified:** `packages/backend/src/routes/dashboard.ts`, `packages/backend/src/routes/executions.ts`
+
+**Notes:** The `monthCap` in project settings is already in dollars (default 50), so the progress bar comparison now works correctly: `monthTotal` (dollars) vs `monthCap` (dollars).
+
+---
+
 ## 2026-03-30 — Review: FX.4 (approved)
 
 **Reviewed:** Transition loop detection in `packages/backend/src/agent/execution-manager.ts`.

@@ -23,7 +23,7 @@ function serializeExecution(row: typeof executions.$inferSelect) {
     status: row.status,
     startedAt: toIso(row.startedAt),
     completedAt: row.completedAt ? toIso(row.completedAt) : null,
-    costUsd: row.costUsd,
+    costUsd: row.costUsd / 100, // cents → dollars
     durationMs: row.durationMs,
     summary: row.summary,
     outcome: row.outcome,
