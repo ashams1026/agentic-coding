@@ -136,7 +136,7 @@ export async function seedTestDb(db: TestDb) {
       systemPrompt: "You are a tech lead.",
       model: "opus",
       allowedTools: ["Read", "Glob", "Bash"],
-      mcpTools: ["create_tasks", "post_comment"],
+      mcpTools: ["create_children", "post_comment"],
       maxBudgetPerRun: 100,
       settings: {},
     },

@@ -5,6 +5,24 @@
 
 ---
 
+## 2026-03-30 — FX.0: Fix MCP tool name mismatch in seed personas
+
+**Task:** Fix `transition_state` → `route_to_state` and `create_tasks` → `create_children` mismatch.
+
+**Done:**
+- **seed.ts**: Fixed PM (`transition_state` → `route_to_state`), TL (`create_tasks` → `create_children`), Engineer (`transition_state` → `route_to_state`), Reviewer (`transition_state` → `route_to_state`)
+- **default-personas.ts**: Same 4 fixes (PM, TL, Engineer, Reviewer)
+- **test/setup.ts**: Fixed TL (`create_tasks` → `create_children`)
+- **Audit of mcp-server.ts**: Confirmed 7 registered tools match `TOOL_NAMES` constant: `post_comment`, `create_children`, `route_to_state`, `list_items`, `get_context`, `flag_blocked`, `request_review`. The `allowedTools` field in `McpContext` is defined but not used for filtering within the MCP server itself — tools are gated by the `mcpTools` array on persona entities.
+- Verified zero remaining `"transition_state"` or `"create_tasks"` references in backend
+- Build passes
+
+**Files modified:** `packages/backend/src/db/seed.ts`, `packages/backend/src/db/default-personas.ts`, `packages/backend/src/test/setup.ts`
+
+**Notes:** The `seed-demo.ts` file already used the correct tool names. Router persona was also correct (uses `route_to_state` in `allowedTools` — slightly different pattern since Router uses SDK tools for MCP, but this is a separate concern for FX.P5).
+
+---
+
 ## 2026-03-30 — Review: FX.PM1 (approved)
 
 **Reviewed:** Inline system prompt preview on persona cards.

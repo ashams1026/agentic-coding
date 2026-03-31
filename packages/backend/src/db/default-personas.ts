@@ -21,7 +21,7 @@ const BUILT_IN_PERSONAS: DefaultPersona[] = [
     avatar: { color: "#7c3aed", icon: "clipboard-list" },
     model: "sonnet",
     allowedTools: ["Read", "Glob", "Grep", "WebSearch"],
-    mcpTools: ["post_comment", "transition_state"],
+    mcpTools: ["post_comment", "route_to_state"],
     maxBudgetPerRun: 50,
   },
   {
@@ -30,7 +30,7 @@ const BUILT_IN_PERSONAS: DefaultPersona[] = [
     avatar: { color: "#2563eb", icon: "git-branch" },
     model: "opus",
     allowedTools: ["Read", "Glob", "Grep", "WebSearch", "Bash"],
-    mcpTools: ["create_tasks", "post_comment", "request_review"],
+    mcpTools: ["create_children", "post_comment", "request_review"],
     maxBudgetPerRun: 100,
   },
   {
@@ -39,7 +39,7 @@ const BUILT_IN_PERSONAS: DefaultPersona[] = [
     avatar: { color: "#059669", icon: "code" },
     model: "sonnet",
     allowedTools: ["Read", "Edit", "Write", "Glob", "Grep", "Bash", "WebFetch"],
-    mcpTools: ["post_comment", "flag_blocked", "transition_state"],
+    mcpTools: ["post_comment", "flag_blocked", "route_to_state"],
     maxBudgetPerRun: 200,
   },
   {
@@ -48,7 +48,7 @@ const BUILT_IN_PERSONAS: DefaultPersona[] = [
     avatar: { color: "#d97706", icon: "eye" },
     model: "sonnet",
     allowedTools: ["Read", "Glob", "Grep", "Bash"],
-    mcpTools: ["post_comment", "request_review", "transition_state"],
+    mcpTools: ["post_comment", "request_review", "route_to_state"],
     maxBudgetPerRun: 50,
   },
   {
