@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-31 — Review: PICO.5 (approved)
+
+**Reviewed:** Floating chat bubble — chat-bubble.tsx, pico-store.ts, root-layout.tsx, index.css.
+- All spec requirements met: 56px amber circle, Dog icon, fixed bottom-right, bounce animation, unread dot, toggle open/closed.
+- Zustand + persist store correctly clears `hasUnread` on open, exposes `setHasUnread` for future PICO.8 wiring.
+- Conventions followed: named exports, kebab-case files, feature collocation, TypeScript interface, aria-label accessibility.
+- Keyframe animation added consistently alongside existing `animate-slide-down`.
+- ChatBubble rendered in root-layout after ToastRenderer — correct placement.
+- Build passes cleanly.
+- Verdict: **approved**
+
+---
+
 ## 2026-03-31 — PICO.5: Build floating chat bubble
 
 **Task:** Create a floating chat bubble for Pico, available on every page.
