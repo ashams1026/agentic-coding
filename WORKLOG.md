@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-30 — Review: FX.NAV1 (approved)
+
+**Reviewed:** Sidebar nav layout and interaction states.
+- Icon/label inline: `flex flex-row items-center`, icon `shrink-0 inline-flex`, label conditional render ✓
+- Active state: `bg-accent/80 text-foreground font-semibold border-l-2 border-primary` — clearly distinguishable ✓
+- Hover: `hover:bg-accent/80` visible background ✓
+- `rounded-lg` softer corners ✓
+- No layout shift: inactive items have `border-l-2 border-transparent` ✓
+- Collapsed/expanded badges both work correctly ✓
+- Build passes ✓
+- Verdict: **approved**
+
+---
+
 ## 2026-03-30 — FX.NAV1: Fix sidebar nav item layout and interaction states
 
 **Task:** Fix icon/label stacking issue and improve hover/active states in sidebar.
