@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-30 — FX.P9: Inject persona skills into system prompt
+
+**Task:** Read skill files from disk and inject their content into the persona's system prompt at execution time.
+
+**Done:**
+- Added `readFileSync`, `join`, `basename` imports from `node:fs` and `node:path`
+- Added `logger` import from `../logger.js`
+- New section (5) in `buildSystemPrompt()` between sandbox rules and execution history
+- For each skill path in `persona.skills`: resolves `path.join(project.path, skillPath)`, reads file content
+- Each skill appended as `### {filename}\n\n{content}` under a `## Skills` header
+- **Cap**: 8000 chars (~2000 tokens) total across all skills. If cap reached, remaining skills are skipped with a warning log. If a single skill exceeds remaining capacity, it's truncated with `...(truncated)` marker.
+- **Missing files**: caught with try/catch, logged as warning with `skillPath` and `personaId`, silently skipped
+- Skills section only added if at least one skill was successfully loaded
+- Build passes
+
+**Files modified:** `packages/backend/src/agent/claude-executor.ts`
+
+**Notes:** Skills are injected after sandbox rules and before execution history, so they appear in the middle of the system prompt — visible to the agent but not overriding core identity or execution context.
+
+---
+
 ## 2026-03-30 — Review: FX.P8 (approved)
 
 **Reviewed:** Skill browser in persona editor.

@@ -3,6 +3,8 @@
  * @anthropic-ai/claude-agent-sdk to spawn Claude Code subprocesses.
  */
 
+import { readFileSync } from "node:fs";
+import { join, basename } from "node:path";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import type { SDKMessage } from "@anthropic-ai/claude-agent-sdk";
 import type {
@@ -13,6 +15,7 @@ import type {
 } from "./types.js";
 import type { Persona, Project } from "@agentops/shared";
 import { loadConfig } from "../config.js";
+import { logger } from "../logger.js";
 import { validateCommand, buildSandboxPrompt } from "./sandbox.js";
 
 // ── System prompt assembly ────────────────────────────────────────
@@ -69,7 +72,35 @@ export function buildSystemPrompt(
   // (4) Sandbox rules
   sections.push(buildSandboxPrompt(project.path));
 
-  // (5) Execution history
+  // (5) Persona skills — inject skill file contents
+  if (persona.skills.length > 0) {
+    const MAX_SKILL_CHARS = 8000; // ~2000 tokens
+    let totalChars = 0;
+    const skillSections: string[] = ["## Skills"];
+
+    for (const skillPath of persona.skills) {
+      const fullPath = join(project.path, skillPath);
+      try {
+        const content = readFileSync(fullPath, "utf-8");
+        const remaining = MAX_SKILL_CHARS - totalChars;
+        if (remaining <= 0) {
+          logger.warn({ skillPath, personaId: persona.id }, "Skill content cap reached, skipping");
+          break;
+        }
+        const trimmed = content.length > remaining ? content.slice(0, remaining) + "\n...(truncated)" : content;
+        skillSections.push(`### ${basename(skillPath)}\n\n${trimmed}`);
+        totalChars += trimmed.length;
+      } catch {
+        logger.warn({ skillPath, personaId: persona.id }, "Skill file not found, skipping");
+      }
+    }
+
+    if (skillSections.length > 1) {
+      sections.push(skillSections.join("\n\n"));
+    }
+  }
+
+  // (6) Execution history
   if (task.executionHistory.length > 0) {
     const historyLines = ["## Previous Executions"];
     for (const entry of task.executionHistory) {
