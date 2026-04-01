@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 18:50 PDT — RES.NOTIFY.UX: Research notifications UX
+
+**Done:** Researched and documented the notifications UX. Doc covers all 5 investigation areas: (1) event catalog — 10 notification events with priority levels (critical/high/low/info), default channels, and examples, (2) in-app notification center — bell icon in sidebar footer with unread badge, sliding drawer (320px) with grouped-by-date notifications, inline actions (approve/reject on proposals), mark-as-read; 6 notification types with icons/colors/actions, (3) preferences — Settings page with per-event in-app/sound toggles, quiet hours (suppress non-critical), project scope filter; stored in Zustand/localStorage for Phase 1, (4) toast vs persistent — decision matrix for all 10 events; critical toasts don't auto-dismiss; 60-second batching window for rapid completions; toast → persistent notification link, (5) Agent Monitor interaction — suppress toasts when user is watching execution, auto-mark-as-read on view, quick navigation from notifications. Also: lightweight data model (Zustand Phase 1, SQLite Phase 2), WS event emission, 4 design decisions, 5 cross-references.
+**Files:** `docs/proposals/notifications/ux-design.md` (new)
+
+---
+
 ## 2026-04-02 18:35 PDT — Review: RES.LIFECYCLE.DATA (approved)
 
 **Reviewed:** Work item lifecycle data model research.
