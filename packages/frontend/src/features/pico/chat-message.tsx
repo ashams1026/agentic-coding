@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dog,
   ChevronDown,
@@ -15,6 +15,7 @@ import {
   FolderSearch,
   PenLine,
   FilePlus2,
+  type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -72,8 +73,8 @@ export const MOCK_MESSAGES: PicoChatMessage[] = [
       {
         type: "tool_use",
         toolCallId: "tc1",
-        toolName: "Bash",
-        input: { command: "cat TASKS.md | head -20" },
+        toolName: "Read",
+        input: { file_path: "/Users/amin/workspaces/agentic_coding/TASKS.md" },
         summary: "Reading task backlog",
         status: "success",
         output:
@@ -131,10 +132,12 @@ export function ChatMessage({ message, showAvatar, compact = true }: ChatMessage
               ? message.content[0].text
               : ""}
           </span>
+        ) : compact ? (
+          <CompactMessageBody content={message.content} />
         ) : (
           <div className="space-y-2">
             {message.content.map((block, i) => (
-              <ContentBlockRenderer key={i} block={block} compact={compact} />
+              <ContentBlockRenderer key={i} block={block} compact={false} />
             ))}
           </div>
         )}
@@ -253,6 +256,211 @@ function CompactToolCall({
       <span className="truncate">
         Used {toolName}{summary ? ` — ${summary}` : ""}
       </span>
+    </div>
+  );
+}
+
+// ── Compact message body (status line + text) ───────────────────
+
+function CompactMessageBody({ content }: { content: ContentBlock[] }) {
+  const statusBlocks = content.filter(
+    (b): b is ContentBlock & { type: "thinking" | "tool_use" } =>
+      b.type === "thinking" || b.type === "tool_use",
+  );
+  const textBlocks = content.filter(
+    (b): b is ContentBlock & { type: "text" } => b.type === "text",
+  );
+
+  return (
+    <div className="space-y-2">
+      {statusBlocks.length > 0 && <StatusLine items={statusBlocks} />}
+      {textBlocks.map((block, i) => (
+        <PicoMarkdown key={i} text={block.text} />
+      ))}
+    </div>
+  );
+}
+
+// ── Status line (animated, consolidated) ─────────────────────────
+
+interface StatusItem {
+  icon: LucideIcon;
+  label: string;
+  status?: "running" | "success" | "error";
+}
+
+function blockToStatusItem(block: ContentBlock): StatusItem {
+  if (block.type === "thinking") {
+    return { icon: Brain, label: "Thinking..." };
+  }
+  // tool_use
+  if (block.type === "tool_use") {
+    const Icon = TOOL_ICONS[block.toolName] ?? Wrench;
+    return {
+      icon: Icon,
+      label: getToolDescription(block.toolName, block.input, block.summary),
+      status: block.status,
+    };
+  }
+  return { icon: Wrench, label: "Working..." };
+}
+
+function getToolDescription(
+  toolName: string,
+  input: Record<string, unknown>,
+  summary: string,
+): string {
+  switch (toolName) {
+    case "Read": {
+      const fp = input.file_path as string | undefined;
+      return fp ? `Reading ${pathBasename(fp)}` : summary || "Reading file";
+    }
+    case "Edit": {
+      const fp = input.file_path as string | undefined;
+      return fp ? `Editing ${pathBasename(fp)}` : summary || "Editing file";
+    }
+    case "Write": {
+      const fp = input.file_path as string | undefined;
+      return fp ? `Writing ${pathBasename(fp)}` : summary || "Writing file";
+    }
+    case "Bash": {
+      const cmd = input.command as string | undefined;
+      return cmd ? `Running: ${truncStr(cmd, 40)}` : summary || "Running command";
+    }
+    case "Grep": {
+      const pattern = input.pattern as string | undefined;
+      return pattern
+        ? `Searching: ${truncStr(pattern, 30)}`
+        : summary || "Searching";
+    }
+    case "Glob": {
+      const pattern = input.pattern as string | undefined;
+      return pattern ? `Finding: ${pattern}` : summary || "Finding files";
+    }
+    case "WebFetch": {
+      const url = input.url as string | undefined;
+      return url ? `Fetching ${truncStr(url, 40)}` : summary || "Fetching URL";
+    }
+    case "WebSearch": {
+      const query = input.query as string | undefined;
+      return query
+        ? `Searching: ${truncStr(query, 30)}`
+        : summary || "Web search";
+    }
+    case "Agent": {
+      const desc =
+        (input.description as string | undefined) ??
+        (input.name as string | undefined);
+      return desc
+        ? `Agent — ${truncStr(desc, 35)}`
+        : summary || "Running agent";
+    }
+    default:
+      return summary ? `${toolName} — ${summary}` : `Using ${toolName}`;
+  }
+}
+
+function pathBasename(p: string): string {
+  return p.split("/").pop() || p;
+}
+
+function truncStr(s: string, max: number): string {
+  return s.length > max ? s.slice(0, max - 1) + "…" : s;
+}
+
+function StatusLine({ items }: { items: (ContentBlock & { type: "thinking" | "tool_use" })[] }) {
+  const statusItems = items.map(blockToStatusItem);
+  const [visibleIdx, setVisibleIdx] = useState(0);
+  const [expanded, setExpanded] = useState(false);
+  const lastAdvanceRef = useRef(Date.now());
+
+  // Auto-advance through items with 1.5s minimum display time
+  useEffect(() => {
+    if (visibleIdx >= statusItems.length - 1) return;
+
+    const elapsed = Date.now() - lastAdvanceRef.current;
+    const remaining = Math.max(0, 1500 - elapsed);
+
+    const timer = setTimeout(() => {
+      lastAdvanceRef.current = Date.now();
+      setVisibleIdx((prev) => prev + 1);
+    }, remaining);
+
+    return () => clearTimeout(timer);
+  }, [visibleIdx, statusItems.length]);
+
+  const safeIdx = Math.min(visibleIdx, statusItems.length - 1);
+  const current = statusItems[safeIdx];
+  if (!current) return null;
+
+  const StatusIcon = current.icon;
+
+  return (
+    <div>
+      {/* Current status */}
+      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <StatusIcon className="h-3 w-3 shrink-0" />
+        {current.status === "running" && (
+          <Loader2 className="h-3 w-3 animate-spin text-blue-400 shrink-0" />
+        )}
+        {current.status === "success" && (
+          <Check className="h-3 w-3 text-emerald-400 shrink-0" />
+        )}
+        {current.status === "error" && (
+          <XIcon className="h-3 w-3 text-red-400 shrink-0" />
+        )}
+        <span className="truncate flex-1">{current.label}</span>
+        {statusItems.length > 1 && (
+          <>
+            <span className="shrink-0 text-[10px] tabular-nums">
+              {safeIdx + 1}/{statusItems.length}
+            </span>
+            <button
+              type="button"
+              onClick={() => setExpanded(!expanded)}
+              className="shrink-0 rounded p-0.5 hover:bg-background/50 transition-colors"
+            >
+              <ChevronDown
+                className={cn(
+                  "h-3 w-3 transition-transform",
+                  expanded && "rotate-180",
+                )}
+              />
+            </button>
+          </>
+        )}
+      </div>
+      {/* Expanded list */}
+      {expanded && (
+        <div className="mt-1 space-y-0.5 pl-1 border-l-2 border-border/50">
+          {statusItems.map((item, i) => {
+            const ItemIcon = item.icon;
+            return (
+              <div
+                key={i}
+                className={cn(
+                  "flex items-center gap-1.5 text-xs",
+                  i === safeIdx
+                    ? "text-foreground"
+                    : "text-muted-foreground",
+                )}
+              >
+                <ItemIcon className="h-3 w-3 shrink-0" />
+                {item.status === "running" && (
+                  <Loader2 className="h-3 w-3 animate-spin text-blue-400 shrink-0" />
+                )}
+                {item.status === "success" && (
+                  <Check className="h-3 w-3 text-emerald-400 shrink-0" />
+                )}
+                {item.status === "error" && (
+                  <XIcon className="h-3 w-3 text-red-400 shrink-0" />
+                )}
+                <span className="truncate">{item.label}</span>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 14:55 PDT — UX.PICO.STATUSBAR: Consolidated status line for thinking/tool calls
+
+**Done:** Replaced separate compact thinking/tool_use one-liners with a single animated `StatusLine` component. In compact mode, all thinking and tool_use blocks are collected into status items and rendered as one updating line that auto-advances through items with 1.5s minimum display time. Shows a counter (e.g. "3/3") and an expand chevron to reveal the full list with left-border styling. Added `getToolDescription()` for rich labels — extracts file paths from Read/Edit/Write (`pathBasename`), commands from Bash (`truncStr`), patterns from Grep/Glob, queries from WebSearch, descriptions from Agent tool. `CompactMessageBody` separates status blocks from text blocks, rendering StatusLine + PicoMarkdown. Updated mock data to use Read tool for better demo labels. Full (non-compact) rendering unchanged.
+**Files:** `packages/frontend/src/features/pico/chat-message.tsx`
+**Notes:** The `CompactThinking` and `CompactToolCall` components are still present for potential reuse in the expanded list but are currently unused — StatusLine renders its own inline items.
+
+---
+
 ## 2026-04-02 14:40 PDT — Review: UX.PICO.RESIZE (approved)
 
 **Reviewed:** Drag-to-resize on Pico chat panel — top, left, and corner handles.
