@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 22:45 PDT — Review: RES.ANALYTICS.METRICS (approved)
+
+**Reviewed:** Agent analytics metrics collection and storage research.
+- All 5 areas covered: per-execution (10 existing columns audited, 8 missing metrics identified with priority P0-P2, SDK result fields mapped — costUsd/durationMs captured at executor:180-181, token fields on msg.usage not captured; 8 ALTER TABLE columns proposed), per-persona (7 derived metrics via SQL GROUP BY, persona leaderboard table design), per-project (5 metrics via workItems join, burn-down deferred to Phase 2), per-workflow (step timing via paired audit state_transitions, bottleneck identification, workflow_state column on executions for per-state analytics), collection strategy (3 options compared with pros/cons; SQLite perf at 1K/10K/50K/100K rows; typical instance 3.6K-18K executions/year; hybrid recommended)
+- Source code claims verified: executions table at schema.ts:142-159 (all 10 columns match), audit.ts:14-15 (LOG_DIR + AUDIT_FILE paths), executor costUsd/durationMs at claude-executor.ts:180-181, FileChanged hook at :603, retry extraction at :170-173, dashboard.ts 3 endpoints with in-memory aggregation, chat.ts:418 metadata.costUsd
+- SDK types verified: SDKResultSuccess has usage:NonNullableUsage (→BetaUsage with input_tokens/output_tokens/cache fields) and num_turns. Note: doc's code block shows token fields as direct properties of result message — actually nested under msg.usage. Minor presentation simplification; core claim (fields exist, not captured) is correct.
+- Audit log DB migration plan well-designed (audit_events table with 3 indexes)
+- 5 SQL indexes for common query patterns appropriate
+- 3-phase plan correctly ordered, 6 cross-references accurate, 5 design decisions well-reasoned
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 22:30 PDT — RES.ANALYTICS.METRICS: Research metrics collection
 
 **Done:** Researched agent analytics metrics collection and storage. Doc covers all 5 investigation areas: (1) per-execution metrics — audited executions table (10 existing columns), identified 8 missing metrics (input/output/cache tokens, model, num_turns, tool_call_count, files_modified_count, workflow_state), mapped SDK result message fields showing 4 token fields not captured at claude-executor.ts:180-181, recommended extending executions table with 8 new columns; (2) per-persona metrics — 7 derived metrics via SQL GROUP BY personaId, persona leaderboard table design (runs, success rate, avg cost, avg duration, total cost); (3) per-project metrics — 5 metrics via join through workItems.projectId, backlog burn-down deferred to Phase 2 (requires snapshots or event replay); (4) per-workflow metrics — workflow step timing via paired state_transition audit entries, bottleneck identification with rejection rate per step, recommended adding `workflow_state` column to executions for per-state analytics; (5) collection strategy — 3 options compared (query-time/rollup tables/hybrid), SQLite performance analysis (<10ms at 1K rows, ~500ms at 100K), estimated 3.6K-18K executions/year for typical instance, recommended hybrid (Phase 1 query-time, Phase 2 rollup). Also: audit log DB migration plan, 7 SQL indexes for common query patterns, 3-phase implementation plan.
