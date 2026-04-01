@@ -67,7 +67,7 @@
 
 ### Work Item Detail Panel
 
-- [review] **UX.DETAIL** — Audit detail panel. Open a work item's detail panel. Verify: all sections render (description, child tasks, proposals, comments, execution timeline), each section has correct data or appropriate empty state. Test editing fields (title, description, status). Check comment input and submission. Scroll within the panel if content overflows. Toggle dark mode. Screenshot each section. File bugs.
+- [x] **UX.DETAIL** — Audit detail panel. Open a work item's detail panel. Verify: all sections render (description, child tasks, proposals, comments, execution timeline), each section has correct data or appropriate empty state. Test editing fields (title, description, status). Check comment input and submission. Scroll within the panel if content overflows. Toggle dark mode. Screenshot each section. File bugs.
 
 ### Agent Monitor (`/agents`)
 

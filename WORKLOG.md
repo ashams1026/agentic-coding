@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-01 23:50 PDT — Review: UX.DETAIL (approved)
+
+**Reviewed:** Work item detail panel audit — 3 screenshots, 0 bugs.
+- All sections verified: title (editable h2), status/priority/labels, description + Edit, children (3 with status + Add child), comments (6 with agent attribution), comment input, execution history (3 entries with success/cost/time), metadata
+- Data-rich item chosen (OAuth2) — exercises all panel features
+- Scrolling verified (scrollHeight 1484), dark mode good contrast
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 23:45 PDT — UX.DETAIL: Audit detail panel
 
 **Done:** Audited work item detail panel using "User authentication with OAuth2" (data-rich item). All sections render: title (h2, "Click to edit"), status badge (In Progress), Move to/priority dropdowns, labels (auth, security + add), description with Edit button, 3 children with status badges + Add child, 6 comments with agent/user avatars and timestamps, comment input with send button, 3 execution history entries (Router/Tech Lead/Product Manager with success badges, cost, timestamps), ID/Created/Updated metadata. Panel scrolls internally (scrollHeight 1484). Dark mode: good contrast throughout, no broken elements. No bugs filed.
