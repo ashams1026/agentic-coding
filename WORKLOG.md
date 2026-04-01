@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 22:30 PDT — Review: FX.UX.DASH.3 (approved)
+
+**Reviewed:** Activity items now link to specific work items instead of generic `/items`.
+- `workItemId` populated from all 5 data sources (executions, comments, proposals) and all 5 WS event types
+- `ActivityRow` uses `setSelectedItemId()` + `navigate("/items")` — matches command palette pattern
+- Verified live: clicked "Work item started" row → navigated to `/items` with "Build login UI component" detail panel open
+- Graceful fallback: if `workItemId` is null, still navigates to `/items` list
+- Bonus: activity rows now have a11y attributes (role, tabIndex, keyboard, focus ring)
+- Build passes clean
+- **Verdict: approved.** All 3 dashboard bugs (FX.UX.DASH.1-3) now resolved.
+
+---
+
 ## 2026-04-01 22:25 PDT — FX.UX.DASH.3: Activity items link to specific work item
 
 **Done:** Replaced generic `targetPath: "/items"` with `workItemId` on all `ActivityEvent` objects in `recent-activity.tsx`. Data sources: executions (`exec.workItemId`), comments (`comment.workItemId`), proposals (`proposal.workItemId`), WS events (`e.workItemId`). Changed `ActivityRow` from `<Link to="/items">` to a `<div role="button">` with onClick that calls `setSelectedItemId(workItemId)` then `navigate("/items")` — matching the command palette pattern. Added a11y: `role="button"`, `tabIndex`, `onKeyDown`, `focus-visible` ring. Verified: clicking an activity row navigates to `/items` and opens the correct work item detail panel.
