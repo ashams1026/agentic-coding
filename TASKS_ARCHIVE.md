@@ -169,3 +169,21 @@
 - [x] **SDK.ET.3** — E2E test plan: persona effort & thinking settings (13 steps, 4 parts). *(completed 2026-04-01)*
 - [x] **SDK.ET.4** — Executed effort & thinking e2e test (11/13 PASS — full save-persist cycle verified). *(completed 2026-04-01)*
 - [x] **SDK.ET.5** — Updated docs/personas.md with effort levels, thinking modes, recommended defaults. *(completed 2026-04-01)*
+
+---
+
+## Sprint 20: SDK Deep Integration — Observability & Safety (partial) — archived 2026-04-01
+
+### Part 1: Real-Time Streaming — archived 2026-04-01
+- [x] **SDK.ST.1** — Enabled partial message streaming (`includePartialMessages`, `stream_event` handling, `PartialEvent`). *(completed 2026-04-01)*
+- [x] **SDK.ST.2** — Live token streaming UI (rAF batching, streamBuffer, blinking emerald cursor). *(completed 2026-04-01)*
+- [x] **SDK.ST.3** — Agent progress summaries (`agentProgressSummaries`, `agent_progress` WS event, emerald bar). *(completed 2026-04-01)*
+- [x] **SDK.ST.4** — Rate limit event handling (`api_retry` → inline retry countdown text). *(completed 2026-04-01)*
+- [x] **SDK.ST.5** — Context usage display (60s `getContextUsage()` polling, color-coded fill bar). *(completed 2026-04-01)*
+- [x] **SDK.ST.6** — E2E test plan: streaming & observability (14 steps, 5 parts). *(completed 2026-04-01)*
+- [x] **SDK.ST.7** — Executed streaming e2e test (2/14 PASS, 12 SKIP — no live agents). *(completed 2026-04-01)*
+- [x] **SDK.ST.8** — Updated docs/frontend.md with streaming & observability section. *(completed 2026-04-01)*
+
+### Part 2: Safety — SDK Native Sandbox — archived 2026-04-01
+- [x] **SDK.SB.1** — SDK native sandbox (`sandbox.enabled`, filesystem/network restrictions, PreToolUse fallback). *(completed 2026-04-01)*
+- [x] **SDK.SB.2** — Sandbox config in project settings (`SandboxConfig`/`ProjectSettings` types, Security section UI). *(completed 2026-04-01)*

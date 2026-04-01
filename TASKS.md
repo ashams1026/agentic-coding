@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-18 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 19 complete and archived (V2, FC, HK, SO, SA, ET).
+> Sprints 1-19 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 20 ST.1-ST.8, SB.1-SB.2 archived.
 
 ---
 
@@ -44,29 +44,7 @@
 
 - [ ] **SDK.REG.2** — Full e2e regression sweep after Sprint 20. Re-run all e2e test suites (including new ones from Sprints 19-20) against the current app state. Record results to `tests/e2e/results/regression-post-sprint20.md`. Compare against Sprint 19 regression baseline. File new FX tasks for any regressions. This is the final quality gate before moving to backlog work.
 
-### Part 1: Real-Time Streaming
-
-- [x] **SDK.ST.1** — Enable partial message streaming. In `packages/backend/src/agent/claude-executor.ts`: add `includePartialMessages: true` to `query()` options. Handle `SDKPartialAssistantMessage` in the `mapMessage()` function: emit partial events as `{ type: "partial", content: string, index: number }`. Stream these over WebSocket to the frontend. This replaces our current chunk-by-chunk display with true token-by-token streaming.
-
-- [x] **SDK.ST.2** — Agent monitor: live token streaming UI. In `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`: handle partial message events. Instead of waiting for complete text chunks, append tokens to the current message bubble in real-time (like a typing animation). Use `requestAnimationFrame` batching to avoid excessive re-renders. Show a blinking cursor at the end of the current streaming message. This makes the agent monitor feel alive — users see text appear character by character.
-
-- [x] **SDK.ST.3** — Enable agent progress summaries. Add `agentProgressSummaries: true` to `query()` options. Handle `SDKTaskProgressMessage` events: extract the AI-generated summary (generated ~every 30s for long-running agents). Emit as a WebSocket event. In the agent monitor: show a progress summary bar below the execution header — "Currently: analyzing test coverage for payment module..." Updates every 30s. In the activity feed: show progress updates for long-running executions.
-
-- [x] **SDK.ST.4** — Handle rate limit events in agent monitor. Handle `SDKRateLimitEvent` in `mapMessage()`: emit as `{ type: "rate_limit", retryAfterMs: number, attempt: number }`. In the agent monitor: show an inline banner "Rate limited — retrying in Xs..." with a countdown timer. In the execution card header: show a small yellow warning icon while rate-limited. This replaces mysterious pauses with clear feedback.
-
-- [x] **SDK.ST.5** — Add context usage display to agent monitor. Call `getContextUsage()` periodically (every 60s) during active executions via the query object. Emit as WebSocket event. In the agent monitor: show a context usage bar in the execution header — e.g., "Context: 45% used" with a fill bar. Color: green (<60%), yellow (60-80%), red (>80%). Tooltip shows breakdown: system prompt, tools, messages, MCP tools, memory. This warns users when an agent is approaching context limits.
-
-- [x] **SDK.ST.6** — E2E test plan: agent monitor streaming & observability. Create `tests/e2e/plans/agent-monitor-streaming.md`: test live streaming appearance, progress summary bar, rate limit banner (mock a rate limit scenario), context usage bar. Visual verification of all new UI elements.
-
-- [x] **SDK.ST.7** — Run agent monitor streaming e2e test. Execute SDK.ST.6. Record results with screenshots of streaming, progress summary, context bar.
-
-- [x] **SDK.ST.8** — Update `docs/frontend.md` with streaming and observability features. Document: partial message handling, progress summaries, rate limit display, context usage monitoring, WebSocket event types.
-
-### Part 2: Safety — SDK Native Sandbox
-
-- [x] **SDK.SB.1** — Migrate to SDK native sandbox. In `packages/backend/src/agent/claude-executor.ts`: replace our custom `validateCommand()` + `PreToolUse` hook approach with the SDK's native `sandbox` option. Configure: `sandbox: { enabled: true, filesystem: { allowWrite: [projectPath], denyWrite: ['/', '/etc', '/usr', '~/.ssh', '~/.aws'] }, network: { allowedDomains: ['api.anthropic.com', 'registry.npmjs.org', 'github.com'] } }`. Build the sandbox config from project settings. Remove `packages/backend/src/agent/sandbox.ts` custom validation (keep as fallback for non-sandboxed environments). The SDK sandbox is more comprehensive — it handles filesystem isolation, network restrictions, and process sandboxing at the OS level.
-
-- [x] **SDK.SB.2** — Add sandbox configuration to project settings. In `packages/shared/src/entities.ts`: add `sandbox?: { allowedDomains?: string[], allowedWritePaths?: string[], denyWritePaths?: string[] }` to Project settings. In the Settings → Security page: add a "Sandbox" section with editable lists for allowed domains, allowed write paths, and denied write paths. Defaults pre-populated from SDK.SB.1. Toggle for "Enable OS-level sandboxing" (with note: requires macOS sandbox or Linux namespaces).
+### Part 2: Safety — SDK Native Sandbox (remaining)
 
 - [ ] **SDK.SB.3** — Add permission callback for sensitive operations. In `packages/backend/src/agent/claude-executor.ts`: pass a `canUseTool` callback to `query()` options. The callback checks: if the tool is `Bash` and the command contains `rm -rf`, `git push --force`, `DROP TABLE`, or other destructive patterns → return `{ behavior: 'deny', message: 'Destructive command blocked by policy' }`. If the tool is `WebFetch` and the URL is not in the allowed domains → deny. For all other tools → allow. This is a defense-in-depth layer on top of the sandbox. Log all deny decisions to the audit trail.
 
