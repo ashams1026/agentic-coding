@@ -37,7 +37,7 @@
 
 ### Part 2: Infrastructure — File Checkpointing
 
-- [review] **SDK.FC.4** — Add rewind to REVIEW state workflow. Update the Code Reviewer persona's system prompt: after reviewing an agent's work, if the review outcome is REJECT, the reviewer can call the rewind API to automatically restore files before re-routing to a previous state. Add `rewind_execution` as a new MCP tool in the agentops MCP server: takes `executionId`, calls the rewind endpoint internally. Add to the reviewer's `mcpTools` allowlist.
+- [x] **SDK.FC.4** — Add rewind to REVIEW state workflow. Update the Code Reviewer persona's system prompt: after reviewing an agent's work, if the review outcome is REJECT, the reviewer can call the rewind API to automatically restore files before re-routing to a previous state. Add `rewind_execution` as a new MCP tool in the agentops MCP server: takes `executionId`, calls the rewind endpoint internally. Add to the reviewer's `mcpTools` allowlist.
 
 - [ ] **SDK.FC.5** — E2E test plan: file checkpointing. Create `tests/e2e/plans/file-checkpointing.md`: test the rewind button in agent monitor — verify dry run shows file list, confirm rewind restores files, verify button state (disabled for legacy executions, hidden for running ones). Include visual verification of the confirmation modal and success state.
 

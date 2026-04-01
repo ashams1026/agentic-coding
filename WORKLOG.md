@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-31 — Review: SDK.FC.4 (approved)
+
+**Reviewed:** `rewind_execution` MCP tool and Code Reviewer persona updates.
+- Tool registered in `mcp-server.ts` with proper schema (`executionId`, `dryRun`), calls HTTP endpoint to avoid duplicating SDK rewind logic
+- `encodeURIComponent` on executionId — safe against injection
+- Error handling: HTTP errors extracted from response body, network errors caught, both return `isError: true`
+- `TOOL_NAMES` array updated to include `"rewind_execution"`
+- `mcpTools` updated in all 3 persona files: `default-personas.ts`, `seed.ts`, `seed-demo.ts`
+- System prompt: clear 3-step rewind workflow (get executionId → dry run → confirm), guidance on when to/not to rewind, anti-pattern added
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — SDK.FC.4: Add rewind to REVIEW state workflow
 
 **Done:** Added `rewind_execution` MCP tool to the agentops MCP server. The tool calls the existing `POST /api/executions/:id/rewind` endpoint via HTTP (avoids duplicating SDK query/rewind logic). Supports `dryRun` for preview. Updated Code Reviewer persona: added tool to `mcpTools` allowlist in `default-personas.ts`, `seed.ts`, and `seed-demo.ts`. Added "Rewinding files on rejection" section to the reviewer's system prompt with clear guidance on when to rewind (fundamentally wrong implementations) vs when not to (minor issues).
