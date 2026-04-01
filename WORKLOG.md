@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 12:30 PDT — FX.PERSONA.SEED: Fix built-in personas not seeding
+
+**Done:** Root cause: `seedDefaultPersonasForProject()` checked `existing.length === 0` — if even one persona existed (Pico), it skipped seeding the other 5 built-in personas. Fix: extracted `ensureBuiltInPersonas()` that checks each built-in persona by name and inserts any missing ones. Made it idempotent. Also added startup call in `start.ts` so personas are ensured on every server boot, not just on project creation. Verified: all 6 personas (Pico, PM, Tech Lead, Engineer, Code Reviewer, Router) now appear on `/personas` page.
+**Files:** `packages/backend/src/db/default-personas.ts`, `packages/backend/src/start.ts`
+
+---
+
 ## 2026-04-02 12:10 PDT — Review: FX.WORK.EDIT (approved)
 
 **Reviewed:** Fix for work item mutations not persisting.

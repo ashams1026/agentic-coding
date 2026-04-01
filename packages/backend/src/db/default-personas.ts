@@ -80,43 +80,48 @@ const DEFAULT_STATE_ASSIGNMENTS: Record<string, string> = {
   "In Review": "Code Reviewer",
 };
 
-// ── Seed function ────────────────────────────────────────────────
+// ── Seed functions ───────────────────────────────────────────────
 
 /**
- * If no personas exist in the DB, seed the 5 built-in personas.
- * Then create default persona assignments for the given project.
+ * Ensure all built-in personas exist in the DB.
+ * Inserts any that are missing by name. Idempotent — safe to call on every startup.
+ */
+export async function ensureBuiltInPersonas(): Promise<void> {
+  const existing = await db
+    .select({ id: personas.id, name: personas.name })
+    .from(personas);
+  const existingNames = new Set(existing.map((p) => p.name));
+
+  const missing = BUILT_IN_PERSONAS.filter((p) => !existingNames.has(p.name));
+  if (missing.length === 0) return;
+
+  const rows = missing.map((p) => ({
+    id: createId.persona() as string,
+    name: p.name,
+    description: p.description,
+    avatar: p.avatar,
+    systemPrompt: "",
+    model: p.model,
+    allowedTools: p.allowedTools,
+    mcpTools: p.mcpTools,
+    maxBudgetPerRun: p.maxBudgetPerRun,
+    settings: p.name === "Router" ? { isSystem: true, isRouter: true } : p.name === "Pico" ? { isSystem: true, isAssistant: true } : {},
+  }));
+
+  await db.insert(personas).values(rows);
+}
+
+/**
+ * Ensure built-in personas exist, then create default persona assignments for a project.
  */
 export async function seedDefaultPersonasForProject(projectId: string): Promise<void> {
-  // Check if any personas exist
-  const existing = await db.select({ id: personas.id }).from(personas);
+  await ensureBuiltInPersonas();
 
-  let personaNameToId: Map<string, string>;
-
-  if (existing.length === 0) {
-    // Seed built-in personas
-    const rows = BUILT_IN_PERSONAS.map((p) => ({
-      id: createId.persona() as string,
-      name: p.name,
-      description: p.description,
-      avatar: p.avatar,
-      systemPrompt: "",
-      model: p.model,
-      allowedTools: p.allowedTools,
-      mcpTools: p.mcpTools,
-      maxBudgetPerRun: p.maxBudgetPerRun,
-      settings: p.name === "Router" ? { isSystem: true, isRouter: true } : p.name === "Pico" ? { isSystem: true, isAssistant: true } : {},
-    }));
-
-    await db.insert(personas).values(rows);
-
-    personaNameToId = new Map(rows.map((r) => [r.name, r.id]));
-  } else {
-    // Personas already exist — build lookup from DB
-    const allPersonas = await db
-      .select({ id: personas.id, name: personas.name })
-      .from(personas);
-    personaNameToId = new Map(allPersonas.map((p) => [p.name, p.id]));
-  }
+  // Build name→id lookup from DB
+  const allPersonas = await db
+    .select({ id: personas.id, name: personas.name })
+    .from(personas);
+  const personaNameToId = new Map(allPersonas.map((p) => [p.name, p.id]));
 
   // Create default assignments for this project
   const assignments: { projectId: string; stateName: string; personaId: string }[] = [];

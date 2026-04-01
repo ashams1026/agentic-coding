@@ -2,6 +2,7 @@ import { eq, or } from "drizzle-orm";
 import type { FastifyInstance } from "fastify";
 import { buildServer } from "./server.js";
 import { runMigrations } from "./db/migrate.js";
+import { ensureBuiltInPersonas } from "./db/default-personas.js";
 import { db, DB_PATH } from "./db/connection.js";
 import { sqlite } from "./db/connection.js";
 import { executions, workItems } from "./db/schema.js";
@@ -213,6 +214,9 @@ export async function startServer(options: StartOptions = {}): Promise<void> {
   logger.info({ dbPath: DB_PATH, nodeEnv: process.env["NODE_ENV"] ?? "development" }, "Database path resolved");
 
   runMigrations();
+
+  // Ensure built-in personas exist (idempotent)
+  await ensureBuiltInPersonas();
 
   // Production-grade crash recovery
   const recovery = await recoverOrphanedState();
