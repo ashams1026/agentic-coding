@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-03-31 — FX.PICO5: Fix Pico chat panel scroll overflow
+
+**Done:** Added `min-h-0 overflow-hidden` to the ScrollArea in `chat-panel.tsx`. The root cause was CSS flex's default `min-height: auto` preventing the ScrollArea from shrinking below its content height — messages overflowed instead of scrolling. With `min-h-0`, the flex child respects the parent's height constraint and scrolls properly.
+**Files:** `packages/frontend/src/features/pico/chat-panel.tsx`
+
+---
+
 ## 2026-03-31 — Review: FX.LIC1 (approved)
 
 **Reviewed:** Apache 2.0 license addition.

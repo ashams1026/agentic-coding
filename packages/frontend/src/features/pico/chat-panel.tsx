@@ -262,7 +262,7 @@ export function ChatPanel() {
       </div>
 
       {/* Messages */}
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 min-h-0 overflow-hidden">
         <div className="flex flex-col p-4">
           {isLoadingHistory && (
             <div className="flex items-center justify-center py-8">
