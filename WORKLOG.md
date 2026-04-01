@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 01:30 PDT — RES.SWAP.ARCH: Research frontend/backend decoupling architecture
+
+**Done:** Researched frontend/backend decoupling architecture. Doc covers all 7 investigation areas: (1) current state audit — hardcoded `API_BASE_URL = "http://localhost:3001"` at client.ts:48, 30+ API functions using `BASE_URL` through 5 helpers + 6 inline fetch calls, WebSocket URL derived from same constant at ws-client.ts:53, CORS hardcoded to localhost ports at server.ts:27-30, health endpoint at server.ts:33-41 with version; (2) backend selector UX — Settings > Connection page, connection list with status indicators, add/edit dialog with test, sidebar footer status indicator, first-run screen if no connection; (3) connection validation — health check flow with version comparison, enhanced health response with apiVersion + capabilities, periodic 30s health polling with 3-strike disconnect detection; (4) auth — bearer token (API key) scheme, header injection per connection, localStorage storage with security note, OAuth/SSO deferred; (5) WebSocket reconnection — 5-step switch flow (disconnect → update store → connect new → invalidate cache → refetch), handler survival across reconnects, Agent Monitor stream clearing; (6) offline/disconnected — 3 detection signals, 4-tier degradation (connected/recent/extended/no-backend), TanStack Query stale cache serving, reconnection polling with backoff; (7) deployment models — 5 models enabled (local, SPA+local, SPA+tunnel, team server, desktop app), what's enabled vs what needs additional work. Also: implementation approach (Zustand connection store replacing constant), 3-phase migration, backend CORS change, 6 cross-references, 5 design decisions.
+**Files:** `docs/proposals/frontend-backend-swappability/architecture.md` (new)
+
+---
+
 ## 2026-04-03 01:00 PDT — Review: RES.WEBHOOKS.OUTBOUND (approved after rework)
 
 **Reviewed:** Outbound event webhooks research doc — rework review.
