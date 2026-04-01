@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 00:35 PDT — Review: SDK.SO.2 (approved)
+
+**Reviewed:** Structured Router decision display across backend storage, component, and two integration points.
+- `RouterDecisionCard`: full (card) + compact (inline) variants with color-coded state badge from WORKFLOW.states, confidence dot (emerald/amber/red)
+- `isRouterDecision()` type guard validates all 3 fields before rendering — safe against malformed data
+- Backend: `structured_output` column + migration, stored from ResultEvent, serialized in API
+- Agent history: full card shown above terminal renderer for Router executions
+- Activity feed: Router executions with structured output render as `router_decision` with compact card + reasoning
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 00:25 PDT — SDK.SO.2: Display structured Router decisions in UI
 
 **Done:** Full-stack structured output display. Backend: added `structured_output` column to executions schema (migration 0005), stored from `ResultEvent.structuredOutput` in execution-manager, included in API serializer. Shared: added `structuredOutput` to `Execution` entity. Frontend: created `RouterDecisionCard` component with full (card with state badge, reasoning, confidence dot) and compact (inline badge+dot) variants. Integrated into agent-history expanded view (shows above terminal renderer for Router executions). Activity feed: Router executions with structured output render as `router_decision` events with compact card instead of generic `agent_completed`.
