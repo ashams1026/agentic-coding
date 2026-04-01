@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 20:40 PDT — Review: RES.SCHED.UX (approved)
+
+**Reviewed:** Scheduling UX design research.
+- All 5 areas covered: where schedules live (4-location analysis with pros/cons/recommendation; Persona Manager primary with wireframe, Settings > Automation secondary with table wireframe, /schedules Phase 3), schedule definition (2-tier presets→cron with 6 preset-to-cron mappings, cron-parser live preview with next-5-runs, timezone handling via IANA + browser detection), what gets scheduled (ScheduleDefinition interface, prompt vs system prompt distinction clearly drawn, 7 template variables, 3 project scope options with behavior per scope), schedule management (card UI with 5 data points + 4 controls, create/edit dialog wireframe, Run Now behavior — 5-step spec with cadence isolation), how scheduled runs appear (work-item vs standalone analysis, Model B recommended with rationale, scheduleId + trigger_type SQL extensions, Agent Monitor/Activity Feed/Dashboard wireframes, execution history view with 30-day stats)
+- Current state claims verified: personaAssignments table at schema.ts:95-105, 7 sidebar nav items at sidebar.tsx:38-46, no Trigger table in schema
+- Notification integration well-designed — silent success, high on failure, critical on auto-disable matches RES.NOTIFY.UX event catalog
+- 3-phase implementation ordering logical (persona-scoped → project-scoped → dedicated page)
+- 6 cross-references accurate, 5 design decisions well-reasoned
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 20:30 PDT — RES.SCHED.UX: Research scheduling UX
 
 **Done:** Researched scheduling UX for recurring agent tasks. Doc covers all 5 investigation areas: (1) where schedules live — 4-location analysis, recommended Persona Manager "Schedules" tab as primary entry (per-persona), Settings > Automation as secondary (per-project overview), dedicated /schedules page as Phase 3; wireframes for both views, (2) schedule definition — 2-tier input (preset dropdown covering 90% use cases → custom cron with live preview/next-5-runs); 6 presets mapped to cron expressions; timezone handling (browser-detected default, per-schedule override, IANA storage), (3) what gets scheduled — ScheduleDefinition interface (persona + project scope + prompt + cron + timezone); prompt template variables ({{date}}, {{schedule.lastRunAt}}, etc.); 3 project scope options (specific/all/none), (4) schedule management — card UI with name, frequency, next/last run status, enable/disable toggle, Run Now button, edit/delete; create/edit dialog wireframe with all fields; Run Now doesn't affect cadence, (5) how scheduled runs appear — standalone execution model (no work item creation for Phase 1), scheduleId + trigger_type on executions, Agent Monitor badge (calendar icon), Activity Feed events, Dashboard "Upcoming Schedules" widget; per-schedule history view with 30-day summary stats. Also: notification integration (silent on success, high on failure, critical on auto-disable), 3-phase implementation plan, 6 cross-references, 5 design decisions.
