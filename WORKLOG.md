@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 08:15 PDT — RES.PLUG.CORE: Research core package extraction strategy
+
+**Done:** Cataloged all dependencies of ExecutionManager (11 imports: 2 DB, 6 internal, 2 shared, 1 core) and MCP server (14 imports: 3 DB, 6 internal, 2 shared, 3 external). Identified circular dependency cycle between ExecutionManager/dispatch/router/coordination. Evaluated 4 approaches: full extraction (too large), thin interface extraction (recommended), DI container (overcomplicated), Effect pattern (wrong scale). Recommended Option B: extract contracts (Orchestrator, ExecutionManagerPort, infrastructure interfaces) to core while keeping implementations in backend. Referenced tRPC's pattern as closest analog.
+**Files:** `docs/proposals/core-package-extraction.md`
+
+---
+
 ## 2026-04-02 07:55 PDT — Review: RES.V2.SESSIONS (approved)
 
 **Reviewed:** V2 session configuration research proposal.
