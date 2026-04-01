@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 03:20 PDT — Review: SDK.ET.1 (approved)
+
+**Reviewed:** Effort and thinking settings across shared types, executor, seed data.
+- `EffortLevel`/`ThinkingMode` types clean, `thinkingBudgetTokens` for enabled mode
+- Executor builds thinking config correctly: enabled→budgetTokens, adaptive/disabled→simple type
+- Per-persona defaults match spec: PM=medium, TL=high, Engineer=max+enabled(16K), Reviewer=high, Router=low+disabled
+- Pico unchanged — falls back to high/adaptive via executor defaults
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 03:15 PDT — SDK.ET.1: Add effort and thinking to Persona settings
 
 **Done:** Added `EffortLevel` (`low`/`medium`/`high`/`max`) and `ThinkingMode` (`adaptive`/`enabled`/`disabled`) types to shared entities. Added `effort`, `thinking`, `thinkingBudgetTokens` to `PersonaSettings`. In `claude-executor.ts`: builds `effort` and `thinking` config from persona settings, passes to `query()` options. Defaults: PM=medium/adaptive, TL=high/adaptive, Engineer=max/enabled(16K tokens), Code Reviewer=high/adaptive, Router=low/disabled. Updated seed.ts and router.ts with per-persona defaults.
