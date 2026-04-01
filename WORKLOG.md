@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 18:15 PDT — Review: PLUG.4 (approved)
+
+**Reviewed:** Executor registry implementation.
+- `ExecutorRegistry` class in core: register/get/has/list, clear error messages
+- ExecutionManager constructor takes registry instead of factory
+- `setExecutorMode()` validates against registry, `listExecutorModes()` delegates
+- `createDefaultRegistry()` in setup.ts with "claude" + "mock"
+- REST GET returns `available` array, PUT validates against it
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 18:10 PDT — PLUG.4: Executor registry with named registration
 
 **Done:** Added `ExecutorRegistry` class to `@agentops/core` with `register()`, `get()`, `has()`, `list()` methods. Refactored `ExecutionManager` to accept registry instead of plain factory. Updated `setup.ts` to use `createDefaultRegistry()` with "claude" and "mock" registered. REST API `GET /api/settings/executor-mode` now returns `available` array from registry. `PUT` validates against registered names. Marked PLUG.3c/3d as blocked (non-DB dependencies need broader abstraction).
