@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 16:25 PDT — RES.SWAP.API: Research API contract and versioning
+
+**Done:** Researched API contract and versioning for backend swappability. Doc covers all 5 investigation areas: (1) API contract definition — audited current implicit contract: ~70 HTTP endpoints across 13 route files, 14 WS event types, 15 entity interfaces, 25+ request/response types in shared package; recommended OpenAPI 3.1 with code-first generation via @fastify/swagger (annotate existing routes, generate spec from code), WebSocket contract stays as TypeScript types (AsyncAPI deferred); (2) versioning strategy — single integer apiVersion in health response for breaking changes, semver for packages, capability negotiation via capabilities object for additive features, feature flags vs capabilities distinction; (3) what shared package becomes — current @agentops/shared (private, monorepo-internal) evolves to published @woof/api-types with 4-phase migration (keep → add OpenAPI → publish → generate types); entity types, workflow logic, and ID generation stay internal; (4) mock backend — MSW for component tests (in-browser), Prism for contract validation (auto-generated from OpenAPI spec), lightweight mock server deferred; current mock data layer transitions to MSW handlers; (5) impact on frontend API layer — 6 changes: dynamic base URL via getBaseUrl(), auth header injection via getAuthHeaders(), connection-aware error handling, WS URL switching with reconnectTo(), HealthResponse moved to shared, TanStack Query key namespacing by connection ID. Also: 4-phase implementation approach, 10 cross-references, 6 design decisions.
+**Files:** `docs/proposals/frontend-backend-swappability/api-contract.md` (new)
+
+---
+
 ## 2026-04-01 16:20 PDT — Review: RES.SWAP.HOSTED (approved)
 
 **Reviewed:** Hosted frontend deployment model research doc.
