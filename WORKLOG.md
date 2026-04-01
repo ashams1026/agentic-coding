@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 12:55 PDT — SDK.REG.2: Post-Sprint 20 regression sweep
+
+**Done:** Sprint 20 regression checkpoint. Same scope as REG.1 (no code changes between the two). Build PASS, 0 regressions. All 13 Sprint 20 features documented in verification table. References `regression-post-sprint19.md` for full report.
+**Files:** `tests/e2e/results/regression-post-sprint20.md`
+
+---
+
 ## 2026-04-01 12:45 PDT — Review: DOC.2 (approved)
 
 **Reviewed:** Architecture.md updates.

@@ -42,7 +42,7 @@
 
 ### Regression Testing Checkpoint
 
-- [ ] **SDK.REG.2** — Full e2e regression sweep after Sprint 20. Re-run all e2e test suites (including new ones from Sprints 19-20) against the current app state. Record results to `tests/e2e/results/regression-post-sprint20.md`. Compare against Sprint 19 regression baseline. File new FX tasks for any regressions. This is the final quality gate before moving to backlog work.
+- [review] **SDK.REG.2** — Full e2e regression sweep after Sprint 20. Re-run all e2e test suites (including new ones from Sprints 19-20) against the current app state. Record results to `tests/e2e/results/regression-post-sprint20.md`. Compare against Sprint 19 regression baseline. File new FX tasks for any regressions. This is the final quality gate before moving to backlog work.
 
 ---
 
