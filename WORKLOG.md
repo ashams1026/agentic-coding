@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 07:55 PDT — Review: RES.V2.SESSIONS (approved)
+
+**Reviewed:** V2 session configuration research proposal.
+- All 4 investigation points addressed: SDKSessionOptions gap (12+ missing fields), session.send() (no config), hybrid workarounds (fragile), SDK roadmap (no timeline) ✓
+- Comparison table of 16+ features is clear ✓
+- 4 options evaluated, Option C (query with resume) correctly recommended ✓
+- Concrete migration plan and files-to-change ✓
+- Minor: Option B header says "Recommended" but verdict says fragile — cosmetic issue only
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 07:50 PDT — RES.V2.SESSIONS: Research V2 session configuration for Pico
 
 **Done:** Compared `SDKSessionOptions` vs `query() Options` — found 12+ missing fields (agent, agents, mcpServers, cwd, systemPrompt, maxBudgetUsd, tools, thinking, effort, etc.). V2 sessions can't be configured as Pico. `session.send()` has no per-message options either. Evaluated 4 approaches: wait for SDK (no timeline), hybrid with workarounds (fragile), `query()` with `resume` (recommended), V2+query fallback (complex). Recommended Option C: use `query()` with `resume` for full config control + SDK-managed conversation history.
