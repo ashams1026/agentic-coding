@@ -506,6 +506,22 @@ export class ClaudeExecutor implements AgentExecutor {
           permissionMode: "bypassPermissions",
           allowDangerouslySkipPermissions: true,
           enableFileCheckpointing: true,
+          sandbox: {
+            enabled: true,
+            autoAllowBashIfSandboxed: true,
+            filesystem: {
+              allowWrite: [project.path],
+              denyWrite: ["/", "/etc", "/usr", "/var"],
+            },
+            network: {
+              allowedDomains: [
+                "api.anthropic.com",
+                "registry.npmjs.org",
+                "github.com",
+                "raw.githubusercontent.com",
+              ],
+            },
+          },
           includePartialMessages: true,
           agentProgressSummaries: true,
           maxBudgetUsd: options.maxBudget > 0 ? options.maxBudget : undefined,

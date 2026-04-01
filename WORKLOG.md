@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 06:55 PDT — SDK.SB.1: Migrate to SDK native sandbox
+
+**Done:** Added SDK `sandbox` option to `query()`: `enabled: true`, `autoAllowBashIfSandboxed: true`, filesystem allows writes only to project path (denies /, /etc, /usr, /var), network allows api.anthropic.com, npmjs, github. Kept the existing `PreToolUse` hook as a defense-in-depth fallback (application-level validation on top of OS-level sandbox). `sandbox.ts` module preserved for non-sandboxed environments.
+**Files:** `packages/backend/src/agent/claude-executor.ts`
+
+---
+
 ## 2026-04-01 06:45 PDT — Review: SDK.ST.8 (approved)
 
 **Reviewed:** Streaming & observability documentation in `docs/frontend.md`.
