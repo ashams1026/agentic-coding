@@ -1,0 +1,1 @@
+ALTER TABLE `executions` ADD `parent_execution_id` text;

@@ -23,7 +23,9 @@ export type WsEventType =
   | "proposal_updated"
   | "cost_update"
   | "execution_update"
-  | "file_changed";
+  | "file_changed"
+  | "subagent_started"
+  | "subagent_completed";
 
 // ── Event payloads ─────────────────────────────────────────────────
 
@@ -112,6 +114,24 @@ export interface FileChangedEvent {
   timestamp: string;
 }
 
+export interface SubagentStartedEvent {
+  type: "subagent_started";
+  executionId: ExecutionId;
+  parentExecutionId: ExecutionId;
+  agentId: string;
+  agentName: string;
+  timestamp: string;
+}
+
+export interface SubagentCompletedEvent {
+  type: "subagent_completed";
+  executionId: ExecutionId;
+  parentExecutionId: ExecutionId;
+  agentId: string;
+  agentName: string;
+  timestamp: string;
+}
+
 // ── Union type ─────────────────────────────────────────────────────
 
 export type WsEvent =
@@ -124,7 +144,9 @@ export type WsEvent =
   | ProposalUpdatedEvent
   | CostUpdateEvent
   | ExecutionUpdateEvent
-  | FileChangedEvent;
+  | FileChangedEvent
+  | SubagentStartedEvent
+  | SubagentCompletedEvent;
 
 // ── Subscriber API ─────────────────────────────────────────────────
 
@@ -141,4 +163,6 @@ export type WsEventMap = {
   cost_update: CostUpdateEvent;
   execution_update: ExecutionUpdateEvent;
   file_changed: FileChangedEvent;
+  subagent_started: SubagentStartedEvent;
+  subagent_completed: SubagentCompletedEvent;
 };

@@ -122,6 +122,7 @@ export interface Execution {
   logs: string;
   checkpointMessageId: string | null;
   structuredOutput: Record<string, unknown> | null;
+  parentExecutionId: string | null;
 }
 
 export interface Comment {

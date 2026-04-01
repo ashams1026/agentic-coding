@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 01:55 PDT — SDK.SA.2: Subagent invocation tracking
+
+**Done:** Added SubagentStart/SubagentStop hooks for tracking when agents spawn subagents. Backend: `parentExecutionId` column on executions table (migration 0006), added to shared `Execution` entity and API serializer. New WS event types `subagent_started`/`subagent_completed` in shared ws-events (interfaces, union, map). Frontend: WS client listeners initialized. `buildSubagentHooks()` factory in executor broadcasts WS events with parent execution ID and agent name (resolved from persona map). Hooks wired into query() options.
+**Files:** `packages/backend/src/db/schema.ts`, `packages/backend/drizzle/0006_groovy_red_wolf.sql`, `packages/shared/src/entities.ts`, `packages/shared/src/ws-events.ts`, `packages/backend/src/routes/executions.ts`, `packages/backend/src/agent/claude-executor.ts`, `packages/frontend/src/api/ws-client.ts`
+
+---
+
 ## 2026-04-01 01:35 PDT — Review: SDK.SA.1 (approved)
 
 **Reviewed:** Personas as SDK subagents across `types.ts`, `execution-manager.ts`, `claude-executor.ts`.

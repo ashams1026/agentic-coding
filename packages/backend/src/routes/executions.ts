@@ -36,6 +36,7 @@ function serializeExecution(row: typeof executions.$inferSelect) {
     logs: row.logs,
     checkpointMessageId: row.checkpointMessageId ?? null,
     structuredOutput: row.structuredOutput ?? null,
+    parentExecutionId: row.parentExecutionId ?? null,
   };
 }
 

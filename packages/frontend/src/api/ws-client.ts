@@ -32,6 +32,8 @@ class RealWsClient {
     cost_update: new Set(),
     execution_update: new Set(),
     file_changed: new Set(),
+    subagent_started: new Set(),
+    subagent_completed: new Set(),
     "*": new Set(),
   };
 

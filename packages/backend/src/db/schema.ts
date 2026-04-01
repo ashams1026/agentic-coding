@@ -155,6 +155,7 @@ export const executions = sqliteTable("executions", {
   logs: text("logs").notNull().default(""),
   checkpointMessageId: text("checkpoint_message_id"),
   structuredOutput: text("structured_output", { mode: "json" }).$type<Record<string, unknown> | null>(),
+  parentExecutionId: text("parent_execution_id"),
 });
 
 export const executionsRelations = relations(executions, ({ one, many }) => ({

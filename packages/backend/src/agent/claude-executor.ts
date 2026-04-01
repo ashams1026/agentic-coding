@@ -4,7 +4,7 @@
  */
 
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import type { SDKMessage, AgentDefinition, HookCallback, PreToolUseHookInput, PostToolUseHookInput, PostToolUseFailureHookInput, SessionStartHookInput, SessionEndHookInput, FileChangedHookInput } from "@anthropic-ai/claude-agent-sdk";
+import type { SDKMessage, AgentDefinition, HookCallback, PreToolUseHookInput, PostToolUseHookInput, PostToolUseFailureHookInput, SessionStartHookInput, SessionEndHookInput, FileChangedHookInput, SubagentStartHookInput, SubagentStopHookInput } from "@anthropic-ai/claude-agent-sdk";
 import type {
   AgentExecutor,
   AgentTask,
@@ -320,6 +320,51 @@ function buildFileChangedHook(executionId: string): HookCallback {
   };
 }
 
+// ── Subagent tracking hooks ──────────────────────────────────────
+
+function buildSubagentHooks(
+  parentExecutionId: string,
+  allPersonas: Persona[],
+): { subagentStart: HookCallback; subagentStop: HookCallback } {
+  const personaMap = new Map(allPersonas.map((p) => [p.id as string, p]));
+
+  const subagentStart: HookCallback = async (input, _toolUseID, _options) => {
+    const startInput = input as SubagentStartHookInput;
+    const persona = personaMap.get(startInput.agent_id);
+    const agentName = persona?.name ?? startInput.agent_type ?? startInput.agent_id;
+
+    broadcast({
+      type: "subagent_started",
+      executionId: startInput.agent_id as ExecutionId,
+      parentExecutionId: parentExecutionId as ExecutionId,
+      agentId: startInput.agent_id,
+      agentName,
+      timestamp: new Date().toISOString(),
+    });
+
+    return {};
+  };
+
+  const subagentStop: HookCallback = async (input, _toolUseID, _options) => {
+    const stopInput = input as SubagentStopHookInput;
+    const persona = personaMap.get(stopInput.agent_id);
+    const agentName = persona?.name ?? stopInput.agent_type ?? stopInput.agent_id;
+
+    broadcast({
+      type: "subagent_completed",
+      executionId: stopInput.agent_id as ExecutionId,
+      parentExecutionId: parentExecutionId as ExecutionId,
+      agentId: stopInput.agent_id,
+      agentName,
+      timestamp: new Date().toISOString(),
+    });
+
+    return {};
+  };
+
+  return { subagentStart, subagentStop };
+}
+
 // ── Router structured output schema ──────────────────────────────
 
 const ROUTER_OUTPUT_SCHEMA = {
@@ -413,6 +458,7 @@ export class ClaudeExecutor implements AgentExecutor {
         workItemId: task.workItemId,
       });
 
+      const subagentHooks = buildSubagentHooks(options.executionId, options.allPersonas);
       const isRouter = persona.settings?.isRouter === true;
 
       const q = query({
@@ -437,6 +483,8 @@ export class ClaudeExecutor implements AgentExecutor {
             SessionStart: [{ hooks: [sessionHooks.sessionStart] }],
             SessionEnd: [{ hooks: [sessionHooks.sessionEnd] }],
             FileChanged: [{ hooks: [buildFileChangedHook(options.executionId)] }],
+            SubagentStart: [{ hooks: [subagentHooks.subagentStart] }],
+            SubagentStop: [{ hooks: [subagentHooks.subagentStop] }],
           },
           mcpServers: {
             agentops: {
