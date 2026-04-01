@@ -96,10 +96,14 @@ function PersonaCard({ persona, isBuiltIn, isAssistant, isSelected, onSelect, on
 
   return (
     <div
+      role="button"
+      tabIndex={0}
       onClick={onSelect}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(); } }}
       className={cn(
         "group relative rounded-lg border border-border bg-card transition-all duration-200 cursor-pointer",
         "hover:shadow-md hover:border-border/80",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         isSelected && "shadow-md border-primary/50 ring-1 ring-primary/20",
       )}
     >
