@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 17:50 PDT — RES.CHAT.DATA: Research chat data model and backend
+
+**Done:** Researched data model and backend changes for multi-persona agent chat. Doc covers all 5 investigation areas: (1) SDK events mapping — recommends hybrid (one message per turn with ordered contentBlocks array), formalizes ContentBlock union type replacing loose thinkingBlocks/toolCalls, (2) storage — adds personaId/workItemId/sdkSessionId to chat_sessions, keeps JSON metadata on messages (no normalized sub-tables), includes storage estimates and migration SQL, (3) streaming — stay with SSE (add cancel/approve control endpoints), enhanced event format with toolCallId linking and tool_status events, WebSocket deferred to Phase 2, (4) execution relationship — separate with optional linking (workItemId FK on sessions), cost tracking aggregation, (5) V2 sessions — sdkSessionId column for future SDK session binding, what V2 eliminates vs what we still need. Includes final schema summary and 6-step migration plan.
+**Files:** `docs/proposals/agent-chat/data-model.md` (new)
+
+---
+
 ## 2026-04-02 17:35 PDT — Review: RES.CHAT.RICH (approved)
 
 **Reviewed:** Rich message rendering research for agent chat.
