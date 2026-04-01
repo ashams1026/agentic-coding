@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 06:15 PDT — Review: SDK.ST.6 (approved)
+
+**Reviewed:** E2E test plan at `tests/e2e/plans/agent-monitor-streaming.md`.
+- 14 steps across 5 parts covering all streaming/observability features
+- Real-time dependency honestly documented with SKIP guidance
+- Rate limit steps pragmatically marked SKIP (can't trigger in test)
+- Step 12 tests absence of context bar for completed executions
+- Failure criteria specific to each feature
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 06:10 PDT — SDK.ST.6: E2E test plan for streaming & observability
 
 **Done:** Created `tests/e2e/plans/agent-monitor-streaming.md` — 14 steps across 5 parts: live token streaming (4), progress summary bar (3), rate limit banner (2), context usage bar (3), visual quality (2). Notes real-time dependency for most steps. Rate limit steps marked SKIP by default (can't reliably trigger).

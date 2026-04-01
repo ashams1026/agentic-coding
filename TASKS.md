@@ -56,7 +56,7 @@
 
 - [x] **SDK.ST.5** — Add context usage display to agent monitor. Call `getContextUsage()` periodically (every 60s) during active executions via the query object. Emit as WebSocket event. In the agent monitor: show a context usage bar in the execution header — e.g., "Context: 45% used" with a fill bar. Color: green (<60%), yellow (60-80%), red (>80%). Tooltip shows breakdown: system prompt, tools, messages, MCP tools, memory. This warns users when an agent is approaching context limits.
 
-- [review] **SDK.ST.6** — E2E test plan: agent monitor streaming & observability. Create `tests/e2e/plans/agent-monitor-streaming.md`: test live streaming appearance, progress summary bar, rate limit banner (mock a rate limit scenario), context usage bar. Visual verification of all new UI elements.
+- [x] **SDK.ST.6** — E2E test plan: agent monitor streaming & observability. Create `tests/e2e/plans/agent-monitor-streaming.md`: test live streaming appearance, progress summary bar, rate limit banner (mock a rate limit scenario), context usage bar. Visual verification of all new UI elements.
 
 - [ ] **SDK.ST.7** — Run agent monitor streaming e2e test. Execute SDK.ST.6. Record results with screenshots of streaming, progress summary, context bar.
 
