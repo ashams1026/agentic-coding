@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 15:45 PDT — Review: UX.PICO.COLLAPSE (approved)
+
+**Reviewed:** Replace X icon with ChevronDown on mini chat panel.
+- ChevronDown icon at line 330 replaces X ✓
+- Tooltip says "Minimize" (not "Close") ✓
+- Unused X import removed from lucide-react ✓
+- Build passes, visual check confirms chevron visible in header ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 15:40 PDT — UX.PICO.COLLAPSE: Replace X with collapse chevron
 
 **Done:** Replaced the close (X) button in the Pico mini chat panel header with a downward ChevronDown icon to indicate minimize/collapse behavior instead of close/end. Tooltip already said "Minimize" from prior work. Removed unused `X` import from lucide-react. `ChevronDown` was already imported.
