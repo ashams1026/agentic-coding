@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 20:25 PDT — AW.1: Add visual UI check to WORK state
+
+**Done:** Added `[VISUAL CHECK]` step to AGENT_PROMPT.md between `[IMPLEMENT]` and `[VERIFY]`. Conditional on frontend changes: runs `git diff --name-only`, skips if no `packages/frontend/` files changed. Includes: dev server check, chrome-devtools MCP screenshot, visual inspection, fix loop. File path → page URL mapping for 7 feature directories. Added mandatory rule to Worker Rules section.
+**Files:** `AGENT_PROMPT.md`
+
+---
+
 ## 2026-04-01 20:15 PDT — Review: PLUG.10 (approved)
 
 **Reviewed:** E2E test execution results at `tests/e2e/results/executor-switching.md`.

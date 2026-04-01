@@ -239,6 +239,26 @@ WORK
   └── Continue ↓
   │
   ▼
+[VISUAL CHECK] (conditional — frontend changes only)
+  Run: git diff --name-only
+  If NO files in packages/frontend/ changed → skip to [VERIFY]
+  If frontend files changed:
+    1. Ensure dev servers are running (check ports 3001 and 5173/5174, skip if already up)
+    2. Use chrome-devtools MCP to open the affected page(s) in a browser
+    3. Take a screenshot, visually examine for layout issues / broken styling / clipping / misalignment
+    4. Fix any visual defects found, re-screenshot to confirm
+  │
+  File path → page URL mapping:
+    features/work-items/        → /items
+    features/dashboard/ or pages/dashboard → /
+    features/agent-monitor/     → /agents
+    features/activity-feed/     → /activity
+    features/persona-manager/   → /personas
+    features/settings/          → /settings
+    components/sidebar.tsx or layouts/ → / (check any page)
+  If multiple feature directories were touched, check each corresponding page.
+  │
+  ▼
 [VERIFY]
   Ensure app builds: pnpm build or pnpm dev — no errors
   Check existing functionality is not broken
@@ -274,3 +294,4 @@ STOP — do not pick up another task
 - **Preserve mock data layer** — components must use mock data, no hardcoded placeholders.
 - **Follow established patterns** — check WORKLOG.md and existing code for consistency.
 - **Read feedback carefully.** If a task has a `[feedback: ...]` block, address every point before marking [review].
+- **If your task modifies frontend code, the visual check is mandatory — do not skip it.**
