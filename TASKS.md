@@ -85,7 +85,7 @@
 
 ### Activity Feed (`/activity`)
 
-- [review] **UX.ACTIVITY** — Audit Activity Feed page. Open `/activity`. Verify: events render chronologically with timestamps, event types are visually distinct (icons/colors), scrolling loads more events or shows end-of-list. Click an event to navigate to the related entity. Check empty state. Toggle dark mode. Screenshot. File bugs.
+- [x] **UX.ACTIVITY** — Audit Activity Feed page. Open `/activity`. Verify: events render chronologically with timestamps, event types are visually distinct (icons/colors), scrolling loads more events or shows end-of-list. Click an event to navigate to the related entity. Check empty state. Toggle dark mode. Screenshot. File bugs.
 
 ### Activity Feed Bugs
 
