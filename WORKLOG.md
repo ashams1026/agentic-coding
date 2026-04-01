@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 06:40 PDT — SDK.ST.8: Update frontend docs with streaming features
+
+**Done:** Added "Agent Monitor — Streaming & Observability" section to `docs/frontend.md`. Documents: live token streaming (rAF batching, cursor), progress summary bar, rate limit display, context usage bar, and WebSocket event types table (5 events). All 5 task requirements covered.
+**Files:** `docs/frontend.md`
+
+---
+
 ## 2026-04-01 06:30 PDT — Review: SDK.ST.7 (approved)
 
 **Reviewed:** Streaming & observability e2e test results at `tests/e2e/results/agent-monitor-streaming.md`.

@@ -131,6 +131,28 @@ A resizable side panel that appears when a work item is selected. Shows:
 
 The panel width is persisted in the work-items store.
 
+### Agent Monitor — Streaming & Observability
+
+The agent monitor (`/agents`) provides real-time visibility into agent executions via several streaming and observability features:
+
+**Live Token Streaming** — When `includePartialMessages` is enabled, the terminal renderer receives individual tokens via `agent_output_chunk` WebSocket events. Small text chunks (<50 chars) are batched using `requestAnimationFrame` and appended to the current message bubble (not creating new bubbles per token). A blinking emerald cursor (`animate-pulse`) appears during active streaming and disappears after 500ms of inactivity.
+
+**Progress Summary Bar** — AI-generated progress descriptions arrive via `agent_progress` WebSocket events (~every 30s for long-running agents). Displayed as an emerald bar below the toolbar with a pulsing dot: "Currently: analyzing test coverage..." Clears when execution completes.
+
+**Rate Limit Display** — When the API returns a rate limit (`SDKAPIRetryMessage`), an inline text message appears in the terminal output: "Rate limited — retrying in Xs (attempt N/M)". Not persisted to execution logs.
+
+**Context Usage Bar** — A color-coded fill bar in the toolbar showing context window usage percentage. Polled every 60s via `getContextUsage()` on the query object. Colors: green (<60%), amber (60-80%), red (>80%). Tooltip shows total/max token counts.
+
+**WebSocket Event Types for Observability:**
+
+| Event | Source | Purpose |
+|---|---|---|
+| `agent_output_chunk` | Partial tokens, complete chunks | Terminal renderer display |
+| `agent_progress` | SDK task progress (~30s) | Progress summary bar |
+| `context_usage` | 60s polling via `getContextUsage()` | Context usage bar |
+| `file_changed` | FileChanged hook | File changes panel |
+| `subagent_started` / `subagent_completed` | SubagentStart/Stop hooks | Nested subagent cards |
+
 ## Mock Data Layer
 
 The frontend ships with a complete mock data layer that simulates the entire backend in-browser.
