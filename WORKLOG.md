@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 14:10 PDT — DOC.7: Update mcp-tools.md
+
+**Done:** Fixed source files table: "7 tool registrations" → "8 tool registrations + in-process server". The rest of `mcp-tools.md` was already current from prior updates: SDK.FC.7 (rewind_execution tool, tool count, persona access table), SDK.MCP.5 (dynamic management section). No stale tool names found (`transition_state`/`create_tasks` already corrected).
+**Files:** `docs/mcp-tools.md`
+
+---
+
 ## 2026-04-01 14:00 PDT — Review: DOC.6 (approved)
 
 **Reviewed:** API docs update in `docs/api.md`.

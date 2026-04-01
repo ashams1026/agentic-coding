@@ -58,7 +58,7 @@
 
 - [x] **DOC.6** — Update `docs/api.md`. Check commits touching `packages/backend/src/routes/`, `packages/backend/src/server.ts`. Update: any new routes (chat sessions, service status, browse-directory, audit), any changed request/response shapes, any removed routes. Add curl examples for new endpoints.
 
-- [ ] **DOC.7** — Update `docs/mcp-tools.md`. Check commits touching `packages/backend/src/agent/mcp-server.ts`. Update: any tool schema changes, new tools added, tool name corrections, per-persona allowlist changes from the audit.
+- [review] **DOC.7** — Update `docs/mcp-tools.md`. Check commits touching `packages/backend/src/agent/mcp-server.ts`. Update: any tool schema changes, new tools added, tool name corrections, per-persona allowlist changes from the audit.
 
 - [ ] **DOC.8** — Update `docs/deployment.md`. Check commits touching `packages/backend/src/cli.ts`, `ecosystem.config.cjs`, `packages/backend/src/config.ts`, `packages/backend/src/logger.ts`, `packages/backend/src/audit.ts`, `scripts/`. Update: any new CLI commands, config file changes, log file paths, pm2 config changes, new scripts (test-e2e, dev wrapper).
 

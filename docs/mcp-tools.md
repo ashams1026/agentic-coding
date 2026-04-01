@@ -460,7 +460,7 @@ Active query references are stored in a module-level `runningQueries` Map in `cl
 
 | File | Purpose |
 |---|---|
-| `packages/backend/src/agent/mcp-server.ts` | MCP server factory with 7 tool registrations |
+| `packages/backend/src/agent/mcp-server.ts` | MCP server factory with 8 tool registrations + in-process server |
 | `packages/backend/src/agent/claude-executor.ts` | Attaches MCP server to agent sessions via `mcpServers` config |
 | `packages/backend/src/agent/coordination.ts` | `checkParentCoordination()` called by `route_to_state` and `flag_blocked` |
 | `packages/backend/src/agent/memory.ts` | `getRecentMemories()` called by `get_context`, `checkMemoryGeneration()` called by `route_to_state` |
