@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 10:00 PDT — Review: SDK.UX.1 (approved)
+
+**Reviewed:** Pico prompt suggestions across backend, hook, and chat panel.
+- `promptSuggestions: true` in query options, `prompt_suggestion` → SSE `suggestion` event
+- Hook: `SSESuggestionEvent` type, suggestions state (max 3, cleared on send)
+- Chat panel: pill buttons between messages and input, click sends, hidden during streaming
+- Button styling: rounded-full, primary color, truncated at 200px
+- Build passes
+- **Verdict: approved.** 10 [x] tasks — CLEANUP next.
+
+---
+
 ## 2026-04-01 09:55 PDT — SDK.UX.1: Enable prompt suggestions for Pico
 
 **Done:** Full-stack prompt suggestions. Backend: `promptSuggestions: true` in Pico's `query()` options, handles `prompt_suggestion` messages → sends as `suggestion` SSE event. Frontend hook: `SSESuggestionEvent` type, `suggestions` state (max 3, cleared on send). Chat panel: suggestion buttons between ScrollArea and input — rounded pill buttons with primary color, click sends message. Suggestions hidden during streaming.
