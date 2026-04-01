@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 17:15 PDT — RES.SEARCH: Research search infrastructure and UX
+
+**Done:** Researched search infrastructure and UX. Doc covers all 6 investigation areas: (1) what's searchable — audited current state (zero server-side search, all client-side includes() on titles), prioritized 8 entity types (P0: work items + personas, P1: comments + chat, P2: executions + memories, P3: proposals + activity events); (2) search UX — 3 access points: enhanced Command Palette (Cmd+K, server-side with entity type badges), enhanced work items filter bar (debounced FTS), dedicated /search page (Phase 2, filter sidebar + entity tabs + pagination); result display with type badges, snippets, metadata; (3) search implementation — compared SQLite FTS5 vs Fuse.js vs Meilisearch on 9 criteria; recommended FTS5 (zero deps, built into better-sqlite3, BM25 ranking, atomic updates, handles 100K+ rows); Fuse.js fallback for Command Palette static lists only; (4) indexing — write-time via FTS5 triggers (15 triggers, 5 entities x 3 ops), contentless external content tables, porter unicode61 tokenizer, initial rebuild via `VALUES('rebuild')`, execution logs deferred to Phase 2 (summary only in Phase 1); (5) filtering and facets — project-scoped by default with global opt-in, 6 filter types (entity type, project, date range, status, priority, author), faceted counts via COUNT(*) FTS queries; (6) performance — estimated 52K rows / 10.5MB FTS index after 1 year, <50ms Command Palette, <200ms dedicated search page. Also: unified `/api/search` endpoint design, 3-phase implementation plan, 6 cross-references, 6 design decisions.
+**Files:** `docs/proposals/search/design.md` (new)
+
+---
+
 ## 2026-04-01 16:45 PDT — Cleanup: Archive 10 research tasks + trim worklog
 
 **Done:** Archived 10 completed research tasks (RES.SCHED.INFRA, RES.ROLLBACK, RES.TEMPLATES, RES.ANALYTICS.METRICS/UX, RES.WEBHOOKS.INBOUND/OUTBOUND, RES.SWAP.ARCH/HOSTED/API) from TASKS.md to TASKS_ARCHIVE.md. Removed 6 now-empty research section headers. Archived 22 oldest worklog entries (already summarized in batches 1-2, added RES.SCHED.INFRA to batch 2). WORKLOG.md trimmed to 20 entries.
