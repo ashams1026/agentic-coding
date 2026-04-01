@@ -23,7 +23,7 @@
 
 - [x] **FX.PICO2** — Write Pico e2e test plan. Create `tests/e2e/plans/pico-chat.md`: a step-by-step test plan covering the full Pico UX. Steps should include: (1) verify chat bubble is visible on every page, (2) click bubble to open chat panel, (3) verify welcome message and quick-action buttons, (4) click a quick-action suggestion and verify it sends as a message, (5) type a custom message and send via Cmd+Enter, (6) verify streaming response appears with typing indicator, (7) verify markdown rendering in Pico responses, (8) verify thinking blocks are collapsible, (9) verify tool call cards render correctly, (10) test session management — create new session, switch sessions, verify history loads, (11) close and reopen panel — verify state persists, (12) test on mobile viewport — verify panel is usable, (13) test error state — what happens when backend is down. Each step should include visual verification via screenshot.
 
-- [review] **FX.PICO3** — Execute Pico e2e test plan. Run the test plan from FX.PICO2 using chrome-devtools MCP against the running app. Record results to `tests/e2e/results/pico-chat.md`. Take screenshots at each visual checkpoint. Document any bugs found with severity and reproduction steps. File new FX tasks for any failures.
+- [x] **FX.PICO3** — Execute Pico e2e test plan. Run the test plan from FX.PICO2 using chrome-devtools MCP against the running app. Record results to `tests/e2e/results/pico-chat.md`. Take screenshots at each visual checkpoint. Document any bugs found with severity and reproduction steps. File new FX tasks for any failures.
 
 ### SDK-Native Skills & Tool Discovery
 

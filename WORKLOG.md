@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-31 — Review: FX.PICO3 (approved)
+
+**Reviewed:** Pico e2e test execution — results at `tests/e2e/results/pico-chat.md`, 8 screenshots.
+- 30/38 pass, 4 fail, 4 skip — all failures from a single root cause (CORS on SSE endpoint)
+- Bug properly documented: BUG-1 in results file with reproduction steps, root cause, and fix suggestion
+- FX.PICO4 filed for the CORS fix (HIGH severity)
+- 8 screenshots captured covering: bubble, panel, empty state, error state, session dropdown, mobile views, cleared state
+- Build passes, no regressions
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — Review: FX.PICO2 (approved)
 
 **Reviewed:** Pico chat e2e test plan at `tests/e2e/plans/pico-chat.md`.
