@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 00:45 PDT — UX.ACTIVITY: Audit Activity Feed page
+
+**Done:** Audited `/activity` at 1440x900 and dark mode. Events render chronologically grouped by date (Fri Mar 27 through Sat Mar 21). Event types visually distinct with colored icons: Comment (violet), Agent Started/Completed (green), State Change (blue), Proposal Created (amber), Agent Failed (red), Approved (green). Filters: Types dropdown, All personas dropdown, All time dropdown. Scrolling reveals full history (scrollHeight 2487). Dark mode: good contrast, all badges/text readable. Filed 1 bug: FX.UX.ACTIVITY.1 — all event links go to generic `/items` instead of specific work item (same issue as fixed FX.UX.DASH.3 but different component).
+**Files:** `tests/e2e/results/ux-activity-initial.png`, `tests/e2e/results/ux-activity-scrolled.png`, `tests/e2e/results/ux-activity-dark.png`
+
+---
+
 ## 2026-04-02 00:35 PDT — Review: UX.AGENT.HISTORY (approved)
 
 **Reviewed:** Agent Monitor history view audit — 3 screenshots, 0 new bugs.
