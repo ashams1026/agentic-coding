@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 19:25 PDT — Review: PLUG.7 (approved)
+
+**Reviewed:** Pluggable executor architecture documentation in `docs/architecture.md`.
+- 3-package dependency diagram (shared → core → backend) — accurate
+- Executor interface, registry API, composition root — all documented with code examples
+- REST API table for mode switching, "Building on AgentOps" 3-step guide
+- File table updated with setup.ts, mock-executor, core re-export notes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 19:20 PDT — PLUG.7: Architecture docs for pluggable executors
 
 **Done:** Added "Pluggable Executor Architecture" section to `docs/architecture.md`: 3-package dependency diagram (shared → core → backend), executor interface contract, ExecutorRegistry API, composition root pattern, REST API for mode switching, "Building on AgentOps" 3-step guide. Updated agent file table with setup.ts, mock-executor.ts, and core re-export notes.
