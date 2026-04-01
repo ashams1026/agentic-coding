@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 05:40 PDT — Review: SDK.ST.4 (approved)
+
+**Reviewed:** Rate limit event handling in executor, types, execution manager.
+- Handles `SDKAPIRetryMessage` (api_retry subtype) — correct extraction of attempt, retry_delay_ms, max_retries
+- `RateLimitEvent` added to AgentEvent union with all fields
+- Inline text banner with retry countdown — pragmatic approach (vs live countdown timer which would add complexity for a rare event)
+- Not logged to execution logs, broadcast as agent_output_chunk
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 05:35 PDT — SDK.ST.4: Handle rate limit events in agent monitor
 
 **Done:** Handles `SDKAPIRetryMessage` (type: "system", subtype: "api_retry") in `mapMessage()` — emits `RateLimitEvent` with retryDelayMs, attempt, maxRetries, errorStatus. In execution manager: broadcasts as `agent_output_chunk` with formatted text "Rate limited — retrying in Xs (attempt N/M)". Not logged to execution logs. Added `RateLimitEvent` to `AgentEvent` union.
