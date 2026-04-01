@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 18:35 PDT — Review: RES.RECOVERY.SYSTEM (approved)
+
+**Reviewed:** System-level resilience and data integrity research doc.
+- All 4 areas covered: WebSocket disconnection (ws-client.ts fixed 3s reconnect :141, shouldReconnect :44, reconnectCallbacks :61; ws.ts broadcast Set :6, close/error :53-61, welcome :64; terminal-renderer agent_output_chunk :406), concurrent write safety (connection.ts WAL :29, foreign_keys :30, missing busy_timeout — critical gap), database integrity (Drizzle migrator no rollback, proposed pre-migration backup + integrity checks), frontend resilience (zero ErrorBoundaries confirmed, useHealth refetchInterval 30s :8, TanStack staleTime 30s/retry 1 :6-8, showErrorToast :53)
+- Source code claims verified: ws-client.ts scheduleReconnect :136, 3000ms :141, shouldReconnect :44. ws.ts Set<WebSocket> :6, broadcast :12, close :53, error :58, welcome :64. query-client.ts staleTime :6, refetchOnWindowFocus :7, retry :8. useWsQuerySync in root-layout :19 with invalidation in use-ws-sync :14-39.
+- All 4 cross-reference files exist (agent-recovery.md, coordination.md, architecture.md, ux-design.md)
+- busy_timeout PRAGMA correctly identified as highest-priority one-line fix
+- 4-tier degradation (connected/degraded/disconnected/offline) well-designed
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 18:25 PDT — RES.RECOVERY.SYSTEM: Research system-level resilience and data integrity
 
 **Done:** Researched system-level resilience across 4 investigation areas. (1) WebSocket disconnection — audited ws-client.ts (fixed 3s reconnect at line 141, no backoff, listeners survive in memory, events during disconnect lost), ws.ts (broadcast-only, no replay), terminal-renderer.tsx (no reconnect recovery, output stalls silently); proposed exponential backoff with jitter, connection state indicator, event replay (Phase 3), Agent Monitor HTTP gap-fill. (2) Concurrent write safety — audited connection.ts (WAL mode line 29, foreign_keys line 30, missing busy_timeout and synchronous PRAGMAs); better-sqlite3 serializes writes via Node.js single-thread; no file-level locking between agents; recommended busy_timeout=5000 as highest-priority one-line fix. (3) Database integrity — Drizzle migrator has no rollback support, 7 migration files; proposed pre-migration db.backup(), integrity_check on startup, corruption recovery. (4) Frontend resilience — zero ErrorBoundary components (component crash = white screen), useHealth() polls /api/health every 30s (use-health.ts:8), TanStack Query staleTime=30s/retry=1, no offline degradation; proposed 3-tier error boundaries (App/Page/Panel), 4-tier connection state (connected/degraded/disconnected/offline) with read-only mode. 3-phase implementation plan, 7 cross-references, 6 design decisions.
