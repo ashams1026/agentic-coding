@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 01:00 PDT — FX.UX.AGENT.1: Fix Work Item/Parent links in agent header
+
+**Done:** Replaced broken `<Link to="/work-items/:id">` with `setSelectedItemId(id)` + `navigate("/items")` in `agent-control-bar.tsx` for both "Work Item" and "Parent" buttons. Changed import from `Link` to `useNavigate`, added `useWorkItemsStore` import. Removed `asChild` prop (no longer wrapping a Link). Verified: clicking "Work Item" on Engineer agent navigates to `/items` and opens "Build login UI component" detail panel. No more 404.
+**Files:** `packages/frontend/src/features/agent-monitor/agent-control-bar.tsx`
+
+---
+
 ## 2026-04-02 00:50 PDT — Review: UX.ACTIVITY (approved)
 
 **Reviewed:** Activity Feed page audit — 3 screenshots, 1 bug filed.

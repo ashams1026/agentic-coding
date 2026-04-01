@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 import {
   Bot,
   DollarSign,
@@ -22,7 +22,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useExecution, usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
-import type { ExecutionId } from "@agentops/shared";
+import { useWorkItemsStore } from "@/stores/work-items-store";
+import type { ExecutionId, WorkItemId } from "@agentops/shared";
 
 // ── Helpers ───────────────────────────────────────────────────────
 
@@ -50,6 +51,8 @@ interface AgentControlBarProps {
 }
 
 export function AgentControlBar({ executionId }: AgentControlBarProps) {
+  const navigate = useNavigate();
+  const setSelectedItemId = useWorkItemsStore((s) => s.setSelectedItemId);
   const { projectId } = useSelectedProject();
   const { data: execution } = useExecution(executionId);
   const { data: personas = [] } = usePersonas();
@@ -122,19 +125,15 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
 
       {/* Navigation links */}
       {execution.workItemId && (
-        <Button variant="ghost" size="xs" className="gap-1" asChild>
-          <Link to={`/work-items/${execution.workItemId}`}>
-            Work Item
-            <ExternalLink className="h-2.5 w-2.5" />
-          </Link>
+        <Button variant="ghost" size="xs" className="gap-1" onClick={() => { setSelectedItemId(execution.workItemId as WorkItemId); navigate("/items"); }}>
+          Work Item
+          <ExternalLink className="h-2.5 w-2.5" />
         </Button>
       )}
       {parentWorkItemId && (
-        <Button variant="ghost" size="xs" className="gap-1" asChild>
-          <Link to={`/work-items/${parentWorkItemId}`}>
-            Parent
-            <ExternalLink className="h-2.5 w-2.5" />
-          </Link>
+        <Button variant="ghost" size="xs" className="gap-1" onClick={() => { setSelectedItemId(parentWorkItemId as WorkItemId); navigate("/items"); }}>
+          Parent
+          <ExternalLink className="h-2.5 w-2.5" />
         </Button>
       )}
 
