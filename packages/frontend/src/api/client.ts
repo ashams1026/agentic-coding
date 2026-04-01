@@ -294,8 +294,10 @@ export interface McpServerStatusInfo {
 }
 
 export async function getMcpStatus(executionId: ExecutionId): Promise<McpServerStatusInfo[]> {
-  const res = await get<{ data: McpServerStatusInfo[] }>(`/api/executions/${executionId}/mcp/status`);
-  return res.data;
+  const res = await fetch(`${BASE_URL}/api/executions/${executionId}/mcp/status`);
+  if (!res.ok) return []; // Silently return empty — endpoint may not exist in simulated mode
+  const json = await res.json() as { data: McpServerStatusInfo[] };
+  return json.data;
 }
 
 export async function reconnectMcpServer(executionId: ExecutionId, serverName: string): Promise<void> {
