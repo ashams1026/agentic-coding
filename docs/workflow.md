@@ -136,6 +136,18 @@ The structured output is stored in the `structuredOutput` column of the executio
 - **System prompt:** Guidelines for state decisions (e.g., after "In Progress" → "In Review", after successful review → "Done", issues found → back to "In Progress")
 - **Created lazily:** The Router persona is auto-created in the database on first use
 
+### Router Safety Features
+
+Three layers prevent routing loops:
+
+1. **Same-state rejection:** The `route_to_state` MCP tool rejects transitions to the item's current state, preventing infinite self-loops.
+
+2. **Transition history awareness:** Before routing, the Router's system prompt is dynamically updated with the last 3 state transitions for the work item (from Router comments). This context helps avoid re-triggering the same persona.
+
+3. **Loop detection:** An in-memory state history (6 entries) tracks transitions per work item. If a state appears 3+ times, the item is auto-escalated to "Blocked" with a system comment explaining the loop.
+
+Additionally, the rate limiter logs all pauses with `logger.warn`, posts system comments, and broadcasts WS events so the UI can show rate-limit status.
+
 ### Auto-Routing Toggle
 
 Auto-routing is controlled by the `autoRouting` setting in project settings:
@@ -143,7 +155,7 @@ Auto-routing is controlled by the `autoRouting` setting in project settings:
 - **ON** (default): Router fires after every persona completion
 - **OFF**: Router is skipped; items stay in their current state until manually transitioned
 
-Toggle in **Settings > Workflow > Auto-routing**.
+Toggle via the **play/pause button** in the status bar, Settings > Workflow, or the Work Items header. The UI uses a play/pause metaphor with emerald (running) and amber (paused) colors.
 
 The backend checks `project.settings.autoRouting` in `router.ts`:
 ```typescript

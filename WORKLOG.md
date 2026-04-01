@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 13:25 PDT — DOC.4: Update workflow.md
+
+**Done:** Added "Router Safety Features" section with 3-layer loop prevention: same-state rejection, transition history awareness (last 3 transitions in dynamic prompt), loop detection (6-entry history, 3-occurrence threshold → auto-Blocked). Added rate limiter logging note. Updated auto-routing toggle to describe play/pause UX (emerald/amber colors, 3 toggle locations).
+**Files:** `docs/workflow.md`
+
+---
+
 ## 2026-04-01 13:15 PDT — Review: DOC.3 (approved)
 
 **Reviewed:** Data model updates in `docs/data-model.md`.

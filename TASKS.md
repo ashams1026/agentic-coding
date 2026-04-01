@@ -52,7 +52,7 @@
 
 - [x] **DOC.3** — Update `docs/data-model.md`. Check commits touching `packages/shared/src/entities.ts`, `packages/backend/src/db/schema.ts`. Update: any new fields added to entities (skills on Persona, isAssistant flag, chat_sessions/chat_messages tables), any changed field names or types, update the ER diagram if relationships changed.
 
-- [ ] **DOC.4** — Update `docs/workflow.md`. Check commits touching `packages/shared/src/workflow.ts`, `packages/backend/src/agent/router.ts`, `packages/backend/src/agent/dispatch.ts`, `packages/backend/src/agent/coordination.ts`, `packages/backend/src/agent/execution-manager.ts`. Update: router behavior changes (same-state blocking, loop detection, transition history), rate limiter logging, any new states or transition rules, play/pause auto-routing UX.
+- [review] **DOC.4** — Update `docs/workflow.md`. Check commits touching `packages/shared/src/workflow.ts`, `packages/backend/src/agent/router.ts`, `packages/backend/src/agent/dispatch.ts`, `packages/backend/src/agent/coordination.ts`, `packages/backend/src/agent/execution-manager.ts`. Update: router behavior changes (same-state blocking, loop detection, transition history), rate limiter logging, any new states or transition rules, play/pause auto-routing UX.
 
 - [ ] **DOC.5** — Update `docs/personas.md`. Check commits touching `packages/backend/src/db/seed.ts` persona entries, `packages/backend/src/agent/claude-executor.ts`. Update: any persona prompt changes from the FX.P1-P5 overhaul, corrected tool names, new skills system, SDK tool name verification results, Pico as a new built-in persona (if implemented). Document the full list of correct MCP and SDK tool names per persona.
 
