@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 22:45 PDT — UX.WORK.LIST: Audit Work Items list view
+
+**Done:** Audited `/items` list view at 1440x900, 1024x768, 768x900, and dark mode. List view is the default. 3 items render grouped by state (Backlog, Decomposition, In Progress) with correct status badges, priority pills, and progress bars. Clicking an item opens detail panel with description, children, comments. Sort dropdown shows 3 options (priority/created/updated). State filter shows all 8 workflow states with colored dots. Responsive: filter bar wraps gracefully at 1024px (2 rows) and 768px (3 rows). Dark mode: good contrast, all elements visible. Filed 1 bug: FX.UX.ITEMS.1 (no empty state when filters match nothing).
+**Files:** `tests/e2e/results/ux-work-list-initial.png`, `tests/e2e/results/ux-work-list-detail.png`, `tests/e2e/results/ux-work-list-sort.png`, `tests/e2e/results/ux-work-list-filter-state.png`, `tests/e2e/results/ux-work-list-empty.png`, `tests/e2e/results/ux-work-list-empty-nodetail.png`, `tests/e2e/results/ux-work-list-1024.png`, `tests/e2e/results/ux-work-list-768.png`, `tests/e2e/results/ux-work-list-dark.png`
+
+---
+
 ## 2026-04-01 22:30 PDT — Review: FX.UX.DASH.3 (approved)
 
 **Reviewed:** Activity items now link to specific work items instead of generic `/items`.

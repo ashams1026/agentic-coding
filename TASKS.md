@@ -53,13 +53,17 @@
 
 ### Work Items (`/items`)
 
-- [ ] **UX.WORK.LIST** — Audit Work Items list view. Open `/items`, verify list view is the default or switch to it. Check: items render with correct status badges, sorting controls work (click each sort option), filter bar filters by status/assignee/priority, empty state shows when filters match nothing. Click an item to open detail panel. Scroll a long list — verify no layout jank. Screenshot each state. File bugs.
+- [review] **UX.WORK.LIST** — Audit Work Items list view. Open `/items`, verify list view is the default or switch to it. Check: items render with correct status badges, sorting controls work (click each sort option), filter bar filters by status/assignee/priority, empty state shows when filters match nothing. Click an item to open detail panel. Scroll a long list — verify no layout jank. Screenshot each state. File bugs.
 
 - [ ] **UX.WORK.BOARD** — Audit Work Items board view. Switch to board/kanban view. Verify: columns render by workflow state, cards show title/status/assignee, drag-and-drop works (attempt to move a card between columns). Check empty columns display correctly. Screenshot. File bugs.
 
 - [ ] **UX.WORK.FLOW** — Audit Work Items flow view. Switch to flow view. Verify: flow diagram renders, nodes and edges are visible and labeled, zoom/pan works if supported. Screenshot at different zoom levels. File bugs.
 
 - [ ] **UX.WORK.CREATE** — Audit Work Item creation. Click the create/add button. Verify: form opens, all fields are present (title, description, status, assignee, priority), validation works (submit empty form), successful creation adds item to the list. File bugs.
+
+### Work Items Bugs
+
+- [ ] **FX.UX.ITEMS.1** — No empty state message when filters match no items. Page `/items`. When filtering by a state with no items (e.g. "Done"), the list area is completely blank — no message like "No items match your filters" or prompt to clear filters. Expected: show a centered empty state with a message and a "Clear filters" button. Screenshot: `tests/e2e/results/ux-work-list-empty-nodetail.png`.
 
 ### Work Item Detail Panel
 
