@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 20:15 PDT — Review: RES.COLLAB.COORD (approved)
+
+**Reviewed:** Multi-agent coordination patterns research.
+- All 5 areas covered: parallel execution (current behavior accurate — sequential per item, parallel across items up to maxConcurrent=3; merge conflict risk matrix; 3 strategies with advisory locking recommended), blocking dependencies (correctly identified edges exist but are NOT enforced — dispatch.ts has no workItemEdges import; proposed getUnresolvedBlockers() + onWorkItemDone() trigger + circular detection), human-in-the-loop (4 intervention points; create_proposal MCP tool design; manual workflow gate type; notification priority matrix), escalation (5 failure scenarios mapped to current vs proposed behavior; EscalationPolicy retry chain; request_help MCP tool; configurable settings), fan-out/fan-in (decompose→execute→aggregate pattern; CompletionGate with checkParentCompletionGate() trigger; 4 partial completion policies; child handoff note aggregation tying to RES.COLLAB.CONTEXT)
+- Source code claims verified: MAX_REJECTIONS=3 (execution-manager.ts:75), MAX_TRANSITIONS_PER_HOUR=10 (:74), LOOP_HISTORY_SIZE=6 (:76), DEFAULT_MAX_CONCURRENT=3 (concurrency.ts:12), edge types at schema.ts:77, no proposal MCP tool in mcp-server.ts
+- Dependency non-enforcement correctly identified as existing bug — edges are purely decorative today
+- Phase ordering well-justified (dependencies first as bug fix, human-in-loop second for production safety, escalation third, fan-out/fan-in last as most complex)
+- 8 cross-references accurate, 5 design decisions well-reasoned
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 20:05 PDT — RES.COLLAB.COORD: Research multi-agent coordination patterns
 
 **Done:** Researched multi-agent coordination patterns. Doc covers all 5 investigation areas: (1) parallel execution — current behavior (sequential per work item, parallel across items up to maxConcurrent=3), merge conflict risk matrix, 3 mitigation strategies (file-level locking recommended for Phase 1, branch-per-agent for Phase 2, sequential fallback), (2) blocking dependencies — audited work_item_edges (blocks/depends_on/related_to types exist but NOT enforced by dispatch or router), proposed `getUnresolvedBlockers()` check in dispatchForState(), `onWorkItemDone()` trigger for unblocking dependents, circular dependency detection, (3) human-in-the-loop — 4 intervention points (proposals, manual workflow gates, quality review, escalation), `create_proposal` MCP tool design, manual transition type for workflow edges, notification integration matrix, (4) escalation — 5 failure scenarios with detection/current/proposed behavior, `EscalationPolicy` with retry chain (same→upgrade model→different persona→human), `request_help` MCP tool, configurable per persona/project, (5) fan-out/fan-in — decompose→parallel execute→aggregate pattern, completion gate with `checkParentCompletionGate()` trigger, 4 partial completion policies (all/majority/any/threshold), child handoff note aggregation. 4-phase implementation plan, 8 cross-references, 5 design decisions.
