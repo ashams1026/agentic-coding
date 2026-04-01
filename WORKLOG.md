@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-03-31 23:05 PDT — FX.PROJ1: Fix stale project ID fallback
+
+**Done:** Updated `use-selected-project.ts` to detect stale project IDs and auto-fallback. Added `useProjects()` to get available projects and `useEffect` that resets to first available project when: (a) no project selected and projects exist, or (b) selected project returns error (404) and projects exist. Added `retry: false` to `useProject` query in `use-projects.ts` so stale IDs fail fast instead of retrying 3 times.
+**Files:** `packages/frontend/src/hooks/use-selected-project.ts`, `packages/frontend/src/hooks/use-projects.ts`
+
+---
+
 ## 2026-03-31 22:50 PDT — Review: SDK.HK.5 (approved)
 
 **Reviewed:** File changes panel UI in `file-changes-panel.tsx` and integration in `terminal-renderer.tsx`.

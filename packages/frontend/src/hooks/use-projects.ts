@@ -15,6 +15,7 @@ export function useProject(id: ProjectId | null) {
     queryKey: queryKeys.project(id!),
     queryFn: () => getProject(id!),
     enabled: !!id,
+    retry: false,
   });
 }
 
