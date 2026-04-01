@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 05:25 PDT — Review: SDK.ST.3 (approved)
+
+**Reviewed:** Agent progress summaries across 6 files.
+- `agentProgressSummaries: true` enables SDK task progress messages
+- `SDKTaskProgressMessage` handling: extracts description, summary, usage stats
+- Dedicated `agent_progress` WS event (not mixed with output chunks) — clean separation
+- Progress bar: emerald with pulsing dot, truncated text, dark mode support
+- Clears on execution completion, not logged to execution logs
+- All shared types updated (event type, interface, union, map, ws-client)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 05:20 PDT — SDK.ST.3: Agent progress summaries
 
 **Done:** Added `agentProgressSummaries: true` to `query()` options. Handles `SDKTaskProgressMessage` (type: "system", subtype: "task_progress") in `mapMessage()` — emits `ProgressEvent` with description, summary, usage stats. New `agent_progress` WS event type for dedicated progress broadcasting. Frontend: `progressSummary` state in terminal renderer, subscribes to `agent_progress` events, shows emerald progress bar below toolbar with pulsing dot and truncated summary text. Clears on execution completion.
