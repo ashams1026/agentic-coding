@@ -132,3 +132,13 @@ Full refresh of all 9 doc files: getting-started, architecture, data-model, work
 - [x] **UX.DASH** — Audit Dashboard page. 7 screenshots, 3 bugs filed (FX.UX.DASH.1-3). *(completed 2026-04-01)*
 - [x] **FX.UX.DASH.1** — Cost Summary widget below fold. Fixed: `lg:grid-cols-2` → `md:grid-cols-2 lg:grid-cols-3` in dashboard.tsx. *(completed 2026-04-01)*
 - [x] **FX.UX.DASH.2** — Stat cards and agent cards not accessible. Fixed: added `role="button"`, `tabIndex={0}`, `onKeyDown`, focus-visible ring. *(completed 2026-04-01)*
+- [x] **FX.UX.DASH.3** — Activity items link to generic `/items`. Fixed: `setSelectedItemId` + `navigate("/items")` pattern. *(completed 2026-04-01)*
+- [x] **UX.WORK.LIST** — Audit Work Items list view. 9 screenshots, 1 bug (FX.UX.ITEMS.1). *(completed 2026-04-01)*
+- [x] **UX.WORK.FLOW** — Audit Work Items flow view. 6 screenshots, 0 bugs. *(completed 2026-04-01)*
+- [x] **UX.WORK.CREATE** — Audit Work Item creation. Quick-add pattern, 0 bugs. *(completed 2026-04-01)*
+- [x] **FX.UX.ITEMS.1** — Empty state for grouped filter results. Fixed: `topLevel.length === 0` check + "Clear filters" button. *(completed 2026-04-01)*
+- [x] **UX.DETAIL** — Audit detail panel. 3 screenshots, 0 bugs. *(completed 2026-04-01)*
+- [x] **UX.AGENT.MAIN** — Audit Agent Monitor main layout. 3 screenshots, 1 bug (FX.UX.AGENT.1). *(completed 2026-04-02)*
+- [x] **UX.AGENT.CONTROLS** — Audit Agent Monitor controls. 2 screenshots, 1 bug (FX.UX.AGENT.2). *(completed 2026-04-02)*
+- [x] **UX.AGENT.HISTORY** — Audit Agent Monitor history. 3 screenshots, 0 bugs. *(completed 2026-04-02)*
+- [x] **UX.ACTIVITY** — Audit Activity Feed. 3 screenshots, 1 bug (FX.UX.ACTIVITY.1). *(completed 2026-04-02)*

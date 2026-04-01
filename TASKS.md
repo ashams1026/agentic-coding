@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-21 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-6, PLUG.1-10, AW.1-2 archived. Sprint 22 partial (UX.DASH, FX.UX.DASH.1-2) archived.
+> Sprints 1-21 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-6, PLUG.1-10, AW.1-2 archived. Sprint 22 partial (UX.DASH-ACTIVITY audits + FX.UX.DASH.1-3 + FX.UX.ITEMS.1) archived.
 
 ---
 
@@ -47,45 +47,15 @@
 
 > Exploratory testing sprint. Each task: start dev servers (ports 3001 + 5173), open the page via chrome-devtools MCP, interact with every feature, screenshot each state, and file bugs as new `FX.UX.*` tasks in TASKS.md. Bugs should include: page, what's broken, expected behavior, and a screenshot path if possible.
 
-### Dashboard Bugs
-
-- [x] **FX.UX.DASH.3** — Activity items all link to generic `/items` instead of specific work item. Page `/`. All Recent Activity events in `recent-activity.tsx` set `targetPath: "/items"` regardless of which work item they relate to. Clicking any event navigates to the work items list page, not the specific work item detail. Expected: link to `/items?selected={workItemId}` or a route that opens the relevant work item's detail panel.
-
 ### Work Items (`/items`)
 
-- [x] **UX.WORK.LIST** — Audit Work Items list view. Open `/items`, verify list view is the default or switch to it. Check: items render with correct status badges, sorting controls work (click each sort option), filter bar filters by status/assignee/priority, empty state shows when filters match nothing. Click an item to open detail panel. Scroll a long list — verify no layout jank. Screenshot each state. File bugs.
-
 - [blocked: Board view component exists (board-view.tsx) but is not exposed in the UI — WorkItemView type is "list" | "flow" only, viewOptions array has no board entry. Cannot audit what users can't access.] **UX.WORK.BOARD** — Audit Work Items board view. Switch to board/kanban view. Verify: columns render by workflow state, cards show title/status/assignee, drag-and-drop works (attempt to move a card between columns). Check empty columns display correctly. Screenshot. File bugs.
-
-- [x] **UX.WORK.FLOW** — Audit Work Items flow view. Switch to flow view. Verify: flow diagram renders, nodes and edges are visible and labeled, zoom/pan works if supported. Screenshot at different zoom levels. File bugs.
-
-- [x] **UX.WORK.CREATE** — Audit Work Item creation. Click the create/add button. Verify: form opens, all fields are present (title, description, status, assignee, priority), validation works (submit empty form), successful creation adds item to the list. File bugs.
-
-### Work Items Bugs
-
-- [x] **FX.UX.ITEMS.1** — No empty state message when filters match no items. Page `/items`. When filtering by a state with no items (e.g. "Done"), the list area is completely blank — no message like "No items match your filters" or prompt to clear filters. Expected: show a centered empty state with a message and a "Clear filters" button. Screenshot: `tests/e2e/results/ux-work-list-empty-nodetail.png`.
-
-### Work Item Detail Panel
-
-- [x] **UX.DETAIL** — Audit detail panel. Open a work item's detail panel. Verify: all sections render (description, child tasks, proposals, comments, execution timeline), each section has correct data or appropriate empty state. Test editing fields (title, description, status). Check comment input and submission. Scroll within the panel if content overflows. Toggle dark mode. Screenshot each section. File bugs.
-
-### Agent Monitor (`/agents`)
-
-- [x] **UX.AGENT.MAIN** — Audit Agent Monitor main layout. Open `/agents`. Verify: layout renders (sidebar + main area), active agent sidebar shows agents or empty state with correct CTA button (should link to `/items`, not storyboard). Test terminal renderer output area. Check split view toggle if present. Screenshot. File bugs.
-
-- [x] **UX.AGENT.CONTROLS** — Audit Agent Monitor controls and panels. Test: agent control bar buttons (pause, resume, cancel), file changes panel renders diffs or empty state, router decision cards display correctly, MCP status panel shows server status, model switcher dropdown works. Verify subagent cards render for nested agents. Screenshot each panel. File bugs.
-
-- [x] **UX.AGENT.HISTORY** — Audit Agent Monitor history view. Navigate to agent history. Verify: past executions list populates, clicking an entry shows execution details, terminal output replays or displays correctly. Check filtering/pagination if present. Screenshot. File bugs.
 
 ### Agent Monitor Bugs
 
 - [ ] **FX.UX.AGENT.1** — "Work Item" and "Parent" links in agent header bar navigate to 404.
 
 - [ ] **FX.UX.AGENT.2** — MCP status panel triggers error toast on 404. Page `/agents`. The `McpStatus` component in `terminal-renderer.tsx` (line 570) fetches `GET /api/executions/:id/mcp/status` which returns 404 in simulated mode, causing an "API request failed" error toast. Expected: suppress the error gracefully when the endpoint is unavailable (e.g. catch 404 and show nothing, or show "MCP: unavailable" without an error toast). Page `/agents`. The header bar links use `/work-items/:id` route (e.g. `/work-items/wi-au01002`) which doesn't exist — the actual route is `/items`. Clicking either link shows "404 Not Found — Unexpected Application Error". Expected: link to `/items` and call `setSelectedItemId(workItemId)` to open the detail panel, matching the pattern used by the command palette and dashboard activity items. Screenshot: `tests/e2e/results/ux-agent-main-workitem-link.png`.
-
-### Activity Feed (`/activity`)
-
-- [x] **UX.ACTIVITY** — Audit Activity Feed page. Open `/activity`. Verify: events render chronologically with timestamps, event types are visually distinct (icons/colors), scrolling loads more events or shows end-of-list. Click an event to navigate to the related entity. Check empty state. Toggle dark mode. Screenshot. File bugs.
 
 ### Activity Feed Bugs
 
