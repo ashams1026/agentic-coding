@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-01 14:15 PDT — Review: DOC.7 (approved)
+
+**Reviewed:** mcp-tools.md source files table fix.
+- Source files: 7→8 + in-process server — correct
+- Rest of doc already current from SDK.FC.7 and SDK.MCP.5
+- No stale tool names found
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 14:10 PDT — DOC.7: Update mcp-tools.md
 
 **Done:** Fixed source files table: "7 tool registrations" → "8 tool registrations + in-process server". The rest of `mcp-tools.md` was already current from prior updates: SDK.FC.7 (rewind_execution tool, tool count, persona access table), SDK.MCP.5 (dynamic management section). No stale tool names found (`transition_state`/`create_tasks` already corrected).
