@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 04:35 PDT — UX.DARK: Comprehensive dark mode audit
+
+**Done:** Switched to dark mode via Settings > Appearance. Visited all 8 views: Dashboard, Work Items (list + detail panel), Agent Monitor, Activity Feed, Persona Manager, Settings, Pico Chat, and Command Palette. Each page screenshotted and inspected for invisible text, low-contrast elements, missing dark backgrounds, broken borders, and white flashes on navigation. All pages render correctly in dark mode — proper dark backgrounds, readable text, colored badges/labels visible, no white flash between navigations. No bugs found.
+**Files:** `TASKS.md`
+**Notes:** 9 screenshots in `tests/e2e/results/ux-dark-*.png` (settings, dashboard, items, agents, activity, personas, pico, cmdpalette, item-detail).
+
+---
+
 ## 2026-04-02 04:15 PDT — UX.CMD: Audit Command Palette
 
 **Done:** Audited command palette (Cmd+K). Overlay opens as dialog with auto-focused search input. Typing filters — "dash" narrows to 2 results, "Settings" to 2 results, gibberish shows "No results found." empty state. Enter on filtered "Settings" navigates to `/settings`. Clicking work item "User authentication with OAuth2" navigates to `/items` with detail panel open. ArrowDown moves highlight with "Enter" badge. Escape closes palette. All 24 registered commands present: 6 navigation + 2 quick actions + 16 work items. Footer shows keyboard hints (↑↓, ↵, esc). No bugs found.
