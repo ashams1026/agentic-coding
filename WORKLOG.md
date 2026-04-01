@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-31 — Review: SDK.FC.6 (approved)
+
+**Reviewed:** File checkpointing e2e test results at `tests/e2e/results/file-checkpointing.md`.
+- 7/17 PASS, 0 FAIL, 10 SKIP — SKIPs justified: all seeded executions lack checkpoints (legacy data)
+- 4 screenshots captured covering: initial page, history table, disabled hover, full-page visual
+- Disabled rewind buttons verified on all 11 rows — correct for null checkpoints
+- API test: POST rewind returns 400 NO_CHECKPOINT — correct
+- BUG-1 (minor) properly documented: Radix tooltip on disabled button, includes fix suggestion
+- Results file well-structured with summary table, per-step verdicts, notes for re-testing
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — SDK.FC.6: Run file checkpointing e2e test
 
 **Done:** Executed the file-checkpointing test plan. 7/17 PASS, 0 FAIL, 10 SKIP. All skips due to no executions having checkpoints (seeded demo data predates the feature). Verified: rewind buttons disabled on all 11 legacy executions, disabled button not clickable, API returns 400 NO_CHECKPOINT, visual layout clean. Found BUG-1 (minor): tooltip doesn't show on disabled rewind button (Radix tooltip + disabled element issue).
