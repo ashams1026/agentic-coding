@@ -70,7 +70,7 @@
 
 > Lower-priority SDK features that become relevant as the product matures.
 
-- [ ] **SDK.FUT.1** — Browser SDK for client-side Pico. Evaluate using `@anthropic-ai/claude-agent-sdk/browser` to run Pico directly in the browser via WebSocket. This would eliminate the backend SSE proxy for chat — messages stream directly from the SDK to the browser. Requires: WebSocket relay server, OAuth token management, CORS configuration. Spike: build a proof-of-concept Pico chat that connects via the browser SDK and compare latency/complexity with the server-side approach.
+- [review] **SDK.FUT.1** — Browser SDK for client-side Pico. Evaluate using `@anthropic-ai/claude-agent-sdk/browser` to run Pico directly in the browser via WebSocket. This would eliminate the backend SSE proxy for chat — messages stream directly from the SDK to the browser. Requires: WebSocket relay server, OAuth token management, CORS configuration. Spike: build a proof-of-concept Pico chat that connects via the browser SDK and compare latency/complexity with the server-side approach.
 
 - [ ] **SDK.FUT.2** — Bridge API for remote agent execution. Evaluate the SDK's `attachBridgeSession()` and `createCodeSession()` for running agents on remote machines or in cloud environments. Use case: offload heavy Engineering persona executions to a cloud VM with more compute. Spike: establish a bridge session from AgentOps backend to a remote Claude Code instance, run a simple task, verify event streaming works end-to-end.
 
