@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 15:00 PDT — Review: SDK.FUT.1 (approved)
+
+**Reviewed:** Browser SDK spike at `docs/spikes/browser-sdk-pico.md`.
+- API documented from actual `browser-sdk.d.ts` types
+- Architecture comparison with clear diagrams
+- Feature parity table (server vs browser query)
+- 4 requirements, complexity estimate, recommendation with revisit criteria
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 14:55 PDT — SDK.FUT.1: Browser SDK spike for Pico
 
 **Done:** Evaluated `@anthropic-ai/claude-agent-sdk/browser` for client-side Pico chat. Browser SDK exists with WebSocket transport, OAuth auth, hooks, MCP server support. Documented in `docs/spikes/browser-sdk-pico.md`. Conclusion: feasible but not recommended now — requires WebSocket relay infrastructure and OAuth flow. Revisit when Claude provides hosted relay or multi-user OAuth is needed.
