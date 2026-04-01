@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-01 13:15 PDT — Review: DOC.3 (approved)
+
+**Reviewed:** Data model updates in `docs/data-model.md`.
+- Table count 9→11, Project/Persona/Execution entities updated with all new fields
+- ChatSession + ChatMessage tables added for Pico
+- Settings typed as `ProjectSettings`/`PersonaSettings` — accurate to code
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 13:10 PDT — DOC.3: Update data-model.md
 
 **Done:** Updated table count 9→11. Project: `settings` typed as `ProjectSettings` with sandbox. Persona: added `skills`, `subagents` fields, updated `settings` to `PersonaSettings` with effort/thinking. Execution: added `checkpointMessageId`, `structuredOutput`, `parentExecutionId`. Added ChatSession and ChatMessage entity tables for Pico.
