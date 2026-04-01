@@ -14,6 +14,7 @@ import {
 } from "./tool-call-display";
 import type { ExecutionId, AgentOutputChunkEvent } from "@agentops/shared";
 import { FileChangesPanel } from "./file-changes-panel";
+import { McpStatus } from "./mcp-status";
 
 // ── Chunk types ────────────────────────────────────────────────
 
@@ -563,6 +564,7 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
               </span>
             </div>
           )}
+          <McpStatus executionId={executionId} isRunning={execution?.status === "running"} />
         </div>
         <Button
           variant="ghost"

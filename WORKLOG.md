@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 08:50 PDT — SDK.MCP.2: MCP server status in agent monitor
+
+**Done:** Created `McpStatus` component — colored dots for each MCP server (green=connected, red=failed, amber=pending, gray=disabled). Polls `GET /api/executions/:id/mcp/status` every 30s during running executions. Tooltip shows server name, status, error message (if failed), tool count. Click failed server to reconnect. Added `getMcpStatus()` and `reconnectMcpServer()` to frontend API client. Integrated into terminal renderer toolbar.
+**Files:** `packages/frontend/src/features/agent-monitor/mcp-status.tsx` (new), `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`, `packages/frontend/src/api/client.ts`
+
+---
+
 ## 2026-04-01 08:40 PDT — Review: SDK.MCP.1 (approved)
 
 **Reviewed:** Runtime MCP management in `claude-executor.ts` and `executions.ts`.

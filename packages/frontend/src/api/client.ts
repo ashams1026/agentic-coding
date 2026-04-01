@@ -286,6 +286,22 @@ export async function rewindExecution(id: ExecutionId, dryRun: boolean): Promise
   return res.data;
 }
 
+export interface McpServerStatusInfo {
+  name: string;
+  status: "connected" | "failed" | "needs-auth" | "pending" | "disabled";
+  error?: string;
+  tools?: Array<{ name: string; description?: string }>;
+}
+
+export async function getMcpStatus(executionId: ExecutionId): Promise<McpServerStatusInfo[]> {
+  const res = await get<{ data: McpServerStatusInfo[] }>(`/api/executions/${executionId}/mcp/status`);
+  return res.data;
+}
+
+export async function reconnectMcpServer(executionId: ExecutionId, serverName: string): Promise<void> {
+  await post(`/api/executions/${executionId}/mcp/reconnect`, { serverName });
+}
+
 // ── Comments ─────────────────────────────────────────────────────
 
 export async function getComments(workItemId: WorkItemId): Promise<Comment[]> {
