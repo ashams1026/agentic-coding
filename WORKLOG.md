@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 07:20 PDT — Review: SDK.SB.2 (approved)
+
+**Reviewed:** Sandbox config in shared types, executor, and settings UI.
+- `SandboxConfig` + `ProjectSettings` types replace `Record<string, unknown>` — backward compatible with index signature
+- Executor reads sandbox config with `??` fallback defaults — clean
+- Security section: enable checkbox, editable domain/path badge lists with add/remove, Enter key support
+- Settings spread on save preserves existing project settings
+- Defaults match SDK.SB.1 values
+- Build passes
+- **Verdict: approved.** 10 [x] tasks — CLEANUP next.
+
+---
+
 ## 2026-04-01 07:15 PDT — SDK.SB.2: Sandbox configuration in project settings
 
 **Done:** Added `SandboxConfig` and `ProjectSettings` types to shared entities (replaces `Record<string, unknown>`). Executor reads sandbox config from `project.settings.sandbox` with fallback defaults. Created `SecuritySection` component: enable/disable checkbox, editable allowed domains list (badge + add/remove), editable deny write paths list. Wired into settings layout as new "Security" section with Shield icon. Project path always allowed for writes.
