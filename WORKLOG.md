@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-03-31 — SDK.FC.4: Add rewind to REVIEW state workflow
+
+**Done:** Added `rewind_execution` MCP tool to the agentops MCP server. The tool calls the existing `POST /api/executions/:id/rewind` endpoint via HTTP (avoids duplicating SDK query/rewind logic). Supports `dryRun` for preview. Updated Code Reviewer persona: added tool to `mcpTools` allowlist in `default-personas.ts`, `seed.ts`, and `seed-demo.ts`. Added "Rewinding files on rejection" section to the reviewer's system prompt with clear guidance on when to rewind (fundamentally wrong implementations) vs when not to (minor issues).
+**Files:** `packages/backend/src/agent/mcp-server.ts`, `packages/backend/src/db/default-personas.ts`, `packages/backend/src/db/seed.ts`, `packages/backend/src/db/seed-demo.ts`
+**Notes:** The tool calls `http://localhost:PORT/api/executions/:id/rewind` — requires the backend server to be running. PORT defaults to 3001. Existing DB personas won't pick up the new mcpTools until re-seeded.
+
+---
+
 ## 2026-03-31 — Review: FX.PICO5 (approved)
 
 **Reviewed:** Scroll overflow fix in `packages/frontend/src/features/pico/chat-panel.tsx`.

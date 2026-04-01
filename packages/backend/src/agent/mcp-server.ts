@@ -46,6 +46,7 @@ export const TOOL_NAMES = [
   "get_context",
   "flag_blocked",
   "request_review",
+  "rewind_execution",
 ] as const;
 
 export type ToolName = (typeof TOOL_NAMES)[number];
@@ -618,6 +619,51 @@ export function createMcpServer(context: McpContext): McpServer {
       } catch (err) {
         return {
           content: [{ type: "text" as const, text: JSON.stringify({ error: `Failed to request review: ${err instanceof Error ? err.message : String(err)}` }) }],
+          isError: true,
+        };
+      }
+    },
+  );
+
+  // ── rewind_execution ────────────────────────────────────────
+  server.registerTool(
+    "rewind_execution",
+    {
+      description:
+        "Rewind file changes from a specific execution back to their pre-execution state. Use this after rejecting a review to restore files before the Engineer re-attempts. Calls the rewind API internally.",
+      inputSchema: z.object({
+        executionId: z.string().describe("The execution ID whose file changes should be reverted"),
+        dryRun: z
+          .boolean()
+          .default(false)
+          .describe("If true, returns the list of files that would be reverted without actually reverting them"),
+      }),
+    },
+    async ({ executionId, dryRun }) => {
+      try {
+        const port = process.env["PORT"] ?? "3001";
+        const res = await fetch(`http://localhost:${port}/api/executions/${encodeURIComponent(executionId)}/rewind`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dryRun }),
+        });
+
+        const body = await res.json() as Record<string, unknown>;
+
+        if (!res.ok) {
+          const error = body.error as Record<string, string> | undefined;
+          return {
+            content: [{ type: "text" as const, text: JSON.stringify({ error: error?.message ?? `Rewind failed (HTTP ${res.status})` }) }],
+            isError: true,
+          };
+        }
+
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify(body.data ?? body) }],
+        };
+      } catch (err) {
+        return {
+          content: [{ type: "text" as const, text: JSON.stringify({ error: `Failed to rewind execution: ${err instanceof Error ? err.message : String(err)}` }) }],
           isError: true,
         };
       }

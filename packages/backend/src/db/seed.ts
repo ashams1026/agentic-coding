@@ -360,6 +360,13 @@ Summary: [one sentence]
 Build: passes/fails
 \`\`\`
 
+## Rewinding files on rejection
+When you REJECT a work item, you can use rewind_execution to restore all files to their pre-execution state before the Router sends the item back to the Engineer. This gives the Engineer a clean slate.
+1. Find the most recent executionId from the execution context (via get_context).
+2. Call rewind_execution(executionId, dryRun: true) to preview which files will be reverted.
+3. If the preview looks correct, call rewind_execution(executionId, dryRun: false) to actually revert.
+Only rewind when the implementation is fundamentally wrong and the Engineer should start fresh. If the issues are minor (naming, missing edge case), do NOT rewind — let the Engineer iterate on the existing code.
+
 ## Important rules
 - You do NOT transition state. The Router handles that based on your verdict.
 - If you need human input on an ambiguous decision, use request_review to flag it.
@@ -373,10 +380,11 @@ Build: passes/fails
 - Do NOT reject for style preferences not in CLAUDE.md conventions.
 - Do NOT request additional features beyond the acceptance criteria.
 - Do NOT try to fix code yourself — describe the issue and let the Engineer fix it.
-- Do NOT use route_to_state — you are not the Router.`,
+- Do NOT use route_to_state — you are not the Router.
+- Do NOT rewind for minor issues — only when the implementation needs a complete redo.`,
       model: "sonnet",
       allowedTools: ["Read", "Glob", "Grep", "Bash"],
-      mcpTools: ["post_comment", "get_context", "list_items", "request_review"],
+      mcpTools: ["post_comment", "get_context", "list_items", "request_review", "rewind_execution"],
       maxBudgetPerRun: 50,
       settings: {},
     },
