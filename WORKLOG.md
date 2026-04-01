@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 06:15 PDT — Review: FX.UX.PERSONA.1 (approved)
+
+**Reviewed:** Persona cards keyboard accessibility fix.
+- `role="button"`, `tabIndex={0}`, `onKeyDown` (Enter/Space with preventDefault), focus-visible ring classes all present ✓
+- `CreateCard` already a native `<button>` — correctly left unchanged ✓
+- Visual verification: Tab focuses cards, Enter opens detail panel ✓
+- Build passes clean ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 06:10 PDT — FX.UX.PERSONA.1: Persona cards keyboard accessibility
 
 **Done:** Added `role="button"`, `tabIndex={0}`, `onKeyDown` (Enter/Space), and `focus-visible:ring-2` classes to `PersonaCard` div in `persona-list.tsx`. Cards are now keyboard-navigable via Tab with visible focus ring and activatable via Enter/Space. `CreateCard` was already a `<button>` element — no change needed.
