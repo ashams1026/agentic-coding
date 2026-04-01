@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 07:15 PDT — SDK.SB.2: Sandbox configuration in project settings
+
+**Done:** Added `SandboxConfig` and `ProjectSettings` types to shared entities (replaces `Record<string, unknown>`). Executor reads sandbox config from `project.settings.sandbox` with fallback defaults. Created `SecuritySection` component: enable/disable checkbox, editable allowed domains list (badge + add/remove), editable deny write paths list. Wired into settings layout as new "Security" section with Shield icon. Project path always allowed for writes.
+**Files:** `packages/shared/src/entities.ts`, `packages/backend/src/agent/claude-executor.ts`, `packages/frontend/src/features/settings/security-section.tsx` (new), `packages/frontend/src/features/settings/settings-layout.tsx`
+
+---
+
 ## 2026-04-01 07:00 PDT — Review: SDK.SB.1 (approved)
 
 **Reviewed:** SDK native sandbox in `claude-executor.ts`.

@@ -507,14 +507,14 @@ export class ClaudeExecutor implements AgentExecutor {
           allowDangerouslySkipPermissions: true,
           enableFileCheckpointing: true,
           sandbox: {
-            enabled: true,
+            enabled: project.settings.sandbox?.enabled !== false,
             autoAllowBashIfSandboxed: true,
             filesystem: {
-              allowWrite: [project.path],
-              denyWrite: ["/", "/etc", "/usr", "/var"],
+              allowWrite: project.settings.sandbox?.allowedWritePaths ?? [project.path],
+              denyWrite: project.settings.sandbox?.denyWritePaths ?? ["/", "/etc", "/usr", "/var"],
             },
             network: {
-              allowedDomains: [
+              allowedDomains: project.settings.sandbox?.allowedDomains ?? [
                 "api.anthropic.com",
                 "registry.npmjs.org",
                 "github.com",

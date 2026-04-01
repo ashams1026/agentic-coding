@@ -31,11 +31,28 @@ export type WorkItemEdgeType = "blocks" | "depends_on" | "related_to";
 
 // ── Entities ───────────────────────────────────────────────────────
 
+export interface SandboxConfig {
+  enabled?: boolean;
+  allowedDomains?: string[];
+  allowedWritePaths?: string[];
+  denyWritePaths?: string[];
+}
+
+export interface ProjectSettings {
+  maxConcurrent?: number;
+  monthCap?: number;
+  autoRouting?: boolean;
+  description?: string;
+  patterns?: string;
+  sandbox?: SandboxConfig;
+  [key: string]: unknown;
+}
+
 export interface Project {
   id: ProjectId;
   name: string;
   path: string;
-  settings: Record<string, unknown>;
+  settings: ProjectSettings;
   createdAt: string;
 }
 
