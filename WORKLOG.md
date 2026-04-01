@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-31 22:25 PDT — Review: SDK.HK.4 (approved)
+
+**Reviewed:** FileChanged hook and `file_changed` WS event type across shared, backend, frontend.
+- `FileChangedEvent` added to all four shared type locations (WsEventType, interface, WsEvent union, WsEventMap)
+- Hook maps SDK events (`add`/`change`/`unlink`) to user-friendly types via `FILE_EVENT_MAP` with safe fallback
+- Frontend `ws-client.ts` listener initialized to satisfy exhaustive type
+- UI work (badge/counter) correctly deferred to SDK.HK.5
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 22:15 PDT — SDK.HK.4: FileChanged hook for live file tracking
 
 **Done:** Added `FileChanged` SDK hook that broadcasts `file_changed` WS events when agents modify files. New `FileChangedEvent` type in `packages/shared/src/ws-events.ts` with `{ executionId, filePath, changeType: "created"|"modified"|"deleted" }`. Hook maps SDK's `event` field (`add`/`change`/`unlink`) to user-friendly change types. Added `file_changed` to `WsEventType`, `WsEvent` union, `WsEventMap`, and frontend `ws-client.ts` listener initialization.
