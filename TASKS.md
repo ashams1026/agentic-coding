@@ -13,7 +13,7 @@
 
 > Blocked and remaining tasks.
 
-- [review] **FX.PROJ1** — Fix stale project ID causing Pico 500 error. The `selectedProjectId` in the Zustand UI store is persisted to localStorage. If the dev DB is reset or the project is deleted, the stale ID remains and causes FK constraint failures when Pico tries to create a chat session (`POST /api/chat/sessions` → `FOREIGN KEY constraint failed`). Fix: in `packages/frontend/src/hooks/use-selected-project.ts`, detect when `useProject()` returns a 404/error for the stored ID, and fall back to the first available project from `useProjects()`. Also add `retry: false` to the `useProject` query so it fails fast instead of retrying 3 times.
+- [x] **FX.PROJ1** — Fix stale project ID causing Pico 500 error. The `selectedProjectId` in the Zustand UI store is persisted to localStorage. If the dev DB is reset or the project is deleted, the stale ID remains and causes FK constraint failures when Pico tries to create a chat session (`POST /api/chat/sessions` → `FOREIGN KEY constraint failed`). Fix: in `packages/frontend/src/hooks/use-selected-project.ts`, detect when `useProject()` returns a 404/error for the stored ID, and fall back to the first available project from `useProjects()`. Also add `retry: false` to the `useProject` query so it fails fast instead of retrying 3 times.
 
 ### SDK-Native Skills & Tool Discovery
 

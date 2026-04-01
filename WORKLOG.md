@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-31 23:10 PDT — Review: FX.PROJ1 (approved)
+
+**Reviewed:** Stale project ID fallback in `use-selected-project.ts` and `use-projects.ts`.
+- `retry: false` on `useProject` — fails fast on 404 instead of 3 retries
+- `useEffect` detects `isError` + auto-selects first available project — no infinite loop risk
+- Also handles null `selectedProjectId` (first-load with empty store) — auto-selects
+- Zustand `setSelectedProjectId` persists fix to localStorage — durable across reloads
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 23:05 PDT — FX.PROJ1: Fix stale project ID fallback
 
 **Done:** Updated `use-selected-project.ts` to detect stale project IDs and auto-fallback. Added `useProjects()` to get available projects and `useEffect` that resets to first available project when: (a) no project selected and projects exist, or (b) selected project returns error (404) and projects exist. Added `retry: false` to `useProject` query in `use-projects.ts` so stale IDs fail fast instead of retrying 3 times.
