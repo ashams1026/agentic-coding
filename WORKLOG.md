@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 02:40 PDT — UX.PERSONA.TEST: Audit Persona Manager test run and creation
+
+**Done:** Audited persona creation, deletion, validation, and test-run accessibility. Create: clicking "Create new persona" creates "New Persona" with Sonnet/3 tools defaults, opens detail panel — works correctly. Delete: confirmation dialog shows, persona removed from grid — but leaves detail panel stuck on "Loading..." with 404 error toast (bug filed as FX.UX.PERSONA.3). Validation: code has `disabled={!name.trim()}` on Save button — present. Test-run: `TestRunPanel` exists in `persona-editor.tsx` but page uses `PersonaDetailPanel` — feature not accessible (filed as FX.UX.PERSONA.4 blocked).
+**Files:** `TASKS.md` (2 new bugs filed: FX.UX.PERSONA.3, FX.UX.PERSONA.4)
+**Notes:** Screenshots in `tests/e2e/results/ux-persona-*.png`.
+
+---
+
 ## 2026-04-02 02:25 PDT — Review: UX.PERSONA.LIST (approved)
 
 **Reviewed:** Persona Manager list and editor audit.

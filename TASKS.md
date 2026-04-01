@@ -65,7 +65,7 @@
 
 - [x] **UX.PERSONA.LIST** — Audit Persona Manager list and editor. Open `/personas`. Verify: persona list renders with names and avatars, clicking a persona opens the detail/edit panel. Check: system prompt editor loads and is editable, tool configuration checkboxes/multi-select work, skill browser shows SDK skills with search, subagent browser displays available agents. Screenshot each section. File bugs.
 
-- [ ] **UX.PERSONA.TEST** — Audit Persona Manager test run and creation. Test the test-run panel: submit a prompt and verify output area shows results or loading state. Test creating a new persona: fill all fields, save, verify it appears in the list. Test deleting a persona. Check validation (empty name, missing required fields). Screenshot. File bugs.
+- [review] **UX.PERSONA.TEST** — Audit Persona Manager test run and creation. Test the test-run panel: submit a prompt and verify output area shows results or loading state. Test creating a new persona: fill all fields, save, verify it appears in the list. Test deleting a persona. Check validation (empty name, missing required fields). Screenshot. File bugs.
 
 ### Settings (`/settings`)
 
@@ -94,6 +94,10 @@
 - [ ] **FX.UX.PERSONA.1** — Persona cards lack keyboard accessibility. In `packages/frontend/src/features/persona-manager/persona-list.tsx` (~line 98): `PersonaCard` uses `<div onClick={onSelect}>` without `role="button"`, `tabIndex={0}`, or `onKeyDown` handler. Cards are not keyboard-navigable. Same pattern as FX.UX.DASH.2 (fixed for dashboard StatCards). Fix: add `role="button"`, `tabIndex={0}`, `onKeyDown` (Enter/Space), and `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2` class. Also apply to `CreateCard` component (~line 182).
 
 - [ ] **FX.UX.PERSONA.2** — Built-in persona label mismatch between list and detail panel. Page `/personas`. `PersonaList` (persona-list.tsx line 291) uses `BUILT_IN_IDS.has(p.id)` to show "Built-in" badge, but `PersonaDetailPanel` (persona-detail-panel.tsx line 212) uses `persona.settings?.isSystem === true`. Result: Engineer shows "Built-in" badge in the card grid but "Custom persona" in the detail panel header. Fix: use the same `BUILT_IN_IDS` set in both components, or ensure mock data sets `settings.isSystem = true` for all built-in personas. Screenshots: `tests/e2e/results/ux-persona-list-light.png`, `tests/e2e/results/ux-persona-detail-engineer.png`.
+
+- [ ] **FX.UX.PERSONA.3** — Delete selected persona causes 404 error toast. Page `/personas`. After deleting a persona that is currently selected in the detail panel, the detail panel still tries to fetch the deleted persona's data, resulting in an "API request failed" error toast and a stuck "Loading..." state. Root cause: `handleDeleteConfirm` in `persona-list.tsx` (~line 247) calls `setDeleteTarget(null)` on success but does NOT clear the parent's `selectedId`. Fix: accept an `onDeselect` callback prop (or extend `onSelect` to accept `null`) and call it when the deleted persona matches `selectedId`. Screenshot: `tests/e2e/results/ux-persona-after-delete.png`.
+
+- [blocked: TestRunPanel component exists in persona-editor.tsx but PersonaManagerPage uses PersonaDetailPanel instead. The test-run feature is not accessible from the UI — no route or button leads to persona-editor.tsx. Cannot audit what users can't reach.] **FX.UX.PERSONA.4** — Wire TestRunPanel into Persona Manager UI. The `TestRunPanel` component (`packages/frontend/src/features/persona-manager/test-run-panel.tsx`) exists and is imported in `persona-editor.tsx`, but the page (`pages/persona-manager.tsx` line 38) uses `PersonaDetailPanel` which does not include it. Users cannot test-run a persona. Fix: either add a collapsible TestRunPanel to `PersonaDetailPanel` (at the bottom of the read-only view), or replace `PersonaDetailPanel` with `PersonaEditor` in the page layout.
 
 ---
 
