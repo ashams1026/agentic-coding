@@ -28,3 +28,16 @@ export {
 } from "./sandbox.js";
 
 export type { ValidationResult } from "./sandbox.js";
+
+export type {
+  WorkItemRepository,
+  WorkItemRow,
+  ExecutionRepository,
+  PersonaRepository,
+  PersonaRow,
+  CommentRepository,
+  ProjectRepository,
+  ProjectRow,
+  WorkItemEdgeRepository,
+  Repositories,
+} from "./repositories.js";

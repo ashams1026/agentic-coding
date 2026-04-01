@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 17:45 PDT — PLUG.3b: Repository interfaces + Drizzle implementations
+
+**Done:** Defined 6 repository interfaces in `@agentops/core/src/repositories.ts`: WorkItemRepository, ExecutionRepository, PersonaRepository, CommentRepository, ProjectRepository, WorkItemEdgeRepository + `Repositories` aggregate type. Created Drizzle implementations in `packages/backend/src/db/repositories.ts` with `createDrizzleRepositories()` factory. Interfaces designed from actual DB query analysis across 5 agent modules (execution-manager, dispatch, router, coordination, mcp-server).
+**Files:** `packages/core/src/repositories.ts` (new), `packages/core/src/index.ts`, `packages/backend/src/db/repositories.ts` (new)
+
+---
+
 ## 2026-04-01 17:30 PDT — Review: PLUG.3a (approved)
 
 **Reviewed:** New `@agentops/core` package at `packages/core/`.
