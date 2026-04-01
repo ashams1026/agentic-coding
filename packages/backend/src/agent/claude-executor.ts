@@ -4,7 +4,7 @@
  */
 
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import type { SDKMessage, AgentDefinition, HookCallback, PreToolUseHookInput, PostToolUseHookInput, PostToolUseFailureHookInput } from "@anthropic-ai/claude-agent-sdk";
+import type { SDKMessage, AgentDefinition, HookCallback, PreToolUseHookInput, PostToolUseHookInput, PostToolUseFailureHookInput, SessionStartHookInput, SessionEndHookInput } from "@anthropic-ai/claude-agent-sdk";
 import type {
   AgentExecutor,
   AgentTask,
@@ -14,7 +14,9 @@ import type {
 import type { Persona, Project } from "@agentops/shared";
 import { loadConfig } from "../config.js";
 import { validateCommand, buildSandboxPrompt } from "./sandbox.js";
-import { auditToolUse } from "../audit.js";
+import { auditToolUse, auditSessionStart, auditSessionEnd } from "../audit.js";
+import { broadcast } from "../ws.js";
+import type { ExecutionId } from "@agentops/shared";
 
 // ── System prompt assembly ────────────────────────────────────────
 
@@ -241,6 +243,57 @@ function buildAuditHooks(executionId: string): {
   return { preToolUse, postToolUse, postToolUseFailure };
 }
 
+// ── Session lifecycle hooks ──────────────────────────────────────
+
+function buildSessionHooks(ctx: {
+  executionId: string;
+  personaName: string;
+  personaId: string;
+  model: string;
+  workItemId: string;
+}): {
+  sessionStart: HookCallback;
+  sessionEnd: HookCallback;
+} {
+  let sessionStartTime = 0;
+
+  const sessionStart: HookCallback = async (input, _toolUseID, _options) => {
+    sessionStartTime = Date.now();
+    const startInput = input as SessionStartHookInput;
+
+    auditSessionStart({
+      executionId: ctx.executionId,
+      personaName: ctx.personaName,
+      model: startInput.model ?? ctx.model,
+      workItemId: ctx.workItemId,
+    });
+
+    broadcast({
+      type: "execution_update",
+      executionId: ctx.executionId as ExecutionId,
+      status: "running",
+      timestamp: new Date().toISOString(),
+    });
+
+    return {};
+  };
+
+  const sessionEnd: HookCallback = async (input, _toolUseID, _options) => {
+    const endInput = input as SessionEndHookInput;
+    const durationMs = sessionStartTime > 0 ? Date.now() - sessionStartTime : 0;
+
+    auditSessionEnd({
+      executionId: ctx.executionId,
+      reason: endInput.reason,
+      durationMs,
+    });
+
+    return {};
+  };
+
+  return { sessionStart, sessionEnd };
+}
+
 // ── Executor ──────────────────────────────────────────────────────
 
 export class ClaudeExecutor implements AgentExecutor {
@@ -298,6 +351,13 @@ export class ClaudeExecutor implements AgentExecutor {
       };
 
       const auditHooks = buildAuditHooks(options.executionId);
+      const sessionHooks = buildSessionHooks({
+        executionId: options.executionId,
+        personaName: persona.name,
+        personaId: persona.id,
+        model: resolveModel(options.model),
+        workItemId: task.workItemId,
+      });
 
       const q = query({
         prompt,
@@ -317,6 +377,8 @@ export class ClaudeExecutor implements AgentExecutor {
             ],
             PostToolUse: [{ hooks: [auditHooks.postToolUse] }],
             PostToolUseFailure: [{ hooks: [auditHooks.postToolUseFailure] }],
+            SessionStart: [{ hooks: [sessionHooks.sessionStart] }],
+            SessionEnd: [{ hooks: [sessionHooks.sessionEnd] }],
           },
           mcpServers: {
             agentops: {

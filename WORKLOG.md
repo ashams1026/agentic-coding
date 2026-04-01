@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-03-31 21:50 PDT — SDK.HK.3: SessionStart/SessionEnd hooks
+
+**Done:** Added session lifecycle hooks for execution audit trail and real-time updates. Created `auditSessionStart()` (logs persona, model, workItemId) and `auditSessionEnd()` (logs reason, durationMs) in `audit.ts`. Added `buildSessionHooks()` factory in `claude-executor.ts` — SessionStart records start time + audit logs + broadcasts `execution_update` (status: "running") WS event; SessionEnd computes duration from start + audit logs. Duration tracked via closure. Existing `agent_started`/`agent_completed` broadcasts in execution-manager preserved (they carry different payload data).
+**Files:** `packages/backend/src/agent/claude-executor.ts`, `packages/backend/src/audit.ts`
+
+---
+
 ## 2026-03-31 21:30 PDT — Review: SDK.HK.2 (approved)
 
 **Reviewed:** PostToolUse audit logging hook across `claude-executor.ts`, `audit.ts`, `types.ts`, `execution-manager.ts`.

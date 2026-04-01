@@ -111,6 +111,34 @@ export function auditToolUse(opts: {
   });
 }
 
+export function auditSessionStart(opts: {
+  executionId: string;
+  personaName: string;
+  model: string;
+  workItemId: string;
+}): void {
+  auditLogger.info({
+    action: "session_start",
+    executionId: opts.executionId,
+    actor: opts.personaName,
+    model: opts.model,
+    workItemId: opts.workItemId,
+  });
+}
+
+export function auditSessionEnd(opts: {
+  executionId: string;
+  reason: string;
+  durationMs: number;
+}): void {
+  auditLogger.info({
+    action: "session_end",
+    executionId: opts.executionId,
+    reason: opts.reason,
+    durationMs: opts.durationMs,
+  });
+}
+
 // ── Query audit log ─────────────────────────────────────────────
 
 export interface AuditEntry {
