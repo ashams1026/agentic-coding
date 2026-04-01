@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 02:50 PDT — Review: SDK.SA.5 (approved)
+
+**Reviewed:** Subagent nesting e2e test results at `tests/e2e/results/subagent-nesting.md`.
+- 1/12 PASS, 0 FAIL, 11 SKIP — justified: 0 executions in current project (DB reset)
+- Empty state renders correctly ("No execution history")
+- Re-testing notes actionable with 4 steps
+- Component correctness verified via SDK.SA.3 code review
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 02:45 PDT — SDK.SA.5: Run subagent nesting e2e test
 
 **Done:** Executed SDK.SA.4 test plan. 1/12 PASS, 0 FAIL, 11 SKIP. Current project has 0 executions (DB reset removed demo data). History tab empty state renders correctly. All nested card steps SKIP — no parent-child execution data exists. 2 screenshots captured.

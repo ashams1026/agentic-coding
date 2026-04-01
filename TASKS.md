@@ -39,7 +39,7 @@
 
 - [x] **SDK.SA.4** — E2E test plan: subagent nesting. Create `tests/e2e/plans/subagent-nesting.md`: verify nested subagent cards in agent monitor, tree connector rendering, expand/collapse, cost rollup.
 
-- [review] **SDK.SA.5** — Run subagent nesting e2e test. Execute SDK.SA.4. Record results with screenshots of nested view.
+- [x] **SDK.SA.5** — Run subagent nesting e2e test. Execute SDK.SA.4. Record results with screenshots of nested view.
 
 - [ ] **SDK.SA.6** — Update `docs/personas.md` and `docs/architecture.md` with subagent system. Document: how personas map to AgentDefinitions, subagent invocation flow, cost tracking, when to use subagents vs. state transitions.
 
