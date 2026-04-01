@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 21:30 PDT — RES.ROLLBACK: Research rollback UX and implementation
+
+**Done:** Researched rollback UX and implementation design. Doc covers all 6 investigation areas: (1) rollback scope — per-execution (current, sufficient for Phase 1), per-message (Phase 2, requires capturing all assistant message IDs), per-tool-call (not recommended — SDK doesn't support, git is better); (2) UX — 4-surface analysis (Agent Monitor history P0 exists, execution detail panel P1, work item timeline P2, activity feed P3); enhanced confirmation dialog with time-elapsed indicator + conflict warnings + per-file diffs; (3) partial rollback — SDK is all-or-nothing; 3 approaches compared (git-based selective revert, pre-rewind snapshot recommended for Phase 3, SDK feature request); checkbox per file in dialog; (4) safety — 2-tier conflict detection (mtime comparison + execution history cross-reference); warning-only approach (never block); conflict UI wireframe showing which files modified and by whom; (5) git integration — 4 options compared (working tree only, auto-commit, staged changes, user choice); recommended: opt-in git commit creation (default on) with auto-generated message; (6) SDK limitations — 9-feature audit table; 5 custom implementations needed (conflict detection, git commits, per-file diffs, multiple checkpoints, partial rollback); checkpoint storage analysis (~5MB/day at 100 executions, not a near-term concern). 3-phase implementation plan, 6 cross-references, 5 design decisions.
+**Files:** `docs/proposals/rollback/design.md` (new)
+
+---
+
 ## 2026-04-02 21:15 PDT — Review: RES.SCHED.INFRA (approved)
 
 **Reviewed:** Scheduling infrastructure and backend design research.
