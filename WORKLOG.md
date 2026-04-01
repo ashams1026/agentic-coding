@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 22:30 PDT — RES.ANALYTICS.METRICS: Research metrics collection
+
+**Done:** Researched agent analytics metrics collection and storage. Doc covers all 5 investigation areas: (1) per-execution metrics — audited executions table (10 existing columns), identified 8 missing metrics (input/output/cache tokens, model, num_turns, tool_call_count, files_modified_count, workflow_state), mapped SDK result message fields showing 4 token fields not captured at claude-executor.ts:180-181, recommended extending executions table with 8 new columns; (2) per-persona metrics — 7 derived metrics via SQL GROUP BY personaId, persona leaderboard table design (runs, success rate, avg cost, avg duration, total cost); (3) per-project metrics — 5 metrics via join through workItems.projectId, backlog burn-down deferred to Phase 2 (requires snapshots or event replay); (4) per-workflow metrics — workflow step timing via paired state_transition audit entries, bottleneck identification with rejection rate per step, recommended adding `workflow_state` column to executions for per-state analytics; (5) collection strategy — 3 options compared (query-time/rollup tables/hybrid), SQLite performance analysis (<10ms at 1K rows, ~500ms at 100K), estimated 3.6K-18K executions/year for typical instance, recommended hybrid (Phase 1 query-time, Phase 2 rollup). Also: audit log DB migration plan, 7 SQL indexes for common query patterns, 3-phase implementation plan.
+**Files:** `docs/proposals/analytics/metrics.md` (new)
+
+---
+
 ## 2026-04-02 22:15 PDT — Review: RES.TEMPLATES (approved)
 
 **Reviewed:** Templates and presets system research.
