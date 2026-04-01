@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 19:10 PDT — Review: PLUG.6 (approved)
+
+**Reviewed:** Example custom executor at `examples/custom-executor/`.
+- EchoExecutor implements full AgentExecutor contract (thinking → text → result)
+- setup.ts shows registry.register pattern
+- README: 4-step guide, code snippets, event types table, runtime switching
+- Imports from @agentops/core and @agentops/shared — correct
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 19:05 PDT — PLUG.6: Example custom executor template
 
 **Done:** Created `examples/custom-executor/` with 3 files: `echo-executor.ts` (trivial AgentExecutor that echoes task description as text events), `setup.ts` (example composition root showing registry.register), `README.md` (step-by-step guide: implement interface, register, wire, select at runtime, event types table).
