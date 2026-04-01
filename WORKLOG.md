@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 23:00 PDT — RES.ANALYTICS.UX: Research analytics dashboard UX
+
+**Done:** Researched analytics dashboard UX design. Doc covers all 5 investigation areas: (1) where analytics live — 4 options compared (dedicated page/embedded/settings tab/hybrid), audited 4 existing surfaces (dashboard stat cards at dashboard.tsx:68-97, cost widget with Recharts AreaChart in cost-summary.tsx, agent-history stats bar at :143-172, settings costs with BarChart in costs-section.tsx), recommended hybrid — dedicated /analytics page + dashboard link, new nav item between Activity Feed and Chat; (2) time range controls — 5 presets (24h/7d/30d/90d/custom), comparison mode (vs previous period with dashed overlay), URL query params for shareability, backend endpoint extension needed; (3) visualizations — 7 chart types (summary cards with deltas, cost line chart, outcomes stacked bar, cost-by-persona horizontal bar, persona leaderboard table, activity heatmap via CSS Grid, workflow bottlenecks bar), full-page wireframe, each chart with data source API endpoint, Recharts for all except custom heatmap; (4) drill-down — click targets mapped to actions (7 interactions), execution list modal design, filter chips for persona/state, "View Detail" to Agent Monitor; (5) export — CSV with column spec, JSON alternative, dashboard snapshot deferred to Phase 3. Also: responsive breakpoints (3 tiers), 3-phase implementation plan, 6 cross-references, 5 design decisions.
+**Files:** `docs/proposals/analytics/ux-design.md` (new)
+
+---
+
 ## 2026-04-02 22:45 PDT — Review: RES.ANALYTICS.METRICS (approved)
 
 **Reviewed:** Agent analytics metrics collection and storage research.
