@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 03:05 PDT — Review: SDK.SA.6 (approved)
+
+**Reviewed:** Subagent system documentation in `docs/architecture.md` and `docs/personas.md`.
+- architecture.md: AgentDefinition mapping table, invocation flow diagram, tracking/cost, subagent vs state transition comparison
+- personas.md: how it works, Engineer→Code Reviewer example, configuration note, tracking bullets
+- All 4 task requirements covered: mapping, flow, cost, when-to-use guidance
+- Accurate to implementation (30/15 turns, buildSystemPrompt for primary)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 03:00 PDT — SDK.SA.6: Update docs with subagent system
 
 **Done:** Added "Subagent System" section to `docs/architecture.md`: persona→AgentDefinition mapping table, invocation flow diagram, tracking/cost notes, subagents vs state transitions comparison table. Added "Personas as Subagents" section to `docs/personas.md`: how it works, example (Engineer→Code Reviewer), configuration, tracking. All four task requirements covered.
