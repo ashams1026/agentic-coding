@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 20:15 PDT — Review: PLUG.10 (approved)
+
+**Reviewed:** E2E test execution results at `tests/e2e/results/executor-switching.md`.
+- 12/14 PASS, 0 FAIL, 2 SKIP — all core functionality verified
+- Toggle switches modes, API reflects, badge appears/disappears, invalid mode rejected
+- 7 screenshots confirm visual quality (aligned toggles, distinct states, readable badge)
+- SKIPs justified: endpoint naming correction + poll timing (cosmetic)
+- **Verdict: approved.** Pluggable Executor Architecture backlog complete (PLUG.6-10 done, PLUG.3c/3d blocked).
+
+---
+
 ## 2026-04-01 20:10 PDT — PLUG.10: Execute executor switching e2e test
 
 **Done:** Ran PLUG.9 test plan against live dev servers. 12/14 PASS, 0 FAIL, 2 SKIP. All core functionality verified: toggle switches modes, API reflects changes, status bar badge appears/disappears, invalid mode rejected with 400. Two notes: test plan referenced `/health` but `executor` field is on `/api/health`; status bar "Simulated" badge requires health poll cycle (cosmetic delay). 7 screenshots captured.
