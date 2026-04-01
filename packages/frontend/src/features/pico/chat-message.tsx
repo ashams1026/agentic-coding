@@ -92,9 +92,10 @@ export const MOCK_MESSAGES: PicoChatMessage[] = [
 interface ChatMessageProps {
   message: PicoChatMessage;
   showAvatar: boolean; // false when grouped with previous same-role message
+  compact?: boolean; // true in mini panel, false in full-page view
 }
 
-export function ChatMessage({ message, showAvatar }: ChatMessageProps) {
+export function ChatMessage({ message, showAvatar, compact = true }: ChatMessageProps) {
   const isUser = message.role === "user";
 
   return (
@@ -133,7 +134,7 @@ export function ChatMessage({ message, showAvatar }: ChatMessageProps) {
         ) : (
           <div className="space-y-2">
             {message.content.map((block, i) => (
-              <ContentBlockRenderer key={i} block={block} />
+              <ContentBlockRenderer key={i} block={block} compact={compact} />
             ))}
           </div>
         )}
@@ -155,14 +156,18 @@ export function ChatMessage({ message, showAvatar }: ChatMessageProps) {
 
 // ── Content block renderer ────────────────────────────────────────
 
-function ContentBlockRenderer({ block }: { block: ContentBlock }) {
+function ContentBlockRenderer({ block, compact }: { block: ContentBlock; compact?: boolean }) {
   switch (block.type) {
     case "text":
       return <PicoMarkdown text={block.text} />;
     case "thinking":
-      return <ThinkingBlock text={block.text} />;
+      return compact ? <CompactThinking /> : <ThinkingBlock text={block.text} />;
     case "tool_use":
-      return <ToolCallCard {...block} />;
+      return compact ? (
+        <CompactToolCall toolName={block.toolName} summary={block.summary} status={block.status} />
+      ) : (
+        <ToolCallCard {...block} />
+      );
   }
 }
 
@@ -200,7 +205,7 @@ function ThinkingBlock({ text }: { text: string }) {
   );
 }
 
-// ── Tool call card (compact, chat-optimized) ──────────────────────
+// ── Tool icon map (shared by compact and full variants) ──────────
 
 const TOOL_ICONS: Record<string, typeof FileText> = {
   Read: FileText,
@@ -212,6 +217,47 @@ const TOOL_ICONS: Record<string, typeof FileText> = {
   WebFetch: Globe,
   WebSearch: Globe,
 };
+
+// ── Compact variants (mini panel) ────────────────────────────────
+
+function CompactThinking() {
+  return (
+    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+      <Brain className="h-3 w-3 shrink-0" />
+      <span className="italic">Thinking...</span>
+    </div>
+  );
+}
+
+function CompactToolCall({
+  toolName,
+  summary,
+  status,
+}: {
+  toolName: string;
+  summary: string;
+  status: "running" | "success" | "error";
+}) {
+  const Icon = TOOL_ICONS[toolName] ?? Wrench;
+
+  return (
+    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+      <Icon className="h-3 w-3 shrink-0" />
+      {status === "running" && (
+        <Loader2 className="h-3 w-3 animate-spin text-blue-400 shrink-0" />
+      )}
+      {status === "success" && (
+        <Check className="h-3 w-3 text-emerald-400 shrink-0" />
+      )}
+      {status === "error" && <XIcon className="h-3 w-3 text-red-400 shrink-0" />}
+      <span className="truncate">
+        Used {toolName}{summary ? ` — ${summary}` : ""}
+      </span>
+    </div>
+  );
+}
+
+// ── Tool call card (full, expandable) ────────────────────────────
 
 function ToolCallCard({
   toolName,

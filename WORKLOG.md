@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 14:00 PDT — UX.PICO.MINI.CONTENT: Compact thinking and tool calls in mini panel
+
+**Done:** Added `compact` prop (default `true`) to `ChatMessage` and `ContentBlockRenderer`. In compact mode: (1) thinking blocks render as a single italic "Thinking..." line with Brain icon — no expandable card, no border, (2) tool calls render as "Used Bash — summary..." one-liners with tool icon + status indicator — no expandable card, no input/output details. Full verbose rendering (expandable `ThinkingBlock` and `ToolCallCard`) is preserved for `compact={false}` (future full-page view). Moved `TOOL_ICONS` map above compact components to avoid reference-before-definition. Verified visually: thinking block is now a single line, tool calls are compact one-liners, markdown text rendering unchanged.
+**Files:** `packages/frontend/src/features/pico/chat-message.tsx`
+
+---
+
 ## 2026-04-02 13:45 PDT — Review: FX.PICO.EMPTY.BUBBLE (approved)
 
 **Reviewed:** Fix for empty chat bubble appearing before streaming content.
