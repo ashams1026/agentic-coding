@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 14:10 PDT — Review: UX.PICO.MINI.CONTENT (approved)
+
+**Reviewed:** Compact thinking and tool call rendering in mini chat panel.
+- Thinking: single italic "Thinking..." line with brain icon, not expandable ✓
+- Tool calls: "Used Bash — summary..." one-liners with icon + status, no card/expand ✓
+- Markdown text rendering unchanged — paragraphs, bullets, bold, code all correct ✓
+- `compact` prop (default true) flows ChatMessage → ContentBlockRenderer → compact/full variants ✓
+- Full verbose rendering preserved for `compact={false}` (future UX.PICO.FULLPAGE) ✓
+- TOOL_ICONS correctly moved above compact components to avoid reference-before-definition ✓
+- Build passes, visual verification confirms all three requirements met ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 14:00 PDT — UX.PICO.MINI.CONTENT: Compact thinking and tool calls in mini panel
 
 **Done:** Added `compact` prop (default `true`) to `ChatMessage` and `ContentBlockRenderer`. In compact mode: (1) thinking blocks render as a single italic "Thinking..." line with Brain icon — no expandable card, no border, (2) tool calls render as "Used Bash — summary..." one-liners with tool icon + status indicator — no expandable card, no input/output details. Full verbose rendering (expandable `ThinkingBlock` and `ToolCallCard`) is preserved for `compact={false}` (future full-page view). Moved `TOOL_ICONS` map above compact components to avoid reference-before-definition. Verified visually: thinking block is now a single line, tool calls are compact one-liners, markdown text rendering unchanged.
