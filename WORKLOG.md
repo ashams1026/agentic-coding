@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 19:10 PDT — RES.NOTIFY.INTEGRATIONS: Research external notification channels
+
+**Done:** Researched external notification channels and delivery infrastructure. Doc covers all 5 investigation areas: (1) Slack — Bot posting with Block Kit formatting, OAuth setup flow, interactive approve/reject buttons (Phase 2 for hosted), channel selection UI, complexity assessment, (2) email — Resend recommended for Phase 1, transactional alerts + daily digest mode, event filter, SMTP advanced option; compared SendGrid/SES/self-hosted, (3) webhooks — standardized JSON payload with `entity.action` type convention, HMAC-SHA256 signing + replay protection + TLS, 5-attempt exponential retry, delivery log with status/response, auto-disable on 10 consecutive failures, (4) backend architecture — in-process NotificationService with channel fan-out (InApp/Slack/Email/Webhook), NotificationChannel interface, rate limiting (5s dedup, per-channel throttle, burst detection), (5) WS interaction — existing broadcast() sufficient, no separate channel needed, WS over SSE for bidirectional. Also: integrations + delivery_log tables, 4-phase implementation plan, 5 cross-references.
+**Files:** `docs/proposals/notifications/integrations.md` (new)
+
+---
+
 ## 2026-04-02 18:55 PDT — Review: RES.NOTIFY.UX (approved)
 
 **Reviewed:** Notifications UX design.
