@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 19:10 PDT — Review: RES.DATA.BACKUP (approved)
+
+**Reviewed:** Backup, restore, and data export research doc.
+- All 5 areas covered: backup strategy (SQLite backup() API, 4 triggers, ~/.agentops/backups/ with 7+4 retention), restore flow (6-step process with pre-restore safety backup, schema migration, integrity check), export/import (audited existing partial export at settings.ts:148-160, proposed full ProjectExport JSON with 3 import strategies), data portability (6-item inventory, migration guide, cross-machine sync explicitly unsupported), disaster recovery (6 scenarios with recovery times, external backup recommendations)
+- Source code claims verified: connection.ts DB paths (AGENTOPS_DB_PATH :11, DATABASE_URL :12, ~/.agentops/data :17, agentops-dev.db :23, WAL :29). settings.ts export :148-160 (projects/personas/personaAssignments), import :229-236 with onConflictDoNothing :254/:273/:285, db-stats :116-117, execution cleanup :137
+- All 4 cross-reference files exist (system-resilience.md, templates/design.md, scheduling/infrastructure.md, hosted-frontend.md)
+- backup() API correctly identified as only safe approach (vs file copy with WAL)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 19:00 PDT — RES.DATA.BACKUP: Research backup, restore, and data export
 
 **Done:** Researched backup, restore, and data export. Doc covers all 5 investigation areas: (1) backup strategy — audited current state (zero backups), DB at `~/.agentops/data/agentops.db` (connection.ts:17) with WAL sidecar files; recommended SQLite `backup()` API (atomic, non-blocking, ~50ms for 100MB); 4 backup triggers (pre-migration, daily, manual, pre-destructive); retention: 7 daily + 4 weekly in `~/.agentops/backups/`. (2) restore — full restore flow (interrupt executions, backup current, copy+migrate+verify), schema version compatibility via Drizzle migration replay, pre-restore safety backup. (3) export/import — audited existing partial export (settings.ts:148-160 — projects/personas/assignments only); proposed full project export as JSON (ProjectExport interface with all entities, configurable execution/chat inclusion); 3 import strategies (skip/overwrite/new project with ID remapping); relationship to RES.TEMPLATES (export is superset of template). (4) data portability — 6-item inventory (DB, config, backups portable; project paths, checkpoints, app binary not); migration guide for same-machine and new-machine; cross-machine sync explicitly not supported (SQLite WAL incompatible). (5) disaster recovery — 6 failure scenarios with recovery times (1-30min) and steps; external backup recommendations (Time Machine, rsync); WARNING not to cloud-sync live DB. Also: 6 API endpoints, Settings > Data Management wireframe, 3-phase implementation plan, 7 cross-references, 6 design decisions.
