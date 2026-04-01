@@ -134,6 +134,7 @@ export interface UpdatePersonaRequest {
   skills?: string[];
   subagents?: string[];
   maxBudgetPerRun?: number;
+  settings?: Record<string, unknown>;
 }
 
 export type PersonaResponse = ApiResponse<Persona>;

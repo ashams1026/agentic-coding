@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 03:30 PDT — SDK.ET.2: Effort & thinking controls in persona editor
+
+**Done:** Added "Effort Level" and "Thinking Mode" dropdowns to persona editor in edit mode (Select components with descriptions). Added `settings` field to `UpdatePersonaRequest` and backend PATCH route (merges with existing settings to preserve system flags). Read-only mode shows effort/thinking as outline badges. Syncs from persona settings on load, included in save handler.
+**Files:** `packages/frontend/src/features/persona-manager/persona-detail-panel.tsx`, `packages/shared/src/api.ts`, `packages/backend/src/routes/personas.ts`
+
+---
+
 ## 2026-04-01 03:20 PDT — Review: SDK.ET.1 (approved)
 
 **Reviewed:** Effort and thinking settings across shared types, executor, seed data.

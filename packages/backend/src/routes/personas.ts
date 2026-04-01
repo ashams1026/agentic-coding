@@ -98,6 +98,11 @@ export async function personaRoutes(app: FastifyInstance) {
     if (body.skills !== undefined) updates["skills"] = body.skills;
     if (body.subagents !== undefined) updates["subagents"] = body.subagents;
     if (body.maxBudgetPerRun !== undefined) updates["maxBudgetPerRun"] = body.maxBudgetPerRun;
+    if (body.settings !== undefined) {
+      // Merge with existing settings to preserve system flags
+      const [existing] = await db.select({ settings: personas.settings }).from(personas).where(eq(personas.id, id));
+      updates["settings"] = { ...(existing?.settings ?? {}), ...body.settings };
+    }
 
     if (Object.keys(updates).length === 0) {
       return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "No fields to update" } });

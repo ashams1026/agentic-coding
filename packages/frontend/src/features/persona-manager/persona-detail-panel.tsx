@@ -34,7 +34,14 @@ import { SystemPromptEditor } from "./system-prompt-editor";
 import { ToolConfiguration } from "./tool-configuration";
 import { SkillBrowser } from "./skill-browser";
 import { SubagentBrowser } from "./subagent-browser";
-import type { PersonaId, PersonaModel } from "@agentops/shared";
+import type { PersonaId, PersonaModel, EffortLevel, ThinkingMode } from "@agentops/shared";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // ── Icon options ────────────────────────────────────────────────
 
@@ -147,6 +154,8 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
   const [skills, setSkills] = useState<string[]>([]);
   const [subagents, setSubagents] = useState<string[]>([]);
   const [maxBudget, setMaxBudget] = useState("1.00");
+  const [effort, setEffort] = useState<EffortLevel>("high");
+  const [thinking, setThinking] = useState<ThinkingMode>("adaptive");
 
   // Sync form state when persona data loads or personaId changes
   useEffect(() => {
@@ -168,6 +177,8 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
     setSkills([...persona.skills]);
     setSubagents([...(persona.subagents ?? [])]);
     setMaxBudget(persona.maxBudgetPerRun.toFixed(2));
+    setEffort((persona.settings?.effort as EffortLevel) ?? "high");
+    setThinking((persona.settings?.thinking as ThinkingMode) ?? "adaptive");
   }
 
   const handleSave = useCallback(() => {
@@ -185,10 +196,11 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
       skills,
       subagents,
       maxBudgetPerRun: isNaN(budget) ? 1.0 : budget,
+      settings: { effort, thinking },
     }, {
       onSuccess: () => setEditing(false),
     });
-  }, [persona, personaId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, skills, subagents, maxBudget, updateMutation]);
+  }, [persona, personaId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, skills, subagents, maxBudget, effort, thinking, updateMutation]);
 
   const handleCancel = () => {
     syncFromPersona();
@@ -503,6 +515,42 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
               </div>
             </section>
 
+            <Separator />
+
+            {/* ── Effort & Thinking ──────────────────────────────── */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Effort & Thinking</h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Effort Level</label>
+                  <Select value={effort} onValueChange={(v) => setEffort(v as EffortLevel)}>
+                    <SelectTrigger className="h-8 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low — Fast, minimal reasoning</SelectItem>
+                      <SelectItem value="medium">Medium — Balanced</SelectItem>
+                      <SelectItem value="high">High — Thorough</SelectItem>
+                      <SelectItem value="max">Max — Maximum depth, highest cost</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Thinking Mode</label>
+                  <Select value={thinking} onValueChange={(v) => setThinking(v as ThinkingMode)}>
+                    <SelectTrigger className="h-8 text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="adaptive">Adaptive — Claude decides when to think deeply</SelectItem>
+                      <SelectItem value="enabled">Enabled — Always show reasoning chain</SelectItem>
+                      <SelectItem value="disabled">Disabled — No extended thinking</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </section>
+
             {/* ── Save / Cancel ─────────────────────────────────── */}
             <div className="flex items-center gap-2 pt-2">
               <Button
@@ -554,6 +602,23 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
                 )}
               </div>
             </section>
+
+            {(persona.settings?.effort || persona.settings?.thinking) && (
+              <>
+                <Separator />
+                <section>
+                  <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Effort & Thinking</h3>
+                  <div className="flex items-center gap-3">
+                    <Badge variant="outline" className="text-xs px-2 py-0.5 capitalize">
+                      {persona.settings?.effort ?? "high"} effort
+                    </Badge>
+                    <Badge variant="outline" className="text-xs px-2 py-0.5 capitalize">
+                      {persona.settings?.thinking ?? "adaptive"} thinking
+                    </Badge>
+                  </div>
+                </section>
+              </>
+            )}
 
             <Separator />
 
