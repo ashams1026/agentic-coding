@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 14:40 PDT — Review: UX.PICO.RESIZE (approved)
+
+**Reviewed:** Drag-to-resize on Pico chat panel — top, left, and corner handles.
+- Resize handles correctly positioned with appropriate cursors (ns, ew, nwse) ✓
+- Min/max constraints enforced: 320x400 min, 600x80vh max, CSS `min()` safety net ✓
+- Delta calculation correct: dragging left/up grows panel (anchored bottom-right) ✓
+- Event listeners cleaned up on mouseup, preventDefault blocks text selection ✓
+- Animation suppressed during resize, content reflows responsively ✓
+- Size persisted in Zustand store with localStorage persistence ✓
+- Build passes, visual check confirms no layout issues ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 14:25 PDT — UX.PICO.RESIZE: Drag-to-resize on Pico chat panel
 
 **Done:** Added drag-to-resize on top edge (ns-resize), left edge (ew-resize), and top-left corner (nwse-resize) of the Pico chat panel. Constraints: min 320x400, max 600x80vh. Dimensions persisted via Zustand `persist` middleware in `pico-store.ts` (`panelWidth`, `panelHeight`, `setPanelSize`). Panel style uses dynamic `width`/`height` from store instead of hardcoded `w-[400px]`. Resize handles are invisible 2px-wide zones on edges with appropriate cursors. Animation class suppressed during resize to prevent jank. Content reflows responsively — wider panel means longer message lines. Verified: drag left edge → panel widens, size persists across reload.
