@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 17:20 PDT — PLUG.3a: Create @agentops/core package
+
+**Done:** Created `packages/core/` as new workspace package. Moved `types.ts` (AgentExecutor interface, AgentEvent union, AgentTask, SpawnOptions) and `sandbox.ts` (command validation) to core — these are the only agent modules with zero DB/SDK dependencies. Backend's `types.ts` and `sandbox.ts` now re-export from `@agentops/core`. Split PLUG.3 into 4 subtasks (3a-3d) since remaining modules (ExecutionManager, dispatch, router, coordination, mcp-server) all have heavy Drizzle DB dependencies that need abstraction first (PLUG.3b).
+**Files:** `packages/core/` (new package), `packages/core/src/types.ts`, `packages/core/src/sandbox.ts`, `packages/core/src/index.ts`, `packages/backend/src/agent/types.ts`, `packages/backend/src/agent/sandbox.ts`, `packages/backend/package.json`, `packages/backend/tsconfig.json`
+
+---
+
 ## 2026-04-01 17:10 PDT — Review: PLUG.2 (approved)
 
 **Reviewed:** Composition root at `packages/backend/src/agent/setup.ts`.

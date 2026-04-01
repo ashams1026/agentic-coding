@@ -3,11 +3,11 @@
   "compilerOptions": {
     "composite": true,
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "types": ["node"]
   },
   "include": ["src"],
   "references": [
-    { "path": "../shared" },
-    { "path": "../core" }
+    { "path": "../shared" }
   ]
 }

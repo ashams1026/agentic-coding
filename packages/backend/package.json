@@ -24,6 +24,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@agentops/core": "workspace:*",
     "@agentops/shared": "workspace:*",
     "@anthropic-ai/claude-agent-sdk": "^0.2.87",
     "@fastify/cors": "^11.2.0",
