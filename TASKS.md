@@ -41,7 +41,7 @@
 
 - [x] **SDK.FC.5** — E2E test plan: file checkpointing. Create `tests/e2e/plans/file-checkpointing.md`: test the rewind button in agent monitor — verify dry run shows file list, confirm rewind restores files, verify button state (disabled for legacy executions, hidden for running ones). Include visual verification of the confirmation modal and success state.
 
-- [ ] **SDK.FC.6** — Run file checkpointing e2e test. Execute the test plan from SDK.FC.5 using chrome-devtools MCP. Record results to `tests/e2e/results/file-checkpointing.md`. Take screenshots at: rewind button visible, dry run modal, post-rewind success state.
+- [review] **SDK.FC.6** — Run file checkpointing e2e test. Execute the test plan from SDK.FC.5 using chrome-devtools MCP. Record results to `tests/e2e/results/file-checkpointing.md`. Take screenshots at: rewind button visible, dry run modal, post-rewind success state.
 
 - [ ] **SDK.FC.7** — Update `docs/architecture.md` and `docs/api.md` with file checkpointing. Document: the rewind API endpoint (request/response), how checkpointing works (message IDs, file restoration), the rewind MCP tool for the reviewer persona, limitations (only works for executions with checkpointing enabled).
 

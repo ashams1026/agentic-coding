@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-03-31 — SDK.FC.6: Run file checkpointing e2e test
+
+**Done:** Executed the file-checkpointing test plan. 7/17 PASS, 0 FAIL, 10 SKIP. All skips due to no executions having checkpoints (seeded demo data predates the feature). Verified: rewind buttons disabled on all 11 legacy executions, disabled button not clickable, API returns 400 NO_CHECKPOINT, visual layout clean. Found BUG-1 (minor): tooltip doesn't show on disabled rewind button (Radix tooltip + disabled element issue).
+**Files:** `tests/e2e/results/file-checkpointing.md`, `tests/e2e/results/fc-01-agent-monitor-initial.png`, `tests/e2e/results/fc-02-history-table.png`, `tests/e2e/results/fc-03-disabled-hover.png`, `tests/e2e/results/fc-04-full-history.png`
+**Notes:** Parts 2-3 (dry-run modal, confirm rewind) need re-testing after a real agent execution with checkpointing produces data.
+
+---
+
 ## 2026-03-31 — Review: SDK.FC.5 (approved)
 
 **Reviewed:** E2E test plan at `tests/e2e/plans/file-checkpointing.md`.
