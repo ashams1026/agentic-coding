@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 02:00 PDT — Review: FX.UX.ACTIVITY.1 (approved)
+
+**Reviewed:** Activity feed events linking to specific work items instead of generic `/items`.
+- All 15 `targetPath` instances replaced with `workItemId` from data sources (executions, comments, proposals, WS events)
+- `EventRow` changed from `<Link>` to `<div role="button">` with `setSelectedItemId` + `navigate` pattern
+- `ProposalUpdatedEvent` correctly handles missing `workItemId` (set to `null`)
+- A11y attributes present (role, tabIndex, onKeyDown, focus-visible ring)
+- Build passes clean, visual check confirms clicking events navigates to correct work item detail panel
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 01:30 PDT — FX.UX.ACTIVITY.1: Activity feed events link to specific work items
 
 **Done:** Replaced `targetPath: "/items"` with `workItemId` from all data sources (15 instances) in `activity-feed.tsx`. Executions use `exec.workItemId`, comments use `comment.workItemId`, proposals use `proposal.workItemId`, WS events use `e.workItemId`. `ProposalUpdatedEvent` has no workItemId — set to `null`. Changed `EventRow` from `<Link to="/items">` to `<div role="button">` with `setSelectedItemId` + `navigate` pattern. Added a11y (role, tabIndex, onKeyDown, focus-visible). Verified: clicking an event navigates to `/items` and opens correct detail panel.
