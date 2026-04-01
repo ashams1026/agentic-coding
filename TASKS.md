@@ -73,7 +73,7 @@
 
 - [x] **UX.AGENT.MAIN** — Audit Agent Monitor main layout. Open `/agents`. Verify: layout renders (sidebar + main area), active agent sidebar shows agents or empty state with correct CTA button (should link to `/items`, not storyboard). Test terminal renderer output area. Check split view toggle if present. Screenshot. File bugs.
 
-- [review] **UX.AGENT.CONTROLS** — Audit Agent Monitor controls and panels. Test: agent control bar buttons (pause, resume, cancel), file changes panel renders diffs or empty state, router decision cards display correctly, MCP status panel shows server status, model switcher dropdown works. Verify subagent cards render for nested agents. Screenshot each panel. File bugs.
+- [x] **UX.AGENT.CONTROLS** — Audit Agent Monitor controls and panels. Test: agent control bar buttons (pause, resume, cancel), file changes panel renders diffs or empty state, router decision cards display correctly, MCP status panel shows server status, model switcher dropdown works. Verify subagent cards render for nested agents. Screenshot each panel. File bugs.
 
 - [ ] **UX.AGENT.HISTORY** — Audit Agent Monitor history view. Navigate to agent history. Verify: past executions list populates, clicking an entry shows execution details, terminal output replays or displays correctly. Check filtering/pagination if present. Screenshot. File bugs.
 
