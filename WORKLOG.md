@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 06:00 PDT — Review: FX.UX.REWIND (approved)
+
+**Reviewed:** Disabled rewind button tooltip fix.
+- `<span className="inline-flex">` wrapper around disabled `<Button>` inside `TooltipTrigger asChild` ✓
+- Tooltip shows correct text for both enabled/disabled states ✓
+- Visual verification: tooltip visible on hover over disabled buttons in History tab ✓
+- Build passes clean ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 05:55 PDT — FX.UX.REWIND: Fix disabled rewind button tooltip
 
 **Done:** Wrapped the disabled `<Button>` inside `<TooltipTrigger asChild>` with a `<span className="inline-flex">` wrapper so the tooltip trigger receives pointer events even when the button is disabled. Tooltip now shows "No file checkpoint available (legacy execution)" on hover over disabled rewind buttons in Agent Monitor History.
