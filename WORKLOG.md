@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 23:30 PDT — RES.WEBHOOKS.INBOUND: Research inbound triggers
+
+**Done:** Researched inbound triggers from external systems. Doc covers all 5 investigation areas: (1) GitHub integration — 5 event use cases (PR opened, issue created, CI failed, review requested, push), GitHub App vs raw webhooks (App preferred for permissions + per-repo install), webhook receiver at POST /api/webhooks/github with X-Hub-Signature-256, 4 event types with extracted variable mappings, setup flow wireframe, local-first tunnel challenge noted; (2) generic webhook receiver — POST /api/webhooks/:triggerId endpoint, WebhookTrigger interface (12 fields), Handlebars-style prompt template with {{payload.*}} variables, custom CI integration example; (3) Slack triggers — slash commands (/woof) + bot mentions + reactions, Slack App with signature verification, 3-second response requirement (async dispatch + later posting), thread-aware responses, channel scoping, setup flow wireframe; (4) trigger configuration UX — Settings > Integrations section (GitHub/Slack/Custom Webhooks), trigger list view wireframe, create/edit dialog wireframe with endpoint URL, secret, event filter, prompt template editor, "Test with Sample Payload" preview panel; (5) security — HMAC verification (timingSafeEqual), 3-tier rate limiting (10/min burst, 60/hr sustained, 100/min global), optional IP allowlisting with GitHub published ranges, replay protection (timestamp + delivery ID dedup), malformed payload handling (4 cases). Also: data model (webhook_triggers + webhook_deliveries tables, trigger_id/trigger_type on executions), 3-phase plan, 6 cross-references, 5 design decisions.
+**Files:** `docs/proposals/webhooks/inbound-triggers.md` (new)
+
+---
+
 ## 2026-04-02 23:15 PDT — Review: RES.ANALYTICS.UX (approved)
 
 **Reviewed:** Analytics dashboard UX design research.
