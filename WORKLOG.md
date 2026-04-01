@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-03-31 23:35 PDT — SDK.HK.7: Run agent monitor file tracking e2e test
+
+**Done:** Executed the SDK.HK.6 test plan. 4/16 PASS, 0 FAIL, 12 SKIP. All SKIPs due to no active agent executions — the file changes panel requires real-time `file_changed` WS events which only fire during live agent runs with the FileChanged hook. Verified: panel auto-hides when empty (PASS), agent monitor layout clean (PASS), history tab shows 11 legacy executions. 4 screenshots captured.
+**Files:** `tests/e2e/results/agent-monitor-files.md`, `tests/e2e/results/amf-01-live-empty.png`, `tests/e2e/results/amf-02-history-table.png`, `tests/e2e/results/amf-03-live-no-agents.png`, `tests/e2e/results/amf-04-full-page.png`
+**Notes:** Parts 2-4 need re-testing with a live agent execution.
+
+---
+
 ## 2026-03-31 23:25 PDT — Review: SDK.HK.6 (approved)
 
 **Reviewed:** E2E test plan at `tests/e2e/plans/agent-monitor-files.md`.
