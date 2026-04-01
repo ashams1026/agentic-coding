@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 21:50 PDT — FX.UX.DASH.1: Fix Cost Summary below fold
+
+**Done:** Changed dashboard widget grid from `lg:grid-cols-2` to `md:grid-cols-2 lg:grid-cols-3` so all three widgets (Recent Activity, Upcoming Work, Cost Summary) display in a single row at 1024px+. At 768px, falls back to 2 columns with CostSummary wrapping to row 2. Verified at 1440x900, 1024x768, 768x900, and dark mode — all widgets visible without scrolling at default viewport.
+**Files:** `packages/frontend/src/pages/dashboard.tsx`
+
+---
+
 ## 2026-04-01 21:35 PDT — Review: UX.DASH (approved)
 
 **Reviewed:** Dashboard UX audit — 7 screenshots, 3 bug filings.
