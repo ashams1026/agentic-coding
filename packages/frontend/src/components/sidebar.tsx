@@ -56,10 +56,13 @@ export function Sidebar() {
   const unreadActivityCount = useActivityStore((s) => s.unreadCount);
   const location = useLocation();
 
-  // Auto-select the first project if none is selected
+  // Auto-select the first project if none is selected or selected project no longer exists
   useEffect(() => {
-    if (!selectedProjectId && projectsList && projectsList.length > 0) {
-      setSelectedProjectId(projectsList[0]!.id);
+    if (projectsList && projectsList.length > 0) {
+      const selectedExists = selectedProjectId && projectsList.some((p) => p.id === selectedProjectId);
+      if (!selectedExists) {
+        setSelectedProjectId(projectsList[0]!.id);
+      }
     }
   }, [selectedProjectId, projectsList, setSelectedProjectId]);
 

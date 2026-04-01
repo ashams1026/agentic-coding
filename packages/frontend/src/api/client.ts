@@ -173,13 +173,9 @@ export async function createWorkItem(req: CreateWorkItemRequest): Promise<WorkIt
   return res.data;
 }
 
-export async function updateWorkItem(id: WorkItemId, req: UpdateWorkItemRequest): Promise<WorkItem | null> {
-  try {
-    const res = await patch<{ data: WorkItem }>(`/api/work-items/${id}`, req);
-    return res.data;
-  } catch {
-    return null;
-  }
+export async function updateWorkItem(id: WorkItemId, req: UpdateWorkItemRequest): Promise<WorkItem> {
+  const res = await patch<{ data: WorkItem }>(`/api/work-items/${id}`, req);
+  return res.data;
 }
 
 export async function deleteWorkItem(id: WorkItemId): Promise<boolean> {

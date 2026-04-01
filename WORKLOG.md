@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 12:00 PDT — FX.WORK.EDIT: Fix work item mutations not persisting
+
+**Done:** Root cause: stale `selectedProjectId` in localStorage. The UI store persists `selectedProjectId` via Zustand `persist` middleware. The value `pj-agntops` (from old seed data) was persisted, but that project no longer exists in the DB — the only real project is `pj-vjZvl1m`. The sidebar's auto-selection logic only fired when `selectedProjectId` was null, not when it pointed to a nonexistent project. Fix 1: Updated sidebar auto-selection in `sidebar.tsx` to validate the persisted selection against the actual projects list — if the selected project doesn't exist, auto-select the first real project. Fix 2: Removed silent error swallowing in `updateWorkItem()` in `client.ts` — errors now propagate to TanStack Query's `onError` handler, which properly reverts optimistic updates and shows the error toast. Verified via chrome-devtools: backend PATCH works correctly (200 OK), work items now display and are editable.
+**Files:** `packages/frontend/src/components/sidebar.tsx`, `packages/frontend/src/api/client.ts`
+
+---
+
 ## 2026-04-02 11:35 PDT — Review: RES.WORKFLOW.RUNTIME (approved)
 
 **Reviewed:** Custom workflow runtime execution proposal.
