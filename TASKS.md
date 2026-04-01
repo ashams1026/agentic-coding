@@ -59,7 +59,7 @@
 
 - [x] **PLUG.3a** — Create `packages/core/` workspace package and move DB-free modules. Create the new workspace package with `package.json`, `tsconfig.json`, `src/index.ts`. Move `agent/types.ts` (AgentExecutor interface, AgentEvent union, AgentTask, SpawnOptions) and `agent/sandbox.ts` (command validation — no DB deps). Update backend imports to reference `@agentops/core`. These are the only agent modules with zero DB/SDK dependencies.
 
-- [review] **PLUG.3b** — Abstract DB operations into repository interfaces in `@agentops/core`. Define `WorkItemRepository`, `ExecutionRepository`, `CommentRepository`, `PersonaRepository` interfaces with the query methods used by ExecutionManager, dispatch, router, coordination, and mcp-server. Implement them in `@agentops/backend` using Drizzle. This unblocks moving the remaining agent modules to core.
+- [x] **PLUG.3b** — Abstract DB operations into repository interfaces in `@agentops/core`. Define `WorkItemRepository`, `ExecutionRepository`, `CommentRepository`, `PersonaRepository` interfaces with the query methods used by ExecutionManager, dispatch, router, coordination, and mcp-server. Implement them in `@agentops/backend` using Drizzle. This unblocks moving the remaining agent modules to core.
 
 - [ ] **PLUG.3c** — Move ExecutionManager, dispatch, router, coordination to `@agentops/core`. Refactor these modules to use the repository interfaces from PLUG.3b instead of direct Drizzle imports. Move them to `packages/core/src/`. Update backend to inject concrete repository implementations via the composition root.
 
