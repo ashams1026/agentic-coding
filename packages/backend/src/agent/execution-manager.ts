@@ -406,6 +406,7 @@ async function runExecutionStream(
 
   try {
     const events = executor.spawn(task, persona, project, {
+      executionId,
       model: persona.model,
       maxBudget: persona.maxBudgetPerRun,
       tools: persona.allowedTools.length > 0 ? persona.allowedTools : [],

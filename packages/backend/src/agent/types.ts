@@ -86,6 +86,8 @@ export interface AgentTask {
 // ── Spawn Options ─────────────────────────────────────────────────
 
 export interface SpawnOptions {
+  /** Execution ID for audit trail logging */
+  executionId: string;
   /** Model to use for this execution */
   model: PersonaModel;
   /** Maximum cost in USD for this execution (0 = unlimited) */

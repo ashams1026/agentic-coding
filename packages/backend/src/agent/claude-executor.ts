@@ -4,7 +4,7 @@
  */
 
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import type { SDKMessage, AgentDefinition, HookCallback, PreToolUseHookInput } from "@anthropic-ai/claude-agent-sdk";
+import type { SDKMessage, AgentDefinition, HookCallback, PreToolUseHookInput, PostToolUseHookInput, PostToolUseFailureHookInput } from "@anthropic-ai/claude-agent-sdk";
 import type {
   AgentExecutor,
   AgentTask,
@@ -14,6 +14,7 @@ import type {
 import type { Persona, Project } from "@agentops/shared";
 import { loadConfig } from "../config.js";
 import { validateCommand, buildSandboxPrompt } from "./sandbox.js";
+import { auditToolUse } from "../audit.js";
 
 // ── System prompt assembly ────────────────────────────────────────
 
@@ -183,6 +184,63 @@ function buildSandboxHook(projectPath: string): HookCallback {
   };
 }
 
+// ── Audit hook ───────────────────────────────────────────────────
+
+const SENSITIVE_PATTERNS = /(?:ANTHROPIC_API_KEY|API_KEY|SECRET|TOKEN|PASSWORD)=[^\s]*/gi;
+
+function sanitizeCommand(command: string): string {
+  return command.replace(SENSITIVE_PATTERNS, (match) => {
+    const key = match.split("=")[0];
+    return `${key}=***`;
+  });
+}
+
+function buildAuditHooks(executionId: string): {
+  preToolUse: HookCallback;
+  postToolUse: HookCallback;
+  postToolUseFailure: HookCallback;
+} {
+  const startTimes = new Map<string, number>();
+
+  const preToolUse: HookCallback = async (input, _toolUseID, _options) => {
+    const preInput = input as PreToolUseHookInput;
+    startTimes.set(preInput.tool_use_id, Date.now());
+    return {};
+  };
+
+  const postToolUse: HookCallback = async (input, _toolUseID, _options) => {
+    const postInput = input as PostToolUseHookInput;
+    const startTime = startTimes.get(postInput.tool_use_id);
+    const durationMs = startTime ? Date.now() - startTime : 0;
+    startTimes.delete(postInput.tool_use_id);
+
+    const toolInput = postInput.tool_input as Record<string, unknown>;
+    const command = postInput.tool_name === "Bash" && typeof toolInput?.command === "string"
+      ? sanitizeCommand(toolInput.command)
+      : undefined;
+
+    auditToolUse({ executionId, toolName: postInput.tool_name, durationMs, success: true, command });
+    return {};
+  };
+
+  const postToolUseFailure: HookCallback = async (input, _toolUseID, _options) => {
+    const failInput = input as PostToolUseFailureHookInput;
+    const startTime = startTimes.get(failInput.tool_use_id);
+    const durationMs = startTime ? Date.now() - startTime : 0;
+    startTimes.delete(failInput.tool_use_id);
+
+    const toolInput = failInput.tool_input as Record<string, unknown>;
+    const command = failInput.tool_name === "Bash" && typeof toolInput?.command === "string"
+      ? sanitizeCommand(toolInput.command)
+      : undefined;
+
+    auditToolUse({ executionId, toolName: failInput.tool_name, durationMs, success: false, command });
+    return {};
+  };
+
+  return { preToolUse, postToolUse, postToolUseFailure };
+}
+
 // ── Executor ──────────────────────────────────────────────────────
 
 export class ClaudeExecutor implements AgentExecutor {
@@ -239,6 +297,8 @@ export class ClaudeExecutor implements AgentExecutor {
         ...(persona.skills.length > 0 ? { skills: persona.skills } : {}),
       };
 
+      const auditHooks = buildAuditHooks(options.executionId);
+
       const q = query({
         prompt,
         options: {
@@ -251,7 +311,12 @@ export class ClaudeExecutor implements AgentExecutor {
           agent: agentId,
           agents: { [agentId]: agentDef },
           hooks: {
-            PreToolUse: [{ matcher: "Bash", hooks: [buildSandboxHook(project.path)] }],
+            PreToolUse: [
+              { matcher: "Bash", hooks: [buildSandboxHook(project.path)] },
+              { hooks: [auditHooks.preToolUse] },
+            ],
+            PostToolUse: [{ hooks: [auditHooks.postToolUse] }],
+            PostToolUseFailure: [{ hooks: [auditHooks.postToolUseFailure] }],
           },
           mcpServers: {
             agentops: {

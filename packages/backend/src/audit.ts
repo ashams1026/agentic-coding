@@ -94,6 +94,23 @@ export function auditCostEvent(opts: {
   });
 }
 
+export function auditToolUse(opts: {
+  executionId: string;
+  toolName: string;
+  durationMs: number;
+  success: boolean;
+  command?: string;
+}): void {
+  auditLogger.info({
+    action: "tool_use",
+    executionId: opts.executionId,
+    toolName: opts.toolName,
+    durationMs: opts.durationMs,
+    success: opts.success,
+    ...(opts.command ? { command: opts.command } : {}),
+  });
+}
+
 // ── Query audit log ─────────────────────────────────────────────
 
 export interface AuditEntry {
