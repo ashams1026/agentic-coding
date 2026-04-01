@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 19:35 PDT — RES.COLLAB.CONTEXT: Research agent context passing and shared memory
+
+**Done:** Researched context passing and shared memory between agents. Doc covers all 5 investigation areas: (1) current state — audited `executionContext` array (summary/outcome only, no files/decisions/questions) and `project_memories` module (project-scoped, only at Done, read-only during execution); identified 7 types of information lost between workflow steps, (2) explicit handoff notes — structured `HandoffNote` schema with summary, filesChanged, decisionsMade, openQuestions, warnings; hybrid generation (auto-extract files from tool calls, agent writes decisions/questions via `write_handoff` MCP tool); new `handoff_notes` table; injection into system prompt replaces flat summaries, (3) shared scratchpad — per-work-item scratch space with `ScratchpadEntry` schema; MCP tools for read/write; distinction from comments (human-facing) and handoff notes (end-of-execution); pinned entries survive context windowing; "Agent Notes" UI section, (4) context windowing — 4-tier priority system with configurable token budget; Priority 1 (always: title + recent handoff), Priority 2 (pinned notes, open questions), Priority 3 (summarized older handoffs, recent scratchpad), Priority 4 (omitted, available via MCP); Haiku summarization for older handoff notes; budget configurable per project and persona, (5) agent-to-agent tagging — `@persona_name` soft references in handoff notes and scratchpad; relevance boost in context window (tagged content promoted to Priority 1); substring matching for resolution; no validation at write time. 4-phase implementation plan, 7 cross-references, 5 design decisions.
+**Files:** `docs/proposals/agent-collaboration/context-sharing.md` (new)
+
+---
+
 ## 2026-04-02 19:15 PDT — Review: RES.NOTIFY.INTEGRATIONS (approved)
 
 **Reviewed:** External notification channels and delivery infrastructure.
