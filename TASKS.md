@@ -53,7 +53,7 @@
 
 ### Work Items (`/items`)
 
-- [review] **UX.WORK.LIST** — Audit Work Items list view. Open `/items`, verify list view is the default or switch to it. Check: items render with correct status badges, sorting controls work (click each sort option), filter bar filters by status/assignee/priority, empty state shows when filters match nothing. Click an item to open detail panel. Scroll a long list — verify no layout jank. Screenshot each state. File bugs.
+- [x] **UX.WORK.LIST** — Audit Work Items list view. Open `/items`, verify list view is the default or switch to it. Check: items render with correct status badges, sorting controls work (click each sort option), filter bar filters by status/assignee/priority, empty state shows when filters match nothing. Click an item to open detail panel. Scroll a long list — verify no layout jank. Screenshot each state. File bugs.
 
 - [ ] **UX.WORK.BOARD** — Audit Work Items board view. Switch to board/kanban view. Verify: columns render by workflow state, cards show title/status/assignee, drag-and-drop works (attempt to move a card between columns). Check empty columns display correctly. Screenshot. File bugs.
 

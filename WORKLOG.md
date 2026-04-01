@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-01 22:50 PDT — Review: UX.WORK.LIST (approved)
+
+**Reviewed:** Work Items list view audit — 9 screenshots, 1 bug filed.
+- All task requirements verified: default view, status badges, sort (3 options), state filter (8 states), detail panel, responsive (1024/768), dark mode
+- Bug FX.UX.ITEMS.1 well-described: empty filter state is blank with no message — correct finding
+- Screenshots cover all required states including edge case (empty filter result)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 22:45 PDT — UX.WORK.LIST: Audit Work Items list view
 
 **Done:** Audited `/items` list view at 1440x900, 1024x768, 768x900, and dark mode. List view is the default. 3 items render grouped by state (Backlog, Decomposition, In Progress) with correct status badges, priority pills, and progress bars. Clicking an item opens detail panel with description, children, comments. Sort dropdown shows 3 options (priority/created/updated). State filter shows all 8 workflow states with colored dots. Responsive: filter bar wraps gracefully at 1024px (2 rows) and 768px (3 rows). Dark mode: good contrast, all elements visible. Filed 1 bug: FX.UX.ITEMS.1 (no empty state when filters match nothing).
