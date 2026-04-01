@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 07:55 PDT — Review: SDK.SB.4 (approved)
+
+**Reviewed:** E2E test plan at `tests/e2e/plans/sandbox-settings.md`.
+- 16 steps across 6 parts: visibility, editable domains (add/remove/Enter/duplicates), deny paths, toggle, save/persist, visual
+- Covers all task requirements: Security section, editable lists, toggle, visual check
+- Step 10 explicitly tests monospace styling on paths
+- Part 4 notes lists stay visible when sandbox disabled — correct UX expectation
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 07:50 PDT — SDK.SB.4: E2E test plan for sandbox settings UI
 
 **Done:** Created `tests/e2e/plans/sandbox-settings.md` — 16 steps across 6 parts: section visibility (3), editable domains (4), editable deny paths (3), enable toggle (2), save/persist (2), visual quality (2). Covers add/remove, Enter key, duplicate prevention, monospace styling, save persistence.
