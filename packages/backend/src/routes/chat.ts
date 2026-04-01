@@ -311,13 +311,13 @@ export async function chatRoutes(app: FastifyInstance) {
       ].join("\n"),
     );
 
-    // Set SSE headers
-    reply.raw.writeHead(200, {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    });
+    // Set SSE headers via Fastify so CORS plugin headers are preserved
+    reply.header("Content-Type", "text/event-stream");
+    reply.header("Cache-Control", "no-cache");
+    reply.header("Connection", "keep-alive");
+    reply.header("X-Accel-Buffering", "no");
+    // Flush all accumulated headers (including CORS from @fastify/cors plugin)
+    reply.raw.writeHead(200, reply.getHeaders() as Record<string, string>);
 
     const sendSSE = (data: Record<string, unknown>) => {
       reply.raw.write(`data: ${JSON.stringify(data)}\n\n`);

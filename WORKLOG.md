@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-31 — FX.PICO4: Fix CORS headers on Pico SSE endpoint
+
+**Task:** Fix CORS headers missing on the SSE streaming endpoint for Pico chat.
+
+**Root cause:** `reply.raw.writeHead(200, { ... })` in `packages/backend/src/routes/chat.ts` (line ~315) bypassed Fastify's `@fastify/cors` plugin by sending only the manually specified headers, excluding the CORS headers the plugin had set.
+
+**Fix:** Replaced direct `reply.raw.writeHead()` with `reply.header()` calls for SSE headers, then flushed all accumulated headers (including CORS from the plugin) via `reply.raw.writeHead(200, reply.getHeaders())`. This preserves the CORS configuration from `server.ts` without duplicating it.
+
+**Files modified:** `packages/backend/src/routes/chat.ts`
+
+**Notes for next agent:** This should unblock all Pico chat streaming in the browser. The 4 failed + 4 skipped steps from the FX.PICO3 e2e test (Parts 3-5: streaming, markdown, thinking blocks) should now pass when re-tested.
+
+---
+
 ## 2026-03-31 — Review: FX.PICO3 (approved)
 
 **Reviewed:** Pico e2e test execution — results at `tests/e2e/results/pico-chat.md`, 8 screenshots.
