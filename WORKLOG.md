@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 19:15 PDT — Review: RES.NOTIFY.INTEGRATIONS (approved)
+
+**Reviewed:** External notification channels and delivery infrastructure.
+- All 5 areas covered: Slack (Block Kit, OAuth, interactive deferred to hosted), email (Resend recommended, digest mode, 4 services compared), webhooks (HMAC signing, 5-attempt retry, delivery log, auto-disable), backend architecture (NotificationService fan-out, rate limiting, burst detection), WS interaction (existing broadcast sufficient, no separate channel)
+- Slack interactive buttons correctly deferred — local-first can't receive callbacks
+- Webhook security thorough (HMAC, replay, TLS, rotation)
+- Retry policy well-designed (exponential, 4xx skip, dead letter, auto-disable)
+- NotificationChannel interface is clean and extensible
+- Data model (integrations + delivery_log tables) supports all 3 channels
+- 4-phase implementation order correct (webhooks simplest, Slack last)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 19:10 PDT — RES.NOTIFY.INTEGRATIONS: Research external notification channels
 
 **Done:** Researched external notification channels and delivery infrastructure. Doc covers all 5 investigation areas: (1) Slack — Bot posting with Block Kit formatting, OAuth setup flow, interactive approve/reject buttons (Phase 2 for hosted), channel selection UI, complexity assessment, (2) email — Resend recommended for Phase 1, transactional alerts + daily digest mode, event filter, SMTP advanced option; compared SendGrid/SES/self-hosted, (3) webhooks — standardized JSON payload with `entity.action` type convention, HMAC-SHA256 signing + replay protection + TLS, 5-attempt exponential retry, delivery log with status/response, auto-disable on 10 consecutive failures, (4) backend architecture — in-process NotificationService with channel fan-out (InApp/Slack/Email/Webhook), NotificationChannel interface, rate limiting (5s dedup, per-channel throttle, burst detection), (5) WS interaction — existing broadcast() sufficient, no separate channel needed, WS over SSE for bidirectional. Also: integrations + delivery_log tables, 4-phase implementation plan, 5 cross-references.
