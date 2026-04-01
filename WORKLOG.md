@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 09:25 PDT — Review: RES.GLOBAL.NAV (approved)
+
+**Reviewed:** Navigation restructure research proposal for project vs global scope.
+- All 4 investigation points addressed: similar tools (5 analyzed with comparison table), Dashboard/Activity Feed scope (scope-aware recommended), project selector interaction (3 options, Option A recommended), single/no-project UX (3 scenarios covered) ✓
+- 4 ASCII wireframe descriptions covering all key states ✓
+- Phase 1/Phase 2 navigation trees with migration path ✓
+- Files-to-change list with specific components ✓
+- URL scheme decision correct (no change, state-based scoping for local-first app) ✓
+- Consistent with RES.GLOBAL.DATA (nullable projectId, scope badges, Pico toggle) ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 09:15 PDT — RES.GLOBAL.NAV: Navigation restructure research
 
 **Done:** Researched navigation patterns from Linear, Jira, Notion, VS Code, and GitHub. Analyzed current sidebar (flat 6-link nav with project selector dropdown). Recommended Option A: keep flat nav, add "All Projects" option to selector, make pages scope-aware. Dashboard and Agent Monitor show aggregated data in global scope; Work Items prompts for project selection; Activity Feed gets filter pills. No URL scheme changes needed — state-based scoping via Zustand. Produced wireframe descriptions for all 4 key states (global dashboard, project work items, global work items prompt, global agent monitor with scope badges). Defined 3-phase migration path and files-to-change list.
