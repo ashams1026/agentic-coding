@@ -35,7 +35,7 @@
 
 ### Part 3: Infrastructure — Hooks System (remaining)
 
-- [review] **SDK.HK.6** — E2E test plan: agent monitor file tracking. Create `tests/e2e/plans/agent-monitor-files.md`: test the files panel — verify it shows modified files during/after execution, badge count updates, file paths are correct. Visual verification of the panel layout.
+- [x] **SDK.HK.6** — E2E test plan: agent monitor file tracking. Create `tests/e2e/plans/agent-monitor-files.md`: test the files panel — verify it shows modified files during/after execution, badge count updates, file paths are correct. Visual verification of the panel layout.
 
 - [ ] **SDK.HK.7** — Run agent monitor file tracking e2e test. Execute SDK.HK.6 test plan. Record results. Screenshots of files panel in both running and completed states.
 

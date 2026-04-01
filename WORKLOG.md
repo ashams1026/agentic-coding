@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-31 23:25 PDT — Review: SDK.HK.6 (approved)
+
+**Reviewed:** E2E test plan at `tests/e2e/plans/agent-monitor-files.md`.
+- 16 steps across 5 parts covering all task requirements: file display, badge count, file paths, visual verification
+- Follows template format exactly with visual inspection protocol and screenshot checkpoints
+- Properly handles real-time WS dependency with SKIP guidance for steps needing active agents
+- Covers edge cases: auto-hide, deduplication, execution switching state cleanup, collapse/expand
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 23:20 PDT — SDK.HK.6: E2E test plan for file changes panel
 
 **Done:** Created `tests/e2e/plans/agent-monitor-files.md` — 16 steps across 5 parts: panel visibility/auto-hide (4), content/file entries (5), collapse/expand (3), execution switching (2), visual quality (2). Notes real-time WS dependency — panel only appears during active executions with FileChanged hook. Covers deduplication, badge count, icon coloring, dark theme.
