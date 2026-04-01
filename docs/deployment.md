@@ -355,6 +355,59 @@ On every startup, before the server accepts connections:
 
 Work items are left in their current state — the user or auto-routing can re-trigger dispatch.
 
+## Security & Sandbox
+
+Agent executions run with three layers of security:
+
+### SDK Native Sandbox
+
+Every `query()` call includes a `sandbox` option providing OS-level isolation:
+
+```typescript
+sandbox: {
+  enabled: true,
+  autoAllowBashIfSandboxed: true,
+  filesystem: {
+    allowWrite: [projectPath],
+    denyWrite: ["/", "/etc", "/usr", "/var"],
+  },
+  network: {
+    allowedDomains: ["api.anthropic.com", "registry.npmjs.org", "github.com"],
+  },
+}
+```
+
+**Requirements:** macOS sandbox (`sandbox-exec`) or Linux namespaces. When unavailable, a warning is logged and commands run unsandboxed — the other layers still protect.
+
+### Per-Project Configuration
+
+Sandbox settings are configurable per-project in **Settings → Security**:
+- **Enable/disable** OS-level sandboxing toggle
+- **Allowed network domains** — editable list (default: Anthropic API, npm, GitHub)
+- **Denied write paths** — editable list (default: /, /etc, /usr, /var)
+- Project path is always allowed for writes
+
+Settings stored in `project.settings.sandbox` and read by the executor on each execution.
+
+### `canUseTool` Permission Callback
+
+A defense-in-depth callback that blocks destructive operations before they reach the sandbox:
+
+| Pattern | Blocked Command |
+|---|---|
+| `rm -rf` | Recursive force delete |
+| `git push --force` | Force push |
+| `git reset --hard` | Hard reset |
+| `DROP TABLE` / `DROP DATABASE` | SQL destruction |
+| `TRUNCATE TABLE` | SQL truncation |
+| `mkfs` / `dd if=` | Disk formatting |
+
+For `WebFetch`, URLs are checked against the project's allowed domains list. All deny decisions are logged to the audit trail.
+
+### PreToolUse Hook (Application Layer)
+
+The original `validateCommand()` from `sandbox.ts` runs as a `PreToolUse` hook, checking Bash commands against project directory escapes. This is the innermost layer — if a command passes OS sandbox and `canUseTool`, the hook provides final validation.
+
 ## Source Files
 
 | File | Purpose |

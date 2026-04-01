@@ -235,6 +235,16 @@ Primary Agent (e.g., Engineer)
 
 Subagents are lightweight (15 turns, no separate execution record in the workflow) while state transitions are the primary orchestration mechanism for the workflow pipeline.
 
+## Security Layers
+
+Agent executions are protected by three security layers, configured in `ClaudeExecutor.spawn()`:
+
+1. **SDK Native Sandbox** (`sandbox` option) — OS-level filesystem and network isolation. Allows writes only to the project directory, blocks system paths. Network restricted to configured domains. Configurable per-project in Settings → Security.
+2. **`canUseTool` Callback** — Permission callback that blocks destructive Bash commands (9 patterns: `rm -rf`, `git push --force`, `DROP TABLE`, etc.) and enforces WebFetch domain allowlist. Deny decisions logged to audit trail.
+3. **PreToolUse Hook** — Application-level `validateCommand()` from `sandbox.ts` that blocks Bash commands escaping the project directory. Returns `permissionDecision: "deny"` via the SDK hooks system.
+
+All three layers run for every tool call. If any layer denies, the tool is blocked. See `docs/deployment.md` for full configuration details.
+
 ## File Checkpointing
 
 Every agent execution runs with `enableFileCheckpointing: true` in the `query()` options. The SDK creates a checkpoint of the project's file state before the agent makes any changes.

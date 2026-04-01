@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 08:20 PDT — SDK.SB.6: Update docs with sandbox documentation
+
+**Done:** Added "Security & Sandbox" section to `docs/deployment.md`: SDK native sandbox config (code example), per-project configuration, canUseTool callback (9 patterns table), PreToolUse hook layer. Added "Security Layers" section to `docs/architecture.md`: 3-layer summary (OS sandbox, canUseTool, PreToolUse hook). All 5 task requirements covered.
+**Files:** `docs/deployment.md`, `docs/architecture.md`
+
+---
+
 ## 2026-04-01 08:10 PDT — Review: SDK.SB.5 (approved)
 
 **Reviewed:** Sandbox settings e2e test results at `tests/e2e/results/sandbox-settings.md`.
