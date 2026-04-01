@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import {
   Dog,
   X,
@@ -34,7 +34,7 @@ import type { ChatSessionId } from "@agentops/shared";
 // ── Component ─────────────────────────────────────────────────────
 
 export function ChatPanel() {
-  const { isOpen, setOpen } = usePicoStore();
+  const { isOpen, setOpen, panelWidth, panelHeight, setPanelSize } = usePicoStore();
   const [input, setInput] = useState("");
   const {
     messages,
@@ -54,6 +54,48 @@ export function ChatPanel() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // ── Resize logic ───────────────────────────────────────────────
+  const MIN_W = 320;
+  const MAX_W = 600;
+  const MIN_H = 400;
+  const maxH = typeof window !== "undefined" ? window.innerHeight * 0.8 : 600;
+  const [isResizing, setIsResizing] = useState(false);
+
+  const handleResizeStart = useCallback(
+    (edge: "top" | "left" | "top-left") => (e: React.MouseEvent) => {
+      e.preventDefault();
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startW = panelWidth;
+      const startH = panelHeight;
+      setIsResizing(true);
+
+      const onMove = (ev: MouseEvent) => {
+        let newW = startW;
+        let newH = startH;
+        if (edge === "left" || edge === "top-left") {
+          // Dragging left edge leftward → panel grows wider
+          newW = Math.min(MAX_W, Math.max(MIN_W, startW + (startX - ev.clientX)));
+        }
+        if (edge === "top" || edge === "top-left") {
+          // Dragging top edge upward → panel grows taller
+          newH = Math.min(maxH, Math.max(MIN_H, startH + (startY - ev.clientY)));
+        }
+        setPanelSize(newW, newH);
+      };
+
+      const onUp = () => {
+        setIsResizing(false);
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+      };
+
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseup", onUp);
+    },
+    [panelWidth, panelHeight, setPanelSize, maxH],
+  );
 
   // Editable title state
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -147,12 +189,28 @@ export function ChatPanel() {
       ref={panelRef}
       className={cn(
         "fixed bottom-24 right-6 z-50 flex flex-col",
-        "w-[400px] max-w-[calc(100vw-3rem)]",
+        "max-w-[calc(100vw-3rem)]",
         "rounded-xl border border-border bg-card shadow-lg",
-        "animate-pico-panel-in",
+        !isResizing && "animate-pico-panel-in",
       )}
-      style={{ height: "min(500px, calc(100vh - 8rem))" }}
+      style={{
+        width: `${panelWidth}px`,
+        height: `min(${panelHeight}px, calc(100vh - 8rem))`,
+      }}
     >
+      {/* Resize handles */}
+      <div
+        className="absolute -top-1 left-3 right-3 h-2 cursor-ns-resize z-10"
+        onMouseDown={handleResizeStart("top")}
+      />
+      <div
+        className="absolute -left-1 top-3 bottom-3 w-2 cursor-ew-resize z-10"
+        onMouseDown={handleResizeStart("left")}
+      />
+      <div
+        className="absolute -top-1 -left-1 h-4 w-4 cursor-nwse-resize z-20"
+        onMouseDown={handleResizeStart("top-left")}
+      />
       {/* Header */}
       <div className="flex items-center gap-2 border-b border-border px-4 py-3">
         <div
