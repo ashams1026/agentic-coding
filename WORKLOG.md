@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-31 — Review: SDK.FC.1 (approved)
+
+**Reviewed:** File checkpointing enablement across executor, types, schema, and routes.
+- `enableFileCheckpointing: true` correctly added to query() options
+- `CheckpointEvent` properly added to `AgentEvent` union, handled with `continue` in stream loop (not broadcast — correct, internal-only signal)
+- `checkpointMessageId` nullable column added via migration `0004`, backward-compatible
+- Shared `Execution` entity and route serializer both include the new field with `?? null` fallback
+- `eventToChunk` handles exhaustive switch with empty string for checkpoint type
+- Build passes clean
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — SDK.FC.1: Enable file checkpointing in executor
 
 **Task:** Add `enableFileCheckpointing: true` to query() options and store the checkpoint message ID.
