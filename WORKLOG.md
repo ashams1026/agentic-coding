@@ -18,6 +18,38 @@
 
 ---
 
+## 2026-03-31 — FX.PICO3: Execute Pico e2e test plan
+
+**Task:** Run the 38-step Pico chat test plan using chrome-devtools MCP.
+
+**Results:** 30 PASS, 4 FAIL, 4 SKIP (all failures from one root cause)
+
+**Bug found:** CORS headers missing on Pico SSE endpoint (`POST /api/chat/sessions/:id/messages`). The route writes SSE headers manually via `reply.raw.writeHead()` which bypasses Fastify's `@fastify/cors` plugin. Browser blocks all requests. Filed as **FX.PICO4** (HIGH severity).
+
+**What passed:**
+- Bubble visibility on all 4 pages (dashboard, items, agents, personas)
+- Panel open/close/toggle with proper positioning and animation
+- Empty state with welcome message and 4 quick action buttons
+- Quick action sends message (user bubble appears correctly)
+- Manual message input via Cmd+Enter
+- Session management: create, switch, rename, dropdown with timestamps
+- Session title inline editing (rename + save via Enter)
+- Panel state persistence across close/reopen and page navigation
+- Mobile viewport (375x667): panel fits, no overflow, usable
+- Error state: clear "Failed to fetch" message with Retry button
+- Clear all sessions: returns to empty state
+
+**What failed (all due to CORS):**
+- Streaming response never arrives (blocked by browser)
+- Markdown rendering untestable (no responses)
+- Thinking blocks / tool calls untestable
+
+**Files created:** `tests/e2e/results/pico-chat.md`, 8 screenshots in `tests/e2e/results/pico-*.png`
+
+**Notes for next agent:** FX.PICO4 is the critical fix — add CORS headers to the SSE writeHead in chat.ts. Once fixed, re-run steps 12-13, 17-20 to verify streaming, markdown, thinking blocks, and tool calls.
+
+---
+
 ## 2026-03-31 — FX.PICO1: Verified already fixed
 
 **Task:** Fix "Pico persona not found" error.
