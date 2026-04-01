@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 01:15 PDT — SDK.SO.5: Update docs with structured Router output
+
+**Done:** Updated `docs/workflow.md`: added "Structured Output" subsection under Router with JSON schema example, field descriptions table, storage/UI notes. Updated `isRouter` in Router Configuration settings. Updated `docs/personas.md`: expanded Router description with `isRouter` flag and structured output details, added "Output format" row to Router comparison table.
+**Files:** `docs/workflow.md`, `docs/personas.md`
+
+---
+
 ## 2026-04-01 01:05 PDT — Review: SDK.SO.4 (approved)
 
 **Reviewed:** Router structured output e2e test results at `tests/e2e/results/router-structured-output.md`.

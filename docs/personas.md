@@ -139,7 +139,7 @@ If issues are found: rejects with specific, actionable feedback (file names, lin
 - All children Done → route parent to "In Review"
 - Unresolvable issues → "Blocked"
 
-The Router is a **system persona** (`settings.isSystem: true`). It is created lazily on first use by `getOrCreateRouterPersona()` in `router.ts`, or seeded with the other built-in personas. It uses the Haiku model for cost efficiency since routing decisions are lightweight.
+The Router is a **system persona** (`settings: { isSystem: true, isRouter: true }`). The `isRouter` flag enables structured output — the SDK returns a JSON object with `{ nextState, reasoning, confidence }` instead of free-text. This is stored in the `structuredOutput` column and rendered as a Router Decision Card in the UI (color-coded state badge, confidence dot, reasoning text). The Router is created lazily on first use by `getOrCreateRouterPersona()` in `router.ts`, or seeded with the other built-in personas. It uses the Haiku model for cost efficiency since routing decisions are lightweight.
 
 ## Creating and Editing Custom Personas
 
@@ -285,7 +285,8 @@ The Router differs from other personas in several ways:
 | **Claude tools** | Read, Edit, Write, etc. | None |
 | **MCP tools** | Various | Only `list_items`, `get_context`, `route_to_state` |
 | **Budget** | $50-200/run | $10/run |
-| **Settings** | `{}` | `{ isSystem: true }` |
+| **Settings** | `{}` | `{ isSystem: true, isRouter: true }` |
+| **Output format** | Free text | Structured JSON: `{ nextState, reasoning, confidence }` |
 | **Creation** | Manual or seeded | Lazy-created on first auto-routing use |
 | **Visible in UI** | Yes, in Persona Manager | Yes, but marked as system persona |
 

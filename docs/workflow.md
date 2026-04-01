@@ -108,10 +108,31 @@ The Router is a special system persona that decides state transitions after each
 4. It calls the `route_to_state` MCP tool to make the transition
 5. The transition triggers the next persona dispatch
 
+### Structured Output
+
+The Router uses the SDK's `outputFormat` option to return machine-readable decisions. When `persona.settings.isRouter` is true, the executor passes a JSON schema to `query()`:
+
+```json
+{
+  "nextState": "In Review",
+  "reasoning": "Implementation complete, all acceptance criteria met. Build passes.",
+  "confidence": "high"
+}
+```
+
+| Field | Type | Description |
+|---|---|---|
+| `nextState` | string | Target workflow state name |
+| `reasoning` | string | Explanation for the routing decision |
+| `confidence` | `"high"` \| `"medium"` \| `"low"` | How confident the Router is in this decision |
+
+The structured output is stored in the `structuredOutput` column of the executions table and displayed in the UI as a **Router Decision Card** (state badge + confidence indicator + reasoning text).
+
 ### Router Configuration
 
 - **Model:** haiku (for cost efficiency)
 - **Tools:** `list_items`, `get_context`, `route_to_state`
+- **Settings:** `{ isSystem: true, isRouter: true }` — the `isRouter` flag enables structured output
 - **System prompt:** Guidelines for state decisions (e.g., after "In Progress" → "In Review", after successful review → "Done", issues found → back to "In Progress")
 - **Created lazily:** The Router persona is auto-created in the database on first use
 
