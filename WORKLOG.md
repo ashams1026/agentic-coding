@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-01 13:30 PDT — Review: DOC.4 (approved)
+
+**Reviewed:** Workflow.md updates.
+- 3-layer Router safety: same-state rejection, transition history, loop detection — all accurate
+- Rate limiter logging with WS broadcast noted
+- Play/pause UX: 3 locations, emerald/amber colors
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 13:25 PDT — DOC.4: Update workflow.md
 
 **Done:** Added "Router Safety Features" section with 3-layer loop prevention: same-state rejection, transition history awareness (last 3 transitions in dynamic prompt), loop detection (6-entry history, 3-occurrence threshold → auto-Blocked). Added rate limiter logging note. Updated auto-routing toggle to describe play/pause UX (emerald/amber colors, 3 toggle locations).
