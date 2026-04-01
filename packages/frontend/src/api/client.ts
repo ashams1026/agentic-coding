@@ -273,6 +273,19 @@ export async function getExecution(id: ExecutionId): Promise<Execution | null> {
   }
 }
 
+export interface RewindResult {
+  canRewind: boolean;
+  filesChanged: string[];
+  insertions: number;
+  deletions: number;
+  dryRun: boolean;
+}
+
+export async function rewindExecution(id: ExecutionId, dryRun: boolean): Promise<RewindResult> {
+  const res = await post<{ data: RewindResult }>(`/api/executions/${id}/rewind`, { dryRun });
+  return res.data;
+}
+
 // ── Comments ─────────────────────────────────────────────────────
 
 export async function getComments(workItemId: WorkItemId): Promise<Comment[]> {

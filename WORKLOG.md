@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-03-31 — SDK.FC.3: Add rewind button to agent monitor UI
+
+**Task:** Add rewind button to execution history with dry-run preview modal.
+
+**Done:**
+- Added `rewindExecution(id, dryRun)` API function + `RewindResult` type to `packages/frontend/src/api/client.ts`
+- Re-exported `rewindExecution` from `packages/frontend/src/api/index.ts`
+- Created `RewindButton` component in `packages/frontend/src/features/agent-monitor/agent-history.tsx`:
+  - Undo2 icon button with tooltip explaining purpose / disabled state
+  - Only visible on completed executions (returns null for running)
+  - Disabled when `checkpointMessageId` is null (legacy executions)
+  - Click: calls `rewindExecution(id, true)` for dry-run preview
+  - Shows AlertDialog with file list (count, paths, insertions/deletions)
+  - Confirm: calls `rewindExecution(id, false)`, shows success toast
+  - Error handling: toast on both preview and confirm failures
+  - `e.stopPropagation()` prevents row expansion toggle on button click
+- Integrated RewindButton into HistoryRow's last table cell, before the expand chevron
+- Restored stray uncommitted changes in `use-selected-project.ts` and `use-projects.ts` that were causing build errors (not mine)
+
+**Files modified:** `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`, `packages/frontend/src/features/agent-monitor/agent-history.tsx`
+
+**Notes for next agent:** Rewind UI is complete. The button appears in the history table for every completed execution. SDK.FC.4 adds the MCP tool for programmatic rewind from the Code Reviewer persona. SDK.FC.5 creates the e2e test plan.
+
+---
+
 ## 2026-03-31 — Review: SDK.FC.2 (approved)
 
 **Reviewed:** Rewind API endpoint in `packages/backend/src/routes/executions.ts`.

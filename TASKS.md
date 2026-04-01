@@ -13,6 +13,10 @@
 
 > Blocked and remaining SDK tasks.
 
+### Bug Fixes
+
+- [ ] **FX.PICO1** — Fix "Pico persona not found" error when chatting. The Pico chat endpoint (`POST /api/chat/sessions/:id/messages`) fails with "Pico persona not found". Likely cause: Pico persona (`ps-pico`) was added to `seed.ts` but the dev database wasn't re-seeded after the schema change, so the persona row doesn't exist. Fix: check if the chat route looks up Pico by ID (`ps-pico`) or by `isAssistant` flag, verify the persona exists in the current dev DB, and if not, ensure `pnpm db:seed` inserts it. Also add a defensive check — if Pico persona is missing, return a clear error message suggesting re-seeding instead of a generic 404.
+
 ### SDK-Native Skills & Tool Discovery
 
 - [blocked: SDK initializationResult() does not return built-in tool names/descriptions — only commands (skills), agents, and models. No tool discovery API exists in the SDK. The hardcoded SDK_TOOLS list in tool-configuration.tsx is actually correct since built-in tools are a fixed set.]  **FX.SDK3** — Replace hardcoded tool list with SDK discovery in persona editor. In the persona editor UI (`packages/frontend/src/features/persona-manager/`): replace any freeform text input or hardcoded tool checkboxes for `allowedTools` with a multi-select populated from `GET /api/sdk/capabilities`. Show each tool with its name and description. Group by category: File tools, Search tools, Execution, Web, Agent, Other. Same for `mcpTools` — show available MCP tools from the discovery response. Validate on save: warn if a selected tool isn't in the available set.
@@ -41,7 +45,7 @@
 
 - [x] **SDK.FC.2** — Add rewind API endpoint. Add `POST /api/executions/:id/rewind` route in `packages/backend/src/routes/executions.ts`. Accepts `{ dryRun?: boolean }`. Looks up the execution's `checkpointMessageId`, creates a temporary `query()` session pointed at the same project directory, calls `rewindFiles(checkpointMessageId, { dryRun })`. Returns `{ files: RewindFilesResult[] }` — list of files that were/would be restored. If not a dry run, post a system comment on the work item: "Files reverted to pre-execution state by [user]." Log the rewind in the audit trail.
 
-- [ ] **SDK.FC.3** — Add rewind button to agent monitor UI. In `packages/frontend/src/features/agent-monitor/`: add a "Rewind" button (undo icon) to the execution header bar, next to the existing controls. Only visible on completed executions (not running ones). Click flow: (1) call rewind with `dryRun: true`, (2) show a confirmation modal listing files that will be reverted, (3) on confirm, call rewind without dryRun, (4) show success toast. Disable the button if `checkpointMessageId` is null (legacy executions without checkpointing). Add tooltip: "Revert all file changes made by this agent run."
+- [review] **SDK.FC.3** — Add rewind button to agent monitor UI. In `packages/frontend/src/features/agent-monitor/`: add a "Rewind" button (undo icon) to the execution header bar, next to the existing controls. Only visible on completed executions (not running ones). Click flow: (1) call rewind with `dryRun: true`, (2) show a confirmation modal listing files that will be reverted, (3) on confirm, call rewind without dryRun, (4) show success toast. Disable the button if `checkpointMessageId` is null (legacy executions without checkpointing). Add tooltip: "Revert all file changes made by this agent run."
 
 - [ ] **SDK.FC.4** — Add rewind to REVIEW state workflow. Update the Code Reviewer persona's system prompt: after reviewing an agent's work, if the review outcome is REJECT, the reviewer can call the rewind API to automatically restore files before re-routing to a previous state. Add `rewind_execution` as a new MCP tool in the agentops MCP server: takes `executionId`, calls the rewind endpoint internally. Add to the reviewer's `mcpTools` allowlist.
 

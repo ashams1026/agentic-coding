@@ -34,6 +34,7 @@ export {
   // Executions
   getExecutions,
   getExecution,
+  rewindExecution,
   // Comments
   getComments,
   getRecentComments,

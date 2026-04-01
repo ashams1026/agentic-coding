@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   Bot,
   ChevronDown,
@@ -7,6 +7,7 @@ import {
   Clock,
   DollarSign,
   Filter,
+  Undo2,
   Timer,
   TrendingUp,
   Hash,
@@ -35,7 +36,26 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useExecutions, usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
+import { rewindExecution } from "@/api";
+import type { RewindResult } from "@/api/client";
+import { useToastStore } from "@/stores/toast-store";
 import { TerminalRenderer } from "./terminal-renderer";
 import type { Execution, ExecutionId } from "@agentops/shared";
 
@@ -244,6 +264,132 @@ function FilterBar({ filters, onChange, personas, hasActiveFilters }: FilterBarP
   );
 }
 
+// ── Rewind button ────────────────────────────────────────────────
+
+interface RewindButtonProps {
+  execution: Execution;
+}
+
+function RewindButton({ execution }: RewindButtonProps) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [preview, setPreview] = useState<RewindResult | null>(null);
+  const addToast = useToastStore((s) => s.addToast);
+
+  const hasCheckpoint = !!execution.checkpointMessageId;
+  const isCompleted = execution.status !== "running";
+
+  const handleClick = useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Don't toggle row expansion
+    if (!hasCheckpoint || !isCompleted) return;
+    setLoading(true);
+    try {
+      const result = await rewindExecution(execution.id, true);
+      setPreview(result);
+      setDialogOpen(true);
+    } catch (err) {
+      addToast({
+        type: "error",
+        title: "Rewind preview failed",
+        description: err instanceof Error ? err.message : "Unknown error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [execution.id, hasCheckpoint, isCompleted, addToast]);
+
+  const handleConfirm = useCallback(async () => {
+    setLoading(true);
+    try {
+      const result = await rewindExecution(execution.id, false);
+      setDialogOpen(false);
+      setPreview(null);
+      addToast({
+        type: "success",
+        title: "Files rewound",
+        description: `${result.filesChanged.length} files reverted (+${result.insertions}/-${result.deletions} lines)`,
+      });
+    } catch (err) {
+      addToast({
+        type: "error",
+        title: "Rewind failed",
+        description: err instanceof Error ? err.message : "Unknown error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [execution.id, addToast]);
+
+  if (!isCompleted) return null;
+
+  return (
+    <>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 w-7 p-0"
+              disabled={!hasCheckpoint || loading}
+              onClick={handleClick}
+            >
+              <Undo2 className="h-3.5 w-3.5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {hasCheckpoint
+              ? "Revert all file changes made by this agent run"
+              : "No file checkpoint available (legacy execution)"}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Rewind file changes?</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-3">
+                <p>
+                  This will revert all file changes made by this agent execution
+                  to their pre-execution state.
+                </p>
+                {preview && preview.filesChanged.length > 0 && (
+                  <div className="rounded-md border bg-muted/50 p-3">
+                    <p className="text-xs font-medium mb-2">
+                      {preview.filesChanged.length} file{preview.filesChanged.length !== 1 ? "s" : ""} will be reverted
+                      <span className="text-muted-foreground ml-1">
+                        (+{preview.insertions}/-{preview.deletions} lines)
+                      </span>
+                    </p>
+                    <ul className="text-xs text-muted-foreground space-y-0.5 max-h-[200px] overflow-auto">
+                      {preview.filesChanged.map((f) => (
+                        <li key={f} className="font-mono truncate">{f}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {preview && preview.filesChanged.length === 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    No files were changed by this execution.
+                  </p>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirm} disabled={loading}>
+              {loading ? "Rewinding..." : "Rewind Files"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
+
 // ── Expandable history row ────────────────────────────────────────
 
 interface HistoryRowProps {
@@ -315,12 +461,15 @@ function HistoryRow({
               <span className="text-xs text-muted-foreground">—</span>
             )}
           </TableCell>
-          <TableCell className="w-8">
-            {isExpanded ? (
-              <ChevronUp className="h-4 w-4 text-muted-foreground" />
-            ) : (
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-            )}
+          <TableCell className="w-16">
+            <div className="flex items-center gap-1">
+              <RewindButton execution={execution} />
+              {isExpanded ? (
+                <ChevronUp className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              )}
+            </div>
           </TableCell>
         </TableRow>
       </CollapsibleTrigger>
