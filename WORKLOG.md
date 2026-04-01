@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 14:30 PDT — Review: DOC.8 (approved)
+
+**Reviewed:** Deployment.md updates.
+- Dev scripts: seed-demo, db:reset, test:e2e added. Port-check behavior documented.
+- Database paths: dev vs prod now distinct (was "Same SQLite file")
+- Audit log added to log files table
+- Stale `npx agentops dev` removed
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 14:25 PDT — DOC.8: Update deployment.md
 
 **Done:** Updated Development section: added `pnpm db:seed-demo`, `pnpm db:reset`, `pnpm test:e2e` commands. Documented `scripts/dev.sh` port-check behavior. Fixed database paths (dev vs prod). Added `audit.log` to pm2 log files table with expanded description. Security section already current from SDK.SB.6.
