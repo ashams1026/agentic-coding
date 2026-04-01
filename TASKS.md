@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-21 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-2 archived.
+> Sprints 1-21 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-6, PLUG.1-2/3a-3b/4-5 archived.
 
 ---
 
@@ -33,41 +33,13 @@
 
 ---
 
-## Backlog: SDK Future Features
+## Backlog: Pluggable Executor Architecture (remaining)
 
-> Lower-priority SDK features that become relevant as the product matures.
-
-- [x] **SDK.FUT.3** — Plugin system integration. Evaluate the SDK's plugin and marketplace system. Use case: allow users to install community-built persona skills and tools from npm/git registries. In Settings: add a "Plugins" section showing installed plugins and a marketplace browser. Use `enabledPlugins` and `extraKnownMarketplaces` in settings. Spike: create a sample plugin that adds a custom MCP tool, install it via the marketplace API, verify it's available to personas.
-
-- [x] **SDK.FUT.4** — HTTP hooks for external integrations. Use the SDK's HTTP hook support to send webhook notifications to external services (Slack, Discord, PagerDuty) on agent events. In Settings → Integrations: configure webhook URLs for events like "execution completed", "agent blocked", "review rejected". Use the `hooks` settings with `type: 'http'` and `url`. This replaces the need for a custom notification system.
-
-- [x] **SDK.FUT.5** — Worktree isolation for agent executions. Use the SDK's `EnterWorktree`/`ExitWorktree` tools and the `worktree` settings to run each agent execution in an isolated git worktree. This prevents agents from interfering with each other's file changes when running concurrently. Configure `worktree: { symlinkDirectories: ['node_modules'], sparsePaths: ['packages/'] }` for efficiency. Evaluate whether this replaces our need for custom file locking.
-
-- [x] **SDK.FUT.6** — Update all documentation for future SDK features. When any of SDK.FUT.1-5 are implemented, update the relevant docs: `docs/architecture.md` for bridge/browser changes, `docs/deployment.md` for remote execution, `docs/personas.md` for plugin-based skills, `docs/getting-started.md` for plugin installation.
-
----
-
-## Backlog: Pluggable Executor Architecture
-
-> Refactor the executor layer so external projects can swap in custom executors without forking.
-> Currently `execution-manager.ts` hard-codes `ClaudeExecutor` and `MockExecutor` imports with a module-level singleton.
-> Goal: constructor injection, executor registry, and a clean package boundary so a new project can `npm install @agentops/core` and provide its own executor.
-
-- [x] **PLUG.1** — Refactor ExecutionManager into a class with injected executor factory. Convert `packages/backend/src/agent/execution-manager.ts` from module-level functions + singleton into an `ExecutionManager` class. Constructor accepts an `ExecutorFactory: (mode: string) => AgentExecutor` function. Remove the hard-coded `ClaudeExecutor` and `MockExecutor` imports from this file — they move to the composition root. `getExecutorMode()` and `setExecutorMode()` become instance methods. The class holds its own executor instance, DB handle, and WebSocket broadcaster. All existing call sites (`routes/executions.ts`, `router.ts`, `dispatch.ts`) receive the `ExecutionManager` instance instead of importing module-level functions.
-
-- [x] **PLUG.2** — Create composition root for executor wiring. Create `packages/backend/src/agent/setup.ts`: this is the only file that imports concrete executor implementations. It creates the `ExecutionManager` with a factory: `(mode) => mode === "mock" ? new MockExecutor() : new ClaudeExecutor()`. Export a `createExecutionManager()` function called from `server.ts` during startup. This is the single point where a custom project would swap in their executor — replace this one file or pass a different factory. Update `server.ts` to use the composition root instead of importing execution-manager directly.
-
-- [x] **PLUG.3a** — Create `packages/core/` workspace package and move DB-free modules. Create the new workspace package with `package.json`, `tsconfig.json`, `src/index.ts`. Move `agent/types.ts` (AgentExecutor interface, AgentEvent union, AgentTask, SpawnOptions) and `agent/sandbox.ts` (command validation — no DB deps). Update backend imports to reference `@agentops/core`. These are the only agent modules with zero DB/SDK dependencies.
-
-- [x] **PLUG.3b** — Abstract DB operations into repository interfaces in `@agentops/core`. Define `WorkItemRepository`, `ExecutionRepository`, `CommentRepository`, `PersonaRepository` interfaces with the query methods used by ExecutionManager, dispatch, router, coordination, and mcp-server. Implement them in `@agentops/backend` using Drizzle. This unblocks moving the remaining agent modules to core.
+> PLUG.1-2, PLUG.3a-3b, PLUG.4-5 archived. Blocked: PLUG.3c/3d. Remaining: PLUG.6-10.
 
 - [blocked: ExecutionManager has 6+ non-DB dependencies beyond repositories (logger, audit, concurrency, runRouter, dispatchForState, drizzle eq operator). Moving to core requires abstracting ALL of these as interfaces — much larger scope than DB repositories alone. Defer until a broader service abstraction layer is designed.] **PLUG.3c** — Move ExecutionManager, dispatch, router, coordination to `@agentops/core`. Refactor these modules to use the repository interfaces from PLUG.3b instead of direct Drizzle imports. Move them to `packages/core/src/`. Update backend to inject concrete repository implementations via the composition root.
 
 - [blocked: same as PLUG.3c — mcp-server.ts depends on SDK MCP factory, logger, audit, coordination, memory modules beyond just DB. Requires broader service abstraction.] **PLUG.3d** — Move MCP server definition to `@agentops/core`. Refactor `mcp-server.ts` to use repository interfaces. The SDK MCP server factory (`createSdkMcpServer`) stays as a peer dependency since it's from the agent SDK.
-
-- [x] **PLUG.4** — Add executor registry with named registration. In `@agentops/core`: add an `ExecutorRegistry` class. `registry.register(name: string, factory: () => AgentExecutor)` adds an executor. `registry.get(name: string): AgentExecutor` returns it. `registry.list(): string[]` returns available names. Wire into `ExecutionManager` — instead of a simple factory function, it takes a registry. The REST API `GET /api/settings/executor-mode` returns available modes from the registry. `PUT /api/settings/executor-mode` switches between registered executors. Default registrations: `"claude"` → `ClaudeExecutor`, `"mock"` → `MockExecutor`. A custom project adds: `registry.register("my-executor", () => new MyExecutor())`.
-
-- [x] **PLUG.5** — Publish-ready package.json for shared and core. Update `packages/shared/package.json` and `packages/core/package.json` (from PLUG.3): add proper `main`, `types`, `exports` fields, `files` whitelist, `peerDependencies` where needed. Add `tsconfig.build.json` for declaration-only builds. Ensure `pnpm pack` produces clean tarballs with no dev dependencies. These don't need to be published to npm yet — just structured so they *could* be, and so a sibling project in a monorepo can depend on them cleanly.
 
 - [ ] **PLUG.6** — Create example custom executor template. Create `examples/custom-executor/` at the repo root: a minimal standalone project that depends on `@agentops/shared` and `@agentops/core`, implements a trivial `AgentExecutor` (echoes back the task description as a text event), registers it, and starts the AgentOps server with the custom executor active. Include a `README.md` explaining: how to implement the interface, how to register, how to configure which executor runs. This serves as documentation-by-example for anyone building on top of AgentOps.
 

@@ -151,3 +151,15 @@ Command sandbox, mock removal (-2283 lines), demo seed, settings fixes, auto-rou
 **SDK.SA.1-SA.6:** All personas as SDK subagents (AgentDefinition mapping), SubagentStart/SubagentStop hooks + WS events, parentExecutionId column, nested SubagentCard UI, e2e test (1/12 PASS — empty DB), docs updated.
 
 **SDK.ET.1-ET.5:** Effort/thinking on PersonaSettings, passed to query() options, per-persona defaults (Router=low/disabled, Engineer=max/enabled), persona editor dropdowns, e2e test (11/13 PASS — full save-persist), docs updated.
+
+---
+
+## Sprint 20 (Streaming + Sandbox + MCP + UX) + Sprint 21 (Docs) + Backlog (Spikes + PLUG) — 2026-04-01
+
+**Sprint 20 (SDK.ST/SB/MCP/UX):** Streaming (partial messages, progress summaries, rate limit events, context usage polling), sandbox (SDK native + canUseTool + per-project config UI), dynamic MCP management (toggle/reconnect/status API + status dots UI), Pico prompt suggestions (pill buttons), model switching (AlertDialog confirmation), in-process MCP server. Regression sweep REG.1+REG.2 both PASS.
+
+**Sprint 21 (DOC.1-DOC.9):** Full documentation refresh — all 9 doc files updated. getting-started (mock removal, demo seed), architecture (tool count, audit, WS events), data-model (11 tables, new fields), workflow (Router safety, play/pause), personas (fixed MCP tools, Pico), api (12 new endpoints), mcp-tools (source files), deployment (dev scripts, sandbox), frontend (streaming, mock removal, Pico).
+
+**Backlog Spikes (SDK.FUT.1-6):** 5 evaluation spikes: browser SDK (deferred — needs relay), bridge API (deferred — SSH/Docker), plugin system (ready — local plugins work), HTTP hooks (ready — zero code), worktree isolation (deferred — needs parallel execution). Doc updates across 4 files referencing all spikes.
+
+**Backlog PLUG (PLUG.1-5):** ExecutionManager class refactoring (constructor injection, 6 call sites), composition root `setup.ts` (sole file importing concrete executors), `@agentops/core` package (types + sandbox), repository interfaces (6 interfaces + Drizzle implementations), executor registry (register/get/has/list + REST API), publish-ready package.json (dist exports, files whitelist).

@@ -78,113 +78,37 @@
 
 ---
 
-## Sprint 19: SDK Deep Integration — Hooks & File Checkpointing — archived 2026-03-31
+## Sprint 19 (SDK.FC/HK/SO/SA/ET, FX.PICO5/PROJ1): SDK Hooks & File Checkpointing — 30 tasks — archived 2026-04-01
 
-### Sprint 17 Bug Fix — archived 2026-03-31
-- [x] **FX.PICO5** — Fixed Pico chat panel scroll overflow (`min-h-0 overflow-hidden` on ScrollArea). *(completed 2026-03-31)*
-
-### Part 2: File Checkpointing — archived 2026-03-31
-- [x] **SDK.FC.4** — Added `rewind_execution` MCP tool for Code Reviewer (HTTP delegation to rewind API). *(completed 2026-03-31)*
-- [x] **SDK.FC.5** — E2E test plan for file checkpointing rewind (17 steps, 5 parts). *(completed 2026-03-31)*
-- [x] **SDK.FC.6** — Executed file checkpointing e2e test (7/17 PASS, 10 SKIP — legacy data). *(completed 2026-03-31)*
-- [x] **SDK.FC.7** — Updated docs/architecture.md, docs/api.md, docs/mcp-tools.md with file checkpointing. *(completed 2026-03-31 20:30 PDT)*
-
-### Part 3: Hooks System — archived 2026-03-31
-- [x] **SDK.HK.1** — Replaced manual sandbox with PreToolUse hook (`permissionDecision: "deny"`). *(completed 2026-03-31)*
-- [x] **SDK.HK.2** — Added PostToolUse audit logging hook (timing, sanitized Bash commands). *(completed 2026-03-31)*
-- [x] **SDK.HK.3** — Added SessionStart/SessionEnd hooks (audit trail + `execution_update` WS event). *(completed 2026-03-31)*
-- [x] **SDK.HK.4** — Added FileChanged hook broadcasting `file_changed` WS events. *(completed 2026-03-31)*
-- [x] **SDK.HK.5** — Agent monitor file changes panel UI (collapsible, real-time via WS). *(completed 2026-03-31)*
-- [x] **SDK.HK.6** — E2E test plan: agent monitor file tracking (16 steps, 5 parts). *(completed 2026-04-01)*
-- [x] **SDK.HK.7** — Executed file tracking e2e test (4/16 PASS, 12 SKIP — no live agents). *(completed 2026-04-01)*
-- [x] **SDK.HK.8** — Updated docs/architecture.md with hooks architecture (7 hooks table, diagram, audit trail). *(completed 2026-04-01)*
-
-### Sprint 17 Bug Fix — archived 2026-04-01
-- [x] **FX.PROJ1** — Fixed stale project ID fallback (`retry: false` + auto-select first available project). *(completed 2026-04-01)*
-
-### Part 4: Structured Output — archived 2026-04-01
-- [x] **SDK.SO.1** — Added structured output for Router persona (`isRouter` flag, `outputFormat` JSON schema). *(completed 2026-04-01)*
-- [x] **SDK.SO.2** — Router decision cards in agent monitor + activity feed (state badge, confidence dot, reasoning). *(completed 2026-04-01)*
-- [x] **SDK.SO.3** — E2E test plan: Router structured output (13 steps, 3 parts). *(completed 2026-04-01)*
-- [x] **SDK.SO.4** — Executed Router structured output e2e test (5/13 PASS, 8 SKIP — no structured data). *(completed 2026-04-01)*
-- [x] **SDK.SO.5** — Updated docs/workflow.md and docs/personas.md with structured Router output. *(completed 2026-04-01)*
-
-### Part 5: Subagent Definitions — archived 2026-04-01
-- [x] **SDK.SA.1** — All personas registered as SDK subagents in `query()` options (primary 30 turns, subagents 15). *(completed 2026-04-01)*
-- [x] **SDK.SA.2** — SubagentStart/SubagentStop hooks, `parentExecutionId` column, `subagent_started`/`subagent_completed` WS events. *(completed 2026-04-01)*
-- [x] **SDK.SA.3** — Nested SubagentCard UI in agent monitor (tree connector, collapsible, child grouping). *(completed 2026-04-01)*
-- [x] **SDK.SA.4** — E2E test plan: subagent nesting (12 steps, 4 parts). *(completed 2026-04-01)*
-- [x] **SDK.SA.5** — Executed subagent nesting e2e test (1/12 PASS, 11 SKIP — empty DB). *(completed 2026-04-01)*
-- [x] **SDK.SA.6** — Updated docs/architecture.md and docs/personas.md with subagent system. *(completed 2026-04-01)*
-
-### Part 6: Effort & Thinking — archived 2026-04-01
-- [x] **SDK.ET.1** — Added effort/thinking to PersonaSettings, passed to `query()` options, per-persona defaults in seed. *(completed 2026-04-01)*
-- [x] **SDK.ET.2** — Effort & thinking dropdowns in persona editor (Select components, settings merge on save). *(completed 2026-04-01)*
-- [x] **SDK.ET.3** — E2E test plan: persona effort & thinking settings (13 steps, 4 parts). *(completed 2026-04-01)*
-- [x] **SDK.ET.4** — Executed effort & thinking e2e test (11/13 PASS — full save-persist cycle verified). *(completed 2026-04-01)*
-- [x] **SDK.ET.5** — Updated docs/personas.md with effort levels, thinking modes, recommended defaults. *(completed 2026-04-01)*
+File checkpointing (rewind MCP tool, e2e test, docs), 8 SDK hooks (PreToolUse sandbox, PostToolUse audit, SessionStart/End, FileChanged + UI), structured Router output (JSON schema, decision cards, e2e), subagent definitions (all personas as subagents, hooks + WS events, nested UI), effort & thinking (persona settings, editor dropdowns, e2e 11/13 PASS), plus FX.PICO5 (scroll fix) and FX.PROJ1 (stale project ID).
 
 ---
 
-## Sprint 20: SDK Deep Integration — Observability & Safety (partial) — archived 2026-04-01
+## Sprint 20 (SDK.ST/SB/MCP/UX/REG): Observability & Safety — 30 tasks — archived 2026-04-01
 
-### Part 1: Real-Time Streaming — archived 2026-04-01
-- [x] **SDK.ST.1** — Enabled partial message streaming (`includePartialMessages`, `stream_event` handling, `PartialEvent`). *(completed 2026-04-01)*
-- [x] **SDK.ST.2** — Live token streaming UI (rAF batching, streamBuffer, blinking emerald cursor). *(completed 2026-04-01)*
-- [x] **SDK.ST.3** — Agent progress summaries (`agentProgressSummaries`, `agent_progress` WS event, emerald bar). *(completed 2026-04-01)*
-- [x] **SDK.ST.4** — Rate limit event handling (`api_retry` → inline retry countdown text). *(completed 2026-04-01)*
-- [x] **SDK.ST.5** — Context usage display (60s `getContextUsage()` polling, color-coded fill bar). *(completed 2026-04-01)*
-- [x] **SDK.ST.6** — E2E test plan: streaming & observability (14 steps, 5 parts). *(completed 2026-04-01)*
-- [x] **SDK.ST.7** — Executed streaming e2e test (2/14 PASS, 12 SKIP — no live agents). *(completed 2026-04-01)*
-- [x] **SDK.ST.8** — Updated docs/frontend.md with streaming & observability section. *(completed 2026-04-01)*
-
-### Part 2: Safety — SDK Native Sandbox — archived 2026-04-01
-- [x] **SDK.SB.1** — SDK native sandbox (`sandbox.enabled`, filesystem/network restrictions, PreToolUse fallback). *(completed 2026-04-01)*
-- [x] **SDK.SB.2** — Sandbox config in project settings (`SandboxConfig`/`ProjectSettings` types, Security section UI). *(completed 2026-04-01)*
-- [x] **SDK.SB.3** — `canUseTool` permission callback (9 destructive patterns, WebFetch domain check, audit logging). *(completed 2026-04-01)*
-- [x] **SDK.SB.4** — E2E test plan: sandbox settings UI (16 steps, 6 parts). *(completed 2026-04-01)*
-- [x] **SDK.SB.5** — Executed sandbox settings e2e test (12/16 PASS — full save-persist cycle). *(completed 2026-04-01)*
-- [x] **SDK.SB.6** — Updated docs/deployment.md and docs/architecture.md with sandbox docs. *(completed 2026-04-01)*
-
-### Part 3: Dynamic MCP Management — archived 2026-04-01
-- [x] **SDK.MCP.1** — Runtime MCP management (`runningQueries` registry, toggle/reconnect/status API routes). *(completed 2026-04-01)*
-- [x] **SDK.MCP.2** — MCP status dots in agent monitor (colored dots, tooltip, click-to-reconnect, 30s polling). *(completed 2026-04-01)*
-- [x] **SDK.MCP.3** — E2E test plan: MCP status display (13 steps, 5 parts). *(completed 2026-04-01)*
-- [x] **SDK.MCP.4** — Executed MCP status e2e test (5/13 PASS, 8 SKIP — API 404s confirmed). *(completed 2026-04-01)*
-- [x] **SDK.MCP.5** — Updated docs/mcp-tools.md with dynamic MCP management. *(completed 2026-04-01)*
-
-### Part 4: UX — Prompt Suggestions — archived 2026-04-01
-- [x] **SDK.UX.1** — Pico prompt suggestions (`promptSuggestions: true`, SSE suggestion events, pill buttons in chat). *(completed 2026-04-01)*
-- [x] **SDK.UX.2** — Model switching for long-running agents (ModelSwitcher component, AlertDialog confirmation). *(completed 2026-04-01)*
-- [x] **SDK.UX.3** — In-process MCP server (`createSdkMcpServer`, `tool()` helper, dual server config). *(completed 2026-04-01)*
-- [x] **SDK.UX.4** — E2E test plan: Pico suggestions (9 steps, 3 parts). *(completed 2026-04-01)*
-- [x] **SDK.UX.5** — Executed Pico suggestions e2e test (1/9 PASS — no API key). *(completed 2026-04-01)*
-- [x] **SDK.UX.6** — E2E test plan: model switching (11 steps, 4 parts). *(completed 2026-04-01)*
-- [x] **SDK.UX.7** — Executed model switching e2e test (2/11 PASS — empty DB). *(completed 2026-04-01)*
-- [x] **SDK.UX.8** — Updated docs/frontend.md with suggestions, model switching, in-process MCP. *(completed 2026-04-01)*
-
-### Regression Testing — archived 2026-04-01
-- [x] **SDK.REG.1** — Post-Sprint 19/20 regression sweep (build PASS, 9 smoke tests PASS, 0 regressions). *(completed 2026-04-01)*
+Streaming (partial messages, progress summaries, rate limits, context usage), sandbox (SDK native + canUseTool + per-project UI), dynamic MCP management (toggle/reconnect/status API + dots UI), Pico suggestions (pill buttons), model switching (AlertDialog), in-process MCP server, 6 e2e test suites. Regression sweeps REG.1 + REG.2 both PASS.
 
 ---
 
-## Sprint 21: Documentation Refresh (partial) — archived 2026-04-01
+## Sprint 21 (DOC.1-9): Documentation Refresh — 9 tasks — archived 2026-04-01
 
-- [x] **DOC.1** — Updated getting-started.md (removed mock mode, added demo seed, Pico, dev tips). *(completed 2026-04-01)*
-- [x] **DOC.2** — Updated architecture.md (tool count 7→8, audit description, 6 new WS events). *(completed 2026-04-01)*
+Full refresh of all 9 doc files: getting-started, architecture, data-model, workflow, personas, api, mcp-tools, deployment, frontend.
 
-### Sprint 20 Regression — archived 2026-04-01
-- [x] **SDK.REG.2** — Post-Sprint 20 regression (build PASS, 0 regressions, references REG.1). *(completed 2026-04-01)*
-
-### Sprint 21 Documentation (continued) — archived 2026-04-01
-- [x] **DOC.3** — Updated data-model.md (table count 9→11, new fields, chat tables, typed settings). *(completed 2026-04-01)*
-- [x] **DOC.4** — Updated workflow.md (Router safety features, play/pause UX). *(completed 2026-04-01)*
-- [x] **DOC.5** — Updated personas.md (fixed MCP tool names, added Pico persona). *(completed 2026-04-01)*
-- [x] **DOC.6** — Updated api.md (12 new endpoints: chat, SDK, MCP, model switching). *(completed 2026-04-01)*
-- [x] **DOC.7** — Updated mcp-tools.md (source files table fix). *(completed 2026-04-01)*
-- [x] **DOC.8** — Updated deployment.md (dev scripts, seed-demo, audit log). *(completed 2026-04-01)*
-- [x] **DOC.9** — Updated frontend.md (mock removal, Pico, directory updates). *(completed 2026-04-01)*
-
-### Backlog Spikes — archived 2026-04-01
+### Backlog Spikes (SDK.FUT.1-2) — archived 2026-04-01
 - [x] **SDK.FUT.1** — Browser SDK spike (feasible, not recommended — needs WebSocket relay). *(completed 2026-04-01)*
 - [x] **SDK.FUT.2** — Bridge API spike (`spawnClaudeCodeProcess`, SSH/Docker/Cloud paths). *(completed 2026-04-01)*
+- [x] **SDK.FUT.3** — Plugin system spike (local plugins work, marketplace via settings). *(completed 2026-04-01)*
+- [x] **SDK.FUT.4** — HTTP hooks spike (zero code — settings-only webhooks). *(completed 2026-04-01)*
+- [x] **SDK.FUT.5** — Worktree isolation spike (5 mechanisms, replaces file locking). *(completed 2026-04-01)*
+- [x] **SDK.FUT.6** — Updated docs/architecture, deployment, personas, getting-started for FUT.1-5. *(completed 2026-04-01)*
+
+---
+
+## Backlog: Pluggable Executor Architecture — archived 2026-04-01
+
+- [x] **PLUG.1** — Refactored ExecutionManager into class with injected ExecutorFactory, updated 6 call sites. *(completed 2026-04-01)*
+- [x] **PLUG.2** — Created composition root `setup.ts` — sole file importing concrete executors. *(completed 2026-04-01)*
+- [x] **PLUG.3a** — Created `@agentops/core` package, moved types.ts and sandbox.ts. *(completed 2026-04-01)*
+- [x] **PLUG.3b** — Defined 6 repository interfaces in core + Drizzle implementations in backend. *(completed 2026-04-01)*
+- [x] **PLUG.4** — Added ExecutorRegistry class to core, wired into ExecutionManager and REST API. *(completed 2026-04-01)*
+- [x] **PLUG.5** — Publish-ready package.json for shared and core (dist exports, files whitelist, tsconfig.build). *(completed 2026-04-01)*
