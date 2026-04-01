@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 19:50 PDT — PLUG.9: E2E test plan for executor switching
+
+**Done:** Created `tests/e2e/plans/executor-switching.md` with 14 steps across 5 parts: health endpoint baseline (2 API checks), Settings toggle location (3 UI steps), switch to mock mode (4 steps — UI + API + status bar badge), switch back to claude (3 steps — UI + badge disappears + API), API validation (invalid mode → 400 error). Visual quality and failure criteria included.
+**Files:** `tests/e2e/plans/executor-switching.md` (new)
+
+---
+
 ## 2026-04-01 19:40 PDT — Review: PLUG.8 (approved)
 
 **Reviewed:** Integration tests for executor registry.
