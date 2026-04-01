@@ -63,7 +63,7 @@
 
 ### Work Items Bugs
 
-- [ ] **FX.UX.ITEMS.1** — No empty state message when filters match no items. Page `/items`. When filtering by a state with no items (e.g. "Done"), the list area is completely blank — no message like "No items match your filters" or prompt to clear filters. Expected: show a centered empty state with a message and a "Clear filters" button. Screenshot: `tests/e2e/results/ux-work-list-empty-nodetail.png`.
+- [review] **FX.UX.ITEMS.1** — No empty state message when filters match no items. Page `/items`. When filtering by a state with no items (e.g. "Done"), the list area is completely blank — no message like "No items match your filters" or prompt to clear filters. Expected: show a centered empty state with a message and a "Clear filters" button. Screenshot: `tests/e2e/results/ux-work-list-empty-nodetail.png`.
 
 ### Work Item Detail Panel
 

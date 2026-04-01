@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 23:30 PDT — FX.UX.ITEMS.1: Fix empty state when filters match no items
+
+**Done:** Root cause: grouped rendering filters to `parentId === null` top-level items, but the existing empty state only checked `filteredItems.length === 0`. When all matching items are children (e.g. "Done" filter), `filteredItems` is non-empty but `topLevel` is empty — no groups render, no message shown. Fix: added `topLevel.length === 0` check in the grouped rendering path with the same "No items match your filters." message + "Clear filters" button. Also added the "Clear filters" button to the existing empty state (was missing). Both paths call `clearFilters()` + `setFilterState(null)`.
+**Files:** `packages/frontend/src/features/work-items/list-view.tsx`
+
+---
+
 ## 2026-04-01 23:20 PDT — Review: UX.WORK.CREATE (approved)
 
 **Reviewed:** Work item creation audit — 3 screenshots, 0 bugs.

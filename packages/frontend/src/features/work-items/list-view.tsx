@@ -305,7 +305,7 @@ export function ListView() {
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined);
   const { data: personas } = usePersonas();
   const { data: executions } = useExecutions(undefined, projectId ?? undefined);
-  const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterPersonas, filterLabels, selectedItemId, setSelectedItemId } =
+  const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterPersonas, filterLabels, selectedItemId, setSelectedItemId, clearFilters, setFilterState } =
     useWorkItemsStore();
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -465,8 +465,11 @@ export function ListView() {
     const hasFilters = searchQuery || filterState || filterPriority || filterPersonas.length > 0 || filterLabels.length > 0;
     if (hasFilters) {
       return (
-        <div className="flex flex-col items-center justify-center h-full text-center p-8">
+        <div className="flex flex-col items-center justify-center h-full text-center p-8 gap-3">
           <p className="text-sm text-muted-foreground">No items match your filters.</p>
+          <Button variant="outline" size="sm" onClick={() => { clearFilters(); setFilterState(null); }}>
+            Clear filters
+          </Button>
         </div>
       );
     }
@@ -479,6 +482,21 @@ export function ListView() {
   if (groupBy !== "none") {
     const groups = new Map<string, WorkItem[]>();
     const topLevel = filteredItems.filter((w) => w.parentId === null);
+
+    if (topLevel.length === 0) {
+      const hasFilters = searchQuery || filterState || filterPriority || filterPersonas.length > 0 || filterLabels.length > 0;
+      if (hasFilters) {
+        return (
+          <div className="flex flex-col items-center justify-center h-full text-center p-8 gap-3">
+            <p className="text-sm text-muted-foreground">No items match your filters.</p>
+            <Button variant="outline" size="sm" onClick={() => { clearFilters(); setFilterState(null); }}>
+              Clear filters
+            </Button>
+          </div>
+        );
+      }
+    }
+
     const sorted = sortItems(topLevel);
 
     for (const item of sorted) {
