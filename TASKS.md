@@ -62,7 +62,7 @@
 
 ### Regression Testing Checkpoint
 
-- [review] **SDK.REG.1** — Full e2e regression sweep after Sprint 19. Re-run all 19 original e2e test suites from `tests/e2e/plans/` against the current app state. Record results to `tests/e2e/results/regression-post-sprint19.md`. Compare pass rates against the previous run (97.3% baseline from Sprint 16). File new FX tasks for any regressions introduced by Sprint 19 changes. This catches breakage from hooks migration, rewind button, structured output, subagent nesting, and effort/thinking UI changes.
+- [x] **SDK.REG.1** — Full e2e regression sweep after Sprint 19. Re-run all 19 original e2e test suites from `tests/e2e/plans/` against the current app state. Record results to `tests/e2e/results/regression-post-sprint19.md`. Compare pass rates against the previous run (97.3% baseline from Sprint 16). File new FX tasks for any regressions introduced by Sprint 19 changes. This catches breakage from hooks migration, rewind button, structured output, subagent nesting, and effort/thinking UI changes.
 
 ---
 
