@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 20:30 PDT — RES.SCHED.UX: Research scheduling UX
+
+**Done:** Researched scheduling UX for recurring agent tasks. Doc covers all 5 investigation areas: (1) where schedules live — 4-location analysis, recommended Persona Manager "Schedules" tab as primary entry (per-persona), Settings > Automation as secondary (per-project overview), dedicated /schedules page as Phase 3; wireframes for both views, (2) schedule definition — 2-tier input (preset dropdown covering 90% use cases → custom cron with live preview/next-5-runs); 6 presets mapped to cron expressions; timezone handling (browser-detected default, per-schedule override, IANA storage), (3) what gets scheduled — ScheduleDefinition interface (persona + project scope + prompt + cron + timezone); prompt template variables ({{date}}, {{schedule.lastRunAt}}, etc.); 3 project scope options (specific/all/none), (4) schedule management — card UI with name, frequency, next/last run status, enable/disable toggle, Run Now button, edit/delete; create/edit dialog wireframe with all fields; Run Now doesn't affect cadence, (5) how scheduled runs appear — standalone execution model (no work item creation for Phase 1), scheduleId + trigger_type on executions, Agent Monitor badge (calendar icon), Activity Feed events, Dashboard "Upcoming Schedules" widget; per-schedule history view with 30-day summary stats. Also: notification integration (silent on success, high on failure, critical on auto-disable), 3-phase implementation plan, 6 cross-references, 5 design decisions.
+**Files:** `docs/proposals/scheduling/ux-design.md` (new)
+
+---
+
 ## 2026-04-02 20:15 PDT — Review: RES.COLLAB.COORD (approved)
 
 **Reviewed:** Multi-agent coordination patterns research.
