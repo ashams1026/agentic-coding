@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 08:20 PDT — Review: RES.PLUG.CORE (approved)
+
+**Reviewed:** Core package extraction strategy research proposal.
+- All 4 investigation points addressed: dependency catalog (25 total, 12 internal), DI container (dismissed), thin extraction (recommended), TS monorepo patterns (tRPC/Prisma/Effect) ✓
+- Circular dependency cycle correctly identified (ExecutionManager ↔ dispatch ↔ router) ✓
+- 4 options evaluated with effort estimates ✓
+- Option B (thin interface extraction) is pragmatic — 3-5 tasks, contracts in core, implementations in backend ✓
+- Concrete interface examples and redefined PLUG.3c/3d scope ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 08:15 PDT — RES.PLUG.CORE: Research core package extraction strategy
 
 **Done:** Cataloged all dependencies of ExecutionManager (11 imports: 2 DB, 6 internal, 2 shared, 1 core) and MCP server (14 imports: 3 DB, 6 internal, 2 shared, 3 external). Identified circular dependency cycle between ExecutionManager/dispatch/router/coordination. Evaluated 4 approaches: full extraction (too large), thin interface extraction (recommended), DI container (overcomplicated), Effect pattern (wrong scale). Recommended Option B: extract contracts (Orchestrator, ExecutionManagerPort, infrastructure interfaces) to core while keeping implementations in backend. Referenced tRPC's pattern as closest analog.
