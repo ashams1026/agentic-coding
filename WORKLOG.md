@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 16:10 PDT — Review: SDK.FUT.5 (approved)
+
+**Reviewed:** Worktree isolation spike at `docs/spikes/worktree-isolation.md`.
+- All 5 SDK worktree mechanisms documented (settings, tools, agent isolation, hooks, sessions)
+- Types verified against actual `sdk.d.ts` and `sdk-tools.d.ts` declarations
+- Honest caveat: `isolation` is on Agent tool, not AgentDefinition
+- File locking replacement analysis thorough — yes for git, no for external resources
+- Recommendation sound: defer until parallel execution is implemented
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 16:05 PDT — SDK.FUT.5: Worktree isolation spike
 
 **Done:** Evaluated SDK worktree isolation for concurrent agent executions. SDK supports 3 mechanisms: `EnterWorktree`/`ExitWorktree` tools, `isolation: "worktree"` on Agent spawning, and `worktree` settings config (`symlinkDirectories`, `sparsePaths`). Also has `WorktreeCreate`/`WorktreeRemove` hook events. Recommendation: use subagent isolation (Option A) when parallel execution is added — not needed yet since agents run sequentially. Replaces need for custom file locking.
