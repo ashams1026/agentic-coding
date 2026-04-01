@@ -44,9 +44,9 @@ packages/frontend dev$ vite
   ➜  Local:   http://localhost:5173/
 ```
 
-Open **http://localhost:5173** in your browser. You'll see the AgentOps dashboard with mock data.
+Open **http://localhost:5173** in your browser. You'll see the AgentOps dashboard.
 
-> **Note:** By default, the UI runs in **mock mode** — all data is simulated in the browser. This lets you explore the full UI without a running backend. You can toggle to real API mode in the bottom status bar.
+> **Tip:** To populate the UI with demo data (projects, work items, personas, executions), run `pnpm db:seed-demo` in a separate terminal. This seeds 3 projects with 14 work items across all workflow states.
 
 ## Configure Your API Key
 
@@ -55,7 +55,7 @@ Agents need an Anthropic API key to run. You can set it in the UI or via CLI.
 ### Via the UI
 
 1. Click **Settings** in the sidebar
-2. Go to the **API Keys** section
+2. Go to the **Agent Configuration** section
 3. Paste your key (`sk-ant-api03-...`) into the input field
 4. Click **Test connection** — you'll see a green checkmark if valid
 5. The key is stored at `~/.agentops/config.json`
@@ -103,9 +103,8 @@ Projects tell AgentOps which directory to work in.
 Work items are the unit of work in AgentOps. They flow through the workflow states.
 
 1. Go to the **Work Items** page (click in the sidebar)
-2. Switch to **Board** view to see the kanban columns
-3. Click the **+** button or use the inline form at the top of the **Backlog** column
-4. Enter a title and description, then submit
+2. Click **Create** or use the inline form
+3. Enter a title and description, then submit
 
 Your new work item appears in the **Backlog** column.
 
@@ -145,12 +144,13 @@ For auto-routing to do anything, you need personas assigned to workflow states:
 2. For each state (Planning, Decomposition, Ready, In Progress, In Review), select a persona from the dropdown
 3. When a work item enters a state, the assigned persona is automatically dispatched
 
-The seed data includes 5 built-in personas:
+The seed data includes 6 built-in personas:
 - **Product Manager** — Planning and requirements
 - **Tech Lead** — Decomposition and architecture
 - **Engineer** — Implementation (In Progress)
 - **Code Reviewer** — Review (In Review)
 - **Router** — Automatic state transitions (system persona)
+- **Pico** — Project assistant chatbot (click the chat bubble in the bottom-right corner)
 
 ### Watch the Pipeline
 
@@ -164,10 +164,18 @@ With personas assigned and auto-routing ON:
 
 Watch the **Agent Monitor** page for live terminal output, and the **Activity Feed** for a chronological event stream.
 
+## Development Tips
+
+- **Dev server port check:** `pnpm dev` uses `scripts/dev.sh` which skips starting a service if its port is already in use. Safe to run multiple times.
+- **Database reset:** `pnpm db:reset` drops and re-creates the development database.
+- **Demo seed:** `pnpm db:seed-demo` populates with realistic demo data.
+- **Separate databases:** Development uses `agentops-dev.db` (local), production uses `~/.agentops/data/agentops.db`.
+
 ## What's Next
 
 - [Architecture](architecture.md) — understand how the system is built
 - [Workflow](workflow.md) — deep dive into the state machine and routing
 - [Personas](personas.md) — create custom personas with your own prompts
+- [MCP Tools](mcp-tools.md) — tools available to AI agents
 - [API Reference](api.md) — integrate with the REST API and WebSocket
 - [Deployment](deployment.md) — run AgentOps as a production service

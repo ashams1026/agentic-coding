@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 12:25 PDT — DOC.1: Update getting-started.md
+
+**Done:** Removed mock mode references (deleted since FX.MOCK1). Added `pnpm db:seed-demo` tip for demo data. Renamed "API Keys" → "Agent Configuration". Updated work item creation flow (Board view reference removed). Added Pico as 6th persona. Added "Development Tips" section with dev server port check, DB reset, demo seed, separate databases. Added MCP Tools link to "What's Next".
+**Files:** `docs/getting-started.md`
+
+---
+
 ## 2026-04-01 12:15 PDT — Review: SDK.REG.1 (approved)
 
 **Reviewed:** Post-Sprint 19/20 regression sweep at `tests/e2e/results/regression-post-sprint19.md`.
