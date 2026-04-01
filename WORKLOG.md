@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-01 02:00 PDT — Review: SDK.SA.2 (approved)
+
+**Reviewed:** Subagent invocation tracking across schema, shared types, executor, and WS client.
+- `parentExecutionId` column added with migration 0006, serialized in API — ready for child record linking
+- SubagentStart/SubagentStop hooks broadcast WS events with parent execution ID and resolved agent name
+- WS event types (`subagent_started`/`subagent_completed`) added to all 4 shared locations + frontend listener
+- Persona map uses `p.id as string` to resolve agent names from IDs — handles branded type correctly
+- DB record creation deferred (pragmatic — hooks are fire-and-forget, no error handling context)
+- UI integration correctly scoped to SDK.SA.3
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 01:55 PDT — SDK.SA.2: Subagent invocation tracking
 
 **Done:** Added SubagentStart/SubagentStop hooks for tracking when agents spawn subagents. Backend: `parentExecutionId` column on executions table (migration 0006), added to shared `Execution` entity and API serializer. New WS event types `subagent_started`/`subagent_completed` in shared ws-events (interfaces, union, map). Frontend: WS client listeners initialized. `buildSubagentHooks()` factory in executor broadcasts WS events with parent execution ID and agent name (resolved from persona map). Hooks wired into query() options.
