@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 06:00 PDT — Review: SDK.ST.5 (approved)
+
+**Reviewed:** Context usage display across executor, shared types, frontend.
+- 60s interval calls `getContextUsage()` on query object with error catch (handles ended queries)
+- `context_usage` WS event with percentage, tokens, categories
+- Fill bar: 16px rounded, color-coded (green/amber/red), percentage label, token tooltip
+- Inner try/finally ensures interval cleanup even on error
+- All shared types updated (event type, interface, union, map, ws-client)
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 05:55 PDT — SDK.ST.5: Context usage display in agent monitor
 
 **Done:** Periodic `getContextUsage()` polling every 60s during active executions via `setInterval` on the query object. Broadcasts `context_usage` WS event with percentage, totalTokens, maxTokens, categories. Frontend: context usage bar in terminal toolbar — 16px fill bar with color coding (green <60%, amber 60-80%, red >80%), percentage label, token count tooltip. New `ContextUsageEvent` in shared ws-events. Interval cleaned up in `finally` block.
