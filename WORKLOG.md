@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 22:15 PDT — Review: RES.TEMPLATES (approved)
+
+**Reviewed:** Templates and presets system research.
+- All 5 areas covered: work item templates (WorkItemTemplate interface, 5 built-in templates with pre-filled fields, "New from Template" dropdown + command palette, custom templates via "Save as Template", storage in `work_item_templates` table), workflow templates (WorkflowTemplate with states + transitions + persona mapping, 5 built-in workflows, template selector in project creation, export/import as JSON), project templates (ProjectTemplate bundles workflow + personas + starter items, 4 built-in project templates, "Create from Template" dialog wireframe with "Customize" expansion), persona presets (current state audit — 6 built-ins with empty systemPrompt, duplicate button exists; 6 additional presets with model/tools/budget, "Browse Presets" library wireframe, "Reset to Default"), storage and sharing (4 options compared; hybrid DB + JSON export recommended; single `templates` table with type discriminator; `.woof.json` format; community gallery deferred to Phase 3+)
+- Source code claims verified: BUILT_IN_PERSONAS at default-personas.ts:17, DEFAULT_STATE_ASSIGNMENTS at :75-81, systemPrompt:"" at :103, Duplicate button at persona-list.tsx:118-121, handleDuplicate at :231, currentState text at schema.ts:29, workflow-config-section.tsx exists, seedDefaultPersonasForProject at projects.ts:85
+- Settings integration well-designed with per-type primary/secondary locations
+- 3-phase plan correctly ordered (work items + personas first, workflows + projects second, sharing third)
+- 6 cross-references accurate, 5 design decisions well-reasoned
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 22:00 PDT — RES.TEMPLATES: Research templates and presets system
 
 **Done:** Researched templates and presets system design. Doc covers all 5 investigation areas: (1) work item templates — WorkItemTemplate interface, 5 built-in templates (Bug Report, Feature Request, Spike, Documentation, Refactor) with pre-filled fields, "New from Template" dropdown UX + command palette integration, custom templates via "Save as Template" on existing items, (2) workflow templates — WorkflowTemplate/WorkflowStateTemplate/WorkflowTransitionTemplate interfaces, 5 built-in workflow templates (Default Linear, Simple Kanban, Code Review Pipeline, Documentation Pipeline, Bug Triage), template selector in project creation dialog, export/import via JSON, (3) project templates — ProjectTemplate bundles workflow + personas + optional starter items, 4 built-in project templates (Standard, Lightweight, Code Review Focused, Documentation Project), "Create Project from Template" dialog wireframe with "Customize" inline expansion, (4) persona presets — audited current state (6 built-ins with empty systemPrompt in default-personas.ts:103, duplicate button at persona-list.tsx:231), 6 additional presets (Bug Triager, Documentation Writer, Test Engineer, Security Reviewer, Dependency Updater, Release Manager), "Browse Presets" library UI wireframe, "Reset to Default" for built-ins, (5) storage and sharing — 4 options compared (DB/JSON files in project/JSON in app data/hybrid), recommended hybrid DB + JSON export with `.woof.json` format, single `templates` table with type discriminator, community gallery as Phase 3+. 3-phase implementation plan, 6 cross-references, 5 design decisions.
