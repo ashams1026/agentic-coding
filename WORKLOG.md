@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 09:40 PDT — Review: SDK.MCP.5 (approved)
+
+**Reviewed:** Dynamic MCP management documentation in `docs/mcp-tools.md`.
+- API endpoints table (3 routes), status response example, 404 behavior
+- Colored dot descriptions with tooltip and click-to-reconnect
+- 5-step failure recovery flow + toggle alternative
+- Implementation section with SDK control methods and runningQueries Map
+- All 3 task requirements covered: toggle/reconnect APIs, status monitoring, failure recovery
+- **Verdict: approved.** Completes Part 3 (Dynamic MCP Management) of Sprint 20.
+
+---
+
 ## 2026-04-01 09:35 PDT — SDK.MCP.5: Update MCP docs with dynamic management
 
 **Done:** Added "Dynamic MCP Management" section to `docs/mcp-tools.md`. Documents: 3 API endpoints table, status response format, agent monitor UI (colored dots, tooltip, click-to-reconnect), failure recovery 5-step flow, implementation details (runningQueries Map, SDK control methods). All 3 task requirements covered.
