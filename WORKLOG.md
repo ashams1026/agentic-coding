@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 16:10 PDT — Review: UX.BRAND.WOOF (approved)
+
+**Reviewed:** Rebrand all user-visible "AgentOps" references to "Woof".
+- Page title "Woof" in index.html with favicon.svg link tag
+- SVG paw-print favicon (amber bg, white paw, 3 toes + main pad) — well-formed
+- Sidebar brand: Dog icon + "Woof" text above project switcher, collapses to icon only
+- Status bar, mobile header, settings, tool-config all say "Woof"
+- Only remaining "AgentOps" in frontend is a CSS comment (developer-facing) — correct per spec
+- Build passes, visual check on dashboard, chat, and settings pages confirms correct layout
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 16:05 PDT — UX.BRAND.WOOF: Rebrand app as Woof
 
 **Done:** Rebranded all user-visible "AgentOps" references to "Woof". Changes: (1) page title in index.html → "Woof", (2) new SVG paw-print favicon (amber background, white paw) in `public/favicon.svg` with link tag in index.html, (3) sidebar header — added Woof brand row with amber Dog icon + "Woof" text above the project switcher, (4) status bar "AgentOps" → "Woof", (5) mobile top bar "AgentOps" → "Woof", (6) settings appearance "AgentOps background service" → "Woof background service", (7) tool-configuration "AgentOps Tools" → "Woof Tools". Pico's avatar already uses Dog icon with amber theme — no changes needed. No login/splash screen exists. Code/package names and developer-facing docs left as "AgentOps".
