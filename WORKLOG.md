@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 00:35 PDT — Review: UX.AGENT.HISTORY (approved)
+
+**Reviewed:** Agent Monitor history view audit — 3 screenshots, 0 new bugs.
+- 8 execution entries with all columns (agent, target, started, duration, cost, outcome)
+- Summary stats correct (8 runs, $2.77, 88%, 3m 5s)
+- Filters present (agent, outcome, duration range)
+- Disabled rewind buttons noted — existing FX.UX.REWIND tracks tooltip fix
+- Dark mode: good contrast on all badges and text
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 00:30 PDT — UX.AGENT.HISTORY: Audit Agent Monitor history view
 
 **Done:** Audited History tab on `/agents`. Summary stats bar shows: Runs 8, Total Cost $2.77, Success 88%, Avg Duration 3m 5s. Filter controls: All agents dropdown, All outcomes dropdown, Min/Max duration inputs. Table with 6 columns: Agent (with avatar), Target (work item), Started, Duration, Cost, Outcome (Success green / Rejected red badges). 8 execution entries render correctly. Each row has a disabled rewind button (no checkpoints in seed data — existing bug FX.UX.REWIND tracks tooltip fix). Rows are flat display (not expandable). Dark mode: good contrast, all badges and text readable. No new bugs filed.
