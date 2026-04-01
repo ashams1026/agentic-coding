@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 11:20 PDT — RES.WORKFLOW.RUNTIME: Custom workflow runtime execution research
+
+**Done:** Investigated all 5 areas for making the workflow runtime dynamic. (1) Router: shared Router persona with workflow-aware dynamic prompt built from DB-backed states/transitions (replaces hardcoded ROUTER_BASE_PROMPT); terminal state short-circuit; Phase 2 per-workflow router persona. (2) Work item binding: per-project default (projects.workflowId) + per-item override (workItems.workflowId) for version pinning; resolution order: item → project → 'wf-default'. (3) Scope: global workflows usable by any project; items always project-scoped (Phase 1); projectless items deferred. (4) Frontend: React Query hooks (useWorkflowStates/useWorkflowTransitions) replace WORKFLOW constant in flow-view, board-view, list-view, filter-bar, detail-panel, settings; mixed version strategy with union display + version badges. (5) Migration: 3-phase approach (dual-read fallback → full dynamic → cleanup). Also designed: resolvePersonaForState() with 2-level resolution, workflow-aware MCP tools (route_to_state, create_children, flag_blocked), execution record enrichment, Phase 2 declarative transition conditions, new workflow-runtime.ts backend module.
+**Files:** `docs/proposals/custom-workflows/runtime-execution.md`
+
+---
+
 ## 2026-04-02 11:00 PDT — Review: RES.WORKFLOW.BUILDER (approved)
 
 **Reviewed:** Workflow builder UX design proposal.
