@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-31 23:55 PDT — Review: SDK.HK.8 (approved)
+
+**Reviewed:** SDK Hooks section added to `docs/architecture.md`.
+- All 7 hooks documented in table with matchers, purpose, and what they replace — matches implementation exactly (lines 399-407)
+- Architecture diagram accurately shows factory functions → query() wiring
+- Audit trail integration table covers all 3 functions with correct fields
+- Sanitization note included for Bash commands
+- Placed logically between Agent Execution Engine and File Checkpointing
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 23:50 PDT — SDK.HK.8: Update architecture docs with hooks
 
 **Done:** Added "SDK Hooks" section to `docs/architecture.md` before File Checkpointing. Documents: registered hooks table (7 hooks across 6 event types with matchers, purpose, and what they replace), hook architecture diagram showing factory functions and query() wiring, audit trail integration table (3 audit functions with fields), Bash command sanitization note.
