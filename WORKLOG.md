@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-31 — Review: SDK.FC.5 (approved)
+
+**Reviewed:** E2E test plan at `tests/e2e/plans/file-checkpointing.md`.
+- 17 steps across 5 parts — covers all task requirements: button visibility, dry-run preview, confirm rewind, error handling, visual quality
+- Follows template format exactly: objective, prerequisites, steps with screenshot checkpoints, expected results, failure criteria
+- Steps reference actual UI elements from RewindButton: Undo2 icon, AlertDialog, tooltip text matches code ("Revert all file changes made by this agent run")
+- Correctly handles edge cases: running executions (hidden), legacy executions (disabled), click propagation prevention
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — SDK.FC.5: E2E test plan for file checkpointing
 
 **Done:** Created `tests/e2e/plans/file-checkpointing.md` — 17 steps across 5 parts covering rewind button visibility (completed/running/legacy), dry-run preview modal (file list, counts, buttons), confirm rewind flow (loading state, success toast), error handling (disabled state, click propagation), and visual quality. References actual UI elements from the RewindButton component: Undo2 icon, AlertDialog, tooltip text, file list styling.
