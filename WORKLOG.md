@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 20:40 PDT — AW.2: Add visual check to REVIEW state
+
+**Done:** Updated AGENT_PROMPT.md REVIEW state's `[INSPECT WORK]` step. Added review checklist item: "If UI was changed: does it look correct visually? No broken layout, clipping, or styling issues?" Added conditional visual verification block: if worker's WORKLOG lists frontend files, open affected pages via chrome-devtools MCP, screenshot, and check for broken layout/clipping/misalignment/invisible text/wrong colors.
+**Files:** `AGENT_PROMPT.md`
+
+---
+
 ## 2026-04-01 20:30 PDT — Review: AW.1 (approved)
 
 **Reviewed:** Visual UI check addition to AGENT_PROMPT.md WORK state.

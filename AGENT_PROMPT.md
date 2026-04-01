@@ -103,7 +103,13 @@ REVIEW
     - Does the code have obvious bugs, missing imports, or broken logic?
     - Are there hardcoded values that should use mock data?
     - Does it integrate with existing code correctly?
+    - If UI was changed: does it look correct visually? No broken layout, clipping, or styling issues?
   Run: pnpm build or pnpm dev — does it compile without errors?
+  If the worker's WORKLOG entry lists frontend files:
+    1. Ensure dev servers are running (check ports 3001 and 5173/5174)
+    2. Open the affected pages in a browser via chrome-devtools MCP
+    3. Take a screenshot, visually verify the UI looks correct
+    4. Check for: broken layout, clipping, misalignment, invisible text, wrong colors
   │
   ▼
 [DECIDE]
