@@ -56,7 +56,7 @@
 
 - [x] **SDK.UX.6** — E2E test plan: model switching. Create `tests/e2e/plans/model-switching.md`: verify model dropdown appears on running executions, model badge updates, confirmation dialog. Visual check.
 
-- [ ] **SDK.UX.7** — Run model switching e2e test. Execute SDK.UX.6. Record results with screenshots.
+- [review] **SDK.UX.7** — Run model switching e2e test. Execute SDK.UX.6. Record results with screenshots.
 
 - [ ] **SDK.UX.8** — Update `docs/frontend.md` with prompt suggestions and model switching. Document: how prompt suggestions work in Pico, model switching in agent monitor, in-process MCP server architecture change.
 

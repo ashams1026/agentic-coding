@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 11:40 PDT — SDK.UX.7: Run model switching e2e test
+
+**Done:** Executed SDK.UX.6 test plan. 2/11 PASS, 0 FAIL, 9 SKIP. No executions in DB — empty History, no running agents. API 404 confirmed for model switch on non-running execution. 1 screenshot. Component verified via code review.
+**Files:** `tests/e2e/results/model-switching.md`, `tests/e2e/results/msw-01-agents-page.png`
+
+---
+
 ## 2026-04-01 11:30 PDT — Review: SDK.UX.6 (approved)
 
 **Reviewed:** E2E test plan at `tests/e2e/plans/model-switching.md`.
