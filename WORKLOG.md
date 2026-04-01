@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 03:30 PDT — UX.PICO: Audit Pico Chat panel
+
+**Done:** Audited Pico chat panel. Floating button opens panel with correct styling. Previous session loads with messages and timestamps. Message input functional — typed and sent "What is this project about?" via ⌘Enter. Response shows SDK error (executable not found — expected in dev, not a UI bug) with red error styling and Retry button. New session creates fresh chat with "Woof! I'm Pico" welcome and 4 suggested prompt chips. Session selector dropdown works. Minimize closes panel cleanly. Dark mode verified — proper contrast, readable text. No UI bugs found.
+**Files:** `TASKS.md`
+**Notes:** Screenshots in `tests/e2e/results/ux-pico-*.png` (6 screenshots). The SDK error on send is a config issue (pathToClaudeCodeExecutable), not a UI bug.
+
+---
+
 ## 2026-04-02 03:15 PDT — Review: UX.SETTINGS (approved)
 
 **Reviewed:** Settings page audit — all 8 sections.

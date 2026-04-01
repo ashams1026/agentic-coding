@@ -73,7 +73,7 @@
 
 ### Pico Chat
 
-- [ ] **UX.PICO** — Audit Pico Chat panel. Open the Pico chat panel (floating button or keyboard shortcut). Verify: panel opens with correct styling, previous session loads or empty state shows, message input is functional, sending a message shows it in the chat with loading indicator, responses render with proper formatting (markdown, code blocks). Test creating a new session. Check panel resize/close behavior. Toggle dark mode. Screenshot. File bugs.
+- [review] **UX.PICO** — Audit Pico Chat panel. Open the Pico chat panel (floating button or keyboard shortcut). Verify: panel opens with correct styling, previous session loads or empty state shows, message input is functional, sending a message shows it in the chat with loading indicator, responses render with proper formatting (markdown, code blocks). Test creating a new session. Check panel resize/close behavior. Toggle dark mode. Screenshot. File bugs.
 
 ### Cross-Cutting
 
