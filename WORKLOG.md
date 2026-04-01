@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 11:00 PDT — Review: RES.WORKFLOW.BUILDER (approved)
+
+**Reviewed:** Workflow builder UX design proposal.
+- All 6 investigation points addressed: hybrid editor (form + preview), add step (4-step flow with defaults + transition definition), delete step (auto-cascade + confirmation + fallback state), reorder (visual only, transitions unchanged), validation (8 rules, real-time, errors block publish), router (shared with dynamic prompt, Phase 2 declarative conditions) ✓
+- Current state accurately documented (flow-view.tsx hand-built CSS, no graph library, workflow-config-section.tsx) ✓
+- 3 interaction flows (create, edit, assign personas) ✓
+- Circular transitions correctly allowed (rejection cycles) with router anti-loop reference ✓
+- Files-to-change list comprehensive (5 new components + backend + hooks + shared validation) ✓
+- Consistent with RES.WORKFLOW.DATA (sort_order, versioning, persona binding) ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 10:50 PDT — RES.WORKFLOW.BUILDER: Workflow builder UX research
 
 **Done:** Evaluated 3 editor models (visual node/edge, form list, hybrid). Recommended hybrid: form-based state list in left panel + auto-laid-out visual preview in right panel. No graph library for Phase 1 — hand-built CSS like existing flow-view.tsx. Designed: add step flow (inline defaults, transition definition with target dropdown + label), delete step (auto-cascade transitions + confirmation with fallback state for active work items), reorder (drag handle, visual only — doesn't affect transitions). 8-rule validation system (errors block publish, warnings advisory). Router: shared router with workflow-aware dynamic prompt (Phase 1), declarative conditions (Phase 2). 3 interaction flows (create, edit, assign personas). ASCII wireframe of full builder layout with validation panel.
