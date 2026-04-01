@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 08:40 PDT — Review: SDK.MCP.1 (approved)
+
+**Reviewed:** Runtime MCP management in `claude-executor.ts` and `executions.ts`.
+- `runningQueries` Map with register/delete lifecycle — clean module-level registry
+- 3 routes: toggle, reconnect, status — all check for running query with 404 fallback
+- Error handling: try/catch on all SDK control methods with MCP_ERROR code
+- Cleanup in `finally` ensures no stale entries
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 08:35 PDT — SDK.MCP.1: Runtime MCP server management
 
 **Done:** Added `runningQueries` registry (Map keyed by executionId) to store active query references. Exported `getRunningQuery()` for route access. Three new API routes: `POST /api/executions/:id/mcp/toggle` (enable/disable MCP server), `POST /api/executions/:id/mcp/reconnect` (reconnect failed server), `GET /api/executions/:id/mcp/status` (get server status). All routes use SDK control methods on the running query. Registry cleaned up in `finally` block.
