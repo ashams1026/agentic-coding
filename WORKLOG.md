@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-31 21:00 PDT — Review: SDK.HK.1 (approved)
+
+**Reviewed:** PreToolUse hook replacing manual sandbox validation in `claude-executor.ts`.
+- Manual `validateCommand()` + `abortController.abort()` loop removed — streaming loop now just yields events
+- SDK-native `PreToolUse` hook with `matcher: "Bash"` correctly wired into `query()` options
+- Hook uses proper `hookSpecificOutput.permissionDecision: "deny"` (correct SDK API, not the `continue/stopReason` pattern from the task description which is for command hooks)
+- `sandbox.ts` module preserved, both `validateCommand` and `buildSandboxPrompt` still used
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 20:50 PDT — SDK.HK.1: Replace sandbox with PreToolUse hook
 
 **Done:** Replaced manual sandbox validation in the streaming loop with a native SDK `PreToolUse` hook. Added `buildSandboxHook()` factory that creates a `HookCallback` matching `Bash` tool calls — calls `validateCommand()` and returns `permissionDecision: "deny"` if blocked. Removed the manual `event.type === "tool_use"` check + `abortController.abort()` pattern (lines 282-298). The SDK now handles sandbox blocking natively via the hooks system. Kept `sandbox.ts` module unchanged.
