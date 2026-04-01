@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 10:20 PDT — SDK.UX.2: Model switching for long-running agents
+
+**Done:** Full-stack model switching. Backend: `GET /api/executions/:id/models` (returns available models via `supportedModels()`), `POST /api/executions/:id/model` (calls `setModel()` on running query). Frontend: `ModelSwitcher` component — Select dropdown for running executions, static Badge for completed. AlertDialog confirmation before switching with cost warning. API client functions `getAvailableModels()` and `switchModel()`. Replaces static model badge in terminal renderer header.
+**Files:** `packages/backend/src/routes/executions.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/features/agent-monitor/model-switcher.tsx` (new), `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`
+
+---
+
 ## 2026-04-01 10:00 PDT — Review: SDK.UX.1 (approved)
 
 **Reviewed:** Pico prompt suggestions across backend, hook, and chat panel.

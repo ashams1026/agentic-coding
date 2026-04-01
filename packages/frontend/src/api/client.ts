@@ -302,6 +302,21 @@ export async function reconnectMcpServer(executionId: ExecutionId, serverName: s
   await post(`/api/executions/${executionId}/mcp/reconnect`, { serverName });
 }
 
+export interface ModelOption {
+  value: string;
+  displayName: string;
+  description: string;
+}
+
+export async function getAvailableModels(executionId: ExecutionId): Promise<ModelOption[]> {
+  const res = await get<{ data: ModelOption[] }>(`/api/executions/${executionId}/models`);
+  return res.data;
+}
+
+export async function switchModel(executionId: ExecutionId, model: string): Promise<void> {
+  await post(`/api/executions/${executionId}/model`, { model });
+}
+
 // ── Comments ─────────────────────────────────────────────────────
 
 export async function getComments(workItemId: WorkItemId): Promise<Comment[]> {

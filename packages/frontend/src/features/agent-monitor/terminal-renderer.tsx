@@ -15,6 +15,7 @@ import {
 import type { ExecutionId, AgentOutputChunkEvent } from "@agentops/shared";
 import { FileChangesPanel } from "./file-changes-panel";
 import { McpStatus } from "./mcp-status";
+import { ModelSwitcher } from "./model-switcher";
 
 // ── Chunk types ────────────────────────────────────────────────
 
@@ -521,9 +522,11 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
               <span className="font-semibold text-sm truncate">
                 {persona.name}
               </span>
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                {MODEL_LABELS[persona.model] ?? persona.model}
-              </Badge>
+              <ModelSwitcher
+                executionId={executionId}
+                currentModel={MODEL_LABELS[persona.model] ?? persona.model}
+                isRunning={execution?.status === "running"}
+              />
             </div>
             {workItem && (
               <p className="text-xs text-muted-foreground truncate">

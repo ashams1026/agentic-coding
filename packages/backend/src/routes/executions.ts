@@ -371,4 +371,37 @@ export async function executionRoutes(app: FastifyInstance) {
       return reply.status(500).send({ error: { code: "MCP_ERROR", message: err instanceof Error ? err.message : String(err) } });
     }
   });
+
+  // GET /api/executions/:id/models — get available models for a running execution
+  app.get<{
+    Params: { id: string };
+  }>("/api/executions/:id/models", async (request, reply) => {
+    const q = getRunningQuery(request.params.id);
+    if (!q) {
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: "No running execution with this ID" } });
+    }
+    try {
+      const models = await q.supportedModels();
+      return { data: models.map((m) => ({ value: m.value, displayName: m.displayName, description: m.description })) };
+    } catch (err) {
+      return reply.status(500).send({ error: { code: "MODEL_ERROR", message: err instanceof Error ? err.message : String(err) } });
+    }
+  });
+
+  // POST /api/executions/:id/model — switch model for a running execution
+  app.post<{
+    Params: { id: string };
+    Body: { model: string };
+  }>("/api/executions/:id/model", async (request, reply) => {
+    const q = getRunningQuery(request.params.id);
+    if (!q) {
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: "No running execution with this ID" } });
+    }
+    try {
+      await q.setModel(request.body.model);
+      return { data: { ok: true, model: request.body.model } };
+    } catch (err) {
+      return reply.status(500).send({ error: { code: "MODEL_ERROR", message: err instanceof Error ? err.message : String(err) } });
+    }
+  });
 }
