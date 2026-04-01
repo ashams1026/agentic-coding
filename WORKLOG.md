@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-31 21:30 PDT — Review: SDK.HK.2 (approved)
+
+**Reviewed:** PostToolUse audit logging hook across `claude-executor.ts`, `audit.ts`, `types.ts`, `execution-manager.ts`.
+- `auditToolUse()` follows existing audit function patterns, logs all required fields
+- `buildAuditHooks()` factory uses closures for shared state (startTimes Map + executionId) — clean design
+- Three hooks cover full lifecycle: PreToolUse (timing), PostToolUse (success), PostToolUseFailure (failure)
+- Bash command sanitization regex covers API_KEY/SECRET/TOKEN/PASSWORD (case-insensitive), preserves key names
+- `executionId` correctly plumbed through SpawnOptions to execution-manager call site
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 21:20 PDT — SDK.HK.2: PostToolUse audit logging hook
 
 **Done:** Added tool-level audit logging via SDK hooks. Created `auditToolUse()` in `audit.ts` logging `{ executionId, toolName, durationMs, success, command? }`. In `claude-executor.ts`: added `buildAuditHooks()` factory that creates three hooks — `PreToolUse` (records start time per tool_use_id), `PostToolUse` (logs success + duration), `PostToolUseFailure` (logs failure + duration). Bash commands are sanitized via regex replacing `ANTHROPIC_API_KEY=`/`SECRET=`/etc. with `***`. Added `executionId` to `SpawnOptions` interface and call site.
