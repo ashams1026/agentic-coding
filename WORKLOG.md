@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 20:05 PDT — RES.COLLAB.COORD: Research multi-agent coordination patterns
+
+**Done:** Researched multi-agent coordination patterns. Doc covers all 5 investigation areas: (1) parallel execution — current behavior (sequential per work item, parallel across items up to maxConcurrent=3), merge conflict risk matrix, 3 mitigation strategies (file-level locking recommended for Phase 1, branch-per-agent for Phase 2, sequential fallback), (2) blocking dependencies — audited work_item_edges (blocks/depends_on/related_to types exist but NOT enforced by dispatch or router), proposed `getUnresolvedBlockers()` check in dispatchForState(), `onWorkItemDone()` trigger for unblocking dependents, circular dependency detection, (3) human-in-the-loop — 4 intervention points (proposals, manual workflow gates, quality review, escalation), `create_proposal` MCP tool design, manual transition type for workflow edges, notification integration matrix, (4) escalation — 5 failure scenarios with detection/current/proposed behavior, `EscalationPolicy` with retry chain (same→upgrade model→different persona→human), `request_help` MCP tool, configurable per persona/project, (5) fan-out/fan-in — decompose→parallel execute→aggregate pattern, completion gate with `checkParentCompletionGate()` trigger, 4 partial completion policies (all/majority/any/threshold), child handoff note aggregation. 4-phase implementation plan, 8 cross-references, 5 design decisions.
+**Files:** `docs/proposals/agent-collaboration/coordination.md` (new)
+
+---
+
 ## 2026-04-02 19:45 PDT — Review: RES.COLLAB.CONTEXT (approved)
 
 **Reviewed:** Agent context passing and shared memory research.
