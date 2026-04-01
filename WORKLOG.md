@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 15:45 PDT — SDK.FUT.4: HTTP hooks spike
+
+**Done:** Evaluated SDK HTTP hooks for external integrations. HTTP hooks work natively via settings (`type: 'http'`, `url`, `headers` with env var interpolation). Documented security controls (`allowedHttpHookUrls`, `httpHookAllowedEnvVars`). 2 integration options: settings file (zero code) vs UI-configured webhooks. Recommendation: start with settings file — already works.
+**Files:** `docs/spikes/http-hooks.md` (new)
+
+---
+
 ## 2026-04-01 15:35 PDT — Review: SDK.FUT.3 (approved)
 
 **Reviewed:** Plugin system spike at `docs/spikes/plugin-system.md`.
