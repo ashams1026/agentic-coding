@@ -56,7 +56,7 @@
 
 ### Part 3: Safety — Dynamic MCP Management
 
-- [ ] **SDK.MCP.1** — Add runtime MCP server management. In `packages/backend/src/agent/claude-executor.ts`: store the `query` object reference during execution. Expose `POST /api/executions/:id/mcp/toggle` route: calls `toggleMcpServer(serverName, enabled)` on the running query to enable/disable an MCP server mid-execution. Expose `POST /api/executions/:id/mcp/reconnect` route: calls `reconnectMcpServer(serverName)` to recover a failed connection. These are useful when an MCP server crashes during a long agent run — the user can reconnect without restarting the entire execution.
+- [review] **SDK.MCP.1** — Add runtime MCP server management. In `packages/backend/src/agent/claude-executor.ts`: store the `query` object reference during execution. Expose `POST /api/executions/:id/mcp/toggle` route: calls `toggleMcpServer(serverName, enabled)` on the running query to enable/disable an MCP server mid-execution. Expose `POST /api/executions/:id/mcp/reconnect` route: calls `reconnectMcpServer(serverName)` to recover a failed connection. These are useful when an MCP server crashes during a long agent run — the user can reconnect without restarting the entire execution.
 
 - [ ] **SDK.MCP.2** — Show MCP server status in agent monitor. During execution, call `mcpServerStatus()` periodically (every 30s). In the agent monitor: show a small "MCP" status section in the execution header. Each configured server shows as a colored dot: green (connected), red (failed), yellow (pending), gray (disabled). Click a failed server to trigger reconnection. Click a connected server to see its available tools. This gives users visibility into MCP health.
 

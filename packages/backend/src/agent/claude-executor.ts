@@ -450,6 +450,16 @@ const ROUTER_OUTPUT_SCHEMA = {
   required: ["nextState", "reasoning", "confidence"],
 };
 
+// ── Running query registry ────────────────────────────────────────
+// Stores references to active query objects so API routes can call
+// control methods (toggleMcpServer, reconnectMcpServer, mcpServerStatus).
+
+const runningQueries = new Map<string, ReturnType<typeof query>>();
+
+export function getRunningQuery(executionId: string) {
+  return runningQueries.get(executionId);
+}
+
 // ── Executor ──────────────────────────────────────────────────────
 
 export class ClaudeExecutor implements AgentExecutor {
@@ -611,6 +621,9 @@ export class ClaudeExecutor implements AgentExecutor {
         },
       });
 
+      // Register query for runtime MCP management
+      runningQueries.set(options.executionId, q);
+
       // Periodic context usage polling
       const contextUsageInterval = setInterval(async () => {
         try {
@@ -644,6 +657,7 @@ export class ClaudeExecutor implements AgentExecutor {
         }
       } finally {
         clearInterval(contextUsageInterval);
+        runningQueries.delete(options.executionId);
       }
     } catch (err) {
       yield {

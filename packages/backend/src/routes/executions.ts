@@ -4,6 +4,7 @@ import { query } from "@anthropic-ai/claude-agent-sdk";
 import type { RewindFilesResult } from "@anthropic-ai/claude-agent-sdk";
 import { db } from "../db/connection.js";
 import { executions, workItems, comments, projects } from "../db/schema.js";
+import { getRunningQuery } from "../agent/claude-executor.js";
 import { createId } from "@agentops/shared";
 import type {
   ExecutionId,
@@ -319,5 +320,55 @@ export async function executionRoutes(app: FastifyInstance) {
         dryRun,
       },
     };
+  });
+
+  // POST /api/executions/:id/mcp/toggle — enable/disable an MCP server mid-execution
+  app.post<{
+    Params: { id: string };
+    Body: { serverName: string; enabled: boolean };
+  }>("/api/executions/:id/mcp/toggle", async (request, reply) => {
+    const q = getRunningQuery(request.params.id);
+    if (!q) {
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: "No running execution with this ID" } });
+    }
+    try {
+      await q.toggleMcpServer(request.body.serverName, request.body.enabled);
+      return { data: { ok: true } };
+    } catch (err) {
+      return reply.status(500).send({ error: { code: "MCP_ERROR", message: err instanceof Error ? err.message : String(err) } });
+    }
+  });
+
+  // POST /api/executions/:id/mcp/reconnect — reconnect a failed MCP server
+  app.post<{
+    Params: { id: string };
+    Body: { serverName: string };
+  }>("/api/executions/:id/mcp/reconnect", async (request, reply) => {
+    const q = getRunningQuery(request.params.id);
+    if (!q) {
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: "No running execution with this ID" } });
+    }
+    try {
+      await q.reconnectMcpServer(request.body.serverName);
+      return { data: { ok: true } };
+    } catch (err) {
+      return reply.status(500).send({ error: { code: "MCP_ERROR", message: err instanceof Error ? err.message : String(err) } });
+    }
+  });
+
+  // GET /api/executions/:id/mcp/status — get MCP server status for a running execution
+  app.get<{
+    Params: { id: string };
+  }>("/api/executions/:id/mcp/status", async (request, reply) => {
+    const q = getRunningQuery(request.params.id);
+    if (!q) {
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: "No running execution with this ID" } });
+    }
+    try {
+      const status = await q.mcpServerStatus();
+      return { data: status };
+    } catch (err) {
+      return reply.status(500).send({ error: { code: "MCP_ERROR", message: err instanceof Error ? err.message : String(err) } });
+    }
   });
 }

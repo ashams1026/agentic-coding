@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 08:35 PDT — SDK.MCP.1: Runtime MCP server management
+
+**Done:** Added `runningQueries` registry (Map keyed by executionId) to store active query references. Exported `getRunningQuery()` for route access. Three new API routes: `POST /api/executions/:id/mcp/toggle` (enable/disable MCP server), `POST /api/executions/:id/mcp/reconnect` (reconnect failed server), `GET /api/executions/:id/mcp/status` (get server status). All routes use SDK control methods on the running query. Registry cleaned up in `finally` block.
+**Files:** `packages/backend/src/agent/claude-executor.ts`, `packages/backend/src/routes/executions.ts`
+
+---
+
 ## 2026-04-01 08:25 PDT — Review: SDK.SB.6 (approved)
 
 **Reviewed:** Sandbox documentation in `docs/deployment.md` and `docs/architecture.md`.
