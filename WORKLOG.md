@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 21:05 PDT — RES.SCHED.INFRA: Research scheduling infrastructure
+
+**Done:** Researched scheduling infrastructure and backend design. Doc covers all 5 investigation areas: (1) scheduler implementation — 7-option comparison table, recommended node-cron + SQLite persistence (zero external deps); Scheduler singleton module with initializeScheduler(), registerSchedule(), executeSchedule(), stopAllSchedules(); lifecycle integration with start.ts (init after migrations + crash recovery, stop on shutdown), (2) missed runs — detection via nextRunAt < now on startup; catch-up policy (run once, not N times) configurable per schedule; notification on missed runs; skip-and-advance alternative, (3) data model — `schedules` table with 14 columns (name, personaId, projectId, prompt, cronExpression, timezone, enabled, catchUpMissed, skipIfRunning, lastRunAt, lastRunOutcome, nextRunAt, consecutiveFailures, timestamps); `schedule_id` + `trigger_type` on executions; nextRunAt via cron-parser; auto-disable after 10 consecutive failures, (4) concurrency — shared pool with existing concurrency.ts (no separate limit); per-schedule overlap handling (skip vs queue, no parallel); p2 default priority; "all projects" fan-out creates one execution per project, (5) trigger interaction — schedules and triggers are separate concepts (different semantics); standalone executions bypass workflow; potential Phase 3 unification into triggers table. Also: 7 CRUD API endpoints, validation rules, 3-phase plan, 7 cross-references, 5 design decisions.
+**Files:** `docs/proposals/scheduling/infrastructure.md` (new)
+
+---
+
 ## 2026-04-02 20:40 PDT — Review: RES.SCHED.UX (approved)
 
 **Reviewed:** Scheduling UX design research.
