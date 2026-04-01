@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-01 02:45 PDT — SDK.SA.5: Run subagent nesting e2e test
+
+**Done:** Executed SDK.SA.4 test plan. 1/12 PASS, 0 FAIL, 11 SKIP. Current project has 0 executions (DB reset removed demo data). History tab empty state renders correctly. All nested card steps SKIP — no parent-child execution data exists. 2 screenshots captured.
+**Files:** `tests/e2e/results/subagent-nesting.md`, `tests/e2e/results/san-01-history-empty.png`, `tests/e2e/results/san-02-full-page.png`
+**Notes:** Re-seed demo DB or run live agent to get execution data for re-testing.
+
+---
+
 ## 2026-04-01 02:35 PDT — Review: SDK.SA.4 (approved)
 
 **Reviewed:** E2E test plan at `tests/e2e/plans/subagent-nesting.md`.
