@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-03-31 — SDK.FC.5: E2E test plan for file checkpointing
+
+**Done:** Created `tests/e2e/plans/file-checkpointing.md` — 17 steps across 5 parts covering rewind button visibility (completed/running/legacy), dry-run preview modal (file list, counts, buttons), confirm rewind flow (loading state, success toast), error handling (disabled state, click propagation), and visual quality. References actual UI elements from the RewindButton component: Undo2 icon, AlertDialog, tooltip text, file list styling.
+**Files:** `tests/e2e/plans/file-checkpointing.md`
+
+---
+
 ## 2026-03-31 — Review: SDK.FC.4 (approved)
 
 **Reviewed:** `rewind_execution` MCP tool and Code Reviewer persona updates.
