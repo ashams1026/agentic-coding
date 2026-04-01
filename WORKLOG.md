@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 02:50 PDT — Review: UX.PERSONA.TEST (approved)
+
+**Reviewed:** Persona Manager test run and creation audit.
+- Create persona: screenshot confirms new card appears with defaults ✓
+- Delete persona: real bug found and well-documented (FX.UX.PERSONA.3) ✓
+- Validation: code verified at persona-detail-panel.tsx:560 ✓
+- Test-run: correctly identified as not wired into UI, filed FX.UX.PERSONA.4 as blocked ✓
+- 4 screenshots present, 2 bugs filed with root cause and fix suggestions
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 02:40 PDT — UX.PERSONA.TEST: Audit Persona Manager test run and creation
 
 **Done:** Audited persona creation, deletion, validation, and test-run accessibility. Create: clicking "Create new persona" creates "New Persona" with Sonnet/3 tools defaults, opens detail panel — works correctly. Delete: confirmation dialog shows, persona removed from grid — but leaves detail panel stuck on "Loading..." with 404 error toast (bug filed as FX.UX.PERSONA.3). Validation: code has `disabled={!name.trim()}` on Save button — present. Test-run: `TestRunPanel` exists in `persona-editor.tsx` but page uses `PersonaDetailPanel` — feature not accessible (filed as FX.UX.PERSONA.4 blocked).
