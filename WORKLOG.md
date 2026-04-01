@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 04:15 PDT — UX.CMD: Audit Command Palette
+
+**Done:** Audited command palette (Cmd+K). Overlay opens as dialog with auto-focused search input. Typing filters — "dash" narrows to 2 results, "Settings" to 2 results, gibberish shows "No results found." empty state. Enter on filtered "Settings" navigates to `/settings`. Clicking work item "User authentication with OAuth2" navigates to `/items` with detail panel open. ArrowDown moves highlight with "Enter" badge. Escape closes palette. All 24 registered commands present: 6 navigation + 2 quick actions + 16 work items. Footer shows keyboard hints (↑↓, ↵, esc). No bugs found.
+**Files:** `TASKS.md`
+**Notes:** Screenshots in `tests/e2e/results/ux-cmd-*.png` (4 screenshots: open, filtered, workitem-nav, keyboard-nav).
+
+---
+
 ## 2026-04-02 04:00 PDT — Review: UX.NAV (approved)
 
 **Reviewed:** Navigation and sidebar audit.
