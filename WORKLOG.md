@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-04-02 19:45 PDT — Review: RES.COLLAB.CONTEXT (approved)
+
+**Reviewed:** Agent context passing and shared memory research.
+- All 5 areas covered: current state (executionContext audit with 4 limitations, project_memories audit with 4 limitations, 7-row "what's lost" table), handoff notes (structured HandoffNote schema with FileChange/Decision sub-types, hybrid generation approach, write_handoff MCP tool, handoff_notes SQL table, before/after system prompt comparison), shared scratchpad (ScratchpadEntry schema, 4 use cases, 5-column comparison table vs comments/handoffs/memories, MCP tools, SQL table), context windowing (4-tier priority system with token budget, buildContextWindow implementation sketch, Haiku summarization for older handoffs, configurable per project/persona, on-demand get_context extension), agent-to-agent tagging (soft @persona_name refs, relevance boost function, 3-level resolution, UI filtering)
+- Current state audit correctly references actual code: `executionContext` at entities.ts:70, schema.ts:33, `buildSystemPrompt()` at claude-executor.ts:78, `memory.ts` with `APPROX_CHARS_PER_TOKEN = 4` at line 23
+- Handoff notes are correctly positioned as separate from comments (agent-to-agent vs human-facing) — good separation of concerns
+- Hybrid generation (auto-extract files from tool calls + agent writes decisions) is pragmatic
+- Context windowing reuses existing Haiku summarizer pattern from memory.ts
+- Phase ordering is well-justified (handoff notes first as highest value, windowing second to prevent bloat, scratchpad third, tagging last as refinement)
+- 7 cross-references are accurate and specific
+- backward compatibility with executionContext addressed
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 19:35 PDT — RES.COLLAB.CONTEXT: Research agent context passing and shared memory
 
 **Done:** Researched context passing and shared memory between agents. Doc covers all 5 investigation areas: (1) current state — audited `executionContext` array (summary/outcome only, no files/decisions/questions) and `project_memories` module (project-scoped, only at Done, read-only during execution); identified 7 types of information lost between workflow steps, (2) explicit handoff notes — structured `HandoffNote` schema with summary, filesChanged, decisionsMade, openQuestions, warnings; hybrid generation (auto-extract files from tool calls, agent writes decisions/questions via `write_handoff` MCP tool); new `handoff_notes` table; injection into system prompt replaces flat summaries, (3) shared scratchpad — per-work-item scratch space with `ScratchpadEntry` schema; MCP tools for read/write; distinction from comments (human-facing) and handoff notes (end-of-execution); pinned entries survive context windowing; "Agent Notes" UI section, (4) context windowing — 4-tier priority system with configurable token budget; Priority 1 (always: title + recent handoff), Priority 2 (pinned notes, open questions), Priority 3 (summarized older handoffs, recent scratchpad), Priority 4 (omitted, available via MCP); Haiku summarization for older handoff notes; budget configurable per project and persona, (5) agent-to-agent tagging — `@persona_name` soft references in handoff notes and scratchpad; relevance boost in context window (tagged content promoted to Priority 1); substring matching for resolution; no validation at write time. 4-phase implementation plan, 7 cross-references, 5 design decisions.
