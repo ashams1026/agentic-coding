@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-01 14:00 PDT — Review: DOC.6 (approved)
+
+**Reviewed:** API docs update in `docs/api.md`.
+- 12 new endpoint docs across 3 sections (Chat, SDK, Runtime Control)
+- SSE event types for chat streaming documented
+- 404 behavior noted for runtime endpoints
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 13:55 PDT — DOC.6: Update api.md
 
 **Done:** Added 3 new API sections: "Chat (Pico)" (5 endpoints: create/list/send/update/delete sessions, SSE streaming), "SDK Capabilities" (2 endpoints: get/reload), "Runtime Execution Control" (5 endpoints: MCP status/toggle/reconnect, models, model switch). Total ~12 new endpoint docs.
