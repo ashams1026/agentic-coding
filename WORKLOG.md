@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 23:35 PDT — Review: FX.UX.ITEMS.1 (approved)
+
+**Reviewed:** Empty state fix for grouped list when all filtered items are children.
+- Root cause correct: grouped rendering filters to `parentId === null`, skipping empty state when children exist
+- Fix adds `topLevel.length === 0` check in grouped path with "No items match your filters." + "Clear filters" button
+- Verified live: "Done" filter now shows message + button (was blank before)
+- "Clear filters" button resets to "All states" and restores all items
+- Both empty state paths (line 464 and 486) consistently have button
+- Build passes clean
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 23:30 PDT — FX.UX.ITEMS.1: Fix empty state when filters match no items
 
 **Done:** Root cause: grouped rendering filters to `parentId === null` top-level items, but the existing empty state only checked `filteredItems.length === 0`. When all matching items are children (e.g. "Done" filter), `filteredItems` is non-empty but `topLevel` is empty — no groups render, no message shown. Fix: added `topLevel.length === 0` check in the grouped rendering path with the same "No items match your filters." message + "Clear filters" button. Also added the "Clear filters" button to the existing empty state (was missing). Both paths call `clearFilters()` + `setFilterState(null)`.
