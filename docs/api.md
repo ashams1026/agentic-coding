@@ -1059,6 +1059,114 @@ Fired when an execution status changes.
 }
 ```
 
+## Chat (Pico)
+
+### Create Chat Session
+
+```
+POST /api/chat/sessions
+```
+
+**Body:** `{ projectId: string }`
+
+**Response:** `{ data: ChatSession }`
+
+### List Chat Sessions
+
+```
+GET /api/chat/sessions?projectId=pj-xxxx
+```
+
+**Response:** `{ data: ChatSession[], total: number }`
+
+### Send Chat Message (SSE)
+
+```
+POST /api/chat/sessions/:id/messages
+```
+
+**Body:** `{ content: string }`
+
+**Response:** Server-Sent Events stream with event types: `text`, `thinking`, `tool_use`, `tool_result`, `suggestion`, `error`, `done`.
+
+### Update Session Title
+
+```
+PATCH /api/chat/sessions/:id
+```
+
+**Body:** `{ title: string }`
+
+### Delete Chat Session
+
+```
+DELETE /api/chat/sessions/:id
+```
+
+## SDK Capabilities
+
+### Get Capabilities
+
+```
+GET /api/sdk/capabilities
+```
+
+**Response:** `{ data: { commands, agents, models, cachedAt } }`
+
+Returns available SDK commands (skills), agents, and models. Cached after first call.
+
+### Reload Plugins
+
+```
+POST /api/sdk/reload
+```
+
+Refreshes SDK plugins and returns updated capabilities.
+
+## Runtime Execution Control
+
+### MCP Server Status
+
+```
+GET /api/executions/:id/mcp/status
+```
+
+Returns MCP server status for a running execution. 404 if not running.
+
+### Toggle MCP Server
+
+```
+POST /api/executions/:id/mcp/toggle
+```
+
+**Body:** `{ serverName: string, enabled: boolean }`
+
+### Reconnect MCP Server
+
+```
+POST /api/executions/:id/mcp/reconnect
+```
+
+**Body:** `{ serverName: string }`
+
+### Get Available Models
+
+```
+GET /api/executions/:id/models
+```
+
+Returns available models for a running execution. 404 if not running.
+
+### Switch Model
+
+```
+POST /api/executions/:id/model
+```
+
+**Body:** `{ model: string }`
+
+Switches the model mid-execution. Returns 404 if not running.
+
 ## Source Files
 
 | File | Purpose |

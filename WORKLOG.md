@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 13:55 PDT — DOC.6: Update api.md
+
+**Done:** Added 3 new API sections: "Chat (Pico)" (5 endpoints: create/list/send/update/delete sessions, SSE streaming), "SDK Capabilities" (2 endpoints: get/reload), "Runtime Execution Control" (5 endpoints: MCP status/toggle/reconnect, models, model switch). Total ~12 new endpoint docs.
+**Files:** `docs/api.md`
+
+---
+
 ## 2026-04-01 13:45 PDT — Review: DOC.5 (approved)
 
 **Reviewed:** Personas.md updates.
