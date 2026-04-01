@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 05:45 PDT — Review: FX.PICO.EXEC (approved)
+
+**Reviewed:** Claude Code executable path resolution fix.
+- `getClaudeCodeExecutablePath()` helper in config.ts: env var override, createRequire resolution, caching, fallback ✓
+- All 4 `query()` call sites have `pathToClaudeCodeExecutable` option: chat.ts:355, claude-executor.ts:559, memory.ts:187, memory.ts:351 ✓
+- Imports correct at all 4 files ✓
+- Build passes clean ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 05:30 PDT — FX.PICO.EXEC: Fix Claude Code executable not found
 
 **Done:** Added `getClaudeCodeExecutablePath()` helper to `config.ts` that resolves the SDK's bundled `cli.js` path (or uses `CLAUDE_CLI_PATH` env var override). Added `pathToClaudeCodeExecutable` option to all 4 `query()` call sites: `chat.ts` (Pico chat), `claude-executor.ts` (agent execution), and `memory.ts` (2 calls: summarizer + consolidation). The helper uses `createRequire` to resolve the SDK package path, caches the result, and falls back to `"claude"` if resolution fails.
