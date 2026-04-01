@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 11:00 PDT — Review: SDK.UX.4 (approved)
+
+**Reviewed:** E2E test plan at `tests/e2e/plans/pico-suggestions.md`.
+- 9 steps across 3 parts: visibility, click interaction, visual quality
+- Covers all task requirements: appear after response, click sends, clear on send
+- Hidden-during-streaming and max-3-limit tested
+- API key dependency noted with SKIP guidance
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 10:55 PDT — SDK.UX.4: E2E test plan for Pico prompt suggestions
 
 **Done:** Created `tests/e2e/plans/pico-suggestions.md` — 9 steps across 3 parts: suggestion visibility (4), click interaction (3), visual quality (2). Covers button styling, click-to-send, clear-on-send, hidden-during-streaming, max 3 limit. Notes API key dependency.

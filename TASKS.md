@@ -50,7 +50,7 @@
 
 - [x] **SDK.UX.3** — In-process MCP server. In `packages/backend/src/agent/mcp-server.ts`: instead of spawning the agentops MCP server as a child process (stdio), use `createSdkMcpServer({ type: 'sdk' })` to run it in-process. Register all MCP tools via `server.tool(name, description, schema, handler)`. This eliminates the child process overhead, reduces latency on MCP tool calls, and simplifies debugging (all in one process, shared memory). Update the `mcpServers` config in `claude-executor.ts` to use `{ type: 'sdk', name: 'agentops', instance: server }`.
 
-- [review] **SDK.UX.4** — E2E test plan: Pico prompt suggestions. Create `tests/e2e/plans/pico-suggestions.md`: verify suggestion buttons appear after Pico responses, clicking sends the suggestion, buttons fade on typing. Visual check.
+- [x] **SDK.UX.4** — E2E test plan: Pico prompt suggestions. Create `tests/e2e/plans/pico-suggestions.md`: verify suggestion buttons appear after Pico responses, clicking sends the suggestion, buttons fade on typing. Visual check.
 
 - [ ] **SDK.UX.5** — Run Pico prompt suggestions e2e test. Execute SDK.UX.4. Record results with screenshots.
 
