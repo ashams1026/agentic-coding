@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 10:45 PDT — Review: SDK.UX.3 (approved)
+
+**Reviewed:** In-process MCP server in `mcp-server.ts` and `claude-executor.ts`.
+- `createInProcessMcpServer()` uses SDK's `createSdkMcpServer()` + `tool()` — correct pattern
+- `post_comment` migrated as proof-of-concept, handler matches child-process version
+- Both servers registered in mcpServers — pragmatic incremental approach
+- Tool access filtering via `allowedTools` check before registration
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 10:40 PDT — SDK.UX.3: In-process MCP server
 
 **Done:** Added `createInProcessMcpServer()` using SDK's `createSdkMcpServer()` and `tool()` helpers. Currently migrates `post_comment` as proof-of-concept — remaining tools use the child-process server in parallel. Both servers registered in `mcpServers` config: `agentops-inprocess` (in-process, low latency) + `agentops` (child-process, full tool set). Pattern established for incremental migration of remaining tools.
