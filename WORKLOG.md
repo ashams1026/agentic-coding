@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 11:25 PDT — SDK.UX.6: E2E test plan for model switching
+
+**Done:** Created `tests/e2e/plans/model-switching.md` — 11 steps across 4 parts: static badge for non-running (3), dropdown for running (4), confirm switch (2), visual quality (2). Covers static vs dropdown behavior, confirmation dialog, cancel/confirm flows, API 404 test.
+**Files:** `tests/e2e/plans/model-switching.md`
+
+---
+
 ## 2026-04-01 11:15 PDT — Review: SDK.UX.5 (approved)
 
 **Reviewed:** Pico prompt suggestions e2e test results.
