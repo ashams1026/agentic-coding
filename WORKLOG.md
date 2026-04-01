@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 23:45 PDT — Review: RES.WEBHOOKS.INBOUND (approved)
+
+**Reviewed:** Inbound triggers from external systems research doc.
+- All 5 areas covered: GitHub integration (5 events, App approach, HMAC, payload mapping, setup wireframe, tunnel challenge), generic webhook receiver (POST /api/webhooks/:triggerId, WebhookTrigger interface, Handlebars templates, CI example), Slack triggers (slash commands, bot mentions, 3-sec async, thread-aware, channel scoping), trigger config UX (Settings > Integrations, list/create/edit wireframes, test panel), security (HMAC timingSafeEqual, 3-tier rate limiting, IP allowlisting, replay protection, malformed handling)
+- Source code claims verified: dispatchForState() at dispatch.ts:23, canSpawn() at concurrency.ts:46, enqueue() at concurrency.ts:76, no trigger/webhook tables in schema.ts, no webhook routes exist
+- Cross-reference to scheduling infrastructure doc (docs/proposals/scheduling/infrastructure.md) confirmed to exist
+- Data model well-designed: webhook_triggers + webhook_deliveries tables with trigger_id/trigger_type on executions aligning with scheduling proposal
+- 3-phase plan correctly ordered (generic → GitHub → Slack), 6 cross-references accurate, 5 design decisions well-reasoned
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 23:30 PDT — RES.WEBHOOKS.INBOUND: Research inbound triggers
 
 **Done:** Researched inbound triggers from external systems. Doc covers all 5 investigation areas: (1) GitHub integration — 5 event use cases (PR opened, issue created, CI failed, review requested, push), GitHub App vs raw webhooks (App preferred for permissions + per-repo install), webhook receiver at POST /api/webhooks/github with X-Hub-Signature-256, 4 event types with extracted variable mappings, setup flow wireframe, local-first tunnel challenge noted; (2) generic webhook receiver — POST /api/webhooks/:triggerId endpoint, WebhookTrigger interface (12 fields), Handlebars-style prompt template with {{payload.*}} variables, custom CI integration example; (3) Slack triggers — slash commands (/woof) + bot mentions + reactions, Slack App with signature verification, 3-second response requirement (async dispatch + later posting), thread-aware responses, channel scoping, setup flow wireframe; (4) trigger configuration UX — Settings > Integrations section (GitHub/Slack/Custom Webhooks), trigger list view wireframe, create/edit dialog wireframe with endpoint URL, secret, event filter, prompt template editor, "Test with Sample Payload" preview panel; (5) security — HMAC verification (timingSafeEqual), 3-tier rate limiting (10/min burst, 60/hr sustained, 100/min global), optional IP allowlisting with GitHub published ranges, replay protection (timestamp + delivery ID dedup), malformed payload handling (4 cases). Also: data model (webhook_triggers + webhook_deliveries tables, trigger_id/trigger_type on executions), 3-phase plan, 6 cross-references, 5 design decisions.
