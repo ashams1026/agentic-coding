@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 01:35 PDT — Review: SDK.SA.1 (approved)
+
+**Reviewed:** Personas as SDK subagents across `types.ts`, `execution-manager.ts`, `claude-executor.ts`.
+- All personas mapped to `AgentDefinition` entries in `agents` option — primary gets `buildSystemPrompt` (30 turns), subagents get their own `systemPrompt` (15 turns)
+- Tools/skills mapped per-persona — each subagent has its own tool access
+- Fallback for empty `allPersonas` ensures primary persona always defined
+- MCP servers correctly not per-subagent (process-level, shared)
+- Execution manager queries all personas and serializes cleanly
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 01:30 PDT — SDK.SA.1: Define personas as SDK subagents
 
 **Done:** All project personas are now passed as `AgentDefinition` entries in the `agents` option of `query()`. Primary persona gets full system prompt (via `buildSystemPrompt`), 30 max turns. Other personas get their own system prompt, 15 max turns, and are available as subagents via the `Agent` tool. Added `allPersonas: Persona[]` to `SpawnOptions`. Execution manager queries all personas, serializes them, and passes through `runExecutionStream` to the executor. Fallback ensures primary persona is always present even if `allPersonas` is empty.
