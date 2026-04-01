@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 19:05 PDT — PLUG.6: Example custom executor template
+
+**Done:** Created `examples/custom-executor/` with 3 files: `echo-executor.ts` (trivial AgentExecutor that echoes task description as text events), `setup.ts` (example composition root showing registry.register), `README.md` (step-by-step guide: implement interface, register, wire, select at runtime, event types table).
+**Files:** `examples/custom-executor/echo-executor.ts`, `examples/custom-executor/setup.ts`, `examples/custom-executor/README.md` (all new)
+
+---
+
 ## 2026-04-01 18:35 PDT — Review: PLUG.5 (approved)
 
 **Reviewed:** Publish-ready package.json for shared and core.
