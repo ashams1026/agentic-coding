@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-01 21:35 PDT — Review: UX.DASH (approved)
+
+**Reviewed:** Dashboard UX audit — 7 screenshots, 3 bug filings.
+- All task requirements met: initial screenshot, active agents strip, cost summary, recent activity, upcoming work, interactive clicks, 1024px, 768px, dark mode
+- 3 bugs well-described with specific file paths, measurements, and fix suggestions
+- Screenshots valid across all viewport sizes and dark/light modes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 21:25 PDT — UX.DASH: Audit Dashboard page
 
 **Done:** Audited Dashboard (`/`) at default viewport (1440x900), 1024px, and 768px, plus dark mode. All 4 stat cards render with correct data and icons. Active agents strip shows 2 running agents with green pulse indicators. Recent Activity populates 10 events with correct icons/colors and live WS support. Upcoming Work shows 1 ready item. Cost Summary renders sparkline chart and monthly progress bar. Dark mode has good contrast throughout. All navigation links verified (stat cards → /agents, /items, /activity, /settings; View all → /activity; activity rows → /items; View items → /items; Settings → /settings). Filed 3 bugs: FX.UX.DASH.1 (Cost Summary below fold), FX.UX.DASH.2 (stat/agent cards not accessible), FX.UX.DASH.3 (activity items link to generic /items).

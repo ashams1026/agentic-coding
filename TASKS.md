@@ -67,7 +67,7 @@
 
 ### Dashboard (`/`)
 
-- [review] **UX.DASH** — Audit Dashboard page. Open `/`, screenshot initial state. Verify: active agents strip shows correct data or empty state, cost summary renders with mock/real data, recent activity list populates and scrolls, upcoming work section displays items. Click each interactive element (agent cards, activity items, work item links). Resize viewport to 1024px and 768px — check for clipping or overflow. Toggle dark mode — verify no invisible text or broken contrast. File bugs for anything broken.
+- [x] **UX.DASH** — Audit Dashboard page. Open `/`, screenshot initial state. Verify: active agents strip shows correct data or empty state, cost summary renders with mock/real data, recent activity list populates and scrolls, upcoming work section displays items. Click each interactive element (agent cards, activity items, work item links). Resize viewport to 1024px and 768px — check for clipping or overflow. Toggle dark mode — verify no invisible text or broken contrast. File bugs for anything broken.
 
 ### Dashboard Bugs
 
