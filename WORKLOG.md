@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 22:00 PDT — RES.TEMPLATES: Research templates and presets system
+
+**Done:** Researched templates and presets system design. Doc covers all 5 investigation areas: (1) work item templates — WorkItemTemplate interface, 5 built-in templates (Bug Report, Feature Request, Spike, Documentation, Refactor) with pre-filled fields, "New from Template" dropdown UX + command palette integration, custom templates via "Save as Template" on existing items, (2) workflow templates — WorkflowTemplate/WorkflowStateTemplate/WorkflowTransitionTemplate interfaces, 5 built-in workflow templates (Default Linear, Simple Kanban, Code Review Pipeline, Documentation Pipeline, Bug Triage), template selector in project creation dialog, export/import via JSON, (3) project templates — ProjectTemplate bundles workflow + personas + optional starter items, 4 built-in project templates (Standard, Lightweight, Code Review Focused, Documentation Project), "Create Project from Template" dialog wireframe with "Customize" inline expansion, (4) persona presets — audited current state (6 built-ins with empty systemPrompt in default-personas.ts:103, duplicate button at persona-list.tsx:231), 6 additional presets (Bug Triager, Documentation Writer, Test Engineer, Security Reviewer, Dependency Updater, Release Manager), "Browse Presets" library UI wireframe, "Reset to Default" for built-ins, (5) storage and sharing — 4 options compared (DB/JSON files in project/JSON in app data/hybrid), recommended hybrid DB + JSON export with `.woof.json` format, single `templates` table with type discriminator, community gallery as Phase 3+. 3-phase implementation plan, 6 cross-references, 5 design decisions.
+**Files:** `docs/proposals/templates/design.md` (new)
+
+---
+
 ## 2026-04-02 21:45 PDT — Review: RES.ROLLBACK (approved)
 
 **Reviewed:** Rollback UX and implementation research.
