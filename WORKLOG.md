@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 16:25 PDT — Review: RES.PROMPTS.DOC (approved)
+
+**Reviewed:** Persona prompt pipeline documentation.
+- All 5 task requirements covered (storage, assembly, Pico path, SDK delivery, user vs system control)
+- Verified `buildSystemPrompt()` assembly order against source (lines 25-97) — exact match
+- Verified Pico chat assembly against `chat.ts` (lines 274-313) — exact match
+- Verified SDK delivery and subagent prompt fallback (line 517) — accurate
+- Architecture diagrams, section format details, and comparison tables all correct
+- Written to correct output path `docs/proposals/persona-prompts/current-architecture.md`
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 16:20 PDT — RES.PROMPTS.DOC: Document persona prompt pipeline
 
 **Done:** Traced and documented the full persona prompt storage and assembly pipeline. Doc covers: (1) persona DB schema (`systemPrompt` TEXT field), (2) editor UI (textarea, no structured fields), (3) `buildSystemPrompt()` in claude-executor.ts — 5-section assembly with `\n\n` separators (user prompt → project context → work item → sandbox → history), (4) Pico chat assembly — 4-section variant (user prompt → skill file → project context → personality), (5) SDK delivery via `AgentDefinition.prompt` in `query()`, (6) user-controlled vs system-injected table, (7) project memories are on-demand via MCP tool only. Includes architecture diagrams.
