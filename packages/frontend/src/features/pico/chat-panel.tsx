@@ -43,6 +43,7 @@ export function ChatPanel() {
     isStreaming,
     isLoadingHistory,
     error,
+    suggestions,
     sendMessage,
     newSession,
     switchSession,
@@ -340,6 +341,25 @@ export function ChatPanel() {
           <div ref={messagesEndRef} />
         </div>
       </ScrollArea>
+
+      {/* Prompt suggestions */}
+      {suggestions.length > 0 && !isStreaming && (
+        <div className="flex flex-wrap gap-1.5 px-3 py-2 border-t border-border">
+          {suggestions.map((s, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => {
+                sendMessage(s);
+                setInput("");
+              }}
+              className="text-xs px-2.5 py-1 rounded-full border border-primary/30 text-primary hover:bg-primary/10 transition-colors truncate max-w-[200px]"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Input */}
       <div className="border-t border-border p-3">

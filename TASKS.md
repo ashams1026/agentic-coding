@@ -68,7 +68,7 @@
 
 ### Part 4: UX — Prompt Suggestions & Model Switching
 
-- [ ] **SDK.UX.1** — Enable prompt suggestions for Pico. In the Pico executor config: add `promptSuggestions: true` to `query()` options. Handle `SDKPromptSuggestionMessage` in the streaming response: extract the predicted next prompts. In the Pico chat panel: after each Pico response, show 2-3 suggested follow-up buttons below the message (similar to the welcome message quick actions from PICO.10). Clicking a suggestion sends it as the next message. Suggestions fade out once the user starts typing.
+- [review] **SDK.UX.1** — Enable prompt suggestions for Pico. In the Pico executor config: add `promptSuggestions: true` to `query()` options. Handle `SDKPromptSuggestionMessage` in the streaming response: extract the predicted next prompts. In the Pico chat panel: after each Pico response, show 2-3 suggested follow-up buttons below the message (similar to the welcome message quick actions from PICO.10). Clicking a suggestion sends it as the next message. Suggestions fade out once the user starts typing.
 
 - [ ] **SDK.UX.2** — Add model switching for long-running agents. In the agent monitor: add a "Model" dropdown in the execution header (only visible for running executions). Shows available models from `supportedModels()`. Selecting a different model calls `setModel(newModel)` on the running query. Use case: an agent started on Haiku but the task is complex — user can upgrade to Sonnet mid-run without restarting. Show the current model as a badge that updates when switched. Confirm before switching: "Switch from Haiku to Sonnet? This may increase costs."
 

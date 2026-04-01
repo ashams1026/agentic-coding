@@ -355,6 +355,7 @@ export async function chatRoutes(app: FastifyInstance) {
           permissionMode: "bypassPermissions",
           allowDangerouslySkipPermissions: true,
           maxBudgetUsd: pico.maxBudgetPerRun > 0 ? pico.maxBudgetPerRun : undefined,
+          promptSuggestions: true,
           agent: "pico",
           agents: { pico: agentDef },
           mcpServers: {
@@ -408,6 +409,8 @@ export async function chatRoutes(app: FastifyInstance) {
                   : JSON.stringify(msg.tool_use_result),
             }),
           });
+        } else if (msg.type === "prompt_suggestion") {
+          sendSSE({ type: "suggestion", content: msg.suggestion });
         } else if (msg.type === "result") {
           if (msg.subtype === "success") {
             metadata.costUsd = msg.total_cost_usd;

@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 09:55 PDT — SDK.UX.1: Enable prompt suggestions for Pico
+
+**Done:** Full-stack prompt suggestions. Backend: `promptSuggestions: true` in Pico's `query()` options, handles `prompt_suggestion` messages → sends as `suggestion` SSE event. Frontend hook: `SSESuggestionEvent` type, `suggestions` state (max 3, cleared on send). Chat panel: suggestion buttons between ScrollArea and input — rounded pill buttons with primary color, click sends message. Suggestions hidden during streaming.
+**Files:** `packages/backend/src/routes/chat.ts`, `packages/frontend/src/hooks/use-pico-chat.ts`, `packages/frontend/src/features/pico/chat-panel.tsx`
+
+---
+
 ## 2026-04-01 09:40 PDT — Review: SDK.MCP.5 (approved)
 
 **Reviewed:** Dynamic MCP management documentation in `docs/mcp-tools.md`.

@@ -34,6 +34,10 @@ interface SSEErrorEvent {
   type: "error";
   content: string;
 }
+interface SSESuggestionEvent {
+  type: "suggestion";
+  content: string;
+}
 interface SSEDoneEvent {
   type: "done";
   messageId: string;
@@ -45,6 +49,7 @@ type SSEEvent =
   | SSEToolUseEvent
   | SSEToolResultEvent
   | SSEErrorEvent
+  | SSESuggestionEvent
   | SSEDoneEvent;
 
 // ── Parse SSE stream ─────────────────────────────────────────────
@@ -163,6 +168,7 @@ export function usePicoChat() {
   const [messages, setMessages] = useState<PicoChatMessage[]>([]);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const abortRef = useRef<(() => void) | null>(null);
@@ -240,6 +246,7 @@ export function usePicoChat() {
     async (content: string) => {
       if (!content.trim() || isStreaming) return;
       setError(null);
+      setSuggestions([]);
 
       try {
         const sessionId = await ensureSession();
@@ -332,6 +339,10 @@ export function usePicoChat() {
                   block.output = result.output;
                 }
               }
+              break;
+            }
+            case "suggestion": {
+              setSuggestions((prev) => [...prev, event.content].slice(-3));
               break;
             }
             case "error": {
@@ -462,6 +473,7 @@ export function usePicoChat() {
     isStreaming,
     isLoadingHistory,
     error,
+    suggestions,
     sendMessage,
     newSession,
     switchSession,
