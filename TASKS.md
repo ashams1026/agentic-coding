@@ -50,7 +50,7 @@
 
 - [x] **SDK.SB.4** — E2E test plan: sandbox settings UI. Create `tests/e2e/plans/sandbox-settings.md`: verify sandbox configuration renders in Settings → Security, allowed domains list is editable, toggle works. Visual check of the sandbox settings section.
 
-- [ ] **SDK.SB.5** — Run sandbox settings e2e test. Execute SDK.SB.4. Record results with screenshots.
+- [review] **SDK.SB.5** — Run sandbox settings e2e test. Execute SDK.SB.4. Record results with screenshots.
 
 - [ ] **SDK.SB.6** — Update `docs/deployment.md` and `docs/architecture.md` with sandbox documentation. Document: SDK sandbox configuration, filesystem/network rules, canUseTool callback, how to customize per-project, OS-level sandbox requirements.
 
