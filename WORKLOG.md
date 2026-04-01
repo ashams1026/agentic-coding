@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 21:45 PDT — Review: RES.ROLLBACK (approved)
+
+**Reviewed:** Rollback UX and implementation research.
+- All 6 areas covered: rollback scope (3-scope comparison table — per-execution/per-message/per-tool-call with SDK support, complexity, user value; per-execution as Phase 1, per-message Phase 2, per-tool-call not recommended), UX (4-surface analysis with priority — Agent Monitor P0 exists, execution detail panel P1 with wireframe, work item timeline P2, activity feed P3; 3 confirmation dialog enhancements: diff preview, conflict warning, time-elapsed), partial rollback (SDK is all-or-nothing; 3 approaches: git-based selective revert with race condition identified, pre-rewind snapshot recommended for Phase 3, SDK feature request; honest tradeoff analysis), safety (4 detection strategies compared; 2-tier recommendation: mtime + execution history; conflict UI wireframe; warning-only approach with running-execution exception), git integration (4 options: working tree/auto-commit/staged/user choice; recommended Option D user choice with default-on commit; auto-generated message with editable text), SDK limitations (9-feature audit table; 5 custom implementations needed; checkpoint retention analysis ~5MB/day; cross-session validity confirmed as critical architectural enabler)
+- Source code claims verified: enableFileCheckpointing at claude-executor.ts:564, checkpointEmitted at :655-661, checkpointMessageId at execution-manager.ts:431/445/525, schema.ts:156, rewind API at executions.ts:167-322, client.ts:280-283, RewindButton at agent-history.tsx:275-395, rewind_execution MCP tool at mcp-server.ts:628-671, running block at executions.ts:196-203
+- BUG-1 reference verified at e2e results :47
+- SDK RewindFilesResult type matches exactly (canRewind/error/filesChanged/insertions/deletions)
+- 3-phase plan correctly ordered by effort and value
+- 6 cross-references accurate, 5 design decisions well-reasoned
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 21:30 PDT — RES.ROLLBACK: Research rollback UX and implementation
 
 **Done:** Researched rollback UX and implementation design. Doc covers all 6 investigation areas: (1) rollback scope — per-execution (current, sufficient for Phase 1), per-message (Phase 2, requires capturing all assistant message IDs), per-tool-call (not recommended — SDK doesn't support, git is better); (2) UX — 4-surface analysis (Agent Monitor history P0 exists, execution detail panel P1, work item timeline P2, activity feed P3); enhanced confirmation dialog with time-elapsed indicator + conflict warnings + per-file diffs; (3) partial rollback — SDK is all-or-nothing; 3 approaches compared (git-based selective revert, pre-rewind snapshot recommended for Phase 3, SDK feature request); checkbox per file in dialog; (4) safety — 2-tier conflict detection (mtime comparison + execution history cross-reference); warning-only approach (never block); conflict UI wireframe showing which files modified and by whom; (5) git integration — 4 options compared (working tree only, auto-commit, staged changes, user choice); recommended: opt-in git commit creation (default on) with auto-generated message; (6) SDK limitations — 9-feature audit table; 5 custom implementations needed (conflict detection, git commits, per-file diffs, multiple checkpoints, partial rollback); checkpoint storage analysis (~5MB/day at 100 executions, not a near-term concern). 3-phase implementation plan, 6 cross-references, 5 design decisions.
