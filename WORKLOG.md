@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 18:15 PDT — Review: RES.LIFECYCLE.UX (approved)
+
+**Reviewed:** Work item delete & archive UX design.
+- All 5 areas covered: semantics (archive primary/preserves, delete secondary/permanent), confirmation (3 tiers: toast, children dialog, always-confirm delete with wireframe), bulk operations (action bar, board multi-select, filter-aware select-all), undo (archive reversible + toast, delete 30-day soft delete with Settings recovery), archived appearance (hidden by default, "Show archived" toggle, muted style, read-only detail)
+- Agent interaction edge cases handled: archive proceeds (execution finishes), delete blocked on active execution
+- Parent-child cascading addressed for both archive and delete
+- 7 entry points comprehensive, keyboard shortcuts included
+- Design decisions well-reasoned (archive over delete, no trash view, soft delete, block delete on active)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 18:10 PDT — RES.LIFECYCLE.UX: Research work item delete & archive UX
 
 **Done:** Researched and documented UX for deleting and archiving work items. Doc covers all 5 investigation areas: (1) delete vs archive semantics — archive hides but preserves data, delete is permanent; archive is primary/prominent action, delete is secondary; availability table per view, (2) confirmation UX — no confirmation for simple archive (undo toast), dialog for items with children/executions, always-confirm for delete with cascade options, blocked if active execution, (3) bulk operations — multi-select action bar in list/board views, select-all respects filters, drag-to-archive zone, (4) undo — archive fully reversible via unarchive button + 5-second undo toast; delete uses 30-day soft delete with Settings > Data recovery; background hard-delete job, (5) archived item appearance — hidden from default views, "Show archived" toggle in filter bar, muted/grayed in search, read-only detail panel, execution history preserved. Also covers agent interaction (§6), 7 entry points table (§7), and 4 design decisions (§8).
