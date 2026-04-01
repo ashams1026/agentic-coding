@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 00:50 PDT — RES.WEBHOOKS.OUTBOUND (rework): Fix event source references
+
+**Done:** Addressed all 7 feedback points from review. Fixed event catalog table in section 2: (1) agent_started source → execution-manager.ts:341, (2) agent_completed source → execution-manager.ts:539, (3) agent_completed failure source → execution-manager.ts:693, (4) state_change source → work-items.ts:166 / mcp-server.ts:197. For proposal_created and proposal_updated: explicitly noted these types exist in ws-events.ts but are NOT currently broadcast anywhere — added implementation gap note explaining broadcast calls need to be added as a Phase 2 prerequisite. Updated section 1 file list from 5 to 6 files, adding execution-manager.ts as primary broadcast site for agent lifecycle events.
+**Files:** `docs/proposals/webhooks/outbound-events.md` (modified)
+
+---
+
 ## 2026-04-03 00:30 PDT — Review: RES.WEBHOOKS.OUTBOUND (rejected)
 
 **Reviewed:** Outbound event webhooks research doc.

@@ -12,7 +12,7 @@ AgentOps has two event systems, both internal-only:
 
 **1. WebSocket broadcast** (`ws.ts:12`) — real-time push to connected frontend clients:
 - 14 event types defined in `packages/shared/src/ws-events.ts:16-30`
-- Broadcast sites across 5 files: `work-items.ts`, `mcp-server.ts`, `coordination.ts`, `dispatch.ts`, `claude-executor.ts`
+- Broadcast sites across 6 files: `execution-manager.ts` (agent_started, agent_completed), `work-items.ts`, `mcp-server.ts`, `coordination.ts`, `dispatch.ts`, `claude-executor.ts`
 - Simple `Set<WebSocket>` — no topic filtering, no per-client subscription, no persistence
 - Events lost if no frontend client is connected
 
@@ -39,14 +39,16 @@ Which internal events should be exposed as outbound webhooks:
 
 | Event | Source | Priority | Rationale |
 |-------|--------|----------|-----------|
-| **Execution started** | `dispatch.ts:63` broadcast `agent_started` | P0 | Track when agents begin work |
-| **Execution completed** | `claude-executor.ts:304` broadcast `agent_completed` | P0 | Know when work is done, get outcome |
-| **Execution failed** | `claude-executor.ts:343` broadcast `agent_completed` (outcome=error) | P0 | Alert external monitoring systems |
-| **Work item state changed** | `work-items.ts:166` / `mcp-server.ts:93` broadcast `state_change` | P1 | Sync state with external project trackers |
-| **Proposal created** | `mcp-server.ts:313` broadcast `proposal_created` | P1 | Notify humans of pending approvals |
-| **Proposal resolved** | `mcp-server.ts:344` broadcast `proposal_updated` | P1 | Track approval/rejection flow |
+| **Execution started** | `execution-manager.ts:341` broadcast `agent_started` | P0 | Track when agents begin work |
+| **Execution completed** | `execution-manager.ts:539` broadcast `agent_completed` | P0 | Know when work is done, get outcome |
+| **Execution failed** | `execution-manager.ts:693` broadcast `agent_completed` (outcome=failure) | P0 | Alert external monitoring systems |
+| **Work item state changed** | `work-items.ts:166` / `mcp-server.ts:197` broadcast `state_change` | P1 | Sync state with external project trackers |
+| **Proposal created** | Not currently broadcast — `proposal_created` type exists in `ws-events.ts` but is unused. New broadcast site needed. | P1 | Notify humans of pending approvals |
+| **Proposal resolved** | Not currently broadcast — `proposal_updated` type exists in `ws-events.ts` but is unused. New broadcast site needed. | P1 | Track approval/rejection flow |
 | **Cost threshold reached** | New — derived from `cost_event` audit entries | P2 | Budget alerting |
 | **Comment created** | `mcp-server.ts:704` broadcast `comment_created` | P2 | External discussion sync |
+
+**Implementation gap:** The `proposal_created` and `proposal_updated` WsEvent types are defined in `packages/shared/src/ws-events.ts:81-95` but no backend code currently emits them. To expose these as outbound webhook events, broadcast calls must first be added at the proposal creation and resolution points in the backend (likely in the MCP server's proposal handling or execution-manager). This is a prerequisite for Phase 2.
 
 ### Mapping: Internal WsEvent → Outbound Webhook Event
 
