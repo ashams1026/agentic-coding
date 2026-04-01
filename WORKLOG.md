@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 09:05 PDT — SDK.MCP.3: E2E test plan for MCP status display
+
+**Done:** Created `tests/e2e/plans/mcp-status.md` — 13 steps across 5 parts: dot visibility (3), dot colors (3), click interactions (2), API endpoints (3), visual quality (2). Notes real-time dependency — dots only show during running executions. Includes API 404 tests for non-running executions.
+**Files:** `tests/e2e/plans/mcp-status.md`
+
+---
+
 ## 2026-04-01 08:55 PDT — Review: SDK.MCP.2 (approved)
 
 **Reviewed:** MCP status component and API client functions.

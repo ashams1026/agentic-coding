@@ -60,7 +60,7 @@
 
 - [x] **SDK.MCP.2** — Show MCP server status in agent monitor. During execution, call `mcpServerStatus()` periodically (every 30s). In the agent monitor: show a small "MCP" status section in the execution header. Each configured server shows as a colored dot: green (connected), red (failed), yellow (pending), gray (disabled). Click a failed server to trigger reconnection. Click a connected server to see its available tools. This gives users visibility into MCP health.
 
-- [ ] **SDK.MCP.3** — E2E test plan: MCP status display. Create `tests/e2e/plans/mcp-status.md`: verify MCP server dots render in agent monitor, colors are correct, click interactions work. Visual verification.
+- [review] **SDK.MCP.3** — E2E test plan: MCP status display. Create `tests/e2e/plans/mcp-status.md`: verify MCP server dots render in agent monitor, colors are correct, click interactions work. Visual verification.
 
 - [ ] **SDK.MCP.4** — Run MCP status e2e test. Execute SDK.MCP.3. Record results with screenshots.
 
