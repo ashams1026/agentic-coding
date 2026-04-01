@@ -403,6 +403,7 @@ async function runExecutionStream(
   let finalCostUsd = 0;
   let finalDurationMs = 0;
   let checkpointMessageId: string | null = null;
+  let structuredOutput: Record<string, unknown> | null = null;
 
   try {
     const events = executor.spawn(task, persona, project, {
@@ -438,6 +439,9 @@ async function runExecutionStream(
         finalSummary = event.summary;
         finalCostUsd = event.costUsd;
         finalDurationMs = event.durationMs;
+        if (event.structuredOutput && typeof event.structuredOutput === "object") {
+          structuredOutput = event.structuredOutput as Record<string, unknown>;
+        }
       }
 
       if (event.type === "error") {
@@ -457,6 +461,7 @@ async function runExecutionStream(
         outcome: finalOutcome,
         logs,
         checkpointMessageId,
+        structuredOutput,
       })
       .where(eq(executions.id, executionId));
 

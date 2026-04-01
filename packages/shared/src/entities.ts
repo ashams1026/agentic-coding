@@ -121,6 +121,7 @@ export interface Execution {
   rejectionPayload: RejectionPayload | null;
   logs: string;
   checkpointMessageId: string | null;
+  structuredOutput: Record<string, unknown> | null;
 }
 
 export interface Comment {

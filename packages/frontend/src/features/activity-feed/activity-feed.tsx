@@ -39,6 +39,7 @@ import {
 import { subscribeAll } from "@/api/ws";
 import { useActivityStore } from "@/stores/activity-store";
 import type { Persona, WorkItemId, PersonaId } from "@agentops/shared";
+import { RouterDecisionCard, isRouterDecision } from "@/features/agent-monitor/router-decision-card";
 import type {
   WsEvent,
   AgentStartedEvent,
@@ -73,6 +74,7 @@ interface ActivityEvent {
   targetLabel: string;
   timestamp: string;
   isLive?: boolean;
+  structuredOutput?: Record<string, unknown> | null;
 }
 
 // ── Icon/color config per event type ──────────────────────────────
@@ -226,15 +228,30 @@ function useBaseActivityEvents(): ActivityEvent[] {
           });
         }
         if (exec.status === "completed" && exec.outcome === "success") {
-          events.push({
-            id: `completed-${exec.id}`,
-            type: "agent_completed",
-            description: exec.summary || `${pName} completed work on ${wiTitle}`,
-            personaId: exec.personaId,
-            targetPath: "/items",
-            targetLabel: wiTitle,
-            timestamp: exec.completedAt ?? exec.startedAt,
-          });
+          // Router with structured output gets a dedicated decision event
+          if (pName === "Router" && exec.structuredOutput) {
+            const so = exec.structuredOutput as Record<string, unknown>;
+            events.push({
+              id: `router-${exec.id}`,
+              type: "router_decision",
+              description: `Router: ${so.nextState ?? "unknown"} — ${so.reasoning ?? exec.summary}`,
+              personaId: exec.personaId,
+              targetPath: "/items",
+              targetLabel: wiTitle,
+              timestamp: exec.completedAt ?? exec.startedAt,
+              structuredOutput: exec.structuredOutput,
+            });
+          } else {
+            events.push({
+              id: `completed-${exec.id}`,
+              type: "agent_completed",
+              description: exec.summary || `${pName} completed work on ${wiTitle}`,
+              personaId: exec.personaId,
+              targetPath: "/items",
+              targetLabel: wiTitle,
+              timestamp: exec.completedAt ?? exec.startedAt,
+            });
+          }
         }
         if (exec.status === "completed" && exec.outcome === "rejected") {
           events.push({
@@ -652,7 +669,14 @@ function EventRow({ event, personaMap }: EventRowProps) {
       )}
 
       <div className="min-w-0 flex-1">
-        <p className="text-sm leading-snug">{event.description}</p>
+        {event.type === "router_decision" && isRouterDecision(event.structuredOutput) ? (
+          <div className="space-y-1">
+            <RouterDecisionCard output={event.structuredOutput} compact />
+            <p className="text-xs text-muted-foreground leading-snug">{(event.structuredOutput as Record<string, unknown>).reasoning as string}</p>
+          </div>
+        ) : (
+          <p className="text-sm leading-snug">{event.description}</p>
+        )}
         <div className="flex items-center gap-2 mt-1">
           <span className="text-xs text-muted-foreground">
             {formatTimestamp(event.timestamp)}

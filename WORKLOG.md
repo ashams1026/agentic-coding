@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 00:25 PDT — SDK.SO.2: Display structured Router decisions in UI
+
+**Done:** Full-stack structured output display. Backend: added `structured_output` column to executions schema (migration 0005), stored from `ResultEvent.structuredOutput` in execution-manager, included in API serializer. Shared: added `structuredOutput` to `Execution` entity. Frontend: created `RouterDecisionCard` component with full (card with state badge, reasoning, confidence dot) and compact (inline badge+dot) variants. Integrated into agent-history expanded view (shows above terminal renderer for Router executions). Activity feed: Router executions with structured output render as `router_decision` events with compact card instead of generic `agent_completed`.
+**Files:** `packages/backend/src/db/schema.ts`, `packages/backend/drizzle/0005_futuristic_chamber.sql`, `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/routes/executions.ts`, `packages/shared/src/entities.ts`, `packages/frontend/src/features/agent-monitor/router-decision-card.tsx` (new), `packages/frontend/src/features/agent-monitor/agent-history.tsx`, `packages/frontend/src/features/activity-feed/activity-feed.tsx`
+
+---
+
 ## 2026-04-01 00:10 PDT — Review: SDK.SO.1 (approved)
 
 **Reviewed:** Structured output for Router persona across 7 files.

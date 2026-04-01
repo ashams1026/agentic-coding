@@ -35,6 +35,7 @@ function serializeExecution(row: typeof executions.$inferSelect) {
     rejectionPayload: row.rejectionPayload ?? null,
     logs: row.logs,
     checkpointMessageId: row.checkpointMessageId ?? null,
+    structuredOutput: row.structuredOutput ?? null,
   };
 }
 

@@ -57,6 +57,7 @@ import { rewindExecution } from "@/api";
 import type { RewindResult } from "@/api/client";
 import { useToastStore } from "@/stores/toast-store";
 import { TerminalRenderer } from "./terminal-renderer";
+import { RouterDecisionCard, isRouterDecision } from "./router-decision-card";
 import type { Execution, ExecutionId } from "@agentops/shared";
 
 // ── Helpers ───────────────────────────────────────────────────────
@@ -476,6 +477,11 @@ function HistoryRow({
       <CollapsibleContent>
         <tr>
           <td colSpan={7} className="p-0">
+            {isRouterDecision(execution.structuredOutput) && (
+              <div className="px-4 py-3 border-b">
+                <RouterDecisionCard output={execution.structuredOutput} />
+              </div>
+            )}
             <div className="h-[300px] border-b">
               <TerminalRenderer executionId={execution.id} />
             </div>
