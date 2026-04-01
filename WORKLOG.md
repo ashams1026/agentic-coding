@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 02:30 PDT — SDK.SA.4: E2E test plan for subagent nesting
+
+**Done:** Created `tests/e2e/plans/subagent-nesting.md` — 12 steps across 4 parts: top-level filtering (3), nested subagent cards (5), parent without children (2), visual quality (2). Covers tree connector, expand/collapse, metadata display, conditional rendering, dark mode. Notes data dependency on `parentExecutionId`.
+**Files:** `tests/e2e/plans/subagent-nesting.md`
+
+---
+
 ## 2026-04-01 02:20 PDT — Review: SDK.SA.3 (approved)
 
 **Reviewed:** Nested subagent view in `subagent-card.tsx` and `agent-history.tsx`.
