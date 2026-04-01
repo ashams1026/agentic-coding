@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 19:00 PDT — RES.DATA.BACKUP: Research backup, restore, and data export
+
+**Done:** Researched backup, restore, and data export. Doc covers all 5 investigation areas: (1) backup strategy — audited current state (zero backups), DB at `~/.agentops/data/agentops.db` (connection.ts:17) with WAL sidecar files; recommended SQLite `backup()` API (atomic, non-blocking, ~50ms for 100MB); 4 backup triggers (pre-migration, daily, manual, pre-destructive); retention: 7 daily + 4 weekly in `~/.agentops/backups/`. (2) restore — full restore flow (interrupt executions, backup current, copy+migrate+verify), schema version compatibility via Drizzle migration replay, pre-restore safety backup. (3) export/import — audited existing partial export (settings.ts:148-160 — projects/personas/assignments only); proposed full project export as JSON (ProjectExport interface with all entities, configurable execution/chat inclusion); 3 import strategies (skip/overwrite/new project with ID remapping); relationship to RES.TEMPLATES (export is superset of template). (4) data portability — 6-item inventory (DB, config, backups portable; project paths, checkpoints, app binary not); migration guide for same-machine and new-machine; cross-machine sync explicitly not supported (SQLite WAL incompatible). (5) disaster recovery — 6 failure scenarios with recovery times (1-30min) and steps; external backup recommendations (Time Machine, rsync); WARNING not to cloud-sync live DB. Also: 6 API endpoints, Settings > Data Management wireframe, 3-phase implementation plan, 7 cross-references, 6 design decisions.
+**Files:** `docs/proposals/data-management/backup-restore.md` (new)
+
+---
+
 ## 2026-04-01 18:35 PDT — Review: RES.RECOVERY.SYSTEM (approved)
 
 **Reviewed:** System-level resilience and data integrity research doc.
