@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 23:05 PDT — Review: UX.WORK.FLOW (approved)
+
+**Reviewed:** Work Items flow view audit — 6 screenshots, 0 bugs.
+- All 8 workflow states + Blocked render as nodes with Router edge labels
+- Nodes show state name, count, active/idle, items, progress — verified in screenshots
+- Click interaction works: filters state dropdown and highlights node
+- Scrolling reveals bottom states (In Review, Done) — full diagram accessible
+- Dark mode: good contrast, 768px: narrower nodes but functional
+- UX.WORK.BOARD correctly blocked (board-view.tsx not wired into UI)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 23:00 PDT — UX.WORK.FLOW: Audit Work Items flow view
 
 **Done:** Audited `/items?view=flow` at 1440x900, 768px, and dark mode. Flow diagram renders all 8 workflow states + Blocked as nodes connected by "Router" edges. Each node shows state name, count, active/idle status, child items, and progress bar. Clicking a node filters the state dropdown and highlights the node. Scrolling reveals bottom states (In Review, Done). Dark mode: good contrast, all elements visible. 768px: nodes narrower with text squeezed but functional. Also marked UX.WORK.BOARD as blocked (board-view.tsx exists but not wired into UI — WorkItemView type is "list" | "flow" only). No bugs filed.
