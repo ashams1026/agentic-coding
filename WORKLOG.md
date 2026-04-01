@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 16:05 PDT — SDK.FUT.5: Worktree isolation spike
+
+**Done:** Evaluated SDK worktree isolation for concurrent agent executions. SDK supports 3 mechanisms: `EnterWorktree`/`ExitWorktree` tools, `isolation: "worktree"` on Agent spawning, and `worktree` settings config (`symlinkDirectories`, `sparsePaths`). Also has `WorktreeCreate`/`WorktreeRemove` hook events. Recommendation: use subagent isolation (Option A) when parallel execution is added — not needed yet since agents run sequentially. Replaces need for custom file locking.
+**Files:** `docs/spikes/worktree-isolation.md` (new)
+
+---
+
 ## 2026-04-01 15:50 PDT — Review: SDK.FUT.4 (approved)
 
 **Reviewed:** HTTP hooks spike at `docs/spikes/http-hooks.md`.
