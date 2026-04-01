@@ -1,6 +1,6 @@
 # Frontend
 
-The AgentOps frontend is a React single-page application built with Vite, Tailwind CSS v4, and shadcn/ui. It runs on port 5173 in development and can operate entirely against mock data or a live backend.
+The AgentOps frontend is a React single-page application built with Vite, Tailwind CSS v4, and shadcn/ui. It runs on port 5173 in development and communicates with the Fastify backend on port 3001.
 
 ## Directory Structure
 
@@ -10,23 +10,19 @@ packages/frontend/src/
   app.tsx               # App root — providers (QueryClient, RouterProvider, TooltipProvider)
   router.tsx            # Route definitions (6 routes)
   index.css             # Tailwind config, theme tokens, typography scale, dark mode, density overrides
-  api/                  # Unified API layer
-    index.ts            # Delegates to mock or real based on apiMode
-    client.ts           # Real HTTP client (fetch wrapper)
-    ws-client.ts        # WebSocket client connection
+  api/                  # API layer
+    index.ts            # Re-exports all API functions
+    client.ts           # HTTP client (fetch wrapper with error handling)
+    ws-client.ts        # WebSocket client connection + event listeners
     ws.ts               # WebSocket event subscription helpers
-  mocks/                # Mock data layer
-    api.ts              # Mock API implementations (in-memory CRUD)
-    fixtures.ts         # Seed data (~800 lines of realistic fixtures)
-    demo.ts             # Demo mode — simulated agent executions
-    ws.ts               # Mock WebSocket event emitter
   features/             # Feature modules (collocated components)
-    work-items/         # Board, list, flow views + detail panel + filter bar
+    work-items/         # List view, flow view + detail panel + filter bar
     dashboard/          # Stats cards, cost chart, activity feed, upcoming work
-    agent-monitor/      # Terminal renderer, split view, agent history, tool calls
-    persona-manager/    # Persona cards, editor, prompt preview
-    settings/           # API keys, costs, workflow config, appearance, data management
-    activity-feed/      # Chronological event stream
+    agent-monitor/      # Terminal renderer, split view, history, file changes, MCP status, model switcher
+    persona-manager/    # Persona cards, editor, prompt preview, skill/subagent browser
+    settings/           # Agent config, security, costs, workflow, appearance, data management
+    activity-feed/      # Chronological event stream with Router decision cards
+    pico/               # Floating chat bubble, chat panel, message components
     common/             # Shared feature components (detail panels, etc.)
     command-palette/    # Global command palette (Cmd+K)
     toasts/             # Toast notification system
@@ -181,54 +177,17 @@ The agentops MCP server can run in-process using the SDK's `createSdkMcpServer()
 
 Both servers are configured in parallel in the `mcpServers` query option. Tools in the in-process server take priority; remaining tools fall back to the child process.
 
-## Mock Data Layer
+## API Layer
 
-The frontend ships with a complete mock data layer that simulates the entire backend in-browser.
+The frontend communicates with the backend via HTTP REST and WebSocket. All API functions are in `api/client.ts` and re-exported from `api/index.ts`. TanStack Query hooks in `hooks/` wrap these functions.
 
-### Architecture
-
-```
-hooks/use-*.ts  →  api/index.ts  →  pick(mockFn, realFn)
-                                        │           │
-                                   mocks/api.ts  api/client.ts
-                                        │           │
-                                   In-memory     HTTP fetch
-                                   CRUD on       to backend
-                                   fixtures       :3001
-```
-
-### How It Works
-
-1. `api/index.ts` exports every API function (e.g., `getWorkItems`, `createProject`)
-2. Each function uses `pick(mockFn, realFn)` to select the implementation
-3. `pick()` reads `apiMode` from the UI store: `"mock"` or `"api"`
-4. Mock mode: calls `mocks/api.ts` which operates on in-memory fixture data
-5. API mode: calls `api/client.ts` which makes real HTTP requests to `localhost:3001`
-
-### Switching Modes
-
-Toggle in **Settings > Appearance > API Mode**:
-
-- **Mock** (default): All data comes from `mocks/fixtures.ts`. No backend needed. WebSocket events are simulated by `mocks/ws.ts`.
-- **API**: Data comes from the real backend. Requires `pnpm dev` (backend running on port 3001).
-
-The mode is persisted to localStorage via the UI store.
-
-### Fixture Data
-
-`mocks/fixtures.ts` contains ~800 lines of realistic seed data:
-- 1 project ("AgentOps")
-- 5 personas (Product Manager, Tech Lead, Engineer, Code Reviewer, Router)
-- 3 top-level work items with children and grandchildren
-- 10 executions across various states
-- Comments, proposals, persona assignments, project memories
-- Work item edges (dependency graph)
+> **Note:** The mock data layer was removed in Sprint 17 (FX.MOCK1/MOCK2). The frontend always communicates with the real backend. Use `pnpm db:seed-demo` to populate demo data.
 
 ## State Management
 
 ### TanStack Query — Server State
 
-All data from the backend (or mock layer) is managed by TanStack Query. Hooks in `hooks/` wrap the API layer:
+All data from the backend is managed by TanStack Query. Hooks in `hooks/` wrap the API layer:
 
 ```typescript
 // hooks/use-work-items.ts
