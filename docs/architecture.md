@@ -130,9 +130,39 @@ The agent subsystem lives in `packages/backend/src/agent/`:
 | `coordination.ts` | Parent-child coordination — auto-advances parent when all children complete |
 | `concurrency.ts` | Concurrency limiter — in-memory tracking, priority FIFO queue |
 | `memory.ts` | Project memory — haiku summary on completion, token-budgeted retrieval |
-| `mcp-server.ts` | MCP server factory — 7 tools agents use to interact with the system |
+| `mcp-server.ts` | MCP server factory — 8 tools agents use to interact with the system |
 | `sdk-session.ts` | Persistent V2 SDK session — lazy singleton for capabilities discovery |
 | `sandbox.ts` | Command sandbox — validates Bash commands against project directory escapes |
+
+## File Checkpointing
+
+Every agent execution runs with `enableFileCheckpointing: true` in the `query()` options. The SDK creates a checkpoint of the project's file state before the agent makes any changes.
+
+### How it works
+
+1. **Checkpoint creation:** When `ClaudeExecutor.spawn()` starts an execution, `enableFileCheckpointing: true` is passed to `query()`. The SDK snapshots file state internally.
+2. **Message ID capture:** The executor captures the first assistant message's `id` and emits a `checkpoint` event. The execution manager stores this as `checkpointMessageId` in the `executions` table.
+3. **Rewind:** `POST /api/executions/:id/rewind` creates a temporary `query()` session and calls `q.rewindFiles(checkpointMessageId, { dryRun })` to restore files to their pre-execution state.
+
+### Rewind flow
+
+```
+User clicks Rewind → Frontend calls POST /api/executions/:id/rewind
+                      │
+                      ├── dryRun: true  → returns file list preview
+                      └── dryRun: false → reverts files, posts comment, logs audit
+```
+
+### Limitations
+
+- Only works for executions created after checkpointing was enabled (`checkpointMessageId != null`). Legacy executions have this field as `null`.
+- Cannot rewind running executions (409 EXECUTION_RUNNING).
+- Requires the Anthropic API key to be configured (creates a temporary SDK session for the rewind call).
+- The rewind operation is idempotent — rewinding an already-rewound execution is a no-op (0 files changed).
+
+### MCP tool: `rewind_execution`
+
+The Code Reviewer persona has access to `rewind_execution` via the agentops MCP server. This tool calls the rewind API endpoint internally (`http://localhost:PORT/api/executions/:id/rewind`). The reviewer's system prompt includes guidance on when to use it: only for fundamentally wrong implementations that need a complete redo, not for minor issues.
 
 ## SDK V2 Session Architecture
 

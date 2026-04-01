@@ -550,6 +550,61 @@ DELETE /api/executions/:id
 
 **Response:** 204 | 404
 
+### Rewind Execution Files
+
+```
+POST /api/executions/:id/rewind
+```
+
+Reverts all file changes made by an execution back to their pre-execution state using the SDK's `rewindFiles()` API. Requires the execution to have `checkpointMessageId` set (enabled via `enableFileCheckpointing: true` in query options).
+
+**Request body:**
+
+```typescript
+{
+  dryRun?: boolean;  // default: false — if true, returns preview without reverting
+}
+```
+
+**Response (success):** `{ data: RewindResult }`
+
+```typescript
+{
+  canRewind: true;
+  filesChanged: string[];   // list of file paths that were/would be reverted
+  insertions: number;       // total lines added
+  deletions: number;        // total lines removed
+  dryRun: boolean;
+}
+```
+
+**Error codes:**
+
+| Status | Code | When |
+|---|---|---|
+| 400 | `NO_CHECKPOINT` | Execution has no `checkpointMessageId` (legacy or checkpointing not enabled) |
+| 400 | `CANNOT_REWIND` | SDK reports files cannot be rewound |
+| 404 | `NOT_FOUND` | Execution, work item, or project not found |
+| 409 | `EXECUTION_RUNNING` | Cannot rewind a currently running execution |
+| 500 | `REWIND_FAILED` | SDK rewind call threw an error |
+| 503 | `NO_API_KEY` | Anthropic API key not configured |
+
+**Side effects (non-dry-run only):**
+- System comment posted on the work item with file change summary
+- Audit trail entry logged (`fromState: "rewind"`, `toState: "reverted"`)
+
+```bash
+# Dry run — preview files that would be reverted
+curl -X POST http://localhost:3001/api/executions/ex-xxxx/rewind \
+  -H "Content-Type: application/json" \
+  -d '{"dryRun": true}'
+
+# Actual rewind
+curl -X POST http://localhost:3001/api/executions/ex-xxxx/rewind \
+  -H "Content-Type: application/json" \
+  -d '{"dryRun": false}'
+```
+
 ---
 
 ## Proposals

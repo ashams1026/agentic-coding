@@ -4,7 +4,7 @@ AgentOps provides an MCP (Model Context Protocol) server that gives AI agent per
 
 ## Overview
 
-The MCP server is defined in `packages/backend/src/agent/mcp-server.ts` and registers 7 tools:
+The MCP server is defined in `packages/backend/src/agent/mcp-server.ts` and registers 8 tools:
 
 | Tool | Description |
 |---|---|
@@ -15,6 +15,7 @@ The MCP server is defined in `packages/backend/src/agent/mcp-server.ts` and regi
 | `get_context` | Retrieve execution history and project memories |
 | `flag_blocked` | Mark a work item as Blocked |
 | `request_review` | Request human attention on a work item |
+| `rewind_execution` | Revert file changes from a specific execution |
 
 ## How the MCP Server Attaches to Agent Sessions
 
@@ -352,6 +353,35 @@ Agent calls request_review with:
   message: "Architecture decision needed: should we use passport.js or implement OAuth directly?"
 ```
 
+---
+
+### `rewind_execution`
+
+Reverts all file changes from a specific execution back to their pre-execution state. Calls the rewind API endpoint internally (`POST /api/executions/:id/rewind`).
+
+**Used by:** Code Reviewer (after rejecting a review to give the Engineer a clean slate)
+
+**Input:**
+
+| Field | Type | Description |
+|---|---|---|
+| `executionId` | `string` | The execution ID whose file changes should be reverted |
+| `dryRun` | `boolean` | If true, returns preview without actually reverting (default: false) |
+
+**Output:** `{ canRewind, filesChanged, insertions, deletions, dryRun }` on success; `{ error }` on failure.
+
+**When to use:** Only when an implementation is fundamentally wrong and the Engineer should start fresh. Do NOT rewind for minor issues — let the Engineer iterate on the existing code.
+
+**Example flow:**
+
+```
+1. Reviewer calls get_context(workItemId) → gets executionId from execution history
+2. Reviewer calls rewind_execution(executionId, dryRun: true) → sees 5 files would revert
+3. Reviewer calls rewind_execution(executionId, dryRun: false) → files reverted
+4. Reviewer posts rejection comment with feedback
+5. Router sends item back to In Progress
+```
+
 ## Tool Access by Persona
 
 | Tool | Product Manager | Tech Lead | Engineer | Code Reviewer | Router |
@@ -363,8 +393,9 @@ Agent calls request_review with:
 | `get_context` | | | | | yes |
 | `flag_blocked` | | | yes | | |
 | `request_review` | | yes | | yes | |
+| `rewind_execution` | | | | yes | |
 
-Note: The seed data uses slightly different MCP tool names in the `mcpTools` field (e.g., `transition_state` instead of `route_to_state`, `create_tasks` instead of `create_children`). The actual tool names registered in the MCP server are the 7 listed in `TOOL_NAMES`. Access is controlled by the `ALLOWED_TOOLS` environment variable passed to the MCP server process.
+Note: The actual tool names registered in the MCP server are the 8 listed in `TOOL_NAMES`. Access is controlled by the `ALLOWED_TOOLS` environment variable passed to the MCP server process.
 
 ## Source Files
 

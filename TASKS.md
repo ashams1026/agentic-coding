@@ -17,6 +17,8 @@
 
 - [x] **FX.PICO5** — Fix Pico chat panel scroll overflow. The chat panel message area doesn't scroll within its container — messages overflow off screen instead of scrolling inside the panel. In `packages/frontend/src/features/pico/chat-panel.tsx`: ensure the message area has a fixed height with `overflow-y: auto` (or uses ScrollArea) so messages scroll within the panel bounds. Verify auto-scroll to bottom still works on new messages.
 
+- [ ] **FX.PROJ1** — Fix stale project ID causing Pico 500 error. The `selectedProjectId` in the Zustand UI store is persisted to localStorage. If the dev DB is reset or the project is deleted, the stale ID remains and causes FK constraint failures when Pico tries to create a chat session (`POST /api/chat/sessions` → `FOREIGN KEY constraint failed`). Fix: in `packages/frontend/src/hooks/use-selected-project.ts`, detect when `useProject()` returns a 404/error for the stored ID, and fall back to the first available project from `useProjects()`. Also add `retry: false` to the `useProject` query so it fails fast instead of retrying 3 times.
+
 ### SDK-Native Skills & Tool Discovery
 
 - [blocked: SDK initializationResult() does not return built-in tool names/descriptions — only commands (skills), agents, and models. No tool discovery API exists in the SDK. The hardcoded SDK_TOOLS list in tool-configuration.tsx is actually correct since built-in tools are a fixed set.]  **FX.SDK3** — Replace hardcoded tool list with SDK discovery in persona editor. In the persona editor UI (`packages/frontend/src/features/persona-manager/`): replace any freeform text input or hardcoded tool checkboxes for `allowedTools` with a multi-select populated from `GET /api/sdk/capabilities`. Show each tool with its name and description. Group by category: File tools, Search tools, Execution, Web, Agent, Other. Same for `mcpTools` — show available MCP tools from the discovery response. Validate on save: warn if a selected tool isn't in the available set.
@@ -43,7 +45,7 @@
 
 - [x] **SDK.FC.6** — Run file checkpointing e2e test. Execute the test plan from SDK.FC.5 using chrome-devtools MCP. Record results to `tests/e2e/results/file-checkpointing.md`. Take screenshots at: rewind button visible, dry run modal, post-rewind success state.
 
-- [ ] **SDK.FC.7** — Update `docs/architecture.md` and `docs/api.md` with file checkpointing. Document: the rewind API endpoint (request/response), how checkpointing works (message IDs, file restoration), the rewind MCP tool for the reviewer persona, limitations (only works for executions with checkpointing enabled).
+- [review] **SDK.FC.7** — Update `docs/architecture.md` and `docs/api.md` with file checkpointing. Document: the rewind API endpoint (request/response), how checkpointing works (message IDs, file restoration), the rewind MCP tool for the reviewer persona, limitations (only works for executions with checkpointing enabled).
 
 ### Part 3: Infrastructure — Hooks System
 
