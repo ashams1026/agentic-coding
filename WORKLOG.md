@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-01 05:05 PDT — Review: SDK.ST.2 (approved)
+
+**Reviewed:** Live token streaming UI in `terminal-renderer.tsx`.
+- rAF batching: tokens accumulate in ref, flush once per frame — no excessive re-renders
+- Streaming chunks append to last `stream-*` chunk or create new — smooth typing effect
+- `<50 chars` heuristic cleanly separates partial tokens from complete text chunks
+- Non-partial chunks flush buffer first — correct ordering
+- Blinking emerald cursor via `isStreaming` state with 500ms timeout
+- Cleanup cancels rAF + timeout on unmount
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 05:00 PDT — SDK.ST.2: Live token streaming UI in agent monitor
 
 **Done:** Updated terminal renderer to batch partial streaming tokens using `requestAnimationFrame`. Small text chunks (<50 chars) accumulate in `streamBuffer` ref, flushed via rAF into the last streaming chunk (appended, not new bubble). Non-partial chunks flush the buffer first. Added `isStreaming` state with 500ms timeout — shows emerald blinking cursor (`animate-pulse`) at the bottom of output while streaming. Cleanup on unmount cancels rAF + timeout.
