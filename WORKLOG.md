@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-31 — FX.LIC1: Add Apache 2.0 license
+
+**Task:** Add Apache 2.0 license to the repository.
+
+**Done:**
+- Created `LICENSE` file at repo root with standard Apache License 2.0 text (copyright 2026 AgentOps Contributors)
+- Added `"license": "Apache-2.0"` to root `package.json`
+- Added `"license": "Apache-2.0"` to `packages/shared/package.json`
+- Added `"license": "Apache-2.0"` to `packages/backend/package.json`
+- Added `"license": "Apache-2.0"` to `packages/frontend/package.json`
+
+**Files created:** `LICENSE`
+**Files modified:** `package.json`, `packages/shared/package.json`, `packages/backend/package.json`, `packages/frontend/package.json`
+
+---
+
 ## 2026-03-31 — Review: FX.PICO4 (approved)
 
 **Reviewed:** CORS fix in `packages/backend/src/routes/chat.ts`.
