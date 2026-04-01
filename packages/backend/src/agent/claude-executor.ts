@@ -4,7 +4,7 @@
  */
 
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import type { SDKMessage, AgentDefinition } from "@anthropic-ai/claude-agent-sdk";
+import type { SDKMessage, AgentDefinition, HookCallback, PreToolUseHookInput } from "@anthropic-ai/claude-agent-sdk";
 import type {
   AgentExecutor,
   AgentTask,
@@ -158,6 +158,31 @@ function mapMessage(msg: SDKMessage): AgentEvent[] {
   return events;
 }
 
+// ── Sandbox hook ─────────────────────────────────────────────────
+
+function buildSandboxHook(projectPath: string): HookCallback {
+  return async (input, _toolUseID, _options) => {
+    const preInput = input as PreToolUseHookInput;
+    const toolInput = preInput.tool_input as Record<string, unknown>;
+    const command = toolInput?.command as string;
+
+    if (typeof command === "string") {
+      const result = validateCommand(command, projectPath);
+      if (!result.allowed) {
+        return {
+          hookSpecificOutput: {
+            hookEventName: "PreToolUse" as const,
+            permissionDecision: "deny" as const,
+            permissionDecisionReason: `[SANDBOX] Blocked: ${result.reason}`,
+          },
+        };
+      }
+    }
+
+    return {};
+  };
+}
+
 // ── Executor ──────────────────────────────────────────────────────
 
 export class ClaudeExecutor implements AgentExecutor {
@@ -225,6 +250,9 @@ export class ClaudeExecutor implements AgentExecutor {
           maxBudgetUsd: options.maxBudget > 0 ? options.maxBudget : undefined,
           agent: agentId,
           agents: { [agentId]: agentDef },
+          hooks: {
+            PreToolUse: [{ matcher: "Bash", hooks: [buildSandboxHook(project.path)] }],
+          },
           mcpServers: {
             agentops: {
               command: "node",
@@ -254,23 +282,6 @@ export class ClaudeExecutor implements AgentExecutor {
         }
         const events = mapMessage(msg);
         for (const event of events) {
-          // Sandbox: validate Bash commands before they execute
-          if (
-            event.type === "tool_use" &&
-            event.toolName === "Bash" &&
-            typeof event.input.command === "string"
-          ) {
-            const result = validateCommand(event.input.command, project.path);
-            if (!result.allowed) {
-              yield {
-                type: "error",
-                message: `[SANDBOX] Blocked command: ${result.reason}`,
-                code: "sandbox_blocked",
-              };
-              abortController.abort();
-              return;
-            }
-          }
           yield event;
         }
       }
