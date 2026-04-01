@@ -266,6 +266,7 @@ function eventToChunk(event: AgentEvent): string {
     case "tool_result": return event.output;
     case "error": return `Error: ${event.message}`;
     case "result": return event.summary;
+    case "checkpoint": return "";
   }
 }
 
@@ -401,6 +402,7 @@ async function runExecutionStream(
   let finalSummary = "";
   let finalCostUsd = 0;
   let finalDurationMs = 0;
+  let checkpointMessageId: string | null = null;
 
   try {
     const events = executor.spawn(task, persona, project, {
@@ -410,6 +412,12 @@ async function runExecutionStream(
     });
 
     for await (const event of events) {
+      // Capture file checkpoint message ID
+      if (event.type === "checkpoint") {
+        checkpointMessageId = event.messageId;
+        continue;
+      }
+
       const chunk = eventToChunk(event);
       logs += chunk + "\n";
 
@@ -447,6 +455,7 @@ async function runExecutionStream(
         summary: finalSummary,
         outcome: finalOutcome,
         logs,
+        checkpointMessageId,
       })
       .where(eq(executions.id, executionId));
 

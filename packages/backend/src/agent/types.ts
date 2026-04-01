@@ -52,13 +52,19 @@ export interface ResultEvent {
   durationMs: number;
 }
 
+export interface CheckpointEvent {
+  type: "checkpoint";
+  messageId: string;
+}
+
 export type AgentEvent =
   | ThinkingEvent
   | ToolUseEvent
   | ToolResultEvent
   | TextEvent
   | ErrorEvent
-  | ResultEvent;
+  | ResultEvent
+  | CheckpointEvent;
 
 // ── Agent Task ────────────────────────────────────────────────────
 

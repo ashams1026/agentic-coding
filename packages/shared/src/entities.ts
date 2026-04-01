@@ -119,6 +119,7 @@ export interface Execution {
   outcome: ExecutionOutcome | null;
   rejectionPayload: RejectionPayload | null;
   logs: string;
+  checkpointMessageId: string | null;
 }
 
 export interface Comment {

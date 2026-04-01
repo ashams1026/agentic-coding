@@ -29,6 +29,7 @@ function serializeExecution(row: typeof executions.$inferSelect) {
     outcome: row.outcome,
     rejectionPayload: row.rejectionPayload ?? null,
     logs: row.logs,
+    checkpointMessageId: row.checkpointMessageId ?? null,
   };
 }
 

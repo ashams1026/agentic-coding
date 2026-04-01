@@ -221,6 +221,7 @@ export class ClaudeExecutor implements AgentExecutor {
           cwd: project.path,
           permissionMode: "bypassPermissions",
           allowDangerouslySkipPermissions: true,
+          enableFileCheckpointing: true,
           maxBudgetUsd: options.maxBudget > 0 ? options.maxBudget : undefined,
           agent: agentId,
           agents: { [agentId]: agentDef },
@@ -244,7 +245,13 @@ export class ClaudeExecutor implements AgentExecutor {
         },
       });
 
+      let checkpointEmitted = false;
       for await (const msg of q) {
+        // Emit a checkpoint event for the first assistant message
+        if (!checkpointEmitted && msg.type === "assistant" && msg.message.id) {
+          checkpointEmitted = true;
+          yield { type: "checkpoint" as const, messageId: msg.message.id };
+        }
         const events = mapMessage(msg);
         for (const event of events) {
           // Sandbox: validate Bash commands before they execute

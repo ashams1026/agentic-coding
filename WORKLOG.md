@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-03-31 — SDK.FC.1: Enable file checkpointing in executor
+
+**Task:** Add `enableFileCheckpointing: true` to query() options and store the checkpoint message ID.
+
+**Done:**
+- Added `CheckpointEvent` type to `AgentEvent` union in `packages/backend/src/agent/types.ts`
+- Added `checkpointMessageId: string | null` to `Execution` entity in `packages/shared/src/entities.ts`
+- Added `checkpoint_message_id` column to `executions` table in `packages/backend/src/db/schema.ts`
+- Generated Drizzle migration `0004_sloppy_juggernaut.sql`
+- In `packages/backend/src/agent/claude-executor.ts`: added `enableFileCheckpointing: true` to query() options, emits a `checkpoint` event with the first assistant message's ID
+- In `packages/backend/src/agent/execution-manager.ts`: captures checkpoint events, stores `checkpointMessageId` in DB on completion, handles new event type in `eventToChunk`
+- In `packages/backend/src/routes/executions.ts`: serializer now includes `checkpointMessageId`
+
+**Files modified:** `packages/backend/src/agent/types.ts`, `packages/shared/src/entities.ts`, `packages/backend/src/db/schema.ts`, `packages/backend/src/agent/claude-executor.ts`, `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/routes/executions.ts`
+**Files created:** `packages/backend/drizzle/0004_sloppy_juggernaut.sql`, `packages/backend/drizzle/meta/0004_snapshot.json`
+
+**Notes for next agent:** File checkpointing is now enabled on all agent executions. The `checkpointMessageId` is captured from the first SDK assistant message and stored in the executions table. This unblocks SDK.FC.2 (rewind API endpoint) which will use `rewindFiles(checkpointMessageId)` to restore files. Existing executions will have `null` for this field — SDK.FC.3's UI should handle that (disable rewind button).
+
+---
+
 ## 2026-03-31 — Review: SDK.V2.4 (approved)
 
 **Reviewed:** V2 session architecture documentation in `docs/architecture.md`.

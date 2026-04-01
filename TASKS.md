@@ -37,7 +37,7 @@
 
 ### Part 2: Infrastructure — File Checkpointing
 
-- [ ] **SDK.FC.1** — Enable file checkpointing in executor. In `packages/backend/src/agent/claude-executor.ts`: add `enableFileCheckpointing: true` to the `query()` options. This makes `rewindFiles(messageId)` available on every agent execution. Store the initial message ID (first assistant message) in the execution record so we can rewind to pre-execution state. Add a `checkpointMessageId` column to the executions table (nullable string). Populate it from the first `SDKAssistantMessage` received during streaming.
+- [review] **SDK.FC.1** — Enable file checkpointing in executor. In `packages/backend/src/agent/claude-executor.ts`: add `enableFileCheckpointing: true` to the `query()` options. This makes `rewindFiles(messageId)` available on every agent execution. Store the initial message ID (first assistant message) in the execution record so we can rewind to pre-execution state. Add a `checkpointMessageId` column to the executions table (nullable string). Populate it from the first `SDKAssistantMessage` received during streaming.
 
 - [ ] **SDK.FC.2** — Add rewind API endpoint. Add `POST /api/executions/:id/rewind` route in `packages/backend/src/routes/executions.ts`. Accepts `{ dryRun?: boolean }`. Looks up the execution's `checkpointMessageId`, creates a temporary `query()` session pointed at the same project directory, calls `rewindFiles(checkpointMessageId, { dryRun })`. Returns `{ files: RewindFilesResult[] }` — list of files that were/would be restored. If not a dry run, post a system comment on the work item: "Files reverted to pre-execution state by [user]." Log the rewind in the audit trail.
 
