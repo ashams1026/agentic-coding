@@ -47,7 +47,7 @@
 
 - [x] **SDK.SO.2** — Display structured Router decisions in UI. In the agent monitor and activity feed: when showing a Router execution result, render the structured JSON as a formatted card: state badge (color-coded), reasoning text, confidence indicator (green/yellow/red dot). This replaces the current raw text display of Router output.
 
-- [ ] **SDK.SO.3** — E2E test plan: Router structured output. Create `tests/e2e/plans/router-structured-output.md`: verify Router decision cards display correctly in agent monitor and activity feed. Visual check of the state badge, reasoning, and confidence indicator.
+- [review] **SDK.SO.3** — E2E test plan: Router structured output. Create `tests/e2e/plans/router-structured-output.md`: verify Router decision cards display correctly in agent monitor and activity feed. Visual check of the state badge, reasoning, and confidence indicator.
 
 - [ ] **SDK.SO.4** — Run Router structured output e2e test. Execute SDK.SO.3. Record results with screenshots of Router decision cards.
 

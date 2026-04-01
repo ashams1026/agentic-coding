@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 00:45 PDT — SDK.SO.3: E2E test plan for Router structured output
+
+**Done:** Created `tests/e2e/plans/router-structured-output.md` — 13 steps across 3 parts: agent monitor history card (5), activity feed events (5), visual quality (3). Covers state badge coloring, confidence dot, reasoning text, compact vs full variants, fallback for null structuredOutput. Notes data dependency — seeded executions predate the feature.
+**Files:** `tests/e2e/plans/router-structured-output.md`
+
+---
+
 ## 2026-04-01 00:35 PDT — Review: SDK.SO.2 (approved)
 
 **Reviewed:** Structured Router decision display across backend storage, component, and two integration points.
