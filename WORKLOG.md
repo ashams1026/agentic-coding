@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 09:20 PDT — SDK.MCP.4: Run MCP status e2e test
+
+**Done:** Executed SDK.MCP.3 test plan. 5/13 PASS, 0 FAIL, 8 SKIP. Verified: agent monitor loads (PASS), MCP dots correctly hidden when no running execution (PASS), API 404 for non-existent execution on both GET status and POST toggle (PASS). SKIPs: all live MCP dot tests require active agent. 2 screenshots.
+**Files:** `tests/e2e/results/mcp-status.md`, `tests/e2e/results/mcp-01-agents-live.png`, `tests/e2e/results/mcp-02-full-page.png`
+
+---
+
 ## 2026-04-01 09:10 PDT — Review: SDK.MCP.3 (approved)
 
 **Reviewed:** E2E test plan at `tests/e2e/plans/mcp-status.md`.
