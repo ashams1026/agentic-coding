@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-03-31 22:50 PDT — Review: SDK.HK.5 (approved)
+
+**Reviewed:** File changes panel UI in `file-changes-panel.tsx` and integration in `terminal-renderer.tsx`.
+- Collapsible section with badge count, auto-hides when empty, clears state on execution switch
+- Each entry: icon (FilePlus/FileText/FileX), file path (monospace, truncated), change type label (color-coded), timestamp
+- Real-time via `file_changed` WS subscription with deduplication by path
+- Follows conventions: named export, shadcn Badge, cn(), lucide-react icons, dark theme
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 22:40 PDT — SDK.HK.5: Agent monitor file changes panel
 
 **Done:** Created `file-changes-panel.tsx` component in agent-monitor feature. Subscribes to `file_changed` WS events, deduplicates by file path (updates existing entries on re-modification). Shows collapsible panel at bottom of terminal renderer with badge count. Each entry shows: icon (FilePlus/FileText/FileX with green/amber/red coloring), file path, change type label, timestamp. Panel auto-hides when no files changed. Integrated into `terminal-renderer.tsx` between chat output and new-output indicator.
