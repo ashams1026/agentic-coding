@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 09:10 PDT — Review: SDK.MCP.3 (approved)
+
+**Reviewed:** E2E test plan at `tests/e2e/plans/mcp-status.md`.
+- 13 steps across 5 parts: dot visibility, colors/tooltip, click interactions, API endpoints, visual quality
+- API endpoint tests (steps 10-11) test 404 for non-running executions — good backend coverage
+- Real-time dependency properly noted with SKIP guidance
+- Failure criteria specific (e.g., "click connected triggers reconnect" — verifies it shouldn't)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 09:05 PDT — SDK.MCP.3: E2E test plan for MCP status display
 
 **Done:** Created `tests/e2e/plans/mcp-status.md` — 13 steps across 5 parts: dot visibility (3), dot colors (3), click interactions (2), API endpoints (3), visual quality (2). Notes real-time dependency — dots only show during running executions. Includes API 404 tests for non-running executions.
