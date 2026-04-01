@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 16:50 PDT — RES.WORKFLOW.EDGE: Research custom workflow edge cases
+
+**Done:** Researched and documented edge cases for custom workflows. Doc covers all 6 investigation areas plus a 7th on chat interaction: (1) deletion — recommends archive-only with optional migration wizard, block if active executions, (2) cloning — clone button + 5 built-in starter templates (Simple Kanban, Code Review Pipeline, etc.), (3) import/export — JSON format with versioning, validation on import, excludes persona assignments, (4) permissions — Draft/Published toggle as primary safety mechanism (no RBAC for single-user), (5) global agents — require project context (current design is correct), (6) testing — static validator (unreachable/dead-end states) + test project approach, (7) chat interaction — keep execution and chat separate, use proposals for decisions. Includes priority-ranked summary table.
+**Files:** `docs/proposals/custom-workflows/edge-cases.md` (new)
+
+---
+
 ## 2026-04-02 16:40 PDT — Review: RES.PROMPTS.VARS (approved)
 
 **Reviewed:** Template variable research doc for persona prompts.
