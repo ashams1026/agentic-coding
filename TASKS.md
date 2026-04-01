@@ -15,7 +15,13 @@
 
 ### Bug Fixes
 
-- [ ] **FX.PICO1** — Fix "Pico persona not found" error when chatting. The Pico chat endpoint (`POST /api/chat/sessions/:id/messages`) fails with "Pico persona not found". Likely cause: Pico persona (`ps-pico`) was added to `seed.ts` but the dev database wasn't re-seeded after the schema change, so the persona row doesn't exist. Fix: check if the chat route looks up Pico by ID (`ps-pico`) or by `isAssistant` flag, verify the persona exists in the current dev DB, and if not, ensure `pnpm db:seed` inserts it. Also add a defensive check — if Pico persona is missing, return a clear error message suggesting re-seeding instead of a generic 404.
+- [x] **FX.PICO1** — Fix "Pico persona not found" error when chatting. The Pico chat endpoint (`POST /api/chat/sessions/:id/messages`) fails with "Pico persona not found". Likely cause: Pico persona (`ps-pico`) was added to `seed.ts` but the dev database wasn't re-seeded after the schema change, so the persona row doesn't exist. Fix: check if the chat route looks up Pico by ID (`ps-pico`) or by `isAssistant` flag, verify the persona exists in the current dev DB, and if not, ensure `pnpm db:seed` inserts it. Also add a defensive check — if Pico persona is missing, return a clear error message suggesting re-seeding instead of a generic 404.
+
+### Pico UX Testing
+
+- [ ] **FX.PICO2** — Write Pico e2e test plan. Create `tests/e2e/plans/pico-chat.md`: a step-by-step test plan covering the full Pico UX. Steps should include: (1) verify chat bubble is visible on every page, (2) click bubble to open chat panel, (3) verify welcome message and quick-action buttons, (4) click a quick-action suggestion and verify it sends as a message, (5) type a custom message and send via Cmd+Enter, (6) verify streaming response appears with typing indicator, (7) verify markdown rendering in Pico responses, (8) verify thinking blocks are collapsible, (9) verify tool call cards render correctly, (10) test session management — create new session, switch sessions, verify history loads, (11) close and reopen panel — verify state persists, (12) test on mobile viewport — verify panel is usable, (13) test error state — what happens when backend is down. Each step should include visual verification via screenshot.
+
+- [ ] **FX.PICO3** — Execute Pico e2e test plan. Run the test plan from FX.PICO2 using chrome-devtools MCP against the running app. Record results to `tests/e2e/results/pico-chat.md`. Take screenshots at each visual checkpoint. Document any bugs found with severity and reproduction steps. File new FX tasks for any failures.
 
 ### SDK-Native Skills & Tool Discovery
 

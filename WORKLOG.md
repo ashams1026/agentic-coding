@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-03-31 — FX.PICO1: Verified already fixed
+
+**Task:** Fix "Pico persona not found" error.
+**Result:** Confirmed fixed — seed.ts (line 499) already creates Pico persona with `isAssistant: true`, and chat.ts (line 244-247) looks up by that flag. Issue was a stale dev DB needing re-seed. User confirmed it's working. Marked complete.
+
+---
+
 ## 2026-03-31 — Review: SDK.FC.3 (approved)
 
 **Reviewed:** Rewind button in agent monitor history.
