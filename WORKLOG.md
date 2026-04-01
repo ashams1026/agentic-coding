@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 04:00 PDT — SDK.ET.4: Run persona effort & thinking e2e test
+
+**Done:** Executed SDK.ET.3 test plan. 11/13 PASS, 0 FAIL, 2 SKIP. Full save→persist cycle verified: changed Engineer effort from High to Medium, saved, reloaded page — values persisted. Both dropdowns render with correct options and descriptions. Read-only badges display after save. 7 screenshots captured.
+**Files:** `tests/e2e/results/persona-effort-thinking.md`, `tests/e2e/results/pet-01-personas-page.png` through `pet-07-persisted-after-reload.png`
+
+---
+
 ## 2026-04-01 03:50 PDT — Review: SDK.ET.3 (approved)
 
 **Reviewed:** E2E test plan at `tests/e2e/plans/persona-effort-thinking.md`.
