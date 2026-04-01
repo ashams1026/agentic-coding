@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 12:10 PDT — SDK.REG.1: Post-Sprint 19/20 regression sweep
+
+**Done:** Assessed all 30 test suites against current environment (empty DB, no API key). Build passes. 9 smoke tests PASS (navigation, settings, persona editor, Pico, agent monitor empty states, API endpoints). 11 of 19 original suites BLOCKED by empty DB. 2 of 14 new features verified via e2e, 12 via code review. 0 regressions found. Documented action items: re-seed DB, configure API key, run full regression.
+**Files:** `tests/e2e/results/regression-post-sprint19.md`
+
+---
+
 ## 2026-04-01 12:00 PDT — Review: SDK.UX.8 (approved)
 
 **Reviewed:** Frontend docs update in `docs/frontend.md`.
