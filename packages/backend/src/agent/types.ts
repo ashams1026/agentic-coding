@@ -59,6 +59,15 @@ export interface PartialEvent {
   index: number;
 }
 
+export interface ProgressEvent {
+  type: "progress";
+  description: string;
+  summary?: string;
+  totalTokens: number;
+  toolUses: number;
+  durationMs: number;
+}
+
 export interface CheckpointEvent {
   type: "checkpoint";
   messageId: string;
@@ -72,6 +81,7 @@ export type AgentEvent =
   | ErrorEvent
   | ResultEvent
   | PartialEvent
+  | ProgressEvent
   | CheckpointEvent;
 
 // ── Agent Task ────────────────────────────────────────────────────

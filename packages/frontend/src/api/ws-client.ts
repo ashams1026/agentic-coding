@@ -34,6 +34,7 @@ class RealWsClient {
     file_changed: new Set(),
     subagent_started: new Set(),
     subagent_completed: new Set(),
+    agent_progress: new Set(),
     "*": new Set(),
   };
 

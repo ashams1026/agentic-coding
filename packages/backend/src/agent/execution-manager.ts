@@ -267,6 +267,7 @@ function eventToChunk(event: AgentEvent): string {
     case "error": return `Error: ${event.message}`;
     case "result": return event.summary;
     case "partial": return "";
+    case "progress": return "";
     case "checkpoint": return "";
   }
 }
@@ -451,6 +452,21 @@ async function runExecutionStream(
           personaId: persona.id as PersonaId,
           chunk: event.content,
           chunkType: "text",
+          timestamp: new Date().toISOString(),
+        });
+        continue;
+      }
+
+      // Progress summaries: broadcast dedicated event, don't log
+      if (event.type === "progress") {
+        broadcast({
+          type: "agent_progress",
+          executionId: executionId as ExecutionId,
+          description: event.description,
+          summary: event.summary,
+          totalTokens: event.totalTokens,
+          toolUses: event.toolUses,
+          durationMs: event.durationMs,
           timestamp: new Date().toISOString(),
         });
         continue;

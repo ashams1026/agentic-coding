@@ -352,6 +352,7 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
   const [scrollLocked, setScrollLocked] = useState(false);
   const [hasNewOutput, setHasNewOutput] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [progressSummary, setProgressSummary] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const chunkCounter = useRef(0);
@@ -445,6 +446,22 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
       clearTimeout(streamTimeout.current);
     };
   }, [executionId, scrollLocked, flushStreamBuffer]);
+
+  // Subscribe to progress summaries
+  useEffect(() => {
+    const unsubscribe = subscribe("agent_progress", (event) => {
+      if (event.executionId !== executionId) return;
+      setProgressSummary(event.summary ?? event.description);
+    });
+    return unsubscribe;
+  }, [executionId]);
+
+  // Clear progress summary when execution completes
+  useEffect(() => {
+    if (execution?.status === "completed" || execution?.status === "failed") {
+      setProgressSummary(null);
+    }
+  }, [execution?.status]);
 
   // Auto-scroll to bottom when new chunks arrive (if not locked)
   useEffect(() => {
@@ -541,6 +558,16 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
           )}
         </Button>
       </div>
+
+      {/* Progress summary bar */}
+      {progressSummary && (
+        <div className="flex items-center gap-2 px-4 py-1.5 border-b bg-emerald-500/10 text-xs">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+          <span className="text-emerald-700 dark:text-emerald-400 truncate">
+            {progressSummary}
+          </span>
+        </div>
+      )}
 
       {/* Chat thread output */}
       <div

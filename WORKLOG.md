@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 05:20 PDT — SDK.ST.3: Agent progress summaries
+
+**Done:** Added `agentProgressSummaries: true` to `query()` options. Handles `SDKTaskProgressMessage` (type: "system", subtype: "task_progress") in `mapMessage()` — emits `ProgressEvent` with description, summary, usage stats. New `agent_progress` WS event type for dedicated progress broadcasting. Frontend: `progressSummary` state in terminal renderer, subscribes to `agent_progress` events, shows emerald progress bar below toolbar with pulsing dot and truncated summary text. Clears on execution completion.
+**Files:** `packages/backend/src/agent/types.ts`, `packages/backend/src/agent/claude-executor.ts`, `packages/backend/src/agent/execution-manager.ts`, `packages/shared/src/ws-events.ts`, `packages/frontend/src/api/ws-client.ts`, `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`
+
+---
+
 ## 2026-04-01 05:05 PDT — Review: SDK.ST.2 (approved)
 
 **Reviewed:** Live token streaming UI in `terminal-renderer.tsx`.

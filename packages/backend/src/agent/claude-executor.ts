@@ -148,6 +148,17 @@ function mapMessage(msg: SDKMessage): AgentEvent[] {
         events.push({ type: "partial", content: delta.text, index: evt.index });
       }
     }
+  } else if (msg.type === "system" && "subtype" in msg && msg.subtype === "task_progress") {
+    // Agent progress summary — AI-generated description of current work
+    const progressMsg = msg as { description: string; summary?: string; usage: { total_tokens: number; tool_uses: number; duration_ms: number } };
+    events.push({
+      type: "progress",
+      description: progressMsg.description,
+      summary: progressMsg.summary,
+      totalTokens: progressMsg.usage.total_tokens,
+      toolUses: progressMsg.usage.tool_uses,
+      durationMs: progressMsg.usage.duration_ms,
+    });
   } else if (msg.type === "result") {
     if (msg.subtype === "success") {
       events.push({
@@ -486,6 +497,7 @@ export class ClaudeExecutor implements AgentExecutor {
           allowDangerouslySkipPermissions: true,
           enableFileCheckpointing: true,
           includePartialMessages: true,
+          agentProgressSummaries: true,
           maxBudgetUsd: options.maxBudget > 0 ? options.maxBudget : undefined,
           effort,
           thinking,
