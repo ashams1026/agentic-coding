@@ -15,7 +15,7 @@
 
 ### Bug Fixes
 
-- [review] **FX.PICO5** — Fix Pico chat panel scroll overflow. The chat panel message area doesn't scroll within its container — messages overflow off screen instead of scrolling inside the panel. In `packages/frontend/src/features/pico/chat-panel.tsx`: ensure the message area has a fixed height with `overflow-y: auto` (or uses ScrollArea) so messages scroll within the panel bounds. Verify auto-scroll to bottom still works on new messages.
+- [x] **FX.PICO5** — Fix Pico chat panel scroll overflow. The chat panel message area doesn't scroll within its container — messages overflow off screen instead of scrolling inside the panel. In `packages/frontend/src/features/pico/chat-panel.tsx`: ensure the message area has a fixed height with `overflow-y: auto` (or uses ScrollArea) so messages scroll within the panel bounds. Verify auto-scroll to bottom still works on new messages.
 
 ### SDK-Native Skills & Tool Discovery
 
