@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 13:45 PDT — Review: FX.PICO.EMPTY.BUBBLE (approved)
+
+**Reviewed:** Fix for empty chat bubble appearing before streaming content.
+- `isEmptyStreaming` guard correctly checks 3 conditions (isStreaming, last message, empty content) — won't affect non-streaming or populated messages ✓
+- TypingIndicator guard condition unchanged, still shows only when content is empty ✓
+- Margin changed from `mt-1` to `mt-3` compensates for removed empty bubble spacing ✓
+- Single file change, minimal and focused ✓
+- Build passes, visual verification confirms no regressions ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 13:35 PDT — FX.PICO.EMPTY.BUBBLE: Hide empty bubble during streaming
 
 **Done:** When Pico starts streaming, a message with empty `content: []` was added to the messages array. `ChatMessage` rendered this as an empty bubble (avatar + muted background + padding, no text) before the TypingIndicator below it. Fix: in `chat-panel.tsx`, skip rendering the last message during streaming if its content array is empty (`return null` from the map). The TypingIndicator already handles this state — changed its margin from `mt-1` to `mt-3` to provide proper spacing since the empty bubble no longer precedes it. Verified: panel renders correctly with existing messages, no regressions.
