@@ -62,7 +62,7 @@ const MODEL_CONFIG: Record<PersonaModel, { label: string; className: string }> =
 
 // ── Built-in persona IDs ────────────────────────────────────────
 
-const BUILT_IN_IDS = new Set<string>([
+export const BUILT_IN_IDS = new Set<string>([
   "ps-pm00001",
   "ps-tl00001",
   "ps-en00001",

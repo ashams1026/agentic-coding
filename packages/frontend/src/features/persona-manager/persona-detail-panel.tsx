@@ -34,6 +34,7 @@ import { SystemPromptEditor } from "./system-prompt-editor";
 import { ToolConfiguration } from "./tool-configuration";
 import { SkillBrowser } from "./skill-browser";
 import { SubagentBrowser } from "./subagent-browser";
+import { BUILT_IN_IDS } from "./persona-list";
 import type { PersonaId, PersonaModel, EffortLevel, ThinkingMode } from "@agentops/shared";
 import {
   Select,
@@ -209,7 +210,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
 
   const AvatarIcon = getIcon(editing ? avatarIcon : (persona?.avatar.icon ?? "bot"));
   const displayColor = editing ? avatarColor : (persona?.avatar.color ?? "#6b7280");
-  const isBuiltIn = persona?.settings?.isSystem === true;
+  const isBuiltIn = persona ? BUILT_IN_IDS.has(persona.id as string) : false;
   const isAssistant = persona?.settings?.isAssistant === true;
 
   if (!persona) {

@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 06:25 PDT — FX.UX.PERSONA.2: Fix built-in persona label mismatch
+
+**Done:** Exported `BUILT_IN_IDS` from `persona-list.tsx` and imported it in `persona-detail-panel.tsx`. Replaced `persona?.settings?.isSystem === true` check with `BUILT_IN_IDS.has(persona.id)` to match the same logic used in the list view. Now all built-in personas (PM, Tech Lead, Engineer, Code Reviewer) consistently show "Built-in persona" label and "Built-in" badge in both the card grid and the detail panel.
+**Files:** `packages/frontend/src/features/persona-manager/persona-list.tsx`, `packages/frontend/src/features/persona-manager/persona-detail-panel.tsx`
+**Notes:** Root cause was that only Router and Pico had `isSystem: true` in backend seed data; the other 4 built-in personas didn't. Using `BUILT_IN_IDS` is the authoritative source.
+
+---
+
 ## 2026-04-02 06:15 PDT — Review: FX.UX.PERSONA.1 (approved)
 
 **Reviewed:** Persona cards keyboard accessibility fix.
