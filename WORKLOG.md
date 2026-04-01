@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-01 06:30 PDT — Review: SDK.ST.7 (approved)
+
+**Reviewed:** Streaming & observability e2e test results at `tests/e2e/results/agent-monitor-streaming.md`.
+- 2/14 PASS, 0 FAIL, 12 SKIP — justified: all streaming features need live agent, empty DB
+- Live tab and History tab absence tests pass
+- Re-testing notes with component cross-references (ST.1-ST.5)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 06:25 PDT — SDK.ST.7: Run streaming & observability e2e test
 
 **Done:** Executed SDK.ST.6 test plan. 2/14 PASS, 0 FAIL, 12 SKIP. No active agents — all streaming features require live WS events. Verified: Live tab loads correctly, History tab has no context bar (correct absence). 2 screenshots. Re-testing notes reference all 5 component implementations (ST.1-ST.5).
