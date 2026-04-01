@@ -122,9 +122,11 @@ The agent subsystem lives in `packages/backend/src/agent/`:
 
 | File | Role |
 |---|---|
-| `types.ts` | `AgentEvent` union (6 variants), `AgentTask`, `SpawnOptions`, `AgentExecutor` interface |
+| `types.ts` | `AgentEvent` union, `AgentTask`, `SpawnOptions`, `AgentExecutor` interface (re-exported from `@agentops/core`) |
 | `claude-executor.ts` | Claude Agent SDK integration — spawns agent sessions with MCP tools |
-| `execution-manager.ts` | Orchestrates execution lifecycle: create DB record → stream events → update on completion/failure |
+| `mock-executor.ts` | Simulated executor for testing — realistic events without API calls |
+| `execution-manager.ts` | `ExecutionManager` class — orchestrates execution lifecycle with injected `ExecutorRegistry` |
+| `setup.ts` | **Composition root** — sole file importing concrete executors, creates default `ExecutionManager` singleton |
 | `dispatch.ts` | Triggers persona execution when work items enter a state |
 | `router.ts` | Router agent — haiku model, decides next state after persona completes |
 | `coordination.ts` | Parent-child coordination — auto-advances parent when all children complete |
@@ -132,7 +134,113 @@ The agent subsystem lives in `packages/backend/src/agent/`:
 | `memory.ts` | Project memory — haiku summary on completion, token-budgeted retrieval |
 | `mcp-server.ts` | MCP server factory — 8 tools agents use to interact with the system |
 | `sdk-session.ts` | Persistent V2 SDK session — lazy singleton for capabilities discovery |
-| `sandbox.ts` | Command sandbox — validates Bash commands against project directory escapes |
+| `sandbox.ts` | Command sandbox — validates Bash commands (re-exported from `@agentops/core`) |
+
+## Pluggable Executor Architecture
+
+The executor layer uses dependency injection so external projects can swap in custom executors without forking. Three packages collaborate:
+
+```
+┌──────────────────────────────────────────┐
+│ @agentops/shared                         │
+│ Entity types, IDs, workflow constants    │
+└──────────────┬───────────────────────────┘
+               │
+┌──────────────▼───────────────────────────┐
+│ @agentops/core                           │
+│                                          │
+│ AgentExecutor interface                  │
+│ AgentEvent, AgentTask, SpawnOptions      │
+│ ExecutorRegistry (register/get/list)     │
+│ Repository interfaces (6 interfaces)     │
+│ validateCommand() sandbox                │
+└──────────────┬───────────────────────────┘
+               │
+┌──────────────▼───────────────────────────┐
+│ @agentops/backend                        │
+│                                          │
+│ ClaudeExecutor (concrete)                │
+│ MockExecutor (concrete)                  │
+│ ExecutionManager (class)                 │
+│ setup.ts (composition root)              │
+│ Drizzle repository implementations       │
+│ Fastify routes, WebSocket, DB            │
+└──────────────────────────────────────────┘
+```
+
+### Executor Interface
+
+Every executor implements `AgentExecutor` from `@agentops/core`:
+
+```typescript
+interface AgentExecutor {
+  spawn(
+    task: AgentTask,
+    persona: Persona,
+    project: Project,
+    options: SpawnOptions,
+  ): AsyncIterable<AgentEvent>;
+}
+```
+
+`spawn()` returns an async iterable of events streamed to the UI in real time. The final event must be a `ResultEvent` with `outcome`, `costUsd`, and `durationMs`.
+
+### Executor Registry
+
+The `ExecutorRegistry` class manages named executor factories:
+
+```typescript
+const registry = new ExecutorRegistry();
+registry.register("claude", () => new ClaudeExecutor());
+registry.register("mock",   () => new MockExecutor());
+registry.register("custom", () => new MyCustomExecutor());
+
+registry.list();       // ["claude", "mock", "custom"]
+registry.get("claude"); // creates a ClaudeExecutor instance
+registry.has("custom"); // true
+```
+
+The `ExecutionManager` accepts the registry in its constructor and uses it to create executors based on the resolved mode.
+
+### Composition Root (`setup.ts`)
+
+`packages/backend/src/agent/setup.ts` is the **only file** that imports concrete executor classes. It wires everything together:
+
+```typescript
+// setup.ts — the single point to swap executors
+import { ClaudeExecutor } from "./claude-executor.js";
+import { MockExecutor } from "./mock-executor.js";
+
+function createDefaultRegistry(): ExecutorRegistry {
+  const registry = new ExecutorRegistry();
+  registry.register("claude", () => new ClaudeExecutor());
+  registry.register("mock",   () => new MockExecutor());
+  return registry;
+}
+
+export const executionManager = createExecutionManager(createDefaultRegistry());
+```
+
+To add a custom executor, modify `setup.ts` or replace it entirely. See `examples/custom-executor/` for a complete template.
+
+### REST API for Executor Mode
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/settings/executor-mode` | GET | Returns `{ mode, available, isProduction }` |
+| `/api/settings/executor-mode` | PUT | Switch executor: `{ mode: "mock" }` — validates against registry |
+
+The `available` array reflects what's registered in the `ExecutorRegistry`. Custom executors appear automatically after registration.
+
+### Building on AgentOps
+
+To create a custom executor:
+
+1. **Implement `AgentExecutor`** — yield events from `spawn()`. See `examples/custom-executor/echo-executor.ts`.
+2. **Register it** — `registry.register("my-executor", () => new MyExecutor())` in `setup.ts`.
+3. **Select it** — `PUT /api/settings/executor-mode { mode: "my-executor" }` or `AGENTOPS_EXECUTOR=my-executor`.
+
+The `@agentops/core` package can be used as a dependency without importing the full backend.
 
 ## SDK Hooks
 
