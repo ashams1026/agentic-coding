@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-03-31 — SDK.FC.2: Add rewind API endpoint
+
+**Task:** Add `POST /api/executions/:id/rewind` route for file rewind via SDK.
+
+**Done:**
+- Added `POST /api/executions/:id/rewind` route in `packages/backend/src/routes/executions.ts`
+- Accepts `{ dryRun?: boolean }` body
+- Validates: execution exists, has checkpointMessageId, is not running
+- Looks up project path via workItem → project chain
+- Creates temporary query() session with `enableFileCheckpointing: true` in the project's cwd
+- Calls `q.rewindFiles(checkpointMessageId, { dryRun })` using the withDiscoveryQuery pattern (start subprocess, call control method, interrupt+drain)
+- Returns `{ canRewind, filesChanged, insertions, deletions, dryRun }`
+- On non-dry-run: posts system comment on work item with file change summary, logs audit trail entry
+- Error handling: 404 (execution/workItem/project not found), 400 (no checkpoint, cannot rewind), 409 (running execution), 503 (no API key), 500 (rewind failure)
+
+**Files modified:** `packages/backend/src/routes/executions.ts`
+
+**Notes for next agent:** The rewind endpoint is ready for SDK.FC.3 (UI rewind button). Frontend needs: `POST /api/executions/:id/rewind` with `{ dryRun: true }` first for preview, then `{ dryRun: false }` for actual rewind. Response shape: `{ data: { canRewind, filesChanged: string[], insertions, deletions, dryRun } }`. Note: `auditStateTransition` is reused for rewind audit logging with fromState="rewind", toState="reverted" — a dedicated audit function could be added later.
+
+---
+
 ## 2026-03-31 — Review: SDK.FC.1 (approved)
 
 **Reviewed:** File checkpointing enablement across executor, types, schema, and routes.
