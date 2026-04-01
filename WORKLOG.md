@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 20:30 PDT — Review: AW.1 (approved)
+
+**Reviewed:** Visual UI check addition to AGENT_PROMPT.md WORK state.
+- [VISUAL CHECK] step placed correctly between [IMPLEMENT] and [VERIFY]
+- Conditional: `git diff --name-only` → skip if no frontend changes
+- 4-step procedure: dev server check, chrome-devtools screenshot, inspect, fix loop
+- All 7 file path → page URL mappings present
+- Mandatory rule added to Worker Rules
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 20:25 PDT — AW.1: Add visual UI check to WORK state
 
 **Done:** Added `[VISUAL CHECK]` step to AGENT_PROMPT.md between `[IMPLEMENT]` and `[VERIFY]`. Conditional on frontend changes: runs `git diff --name-only`, skips if no `packages/frontend/` files changed. Includes: dev server check, chrome-devtools MCP screenshot, visual inspection, fix loop. File path → page URL mapping for 7 feature directories. Added mandatory rule to Worker Rules section.
