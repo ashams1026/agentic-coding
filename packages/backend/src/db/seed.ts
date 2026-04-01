@@ -10,6 +10,8 @@ import {
   comments,
   proposals,
   projectMemories,
+  chatMessages,
+  chatSessions,
 } from "./schema.js";
 
 // ── Fixed IDs (matching frontend fixtures) ────────────────────────
@@ -67,6 +69,8 @@ export async function seed() {
   runMigrations();
 
   // Clear existing data (reverse dependency order)
+  await db.delete(chatMessages);
+  await db.delete(chatSessions);
   await db.delete(projectMemories);
   await db.delete(proposals);
   await db.delete(comments);
@@ -841,11 +845,14 @@ Call route_to_state with the workItemId, targetState, and reasoning.
     },
   ]);
 
-  console.log("Seed complete: 1 project, 5 personas, 16 work items, 4 edges, 5 assignments, 10 executions, 17 comments, 2 proposals, 2 memories");
+  console.log("Seed complete: 1 project, 6 personas, 16 work items, 4 edges, 5 assignments, 10 executions, 17 comments, 2 proposals, 2 memories");
 }
 
-// Run if executed directly
-seed().catch((err) => {
-  console.error("Seed failed:", err);
-  process.exit(1);
-});
+// Run if executed directly (not when imported by seed-e2e or seed-demo)
+const isDirectRun = process.argv[1]?.endsWith("seed.ts") || process.argv[1]?.endsWith("seed.js");
+if (isDirectRun) {
+  seed().catch((err) => {
+    console.error("Seed failed:", err);
+    process.exit(1);
+  });
+}

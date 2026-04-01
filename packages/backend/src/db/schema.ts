@@ -241,7 +241,7 @@ export const projectMemoriesRelations = relations(projectMemories, ({ one }) => 
 
 export const chatSessions = sqliteTable("chat_sessions", {
   id: text("id").primaryKey(), // ChatSessionId
-  projectId: text("project_id").notNull().references(() => projects.id),
+  projectId: text("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
   title: text("title").notNull().default("New chat"),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
