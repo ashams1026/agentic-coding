@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-01 08:25 PDT — Review: SDK.SB.6 (approved)
+
+**Reviewed:** Sandbox documentation in `docs/deployment.md` and `docs/architecture.md`.
+- deployment.md: code example, per-project config, canUseTool patterns table, OS requirements, PreToolUse hook
+- architecture.md: concise 3-layer summary with cross-reference
+- All 5 task requirements covered: SDK config, filesystem/network rules, canUseTool, per-project customization, OS requirements
+- **Verdict: approved.** Completes Part 2 (Safety) of Sprint 20.
+
+---
+
 ## 2026-04-01 08:20 PDT — SDK.SB.6: Update docs with sandbox documentation
 
 **Done:** Added "Security & Sandbox" section to `docs/deployment.md`: SDK native sandbox config (code example), per-project configuration, canUseTool callback (9 patterns table), PreToolUse hook layer. Added "Security Layers" section to `docs/architecture.md`: 3-layer summary (OS sandbox, canUseTool, PreToolUse hook). All 5 task requirements covered.
