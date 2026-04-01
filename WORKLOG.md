@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 23:45 PDT — UX.DETAIL: Audit detail panel
+
+**Done:** Audited work item detail panel using "User authentication with OAuth2" (data-rich item). All sections render: title (h2, "Click to edit"), status badge (In Progress), Move to/priority dropdowns, labels (auth, security + add), description with Edit button, 3 children with status badges + Add child, 6 comments with agent/user avatars and timestamps, comment input with send button, 3 execution history entries (Router/Tech Lead/Product Manager with success badges, cost, timestamps), ID/Created/Updated metadata. Panel scrolls internally (scrollHeight 1484). Dark mode: good contrast throughout, no broken elements. No bugs filed.
+**Files:** `tests/e2e/results/ux-detail-initial.png`, `tests/e2e/results/ux-detail-scrolled.png`, `tests/e2e/results/ux-detail-dark.png`
+
+---
+
 ## 2026-04-01 23:35 PDT — Review: FX.UX.ITEMS.1 (approved)
 
 **Reviewed:** Empty state fix for grouped list when all filtered items are children.
