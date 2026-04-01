@@ -49,7 +49,7 @@
 
 - [x] **SDK.SO.3** — E2E test plan: Router structured output. Create `tests/e2e/plans/router-structured-output.md`: verify Router decision cards display correctly in agent monitor and activity feed. Visual check of the state badge, reasoning, and confidence indicator.
 
-- [review] **SDK.SO.4** — Run Router structured output e2e test. Execute SDK.SO.3. Record results with screenshots of Router decision cards.
+- [x] **SDK.SO.4** — Run Router structured output e2e test. Execute SDK.SO.3. Record results with screenshots of Router decision cards.
 
 - [ ] **SDK.SO.5** — Update `docs/workflow.md` and `docs/personas.md` with structured Router output. Document: the JSON schema, how Router decisions are parsed, the confidence field and its meaning.
 

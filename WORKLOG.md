@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 01:05 PDT — Review: SDK.SO.4 (approved)
+
+**Reviewed:** Router structured output e2e test results at `tests/e2e/results/router-structured-output.md`.
+- 5/13 PASS, 0 FAIL, 8 SKIP — SKIPs justified: seeded Router executions have null structuredOutput
+- Fallback behavior verified: Router executions display as standard agent_completed (no card)
+- Step 10 comparison test confirms conditional rendering — non-Router events have no card styling
+- 5 screenshots captured, re-testing notes actionable
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 01:00 PDT — SDK.SO.4: Run Router structured output e2e test
 
 **Done:** Executed SDK.SO.3 test plan. 5/13 PASS, 0 FAIL, 8 SKIP. All SKIPs because seeded Router executions have `structuredOutput: null` (predate SDK.SO.1). Verified: Router rows appear in history, expand correctly (no card for null data), activity feed shows Router executions as standard `agent_completed`, non-Router events have no decision card styling. 5 screenshots captured.
