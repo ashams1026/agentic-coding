@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-03 01:45 PDT — Review: RES.SWAP.ARCH (approved)
+
+**Reviewed:** Frontend/backend decoupling architecture research doc.
+- All 7 areas covered: current state audit (API_BASE_URL at client.ts:48, 5 helpers + 6 inline fetch at specific lines, WS at ws-client.ts:53, CORS at server.ts:27-30, health at :33-41), backend selector UX (3 access points, connection model, list/add wireframes, sidebar indicator), connection validation (health check flow with 4 error paths, enhanced response with apiVersion + capabilities, 30s polling), auth (bearer token scheme, header injection, localStorage, security note), WebSocket reconnection (5-step switch flow, handler survival, Agent Monitor stream clearing), offline/disconnected (3 detection signals, 4-tier degradation table, TanStack Query cache, polling backoff), deployment models (5 models with architecture diagrams, enabled vs additional work table)
+- Source code claims verified: client.ts:48-49 (API_BASE_URL/BASE_URL), ws-client.ts:23/53/77-81/90/122-128/136 (class/URL/onclose/disconnect/onReconnect/scheduleReconnect), server.ts:27-28 (CORS origins), server.ts:33/39 (health/version)
+- Implementation approach pragmatic: Zustand connection store, Phase 1 single-file change
+- 6 cross-references accurate, 5 design decisions well-reasoned
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 01:30 PDT — RES.SWAP.ARCH: Research frontend/backend decoupling architecture
 
 **Done:** Researched frontend/backend decoupling architecture. Doc covers all 7 investigation areas: (1) current state audit — hardcoded `API_BASE_URL = "http://localhost:3001"` at client.ts:48, 30+ API functions using `BASE_URL` through 5 helpers + 6 inline fetch calls, WebSocket URL derived from same constant at ws-client.ts:53, CORS hardcoded to localhost ports at server.ts:27-30, health endpoint at server.ts:33-41 with version; (2) backend selector UX — Settings > Connection page, connection list with status indicators, add/edit dialog with test, sidebar footer status indicator, first-run screen if no connection; (3) connection validation — health check flow with version comparison, enhanced health response with apiVersion + capabilities, periodic 30s health polling with 3-strike disconnect detection; (4) auth — bearer token (API key) scheme, header injection per connection, localStorage storage with security note, OAuth/SSO deferred; (5) WebSocket reconnection — 5-step switch flow (disconnect → update store → connect new → invalidate cache → refetch), handler survival across reconnects, Agent Monitor stream clearing; (6) offline/disconnected — 3 detection signals, 4-tier degradation (connected/recent/extended/no-backend), TanStack Query stale cache serving, reconnection polling with backoff; (7) deployment models — 5 models enabled (local, SPA+local, SPA+tunnel, team server, desktop app), what's enabled vs what needs additional work. Also: implementation approach (Zustand connection store replacing constant), 3-phase migration, backend CORS change, 6 cross-references, 5 design decisions.
