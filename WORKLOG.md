@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 17:50 PDT — RES.RECOVERY.AGENTS: Research agent error handling and recovery
+
+**Done:** Researched agent error handling and recovery patterns. Doc covers all 6 investigation areas: (1) current failure modes — audited 5 backend modules (execution-manager.ts: outer try-catch at line 678, MAX_REJECTIONS=3, LOOP_HISTORY_SIZE=6, MAX_TRANSITIONS_PER_HOUR=10; claude-executor.ts: SDK api_retry events, sandbox hooks, enableFileCheckpointing; start.ts: recoverOrphanedState() at line 38 marks running/pending as failed, SHUTDOWN_TIMEOUT_MS=30000; concurrency.ts: DEFAULT_MAX_CONCURRENT=3, slot leak on crash; dispatch.ts: no try-catch). Key finding: error handling is defensive but non-resilient — no retries, no circuit breakers. (2) automatic retry — classified 7 error categories (timeout/process_crash retryable, config_error/permission terminal), RetryPolicy interface (maxRetries, backoffMs, upgradeModel), retry in onComplete(), per-persona config, proposed new statuses (retrying, timed_out, interrupted). (3) graceful shutdown — current flow adequate; proposed interrupt+checkpoint enhancement using AbortController + SDK checkpoints, distinguish interrupted vs crashed orphans, auto-retry orphans. (4) stuck detection — watchdog design with per-persona thresholds (Router 2min, Engineer 10min), warn vs timeout actions, WS event for "possibly stuck." (5) partial results — keep+warn default, auto-rollback opt-in via existing rewindFiles/checkpointMessageId, conflict detection before retry. (6) error reporting — ExecutionError schema with 10 error categories, JSON error column on executions, UI badges/callouts, aggregate trends for analytics. 3-phase implementation plan, 7 cross-references, 6 design decisions.
+**Files:** `docs/proposals/error-recovery/agent-recovery.md` (new)
+
+---
+
 ## 2026-04-01 17:30 PDT — Review: RES.SEARCH (approved)
 
 **Reviewed:** Search infrastructure and UX research doc.
