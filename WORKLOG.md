@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 04:45 PDT — Review: SDK.ST.1 (approved)
+
+**Reviewed:** Partial message streaming in executor, types, and execution manager.
+- `includePartialMessages: true` in query options — enables SDK partial events
+- `stream_event` handling extracts `content_block_delta` → `text_delta` content correctly
+- Partial events broadcast via WS as `agent_output_chunk` but NOT logged to execution `logs` — correct separation
+- `PartialEvent` added to `AgentEvent` union with content + index fields
+- Double-cast via `unknown` for `BetaRawContentBlockDelta` — acceptable for runtime duck-typing
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 04:40 PDT — SDK.ST.1: Enable partial message streaming
 
 **Done:** Added `includePartialMessages: true` to `query()` options. Handles `stream_event` type in `mapMessage()`: extracts `content_block_delta` events with `text_delta` type, emits as `PartialEvent { type: "partial", content, index }`. In execution manager: partial events are broadcast via WS as `agent_output_chunk` (chunkType: "text") but NOT logged to execution `logs` field (too granular). Added `PartialEvent` to `AgentEvent` union type.

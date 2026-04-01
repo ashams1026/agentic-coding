@@ -46,7 +46,7 @@
 
 ### Part 1: Real-Time Streaming
 
-- [review] **SDK.ST.1** — Enable partial message streaming. In `packages/backend/src/agent/claude-executor.ts`: add `includePartialMessages: true` to `query()` options. Handle `SDKPartialAssistantMessage` in the `mapMessage()` function: emit partial events as `{ type: "partial", content: string, index: number }`. Stream these over WebSocket to the frontend. This replaces our current chunk-by-chunk display with true token-by-token streaming.
+- [x] **SDK.ST.1** — Enable partial message streaming. In `packages/backend/src/agent/claude-executor.ts`: add `includePartialMessages: true` to `query()` options. Handle `SDKPartialAssistantMessage` in the `mapMessage()` function: emit partial events as `{ type: "partial", content: string, index: number }`. Stream these over WebSocket to the frontend. This replaces our current chunk-by-chunk display with true token-by-token streaming.
 
 - [ ] **SDK.ST.2** — Agent monitor: live token streaming UI. In `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`: handle partial message events. Instead of waiting for complete text chunks, append tokens to the current message bubble in real-time (like a typing animation). Use `requestAnimationFrame` batching to avoid excessive re-renders. Show a blinking cursor at the end of the current streaming message. This makes the agent monitor feel alive — users see text appear character by character.
 
