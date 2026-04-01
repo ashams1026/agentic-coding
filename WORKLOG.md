@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 16:45 PDT — PLUG.1: Refactor ExecutionManager into class
+
+**Done:** Converted `execution-manager.ts` from module-level functions + singleton into an `ExecutionManager` class with constructor injection (`ExecutorFactory`, `DbHandle`, `BroadcastFn`). All state (executor, runtimeOverride, transitionLog, stateHistory) is now instance state. Default instance uses lazy Proxy for test compatibility. Updated 6 call sites (server.ts, settings.ts, start.ts, router.ts, dispatch.ts, mcp-server.ts) to use `executionManager.method()`. Fixed 5 test files to use `vi.hoisted()` for mockDb and updated mock exports. Tests: 156/159 pass (3 pre-existing failures).
+**Files:** `packages/backend/src/agent/execution-manager.ts` (rewritten), `packages/backend/src/server.ts`, `packages/backend/src/start.ts`, `packages/backend/src/routes/settings.ts`, `packages/backend/src/agent/router.ts`, `packages/backend/src/agent/dispatch.ts`, `packages/backend/src/agent/mcp-server.ts`, 5 test files
+
+---
+
 ## 2026-04-01 16:25 PDT — Review: SDK.FUT.6 (approved)
 
 **Reviewed:** Doc updates across 4 files for SDK.FUT.1-5 spike references.

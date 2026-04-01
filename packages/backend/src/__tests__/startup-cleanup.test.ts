@@ -3,7 +3,9 @@ import { eq } from "drizzle-orm";
 import { createTestDb, seedTestDb, TEST_IDS, type TestDatabase } from "../test/setup.js";
 import * as schema from "../db/schema.js";
 
-const mockDb = { db: null as unknown };
+const { mockDb } = vi.hoisted(() => ({
+  mockDb: { db: null as unknown },
+}));
 vi.mock("../db/connection.js", () => ({
   get db() {
     return mockDb.db;
@@ -25,7 +27,7 @@ vi.mock("../agent/dispatch.js", () => ({
 }));
 
 import { clearAll, getActiveCount, getQueueLength, trackExecution, enqueue } from "../agent/concurrency.js";
-import { clearTransitionLog, recordTransition, canTransition } from "../agent/execution-manager.js";
+import { executionManager } from "../agent/execution-manager.js";
 import { recoverOrphanedState } from "../start.js";
 
 let testDb: TestDatabase;
@@ -39,7 +41,7 @@ describe("startup crash recovery", () => {
 
   afterEach(() => {
     clearAll();
-    clearTransitionLog();
+    executionManager.clearTransitionLog();
     testDb.cleanup();
   });
 
@@ -142,12 +144,12 @@ describe("startup crash recovery", () => {
   it("clearTransitionLog resets rate limiter", () => {
     const id = "wi-test0001";
     for (let i = 0; i < 10; i++) {
-      recordTransition(id);
+      executionManager.recordTransition(id);
     }
-    expect(canTransition(id)).toBe(false);
+    expect(executionManager.canTransition(id)).toBe(false);
 
-    clearTransitionLog();
+    executionManager.clearTransitionLog();
 
-    expect(canTransition(id)).toBe(true);
+    expect(executionManager.canTransition(id)).toBe(true);
   });
 });

@@ -3,7 +3,9 @@ import { eq } from "drizzle-orm";
 import { createTestDb, seedTestDb, TEST_IDS, type TestDatabase } from "../../test/setup.js";
 import * as schema from "../../db/schema.js";
 
-const mockDb = { db: null as unknown };
+const { mockDb } = vi.hoisted(() => ({
+  mockDb: { db: null as unknown },
+}));
 vi.mock("../../db/connection.js", () => ({
   get db() {
     return mockDb.db;
@@ -13,7 +15,9 @@ vi.mock("../../db/connection.js", () => ({
 // Stub the executor spawn — we're testing dispatch decisions, not agent execution
 const mockRunExecution = vi.fn().mockResolvedValue("ex-mock001");
 vi.mock("../execution-manager.js", () => ({
-  runExecution: (...args: unknown[]) => mockRunExecution(...args),
+  executionManager: {
+    runExecution: (...args: unknown[]) => mockRunExecution(...args),
+  },
 }));
 
 // Mock broadcast

@@ -3,7 +3,9 @@ import { eq } from "drizzle-orm";
 import { createTestDb, seedTestDb, TEST_IDS, type TestDatabase } from "../../test/setup.js";
 import * as schema from "../../db/schema.js";
 
-const mockDb = { db: null as unknown };
+const { mockDb } = vi.hoisted(() => ({
+  mockDb: { db: null as unknown },
+}));
 vi.mock("../../db/connection.js", () => ({
   get db() {
     return mockDb.db;
@@ -29,9 +31,14 @@ const { mockSpawn, mockTrackExecution, mockOnComplete, mockGetProjectCostSummary
   mockOnComplete: vi.fn().mockReturnValue(null),
   mockGetProjectCostSummary: vi.fn().mockResolvedValue({ todayCostUsd: 0, monthCostUsd: 0 }),
 }));
-// Mock ClaudeExecutor — the one thing we stub
+// Mock both executors so mockSpawn is used regardless of executor mode
 vi.mock("../claude-executor.js", () => ({
   ClaudeExecutor: class {
+    spawn = mockSpawn;
+  },
+}));
+vi.mock("../mock-executor.js", () => ({
+  MockExecutor: class {
     spawn = mockSpawn;
   },
 }));
@@ -43,7 +50,13 @@ vi.mock("../concurrency.js", () => ({
   getProjectCostSummary: (...args: unknown[]) => mockGetProjectCostSummary(...args),
 }));
 
-import { runExecution, canTransition, recordTransition, clearTransitionLog, handleRejection } from "../execution-manager.js";
+import { executionManager, _resetExecutionManager } from "../execution-manager.js";
+// Access methods through the proxy at call time (not module load) to avoid early db init
+const runExecution = (...args: Parameters<typeof executionManager.runExecution>) => executionManager.runExecution(...args);
+const canTransition = (...args: Parameters<typeof executionManager.canTransition>) => executionManager.canTransition(...args);
+const recordTransition = (...args: Parameters<typeof executionManager.recordTransition>) => executionManager.recordTransition(...args);
+const clearTransitionLog = () => executionManager.clearTransitionLog();
+const handleRejection = (...args: Parameters<typeof executionManager.handleRejection>) => executionManager.handleRejection(...args);
 
 let testDb: TestDatabase;
 
@@ -60,6 +73,7 @@ function createMockEvents(events: Array<{ type: string; [key: string]: unknown }
 
 describe("execution manager", () => {
   beforeEach(async () => {
+    _resetExecutionManager();
     testDb = createTestDb();
     mockDb.db = testDb.db;
     await seedTestDb(testDb.db);

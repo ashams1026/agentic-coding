@@ -6,7 +6,7 @@ import { db, DB_PATH } from "./db/connection.js";
 import { sqlite } from "./db/connection.js";
 import { executions, workItems } from "./db/schema.js";
 import { clearAll as clearConcurrency, getActiveCount } from "./agent/concurrency.js";
-import { clearTransitionLog } from "./agent/execution-manager.js";
+import { executionManager } from "./agent/execution-manager.js";
 import { closeSdkSession } from "./agent/sdk-session.js";
 import { closeAllClients } from "./ws.js";
 import { logger } from "./logger.js";
@@ -121,7 +121,7 @@ export async function recoverOrphanedState(): Promise<RecoveryReport> {
 
   // Always clear in-memory state, even if DB recovery failed
   clearConcurrency();
-  clearTransitionLog();
+  executionManager.clearTransitionLog();
 
   return report;
 }

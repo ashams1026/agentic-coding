@@ -8,7 +8,7 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { personaAssignments, workItems, comments } from "../db/schema.js";
-import { runExecution } from "./execution-manager.js";
+import { executionManager } from "./execution-manager.js";
 import { canSpawn, enqueue, checkMonthlyCost } from "./concurrency.js";
 import { createId } from "@agentops/shared";
 import type { CommentId, WorkItemId } from "@agentops/shared";
@@ -79,5 +79,5 @@ export async function dispatchForState(
   }
 
   // Spawn execution
-  await runExecution(workItemId, assignment.personaId);
+  await executionManager.runExecution(workItemId, assignment.personaId);
 }

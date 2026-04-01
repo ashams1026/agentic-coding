@@ -19,7 +19,7 @@ import type { CommentId, WorkItemId, PersonaId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 import { checkParentCoordination } from "./coordination.js";
 import { checkMemoryGeneration, getRecentMemories } from "./memory.js";
-import { handleRejection } from "./execution-manager.js";
+import { executionManager } from "./execution-manager.js";
 import { logger } from "../logger.js";
 import { auditStateTransition } from "../audit.js";
 
@@ -293,7 +293,7 @@ export function createMcpServer(context: McpContext): McpServer {
 
         // Detect rejection: "In Review" → "In Progress"
         if (fromState === "In Review" && targetState === "In Progress") {
-          const result = await handleRejection(workItemId, reasoning);
+          const result = await executionManager.handleRejection(workItemId, reasoning);
           finalTargetState = result.targetState; // may be "Blocked" if max retries exceeded
 
           if (result.blocked) {

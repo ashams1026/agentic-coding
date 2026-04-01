@@ -15,7 +15,7 @@ import { chatRoutes } from "./routes/chat.js";
 import { sdkRoutes } from "./routes/sdk.js";
 import { registerWebSocket } from "./ws.js";
 import { getActiveCount } from "./agent/concurrency.js";
-import { getExecutorMode } from "./agent/execution-manager.js";
+import { executionManager } from "./agent/execution-manager.js";
 import { loggerConfig } from "./logger.js";
 
 export async function buildServer() {
@@ -35,7 +35,7 @@ export async function buildServer() {
       status: "ok",
       uptime: Math.floor(process.uptime()),
       activeExecutions: getActiveCount(),
-      executor: getExecutorMode(),
+      executor: executionManager.getExecutorMode(),
       version: "0.0.1",
     };
   });

@@ -9,7 +9,7 @@
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { workItems, projects, comments } from "../db/schema.js";
-import { runExecution } from "./execution-manager.js";
+import { executionManager } from "./execution-manager.js";
 import { createId } from "@agentops/shared";
 import { personas } from "../db/schema.js";
 
@@ -141,7 +141,7 @@ export async function runRouter(workItemId: string): Promise<boolean> {
     .where(eq(personas.id, routerPersonaId));
 
   // Spawn the router execution
-  await runExecution(workItemId, routerPersonaId);
+  await executionManager.runExecution(workItemId, routerPersonaId);
 
   return true;
 }

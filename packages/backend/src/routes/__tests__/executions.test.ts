@@ -2,7 +2,9 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import Fastify, { type FastifyInstance } from "fastify";
 import { createTestDb, seedTestDb, TEST_IDS, type TestDatabase } from "../../test/setup.js";
 
-const mockDb = { db: null as unknown };
+const { mockDb } = vi.hoisted(() => ({
+  mockDb: { db: null as unknown },
+}));
 vi.mock("../../db/connection.js", () => ({
   get db() {
     return mockDb.db;
