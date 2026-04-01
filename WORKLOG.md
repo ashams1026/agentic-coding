@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 09:15 PDT — RES.GLOBAL.NAV: Navigation restructure research
+
+**Done:** Researched navigation patterns from Linear, Jira, Notion, VS Code, and GitHub. Analyzed current sidebar (flat 6-link nav with project selector dropdown). Recommended Option A: keep flat nav, add "All Projects" option to selector, make pages scope-aware. Dashboard and Agent Monitor show aggregated data in global scope; Work Items prompts for project selection; Activity Feed gets filter pills. No URL scheme changes needed — state-based scoping via Zustand. Produced wireframe descriptions for all 4 key states (global dashboard, project work items, global work items prompt, global agent monitor with scope badges). Defined 3-phase migration path and files-to-change list.
+**Files:** `docs/proposals/global-agents/navigation-redesign.md`
+
+---
+
 ## 2026-04-02 08:40 PDT — Review: RES.GLOBAL.DATA (approved)
 
 **Reviewed:** Data model changes for global agents research proposal.
