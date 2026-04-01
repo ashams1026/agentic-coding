@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 10:15 PDT — RES.WORKFLOW.DATA: Custom workflow data model research
+
+**Done:** Analyzed current hardcoded workflow system (8 states in `workflow.ts`, `personaAssignments` table, router with hardcoded prompt, `route_to_state` MCP tool, `dispatch.ts` state→persona lookup). Designed 3-table schema: `workflows` (versioned, scoped), `workflow_states` (typed as initial/intermediate/terminal, with position data for visual editor, optional default persona), `workflow_transitions` (labeled edges with optional conditions). Proposed soft versioning: each published version is a separate row, work items pin to their version. 2-level persona binding (workflow defaults + project overrides). Migration seeds "Default" workflow from hardcoded constant, backfills existing items. Detailed SQL for all new tables, modified columns on `workItems` and `executions`, and migration path for `personaAssignments`.
+**Files:** `docs/proposals/custom-workflows/data-model.md`
+
+---
+
 ## 2026-04-02 09:55 PDT — Review: RES.GLOBAL.UX (approved)
 
 **Reviewed:** Global agent chat and scheduling UX design proposal.
