@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-01 00:10 PDT — Review: SDK.SO.1 (approved)
+
+**Reviewed:** Structured output for Router persona across 7 files.
+- `isRouter` flag on `PersonaSettings` — clean addition to shared types
+- `ROUTER_OUTPUT_SCHEMA` — correct JSON schema with required fields + confidence enum
+- `outputFormat` conditionally passed via spread — no impact on non-Router personas
+- `structured_output` captured from SDK result into `ResultEvent.structuredOutput`
+- All 4 Router persona creation sites updated with `isRouter: true`
+- Router still uses `route_to_state` MCP tool — structured output is additive for UI display (SDK.SO.2)
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 00:00 PDT — SDK.SO.1: Structured output for Router persona
 
 **Done:** Added `isRouter?: boolean` to `PersonaSettings` in shared entities. Added `ROUTER_OUTPUT_SCHEMA` (nextState, reasoning, confidence) to `claude-executor.ts`. When persona has `isRouter: true`, passes `outputFormat: { type: "json_schema", schema }` to `query()`. Captures `structured_output` from SDK result messages into `ResultEvent.structuredOutput`. Updated Router persona settings in all 4 locations: `router.ts`, `seed.ts`, `seed-demo.ts`, `default-personas.ts`.
