@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-03-31 — Review: SDK.FC.2 (approved)
+
+**Reviewed:** Rewind API endpoint in `packages/backend/src/routes/executions.ts`.
+- Comprehensive validation: execution exists, has checkpoint, not running, work item and project exist, API key configured
+- Correct withDiscoveryQuery pattern: start subprocess, call `rewindFiles()`, interrupt+drain — matches established SDK route pattern
+- Clean error handling: 5 distinct error codes (NOT_FOUND, NO_CHECKPOINT, EXECUTION_RUNNING, NO_API_KEY, REWIND_FAILED, CANNOT_REWIND)
+- Non-dry-run path posts system comment with file change details and logs audit entry
+- Response shape clean: `{ canRewind, filesChanged, insertions, deletions, dryRun }`
+- Query cleanup in both success and error paths
+- Build passes clean
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — SDK.FC.2: Add rewind API endpoint
 
 **Task:** Add `POST /api/executions/:id/rewind` route for file rewind via SDK.
