@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 18:35 PDT — Review: RES.LIFECYCLE.DATA (approved)
+
+**Reviewed:** Work item lifecycle data model research.
+- All 5 areas covered: schema audit (8 FKs, orphan bug identified), soft delete (timestamp columns chosen over archive table), cascade rules (archive keeps all, hard delete cascades with execution orphaning), API design (POST archive/unarchive + DELETE soft + restore + bulk + background job), agent impact (canDispatch guard, 409 Conflict)
+- Execution orphaning is the right call — preserves cost data for accounting
+- SQLite ALTER COLUMN limitation acknowledged with pragmatic workaround
+- Partial indexes for archived/deleted columns — good optimization
+- 5-step migration plan correctly ordered
+- Consistent with RES.LIFECYCLE.UX throughout
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 18:30 PDT — RES.LIFECYCLE.DATA: Research work item lifecycle data model
 
 **Done:** Researched data model and cascade behavior for work item deletion/archival. Doc covers all 5 investigation areas: (1) current schema — audited 7 tables with FKs to work_items, found none have onDelete cascade (orphan bug in existing DELETE endpoint), (2) soft delete — recommends `archived_at`/`deleted_at` timestamp columns over separate archive table or status column; default filter helper for all queries, (3) cascade rules — archive keeps all related records; hard delete cascades edges/comments/proposals/memories, orphans executions (preserves cost data); child cascade is user-configurable, (4) API design — `POST .../archive`/`unarchive` + bulk variants; DELETE sets `deleted_at` (soft); `POST .../restore` during grace period; background hard-delete job every 6h; list endpoint query params for includeArchived/deleted, (5) agent impact — canDispatch() check in dispatch.ts, router skips archived/deleted, 409 Conflict on delete with active execution. Includes 5-step migration plan and cascade summary table.
