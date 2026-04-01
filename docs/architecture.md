@@ -12,9 +12,9 @@ AgentOps is a monorepo with three packages that communicate via HTTP REST, WebSo
 │   TanStack Query (server state) + Zustand (UI state)           │
 │                                                                 │
 │   ┌──────────┐  ┌──────────┐  ┌──────────────┐                │
-│   │ REST API │  │WebSocket │  │  Mock Layer  │                 │
-│   │  client  │  │  client  │  │  (dev mode)  │                 │
-│   └────┬─────┘  └────┬─────┘  └──────────────┘                │
+│   │ REST API │  │WebSocket │  │  Pico Chat   │                 │
+│   │  client  │  │  client  │  │  (SSE)       │                 │
+│   └────┬─────┘  └────┬─────┘  └──────┬───────┘                │
 │        │              │                                         │
 └────────┼──────────────┼─────────────────────────────────────────┘
          │              │
@@ -71,8 +71,7 @@ React single-page application served by Vite in development.
 
 | Directory | Purpose |
 |---|---|
-| `api/` | Unified API layer — `client.ts` (real HTTP), `index.ts` (delegates to mock or real based on `apiMode`) |
-| `mocks/` | Mock API and fixtures — full in-browser simulation of all endpoints |
+| `api/` | Unified API layer — `client.ts` (real HTTP), `index.ts` (re-exports) |
 | `features/` | Feature modules — collocated components, hooks, and types per feature |
 | `pages/` | Route-level page components |
 | `components/` | Shared UI components (sidebar, status bar, shadcn/ui primitives) |
@@ -104,7 +103,7 @@ Fastify HTTP server with SQLite storage and agent execution engine.
 | `logger.ts` | Structured logging — pino with dev pretty-print, prod file rotation |
 | `audit.ts` | Audit trail — state transitions, dispatches, completions, costs |
 | `ws.ts` | WebSocket — `broadcast()` to all connected clients |
-| `routes/` | REST API routes — projects, work-items, personas, executions, comments, proposals, dashboard, settings, audit |
+| `routes/` | REST API routes — projects, work-items, personas, executions, comments, proposals, dashboard, settings, audit, chat, sdk |
 | `db/` | Database — Drizzle schema (9 tables), connection (better-sqlite3), seed script, migrations |
 | `agent/` | Agent execution engine (see below) |
 
@@ -132,6 +131,95 @@ The agent subsystem lives in `packages/backend/src/agent/`:
 | `concurrency.ts` | Concurrency limiter — in-memory tracking, priority FIFO queue |
 | `memory.ts` | Project memory — haiku summary on completion, token-budgeted retrieval |
 | `mcp-server.ts` | MCP server factory — 7 tools agents use to interact with the system |
+| `sdk-session.ts` | Persistent V2 SDK session — lazy singleton for capabilities discovery |
+| `sandbox.ts` | Command sandbox — validates Bash commands against project directory escapes |
+
+## SDK V2 Session Architecture
+
+The backend maintains a persistent V2 SDK session for capabilities discovery. This is separate from per-execution `query()` calls used by workflow agents.
+
+### Session Types
+
+| Type | Purpose | Lifecycle |
+|---|---|---|
+| **Discovery session** | Temporary `query()` to call `initializationResult()` and `reloadPlugins()` control methods | Created on first `GET /api/sdk/capabilities` call, cached for server lifetime |
+| **Per-execution session** | `query()` spawned by `ClaudeExecutor` for each agent run | Created per dispatch, destroyed on completion/failure |
+| **Pico chat session** | `query()` per message with full conversation history | Created per user message, SSE streaming, destroyed on response complete |
+| **Persistent V2 session** | `unstable_v2_createSession()` singleton in `sdk-session.ts` | Lazy-created on first access, kept alive, closed on shutdown |
+
+### Persistent V2 Session (`sdk-session.ts`)
+
+```
+Server Start
+    │
+    ▼
+[NOT created at startup — lazy initialization]
+    │
+    ▼
+First call to getSdkSession()
+    │
+    ▼
+unstable_v2_createSession()
+    ├── model: claude-sonnet-4-6
+    ├── permissionMode: bypassPermissions
+    ├── allowedTools: [Read, Glob, Grep, Bash, WebSearch]
+    │
+    ▼
+Read first message from stream() → captures sessionId
+    │
+    ▼
+Session ready (cached as singleton)
+    │
+    ├── getSdkSession() → returns cached session
+    ├── getSdkSessionId() → returns session ID
+    ├── isSdkSessionReady() → true
+    │
+    ▼
+On session failure → reconnectSdkSession()
+    ├── Try unstable_v2_resumeSession(oldId)
+    ├── Fallback: create new session
+    ├── Exponential backoff: 1s, 2s, 4s (max 3 retries)
+    │
+    ▼
+Server Shutdown (SIGTERM/SIGINT)
+    │
+    ▼
+closeSdkSession() → session.close()
+```
+
+### SDK Capabilities Discovery (`routes/sdk.ts`)
+
+```
+GET /api/sdk/capabilities
+    │
+    ▼
+Cache hit? → return cached result
+    │ (miss)
+    ▼
+withDiscoveryQuery()
+    ├── Create lightweight query("Respond with exactly: OK")
+    ├── Read first message (ensures subprocess running)
+    ├── Call initializationResult()
+    ├── Interrupt and drain query
+    │
+    ▼
+Cache result: { commands, agents, models, cachedAt }
+    │
+    ▼
+Return to client
+
+POST /api/sdk/reload
+    │
+    ▼
+withDiscoveryQuery() → reloadPlugins()
+    │
+    ▼
+Refresh cache with new commands + agents
+```
+
+**Why not use the V2 session for discovery?** The discovery APIs (`initializationResult()`, `reloadPlugins()`) are control methods on the `Query` interface, not on `SDKSession`. V2 sessions only expose `send()`, `stream()`, and `close()`.
+
+**Why not use V2 sessions for Pico?** `SDKSessionOptions` does not support `agent`/`agents`, `mcpServers`, `cwd`, `skills`, or `maxBudgetUsd` — only `query()` `Options` does. Pico requires a custom personality (system prompt), MCP server access, and project-scoped working directory, so it continues to use `query()` per message.
 
 ## Data Flow
 

@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-03-31 — SDK.V2.4: Update architecture docs with V2 session
+
+**Task:** Document V2 session architecture, discovery flow, and limitations.
+
+**Done:**
+- Added "SDK V2 Session Architecture" section to `docs/architecture.md`:
+  - Session types table: discovery, per-execution, Pico chat, persistent V2
+  - Persistent V2 session lifecycle diagram (lazy init → ready → reconnect → shutdown)
+  - SDK capabilities discovery flow diagram (cache check → withDiscoveryQuery → initializationResult)
+  - Documented WHY V2 sessions can't replace query() for discovery (control methods on Query only) or Pico (SDKSessionOptions lacks agent/agents, mcpServers, cwd, skills)
+- Updated stale references:
+  - Removed "Mock Layer (dev mode)" from high-level diagram → replaced with "Pico Chat (SSE)"
+  - Frontend api/ description: removed mock delegation mention
+  - Backend routes: added "chat, sdk" to route list
+  - Agent engine table: added `sdk-session.ts` and `sandbox.ts`
+- Also marked SDK.V2.3 as blocked (SDKSessionOptions limitation)
+
+**Files modified:** `docs/architecture.md`
+
+**Notes for next agent:** The architecture doc now reflects the current state of SDK integration. Key finding documented: V2 sessions (SDKSessionOptions) can't replace query() for Pico because they lack agent/agents, mcpServers, cwd, and skills options. This limitation blocks SDK.V2.3 until the SDK adds these fields. Next Sprint 19 tasks are SDK.FC.1+ (file checkpointing).
+
+---
+
 ## 2026-03-31 — Review: FX.SDK6 (approved)
 
 **Reviewed:** Subagents field added to Persona entity with SDK discovery browser.
