@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 02:15 PDT — UX.PERSONA.LIST: Audit Persona Manager list and editor
+
+**Done:** Full audit of `/personas` page. Tested: persona list rendering (6 personas + create card), clicking persona opens detail panel, detail panel read-only mode (description, model, budget, effort, system prompt with markdown, tools, skills, subagents), edit mode (identity fields, avatar picker, model selector, system prompt editor with line numbers and Edit/Preview tabs, tool checkboxes with presets, skill browser dialog with search, subagent browser dialog with search, budget input, effort/thinking dropdowns, save/cancel), assistant persona (Pico) correctly hides edit button and shows "Assistant" badge, dark mode renders correctly. Filed 2 bugs: FX.UX.PERSONA.1 (keyboard a11y on persona cards) and FX.UX.PERSONA.2 (built-in label mismatch between list and detail panel).
+**Files:** `TASKS.md` (2 new bugs filed)
+**Notes:** Screenshots in `tests/e2e/results/ux-persona-*.png`.
+
+---
+
 ## 2026-04-02 02:00 PDT — Review: FX.UX.ACTIVITY.1 (approved)
 
 **Reviewed:** Activity feed events linking to specific work items instead of generic `/items`.

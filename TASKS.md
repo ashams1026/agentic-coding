@@ -63,7 +63,7 @@
 
 ### Persona Manager (`/personas`)
 
-- [ ] **UX.PERSONA.LIST** — Audit Persona Manager list and editor. Open `/personas`. Verify: persona list renders with names and avatars, clicking a persona opens the detail/edit panel. Check: system prompt editor loads and is editable, tool configuration checkboxes/multi-select work, skill browser shows SDK skills with search, subagent browser displays available agents. Screenshot each section. File bugs.
+- [review] **UX.PERSONA.LIST** — Audit Persona Manager list and editor. Open `/personas`. Verify: persona list renders with names and avatars, clicking a persona opens the detail/edit panel. Check: system prompt editor loads and is editable, tool configuration checkboxes/multi-select work, skill browser shows SDK skills with search, subagent browser displays available agents. Screenshot each section. File bugs.
 
 - [ ] **UX.PERSONA.TEST** — Audit Persona Manager test run and creation. Test the test-run panel: submit a prompt and verify output area shows results or loading state. Test creating a new persona: fill all fields, save, verify it appears in the list. Test deleting a persona. Check validation (empty name, missing required fields). Screenshot. File bugs.
 
@@ -90,6 +90,10 @@
 ## Bug Fixes
 
 - [ ] **FX.UX.REWIND** — Fix disabled rewind button tooltip in Agent Monitor history. In `packages/frontend/src/features/agent-monitor/agent-history.tsx` (~line 329): disabled `<Button>` elements don't fire pointer events, so Radix UI `TooltipTrigger asChild` never activates. Wrap the `<Button>` in a `<span>` so the tooltip trigger remains interactive even when the button is disabled. The tooltip should explain why rewind is unavailable. Found in `tests/e2e/results/file-checkpointing.md` BUG-1.
+
+- [ ] **FX.UX.PERSONA.1** — Persona cards lack keyboard accessibility. In `packages/frontend/src/features/persona-manager/persona-list.tsx` (~line 98): `PersonaCard` uses `<div onClick={onSelect}>` without `role="button"`, `tabIndex={0}`, or `onKeyDown` handler. Cards are not keyboard-navigable. Same pattern as FX.UX.DASH.2 (fixed for dashboard StatCards). Fix: add `role="button"`, `tabIndex={0}`, `onKeyDown` (Enter/Space), and `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2` class. Also apply to `CreateCard` component (~line 182).
+
+- [ ] **FX.UX.PERSONA.2** — Built-in persona label mismatch between list and detail panel. Page `/personas`. `PersonaList` (persona-list.tsx line 291) uses `BUILT_IN_IDS.has(p.id)` to show "Built-in" badge, but `PersonaDetailPanel` (persona-detail-panel.tsx line 212) uses `persona.settings?.isSystem === true`. Result: Engineer shows "Built-in" badge in the card grid but "Custom persona" in the detail panel header. Fix: use the same `BUILT_IN_IDS` set in both components, or ensure mock data sets `settings.isSystem = true` for all built-in personas. Screenshots: `tests/e2e/results/ux-persona-list-light.png`, `tests/e2e/results/ux-persona-detail-engineer.png`.
 
 ---
 
