@@ -59,4 +59,95 @@
 
 - [x] **AW.2** — Add visual check to REVIEW state. Update `AGENT_PROMPT.md`: in the REVIEW state's `[INSPECT WORK]` step, add: if the worker's WORKLOG entry lists frontend files, open the affected pages in a browser via chrome-devtools MCP and visually verify the UI looks correct. This gives the reviewer a second pair of eyes on visual quality. Add a review checklist item: "If UI was changed: does it look correct visually? No broken layout, clipping, or styling issues?"
 
+---
+
+## Sprint 22: Visual UX Audit
+
+> Exploratory testing sprint. Each task: start dev servers (ports 3001 + 5173), open the page via chrome-devtools MCP, interact with every feature, screenshot each state, and file bugs as new `FX.UX.*` tasks in TASKS.md. Bugs should include: page, what's broken, expected behavior, and a screenshot path if possible.
+
+### Dashboard (`/`)
+
+- [review] **UX.DASH** — Audit Dashboard page. Open `/`, screenshot initial state. Verify: active agents strip shows correct data or empty state, cost summary renders with mock/real data, recent activity list populates and scrolls, upcoming work section displays items. Click each interactive element (agent cards, activity items, work item links). Resize viewport to 1024px and 768px — check for clipping or overflow. Toggle dark mode — verify no invisible text or broken contrast. File bugs for anything broken.
+
+### Dashboard Bugs
+
+- [ ] **FX.UX.DASH.1** — Cost Summary widget below the fold at default viewport. Page `/`. CostSummary is the 3rd item in a `lg:grid-cols-2` grid in `dashboard.tsx`, placing it in row 2 col 1 below the longer Recent Activity list. At 1440x900, the MAIN container has scrollHeight 1352 vs clientHeight 1066 — requires scrolling to see Cost Summary. Expected: all dashboard widgets visible without scrolling at default viewport. Fix: consider `lg:grid-cols-3` for the widget grid, or use `lg:col-span-2` on CostSummary to give it full width, or reorder widgets so CostSummary is above Recent Activity. Screenshot: `tests/e2e/results/ux-dash-initial.png`.
+
+- [ ] **FX.UX.DASH.2** — Stat cards and agent cards not accessible as interactive elements. Page `/`. The 4 stat cards (`StatCard` in `dashboard.tsx`) and agent cards (`AgentCard` in `active-agents-strip.tsx`) use `<Card>` (div) + `onClick` + `cursor-pointer` but have no `role="button"`, `tabIndex`, or semantic `<button>` wrapper. Screen readers won't identify them as clickable, and keyboard users can't tab to or activate them. Expected: wrap clickable cards in `<button>` elements or add `role="button" tabIndex={0} onKeyDown` handlers.
+
+- [ ] **FX.UX.DASH.3** — Activity items all link to generic `/items` instead of specific work item. Page `/`. All Recent Activity events in `recent-activity.tsx` set `targetPath: "/items"` regardless of which work item they relate to. Clicking any event navigates to the work items list page, not the specific work item detail. Expected: link to `/items?selected={workItemId}` or a route that opens the relevant work item's detail panel.
+
+### Work Items (`/items`)
+
+- [ ] **UX.WORK.LIST** — Audit Work Items list view. Open `/items`, verify list view is the default or switch to it. Check: items render with correct status badges, sorting controls work (click each sort option), filter bar filters by status/assignee/priority, empty state shows when filters match nothing. Click an item to open detail panel. Scroll a long list — verify no layout jank. Screenshot each state. File bugs.
+
+- [ ] **UX.WORK.BOARD** — Audit Work Items board view. Switch to board/kanban view. Verify: columns render by workflow state, cards show title/status/assignee, drag-and-drop works (attempt to move a card between columns). Check empty columns display correctly. Screenshot. File bugs.
+
+- [ ] **UX.WORK.FLOW** — Audit Work Items flow view. Switch to flow view. Verify: flow diagram renders, nodes and edges are visible and labeled, zoom/pan works if supported. Screenshot at different zoom levels. File bugs.
+
+- [ ] **UX.WORK.CREATE** — Audit Work Item creation. Click the create/add button. Verify: form opens, all fields are present (title, description, status, assignee, priority), validation works (submit empty form), successful creation adds item to the list. File bugs.
+
+### Work Item Detail Panel
+
+- [ ] **UX.DETAIL** — Audit detail panel. Open a work item's detail panel. Verify: all sections render (description, child tasks, proposals, comments, execution timeline), each section has correct data or appropriate empty state. Test editing fields (title, description, status). Check comment input and submission. Scroll within the panel if content overflows. Toggle dark mode. Screenshot each section. File bugs.
+
+### Agent Monitor (`/agents`)
+
+- [ ] **UX.AGENT.MAIN** — Audit Agent Monitor main layout. Open `/agents`. Verify: layout renders (sidebar + main area), active agent sidebar shows agents or empty state with correct CTA button (should link to `/items`, not storyboard). Test terminal renderer output area. Check split view toggle if present. Screenshot. File bugs.
+
+- [ ] **UX.AGENT.CONTROLS** — Audit Agent Monitor controls and panels. Test: agent control bar buttons (pause, resume, cancel), file changes panel renders diffs or empty state, router decision cards display correctly, MCP status panel shows server status, model switcher dropdown works. Verify subagent cards render for nested agents. Screenshot each panel. File bugs.
+
+- [ ] **UX.AGENT.HISTORY** — Audit Agent Monitor history view. Navigate to agent history. Verify: past executions list populates, clicking an entry shows execution details, terminal output replays or displays correctly. Check filtering/pagination if present. Screenshot. File bugs.
+
+### Activity Feed (`/activity`)
+
+- [ ] **UX.ACTIVITY** — Audit Activity Feed page. Open `/activity`. Verify: events render chronologically with timestamps, event types are visually distinct (icons/colors), scrolling loads more events or shows end-of-list. Click an event to navigate to the related entity. Check empty state. Toggle dark mode. Screenshot. File bugs.
+
+### Persona Manager (`/personas`)
+
+- [ ] **UX.PERSONA.LIST** — Audit Persona Manager list and editor. Open `/personas`. Verify: persona list renders with names and avatars, clicking a persona opens the detail/edit panel. Check: system prompt editor loads and is editable, tool configuration checkboxes/multi-select work, skill browser shows SDK skills with search, subagent browser displays available agents. Screenshot each section. File bugs.
+
+- [ ] **UX.PERSONA.TEST** — Audit Persona Manager test run and creation. Test the test-run panel: submit a prompt and verify output area shows results or loading state. Test creating a new persona: fill all fields, save, verify it appears in the list. Test deleting a persona. Check validation (empty name, missing required fields). Screenshot. File bugs.
+
+### Settings (`/settings`)
+
+- [ ] **UX.SETTINGS** — Audit Settings page (all sections). Open `/settings`. Navigate each section tab/panel: Projects (CRUD operations, project switching), API Keys (add/remove/mask), Workflow Config, Appearance (theme toggle, layout options), Costs, Security, Executor mode (if visible in dev). Verify: forms save correctly, validation messages appear, toasts confirm actions. Screenshot each section. File bugs.
+
+### Pico Chat
+
+- [ ] **UX.PICO** — Audit Pico Chat panel. Open the Pico chat panel (floating button or keyboard shortcut). Verify: panel opens with correct styling, previous session loads or empty state shows, message input is functional, sending a message shows it in the chat with loading indicator, responses render with proper formatting (markdown, code blocks). Test creating a new session. Check panel resize/close behavior. Toggle dark mode. Screenshot. File bugs.
+
+### Cross-Cutting
+
+- [ ] **UX.NAV** — Audit navigation and sidebar. Verify: sidebar renders with all page links (Dashboard, Work Items, Agents, Activity, Personas, Settings), active page is highlighted, clicking each link navigates correctly without full reload, project selector in sidebar/header works (switch projects, shows current project name). Test keyboard shortcut for command palette. Check responsive sidebar collapse on narrow viewport. Screenshot. File bugs.
+
+- [ ] **UX.CMD** — Audit Command Palette. Open command palette (Cmd+K or shortcut). Verify: overlay appears, search input is focused, typing filters commands/pages, selecting a command navigates or executes the action, Escape closes the palette. Check that all registered commands appear. Screenshot. File bugs.
+
+- [ ] **UX.DARK** — Comprehensive dark mode audit. Switch to dark mode. Visit every page in sequence (`/`, `/items`, `/agents`, `/activity`, `/personas`, `/settings`), plus open Pico and command palette. For each: screenshot and check for invisible text, low-contrast elements, missing dark backgrounds, broken borders, white flashes on navigation. File all visual issues as individual bugs with page and element identified.
+
+- [ ] **UX.RESPONSIVE** — Comprehensive responsive audit. Set viewport to 1024px width, then 768px. Visit every page in sequence. For each: screenshot and check for horizontal overflow, clipped content, overlapping elements, unreadable text, broken layouts, inaccessible buttons. File all layout issues as individual bugs.
+
+---
+
+## Bug Fixes
+
+- [ ] **FX.UX.REWIND** — Fix disabled rewind button tooltip in Agent Monitor history. In `packages/frontend/src/features/agent-monitor/agent-history.tsx` (~line 329): disabled `<Button>` elements don't fire pointer events, so Radix UI `TooltipTrigger asChild` never activates. Wrap the `<Button>` in a `<span>` so the tooltip trigger remains interactive even when the button is disabled. The tooltip should explain why rewind is unavailable. Found in `tests/e2e/results/file-checkpointing.md` BUG-1.
+
+---
+
+## Housekeeping
+
+- [ ] **HK.TEST.RESULTS** — Restructure `tests/e2e/results/` directory by run date and test name. Current state: all screenshots and report `.md` files are dumped flat into `tests/e2e/results/`. Restructure to `tests/e2e/results/YYYY-MM-DD_HHMMSS/<test-name>/` — each run gets a timestamped directory containing the report `.md` and its screenshots. Move existing results into appropriately dated subdirectories (use git log dates for the original run timestamps). Update the e2e test plan template (`tests/e2e/plans/_template.md`) and any agent instructions that reference result paths to use the new structure. This makes it easy to identify and delete old test runs.
+
+---
+
+## Research: Proposals for Blocked Tasks
+
+> For each blocked issue, research the current SDK/architecture state, explore workarounds or alternative approaches, and write a proposal doc to `docs/proposals/`. Do NOT add tasks to TASKS.md or implement anything — just commit the proposal doc.
+
+- [ ] **RES.SDK.TOOLS** — Research SDK tool discovery alternatives (unblocks FX.SDK3 + FX.SDK5). Investigate: (1) check if newer versions of `@anthropic-ai/claude-agent-sdk` have added tool discovery APIs since the block was filed, (2) examine the SDK source/types for any undocumented way to list built-in tools, (3) evaluate whether the `canUseTool` callback or `PreToolUse` hook can be used to dynamically discover tools at runtime, (4) consider maintaining a version-pinned tool manifest that's auto-verified on SDK upgrade. Write findings and recommended approach to `docs/proposals/sdk-tool-discovery.md`. Commit the doc only.
+
+- [ ] **RES.V2.SESSIONS** — Research V2 session configuration for Pico (unblocks SDK.V2.3). Investigate: (1) check if `SDKSessionOptions` in the latest SDK version now supports `agent`/`agents`, `mcpServers`, `cwd`, `skills`, or `maxBudgetUsd`, (2) examine whether `session.send()` accepts per-message options that could configure these at send-time instead of session-creation time, (3) evaluate a hybrid approach — V2 session for conversation persistence but `query()` with full options for actual execution, (4) check SDK changelog/issues for planned V2 improvements. Write findings and recommended approach to `docs/proposals/v2-session-pico.md`. Commit the doc only.
+
+- [ ] **RES.PLUG.CORE** — Research core package extraction strategy (unblocks PLUG.3c + PLUG.3d). Investigate: (1) catalog all non-DB dependencies of ExecutionManager (logger, audit, concurrency, runRouter, dispatchForState, drizzle operators, etc.) and MCP server module, (2) evaluate a service-locator or dependency container pattern that would let core define interfaces for all deps (not just repositories), (3) consider whether a thinner extraction is viable — move only the executor interface, registry, and workflow engine to core, leaving ExecutionManager in backend, (4) look at how other TS monorepos (e.g., tRPC, Effect) handle this boundary. Write findings and recommended approach to `docs/proposals/core-package-extraction.md`. Commit the doc only.
 
