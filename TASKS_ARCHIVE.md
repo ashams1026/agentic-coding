@@ -181,3 +181,20 @@ Full refresh of all 9 doc files: getting-started, architecture, data-model, work
 - [x] **RES.COLLAB.CONTEXT** — Research agent context passing — handoff notes, shared scratchpad, context windowing, agent-to-agent tagging. *(completed 2026-04-02 19:45 PDT)*
 - [x] **RES.COLLAB.COORD** — Research multi-agent coordination — parallel execution, dependency enforcement, human-in-loop, escalation, fan-out/fan-in. *(completed 2026-04-02 20:15 PDT)*
 - [x] **RES.SCHED.UX** — Research scheduling UX — per-persona schedules, presets/cron, standalone executions, schedule management, notification integration. *(completed 2026-04-02 20:40 PDT)*
+
+---
+
+## Research proposals batch 3 (RES.SCHED.INFRA–RES.SWAP.API): 10 tasks — archived 2026-04-01
+
+Scheduling infrastructure, rollback UX, templates, analytics metrics/UX, inbound/outbound webhooks, frontend/backend swappability (architecture, hosted, API contract). All design docs in `docs/proposals/`.
+
+- [x] **RES.SCHED.INFRA** — Research scheduling infrastructure — node-cron + SQLite persistence, missed run catch-up, 14-column schedules table, shared concurrency pool. *(completed 2026-04-02 21:15 PDT)*
+- [x] **RES.ROLLBACK** — Research rollback UX — per-execution scope, confirmation dialog with diff preview, conflict detection, opt-in git commits, SDK limitations. *(completed 2026-04-02 21:45 PDT)*
+- [x] **RES.TEMPLATES** — Research templates and presets — work item/workflow/project/persona templates, DB vs JSON storage, community gallery. *(completed 2026-04-02 22:15 PDT)*
+- [x] **RES.ANALYTICS.METRICS** — Research metrics collection — per-execution/persona/project/workflow metrics, SQLite aggregation tradeoffs. *(completed 2026-04-02 22:45 PDT)*
+- [x] **RES.ANALYTICS.UX** — Research analytics dashboard UX — time ranges, visualizations, drill-down, export. *(completed 2026-04-02 23:15 PDT)*
+- [x] **RES.WEBHOOKS.INBOUND** — Research inbound triggers — GitHub/Slack/generic webhook receiver, payload-to-prompt mapping, HMAC security. *(completed 2026-04-02 23:45 PDT)*
+- [x] **RES.WEBHOOKS.OUTBOUND** — Research outbound event webhooks — event subscriptions, HMAC signing, retry with backoff, delivery log. *(completed 2026-04-03 01:00 PDT)*
+- [x] **RES.SWAP.ARCH** — Research frontend/backend decoupling — backend selector UX, connection validation, auth, WS reconnection, 5 deployment models. *(completed 2026-04-03 01:45 PDT)*
+- [x] **RES.SWAP.HOSTED** — Research hosted frontend — localhost mixed content OK, Cloudflare Pages CDN, tunnel options, multi-backend localStorage. *(completed 2026-04-01 16:20 PDT)*
+- [x] **RES.SWAP.API** — Research API contract and versioning — ~70 endpoints audited, OpenAPI 3.1 code-first, apiVersion + capabilities, shared package evolution. *(completed 2026-04-01 16:30 PDT)*
