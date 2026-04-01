@@ -70,28 +70,11 @@
 
 **Sprint 17 (remaining, FX.SDK1, FX.SDK4):** 2 tasks. SDK discovery endpoint (superseded by V2), capabilities picker.
 
-**Sprint 19 (V2.1-V2.2, V2.4):** 3 tasks. V2 persistent session manager, capabilities discovery endpoint, architecture docs.
-
-### Part 2: Infrastructure — File Checkpointing — archived 2026-03-31
-- [x] **SDK.FC.1** — Enabled file checkpointing in executor: `enableFileCheckpointing: true`, `checkpointMessageId` column, `CheckpointEvent` type. *(completed 2026-03-31)*
-- [x] **SDK.FC.2** — Rewind API endpoint: `POST /api/executions/:id/rewind` with dry-run support, temporary `query()` session, audit trail. *(completed 2026-03-31)*
-- [x] **SDK.FC.3** — Rewind button in agent monitor: Undo2 icon, dry-run preview modal, success toast, disabled for legacy executions. *(completed 2026-03-31)*
+**Sprint 19 (V2.1-V2.2, V2.4, FC.1-FC.3):** 6 tasks. V2 persistent session manager, capabilities discovery, architecture docs, file checkpointing (executor, rewind API, rewind button UI).
 
 ---
 
-## Sprint 17: Bug Fixes, Testing & License — archived 2026-03-31
-
-### Bug Fixes — archived 2026-03-31
-- [x] **FX.PICO1** — Fixed "Pico persona not found" error (stale dev DB, confirmed seed.ts creates Pico correctly). *(completed 2026-03-31)*
-- [x] **FX.PICO4** — Fixed CORS headers on Pico SSE endpoint: `reply.header()` + `reply.getHeaders()` instead of raw `writeHead()`. *(completed 2026-03-31)*
-- [x] **FX.LIC1** — Added Apache 2.0 LICENSE file and `"license": "Apache-2.0"` to all 4 package.json files. *(completed 2026-03-31)*
-
-### Pico UX Testing — archived 2026-03-31
-- [x] **FX.PICO2** — Wrote Pico e2e test plan: 38 steps across 11 parts in `tests/e2e/plans/pico-chat.md`. *(completed 2026-03-31)*
-- [x] **FX.PICO3** — Executed Pico e2e test: 30/38 PASS, 4 FAIL (CORS), 4 SKIP. Results in `tests/e2e/results/pico-chat.md`, 8 screenshots. *(completed 2026-03-31)*
-
-### SDK-Native Skills — archived 2026-03-31
-- [x] **FX.SDK6** — Exposed available subagents in persona config via SDK `supportedAgents()`. *(completed 2026-03-31)*
+**Sprint 17 (bug fixes, FX.PICO1, FX.PICO4, FX.LIC1, FX.PICO2-3, FX.SDK6):** 6 tasks. Pico fixes (persona seed, CORS), Apache license, Pico e2e test (30/38 PASS), subagent browser.
 
 ---
 
@@ -189,3 +172,19 @@
 
 - [x] **DOC.1** — Updated getting-started.md (removed mock mode, added demo seed, Pico, dev tips). *(completed 2026-04-01)*
 - [x] **DOC.2** — Updated architecture.md (tool count 7→8, audit description, 6 new WS events). *(completed 2026-04-01)*
+
+### Sprint 20 Regression — archived 2026-04-01
+- [x] **SDK.REG.2** — Post-Sprint 20 regression (build PASS, 0 regressions, references REG.1). *(completed 2026-04-01)*
+
+### Sprint 21 Documentation (continued) — archived 2026-04-01
+- [x] **DOC.3** — Updated data-model.md (table count 9→11, new fields, chat tables, typed settings). *(completed 2026-04-01)*
+- [x] **DOC.4** — Updated workflow.md (Router safety features, play/pause UX). *(completed 2026-04-01)*
+- [x] **DOC.5** — Updated personas.md (fixed MCP tool names, added Pico persona). *(completed 2026-04-01)*
+- [x] **DOC.6** — Updated api.md (12 new endpoints: chat, SDK, MCP, model switching). *(completed 2026-04-01)*
+- [x] **DOC.7** — Updated mcp-tools.md (source files table fix). *(completed 2026-04-01)*
+- [x] **DOC.8** — Updated deployment.md (dev scripts, seed-demo, audit log). *(completed 2026-04-01)*
+- [x] **DOC.9** — Updated frontend.md (mock removal, Pico, directory updates). *(completed 2026-04-01)*
+
+### Backlog Spikes — archived 2026-04-01
+- [x] **SDK.FUT.1** — Browser SDK spike (feasible, not recommended — needs WebSocket relay). *(completed 2026-04-01)*
+- [x] **SDK.FUT.2** — Bridge API spike (`spawnClaudeCodeProcess`, SSH/Docker/Cloud paths). *(completed 2026-04-01)*

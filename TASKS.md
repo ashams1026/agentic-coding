@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-20 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 21 DOC.1-2 archived.
+> Sprints 1-21 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-2 archived.
 
 ---
 
@@ -33,46 +33,9 @@
 
 ---
 
-## Sprint 20: SDK Deep Integration — Observability & Polish
-
-> Real-time streaming, progress tracking, rate limit handling, context usage monitoring.
-> Safety improvements: SDK-native sandbox, permission callbacks, dynamic MCP management.
-> UX enhancements: prompt suggestions, model switching.
-> **Runs in parallel with Sprint 21 (Documentation Refresh)** — agents should alternate between implementation and docs.
-
-### Regression Testing Checkpoint
-
-- [x] **SDK.REG.2** — Full e2e regression sweep after Sprint 20. Re-run all e2e test suites (including new ones from Sprints 19-20) against the current app state. Record results to `tests/e2e/results/regression-post-sprint20.md`. Compare against Sprint 19 regression baseline. File new FX tasks for any regressions. This is the final quality gate before moving to backlog work.
-
----
-
-## Sprint 21: Documentation Refresh (remaining)
-
-> Update docs to reflect 200+ commits since original writing.
-
-- [x] **DOC.3** — Update `docs/data-model.md`. Check commits touching `packages/shared/src/entities.ts`, `packages/backend/src/db/schema.ts`. Update: any new fields added to entities (skills on Persona, isAssistant flag, chat_sessions/chat_messages tables), any changed field names or types, update the ER diagram if relationships changed.
-
-- [x] **DOC.4** — Update `docs/workflow.md`. Check commits touching `packages/shared/src/workflow.ts`, `packages/backend/src/agent/router.ts`, `packages/backend/src/agent/dispatch.ts`, `packages/backend/src/agent/coordination.ts`, `packages/backend/src/agent/execution-manager.ts`. Update: router behavior changes (same-state blocking, loop detection, transition history), rate limiter logging, any new states or transition rules, play/pause auto-routing UX.
-
-- [x] **DOC.5** — Update `docs/personas.md`. Check commits touching `packages/backend/src/db/seed.ts` persona entries, `packages/backend/src/agent/claude-executor.ts`. Update: any persona prompt changes from the FX.P1-P5 overhaul, corrected tool names, new skills system, SDK tool name verification results, Pico as a new built-in persona (if implemented). Document the full list of correct MCP and SDK tool names per persona.
-
-- [x] **DOC.6** — Update `docs/api.md`. Check commits touching `packages/backend/src/routes/`, `packages/backend/src/server.ts`. Update: any new routes (chat sessions, service status, browse-directory, audit), any changed request/response shapes, any removed routes. Add curl examples for new endpoints.
-
-- [x] **DOC.7** — Update `docs/mcp-tools.md`. Check commits touching `packages/backend/src/agent/mcp-server.ts`. Update: any tool schema changes, new tools added, tool name corrections, per-persona allowlist changes from the audit.
-
-- [x] **DOC.8** — Update `docs/deployment.md`. Check commits touching `packages/backend/src/cli.ts`, `ecosystem.config.cjs`, `packages/backend/src/config.ts`, `packages/backend/src/logger.ts`, `packages/backend/src/audit.ts`, `scripts/`. Update: any new CLI commands, config file changes, log file paths, pm2 config changes, new scripts (test-e2e, dev wrapper).
-
-- [x] **DOC.9** — Update `docs/frontend.md`. Check commits touching `packages/frontend/src/`. Update: mock layer removal, new features (Pico chat, resizable panels, flow view redesign, play/pause control), deleted directories (mocks/), new stores or hooks, design system changes from the polish sprint.
-
----
-
 ## Backlog: SDK Future Features
 
 > Lower-priority SDK features that become relevant as the product matures.
-
-- [x] **SDK.FUT.1** — Browser SDK for client-side Pico. Evaluate using `@anthropic-ai/claude-agent-sdk/browser` to run Pico directly in the browser via WebSocket. This would eliminate the backend SSE proxy for chat — messages stream directly from the SDK to the browser. Requires: WebSocket relay server, OAuth token management, CORS configuration. Spike: build a proof-of-concept Pico chat that connects via the browser SDK and compare latency/complexity with the server-side approach.
-
-- [x] **SDK.FUT.2** — Bridge API for remote agent execution. Evaluate the SDK's `attachBridgeSession()` and `createCodeSession()` for running agents on remote machines or in cloud environments. Use case: offload heavy Engineering persona executions to a cloud VM with more compute. Spike: establish a bridge session from AgentOps backend to a remote Claude Code instance, run a simple task, verify event streaming works end-to-end.
 
 - [ ] **SDK.FUT.3** — Plugin system integration. Evaluate the SDK's plugin and marketplace system. Use case: allow users to install community-built persona skills and tools from npm/git registries. In Settings: add a "Plugins" section showing installed plugins and a marketplace browser. Use `enabledPlugins` and `extraKnownMarketplaces` in settings. Spike: create a sample plugin that adds a custom MCP tool, install it via the marketplace API, verify it's available to personas.
 
