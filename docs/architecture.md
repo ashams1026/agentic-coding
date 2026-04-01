@@ -38,7 +38,7 @@ AgentOps is a monorepo with three packages that communicate via HTTP REST, WebSo
 │        ▼                              │                         │
 │   ┌──────────┐                 ┌──────┴───────┐                │
 │   │  SQLite  │                 │  MCP Server  │                │
-│   │  (WAL)   │                 │  (7 tools)   │                │
+│   │  (WAL)   │                 │  (8 tools)   │                │
 │   └──────────┘                 └──────────────┘                │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
@@ -101,7 +101,7 @@ Fastify HTTP server with SQLite storage and agent execution engine.
 | `cli.ts` | CLI entry point — start/stop/status/dev/config commands |
 | `config.ts` | Configuration loader — `~/.agentops/config.json` with env var overrides |
 | `logger.ts` | Structured logging — pino with dev pretty-print, prod file rotation |
-| `audit.ts` | Audit trail — state transitions, dispatches, completions, costs |
+| `audit.ts` | Audit trail — state transitions, dispatches, completions, costs, tool use, session lifecycle |
 | `ws.ts` | WebSocket — `broadcast()` to all connected clients |
 | `routes/` | REST API routes — projects, work-items, personas, executions, comments, proposals, dashboard, settings, audit, chat, sdk |
 | `db/` | Database — Drizzle schema (9 tables), connection (better-sqlite3), seed script, migrations |
@@ -447,3 +447,9 @@ The backend broadcasts `WsEvent` messages to all connected clients. The frontend
 | `cost_update` | Cost tracking update | `dashboardStats`, `costSummary` |
 | `proposal_created` | New proposal | `proposals` |
 | `router_decision` | Router state transition | `workItems`, `activityFeed` |
+| `execution_update` | Execution status change | `executions` |
+| `file_changed` | Agent modifies a file (FileChanged hook) | Agent monitor files panel |
+| `subagent_started` | Subagent spawned (SubagentStart hook) | Agent monitor (direct) |
+| `subagent_completed` | Subagent finished (SubagentStop hook) | Agent monitor (direct) |
+| `agent_progress` | AI-generated progress summary (~30s) | Agent monitor progress bar |
+| `context_usage` | Context window usage (60s polling) | Agent monitor context bar |

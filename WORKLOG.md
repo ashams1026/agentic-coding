@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 12:40 PDT — DOC.2: Update architecture.md
+
+**Done:** Fixed MCP server tool count 7→8 in system diagram. Updated audit.ts description to include tool use + session lifecycle. Added 6 new WebSocket event types to events table (execution_update, file_changed, subagent_started/completed, agent_progress, context_usage). Architecture.md was already extensively updated during Sprints 19-20 with hooks, subagent, security, and checkpointing sections — this task focused on remaining stale references.
+**Files:** `docs/architecture.md`
+
+---
+
 ## 2026-04-01 12:30 PDT — Review: DOC.1 (approved)
 
 **Reviewed:** Getting-started.md updates.
