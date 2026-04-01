@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 13:10 PDT — DOC.3: Update data-model.md
+
+**Done:** Updated table count 9→11. Project: `settings` typed as `ProjectSettings` with sandbox. Persona: added `skills`, `subagents` fields, updated `settings` to `PersonaSettings` with effort/thinking. Execution: added `checkpointMessageId`, `structuredOutput`, `parentExecutionId`. Added ChatSession and ChatMessage entity tables for Pico.
+**Files:** `docs/data-model.md`
+
+---
+
 ## 2026-04-01 13:00 PDT — Review: SDK.REG.2 (approved)
 
 **Reviewed:** Post-Sprint 20 regression sweep.

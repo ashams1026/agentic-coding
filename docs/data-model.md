@@ -1,6 +1,6 @@
 # Data Model
 
-AgentOps stores all data in SQLite (9 tables, WAL mode). Types are defined in `packages/shared/src/entities.ts` and the Drizzle schema lives in `packages/backend/src/db/schema.ts`.
+AgentOps stores all data in SQLite (11 tables, WAL mode). Types are defined in `packages/shared/src/entities.ts` and the Drizzle schema lives in `packages/backend/src/db/schema.ts`.
 
 ## Entity Relationship Diagram
 
@@ -72,7 +72,7 @@ The top-level container. Each project maps to a directory on disk.
 | `id` | `ProjectId` (`pj-xxxx`) | Unique identifier |
 | `name` | `string` | Display name |
 | `path` | `string` | Absolute path to project directory (validated on create) |
-| `settings` | `Record<string, unknown>` | Freeform JSON: `maxConcurrent`, `monthCap`, `warningThreshold`, `dailyLimit`, `autoRouting` |
+| `settings` | `ProjectSettings` | Typed settings: `maxConcurrent`, `monthCap`, `autoRouting`, `description`, `patterns`, `sandbox` (see `SandboxConfig`) |
 | `createdAt` | `string` (ISO 8601) | Creation timestamp |
 
 **Relationships:** has many WorkItems, PersonaAssignments, ProjectMemories.
@@ -173,10 +173,12 @@ An AI agent configuration. Defines the system prompt, model, and available tools
 | `avatar` | `{ color: string, icon: string }` | UI display: hex color + icon name |
 | `systemPrompt` | `string` | Base system prompt for this persona |
 | `model` | `PersonaModel` | `"opus"`, `"sonnet"`, or `"haiku"` |
-| `allowedTools` | `string[]` | MCP tool names this persona can use |
-| `mcpTools` | `string[]` | Additional MCP tools |
+| `allowedTools` | `string[]` | SDK built-in tool names (e.g., "Read", "Bash") |
+| `mcpTools` | `string[]` | AgentOps MCP tool names (e.g., "post_comment") |
+| `skills` | `string[]` | SDK skill names (e.g., "commit", "review-pr") |
+| `subagents` | `string[]` | Preferred subagent persona IDs |
 | `maxBudgetPerRun` | `number` | Max cost per execution (0 = unlimited) |
-| `settings` | `Record<string, unknown>` | Freeform settings (e.g., `{ isSystem: true }` for Router) |
+| `settings` | `PersonaSettings` | `isSystem?`, `isAssistant?`, `isRouter?`, `effort?`, `thinking?`, `thinkingBudgetTokens?` |
 
 **Relationships:** has many Executions, has many PersonaAssignments.
 
@@ -198,8 +200,11 @@ A single agent run — one persona executing against one work item.
 | `outcome` | `ExecutionOutcome \| null` | `"success"`, `"failure"`, or `"rejected"` (null if not completed) |
 | `rejectionPayload` | `RejectionPayload \| null` | Structured rejection details (if outcome is "rejected") |
 | `logs` | `string` | Raw agent output logs |
+| `checkpointMessageId` | `string \| null` | SDK message ID for file checkpointing rewind |
+| `structuredOutput` | `Record<string, unknown> \| null` | Structured JSON output (Router decisions) |
+| `parentExecutionId` | `string \| null` | Parent execution ID (for subagent tracking) |
 
-**Relationships:** belongs to WorkItem and Persona, has many Proposals.
+**Relationships:** belongs to WorkItem and Persona, has many Proposals. May have parent Execution (subagent).
 
 #### RejectionPayload
 
@@ -259,6 +264,30 @@ Cumulative knowledge built by agents as they complete work. Used in system promp
 | `consolidatedInto` | `ProjectMemoryId \| null` | If consolidated, points to the merged memory |
 
 **Consolidation:** When too many memories accumulate, older ones are consolidated into higher-level summaries. The `consolidatedInto` field links to the replacement memory.
+
+### ChatSession
+
+Pico chat sessions — one per conversation thread.
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `ChatSessionId` (`cs-xxxx`) | Unique identifier |
+| `projectId` | `ProjectId` | Owning project |
+| `title` | `string` | Auto-generated or user-renamed title |
+| `createdAt` | `string` (ISO 8601) | Creation timestamp |
+
+### ChatMessage
+
+Individual messages within a Pico chat session.
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `ChatMessageId` (`cg-xxxx`) | Unique identifier |
+| `sessionId` | `ChatSessionId` | Owning chat session |
+| `role` | `"user" \| "assistant"` | Message sender |
+| `content` | `string` | Message text content |
+| `metadata` | `Record<string, unknown>` | Thinking blocks, tool calls, cost, duration |
+| `createdAt` | `string` (ISO 8601) | Creation timestamp |
 
 ## ID Format
 
