@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 17:10 PDT — RES.CHAT.UX: Research dedicated agent chat page UX
+
+**Done:** Researched and designed the full-page agent chat UX for conversing with any persona. Doc covers all 5 investigation areas: (1) page structure — sidebar (280px) with persona filter, date-grouped sessions, persona avatar per row + main chat area with persona header; persona selector modal for "New Chat"; rejected channel-based approach, (2) Pico relationship — Pico is a special case of agent chat; mini panel stays Pico-only; `/chat` shows all persona sessions; 3-phase migration, (3) scoping — project context from global sidebar selector; project badge in header; system message on project switch; Router persona hidden from picker, (4) session management — explicit (New Chat + persona selector) or implicit (empty state); auto-title from first message; archive/delete; session-based not channel-based, persona immutable per session, (5) navigation — 5 entry points (sidebar, mini expand, Cmd+K, persona manager, work item detail); URL with optional `?session=id`. Also: 3 empty states, schema changes summary, cross-references to RES.CHAT.RICH/DATA/WORKFLOW.EDGE/GLOBAL.UX.
+**Files:** `docs/proposals/agent-chat/ux-design.md` (new)
+
+---
+
 ## 2026-04-02 16:55 PDT — Review: RES.WORKFLOW.EDGE (approved)
 
 **Reviewed:** Custom workflow edge cases and lifecycle management research.
