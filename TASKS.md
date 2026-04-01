@@ -62,7 +62,7 @@
 
 - [x] **SDK.MCP.3** — E2E test plan: MCP status display. Create `tests/e2e/plans/mcp-status.md`: verify MCP server dots render in agent monitor, colors are correct, click interactions work. Visual verification.
 
-- [review] **SDK.MCP.4** — Run MCP status e2e test. Execute SDK.MCP.3. Record results with screenshots.
+- [x] **SDK.MCP.4** — Run MCP status e2e test. Execute SDK.MCP.3. Record results with screenshots.
 
 - [ ] **SDK.MCP.5** — Update `docs/mcp-tools.md` with dynamic MCP management. Document: runtime toggle/reconnect APIs, status monitoring, how to recover from MCP failures.
 
