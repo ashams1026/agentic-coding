@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-03-31 23:20 PDT — SDK.HK.6: E2E test plan for file changes panel
+
+**Done:** Created `tests/e2e/plans/agent-monitor-files.md` — 16 steps across 5 parts: panel visibility/auto-hide (4), content/file entries (5), collapse/expand (3), execution switching (2), visual quality (2). Notes real-time WS dependency — panel only appears during active executions with FileChanged hook. Covers deduplication, badge count, icon coloring, dark theme.
+**Files:** `tests/e2e/plans/agent-monitor-files.md`
+
+---
+
 ## 2026-03-31 23:10 PDT — Review: FX.PROJ1 (approved)
 
 **Reviewed:** Stale project ID fallback in `use-selected-project.ts` and `use-projects.ts`.
