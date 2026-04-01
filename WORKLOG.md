@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 15:35 PDT — Review: SDK.FUT.3 (approved)
+
+**Reviewed:** Plugin system spike at `docs/spikes/plugin-system.md`.
+- Local plugins documented from actual `SdkPluginConfig` type
+- Marketplace config (enabledPlugins, extraKnownMarketplaces) with examples
+- 3 integration options with complexity estimates
+- Recommendation: local first, marketplace later
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 15:30 PDT — SDK.FUT.3: Plugin system spike
 
 **Done:** Evaluated SDK plugin system. Local plugins (`type: 'local'`) work now via `plugins` option. Marketplace uses `enabledPlugins`/`extraKnownMarketplaces` in settings. 3 options: local (low), marketplace (medium), UI browser (high). Recommendation: start with local plugins.
