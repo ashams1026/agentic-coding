@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 16:20 PDT — RES.PROMPTS.DOC: Document persona prompt pipeline
+
+**Done:** Traced and documented the full persona prompt storage and assembly pipeline. Doc covers: (1) persona DB schema (`systemPrompt` TEXT field), (2) editor UI (textarea, no structured fields), (3) `buildSystemPrompt()` in claude-executor.ts — 5-section assembly with `\n\n` separators (user prompt → project context → work item → sandbox → history), (4) Pico chat assembly — 4-section variant (user prompt → skill file → project context → personality), (5) SDK delivery via `AgentDefinition.prompt` in `query()`, (6) user-controlled vs system-injected table, (7) project memories are on-demand via MCP tool only. Includes architecture diagrams.
+**Files:** `docs/proposals/persona-prompts/current-architecture.md` (new)
+**Notes:** Key finding: subagents only get raw `systemPrompt` or `description` — no project/task/sandbox injection. Memories are never auto-injected.
+
+---
+
 ## 2026-04-02 16:10 PDT — Review: UX.BRAND.WOOF (approved)
 
 **Reviewed:** Rebrand all user-visible "AgentOps" references to "Woof".
