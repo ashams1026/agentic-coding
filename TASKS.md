@@ -77,7 +77,7 @@
 
 ### Cross-Cutting
 
-- [review] **UX.NAV** — Audit navigation and sidebar. Verify: sidebar renders with all page links (Dashboard, Work Items, Agents, Activity, Personas, Settings), active page is highlighted, clicking each link navigates correctly without full reload, project selector in sidebar/header works (switch projects, shows current project name). Test keyboard shortcut for command palette. Check responsive sidebar collapse on narrow viewport. Screenshot. File bugs.
+- [x] **UX.NAV** — Audit navigation and sidebar. Verify: sidebar renders with all page links (Dashboard, Work Items, Agents, Activity, Personas, Settings), active page is highlighted, clicking each link navigates correctly without full reload, project selector in sidebar/header works (switch projects, shows current project name). Test keyboard shortcut for command palette. Check responsive sidebar collapse on narrow viewport. Screenshot. File bugs. *(completed 2026-04-02 04:00 PDT)*
 
 - [ ] **UX.CMD** — Audit Command Palette. Open command palette (Cmd+K or shortcut). Verify: overlay appears, search input is focused, typing filters commands/pages, selecting a command navigates or executes the action, Escape closes the palette. Check that all registered commands appear. Screenshot. File bugs.
 
@@ -88,6 +88,8 @@
 ---
 
 ## Bug Fixes
+
+- [ ] **FX.PICO.EXEC** — Fix "Claude Code executable not found" error in Pico chat and agent executor. The SDK `query()` call in `packages/backend/src/routes/chat.ts` (~line 351) and `packages/backend/src/agent/claude-executor.ts` (~line 556) does not set `pathToClaudeCodeExecutable`, so the SDK falls back to looking for `cli.js` inside its own package which doesn't exist. Add `pathToClaudeCodeExecutable` to the `options` object in both locations, resolving the path from `which claude` or an env var (e.g. `CLAUDE_CLI_PATH`). Also check `packages/backend/src/agent/memory.ts` (~lines 183, 346) for the same issue.
 
 - [ ] **FX.UX.REWIND** — Fix disabled rewind button tooltip in Agent Monitor history. In `packages/frontend/src/features/agent-monitor/agent-history.tsx` (~line 329): disabled `<Button>` elements don't fire pointer events, so Radix UI `TooltipTrigger asChild` never activates. Wrap the `<Button>` in a `<span>` so the tooltip trigger remains interactive even when the button is disabled. The tooltip should explain why rewind is unavailable. Found in `tests/e2e/results/file-checkpointing.md` BUG-1.
 

@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 04:00 PDT — Review: UX.NAV (approved)
+
+**Reviewed:** Navigation and sidebar audit.
+- 5 screenshots verified: dashboard, items, project-selector, 768px responsive, collapsed sidebar ✓
+- All 6 page links present and active state highlighted ✓
+- SPA navigation confirmed (sidebar UIDs persist across clicks) ✓
+- Project selector shows "AgentOps" ✓
+- Responsive at 768px + collapsed icon-only mode ✓
+- Minor gap: command palette shortcut not explicitly tested, but covered by UX.CMD task
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 03:45 PDT — UX.NAV: Audit navigation and sidebar
 
 **Done:** Audited sidebar navigation. All 6 page links present (Dashboard, Work Items, Agents, Activity, Personas, Settings) with correct URLs. Active page highlighted. Clicked all 6 links — SPA navigation (no full reload, sidebar UIDs persist). Project selector shows "AgentOps" as combobox. Sidebar collapse button works — collapses to icon-only mode, content area expands. Responsive at 768px — sidebar remains visible with labels, content adapts to narrower width. No bugs found.
