@@ -38,7 +38,7 @@ AgentOps ships with 5 built-in personas, seeded on first run. Each is optimized 
 | **Budget** | $50/run |
 | **Workflow State** | Planning |
 | **Claude Tools** | `Read`, `Glob`, `Grep`, `WebSearch` |
-| **MCP Tools** | `post_comment`, `transition_state` |
+| **MCP Tools** | `post_comment`, `list_items`, `get_context`, `request_review` |
 
 **Role:** Reads the work item description and user comments, then writes clear, testable acceptance criteria as a checklist. Defines scope (what's in and what's out), sets priority, and flags open questions.
 
@@ -58,7 +58,7 @@ AgentOps ships with 5 built-in personas, seeded on first run. Each is optimized 
 | **Budget** | $100/run |
 | **Workflow State** | Decomposition |
 | **Claude Tools** | `Read`, `Glob`, `Grep`, `WebSearch`, `Bash` |
-| **MCP Tools** | `create_tasks`, `post_comment`, `request_review` |
+| **MCP Tools** | `create_children`, `post_comment`, `get_context`, `list_items` |
 
 **Role:** Reads the work item and its acceptance criteria, analyzes the codebase, then decomposes the work into 2-5 well-scoped child tasks with dependency edges.
 
@@ -79,7 +79,7 @@ AgentOps ships with 5 built-in personas, seeded on first run. Each is optimized 
 | **Budget** | $200/run |
 | **Workflow State** | In Progress |
 | **Claude Tools** | `Read`, `Edit`, `Write`, `Glob`, `Grep`, `Bash`, `WebFetch` |
-| **MCP Tools** | `post_comment`, `flag_blocked`, `transition_state` |
+| **MCP Tools** | `post_comment`, `flag_blocked`, `get_context` |
 
 **Role:** Implements the work item by reading the description, acceptance criteria, and parent context. Checks for feedback from previous review cycles and addresses every point. Writes and modifies code following project conventions.
 
@@ -101,9 +101,9 @@ AgentOps ships with 5 built-in personas, seeded on first run. Each is optimized 
 | **Budget** | $50/run |
 | **Workflow State** | In Review |
 | **Claude Tools** | `Read`, `Glob`, `Grep`, `Bash` |
-| **MCP Tools** | `post_comment`, `request_review`, `transition_state` |
+| **MCP Tools** | `post_comment`, `get_context`, `list_items`, `request_review`, `rewind_execution` |
 
-**Role:** Reviews code changes for correctness, style, and completeness. Reads all files modified in the most recent execution, verifies against acceptance criteria, and checks for bugs, edge cases, and security issues.
+**Role:** Reviews code changes for correctness, style, and completeness. Reads all files modified in the most recent execution, verifies against acceptance criteria, and checks for bugs, edge cases, and security issues. Can rewind file changes via `rewind_execution` when an implementation is fundamentally wrong.
 
 **Review checklist:**
 - Does the code match the task description?
@@ -140,6 +140,22 @@ If issues are found: rejects with specific, actionable feedback (file names, lin
 - Unresolvable issues → "Blocked"
 
 The Router is a **system persona** (`settings: { isSystem: true, isRouter: true }`). The `isRouter` flag enables structured output — the SDK returns a JSON object with `{ nextState, reasoning, confidence }` instead of free-text. This is stored in the `structuredOutput` column and rendered as a Router Decision Card in the UI (color-coded state badge, confidence dot, reasoning text). The Router is created lazily on first use by `getOrCreateRouterPersona()` in `router.ts`, or seeded with the other built-in personas. It uses the Haiku model for cost efficiency since routing decisions are lightweight.
+
+### Pico (Project Assistant)
+
+| Field | Value |
+|---|---|
+| **ID** | `ps-pico` |
+| **Model** | Sonnet |
+| **Avatar** | Amber (`#f59e0b`), `dog` icon |
+| **Budget** | $5/run |
+| **Workflow State** | *(none — chat assistant, not workflow)* |
+| **Claude Tools** | *(none)* |
+| **MCP Tools** | `list_items`, `get_context`, `post_comment` |
+
+**Role:** A conversational project assistant accessible via the floating chat bubble (bottom-right). Answers questions about the project, codebase, workflow, and personas. Has access to project knowledge via a custom skill (`pico-skill.md`).
+
+Pico is a **system persona** (`settings: { isSystem: true, isAssistant: true }`). It is non-editable and non-deletable in the persona manager UI. Chat sessions are stored in `chat_sessions`/`chat_messages` tables.
 
 ## Creating and Editing Custom Personas
 
