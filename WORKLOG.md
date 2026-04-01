@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-04-02 16:55 PDT — Review: RES.WORKFLOW.EDGE (approved)
+
+**Reviewed:** Custom workflow edge cases and lifecycle management research.
+- All 6 investigation areas covered plus bonus chat interaction section (7 total)
+- Deletion: archive-only + migration wizard, active execution blocking — thorough
+- Cloning: 5 starter templates, clone mechanics, UI flow — practical
+- Import/export: JSON with versioning, validation checklist, .woof-workflow.json — well-designed
+- Permissions: Draft/Published toggle as primary safety — right call for single-user
+- Global agents: require project context — correctly identifies sandbox/memory dependencies
+- Testing: phased approach (validator → test project → dry-run) — incremental and practical
+- Chat interaction: 3 scenarios with current/future behavior — addresses the RES.CHAT.* cross-reference
+- Priority-ranked summary table at the end — useful for planning
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 16:50 PDT — RES.WORKFLOW.EDGE: Research custom workflow edge cases
 
 **Done:** Researched and documented edge cases for custom workflows. Doc covers all 6 investigation areas plus a 7th on chat interaction: (1) deletion — recommends archive-only with optional migration wizard, block if active executions, (2) cloning — clone button + 5 built-in starter templates (Simple Kanban, Code Review Pipeline, etc.), (3) import/export — JSON format with versioning, validation on import, excludes persona assignments, (4) permissions — Draft/Published toggle as primary safety mechanism (no RBAC for single-user), (5) global agents — require project context (current design is correct), (6) testing — static validator (unreachable/dead-end states) + test project approach, (7) chat interaction — keep execution and chat separate, use proposals for decisions. Includes priority-ranked summary table.
