@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 17:30 PDT — Review: RES.SEARCH (approved)
+
+**Reviewed:** Search infrastructure and UX research doc.
+- All 6 areas covered: what's searchable (8 entities priority-ordered, current state audit — zero server-side search), search UX (3 surfaces: enhanced Cmd+K, filter bar, dedicated /search page with wireframe), implementation (9-criteria comparison table FTS5/Fuse.js/Meilisearch, FTS5 recommended — zero deps, BM25, atomic), indexing (write-time triggers, initial rebuild, execution logs deferred), filtering (6 filter types, project-scoped default, faceted counts), performance (52K rows/10.5MB projection, <50ms command palette, <200ms full search)
+- Source code claims verified: command-palette.tsx is 287 lines, `label.toLowerCase().includes(q)` at :145, HighlightedText at list-view.tsx:232, schema fields match (title/description, system_prompt, content/author_name, summary/logs, etc.)
+- Cross-references valid: analytics/ux-design.md and api-contract.md both exist
+- FTS5 SQL syntax correct (virtual tables, content=, triggers, snippet(), bm25())
+- API design (SearchResponse/SearchResult types) clean and well-typed
+- Minor notes: debounce is 200ms not 300ms (filter-bar.tsx:90); filter bar already searches title+description (list-view.tsx:362), not title-only as implied. Neither affects conclusions.
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 17:15 PDT — RES.SEARCH: Research search infrastructure and UX
 
 **Done:** Researched search infrastructure and UX. Doc covers all 6 investigation areas: (1) what's searchable — audited current state (zero server-side search, all client-side includes() on titles), prioritized 8 entity types (P0: work items + personas, P1: comments + chat, P2: executions + memories, P3: proposals + activity events); (2) search UX — 3 access points: enhanced Command Palette (Cmd+K, server-side with entity type badges), enhanced work items filter bar (debounced FTS), dedicated /search page (Phase 2, filter sidebar + entity tabs + pagination); result display with type badges, snippets, metadata; (3) search implementation — compared SQLite FTS5 vs Fuse.js vs Meilisearch on 9 criteria; recommended FTS5 (zero deps, built into better-sqlite3, BM25 ranking, atomic updates, handles 100K+ rows); Fuse.js fallback for Command Palette static lists only; (4) indexing — write-time via FTS5 triggers (15 triggers, 5 entities x 3 ops), contentless external content tables, porter unicode61 tokenizer, initial rebuild via `VALUES('rebuild')`, execution logs deferred to Phase 2 (summary only in Phase 1); (5) filtering and facets — project-scoped by default with global opt-in, 6 filter types (entity type, project, date range, status, priority, author), faceted counts via COUNT(*) FTS queries; (6) performance — estimated 52K rows / 10.5MB FTS index after 1 year, <50ms Command Palette, <200ms dedicated search page. Also: unified `/api/search` endpoint design, 3-phase implementation plan, 6 cross-references, 6 design decisions.
