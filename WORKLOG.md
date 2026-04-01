@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 14:25 PDT — DOC.8: Update deployment.md
+
+**Done:** Updated Development section: added `pnpm db:seed-demo`, `pnpm db:reset`, `pnpm test:e2e` commands. Documented `scripts/dev.sh` port-check behavior. Fixed database paths (dev vs prod). Added `audit.log` to pm2 log files table with expanded description. Security section already current from SDK.SB.6.
+**Files:** `docs/deployment.md`
+
+---
+
 ## 2026-04-01 14:15 PDT — Review: DOC.7 (approved)
 
 **Reviewed:** mcp-tools.md source files table fix.

@@ -247,6 +247,7 @@ Set via env: `LOG_LEVEL=debug agentops start`
 | `~/.agentops/logs/agentops-out.log` | pm2-captured stdout |
 | `~/.agentops/logs/agentops-error.log` | pm2-captured stderr |
 | `~/.agentops/logs/agentops.log` | Application log (pino, daily rotation) |
+| `~/.agentops/logs/audit.log` | Audit trail — state transitions, dispatches, completions, tool use, sessions |
 
 ## Database
 
@@ -300,20 +301,28 @@ Or via the UI: **Settings > Data > Clear Execution History**.
 | **Logging** | Pretty-printed to stdout | JSON to file (daily rotation) + stdout |
 | **Process mgmt** | Manual (foreground) | pm2 with auto-restart and boot persistence |
 | **Crash recovery** | Runs on each restart | Runs on each restart |
-| **Database** | Same SQLite file | Same SQLite file |
+| **Database** | `agentops-dev.db` (project root) | `~/.agentops/data/agentops.db` |
 
 ### Running in Development
 
 ```bash
-# Start both frontend and backend
+# Start both frontend and backend (uses scripts/dev.sh with port-check)
 pnpm dev
+
+# Seed demo data (3 projects, 14 work items, personas, executions)
+pnpm db:seed-demo
+
+# Reset development database
+pnpm db:reset
+
+# Run e2e test suite
+pnpm test:e2e
 
 # Or start backend only
 cd packages/backend && pnpm dev
-
-# Or use the CLI
-npx agentops dev
 ```
+
+The `pnpm dev` command uses `scripts/dev.sh` which checks if ports 3001/5173 are already in use and skips starting a service if so. Safe to run multiple times.
 
 ### Running in Production
 
