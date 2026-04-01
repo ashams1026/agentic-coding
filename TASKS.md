@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-19 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 20 ST.1-ST.8, SB.1-SB.2 archived.
+> Sprints 1-19 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 20 ST.1-8, SB.1-6, MCP.1-5, UX.1 archived.
 
 ---
 
@@ -44,31 +44,7 @@
 
 - [ ] **SDK.REG.2** — Full e2e regression sweep after Sprint 20. Re-run all e2e test suites (including new ones from Sprints 19-20) against the current app state. Record results to `tests/e2e/results/regression-post-sprint20.md`. Compare against Sprint 19 regression baseline. File new FX tasks for any regressions. This is the final quality gate before moving to backlog work.
 
-### Part 2: Safety — SDK Native Sandbox (remaining)
-
-- [x] **SDK.SB.3** — Add permission callback for sensitive operations. In `packages/backend/src/agent/claude-executor.ts`: pass a `canUseTool` callback to `query()` options. The callback checks: if the tool is `Bash` and the command contains `rm -rf`, `git push --force`, `DROP TABLE`, or other destructive patterns → return `{ behavior: 'deny', message: 'Destructive command blocked by policy' }`. If the tool is `WebFetch` and the URL is not in the allowed domains → deny. For all other tools → allow. This is a defense-in-depth layer on top of the sandbox. Log all deny decisions to the audit trail.
-
-- [x] **SDK.SB.4** — E2E test plan: sandbox settings UI. Create `tests/e2e/plans/sandbox-settings.md`: verify sandbox configuration renders in Settings → Security, allowed domains list is editable, toggle works. Visual check of the sandbox settings section.
-
-- [x] **SDK.SB.5** — Run sandbox settings e2e test. Execute SDK.SB.4. Record results with screenshots.
-
-- [x] **SDK.SB.6** — Update `docs/deployment.md` and `docs/architecture.md` with sandbox documentation. Document: SDK sandbox configuration, filesystem/network rules, canUseTool callback, how to customize per-project, OS-level sandbox requirements.
-
-### Part 3: Safety — Dynamic MCP Management
-
-- [x] **SDK.MCP.1** — Add runtime MCP server management. In `packages/backend/src/agent/claude-executor.ts`: store the `query` object reference during execution. Expose `POST /api/executions/:id/mcp/toggle` route: calls `toggleMcpServer(serverName, enabled)` on the running query to enable/disable an MCP server mid-execution. Expose `POST /api/executions/:id/mcp/reconnect` route: calls `reconnectMcpServer(serverName)` to recover a failed connection. These are useful when an MCP server crashes during a long agent run — the user can reconnect without restarting the entire execution.
-
-- [x] **SDK.MCP.2** — Show MCP server status in agent monitor. During execution, call `mcpServerStatus()` periodically (every 30s). In the agent monitor: show a small "MCP" status section in the execution header. Each configured server shows as a colored dot: green (connected), red (failed), yellow (pending), gray (disabled). Click a failed server to trigger reconnection. Click a connected server to see its available tools. This gives users visibility into MCP health.
-
-- [x] **SDK.MCP.3** — E2E test plan: MCP status display. Create `tests/e2e/plans/mcp-status.md`: verify MCP server dots render in agent monitor, colors are correct, click interactions work. Visual verification.
-
-- [x] **SDK.MCP.4** — Run MCP status e2e test. Execute SDK.MCP.3. Record results with screenshots.
-
-- [x] **SDK.MCP.5** — Update `docs/mcp-tools.md` with dynamic MCP management. Document: runtime toggle/reconnect APIs, status monitoring, how to recover from MCP failures.
-
-### Part 4: UX — Prompt Suggestions & Model Switching
-
-- [x] **SDK.UX.1** — Enable prompt suggestions for Pico. In the Pico executor config: add `promptSuggestions: true` to `query()` options. Handle `SDKPromptSuggestionMessage` in the streaming response: extract the predicted next prompts. In the Pico chat panel: after each Pico response, show 2-3 suggested follow-up buttons below the message (similar to the welcome message quick actions from PICO.10). Clicking a suggestion sends it as the next message. Suggestions fade out once the user starts typing.
+### Part 4: UX — Prompt Suggestions & Model Switching (remaining)
 
 - [ ] **SDK.UX.2** — Add model switching for long-running agents. In the agent monitor: add a "Model" dropdown in the execution header (only visible for running executions). Shows available models from `supportedModels()`. Selecting a different model calls `setModel(newModel)` on the running query. Use case: an agent started on Haiku but the task is complex — user can upgrade to Sonnet mid-run without restarting. Show the current model as a badge that updates when switched. Confirm before switching: "Switch from Haiku to Sonnet? This may increase costs."
 

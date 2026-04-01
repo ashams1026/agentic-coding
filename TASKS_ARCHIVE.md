@@ -66,40 +66,11 @@
 
 ---
 
-## Sprint 18: Pico — Project Assistant (partial) — archived 2026-03-31
+**Sprint 18 (PICO.1-PICO.10):** 10 tasks. Pico project assistant — backend (persona, chat API, SSE streaming, knowledge skill), frontend (bubble, panel, messages, SSE hook, session management), personality polish.
 
-### Backend: Pico Persona & Chat API — archived 2026-03-31
-- [x] **PICO.1** — Added Pico as built-in system persona: `isAssistant` flag, seed data, non-editable/non-deletable in UI. *(completed 2026-03-31)*
-- [x] **PICO.2** — Chat session API: `chat_sessions`/`chat_messages` tables, 4 CRUD endpoints, Drizzle migration. *(completed 2026-03-31)*
-- [x] **PICO.3** — Chat streaming endpoint: `POST /api/chat/sessions/:id/messages`, SSE streaming via Claude SDK `query()`, 6 event types. *(completed 2026-03-31)*
-- [x] **PICO.4** — Pico project knowledge skill: `pico-skill.md` (~700 tokens), injected into system prompt, docs/ directory guidance. *(completed 2026-03-31)*
+**Sprint 17 (remaining, FX.SDK1, FX.SDK4):** 2 tasks. SDK discovery endpoint (superseded by V2), capabilities picker.
 
-### Frontend: Chat Interface — archived 2026-03-31
-- [x] **PICO.5** — Floating chat bubble: 56px circle, bottom-right, dog icon, bounce animation, unread indicator. *(completed 2026-03-31)*
-- [x] **PICO.6** — Chat panel: 400x500px, header/messages/input, typing indicator, animate open/close. *(completed 2026-03-31)*
-- [x] **PICO.7** — Chat message components: user/assistant bubbles, markdown, thinking blocks, tool cards, code blocks. *(completed 2026-03-31)*
-- [x] **PICO.8** — Wired chat panel to streaming API: `use-pico-chat.ts` hook, SSE parser, session persistence in Zustand. *(completed 2026-03-31)*
-- [x] **PICO.9** — Session management: dropdown, switch, rename, clear all, auto-generated titles. *(completed 2026-03-31)*
-
-### Pico Personality & Polish — archived 2026-03-31
-- [x] **PICO.10** — Personality polish: welcome message, 4 quick-action buttons, dog-pun personality guidelines. *(completed 2026-03-31)*
-
----
-
-## Sprint 17: Agent Pipeline Fixes (remaining SDK tasks) — archived 2026-03-31
-
-### SDK-Native Skills & Tool Discovery — archived 2026-03-31
-- [x] **FX.SDK1** — ~~Create SDK discovery endpoint.~~ Superseded by SDK.V2.2. *(completed 2026-03-31)*
-- [x] **FX.SDK4** — Replaced filesystem skill browser with SDK capabilities picker (`GET /api/sdk/capabilities`). *(completed 2026-03-31)*
-
----
-
-## Sprint 19: SDK Deep Integration — Core (partial) — archived 2026-03-31
-
-### Part 1: Infrastructure — V2 Persistent Sessions — archived 2026-03-31
-- [x] **SDK.V2.1** — Persistent SDK session manager: lazy singleton, `unstable_v2_createSession()`, retry with backoff, shutdown integration. *(completed 2026-03-31)*
-- [x] **SDK.V2.2** — SDK capabilities endpoint: `GET /api/sdk/capabilities` + `POST /api/sdk/reload` using `initializationResult()` Query control method. Unblocked FX.SDK3-6. *(completed 2026-03-31)*
-- [x] **SDK.V2.4** — Updated `docs/architecture.md` with V2 session architecture (singleton lifecycle, discovery, Pico integration). *(completed 2026-03-31)*
+**Sprint 19 (V2.1-V2.2, V2.4):** 3 tasks. V2 persistent session manager, capabilities discovery endpoint, architecture docs.
 
 ### Part 2: Infrastructure — File Checkpointing — archived 2026-03-31
 - [x] **SDK.FC.1** — Enabled file checkpointing in executor: `enableFileCheckpointing: true`, `checkpointMessageId` column, `CheckpointEvent` type. *(completed 2026-03-31)*
@@ -187,3 +158,17 @@
 ### Part 2: Safety — SDK Native Sandbox — archived 2026-04-01
 - [x] **SDK.SB.1** — SDK native sandbox (`sandbox.enabled`, filesystem/network restrictions, PreToolUse fallback). *(completed 2026-04-01)*
 - [x] **SDK.SB.2** — Sandbox config in project settings (`SandboxConfig`/`ProjectSettings` types, Security section UI). *(completed 2026-04-01)*
+- [x] **SDK.SB.3** — `canUseTool` permission callback (9 destructive patterns, WebFetch domain check, audit logging). *(completed 2026-04-01)*
+- [x] **SDK.SB.4** — E2E test plan: sandbox settings UI (16 steps, 6 parts). *(completed 2026-04-01)*
+- [x] **SDK.SB.5** — Executed sandbox settings e2e test (12/16 PASS — full save-persist cycle). *(completed 2026-04-01)*
+- [x] **SDK.SB.6** — Updated docs/deployment.md and docs/architecture.md with sandbox docs. *(completed 2026-04-01)*
+
+### Part 3: Dynamic MCP Management — archived 2026-04-01
+- [x] **SDK.MCP.1** — Runtime MCP management (`runningQueries` registry, toggle/reconnect/status API routes). *(completed 2026-04-01)*
+- [x] **SDK.MCP.2** — MCP status dots in agent monitor (colored dots, tooltip, click-to-reconnect, 30s polling). *(completed 2026-04-01)*
+- [x] **SDK.MCP.3** — E2E test plan: MCP status display (13 steps, 5 parts). *(completed 2026-04-01)*
+- [x] **SDK.MCP.4** — Executed MCP status e2e test (5/13 PASS, 8 SKIP — API 404s confirmed). *(completed 2026-04-01)*
+- [x] **SDK.MCP.5** — Updated docs/mcp-tools.md with dynamic MCP management. *(completed 2026-04-01)*
+
+### Part 4: UX — Prompt Suggestions — archived 2026-04-01
+- [x] **SDK.UX.1** — Pico prompt suggestions (`promptSuggestions: true`, SSE suggestion events, pill buttons in chat). *(completed 2026-04-01)*
