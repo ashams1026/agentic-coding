@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 05:00 PDT — SDK.ST.2: Live token streaming UI in agent monitor
+
+**Done:** Updated terminal renderer to batch partial streaming tokens using `requestAnimationFrame`. Small text chunks (<50 chars) accumulate in `streamBuffer` ref, flushed via rAF into the last streaming chunk (appended, not new bubble). Non-partial chunks flush the buffer first. Added `isStreaming` state with 500ms timeout — shows emerald blinking cursor (`animate-pulse`) at the bottom of output while streaming. Cleanup on unmount cancels rAF + timeout.
+**Files:** `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`
+
+---
+
 ## 2026-04-01 04:45 PDT — Review: SDK.ST.1 (approved)
 
 **Reviewed:** Partial message streaming in executor, types, and execution manager.

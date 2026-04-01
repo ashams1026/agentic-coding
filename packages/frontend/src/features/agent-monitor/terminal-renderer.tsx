@@ -351,9 +351,13 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
   const [chunks, setChunks] = useState<OutputChunk[]>([]);
   const [scrollLocked, setScrollLocked] = useState(false);
   const [hasNewOutput, setHasNewOutput] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const chunkCounter = useRef(0);
+  const streamBuffer = useRef("");
+  const rafId = useRef<number>(0);
+  const streamTimeout = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Load initial logs from execution data
   useEffect(() => {
@@ -369,10 +373,57 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
     setChunks(initialChunks);
   }, [execution?.logs, execution?.startedAt]);
 
+  // Flush accumulated streaming buffer into the last chunk
+  const flushStreamBuffer = useCallback(() => {
+    const text = streamBuffer.current;
+    if (!text) return;
+    streamBuffer.current = "";
+
+    setChunks((prev) => {
+      const last = prev[prev.length - 1];
+      // Append to last text chunk if it's a streaming chunk
+      if (last && last.chunkType === "text" && last.id.startsWith("stream-")) {
+        const updated = [...prev];
+        updated[updated.length - 1] = { ...last, content: last.content + text };
+        return updated;
+      }
+      // Otherwise create a new streaming chunk
+      return [...prev, {
+        id: `stream-${chunkCounter.current++}`,
+        content: text,
+        chunkType: "text" as const,
+        timestamp: new Date().toISOString(),
+      }];
+    });
+  }, []);
+
   // Subscribe to live chunks from WebSocket
   useEffect(() => {
     const unsubscribe = subscribe("agent_output_chunk", (event) => {
       if (event.executionId !== executionId) return;
+
+      // Small text chunks (partial streaming tokens): batch with rAF
+      if (event.chunkType === "text" && event.chunk.length < 50) {
+        streamBuffer.current += event.chunk;
+        setIsStreaming(true);
+
+        // Reset streaming timeout
+        clearTimeout(streamTimeout.current);
+        streamTimeout.current = setTimeout(() => setIsStreaming(false), 500);
+
+        // Batch flush with requestAnimationFrame
+        cancelAnimationFrame(rafId.current);
+        rafId.current = requestAnimationFrame(flushStreamBuffer);
+
+        if (scrollLocked) setHasNewOutput(true);
+        return;
+      }
+
+      // Flush any pending streaming buffer before adding a non-partial chunk
+      if (streamBuffer.current) {
+        flushStreamBuffer();
+        setIsStreaming(false);
+      }
 
       const newChunk: OutputChunk = {
         id: `ws-${chunkCounter.current++}`,
@@ -388,8 +439,12 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
       }
     });
 
-    return unsubscribe;
-  }, [executionId, scrollLocked]);
+    return () => {
+      unsubscribe();
+      cancelAnimationFrame(rafId.current);
+      clearTimeout(streamTimeout.current);
+    };
+  }, [executionId, scrollLocked, flushStreamBuffer]);
 
   // Auto-scroll to bottom when new chunks arrive (if not locked)
   useEffect(() => {
@@ -501,6 +556,9 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
           messageGroups.map((group) => (
             <MessageGroupRenderer key={group.id} group={group} />
           ))
+        )}
+        {isStreaming && (
+          <span className="inline-block w-2 h-4 bg-emerald-400 animate-pulse ml-0.5 -mb-0.5" />
         )}
         <div ref={bottomRef} />
       </div>
