@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 07:35 PDT — RES.SDK.TOOLS: Research SDK tool discovery alternatives
+
+**Done:** Investigated SDK v0.2.87 for tool discovery APIs. Confirmed `initializationResult()` has no `tools` field. Discovered `sdk-tools.d.ts` exports `ToolInputSchemas` type union listing all 21 built-in tools (vs. 8 currently hardcoded). Evaluated `canUseTool` callback and `PreToolUse` hook (both reactive, not suitable for upfront discovery). Recommended Option A: version-pinned shared manifest with user-facing/internal categorization and build-time drift detection. Proposal includes concrete unblock paths for FX.SDK3 and FX.SDK5.
+**Files:** `docs/proposals/sdk-tool-discovery.md`
+
+---
+
 ## 2026-04-02 07:25 PDT — Review: HK.TEST.RESULTS (approved)
 
 **Reviewed:** Restructure e2e results directory.
