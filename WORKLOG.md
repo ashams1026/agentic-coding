@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 17:30 PDT — Review: PLUG.3a (approved)
+
+**Reviewed:** New `@agentops/core` package at `packages/core/`.
+- Zero DB/SDK deps confirmed — only `@agentops/shared` + `@types/node`
+- `types.ts` and `sandbox.ts` moved with all exports intact
+- Backend re-exports from `@agentops/core` — zero broken import paths
+- Barrel index.ts exports all types and functions
+- Task split 3a-3d correctly ordered (DB abstraction first)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 17:20 PDT — PLUG.3a: Create @agentops/core package
 
 **Done:** Created `packages/core/` as new workspace package. Moved `types.ts` (AgentExecutor interface, AgentEvent union, AgentTask, SpawnOptions) and `sandbox.ts` (command validation) to core — these are the only agent modules with zero DB/SDK dependencies. Backend's `types.ts` and `sandbox.ts` now re-export from `@agentops/core`. Split PLUG.3 into 4 subtasks (3a-3d) since remaining modules (ExecutionManager, dispatch, router, coordination, mcp-server) all have heavy Drizzle DB dependencies that need abstraction first (PLUG.3b).
