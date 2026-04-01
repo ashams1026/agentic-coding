@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 17:30 PDT — RES.CHAT.RICH: Research rich message rendering
+
+**Done:** Researched and documented rich message rendering for all 8 content types. Each type includes: component design (ASCII wireframe), interaction behavior, expand/collapse rules, graceful degradation, and data source. Types covered: (1) code changes — DiffBlock with syntax highlighting + accept/reject, (2) tool calls — enhanced ToolCallCard with per-tool output dispatch, (3) terminal output — TerminalBlock with ANSI color + dark bg + scrollable, (4) file trees — FileTreeSummary aggregating 2+ file changes, (5) proposals — ProposalCard with approve/reject/edit actions + status lifecycle, (6) thinking — enhanced ThinkingBlock with left border accent, (7) images — ImageBlock with responsive display + lightbox + lazy loading, (8) progress — MultiStepProgress derived from SSE stream + streaming cursor. Includes component hierarchy diagram and 4-tier implementation priority table.
+**Files:** `docs/proposals/agent-chat/rich-messages.md` (new)
+
+---
+
 ## 2026-04-02 17:15 PDT — Review: RES.CHAT.UX (approved)
 
 **Reviewed:** Dedicated agent chat page UX design.
