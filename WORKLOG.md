@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 02:20 PDT — Review: SDK.SA.3 (approved)
+
+**Reviewed:** Nested subagent view in `subagent-card.tsx` and `agent-history.tsx`.
+- `SubagentCard`: collapsible with avatar, name, outcome badge, duration, cost, 200px TerminalRenderer — collapsed by default
+- Tree connector via `ml-6 border-l-2 border-muted` — clean indentation
+- `childExecutionMap` groups by `parentExecutionId`, passed to HistoryRow
+- Top-level history filters out children (`!e.parentExecutionId`) — no duplicate display
+- "Subagents (N)" section header in expanded view
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 02:15 PDT — SDK.SA.3: Nested subagent view in agent monitor
 
 **Done:** Created `SubagentCard` component — collapsible card with persona avatar, name, "subagent" badge, outcome badge, duration, cost. Expands to show 200px TerminalRenderer. Styled with `ml-6 border-l-2` tree connector. Integrated into `HistoryRow` expanded section: `childExecutionMap` groups executions by `parentExecutionId`, children rendered after terminal renderer. Top-level history list filters out child executions (`!e.parentExecutionId`) so they only appear nested. Subagent count shown in section header.

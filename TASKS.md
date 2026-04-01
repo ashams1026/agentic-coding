@@ -35,7 +35,7 @@
 
 - [x] **SDK.SA.2** — Add subagent invocation tracking. When an agent spawns a subagent (detected via `SubagentStart`/`SubagentStop` hooks), create a child execution record linked to the parent. In the agent monitor: show subagent executions as nested cards under the parent. Activity feed: "Engineer spawned Code Reviewer as subagent for [Work Item]". Track subagent costs as part of the parent execution's total.
 
-- [review] **SDK.SA.3** — Agent monitor: nested subagent view UI. In `packages/frontend/src/features/agent-monitor/`: when an execution has child subagent executions, render them as indented/nested cards with a tree connector line. Each subagent card shows: persona avatar, model, status, cost. Expandable to see the subagent's full output. Collapse by default to keep the view clean.
+- [x] **SDK.SA.3** — Agent monitor: nested subagent view UI. In `packages/frontend/src/features/agent-monitor/`: when an execution has child subagent executions, render them as indented/nested cards with a tree connector line. Each subagent card shows: persona avatar, model, status, cost. Expandable to see the subagent's full output. Collapse by default to keep the view clean.
 
 - [ ] **SDK.SA.4** — E2E test plan: subagent nesting. Create `tests/e2e/plans/subagent-nesting.md`: verify nested subagent cards in agent monitor, tree connector rendering, expand/collapse, cost rollup.
 
