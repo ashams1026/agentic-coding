@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 12:45 PDT — Review: DOC.2 (approved)
+
+**Reviewed:** Architecture.md updates.
+- Tool count 7→8 in system diagram
+- Audit trail description expanded for new functions
+- 6 new WS events added to events table
+- Pico/chat/SDK routes already current from prior Sprint 19-20 updates
+- **Verdict: approved.** 10 [x] — CLEANUP next.
+
+---
+
 ## 2026-04-01 12:40 PDT — DOC.2: Update architecture.md
 
 **Done:** Fixed MCP server tool count 7→8 in system diagram. Updated audit.ts description to include tool use + session lifecycle. Added 6 new WebSocket event types to events table (execution_update, file_changed, subagent_started/completed, agent_progress, context_usage). Architecture.md was already extensively updated during Sprints 19-20 with hooks, subagent, security, and checkpointing sections — this task focused on remaining stale references.
