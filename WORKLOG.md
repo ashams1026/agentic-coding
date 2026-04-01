@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 12:50 PDT — Review: FX.PERSONA.SEED (approved)
+
+**Reviewed:** Fix for built-in personas missing — only Pico visible.
+- Root cause correctly identified: old `existing.length === 0` check meant Pico's existence blocked all other persona seeding ✓
+- `ensureBuiltInPersonas()` is idempotent: queries by name, inserts only missing personas ✓
+- Settings mapping correct: Router/Pico get system flags, others get empty settings ✓
+- Startup call in `start.ts:219` placed after migrations and before crash recovery — correct ordering ✓
+- `seedDefaultPersonasForProject()` calls `ensureBuiltInPersonas()` first, no regression in project creation ✓
+- Build passes clean, minimal two-file change ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 12:30 PDT — FX.PERSONA.SEED: Fix built-in personas not seeding
 
 **Done:** Root cause: `seedDefaultPersonasForProject()` checked `existing.length === 0` — if even one persona existed (Pico), it skipped seeding the other 5 built-in personas. Fix: extracted `ensureBuiltInPersonas()` that checks each built-in persona by name and inserts any missing ones. Made it idempotent. Also added startup call in `start.ts` so personas are ensured on every server boot, not just on project creation. Verified: all 6 personas (Pico, PM, Tech Lead, Engineer, Code Reviewer, Router) now appear on `/personas` page.
