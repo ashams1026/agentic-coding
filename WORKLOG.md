@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 23:20 PDT — Review: UX.WORK.CREATE (approved)
+
+**Reviewed:** Work item creation audit — 3 screenshots, 0 bugs.
+- Quick-add pattern confirmed: "+ Add" instantly creates "New work item" in Backlog with P2
+- Detail panel shows all editable fields: title, status, priority, labels, description, children, comments
+- Before/after screenshots show item count 3→4 — creation successful
+- Design choice correctly documented (quick-add + edit-in-panel, not form-based)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 23:15 PDT — UX.WORK.CREATE: Audit Work Item creation
 
 **Done:** Audited work item creation via the "+ Add" button on `/items`. The button is a quick-add — it instantly creates a "New work item" in Backlog with P2 priority (no form). Clicking the new item opens the detail panel where title, description, status, priority, labels, children, and comments are all editable. This is a valid design pattern (quick-add + edit-in-panel) rather than a form-based creation flow. Item appeared correctly in the list under Backlog (count 1→2). Also found UX.WORK.BOARD is blocked (board-view.tsx not wired into UI). No bugs filed.

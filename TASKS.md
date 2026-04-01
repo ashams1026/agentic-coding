@@ -59,7 +59,7 @@
 
 - [x] **UX.WORK.FLOW** — Audit Work Items flow view. Switch to flow view. Verify: flow diagram renders, nodes and edges are visible and labeled, zoom/pan works if supported. Screenshot at different zoom levels. File bugs.
 
-- [review] **UX.WORK.CREATE** — Audit Work Item creation. Click the create/add button. Verify: form opens, all fields are present (title, description, status, assignee, priority), validation works (submit empty form), successful creation adds item to the list. File bugs.
+- [x] **UX.WORK.CREATE** — Audit Work Item creation. Click the create/add button. Verify: form opens, all fields are present (title, description, status, assignee, priority), validation works (submit empty form), successful creation adds item to the list. File bugs.
 
 ### Work Items Bugs
 
