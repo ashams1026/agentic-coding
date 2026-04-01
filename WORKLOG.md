@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-03-31 — Review: SDK.V2.4 (approved)
+
+**Reviewed:** V2 session architecture documentation in `docs/architecture.md`.
+- Session types table clearly distinguishes all 4 session types (discovery, per-execution, Pico chat, persistent V2)
+- Persistent V2 session lifecycle diagram is thorough: lazy init → sessionId capture → caching → reconnect with exponential backoff → shutdown
+- SDK Capabilities Discovery flow accurately documents the withDiscoveryQuery pattern
+- Critical "why not" explanations included: V2 can't replace query() for discovery (control methods on Query only) or Pico (SDKSessionOptions lacks agent/agents/mcpServers/cwd/skills)
+- Stale references updated: Mock Layer → Pico Chat, sdk-session.ts and sandbox.ts added to agent engine table, chat/sdk added to routes
+- Build passes clean
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — SDK.V2.4: Update architecture docs with V2 session
 
 **Task:** Document V2 session architecture, discovery flow, and limitations.
