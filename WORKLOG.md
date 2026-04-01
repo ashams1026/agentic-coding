@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 18:35 PDT — Review: PLUG.5 (approved)
+
+**Reviewed:** Publish-ready package.json for shared and core.
+- Both: `main`/`types` → dist, conditional exports with types+import, `./src/*` escape hatch
+- `files` whitelist: dist + src + package.json, no leaks
+- Shared: `tsconfig.build.json` excludes `__tests__` from dist
+- `prepublishOnly: pnpm build` on both
+- `pnpm pack` dry-run: clean tarballs, no node_modules/env/creds
+- Backend `Parameters<>` → explicit types fix verified
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 18:30 PDT — PLUG.5: Publish-ready package.json for shared and core
 
 **Done:** Updated both `@agentops/shared` and `@agentops/core` package.json with proper `main`/`types` pointing to `dist/`, conditional `exports` (`types` + `import` + source via `./src/*`), `files` whitelist (`dist`, `src`, `package.json`), `prepublishOnly` scripts. Added `tsconfig.build.json` for shared to exclude `__tests__` from dist output. Fixed backend `repositories.ts` — replaced `Parameters<>` type inference (broke with dist-based resolution) with explicit inline types. Cleaned stale `.tsbuildinfo` files that prevented rebuilds.
