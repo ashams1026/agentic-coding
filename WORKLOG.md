@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-01 16:55 PDT — Review: PLUG.1 (approved)
+
+**Reviewed:** ExecutionManager class refactoring in `execution-manager.ts`.
+- Class with constructor injection: ExecutorFactory, DbHandle, BroadcastFn
+- All module-level state → instance fields (executor, transitionLog, stateHistory, runtimeOverride)
+- 6 call sites updated to `executionManager.method()` pattern
+- Concrete imports isolated in default factory section (PLUG.2 extraction point)
+- Lazy Proxy defers construction for test compatibility, with _resetExecutionManager for cleanup
+- 5 test files fixed with `vi.hoisted()` for mockDb
+- Build passes, 156/159 tests pass (3 pre-existing failures)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 16:45 PDT — PLUG.1: Refactor ExecutionManager into class
 
 **Done:** Converted `execution-manager.ts` from module-level functions + singleton into an `ExecutionManager` class with constructor injection (`ExecutorFactory`, `DbHandle`, `BroadcastFn`). All state (executor, runtimeOverride, transitionLog, stateHistory) is now instance state. Default instance uses lazy Proxy for test compatibility. Updated 6 call sites (server.ts, settings.ts, start.ts, router.ts, dispatch.ts, mcp-server.ts) to use `executionManager.method()`. Fixed 5 test files to use `vi.hoisted()` for mockDb and updated mock exports. Tests: 156/159 pass (3 pre-existing failures).
