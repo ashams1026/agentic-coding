@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 19:40 PDT — Review: PLUG.8 (approved)
+
+**Reviewed:** Integration tests for executor registry.
+- 15 tests: 7 for ExecutorRegistry, 8 for ExecutionManager+Registry integration
+- Real classes with TestExecutor stubs — no mocking system under test
+- Covers: register/get/list/has, overwrite, instance-per-call, mode switching, env vars, production lock, error messages
+- Environment variables properly isolated with try/finally
+- 171/174 pass (3 pre-existing)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 19:35 PDT — PLUG.8: Integration tests for executor registry
 
 **Done:** Created 15 integration tests in `executor-registry.test.ts`. ExecutorRegistry tests (7): register/get, list, has, unknown name error, empty registry error, overwrite, new instance per get. ExecutionManager+Registry tests (8): mode selection in test/dev/prod, listExecutorModes, getRegistry, runtime switching (dev mode), unknown mode throw, production lock, AGENTOPS_EXECUTOR env var. Uses real classes with TestExecutor stubs — no mocking the system under test. Tests: 171/174 pass (3 pre-existing failures).
