@@ -6,7 +6,7 @@ AI-driven end-to-end testing for AgentOps via browser automation. An AI agent re
 
 Each **test plan** is a markdown file in `tests/e2e/plans/` containing step-by-step instructions that an AI agent can follow using browser DevTools (via chrome-devtools MCP). Plans reference UI elements by visible text, aria labels, or semantic selectors — not implementation details.
 
-**Test results** are written to `tests/e2e/results/` with the same filename as the plan.
+**Test results** are written to `tests/e2e/results/YYYY-MM-DD_HHMM_<test-name>/` — each run gets a timestamped directory containing the report `.md` and its screenshots.
 
 ## Prerequisites
 
@@ -43,7 +43,7 @@ Before running any test plan, ensure:
    - `evaluate_script` — run JS to check DOM state
    - `wait_for` — wait for an element to appear
 4. Record pass/fail for each step
-5. Write results to `tests/e2e/results/{plan-name}.md`
+5. Write results to `tests/e2e/results/YYYY-MM-DD_HHMM_{plan-name}/{plan-name}.md`
 
 ## Test Plan Format
 
@@ -66,7 +66,11 @@ tests/e2e/
     work-items-list-view.md
     ...
   results/
-    dashboard-stats.md
-    work-items-list-view.md
+    2026-03-30_1607_dashboard-stats/
+      dashboard-stats.md
+      dashboard-stats-full.png
+    2026-03-30_1616_work-items-list-view/
+      work-items-list-view.md
+      ...
     ...
 ```

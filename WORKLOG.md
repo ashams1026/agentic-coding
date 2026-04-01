@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 07:20 PDT — HK.TEST.RESULTS: Restructure e2e results directory
+
+**Done:** Reorganized 269 files from flat `tests/e2e/results/` into 46 timestamped directories (`YYYY-MM-DD_HHMM_<test-name>/`). Used git log dates for original run timestamps. Grouped Sprint 22 UX audit and bug fix screenshots into appropriate directories. Updated `tests/e2e/README.md` with new directory structure and result path format. No orphaned files remain.
+**Files:** `tests/e2e/results/**` (269 files moved), `tests/e2e/README.md`
+
+---
+
 ## 2026-04-02 07:05 PDT — Review: UX.AGENT.BREADCRUMB (approved)
 
 **Reviewed:** Breadcrumb trail + side panel overlay for Agent Monitor.
