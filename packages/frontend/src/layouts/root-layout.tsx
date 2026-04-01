@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import { Menu } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,8 @@ export function RootLayout() {
   useToastEvents();
   useWsQuerySync();
   const setMobileSidebarOpen = useUIStore((s) => s.setMobileSidebarOpen);
+  const location = useLocation();
+  const isOnChatPage = location.pathname === "/chat";
 
   return (
     <TooltipProvider delayDuration={300}>
@@ -44,8 +46,8 @@ export function RootLayout() {
       </div>
       <CommandPalette />
       <ToastRenderer />
-      <ChatPanel />
-      <ChatBubble />
+      {!isOnChatPage && <ChatPanel />}
+      {!isOnChatPage && <ChatBubble />}
     </TooltipProvider>
   );
 }

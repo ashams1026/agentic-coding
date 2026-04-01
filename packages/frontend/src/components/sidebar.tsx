@@ -5,6 +5,7 @@ import {
   ListTodo,
   Bot,
   Activity,
+  MessageSquare,
   Users,
   Settings,
   PanelLeftClose,
@@ -38,6 +39,7 @@ const navItems = [
   { to: "/items", icon: ListTodo, label: "Work Items" },
   { to: "/agents", icon: Bot, label: "Agent Monitor" },
   { to: "/activity", icon: Activity, label: "Activity Feed" },
+  { to: "/chat", icon: MessageSquare, label: "Chat" },
   { to: "/personas", icon: Users, label: "Personas" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ] as const;

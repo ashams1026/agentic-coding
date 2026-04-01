@@ -15,7 +15,9 @@ import {
   GitBranch,
   Activity,
   PenLine,
+  Maximize2,
 } from "lucide-react";
+import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -35,6 +37,7 @@ import type { ChatSessionId } from "@agentops/shared";
 
 export function ChatPanel() {
   const { isOpen, setOpen, panelWidth, panelHeight, setPanelSize } = usePicoStore();
+  const navigate = useNavigate();
   const [input, setInput] = useState("");
   const {
     messages,
@@ -308,6 +311,15 @@ export function ChatPanel() {
           title="New session"
         >
           <Plus className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 shrink-0"
+          onClick={() => { setOpen(false); navigate("/chat"); }}
+          title="Expand to full page"
+        >
+          <Maximize2 className="h-4 w-4" />
         </Button>
         <Button
           variant="ghost"

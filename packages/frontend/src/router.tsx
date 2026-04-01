@@ -6,6 +6,7 @@ import { AgentMonitorPage } from "./pages/agent-monitor";
 import { ActivityFeedPage } from "./pages/activity-feed";
 import { PersonaManagerPage } from "./pages/persona-manager";
 import { SettingsPage } from "./pages/settings";
+import { ChatPage } from "./pages/chat";
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
       { path: "items", element: <WorkItemsPage /> },
       { path: "agents", element: <AgentMonitorPage /> },
       { path: "activity", element: <ActivityFeedPage /> },
+      { path: "chat", element: <ChatPage /> },
       { path: "personas", element: <PersonaManagerPage /> },
       { path: "settings", element: <SettingsPage /> },
     ],

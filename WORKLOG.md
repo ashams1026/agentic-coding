@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 15:20 PDT — UX.PICO.FULLPAGE: Full-page chat view
+
+**Done:** Created `/chat` full-page view with session sidebar and verbose message rendering. New `pages/chat.tsx` with: (1) session sidebar (256px) showing all conversations with click-to-switch, double-click-to-rename, clear all; (2) main chat area using `ChatMessage` with `compact={false}` — expandable thinking blocks, full tool call cards with chevrons, rich markdown; (3) centered max-w-3xl layout with spacious typography. Added `Maximize2` expand button to mini panel header (navigates to `/chat`, closes overlay). Added `MessageSquare` "Chat" nav item in sidebar. Hid mini panel and chat bubble on `/chat` route via `useLocation` check in `root-layout.tsx`. Minimize button in full-page view navigates back and reopens mini panel.
+**Files:** `packages/frontend/src/pages/chat.tsx` (new), `packages/frontend/src/router.tsx`, `packages/frontend/src/components/sidebar.tsx`, `packages/frontend/src/features/pico/chat-panel.tsx`, `packages/frontend/src/layouts/root-layout.tsx`
+
+---
+
 ## 2026-04-02 15:05 PDT — Review: UX.PICO.STATUSBAR (approved)
 
 **Reviewed:** Consolidated status line for thinking/tool calls in compact mode.
