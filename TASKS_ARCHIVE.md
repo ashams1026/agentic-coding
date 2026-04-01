@@ -112,3 +112,23 @@ Full refresh of all 9 doc files: getting-started, architecture, data-model, work
 - [x] **PLUG.3b** — Defined 6 repository interfaces in core + Drizzle implementations in backend. *(completed 2026-04-01)*
 - [x] **PLUG.4** — Added ExecutorRegistry class to core, wired into ExecutionManager and REST API. *(completed 2026-04-01)*
 - [x] **PLUG.5** — Publish-ready package.json for shared and core (dist exports, files whitelist, tsconfig.build). *(completed 2026-04-01)*
+- [x] **PLUG.6** — Create example custom executor template. `examples/custom-executor/` with EchoExecutor, setup.ts, README. *(completed 2026-04-01)*
+- [x] **PLUG.7** — Update `docs/architecture.md` with pluggable executor documentation. *(completed 2026-04-01)*
+- [x] **PLUG.8** — Integration tests for executor registry. 15 tests in `executor-registry.test.ts`. *(completed 2026-04-01)*
+- [x] **PLUG.9** — E2E test plan: executor switching UI. 14 steps across 5 parts. *(completed 2026-04-01)*
+- [x] **PLUG.10** — Run executor switching e2e test. 12/14 PASS, 0 FAIL, 2 SKIP. *(completed 2026-04-01)*
+
+---
+
+## Backlog: Agent Workflow Improvements — archived 2026-04-01
+
+- [x] **AW.1** — Add conditional visual UI check to agent WORK state. `[VISUAL CHECK]` step between `[IMPLEMENT]` and `[VERIFY]` in AGENT_PROMPT.md. *(completed 2026-04-01)*
+- [x] **AW.2** — Add visual check to REVIEW state. Visual verification in `[INSPECT WORK]` step of AGENT_PROMPT.md. *(completed 2026-04-01)*
+
+---
+
+## Sprint 22: Visual UX Audit (partial) — archived 2026-04-01
+
+- [x] **UX.DASH** — Audit Dashboard page. 7 screenshots, 3 bugs filed (FX.UX.DASH.1-3). *(completed 2026-04-01)*
+- [x] **FX.UX.DASH.1** — Cost Summary widget below fold. Fixed: `lg:grid-cols-2` → `md:grid-cols-2 lg:grid-cols-3` in dashboard.tsx. *(completed 2026-04-01)*
+- [x] **FX.UX.DASH.2** — Stat cards and agent cards not accessible. Fixed: added `role="button"`, `tabIndex={0}`, `onKeyDown`, focus-visible ring. *(completed 2026-04-01)*

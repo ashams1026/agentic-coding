@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-21 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-6, PLUG.1-2/3a-3b/4-5 archived.
+> Sprints 1-21 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-6, PLUG.1-10, AW.1-2 archived. Sprint 22 partial (UX.DASH, FX.UX.DASH.1-2) archived.
 
 ---
 
@@ -35,29 +35,11 @@
 
 ## Backlog: Pluggable Executor Architecture (remaining)
 
-> PLUG.1-2, PLUG.3a-3b, PLUG.4-5 archived. Blocked: PLUG.3c/3d. Remaining: PLUG.6-10.
+> PLUG.1-10 archived (except PLUG.3c/3d blocked).
 
 - [blocked: ExecutionManager has 6+ non-DB dependencies beyond repositories (logger, audit, concurrency, runRouter, dispatchForState, drizzle eq operator). Moving to core requires abstracting ALL of these as interfaces — much larger scope than DB repositories alone. Defer until a broader service abstraction layer is designed.] **PLUG.3c** — Move ExecutionManager, dispatch, router, coordination to `@agentops/core`. Refactor these modules to use the repository interfaces from PLUG.3b instead of direct Drizzle imports. Move them to `packages/core/src/`. Update backend to inject concrete repository implementations via the composition root.
 
 - [blocked: same as PLUG.3c — mcp-server.ts depends on SDK MCP factory, logger, audit, coordination, memory modules beyond just DB. Requires broader service abstraction.] **PLUG.3d** — Move MCP server definition to `@agentops/core`. Refactor `mcp-server.ts` to use repository interfaces. The SDK MCP server factory (`createSdkMcpServer`) stays as a peer dependency since it's from the agent SDK.
-
-- [x] **PLUG.6** — Create example custom executor template. Create `examples/custom-executor/` at the repo root: a minimal standalone project that depends on `@agentops/shared` and `@agentops/core`, implements a trivial `AgentExecutor` (echoes back the task description as a text event), registers it, and starts the AgentOps server with the custom executor active. Include a `README.md` explaining: how to implement the interface, how to register, how to configure which executor runs. This serves as documentation-by-example for anyone building on top of AgentOps.
-
-- [x] **PLUG.7** — Update `docs/architecture.md` with pluggable executor documentation. Document: the executor interface contract, how to implement a custom executor, the registry pattern, the composition root, the `@agentops/core` package boundary, and a diagram showing which packages depend on what. Include a "Building on AgentOps" section for external developers.
-
-- [x] **PLUG.8** — Integration tests for executor registry. Create `packages/backend/tests/executor-registry.test.ts`: test registering multiple executors, switching between them at runtime, verifying the correct executor is selected by environment (test/dev/prod). Test that an unregistered executor name throws a clear error. Test that the REST API (`GET/PUT /api/settings/executor-mode`) reflects registry state. Use the real `ExecutionManager` class with `MockExecutor` instances — no mocking the system under test.
-
-- [x] **PLUG.9** — E2E test plan: executor switching UI. Create `tests/e2e/plans/executor-switching.md`: test the Settings executor toggle (only visible in dev mode), verify switching between mock and claude modes, verify the status bar shows current executor mode, verify the health endpoint reflects the change. Visual verification of the settings UI.
-
-- [x] **PLUG.10** — Run executor switching e2e test. Execute PLUG.9 test plan. Record results with screenshots.
-
----
-
-## Backlog: Agent Workflow Improvements
-
-- [x] **AW.1** — Add conditional visual UI check to agent WORK state. Update `AGENT_PROMPT.md`: add a `[VISUAL CHECK]` step between `[IMPLEMENT]` and `[VERIFY]` in the WORK state. The step is conditional: after implementing, run `git diff --name-only` and check if any files in `packages/frontend/` were modified. If NO frontend files changed → skip to [VERIFY]. If frontend files changed → ensure dev servers are running (check ports 3001 and 5173/5174, skip starting if already up), use chrome-devtools MCP to open the affected page(s) in a browser, take a screenshot, visually examine it for layout issues / broken styling / clipping / misalignment, fix any visual defects found, re-screenshot to confirm. Include a file path → page URL mapping in the prompt so the agent knows which pages to check: `features/work-items/` → `/items`, `features/dashboard/` or `pages/dashboard` → `/`, `features/agent-monitor/` → `/agents`, `features/activity-feed/` → `/activity`, `features/persona-manager/` → `/personas`, `features/settings/` → `/settings`, `components/sidebar.tsx` or `layouts/` → `/` (check any page). If multiple feature directories were touched, check each corresponding page. Add to the Worker Rules section: "If your task modifies frontend code, the visual check is mandatory — do not skip it."
-
-- [x] **AW.2** — Add visual check to REVIEW state. Update `AGENT_PROMPT.md`: in the REVIEW state's `[INSPECT WORK]` step, add: if the worker's WORKLOG entry lists frontend files, open the affected pages in a browser via chrome-devtools MCP and visually verify the UI looks correct. This gives the reviewer a second pair of eyes on visual quality. Add a review checklist item: "If UI was changed: does it look correct visually? No broken layout, clipping, or styling issues?"
 
 ---
 
@@ -65,15 +47,7 @@
 
 > Exploratory testing sprint. Each task: start dev servers (ports 3001 + 5173), open the page via chrome-devtools MCP, interact with every feature, screenshot each state, and file bugs as new `FX.UX.*` tasks in TASKS.md. Bugs should include: page, what's broken, expected behavior, and a screenshot path if possible.
 
-### Dashboard (`/`)
-
-- [x] **UX.DASH** — Audit Dashboard page. Open `/`, screenshot initial state. Verify: active agents strip shows correct data or empty state, cost summary renders with mock/real data, recent activity list populates and scrolls, upcoming work section displays items. Click each interactive element (agent cards, activity items, work item links). Resize viewport to 1024px and 768px — check for clipping or overflow. Toggle dark mode — verify no invisible text or broken contrast. File bugs for anything broken.
-
 ### Dashboard Bugs
-
-- [x] **FX.UX.DASH.1** — Cost Summary widget below the fold at default viewport. Page `/`. CostSummary is the 3rd item in a `lg:grid-cols-2` grid in `dashboard.tsx`, placing it in row 2 col 1 below the longer Recent Activity list. At 1440x900, the MAIN container has scrollHeight 1352 vs clientHeight 1066 — requires scrolling to see Cost Summary. Expected: all dashboard widgets visible without scrolling at default viewport. Fix: consider `lg:grid-cols-3` for the widget grid, or use `lg:col-span-2` on CostSummary to give it full width, or reorder widgets so CostSummary is above Recent Activity. Screenshot: `tests/e2e/results/ux-dash-initial.png`.
-
-- [x] **FX.UX.DASH.2** — Stat cards and agent cards not accessible as interactive elements. Page `/`. The 4 stat cards (`StatCard` in `dashboard.tsx`) and agent cards (`AgentCard` in `active-agents-strip.tsx`) use `<Card>` (div) + `onClick` + `cursor-pointer` but have no `role="button"`, `tabIndex`, or semantic `<button>` wrapper. Screen readers won't identify them as clickable, and keyboard users can't tab to or activate them. Expected: wrap clickable cards in `<button>` elements or add `role="button" tabIndex={0} onKeyDown` handlers.
 
 - [ ] **FX.UX.DASH.3** — Activity items all link to generic `/items` instead of specific work item. Page `/`. All Recent Activity events in `recent-activity.tsx` set `targetPath: "/items"` regardless of which work item they relate to. Clicking any event navigates to the work items list page, not the specific work item detail. Expected: link to `/items?selected={workItemId}` or a route that opens the relevant work item's detail panel.
 
