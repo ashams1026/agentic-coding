@@ -165,31 +165,19 @@ Full refresh of all 9 doc files: getting-started, architecture, data-model, work
 
 ---
 
-## Bug Fixes & Research Proposals — archived 2026-04-02
+**Bug Fixes, Research & UX (FX.WORK.EDIT, FX.PERSONA.SEED, FX.PICO.OVERFLOW/EMPTY.BUBBLE, RES.PLUG.CORE, RES.GLOBAL.DATA/NAV/UX, RES.WORKFLOW.DATA/BUILDER/RUNTIME/EDGE, RES.PROMPTS.DOC/VARS, UX.PICO.MINI.CONTENT/RESIZE/STATUSBAR/FULLPAGE/COLLAPSE, UX.BRAND.WOOF):** 20 tasks. Bug fixes (work item persistence, persona seed, Pico overflow/empty bubble). Research proposals (pluggable core extraction, global agents data/nav/UX, custom workflow data model/builder/runtime/edge cases, persona prompt pipeline/template variables). UX polish (Pico compact content, resize, status line, full-page chat, collapse chevron, Woof rebrand).
 
-- [x] **FX.WORK.EDIT** — Fix work item mutations not persisting — stale selectedProjectId in localStorage + silent error swallowing in updateWorkItem(). *(completed 2026-04-02 12:00 PDT)*
-- [x] **FX.PERSONA.SEED** — Fix built-in personas missing — extracted idempotent ensureBuiltInPersonas() that checks by name, added startup bootstrap. *(completed 2026-04-02 12:30 PDT)*
-- [x] **FX.PICO.OVERFLOW** — Fix Pico chat content overflow — w-0 min-w-full on ScrollArea container, overflow-hidden break-words on bubbles. *(completed 2026-04-02 13:10 PDT)*
-- [x] **RES.PLUG.CORE** — Research core package extraction strategy — cataloged 25 deps, recommended thin interface extraction (Option B). *(completed 2026-04-02 08:15 PDT)*
-- [x] **RES.GLOBAL.DATA** — Research data model for global agents — nullable projectId on 4 tables, AgentScope type, global_memories table. *(completed 2026-04-02 08:35 PDT)*
-- [x] **RES.GLOBAL.NAV** — Research navigation restructure for project vs global scope — keep flat nav, add "All Projects" option, scope-aware pages. *(completed 2026-04-02 09:15 PDT)*
-- [x] **RES.GLOBAL.UX** — Research global agent chat/scheduling UX — Pico scope toggle, set_project_context MCP tool, global workspace. *(completed 2026-04-02 09:45 PDT)*
-- [x] **RES.WORKFLOW.DATA** — Research custom workflow data model — 3-table schema (workflows, workflow_states, workflow_transitions), soft versioning, 2-level persona binding. *(completed 2026-04-02 10:15 PDT)*
-- [x] **RES.WORKFLOW.BUILDER** — Research workflow builder UX — hybrid form+preview editor, 8-rule validation, shared router with dynamic prompt. *(completed 2026-04-02 10:50 PDT)*
-- [x] **RES.WORKFLOW.RUNTIME** — Research custom workflow runtime — dynamic router prompt from DB, per-project/per-item binding, 3-phase migration. *(completed 2026-04-02 11:20 PDT)*
+---
 
-## Bug Fixes & UX — archived 2026-04-02
+## Research: Design Proposals — archived 2026-04-02
 
-- [x] **FX.PICO.EMPTY.BUBBLE** — Empty chat bubble with "..." appears before thinking content arrives. *(completed 2026-04-02 13:35 PDT)*
-- [x] **UX.PICO.MINI.CONTENT** — Reduce thinking and tool call content in mini chat panel. *(completed 2026-04-02 14:00 PDT)*
-- [x] **UX.PICO.RESIZE** — Allow users to resize the Pico chat panel. *(completed 2026-04-02 14:25 PDT)*
-- [x] **UX.PICO.STATUSBAR** — Consolidate thinking/tool call one-liners into a single animated status line. *(completed 2026-04-02 14:55 PDT)*
-- [x] **UX.PICO.FULLPAGE** — Add expand-to-full-page for Pico chat. *(completed 2026-04-02 15:20 PDT)*
-- [x] **UX.PICO.COLLAPSE** — Replace close (X) button with collapse caret on mini chat panel. *(completed 2026-04-02 15:40 PDT)*
-- [x] **UX.BRAND.WOOF** — Rebrand the app as "Woof". *(completed 2026-04-02 16:05 PDT)*
-
-## Research: Persona Prompts & Custom Workflows — archived 2026-04-02
-
-- [x] **RES.PROMPTS.DOC** — Document the current persona prompt storage and assembly pipeline. *(completed 2026-04-02 16:20 PDT)*
-- [x] **RES.PROMPTS.VARS** — Research template variable support for persona prompts. *(completed 2026-04-02 16:35 PDT)*
-- [x] **RES.WORKFLOW.EDGE** — Research edge cases and lifecycle management for custom workflows. *(completed 2026-04-02 16:50 PDT)*
+- [x] **RES.CHAT.UX** — Research dedicated agent chat page UX — session sidebar, persona selector, Pico relationship, scoping, navigation. *(completed 2026-04-02 17:10 PDT)*
+- [x] **RES.CHAT.RICH** — Research rich message rendering — 8 content types (diffs, tool calls, terminal, file trees, proposals, thinking, images, progress). *(completed 2026-04-02 17:30 PDT)*
+- [x] **RES.CHAT.DATA** — Research chat data model — hybrid contentBlocks, SSE + control endpoints, execution linking, V2 readiness. *(completed 2026-04-02 17:50 PDT)*
+- [x] **RES.LIFECYCLE.UX** — Research work item delete & archive UX — archive primary, 3-tier confirmation, bulk ops, 30-day soft delete. *(completed 2026-04-02 18:10 PDT)*
+- [x] **RES.LIFECYCLE.DATA** — Research work item lifecycle data model — archived_at/deleted_at timestamps, cascade rules, API design, agent guards. *(completed 2026-04-02 18:30 PDT)*
+- [x] **RES.NOTIFY.UX** — Research notifications UX — 10-event catalog, bell icon + drawer, toast vs persistent, quiet hours, Agent Monitor suppression. *(completed 2026-04-02 18:50 PDT)*
+- [x] **RES.NOTIFY.INTEGRATIONS** — Research notification channels — Slack/email/webhooks, NotificationService event bus, rate limiting, delivery log. *(completed 2026-04-02 19:10 PDT)*
+- [x] **RES.COLLAB.CONTEXT** — Research agent context passing — handoff notes, shared scratchpad, context windowing, agent-to-agent tagging. *(completed 2026-04-02 19:45 PDT)*
+- [x] **RES.COLLAB.COORD** — Research multi-agent coordination — parallel execution, dependency enforcement, human-in-loop, escalation, fan-out/fan-in. *(completed 2026-04-02 20:15 PDT)*
+- [x] **RES.SCHED.UX** — Research scheduling UX — per-persona schedules, presets/cron, standalone executions, schedule management, notification integration. *(completed 2026-04-02 20:40 PDT)*

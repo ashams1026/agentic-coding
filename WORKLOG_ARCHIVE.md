@@ -177,3 +177,21 @@ Command sandbox, mock removal (-2283 lines), demo seed, settings fixes, auto-rou
 **Research (7 tasks, all approved):** RES.PLUG.CORE — cataloged 25 deps of ExecutionManager/MCP, recommended thin interface extraction (Option B). RES.GLOBAL.DATA — nullable projectId on 4 tables, global_memories table, AgentScope type. RES.GLOBAL.NAV — keep flat nav, add "All Projects" option, scope-aware pages. RES.GLOBAL.UX — Pico scope toggle, `set_project_context` MCP tool, global workspace. RES.WORKFLOW.DATA — 3-table schema (workflows/states/transitions), soft versioning, 2-level persona binding. RES.WORKFLOW.BUILDER — hybrid form+preview editor, 8-rule validation, shared router. RES.WORKFLOW.RUNTIME — dynamic router prompt from DB, per-project/item binding, 3-phase migration.
 
 **Bug fixes (3 tasks, all approved):** FX.WORK.EDIT — stale selectedProjectId in localStorage + silent error swallowing in updateWorkItem(). FX.PERSONA.SEED — extracted idempotent ensureBuiltInPersonas() for server startup. FX.PICO.OVERFLOW — w-0 min-w-full overflow-hidden on ScrollArea container, break-words on bubbles.
+
+---
+
+### Pico UX polish & Woof rebrand — 2026-04-02 13:35–16:10 PDT
+
+**Bug fix + 6 UX tasks (all approved):** FX.PICO.EMPTY.BUBBLE — skip rendering empty message during streaming, TypingIndicator handles the gap. UX.PICO.MINI.CONTENT — compact prop on ChatMessage (thinking=one-liner, tool calls=one-liner). UX.PICO.RESIZE — drag-to-resize on top/left/corner edges (320x400 min, 600x80vh max, persisted in Zustand). UX.PICO.STATUSBAR — consolidated StatusLine component auto-cycling through thinking+tool_use items with counter/expand chevron. UX.PICO.FULLPAGE — `/chat` page with session sidebar, verbose rendering, Maximize2 button in mini panel. UX.PICO.COLLAPSE — ChevronDown replaces X icon on mini panel. UX.BRAND.WOOF — rebranded all user-facing "AgentOps" to "Woof" (title, favicon, sidebar, status bar, mobile header, settings, tool config).
+
+---
+
+### Research proposals batch 1 — 2026-04-02 16:20–17:55 PDT
+
+**6 research docs (all approved):** RES.PROMPTS.DOC — traced 5-section buildSystemPrompt() pipeline (persona→project→work item→sandbox→history) + Pico 4-section variant. RES.PROMPTS.VARS — {{var}} Mustache syntax, 15 built-ins, vars.* user-defined, resolveVariables() regex, 4-phase plan. RES.WORKFLOW.EDGE — 7 edge cases (deletion, cloning, import/export, permissions, global agents, testing, chat interaction). RES.CHAT.UX — session sidebar + main chat, Pico as special case, 5 entry points, 3-phase migration. RES.CHAT.RICH — 8 content types (DiffBlock, ToolCallCard, TerminalBlock, FileTreeSummary, ProposalCard, ThinkingBlock, ImageBlock, MultiStepProgress). RES.CHAT.DATA — hybrid contentBlocks, SSE + control endpoints, execution linking, V2 readiness.
+
+---
+
+### Research proposals batch 2 — 2026-04-02 18:10–20:40 PDT
+
+**8 research docs (all approved):** RES.LIFECYCLE.UX — archive primary, 3-tier confirmation, bulk ops, 30-day soft delete, "Show archived" toggle. RES.LIFECYCLE.DATA — archived_at/deleted_at timestamps, cascade rules per table, API endpoints, canDispatch() guard, 5-step migration. RES.NOTIFY.UX — 10-event catalog with 4 priority levels, bell icon + sliding drawer, toast vs persistent matrix, quiet hours. RES.NOTIFY.INTEGRATIONS — Slack (Block Kit), email (Resend), webhooks (HMAC, retry), NotificationService event bus with channel fan-out. RES.COLLAB.CONTEXT — handoff notes (structured schema), shared scratchpad, 4-tier context windowing, @persona tagging. RES.COLLAB.COORD — parallel execution (advisory file locking), dependency enforcement (edges exist but aren't checked), human-in-loop (create_proposal MCP), escalation chain, fan-out/fan-in completion gates. RES.SCHED.UX — per-persona schedules in Persona Manager, presets/cron with live preview, standalone execution model, silent success notifications.
