@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 import {
   ArrowRightLeft,
   Bot,
@@ -38,6 +38,7 @@ import {
 } from "@/hooks";
 import { subscribeAll } from "@/api/ws";
 import { useActivityStore } from "@/stores/activity-store";
+import { useWorkItemsStore } from "@/stores/work-items-store";
 import type { Persona, WorkItemId, PersonaId } from "@agentops/shared";
 import { RouterDecisionCard, isRouterDecision } from "@/features/agent-monitor/router-decision-card";
 import type {
@@ -70,7 +71,7 @@ interface ActivityEvent {
   type: ActivityEventType;
   description: string;
   personaId: string | null;
-  targetPath: string;
+  workItemId: string | null;
   targetLabel: string;
   timestamp: string;
   isLive?: boolean;
@@ -222,7 +223,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
             type: "agent_started",
             description: `${pName} started work on ${wiTitle}`,
             personaId: exec.personaId,
-            targetPath: "/items",
+            workItemId: exec.workItemId,
             targetLabel: wiTitle,
             timestamp: exec.startedAt,
           });
@@ -236,7 +237,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
               type: "router_decision",
               description: `Router: ${so.nextState ?? "unknown"} — ${so.reasoning ?? exec.summary}`,
               personaId: exec.personaId,
-              targetPath: "/items",
+              workItemId: exec.workItemId,
               targetLabel: wiTitle,
               timestamp: exec.completedAt ?? exec.startedAt,
               structuredOutput: exec.structuredOutput,
@@ -247,7 +248,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
               type: "agent_completed",
               description: exec.summary || `${pName} completed work on ${wiTitle}`,
               personaId: exec.personaId,
-              targetPath: "/items",
+              workItemId: exec.workItemId,
               targetLabel: wiTitle,
               timestamp: exec.completedAt ?? exec.startedAt,
             });
@@ -259,7 +260,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
             type: "agent_failed",
             description: exec.rejectionPayload?.reason ?? `${pName} work rejected on ${wiTitle}`,
             personaId: exec.personaId,
-            targetPath: "/items",
+            workItemId: exec.workItemId,
             targetLabel: wiTitle,
             timestamp: exec.completedAt ?? exec.startedAt,
           });
@@ -278,7 +279,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
             type: "state_transition",
             description: comment.content,
             personaId: null,
-            targetPath: "/items",
+            workItemId: comment.workItemId,
             targetLabel: wiTitle,
             timestamp: comment.createdAt,
           });
@@ -288,7 +289,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
             type: "comment_posted",
             description: `${comment.authorName}: ${comment.content.slice(0, 120)}${comment.content.length > 120 ? "..." : ""}`,
             personaId: comment.authorType === "agent" ? comment.authorId : null,
-            targetPath: "/items",
+            workItemId: comment.workItemId,
             targetLabel: wiTitle,
             timestamp: comment.createdAt,
           });
@@ -306,7 +307,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
           type: "proposal_created",
           description: `New ${proposal.type.replace(/_/g, " ")} proposal for ${wiTitle}`,
           personaId: null,
-          targetPath: "/items",
+          workItemId: proposal.workItemId,
           targetLabel: wiTitle,
           timestamp: proposal.createdAt,
         });
@@ -317,7 +318,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
             type: "proposal_approved",
             description: `${proposal.type.replace(/_/g, " ")} proposal approved for ${wiTitle}`,
             personaId: null,
-            targetPath: "/items",
+            workItemId: proposal.workItemId,
             targetLabel: wiTitle,
             timestamp: new Date(
               new Date(proposal.createdAt).getTime() + 120000,
@@ -330,7 +331,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
             type: "proposal_rejected",
             description: `${proposal.type.replace(/_/g, " ")} proposal rejected for ${wiTitle}`,
             personaId: null,
-            targetPath: "/items",
+            workItemId: proposal.workItemId,
             targetLabel: wiTitle,
             timestamp: new Date(
               new Date(proposal.createdAt).getTime() + 120000,
@@ -364,7 +365,7 @@ function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | nu
         type: "agent_started",
         description: `${pName(e.personaId as string)} started work on ${title}`,
         personaId: e.personaId,
-        targetPath: "/items",
+        workItemId: e.workItemId,
         targetLabel: title,
         timestamp: e.timestamp,
         isLive: true,
@@ -381,7 +382,7 @@ function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | nu
           ? `${pName(e.personaId as string)} work rejected on ${title}`
           : `${pName(e.personaId as string)} completed work on ${title} ($${e.costUsd.toFixed(2)})`,
         personaId: e.personaId,
-        targetPath: "/items",
+        workItemId: e.workItemId,
         targetLabel: title,
         timestamp: e.timestamp,
         isLive: true,
@@ -395,7 +396,7 @@ function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | nu
         type: "state_transition",
         description: `${title} moved from ${e.fromState} to ${e.toState}`,
         personaId: typeof e.triggeredBy === "string" && e.triggeredBy.startsWith("ps-") ? e.triggeredBy : null,
-        targetPath: "/items",
+        workItemId: e.workItemId,
         targetLabel: title,
         timestamp: e.timestamp,
         isLive: true,
@@ -408,7 +409,7 @@ function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | nu
         type: "comment_posted",
         description: `${e.authorName}: ${e.contentPreview}`,
         personaId: null,
-        targetPath: "/items",
+        workItemId: e.workItemId,
         targetLabel: wiTitle(e.workItemId as string),
         timestamp: e.timestamp,
         isLive: true,
@@ -422,7 +423,7 @@ function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | nu
         type: "proposal_created",
         description: `New ${e.proposalType.replace(/_/g, " ")} proposal for ${title}`,
         personaId: null,
-        targetPath: "/items",
+        workItemId: e.workItemId,
         targetLabel: title,
         timestamp: e.timestamp,
         isLive: true,
@@ -436,7 +437,7 @@ function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | nu
           type: e.status === "approved" ? "proposal_approved" : "proposal_rejected",
           description: `Proposal ${e.status}`,
           personaId: null,
-          targetPath: "/items",
+          workItemId: null,
           targetLabel: "proposal",
           timestamp: e.timestamp,
           isLive: true,
@@ -641,15 +642,27 @@ interface EventRowProps {
 }
 
 function EventRow({ event, personaMap }: EventRowProps) {
+  const navigate = useNavigate();
+  const setSelectedItemId = useWorkItemsStore((s) => s.setSelectedItemId);
   const config = eventConfig[event.type];
   const persona = event.personaId
     ? personaMap.get(event.personaId as string)
     : null;
 
+  const handleClick = () => {
+    if (event.workItemId) {
+      setSelectedItemId(event.workItemId as WorkItemId);
+    }
+    navigate("/items");
+  };
+
   return (
-    <Link
-      to={event.targetPath}
-      className={`flex items-start gap-3 rounded-md px-3 py-2.5 transition-colors hover:bg-accent/50 ${
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleClick}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleClick(); } }}
+      className={`flex items-start gap-3 rounded-md px-3 py-2.5 transition-colors hover:bg-accent/50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
         event.isLive ? "animate-slide-down" : ""
       }`}
     >
@@ -694,7 +707,7 @@ function EventRow({ event, personaMap }: EventRowProps) {
           )}
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
 

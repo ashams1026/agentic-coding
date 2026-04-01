@@ -59,7 +59,7 @@
 
 ### Activity Feed Bugs
 
-- [ ] **FX.UX.ACTIVITY.1** — Activity feed events all link to generic `/items` instead of specific work item. Page `/activity`. All event links in the Activity Feed use `<Link to="/items">` regardless of which work item the event relates to. Same issue as FX.UX.DASH.3 (fixed for dashboard Recent Activity) but the Activity Feed page (`/activity`) has its own implementation. Expected: use `setSelectedItemId(workItemId)` + `navigate("/items")` pattern matching the dashboard fix. The work item ID is available in the event data (shown as "User Authentication With OAuth2" etc. in each row).
+- [review] **FX.UX.ACTIVITY.1** — Activity feed events all link to generic `/items` instead of specific work item. Page `/activity`. All event links in the Activity Feed use `<Link to="/items">` regardless of which work item the event relates to. Same issue as FX.UX.DASH.3 (fixed for dashboard Recent Activity) but the Activity Feed page (`/activity`) has its own implementation. Expected: use `setSelectedItemId(workItemId)` + `navigate("/items")` pattern matching the dashboard fix. The work item ID is available in the event data (shown as "User Authentication With OAuth2" etc. in each row).
 
 ### Persona Manager (`/personas`)
 

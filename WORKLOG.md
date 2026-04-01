@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 01:30 PDT — FX.UX.ACTIVITY.1: Activity feed events link to specific work items
+
+**Done:** Replaced `targetPath: "/items"` with `workItemId` from all data sources (15 instances) in `activity-feed.tsx`. Executions use `exec.workItemId`, comments use `comment.workItemId`, proposals use `proposal.workItemId`, WS events use `e.workItemId`. `ProposalUpdatedEvent` has no workItemId — set to `null`. Changed `EventRow` from `<Link to="/items">` to `<div role="button">` with `setSelectedItemId` + `navigate` pattern. Added a11y (role, tabIndex, onKeyDown, focus-visible). Verified: clicking an event navigates to `/items` and opens correct detail panel.
+**Files:** `packages/frontend/src/features/activity-feed/activity-feed.tsx`
+
+---
+
 ## 2026-04-02 01:20 PDT — Review: FX.UX.AGENT.2 (approved)
 
 **Reviewed:** MCP status 404 error toast fix.
