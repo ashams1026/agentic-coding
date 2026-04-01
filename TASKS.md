@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-22 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-6, PLUG.1-10, AW.1-2 archived. Sprint 22 fully archived. Bug fixes (FX.WORK.EDIT, FX.PERSONA.SEED, FX.PICO.OVERFLOW, FX.PICO.EXEC, FX.UX.REWIND, FX.UX.PERSONA.1-3), UX (UX.AGENT.BREADCRUMB), housekeeping (HK.TEST.RESULTS), research (RES.SDK.TOOLS, RES.V2.SESSIONS, RES.PLUG.CORE, RES.GLOBAL.DATA/NAV/UX, RES.WORKFLOW.DATA/BUILDER/RUNTIME) archived.
+> Sprints 1-22 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-6, PLUG.1-10, AW.1-2 archived. Sprint 22 fully archived. Bug fixes (FX.WORK.EDIT, FX.PERSONA.SEED, FX.PICO.OVERFLOW, FX.PICO.EXEC, FX.PICO.EMPTY.BUBBLE, FX.UX.REWIND, FX.UX.PERSONA.1-3), UX (UX.AGENT.BREADCRUMB, UX.PICO.MINI.CONTENT/RESIZE/STATUSBAR/FULLPAGE/COLLAPSE, UX.BRAND.WOOF), housekeeping (HK.TEST.RESULTS), research (RES.SDK.TOOLS, RES.V2.SESSIONS, RES.PLUG.CORE, RES.GLOBAL.DATA/NAV/UX, RES.WORKFLOW.DATA/BUILDER/RUNTIME/EDGE, RES.PROMPTS.DOC/VARS) archived.
 
 ---
 
@@ -53,43 +53,7 @@
 
 ## Bug Fixes & UX
 
-### Pico Chat Panel
-
-- [x] **FX.PICO.EMPTY.BUBBLE** — Empty chat bubble with "..." appears before thinking content arrives. When Pico is processing but hasn't started thinking yet, an empty message bubble renders with the typing indicator dots below it, then gets replaced when thinking content streams in. The empty bubble should not appear — either show only the typing indicator until content arrives, or delay rendering the bubble until the first content chunk.
-
-- [x] **UX.PICO.MINI.CONTENT** — Reduce thinking and tool call content in mini chat panel. Showing full thinking blocks and tool call details in the small overlay panel is too verbose — it overwhelms the compact space. In the mini panel mode: (1) collapse thinking blocks to a single "Thinking..." line (not expandable — save that for the full page), (2) show tool calls as a compact one-liner (e.g. "Used Read on file.ts") instead of the full card with params/output, (3) keep full markdown rendering for the actual response text. The full verbose rendering should only appear in the expanded full-page view (UX.PICO.FULLPAGE).
-
-- [x] **UX.PICO.RESIZE** — Allow users to resize the Pico chat panel. Add drag-to-resize on the top and left edges of the overlay panel. Set reasonable min/max constraints (e.g. min 320x400, max 600x80vh) so it stays an overlay and doesn't become a full page. Content inside should reflow responsively as the panel resizes — wider panel means longer message lines, not richer content. Persist the user's preferred size in localStorage/Zustand. *(completed 2026-04-02 14:40 PDT)*
-
-- [x] **UX.PICO.STATUSBAR** — Consolidate thinking/tool call one-liners into a single animated status line. Currently each thinking block and tool call renders as a separate one-liner in the chat. Replace with a single status line that updates in-place as new events arrive — like a status bar. Each message should display for at least 1.5-2 seconds before being replaced by the next, so the user has time to read it. If events arrive faster, queue them. The status line should be expandable (small chevron) to reveal the full list of all thinking/tool call one-liners for that turn. Additionally, improve the one-liner content to be more descriptive — e.g. "Used Agent - Agent" should instead show the agent name/description like "Used Agent — code-reviewer" or "Used Read — src/routes/chat.ts". Extract meaningful details from the tool call params (tool name + first arg or target) rather than just showing the generic tool type. Component is in `packages/frontend/src/features/pico/chat-message.tsx` or wherever the mini content rendering was implemented.
-
-- [x] **UX.PICO.FULLPAGE** — Add expand-to-full-page for Pico chat. Add an expand icon button (next to the new session button) in the mini chat panel header. Clicking it navigates to a dedicated `/chat` (or `/pico`) full-page view with the current session selected. This page should be accessible from the sidebar nav as well. The full-page view is where richer content rendering lives — expandable thinking blocks, full tool call cards with params/output, larger code blocks, etc. This is the foundation for the broader agent chat page (RES.CHAT.*). Navigating back to another page should re-collapse Pico to the mini panel.
-
-- [x] **UX.PICO.COLLAPSE** — Replace close (X) button with collapse caret on mini chat panel. The X button implies closing/ending the chat, but it only minimizes the overlay. Replace with a downward chevron/caret icon (ChevronDown from lucide-react) to indicate collapse/minimize behavior. Tooltip should say "Minimize" not "Close".
-
 - [blocked: TestRunPanel component exists in persona-editor.tsx but PersonaManagerPage uses PersonaDetailPanel instead. The test-run feature is not accessible from the UI — no route or button leads to persona-editor.tsx. Cannot audit what users can't reach.] **FX.UX.PERSONA.4** — Wire TestRunPanel into Persona Manager UI. The `TestRunPanel` component (`packages/frontend/src/features/persona-manager/test-run-panel.tsx`) exists and is imported in `persona-editor.tsx`, but the page (`pages/persona-manager.tsx` line 38) uses `PersonaDetailPanel` which does not include it. Users cannot test-run a persona. Fix: either add a collapsible TestRunPanel to `PersonaDetailPanel` (at the bottom of the read-only view), or replace `PersonaDetailPanel` with `PersonaEditor` in the page layout.
-
-### Branding
-
-- [x] **UX.BRAND.WOOF** — Rebrand the app as "Woof". The app is being branded as "Woof" — a play on words since Pico (the main assistant agent) is named after the user's dog. Updates needed: (1) page title — change `<title>` in `index.html` from "AgentOps" to "Woof", (2) favicon — replace with a dog-themed favicon (paw print or simple dog silhouette, works at 16x16 and 32x32), (3) sidebar/header — add "Woof" branding text or logo mark in the sidebar header area (where the app name would go), (4) login/splash — if there's a loading screen or empty state, show the Woof name, (5) browser tab — ensure the tab shows "Woof" with the new favicon, (6) Pico's avatar/identity — lean into the dog theme for Pico's chat bubble avatar (paw print, dog emoji, or small icon), (7) audit all references to "AgentOps" in user-visible UI text (tooltips, empty states, footer, about dialog) and update to "Woof" where appropriate. Keep "AgentOps" in code/package names and developer-facing docs — this is a UI/brand change only.
-
----
-
-## Research: Persona Prompt System
-
-> Document how persona prompts work today and research template variable support. Output is design docs only — do NOT add implementation tasks to TASKS.md. All proposals go to `docs/proposals/persona-prompts/`.
-
-- [x] **RES.PROMPTS.DOC** — Document the current persona prompt storage and assembly pipeline. Trace the full path: (1) how `system_prompt` is stored in the personas DB table and edited in the UI (`system-prompt-editor.tsx`), (2) how `buildSystemPrompt()` in `packages/backend/src/agent/claude-executor.ts` assembles the final prompt — what sections are injected (project context, persona identity, workflow instructions, MCP tool descriptions, memory), in what order, with what separators, (3) how the Pico chat route (`packages/backend/src/routes/chat.ts`) builds its prompt differently from the executor, (4) how `AgentDefinition.prompt` is passed to the SDK `query()` call, (5) what the user controls (system_prompt field) vs what the system injects automatically. Write a clear reference doc to `docs/proposals/persona-prompts/current-architecture.md`. Commit the doc only.
-
-- [x] **RES.PROMPTS.VARS** — Research template variable support for persona prompts. Investigate: (1) syntax — what variable format to use in prompts (e.g. `{{project.name}}`, `${project.path}`, Mustache/Handlebars-style); must be visually distinct from natural language and not conflict with code blocks or JSON in prompts, (2) built-in variables — what system variables are available: `project.name`, `project.path`, `project.description`, `persona.name`, `workflow.currentState`, `workItem.title`, `workItem.description`, `date.now`, `user.name`; which are available at prompt-build time vs only at execution time, (3) user-defined variables — can users define custom key-value pairs per project or per persona (e.g. `{{coding_style}}` = "Follow Google TypeScript style guide") that get substituted at runtime; where are these stored and edited, (4) variable resolution — when in the pipeline does substitution happen (before passing to SDK, or in `buildSystemPrompt()`); what happens when a variable is undefined — leave the placeholder, replace with empty string, or warn, (5) UI support — autocomplete/suggestions when typing `{{` in the system prompt editor; variable reference panel showing available variables with descriptions; preview button that shows the fully-hydrated prompt. Write to `docs/proposals/persona-prompts/template-variables.md`. Commit the doc only.
-
----
-
-## Research: Custom Workflows
-
-> Design research for user-defined workflows with custom state machines and routing. Output is design docs only — do NOT add implementation tasks to TASKS.md. All proposals go to `docs/proposals/custom-workflows/`.
-
-- [x] **RES.WORKFLOW.EDGE** — Research edge cases and lifecycle management for custom workflows. Note: consider how the agent chat page (RES.CHAT.*) interacts with workflow execution — can a user chat with an agent mid-workflow and influence routing decisions? Investigate: (1) deleting a workflow that has active work items — block deletion, archive-only, or force-migrate items to another workflow, (2) cloning/templating — can users duplicate a workflow as a starting point, (3) import/export — sharing workflow definitions between projects or instances, (4) permissions: who can edit a workflow — any user, or only admins; can a workflow be locked/published to prevent accidental edits, (5) interaction with global agents: if a global agent runs a workflow, where do the work items live — does the workflow create a temporary project scope or operate without one, (6) testing: how does a user test a new workflow before deploying it — dry-run mode, sandbox execution, or just create a test project. Write to `docs/proposals/custom-workflows/edge-cases.md`. Commit the doc only.
 
 ---
 

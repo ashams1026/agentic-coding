@@ -4,31 +4,9 @@
 
 ---
 
-## Sprints 1-10 (consolidated) — 2026-03-28 to 2026-03-30
+## Sprints 1-15 (consolidated) — 2026-03-28 to 2026-03-30
 
-**Sprints 1-4:** Monorepo setup, React 19/Vite/Tailwind/shadcn/ui/TanStack/Zustand foundation, 9 full UI screens (dashboard, kanban, story/task detail, agent monitor, activity feed, workflow designer, persona manager, settings), mock data layer, command palette, toasts, Fastify backend scaffold.
-
-**Sprints 5-7:** Drizzle schema (9 tables), seed script, 10 CRUD route sets, WebSocket server, API client (32 functions), API mode toggle. Story→WorkItem model overhaul, Flow view (state machine graph), inline editing, state transitions.
-
-**Sprint 8 (A.1-A.18):** MCP server (7 tools), ClaudeExecutor with SDK, 4-layer system prompt, dispatch/router, rate limiter, concurrency, cost tracking, project memory.
-
-**Sprint 9 (Q.1-Q.13):** 145 tests — Vitest setup, test DB helper, workflow (24), API routes (49), agent logic (45). Fixed JSON double-encoding bugs.
-
-**Sprint 10 (P.1-P.12):** Design system (typography, buttons, spacing, dark mode surfaces), filtering/search with URL sync, resizable detail panel, tooltips, skeletons/empty states.
-
----
-
-## Sprints 11-15 (consolidated) — 2026-03-30
-
-**Sprint 11 (E.1-E.10):** API client fixes, WS→Query cache invalidation, agent monitor/activity feed wired, realistic seed, pipeline walkthrough (found state validation + WS broadcast bugs), dispatch trigger fix, parent-child coordination fix, error handling, stale execution cleanup.
-
-**Sprint 12 (S.1-S.9):** CLI (start/stop/status/dev), pm2 ecosystem, setup.sh, pino logging + audit trail, config file (~/.agentops/config.json).
-
-**Sprint 13 (W.1-W.8):** API key management (store + validate + wire to executor), project CRUD with path validation, concurrency slider, cost management, auto-routing toggle, density setting, data export/import.
-
-**Sprint 14 (D.1-D.10):** 10 documentation files — README, getting started, architecture, data model, workflow, personas, REST API (48 endpoints), MCP tools, deployment, frontend.
-
-**Sprint 15 (PS.1-PS.10):** Project scoping (all queries scoped to selected project), empty states, auto-seed personas, folder browser.
+**Sprints 1-4:** Monorepo scaffold, 9 UI screens, mock data, Fastify backend. **Sprints 5-7:** Drizzle schema (9 tables), 10 CRUD routes, WebSocket, API client, WorkItem model. **Sprint 8:** MCP server (7 tools), ClaudeExecutor, dispatch/router, rate limiter, cost tracking. **Sprint 9:** 145 tests (Vitest). **Sprint 10:** Design system, filtering, skeletons. **Sprint 11:** API wiring, WS invalidation, pipeline fixes. **Sprint 12:** CLI + pm2 + logging. **Sprint 13:** API keys, settings, data export. **Sprint 14:** 10 doc files. **Sprint 15:** Project scoping, empty states, auto-seed.
 
 ---
 
@@ -191,3 +169,11 @@ Command sandbox, mock removal (-2283 lines), demo seed, settings fixes, auto-rou
 **Housekeeping:** HK.TEST.RESULTS — restructured 269 files from flat tests/e2e/results/ into 46 timestamped directories.
 
 **Research:** RES.SDK.TOOLS — found sdk-tools.d.ts with 21 tools, recommended version-pinned shared manifest. RES.V2.SESSIONS — SDKSessionOptions missing 12+ fields vs query() Options, recommended query() with resume.
+
+---
+
+### Research & bug fixes batch — 2026-04-02 08:15–13:20 PDT
+
+**Research (7 tasks, all approved):** RES.PLUG.CORE — cataloged 25 deps of ExecutionManager/MCP, recommended thin interface extraction (Option B). RES.GLOBAL.DATA — nullable projectId on 4 tables, global_memories table, AgentScope type. RES.GLOBAL.NAV — keep flat nav, add "All Projects" option, scope-aware pages. RES.GLOBAL.UX — Pico scope toggle, `set_project_context` MCP tool, global workspace. RES.WORKFLOW.DATA — 3-table schema (workflows/states/transitions), soft versioning, 2-level persona binding. RES.WORKFLOW.BUILDER — hybrid form+preview editor, 8-rule validation, shared router. RES.WORKFLOW.RUNTIME — dynamic router prompt from DB, per-project/item binding, 3-phase migration.
+
+**Bug fixes (3 tasks, all approved):** FX.WORK.EDIT — stale selectedProjectId in localStorage + silent error swallowing in updateWorkItem(). FX.PERSONA.SEED — extracted idempotent ensureBuiltInPersonas() for server startup. FX.PICO.OVERFLOW — w-0 min-w-full overflow-hidden on ScrollArea container, break-words on bubbles.

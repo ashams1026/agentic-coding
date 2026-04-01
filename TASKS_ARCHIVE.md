@@ -177,3 +177,19 @@ Full refresh of all 9 doc files: getting-started, architecture, data-model, work
 - [x] **RES.WORKFLOW.DATA** — Research custom workflow data model — 3-table schema (workflows, workflow_states, workflow_transitions), soft versioning, 2-level persona binding. *(completed 2026-04-02 10:15 PDT)*
 - [x] **RES.WORKFLOW.BUILDER** — Research workflow builder UX — hybrid form+preview editor, 8-rule validation, shared router with dynamic prompt. *(completed 2026-04-02 10:50 PDT)*
 - [x] **RES.WORKFLOW.RUNTIME** — Research custom workflow runtime — dynamic router prompt from DB, per-project/per-item binding, 3-phase migration. *(completed 2026-04-02 11:20 PDT)*
+
+## Bug Fixes & UX — archived 2026-04-02
+
+- [x] **FX.PICO.EMPTY.BUBBLE** — Empty chat bubble with "..." appears before thinking content arrives. *(completed 2026-04-02 13:35 PDT)*
+- [x] **UX.PICO.MINI.CONTENT** — Reduce thinking and tool call content in mini chat panel. *(completed 2026-04-02 14:00 PDT)*
+- [x] **UX.PICO.RESIZE** — Allow users to resize the Pico chat panel. *(completed 2026-04-02 14:25 PDT)*
+- [x] **UX.PICO.STATUSBAR** — Consolidate thinking/tool call one-liners into a single animated status line. *(completed 2026-04-02 14:55 PDT)*
+- [x] **UX.PICO.FULLPAGE** — Add expand-to-full-page for Pico chat. *(completed 2026-04-02 15:20 PDT)*
+- [x] **UX.PICO.COLLAPSE** — Replace close (X) button with collapse caret on mini chat panel. *(completed 2026-04-02 15:40 PDT)*
+- [x] **UX.BRAND.WOOF** — Rebrand the app as "Woof". *(completed 2026-04-02 16:05 PDT)*
+
+## Research: Persona Prompts & Custom Workflows — archived 2026-04-02
+
+- [x] **RES.PROMPTS.DOC** — Document the current persona prompt storage and assembly pipeline. *(completed 2026-04-02 16:20 PDT)*
+- [x] **RES.PROMPTS.VARS** — Research template variable support for persona prompts. *(completed 2026-04-02 16:35 PDT)*
+- [x] **RES.WORKFLOW.EDGE** — Research edge cases and lifecycle management for custom workflows. *(completed 2026-04-02 16:50 PDT)*
