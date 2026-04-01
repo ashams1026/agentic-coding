@@ -7,6 +7,7 @@
 
 import { eq, and, isNull, asc, inArray } from "drizzle-orm";
 import { query } from "@anthropic-ai/claude-agent-sdk";
+import { getClaudeCodeExecutablePath } from "../config.js";
 import { db } from "../db/connection.js";
 import {
   workItems,
@@ -183,6 +184,7 @@ async function callHaikuSummarizer(context: string): Promise<SummaryResult> {
     const q = query({
       prompt: context,
       options: {
+        pathToClaudeCodeExecutable: getClaudeCodeExecutablePath(),
         abortController,
         model: "claude-haiku-4-5-20251001",
         systemPrompt: SUMMARIZER_PROMPT,
@@ -346,6 +348,7 @@ async function callConsolidator(context: string): Promise<SummaryResult> {
     const q = query({
       prompt: context,
       options: {
+        pathToClaudeCodeExecutable: getClaudeCodeExecutablePath(),
         abortController,
         model: "claude-haiku-4-5-20251001",
         systemPrompt: CONSOLIDATION_PROMPT,

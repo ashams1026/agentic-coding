@@ -5,9 +5,10 @@
  * Env vars take precedence over config file values.
  */
 
-import { resolve } from "node:path";
+import { resolve, dirname } from "node:path";
 import { homedir } from "node:os";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { createRequire } from "node:module";
 
 const AGENTOPS_DIR = resolve(homedir(), ".agentops");
 const CONFIG_FILE = resolve(AGENTOPS_DIR, "config.json");
@@ -112,6 +113,32 @@ export function setConfigValue(key: string, value: string): void {
  */
 export function getConfigPath(): string {
   return CONFIG_FILE;
+}
+
+// ── Claude Code executable path ─────────────────────────────────
+
+let _cachedCliPath: string | undefined;
+
+/**
+ * Resolve the path to the Claude Code CLI executable.
+ * Checks CLAUDE_CLI_PATH env var first, then resolves the SDK's bundled cli.js.
+ */
+export function getClaudeCodeExecutablePath(): string {
+  if (_cachedCliPath) return _cachedCliPath;
+
+  if (process.env["CLAUDE_CLI_PATH"]) {
+    _cachedCliPath = process.env["CLAUDE_CLI_PATH"];
+    return _cachedCliPath;
+  }
+
+  try {
+    const require = createRequire(import.meta.url);
+    const sdkEntry = require.resolve("@anthropic-ai/claude-agent-sdk");
+    _cachedCliPath = resolve(dirname(sdkEntry), "cli.js");
+    return _cachedCliPath;
+  } catch {
+    return "claude";
+  }
 }
 
 // ── Helpers ─────────────────────────────────────────────────────

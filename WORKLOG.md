@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 05:30 PDT — FX.PICO.EXEC: Fix Claude Code executable not found
+
+**Done:** Added `getClaudeCodeExecutablePath()` helper to `config.ts` that resolves the SDK's bundled `cli.js` path (or uses `CLAUDE_CLI_PATH` env var override). Added `pathToClaudeCodeExecutable` option to all 4 `query()` call sites: `chat.ts` (Pico chat), `claude-executor.ts` (agent execution), and `memory.ts` (2 calls: summarizer + consolidation). The helper uses `createRequire` to resolve the SDK package path, caches the result, and falls back to `"claude"` if resolution fails.
+**Files:** `packages/backend/src/config.ts`, `packages/backend/src/routes/chat.ts`, `packages/backend/src/agent/claude-executor.ts`, `packages/backend/src/agent/memory.ts`
+
+---
+
 ## 2026-04-02 05:15 PDT — Review: UX.RESPONSIVE (approved)
 
 **Reviewed:** Comprehensive responsive audit at 1024px and 768px.

@@ -12,7 +12,7 @@ import type {
   SpawnOptions,
 } from "./types.js";
 import type { Persona, Project } from "@agentops/shared";
-import { loadConfig } from "../config.js";
+import { loadConfig, getClaudeCodeExecutablePath } from "../config.js";
 import { validateCommand, buildSandboxPrompt } from "./sandbox.js";
 import { createInProcessMcpServer } from "./mcp-server.js";
 import type { McpContext } from "./mcp-server.js";
@@ -556,6 +556,7 @@ export class ClaudeExecutor implements AgentExecutor {
       const q = query({
         prompt,
         options: {
+          pathToClaudeCodeExecutable: getClaudeCodeExecutablePath(),
           abortController,
           cwd: project.path,
           permissionMode: "bypassPermissions",

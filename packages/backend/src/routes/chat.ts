@@ -5,6 +5,7 @@ import type { AgentDefinition } from "@anthropic-ai/claude-agent-sdk";
 import { db } from "../db/connection.js";
 import { chatSessions, chatMessages, personas, projects } from "../db/schema.js";
 import { createId } from "@agentops/shared";
+import { getClaudeCodeExecutablePath } from "../config.js";
 import type {
   ChatSessionId,
   ChatMessageId,
@@ -351,6 +352,7 @@ export async function chatRoutes(app: FastifyInstance) {
       const q = query({
         prompt,
         options: {
+          pathToClaudeCodeExecutable: getClaudeCodeExecutablePath(),
           cwd: project?.path ?? process.cwd(),
           permissionMode: "bypassPermissions",
           allowDangerouslySkipPermissions: true,
