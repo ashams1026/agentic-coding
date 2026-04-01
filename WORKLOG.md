@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 03:45 PDT — SDK.ET.3: E2E test plan for effort & thinking settings
+
+**Done:** Created `tests/e2e/plans/persona-effort-thinking.md` — 13 steps across 4 parts: read-only display (3), edit mode dropdowns (5), save and persist (3), visual quality (2). Covers dropdown options with descriptions, badge display, save persistence, settings merge safety, dark mode.
+**Files:** `tests/e2e/plans/persona-effort-thinking.md`
+
+---
+
 ## 2026-04-01 03:35 PDT — Review: SDK.ET.2 (approved)
 
 **Reviewed:** Effort & thinking controls in persona editor and backend settings merge.

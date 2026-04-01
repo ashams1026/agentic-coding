@@ -49,7 +49,7 @@
 
 - [x] **SDK.ET.2** — Add effort & thinking controls to persona editor UI. In the persona editor form: add an "Effort Level" dropdown (low/medium/high/max) with descriptions — low: "Fast, minimal reasoning", medium: "Balanced", high: "Thorough", max: "Maximum depth, highest cost". Add a "Thinking Mode" dropdown (adaptive/enabled/disabled) — adaptive: "Claude decides when to think deeply", enabled: "Always show reasoning chain", disabled: "No extended thinking". Show estimated relative cost indicator next to effort selection.
 
-- [ ] **SDK.ET.3** — E2E test plan: persona effort & thinking settings. Create `tests/e2e/plans/persona-effort-thinking.md`: verify dropdowns render correctly in persona editor, values save and persist, descriptions display. Visual check of the effort/thinking controls.
+- [review] **SDK.ET.3** — E2E test plan: persona effort & thinking settings. Create `tests/e2e/plans/persona-effort-thinking.md`: verify dropdowns render correctly in persona editor, values save and persist, descriptions display. Visual check of the effort/thinking controls.
 
 - [ ] **SDK.ET.4** — Run persona effort & thinking e2e test. Execute SDK.ET.3. Record results with screenshots.
 
