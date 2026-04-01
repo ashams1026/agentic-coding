@@ -37,7 +37,7 @@
 
 - [x] **SDK.SA.3** — Agent monitor: nested subagent view UI. In `packages/frontend/src/features/agent-monitor/`: when an execution has child subagent executions, render them as indented/nested cards with a tree connector line. Each subagent card shows: persona avatar, model, status, cost. Expandable to see the subagent's full output. Collapse by default to keep the view clean.
 
-- [review] **SDK.SA.4** — E2E test plan: subagent nesting. Create `tests/e2e/plans/subagent-nesting.md`: verify nested subagent cards in agent monitor, tree connector rendering, expand/collapse, cost rollup.
+- [x] **SDK.SA.4** — E2E test plan: subagent nesting. Create `tests/e2e/plans/subagent-nesting.md`: verify nested subagent cards in agent monitor, tree connector rendering, expand/collapse, cost rollup.
 
 - [ ] **SDK.SA.5** — Run subagent nesting e2e test. Execute SDK.SA.4. Record results with screenshots of nested view.
 
