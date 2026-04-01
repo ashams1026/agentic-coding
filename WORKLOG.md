@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 10:55 PDT — SDK.UX.4: E2E test plan for Pico prompt suggestions
+
+**Done:** Created `tests/e2e/plans/pico-suggestions.md` — 9 steps across 3 parts: suggestion visibility (4), click interaction (3), visual quality (2). Covers button styling, click-to-send, clear-on-send, hidden-during-streaming, max 3 limit. Notes API key dependency.
+**Files:** `tests/e2e/plans/pico-suggestions.md`
+
+---
+
 ## 2026-04-01 10:45 PDT — Review: SDK.UX.3 (approved)
 
 **Reviewed:** In-process MCP server in `mcp-server.ts` and `claude-executor.ts`.
