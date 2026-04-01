@@ -153,6 +153,34 @@ The agent monitor (`/agents`) provides real-time visibility into agent execution
 | `file_changed` | FileChanged hook | File changes panel |
 | `subagent_started` / `subagent_completed` | SubagentStart/Stop hooks | Nested subagent cards |
 
+### Pico — Prompt Suggestions
+
+When `promptSuggestions: true` is set in Pico's `query()` options, the SDK generates predicted follow-up prompts after each response. These arrive as `suggestion` SSE events from `POST /api/chat/sessions/:id/messages`.
+
+The `usePicoChat` hook collects up to 3 suggestions in state (`setSuggestions`), cleared when a new message is sent. The chat panel renders them as rounded pill buttons between the ScrollArea and input area:
+- Buttons use `rounded-full border-primary/30 text-primary` styling
+- Click sends the suggestion text as the next message
+- Hidden during streaming (`!isStreaming`)
+- Truncated at 200px max width
+
+### Agent Monitor — Model Switching
+
+The `ModelSwitcher` component in the agent monitor persona header provides runtime model switching for long-running executions:
+
+- **Running executions:** Shows a compact Select dropdown with available models from `GET /api/executions/:id/models`
+- **Completed executions:** Falls back to a static Badge with the model name
+- **Confirmation dialog:** AlertDialog asks "Switch from X to Y? This may increase costs." before calling `POST /api/executions/:id/model`
+- **Badge updates** immediately after successful switch
+
+### In-Process MCP Server
+
+The agentops MCP server can run in-process using the SDK's `createSdkMcpServer()` function, eliminating child process overhead:
+
+- **In-process (`agentops-inprocess`):** Tools registered via `tool()` helper, runs in same Node.js process. Lower latency, shared memory, easier debugging.
+- **Child-process (`agentops`):** Original stdio transport. Full 8-tool set as fallback.
+
+Both servers are configured in parallel in the `mcpServers` query option. Tools in the in-process server take priority; remaining tools fall back to the child process.
+
 ## Mock Data Layer
 
 The frontend ships with a complete mock data layer that simulates the entire backend in-browser.

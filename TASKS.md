@@ -58,7 +58,7 @@
 
 - [x] **SDK.UX.7** — Run model switching e2e test. Execute SDK.UX.6. Record results with screenshots.
 
-- [ ] **SDK.UX.8** — Update `docs/frontend.md` with prompt suggestions and model switching. Document: how prompt suggestions work in Pico, model switching in agent monitor, in-process MCP server architecture change.
+- [review] **SDK.UX.8** — Update `docs/frontend.md` with prompt suggestions and model switching. Document: how prompt suggestions work in Pico, model switching in agent monitor, in-process MCP server architecture change.
 
 ### Regression Testing Checkpoint
 

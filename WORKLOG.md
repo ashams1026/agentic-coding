@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 11:55 PDT — SDK.UX.8: Update frontend docs with UX features
+
+**Done:** Added 3 sections to `docs/frontend.md`: "Pico — Prompt Suggestions" (SSE events, usePicoChat hook, pill button styling), "Agent Monitor — Model Switching" (ModelSwitcher component, dropdown vs badge, confirmation dialog), "In-Process MCP Server" (createSdkMcpServer, dual server config). All 3 task requirements covered.
+**Files:** `docs/frontend.md`
+
+---
+
 ## 2026-04-01 11:45 PDT — Review: SDK.UX.7 (approved)
 
 **Reviewed:** Model switching e2e test results.
