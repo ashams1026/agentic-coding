@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 16:20 PDT — Review: RES.SWAP.HOSTED (approved)
+
+**Reviewed:** Hosted frontend deployment model research doc.
+- All 6 areas covered: onboarding flow (3-step wireframe, friction mitigation, returning user flow), local backend discovery (browser mixed content matrix for Chrome/Firefox/Safari/Edge — localhost is special-cased in all modern browsers, silent probe approach with tradeoffs), tunnel/remote access (3 tools compared: ngrok/Cloudflare/Tailscale with free tier/auth/persistence comparison, security implications of tunnel exposure, CORS analysis), multi-backend management (localStorage model, workspace switcher wireframe, independent instances, cross-device export/import + URL params), hosted infrastructure (actual build output analyzed — 1.1MB JS + 92KB CSS, 5 CDN platforms compared, Cloudflare Pages recommended, CI/CD pipeline, versioning/compatibility matrix), business model (free CDN ~$0 cost, value in backend+execution, 3-tier future model, local-first always fully functional, Apache-2.0 compatible)
+- Source code claims verified: bin.agentops at package.json:7-9 (content correct, doc says 8-10 — minor), CORS at server.ts:27-30, health at server.ts:33-41 with version "0.0.1" and executor field, listen 0.0.0.0 at start.ts:212
+- Cross-references checked: architecture.md exists, inbound-triggers.md exists, future docs correctly noted
+- Implementation approach correctly depends on RES.SWAP.ARCH phases 1-2, 3-phase plan logically ordered
+- 6 design decisions well-reasoned and consistent with local-first principles
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 16:15 PDT — RES.SWAP.HOSTED: Research hosted frontend deployment model
 
 **Done:** Researched hosted frontend deployment model. Doc covers all 6 investigation areas: (1) onboarding flow — step-by-step first visit experience with install/start/connect instructions, auto-polling "Test Connection" button, returning user reconnection banner; (2) local backend discovery — mixed content analysis confirms all modern browsers allow HTTP localhost from HTTPS origins, silent localhost:3001 probe for auto-detection, documented what doesn't work (LAN IPs, mDNS from HTTPS); (3) tunnel/remote access — compared ngrok, Cloudflare Tunnel, Tailscale for user-managed tunnels with free tier/auth/URL persistence comparison, security implications (mandatory auth, rate limiting), CORS requirements for tunnel URLs, deferred built-in tunnel; (4) multi-backend management — localStorage-based connection storage, workspace switcher dropdown in sidebar, independent backend instances (no data merging), online/offline status polling, cross-device via export/import + URL params; (5) hosted frontend infrastructure — current build output analysis (1.2MB/300KB gzipped), CDN platform comparison (5 options), recommended Cloudflare Pages (unlimited free bandwidth), CI/CD pipeline via GitHub Actions, versioning/compatibility matrix with apiVersion check, cache busting, canary deployments; (6) business model — free frontend on CDN (~$0 cost), value in backend+agent execution, 3-tier future model (free local/team managed/enterprise), local-first always fully functional, open source compatible. Also: 3-phase implementation approach with prerequisites, 7 cross-references, 6 design decisions.
