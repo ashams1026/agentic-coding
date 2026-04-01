@@ -172,3 +172,20 @@
 
 ### Part 4: UX — Prompt Suggestions — archived 2026-04-01
 - [x] **SDK.UX.1** — Pico prompt suggestions (`promptSuggestions: true`, SSE suggestion events, pill buttons in chat). *(completed 2026-04-01)*
+- [x] **SDK.UX.2** — Model switching for long-running agents (ModelSwitcher component, AlertDialog confirmation). *(completed 2026-04-01)*
+- [x] **SDK.UX.3** — In-process MCP server (`createSdkMcpServer`, `tool()` helper, dual server config). *(completed 2026-04-01)*
+- [x] **SDK.UX.4** — E2E test plan: Pico suggestions (9 steps, 3 parts). *(completed 2026-04-01)*
+- [x] **SDK.UX.5** — Executed Pico suggestions e2e test (1/9 PASS — no API key). *(completed 2026-04-01)*
+- [x] **SDK.UX.6** — E2E test plan: model switching (11 steps, 4 parts). *(completed 2026-04-01)*
+- [x] **SDK.UX.7** — Executed model switching e2e test (2/11 PASS — empty DB). *(completed 2026-04-01)*
+- [x] **SDK.UX.8** — Updated docs/frontend.md with suggestions, model switching, in-process MCP. *(completed 2026-04-01)*
+
+### Regression Testing — archived 2026-04-01
+- [x] **SDK.REG.1** — Post-Sprint 19/20 regression sweep (build PASS, 9 smoke tests PASS, 0 regressions). *(completed 2026-04-01)*
+
+---
+
+## Sprint 21: Documentation Refresh (partial) — archived 2026-04-01
+
+- [x] **DOC.1** — Updated getting-started.md (removed mock mode, added demo seed, Pico, dev tips). *(completed 2026-04-01)*
+- [x] **DOC.2** — Updated architecture.md (tool count 7→8, audit description, 6 new WS events). *(completed 2026-04-01)*

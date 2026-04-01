@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-19 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 20 ST.1-8, SB.1-6, MCP.1-5, UX.1 archived.
+> Sprints 1-20 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 21 DOC.1-2 archived.
 
 ---
 
@@ -44,37 +44,11 @@
 
 - [ ] **SDK.REG.2** — Full e2e regression sweep after Sprint 20. Re-run all e2e test suites (including new ones from Sprints 19-20) against the current app state. Record results to `tests/e2e/results/regression-post-sprint20.md`. Compare against Sprint 19 regression baseline. File new FX tasks for any regressions. This is the final quality gate before moving to backlog work.
 
-### Part 4: UX — Prompt Suggestions & Model Switching (remaining)
-
-- [x] **SDK.UX.2** — Add model switching for long-running agents. In the agent monitor: add a "Model" dropdown in the execution header (only visible for running executions). Shows available models from `supportedModels()`. Selecting a different model calls `setModel(newModel)` on the running query. Use case: an agent started on Haiku but the task is complex — user can upgrade to Sonnet mid-run without restarting. Show the current model as a badge that updates when switched. Confirm before switching: "Switch from Haiku to Sonnet? This may increase costs."
-
-- [x] **SDK.UX.3** — In-process MCP server. In `packages/backend/src/agent/mcp-server.ts`: instead of spawning the agentops MCP server as a child process (stdio), use `createSdkMcpServer({ type: 'sdk' })` to run it in-process. Register all MCP tools via `server.tool(name, description, schema, handler)`. This eliminates the child process overhead, reduces latency on MCP tool calls, and simplifies debugging (all in one process, shared memory). Update the `mcpServers` config in `claude-executor.ts` to use `{ type: 'sdk', name: 'agentops', instance: server }`.
-
-- [x] **SDK.UX.4** — E2E test plan: Pico prompt suggestions. Create `tests/e2e/plans/pico-suggestions.md`: verify suggestion buttons appear after Pico responses, clicking sends the suggestion, buttons fade on typing. Visual check.
-
-- [x] **SDK.UX.5** — Run Pico prompt suggestions e2e test. Execute SDK.UX.4. Record results with screenshots.
-
-- [x] **SDK.UX.6** — E2E test plan: model switching. Create `tests/e2e/plans/model-switching.md`: verify model dropdown appears on running executions, model badge updates, confirmation dialog. Visual check.
-
-- [x] **SDK.UX.7** — Run model switching e2e test. Execute SDK.UX.6. Record results with screenshots.
-
-- [x] **SDK.UX.8** — Update `docs/frontend.md` with prompt suggestions and model switching. Document: how prompt suggestions work in Pico, model switching in agent monitor, in-process MCP server architecture change.
-
-### Regression Testing Checkpoint
-
-- [x] **SDK.REG.1** — Full e2e regression sweep after Sprint 19. Re-run all 19 original e2e test suites from `tests/e2e/plans/` against the current app state. Record results to `tests/e2e/results/regression-post-sprint19.md`. Compare pass rates against the previous run (97.3% baseline from Sprint 16). File new FX tasks for any regressions introduced by Sprint 19 changes. This catches breakage from hooks migration, rewind button, structured output, subagent nesting, and effort/thinking UI changes.
-
 ---
 
-## Sprint 21: Documentation Refresh
+## Sprint 21: Documentation Refresh (remaining)
 
-> All docs were written on 2026-03-30 and haven't been updated since. 200+ commits have landed since then.
-> Each task: run `git log --oneline --since="<last_edit_date>" -- <relevant_source_paths>` to find what changed, read the current doc, update it to reflect the new state of the code. Don't rewrite from scratch — update what's stale, add what's missing, remove what's been deleted.
-> **This sprint runs in parallel with Sprint 20** — agents should alternate between implementation and docs to keep documentation current.
-
-- [x] **DOC.1** — Update `docs/getting-started.md`. Check commits touching `packages/backend/src/index.ts`, `packages/backend/src/cli.ts`, `packages/backend/src/db/seed.ts`, `package.json`, `scripts/`. Update: install steps, first-run commands, any new CLI commands, seed script changes, new prerequisites. The mock mode instructions should be removed (mock layer was deleted). Add the `pnpm db:seed:demo` command if it exists.
-
-- [x] **DOC.2** — Update `docs/architecture.md`. Check commits touching `packages/backend/src/agent/`, `packages/backend/src/routes/`, `packages/frontend/src/api/`, `packages/frontend/src/features/`. Update: system diagram if new components were added (Pico chat, sandbox, audit trail), data flow if the execution chain changed (router loop fixes, rate limiter logging), any new backend services or routes.
+> Update docs to reflect 200+ commits since original writing.
 
 - [ ] **DOC.3** — Update `docs/data-model.md`. Check commits touching `packages/shared/src/entities.ts`, `packages/backend/src/db/schema.ts`. Update: any new fields added to entities (skills on Persona, isAssistant flag, chat_sessions/chat_messages tables), any changed field names or types, update the ER diagram if relationships changed.
 
