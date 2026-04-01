@@ -41,7 +41,7 @@
 
 - [x] **SDK.SA.5** — Run subagent nesting e2e test. Execute SDK.SA.4. Record results with screenshots of nested view.
 
-- [ ] **SDK.SA.6** — Update `docs/personas.md` and `docs/architecture.md` with subagent system. Document: how personas map to AgentDefinitions, subagent invocation flow, cost tracking, when to use subagents vs. state transitions.
+- [review] **SDK.SA.6** — Update `docs/personas.md` and `docs/architecture.md` with subagent system. Document: how personas map to AgentDefinitions, subagent invocation flow, cost tracking, when to use subagents vs. state transitions.
 
 ### Part 6: Agent Quality — Effort & Thinking
 

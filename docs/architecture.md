@@ -187,6 +187,54 @@ Tool-level and session-level audit events are written to `~/.agentops/logs/audit
 
 Bash commands are sanitized before logging — secrets matching `ANTHROPIC_API_KEY`, `API_KEY`, `SECRET`, `TOKEN`, or `PASSWORD` patterns have their values replaced with `***`.
 
+## Subagent System
+
+Every agent execution registers all project personas as SDK subagents via the `agents` option in `query()`. This allows any persona to invoke another persona as a subagent using the SDK's `Agent` tool.
+
+### How Personas Map to AgentDefinitions
+
+When `ClaudeExecutor.spawn()` runs, it builds a map of `AgentDefinition` entries from all personas:
+
+| Field | Primary Persona | Subagent Personas |
+|---|---|---|
+| `prompt` | Full system prompt via `buildSystemPrompt()` (persona identity + project context + work item + sandbox + execution history) | Persona's own `systemPrompt` |
+| `model` | Persona's configured model | Each persona's own model |
+| `tools` | Persona's `allowedTools` | Each persona's own `allowedTools` |
+| `skills` | Persona's `skills` | Each persona's own `skills` |
+| `maxTurns` | 30 | 15 (reduced for subagent scope) |
+
+The primary persona is set as the `agent` option; all others are available as subagents keyed by persona ID.
+
+### Subagent Invocation Flow
+
+```
+Primary Agent (e.g., Engineer)
+    │
+    ├── Uses Agent tool to invoke Code Reviewer (persona ID)
+    │     │
+    │     ├── SubagentStart hook fires → broadcasts subagent_started WS event
+    │     ├── Subagent runs with its own tools, model, and prompt
+    │     └── SubagentStop hook fires → broadcasts subagent_completed WS event
+    │
+    └── Continues with subagent's response
+```
+
+### Tracking and Cost
+
+- **`parentExecutionId`** column on executions table links child executions to their parent
+- **SubagentStart/SubagentStop hooks** broadcast `subagent_started`/`subagent_completed` WS events for real-time UI updates
+- **Agent monitor** renders child executions as nested `SubagentCard` components under the parent (tree connector, collapsible)
+- Subagent costs are tracked within the parent execution's SDK `query()` session (included in `total_cost_usd`)
+
+### When to Use Subagents vs. State Transitions
+
+| Approach | Use When | Example |
+|---|---|---|
+| **Subagent** | Quick, focused task within the current execution; result feeds back to the caller | Engineer asks Code Reviewer for a quick review before committing |
+| **State transition** | Work item moves to a new workflow phase; different persona takes over fully | Router moves item from "In Progress" to "In Review" after Engineer completes |
+
+Subagents are lightweight (15 turns, no separate execution record in the workflow) while state transitions are the primary orchestration mechanism for the workflow pipeline.
+
 ## File Checkpointing
 
 Every agent execution runs with `enableFileCheckpointing: true` in the `query()` options. The SDK creates a checkpoint of the project's file state before the agent makes any changes.

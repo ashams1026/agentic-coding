@@ -274,6 +274,36 @@ These are the 7 tools provided by the AgentOps MCP server (see [MCP Tools](mcp-t
 
 **Enforcement:** Tool access is controlled by passing the `ALLOWED_TOOLS` environment variable to the MCP server process. The persona's `allowedTools` array is joined with commas and passed via `SpawnOptions.tools`. An empty list means all tools are available.
 
+## Personas as Subagents
+
+All project personas are registered as SDK subagents in every execution. This means any persona can invoke another persona as a subagent using the SDK's `Agent` tool.
+
+### How It Works
+
+When an execution starts, `ClaudeExecutor.spawn()` maps all personas to `AgentDefinition` entries and passes them via the `agents` option in `query()`. The primary persona runs the execution (30 max turns, full system prompt with work item context). All other personas are available as subagents (15 max turns, their own system prompt).
+
+### Example
+
+The Engineer persona, while implementing a feature, can spawn the Code Reviewer as a subagent for a quick pre-commit review:
+
+```
+Engineer: "Let me get a quick review before committing..."
+→ Agent tool invokes Code Reviewer (persona ID)
+→ Code Reviewer runs with its own tools, model, and review prompt
+→ Returns feedback to Engineer
+→ Engineer incorporates feedback and continues
+```
+
+### Configuration
+
+The `subagents` field on the Persona entity stores preferred subagent persona IDs. However, all personas are available regardless — the `subagents` field is informational, not restrictive.
+
+### Tracking
+
+- `SubagentStart`/`SubagentStop` SDK hooks broadcast `subagent_started`/`subagent_completed` WebSocket events
+- `parentExecutionId` column on executions table links child records to parent
+- Agent monitor renders subagent executions as nested cards under the parent
+
 ## The Router as a Special Persona
 
 The Router differs from other personas in several ways:

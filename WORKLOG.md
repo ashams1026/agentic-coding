@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 03:00 PDT — SDK.SA.6: Update docs with subagent system
+
+**Done:** Added "Subagent System" section to `docs/architecture.md`: persona→AgentDefinition mapping table, invocation flow diagram, tracking/cost notes, subagents vs state transitions comparison table. Added "Personas as Subagents" section to `docs/personas.md`: how it works, example (Engineer→Code Reviewer), configuration, tracking. All four task requirements covered.
+**Files:** `docs/architecture.md`, `docs/personas.md`
+
+---
+
 ## 2026-04-01 02:50 PDT — Review: SDK.SA.5 (approved)
 
 **Reviewed:** Subagent nesting e2e test results at `tests/e2e/results/subagent-nesting.md`.
