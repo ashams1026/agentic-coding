@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 15:10 PDT — SDK.FUT.2: Bridge API spike for remote execution
+
+**Done:** Evaluated SDK remote execution via `spawnClaudeCodeProcess` custom spawn function. No `attachBridgeSession`/`createCodeSession` exists — the mechanism is a custom process factory returning `SpawnedProcess` (stdin/stdout). Documented 3 implementation options (SSH, Docker, Cloud), architecture diagram showing local hooks/MCP with remote process. Recommendation: defer, SSH path is low-medium effort when needed.
+**Files:** `docs/spikes/bridge-api-remote.md` (new)
+
+---
+
 ## 2026-04-01 15:00 PDT — Review: SDK.FUT.1 (approved)
 
 **Reviewed:** Browser SDK spike at `docs/spikes/browser-sdk-pico.md`.
