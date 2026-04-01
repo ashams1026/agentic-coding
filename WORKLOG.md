@@ -12,6 +12,32 @@
 
 ---
 
+## 2026-03-31 — FX.PICO2: Write Pico e2e test plan
+
+**Task:** Create comprehensive e2e test plan for Pico chat UX.
+
+**Done:**
+- Created `tests/e2e/plans/pico-chat.md` — 38 steps across 11 parts:
+  1. Chat bubble visibility (5 steps — bubble on every page)
+  2. Panel open/close (5 steps — toggle, positioning, animation)
+  3. Quick action messaging (3 steps — click action, streaming, response)
+  4. Manual message input (4 steps — type, send via Cmd+Enter, response)
+  5. Markdown & content rendering (3 steps — markdown, thinking blocks, tool calls)
+  6. Session management (5 steps — create, switch, verify history)
+  7. Session title editing (2 steps — inline edit, save)
+  8. Panel state persistence (3 steps — close/reopen, cross-navigation)
+  9. Mobile viewport (3 steps — resize to 375x667, verify usable)
+  10. Error state (2 steps — error display, retry)
+  11. Clear all sessions (3 steps — clear, verify empty state)
+- Follows test plan template format with screenshot checkpoints at every step
+- Includes visual quality criteria and failure criteria sections
+
+**Files created:** `tests/e2e/plans/pico-chat.md`
+
+**Notes for next agent:** FX.PICO3 executes this test plan using chrome-devtools MCP against the running app. The plan is comprehensive — 38 steps with screenshot checkpoints. Parts 5 (thinking/tool call rendering) and 10 (error state) have conditional steps that may be skipped if those features don't trigger during normal chat.
+
+---
+
 ## 2026-03-31 — Review: SDK.FC.3 (approved)
 
 **Reviewed:** Rewind button in agent monitor history.
