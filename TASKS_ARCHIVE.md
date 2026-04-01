@@ -162,3 +162,18 @@ Full refresh of all 9 doc files: getting-started, architecture, data-model, work
 - [x] **HK.TEST.RESULTS** — Restructured tests/e2e/results/ into 46 timestamped directories. *(completed 2026-04-02 07:25 PDT)*
 - [x] **RES.SDK.TOOLS** — Research SDK tool discovery — found sdk-tools.d.ts with 21 tools, recommended version-pinned shared manifest. *(completed 2026-04-02 07:40 PDT)*
 - [x] **RES.V2.SESSIONS** — Research V2 sessions for Pico — SDKSessionOptions missing 12+ fields, recommended query() with resume. *(completed 2026-04-02 07:55 PDT)*
+
+---
+
+## Bug Fixes & Research Proposals — archived 2026-04-02
+
+- [x] **FX.WORK.EDIT** — Fix work item mutations not persisting — stale selectedProjectId in localStorage + silent error swallowing in updateWorkItem(). *(completed 2026-04-02 12:00 PDT)*
+- [x] **FX.PERSONA.SEED** — Fix built-in personas missing — extracted idempotent ensureBuiltInPersonas() that checks by name, added startup bootstrap. *(completed 2026-04-02 12:30 PDT)*
+- [x] **FX.PICO.OVERFLOW** — Fix Pico chat content overflow — w-0 min-w-full on ScrollArea container, overflow-hidden break-words on bubbles. *(completed 2026-04-02 13:10 PDT)*
+- [x] **RES.PLUG.CORE** — Research core package extraction strategy — cataloged 25 deps, recommended thin interface extraction (Option B). *(completed 2026-04-02 08:15 PDT)*
+- [x] **RES.GLOBAL.DATA** — Research data model for global agents — nullable projectId on 4 tables, AgentScope type, global_memories table. *(completed 2026-04-02 08:35 PDT)*
+- [x] **RES.GLOBAL.NAV** — Research navigation restructure for project vs global scope — keep flat nav, add "All Projects" option, scope-aware pages. *(completed 2026-04-02 09:15 PDT)*
+- [x] **RES.GLOBAL.UX** — Research global agent chat/scheduling UX — Pico scope toggle, set_project_context MCP tool, global workspace. *(completed 2026-04-02 09:45 PDT)*
+- [x] **RES.WORKFLOW.DATA** — Research custom workflow data model — 3-table schema (workflows, workflow_states, workflow_transitions), soft versioning, 2-level persona binding. *(completed 2026-04-02 10:15 PDT)*
+- [x] **RES.WORKFLOW.BUILDER** — Research workflow builder UX — hybrid form+preview editor, 8-rule validation, shared router with dynamic prompt. *(completed 2026-04-02 10:50 PDT)*
+- [x] **RES.WORKFLOW.RUNTIME** — Research custom workflow runtime — dynamic router prompt from DB, per-project/per-item binding, 3-phase migration. *(completed 2026-04-02 11:20 PDT)*
