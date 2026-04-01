@@ -81,7 +81,7 @@
 
 ## Housekeeping
 
-- [review] **HK.TEST.RESULTS** — Restructure `tests/e2e/results/` directory by run date and test name. Current state: all screenshots and report `.md` files are dumped flat into `tests/e2e/results/`. Restructure to `tests/e2e/results/YYYY-MM-DD_HHMMSS/<test-name>/` — each run gets a timestamped directory containing the report `.md` and its screenshots. Move existing results into appropriately dated subdirectories (use git log dates for the original run timestamps). Update the e2e test plan template (`tests/e2e/plans/_template.md`) and any agent instructions that reference result paths to use the new structure. This makes it easy to identify and delete old test runs.
+- [x] **HK.TEST.RESULTS** — Restructure `tests/e2e/results/` directory by run date and test name. Current state: all screenshots and report `.md` files are dumped flat into `tests/e2e/results/`. Restructure to `tests/e2e/results/YYYY-MM-DD_HHMMSS/<test-name>/` — each run gets a timestamped directory containing the report `.md` and its screenshots. Move existing results into appropriately dated subdirectories (use git log dates for the original run timestamps). Update the e2e test plan template (`tests/e2e/plans/_template.md`) and any agent instructions that reference result paths to use the new structure. This makes it easy to identify and delete old test runs.
 
 ---
 
