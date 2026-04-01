@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 07:40 PDT — Review: RES.SDK.TOOLS (approved)
+
+**Reviewed:** SDK tool discovery research proposal.
+- All 4 investigation points addressed: initializationResult() (no tools), sdk-tools.d.ts (21 tools found), canUseTool/PreToolUse (reactive only), version-pinned manifest ✓
+- 21 built-in tools enumerated with correct name mappings ✓
+- User-facing vs internal categorization sensible ✓
+- Option A recommendation is pragmatic with concrete code example ✓
+- Clear unblock paths for FX.SDK3 and FX.SDK5 ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 07:35 PDT — RES.SDK.TOOLS: Research SDK tool discovery alternatives
 
 **Done:** Investigated SDK v0.2.87 for tool discovery APIs. Confirmed `initializationResult()` has no `tools` field. Discovered `sdk-tools.d.ts` exports `ToolInputSchemas` type union listing all 21 built-in tools (vs. 8 currently hardcoded). Evaluated `canUseTool` callback and `PreToolUse` hook (both reactive, not suitable for upfront discovery). Recommended Option A: version-pinned shared manifest with user-facing/internal categorization and build-time drift detection. Proposal includes concrete unblock paths for FX.SDK3 and FX.SDK5.
