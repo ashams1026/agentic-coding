@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-03-31 22:40 PDT — SDK.HK.5: Agent monitor file changes panel
+
+**Done:** Created `file-changes-panel.tsx` component in agent-monitor feature. Subscribes to `file_changed` WS events, deduplicates by file path (updates existing entries on re-modification). Shows collapsible panel at bottom of terminal renderer with badge count. Each entry shows: icon (FilePlus/FileText/FileX with green/amber/red coloring), file path, change type label, timestamp. Panel auto-hides when no files changed. Integrated into `terminal-renderer.tsx` between chat output and new-output indicator.
+**Files:** `packages/frontend/src/features/agent-monitor/file-changes-panel.tsx` (new), `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`
+
+---
+
 ## 2026-03-31 22:25 PDT — Review: SDK.HK.4 (approved)
 
 **Reviewed:** FileChanged hook and `file_changed` WS event type across shared, backend, frontend.

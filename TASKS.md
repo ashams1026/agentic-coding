@@ -57,7 +57,7 @@
 
 - [x] **SDK.HK.4** — Add FileChanged hook for live file tracking. Add a `FileChanged` hook: when an agent modifies a file, emit a WebSocket event `{ type: "file_changed", executionId, filePath, changeType }`. In the agent monitor UI: show a real-time "Files modified" badge/counter on the execution card. Click to expand and see the list of changed files. This gives users live visibility into what an agent is doing to their codebase.
 
-- [ ] **SDK.HK.5** — Agent monitor: file changes panel UI. In `packages/frontend/src/features/agent-monitor/`: add a "Files" tab or collapsible section showing files modified by the current execution. Each entry shows: file path (relative to project), change type (created/modified/deleted), timestamp. Badge on the tab shows count. For completed executions, show the final file list. For running executions, update in real-time via WebSocket events from SDK.HK.4.
+- [review] **SDK.HK.5** — Agent monitor: file changes panel UI. In `packages/frontend/src/features/agent-monitor/`: add a "Files" tab or collapsible section showing files modified by the current execution. Each entry shows: file path (relative to project), change type (created/modified/deleted), timestamp. Badge on the tab shows count. For completed executions, show the final file list. For running executions, update in real-time via WebSocket events from SDK.HK.4.
 
 - [ ] **SDK.HK.6** — E2E test plan: agent monitor file tracking. Create `tests/e2e/plans/agent-monitor-files.md`: test the files panel — verify it shows modified files during/after execution, badge count updates, file paths are correct. Visual verification of the panel layout.
 

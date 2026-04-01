@@ -13,6 +13,7 @@ import {
   type ToolResultData,
 } from "./tool-call-display";
 import type { ExecutionId, AgentOutputChunkEvent } from "@agentops/shared";
+import { FileChangesPanel } from "./file-changes-panel";
 
 // ── Chunk types ────────────────────────────────────────────────
 
@@ -503,6 +504,9 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
         )}
         <div ref={bottomRef} />
       </div>
+
+      {/* File changes panel */}
+      <FileChangesPanel executionId={executionId} />
 
       {/* New output indicator */}
       {hasNewOutput && scrollLocked && (
