@@ -163,3 +163,17 @@ Command sandbox, mock removal (-2283 lines), demo seed, settings fixes, auto-rou
 **Backlog Spikes (SDK.FUT.1-6):** 5 evaluation spikes: browser SDK (deferred — needs relay), bridge API (deferred — SSH/Docker), plugin system (ready — local plugins work), HTTP hooks (ready — zero code), worktree isolation (deferred — needs parallel execution). Doc updates across 4 files referencing all spikes.
 
 **Backlog PLUG (PLUG.1-5):** ExecutionManager class refactoring (constructor injection, 6 call sites), composition root `setup.ts` (sole file importing concrete executors), `@agentops/core` package (types + sandbox), repository interfaces (6 interfaces + Drizzle implementations), executor registry (register/get/has/list + REST API), publish-ready package.json (dist exports, files whitelist).
+
+---
+
+## Sprint 22: Visual UX Audit (batch 1) — 2026-04-01 22:25 to 2026-04-02 00:45
+
+**Dashboard bugs (FX.UX.DASH.3):** Activity items in dashboard's Recent Activity linked to generic `/items` instead of specific work items. Fixed with `setSelectedItemId` + `navigate("/items")` pattern, added a11y attributes.
+
+**Work Items audits (UX.WORK.LIST, UX.WORK.FLOW, UX.WORK.CREATE, FX.UX.ITEMS.1):** List view audited at 3 viewport sizes + dark mode — 9 screenshots, 1 bug (empty filter state blank). Flow view audited — 8 workflow state nodes with Router edges, click-to-filter interaction, 6 screenshots. Creation uses quick-add pattern (instant Backlog item + edit-in-panel). Empty filter state fixed with `topLevel.length === 0` check + "Clear filters" button in list-view.tsx. Board view marked blocked (not wired into UI).
+
+**Detail panel audit (UX.DETAIL):** All sections verified on data-rich OAuth2 item — title, status, priority, labels, description, 3 children, 6 comments, 3 execution history entries, metadata. Scrolls internally, dark mode clean. 0 bugs.
+
+**Agent Monitor audits (UX.AGENT.MAIN, UX.AGENT.CONTROLS, UX.AGENT.HISTORY):** Main layout — sidebar + terminal + header bar, 3 screenshots, 1 bug (broken Work Item/Parent links → 404). Controls — Stop/Force Stop dialogs, split view, panel components, 2 screenshots, 1 bug (MCP status 404 toast). History — 8 execution entries, summary stats, filters, disabled rewind buttons (existing FX.UX.REWIND), 3 screenshots, 0 new bugs.
+
+**Activity Feed audit (UX.ACTIVITY):** Chronological events grouped by date, colored type icons, filters, scrolling, dark mode. 3 screenshots, 1 bug (same generic `/items` link issue as dashboard).

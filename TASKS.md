@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-21 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-6, PLUG.1-10, AW.1-2 archived. Sprint 22 partial (UX.DASH-ACTIVITY audits + FX.UX.DASH.1-3 + FX.UX.ITEMS.1) archived.
+> Sprints 1-21 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-6, PLUG.1-10, AW.1-2 archived. Sprint 22 mostly archived (all audits complete: UX.DASH through UX.DARK; remaining: UX.RESPONSIVE).
 
 ---
 
@@ -51,37 +51,7 @@
 
 - [blocked: Board view component exists (board-view.tsx) but is not exposed in the UI — WorkItemView type is "list" | "flow" only, viewOptions array has no board entry. Cannot audit what users can't access.] **UX.WORK.BOARD** — Audit Work Items board view. Switch to board/kanban view. Verify: columns render by workflow state, cards show title/status/assignee, drag-and-drop works (attempt to move a card between columns). Check empty columns display correctly. Screenshot. File bugs.
 
-### Agent Monitor Bugs
-
-- [x] **FX.UX.AGENT.1** — "Work Item" and "Parent" links in agent header bar navigate to 404.
-
-- [x] **FX.UX.AGENT.2** — MCP status panel triggers error toast on 404. Page `/agents`. The `McpStatus` component in `terminal-renderer.tsx` (line 570) fetches `GET /api/executions/:id/mcp/status` which returns 404 in simulated mode, causing an "API request failed" error toast. Expected: suppress the error gracefully when the endpoint is unavailable (e.g. catch 404 and show nothing, or show "MCP: unavailable" without an error toast). Page `/agents`. The header bar links use `/work-items/:id` route (e.g. `/work-items/wi-au01002`) which doesn't exist — the actual route is `/items`. Clicking either link shows "404 Not Found — Unexpected Application Error". Expected: link to `/items` and call `setSelectedItemId(workItemId)` to open the detail panel, matching the pattern used by the command palette and dashboard activity items. Screenshot: `tests/e2e/results/ux-agent-main-workitem-link.png`.
-
-### Activity Feed Bugs
-
-- [x] **FX.UX.ACTIVITY.1** — Activity feed events all link to generic `/items` instead of specific work item. Page `/activity`. All event links in the Activity Feed use `<Link to="/items">` regardless of which work item the event relates to. Same issue as FX.UX.DASH.3 (fixed for dashboard Recent Activity) but the Activity Feed page (`/activity`) has its own implementation. Expected: use `setSelectedItemId(workItemId)` + `navigate("/items")` pattern matching the dashboard fix. The work item ID is available in the event data (shown as "User Authentication With OAuth2" etc. in each row). *(completed 2026-04-02 02:00 PDT)*
-
-### Persona Manager (`/personas`)
-
-- [x] **UX.PERSONA.LIST** — Audit Persona Manager list and editor. Open `/personas`. Verify: persona list renders with names and avatars, clicking a persona opens the detail/edit panel. Check: system prompt editor loads and is editable, tool configuration checkboxes/multi-select work, skill browser shows SDK skills with search, subagent browser displays available agents. Screenshot each section. File bugs.
-
-- [x] **UX.PERSONA.TEST** — Audit Persona Manager test run and creation. Test the test-run panel: submit a prompt and verify output area shows results or loading state. Test creating a new persona: fill all fields, save, verify it appears in the list. Test deleting a persona. Check validation (empty name, missing required fields). Screenshot. File bugs.
-
-### Settings (`/settings`)
-
-- [x] **UX.SETTINGS** — Audit Settings page (all sections). Open `/settings`. Navigate each section tab/panel: Projects (CRUD operations, project switching), API Keys (add/remove/mask), Workflow Config, Appearance (theme toggle, layout options), Costs, Security, Executor mode (if visible in dev). Verify: forms save correctly, validation messages appear, toasts confirm actions. Screenshot each section. File bugs.
-
-### Pico Chat
-
-- [x] **UX.PICO** — Audit Pico Chat panel. Open the Pico chat panel (floating button or keyboard shortcut). Verify: panel opens with correct styling, previous session loads or empty state shows, message input is functional, sending a message shows it in the chat with loading indicator, responses render with proper formatting (markdown, code blocks). Test creating a new session. Check panel resize/close behavior. Toggle dark mode. Screenshot. File bugs.
-
 ### Cross-Cutting
-
-- [x] **UX.NAV** — Audit navigation and sidebar. Verify: sidebar renders with all page links (Dashboard, Work Items, Agents, Activity, Personas, Settings), active page is highlighted, clicking each link navigates correctly without full reload, project selector in sidebar/header works (switch projects, shows current project name). Test keyboard shortcut for command palette. Check responsive sidebar collapse on narrow viewport. Screenshot. File bugs. *(completed 2026-04-02 04:00 PDT)*
-
-- [x] **UX.CMD** — Audit Command Palette. Open command palette (Cmd+K or shortcut). Verify: overlay appears, search input is focused, typing filters commands/pages, selecting a command navigates or executes the action, Escape closes the palette. Check that all registered commands appear. Screenshot. File bugs. *(completed 2026-04-02 04:15 PDT)*
-
-- [x] **UX.DARK** — Comprehensive dark mode audit. Switch to dark mode. Visit every page in sequence (`/`, `/items`, `/agents`, `/activity`, `/personas`, `/settings`), plus open Pico and command palette. For each: screenshot and check for invisible text, low-contrast elements, missing dark backgrounds, broken borders, white flashes on navigation. File all visual issues as individual bugs with page and element identified.
 
 - [ ] **UX.RESPONSIVE** — Comprehensive responsive audit. Set viewport to 1024px width, then 768px. Visit every page in sequence. For each: screenshot and check for horizontal overflow, clipped content, overlapping elements, unreadable text, broken layouts, inaccessible buttons. File all layout issues as individual bugs.
 
@@ -135,5 +105,19 @@
 
 - [ ] **RES.GLOBAL.NAV** — Research and design the navigation restructure for project vs global scope. Starting point: sidebar currently has flat links (Dashboard, Work Items, Agents, Activity, Personas, Settings). Proposed direction: projects become collapsible sections in the sidebar, each containing that project's Work Items, Flow, Agent Monitor; a separate "Global" section contains global agents, Personas, Settings, and cross-project views. Investigate: (1) how similar tools handle project scoping in navigation (Linear, Jira, Notion workspace switcher, VS Code workspace panels), (2) what happens to Dashboard and Activity Feed — do they become per-project, global, or both, (3) how does the project selector in the header interact with collapsible project sections — does it go away, (4) what's the UX for "no projects yet" or single-project users — avoid forcing unnecessary hierarchy. Produce wireframe descriptions and a recommended navigation tree. Write to `docs/proposals/global-agents/navigation-redesign.md`. Commit the doc only.
 
-- [ ] **RES.GLOBAL.UX** — Design the global agent chat and scheduling UX. Investigate: (1) where does a user go to start a conversation with a global agent — is it a top-level "Agents" page in the global section, a command palette action, or the Pico panel with a scope toggle, (2) how does scheduling/triggering a global agent work — current triggers are project-scoped, (3) how does the Agent Monitor display global vs project-scoped executions — mixed view with scope badges, or separate tabs/filters, (4) can a global agent be "invited into" a project context mid-conversation (e.g. user says "now look at project X"), (5) how do global agent results/artifacts get stored if there's no project directory. Write UX flow descriptions and interaction patterns to `docs/proposals/global-agents/ux-design.md`. Commit the doc only.
+- [ ] **RES.GLOBAL.UX** — Design the global agent chat and scheduling UX. Note: consider how global agents interact with custom workflows (see RES.WORKFLOW.* tasks). Investigate: (1) where does a user go to start a conversation with a global agent — is it a top-level "Agents" page in the global section, a command palette action, or the Pico panel with a scope toggle, (2) how does scheduling/triggering a global agent work — current triggers are project-scoped, (3) how does the Agent Monitor display global vs project-scoped executions — mixed view with scope badges, or separate tabs/filters, (4) can a global agent be "invited into" a project context mid-conversation (e.g. user says "now look at project X"), (5) how do global agent results/artifacts get stored if there's no project directory. Write UX flow descriptions and interaction patterns to `docs/proposals/global-agents/ux-design.md`. Commit the doc only.
+
+---
+
+## Research: Custom Workflows
+
+> Design research for user-defined workflows with custom state machines and routing. Output is design docs only — do NOT add implementation tasks to TASKS.md. All proposals go to `docs/proposals/custom-workflows/`.
+
+- [ ] **RES.WORKFLOW.DATA** — Research data model and state machine storage for custom workflows. Investigate: (1) how to represent a workflow state machine in the DB — states (name, type: initial/intermediate/terminal, persona assignment), transitions (from → to, conditions/triggers), and metadata (name, description, scope: global or project), (2) how the current hardcoded workflow in `packages/backend/src/agent/` (router, dispatch, state transitions) works and what needs to become dynamic, (3) how workflow definitions relate to executions — an execution references a workflow ID and tracks its current state within that workflow's state machine, (4) versioning: what happens to in-flight executions when a workflow definition is edited — do they pin to the version they started with, (5) how workflows relate to personas — each state maps to a persona, so editing a workflow's states affects persona assignment. Write findings to `docs/proposals/custom-workflows/data-model.md`. Commit the doc only.
+
+- [ ] **RES.WORKFLOW.BUILDER** — Research and design the workflow builder UX. Investigate: (1) how users create and edit a workflow — visual node/edge editor (like the existing flow view), form-based step list, or hybrid, (2) adding a step: user picks a name, assigns a persona, defines transition conditions (approve → next step, reject → back to previous, escalate → specific step), (3) deleting a step: what happens to transitions that reference it — auto-remove and warn, or block deletion until transitions are updated; what happens to work items currently in that step — force-move to a fallback step or block deletion, (4) reordering steps: does the visual layout imply order or are transitions the only structure, (5) edge cases: circular transitions (A → B → A), terminal states with no outgoing transitions, orphan states unreachable from the initial state — should the builder validate and warn, (6) how to handle the "router" concept — does each workflow get its own router persona, or is routing logic defined declaratively in the transition conditions. Produce interaction flows and wireframe descriptions. Write to `docs/proposals/custom-workflows/builder-ux.md`. Commit the doc only.
+
+- [ ] **RES.WORKFLOW.RUNTIME** — Research runtime execution of custom workflows. Investigate: (1) how the current router (`packages/backend/src/agent/`) decides state transitions and how to make it workflow-aware — does each workflow define its own router prompt, or does a generic router read the workflow definition and decide, (2) how work items bind to a workflow — is it per-project (all items in project X use workflow Y) or per-item (each item can use a different workflow), (3) scope interaction: can a global workflow be used by project-scoped work items and vice versa, (4) how the Agent Monitor and work item detail views adapt to show workflow-specific states instead of the current hardcoded states (backlog → planning → in-progress → review → done), (5) migration path: how do existing work items using the default workflow behave — is the current hardcoded flow converted to a "Default" workflow record, or is it kept as a fallback. Write to `docs/proposals/custom-workflows/runtime-execution.md`. Commit the doc only.
+
+- [ ] **RES.WORKFLOW.EDGE** — Research edge cases and lifecycle management for custom workflows. Note: consider how the agent chat page (RES.CHAT.*) interacts with workflow execution — can a user chat with an agent mid-workflow and influence routing decisions? Investigate: (1) deleting a workflow that has active work items — block deletion, archive-only, or force-migrate items to another workflow, (2) cloning/templating — can users duplicate a workflow as a starting point, (3) import/export — sharing workflow definitions between projects or instances, (4) permissions: who can edit a workflow — any user, or only admins; can a workflow be locked/published to prevent accidental edits, (5) interaction with global agents: if a global agent runs a workflow, where do the work items live — does the workflow create a temporary project scope or operate without one, (6) testing: how does a user test a new workflow before deploying it — dry-run mode, sandbox execution, or just create a test project. Write to `docs/proposals/custom-workflows/edge-cases.md`. Commit the doc only.
 

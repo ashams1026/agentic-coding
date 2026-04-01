@@ -142,3 +142,13 @@ Full refresh of all 9 doc files: getting-started, architecture, data-model, work
 - [x] **UX.AGENT.CONTROLS** — Audit Agent Monitor controls. 2 screenshots, 1 bug (FX.UX.AGENT.2). *(completed 2026-04-02)*
 - [x] **UX.AGENT.HISTORY** — Audit Agent Monitor history. 3 screenshots, 0 bugs. *(completed 2026-04-02)*
 - [x] **UX.ACTIVITY** — Audit Activity Feed. 3 screenshots, 1 bug (FX.UX.ACTIVITY.1). *(completed 2026-04-02)*
+- [x] **FX.UX.AGENT.1** — "Work Item" and "Parent" links in agent header bar navigate to 404. *(completed 2026-04-02)*
+- [x] **FX.UX.AGENT.2** — MCP status panel triggers error toast on 404. *(completed 2026-04-02)*
+- [x] **FX.UX.ACTIVITY.1** — Activity feed events all link to generic `/items` instead of specific work item. *(completed 2026-04-02 02:00 PDT)*
+- [x] **UX.PERSONA.LIST** — Audit Persona Manager list and editor. 10 screenshots, 2 bugs (FX.UX.PERSONA.1-2). *(completed 2026-04-02)*
+- [x] **UX.PERSONA.TEST** — Audit Persona Manager test run and creation. 4 screenshots, 2 bugs (FX.UX.PERSONA.3-4). *(completed 2026-04-02)*
+- [x] **UX.SETTINGS** — Audit Settings page (all sections). 9 screenshots, 0 bugs. *(completed 2026-04-02)*
+- [x] **UX.PICO** — Audit Pico Chat panel. 6 screenshots, 0 bugs. *(completed 2026-04-02)*
+- [x] **UX.NAV** — Audit navigation and sidebar. 5 screenshots, 0 bugs. *(completed 2026-04-02 04:00 PDT)*
+- [x] **UX.CMD** — Audit Command Palette. 4 screenshots, 0 bugs. *(completed 2026-04-02 04:15 PDT)*
+- [x] **UX.DARK** — Comprehensive dark mode audit. 9 screenshots, 0 bugs. *(completed 2026-04-02 04:35 PDT)*
