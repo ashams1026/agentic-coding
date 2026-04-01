@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 22:10 PDT — Review: FX.UX.DASH.2 (approved)
+
+**Reviewed:** A11y fix for dashboard stat cards and agent cards.
+- `role="button"`, `tabIndex={0}`, `onKeyDown` (Enter/Space), `focus-visible` ring added to both `StatCard` and `AgentCard`
+- A11y tree verified: all 6 cards now appear as `button` elements (previously plain StaticText)
+- Keyboard navigation tested: Enter on "Active Agents" card correctly navigates to `/agents`
+- `e.preventDefault()` on Space prevents page scroll — correct
+- Build passes clean, layout unchanged
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 22:05 PDT — FX.UX.DASH.2: Fix card accessibility
 
 **Done:** Added `role="button"`, `tabIndex={0}`, `onKeyDown` (Enter/Space), and `focus-visible` ring styles to `StatCard` in `dashboard.tsx` and `AgentCard` in `active-agents-strip.tsx`. All 6 interactive cards now expose as `button` in the a11y tree, are keyboard-tabbable, and show a focus ring on focus-visible. Verified via a11y snapshot — cards previously appeared as plain StaticText, now appear as button elements.
