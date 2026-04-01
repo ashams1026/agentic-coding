@@ -48,7 +48,7 @@
 
 - [x] **SDK.SB.3** — Add permission callback for sensitive operations. In `packages/backend/src/agent/claude-executor.ts`: pass a `canUseTool` callback to `query()` options. The callback checks: if the tool is `Bash` and the command contains `rm -rf`, `git push --force`, `DROP TABLE`, or other destructive patterns → return `{ behavior: 'deny', message: 'Destructive command blocked by policy' }`. If the tool is `WebFetch` and the URL is not in the allowed domains → deny. For all other tools → allow. This is a defense-in-depth layer on top of the sandbox. Log all deny decisions to the audit trail.
 
-- [ ] **SDK.SB.4** — E2E test plan: sandbox settings UI. Create `tests/e2e/plans/sandbox-settings.md`: verify sandbox configuration renders in Settings → Security, allowed domains list is editable, toggle works. Visual check of the sandbox settings section.
+- [review] **SDK.SB.4** — E2E test plan: sandbox settings UI. Create `tests/e2e/plans/sandbox-settings.md`: verify sandbox configuration renders in Settings → Security, allowed domains list is editable, toggle works. Visual check of the sandbox settings section.
 
 - [ ] **SDK.SB.5** — Run sandbox settings e2e test. Execute SDK.SB.4. Record results with screenshots.
 
