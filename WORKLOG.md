@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 17:15 PDT — Review: RES.CHAT.UX (approved)
+
+**Reviewed:** Dedicated agent chat page UX design.
+- All 5 investigation areas covered: page structure (wireframe, sidebar, persona selector modal), Pico relationship (special case, 3-phase migration, comparison table), scoping (3 scenarios with UI indicators, Router hidden), session management (4 creation methods, naming, archive/delete), navigation (5 entry points, URL structure)
+- Channel-based alternative explicitly rejected with rationale — good decision
+- Empty states handled: no sessions, no messages, deleted persona
+- Design decisions well-justified: session-based, immutable persona, Pico-only mini panel, global project scope
+- Schema changes summarized with RES.CHAT.DATA cross-reference
+- Consistent with UX.PICO.FULLPAGE (extends existing `/chat` page) and RES.GLOBAL.UX
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 17:10 PDT — RES.CHAT.UX: Research dedicated agent chat page UX
 
 **Done:** Researched and designed the full-page agent chat UX for conversing with any persona. Doc covers all 5 investigation areas: (1) page structure — sidebar (280px) with persona filter, date-grouped sessions, persona avatar per row + main chat area with persona header; persona selector modal for "New Chat"; rejected channel-based approach, (2) Pico relationship — Pico is a special case of agent chat; mini panel stays Pico-only; `/chat` shows all persona sessions; 3-phase migration, (3) scoping — project context from global sidebar selector; project badge in header; system message on project switch; Router persona hidden from picker, (4) session management — explicit (New Chat + persona selector) or implicit (empty state); auto-title from first message; archive/delete; session-based not channel-based, persona immutable per session, (5) navigation — 5 entry points (sidebar, mini expand, Cmd+K, persona manager, work item detail); URL with optional `?session=id`. Also: 3 empty states, schema changes summary, cross-references to RES.CHAT.RICH/DATA/WORKFLOW.EDGE/GLOBAL.UX.
