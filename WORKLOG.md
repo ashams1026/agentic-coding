@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 05:55 PDT — SDK.ST.5: Context usage display in agent monitor
+
+**Done:** Periodic `getContextUsage()` polling every 60s during active executions via `setInterval` on the query object. Broadcasts `context_usage` WS event with percentage, totalTokens, maxTokens, categories. Frontend: context usage bar in terminal toolbar — 16px fill bar with color coding (green <60%, amber 60-80%, red >80%), percentage label, token count tooltip. New `ContextUsageEvent` in shared ws-events. Interval cleaned up in `finally` block.
+**Files:** `packages/backend/src/agent/claude-executor.ts`, `packages/shared/src/ws-events.ts`, `packages/frontend/src/api/ws-client.ts`, `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`
+
+---
+
 ## 2026-04-01 05:40 PDT — Review: SDK.ST.4 (approved)
 
 **Reviewed:** Rate limit event handling in executor, types, execution manager.

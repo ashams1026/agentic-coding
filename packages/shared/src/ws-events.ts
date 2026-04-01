@@ -26,7 +26,8 @@ export type WsEventType =
   | "file_changed"
   | "subagent_started"
   | "subagent_completed"
-  | "agent_progress";
+  | "agent_progress"
+  | "context_usage";
 
 // ── Event payloads ─────────────────────────────────────────────────
 
@@ -144,6 +145,16 @@ export interface AgentProgressEvent {
   timestamp: string;
 }
 
+export interface ContextUsageEvent {
+  type: "context_usage";
+  executionId: ExecutionId;
+  percentage: number;
+  totalTokens: number;
+  maxTokens: number;
+  categories: Array<{ name: string; tokens: number }>;
+  timestamp: string;
+}
+
 // ── Union type ─────────────────────────────────────────────────────
 
 export type WsEvent =
@@ -159,7 +170,8 @@ export type WsEvent =
   | FileChangedEvent
   | SubagentStartedEvent
   | SubagentCompletedEvent
-  | AgentProgressEvent;
+  | AgentProgressEvent
+  | ContextUsageEvent;
 
 // ── Subscriber API ─────────────────────────────────────────────────
 
@@ -179,4 +191,5 @@ export type WsEventMap = {
   subagent_started: SubagentStartedEvent;
   subagent_completed: SubagentCompletedEvent;
   agent_progress: AgentProgressEvent;
+  context_usage: ContextUsageEvent;
 };

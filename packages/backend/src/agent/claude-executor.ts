@@ -547,17 +547,39 @@ export class ClaudeExecutor implements AgentExecutor {
         },
       });
 
+      // Periodic context usage polling
+      const contextUsageInterval = setInterval(async () => {
+        try {
+          const usage = await q.getContextUsage();
+          broadcast({
+            type: "context_usage",
+            executionId: options.executionId as ExecutionId,
+            percentage: usage.percentage,
+            totalTokens: usage.totalTokens,
+            maxTokens: usage.maxTokens,
+            categories: usage.categories.map((c) => ({ name: c.name, tokens: c.tokens })),
+            timestamp: new Date().toISOString(),
+          });
+        } catch {
+          // Query may have ended — ignore
+        }
+      }, 60_000);
+
       let checkpointEmitted = false;
-      for await (const msg of q) {
-        // Emit a checkpoint event for the first assistant message
-        if (!checkpointEmitted && msg.type === "assistant" && msg.message.id) {
-          checkpointEmitted = true;
-          yield { type: "checkpoint" as const, messageId: msg.message.id };
+      try {
+        for await (const msg of q) {
+          // Emit a checkpoint event for the first assistant message
+          if (!checkpointEmitted && msg.type === "assistant" && msg.message.id) {
+            checkpointEmitted = true;
+            yield { type: "checkpoint" as const, messageId: msg.message.id };
+          }
+          const events = mapMessage(msg);
+          for (const event of events) {
+            yield event;
+          }
         }
-        const events = mapMessage(msg);
-        for (const event of events) {
-          yield event;
-        }
+      } finally {
+        clearInterval(contextUsageInterval);
       }
     } catch (err) {
       yield {

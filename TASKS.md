@@ -54,7 +54,7 @@
 
 - [x] **SDK.ST.4** — Handle rate limit events in agent monitor. Handle `SDKRateLimitEvent` in `mapMessage()`: emit as `{ type: "rate_limit", retryAfterMs: number, attempt: number }`. In the agent monitor: show an inline banner "Rate limited — retrying in Xs..." with a countdown timer. In the execution card header: show a small yellow warning icon while rate-limited. This replaces mysterious pauses with clear feedback.
 
-- [ ] **SDK.ST.5** — Add context usage display to agent monitor. Call `getContextUsage()` periodically (every 60s) during active executions via the query object. Emit as WebSocket event. In the agent monitor: show a context usage bar in the execution header — e.g., "Context: 45% used" with a fill bar. Color: green (<60%), yellow (60-80%), red (>80%). Tooltip shows breakdown: system prompt, tools, messages, MCP tools, memory. This warns users when an agent is approaching context limits.
+- [review] **SDK.ST.5** — Add context usage display to agent monitor. Call `getContextUsage()` periodically (every 60s) during active executions via the query object. Emit as WebSocket event. In the agent monitor: show a context usage bar in the execution header — e.g., "Context: 45% used" with a fill bar. Color: green (<60%), yellow (60-80%), red (>80%). Tooltip shows breakdown: system prompt, tools, messages, MCP tools, memory. This warns users when an agent is approaching context limits.
 
 - [ ] **SDK.ST.6** — E2E test plan: agent monitor streaming & observability. Create `tests/e2e/plans/agent-monitor-streaming.md`: test live streaming appearance, progress summary bar, rate limit banner (mock a rate limit scenario), context usage bar. Visual verification of all new UI elements.
 

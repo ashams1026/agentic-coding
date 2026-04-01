@@ -353,6 +353,7 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
   const [hasNewOutput, setHasNewOutput] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [progressSummary, setProgressSummary] = useState<string | null>(null);
+  const [contextUsage, setContextUsage] = useState<{ percentage: number; totalTokens: number; maxTokens: number } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const chunkCounter = useRef(0);
@@ -456,6 +457,15 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
     return unsubscribe;
   }, [executionId]);
 
+  // Subscribe to context usage updates
+  useEffect(() => {
+    const unsubscribe = subscribe("context_usage", (event) => {
+      if (event.executionId !== executionId) return;
+      setContextUsage({ percentage: event.percentage, totalTokens: event.totalTokens, maxTokens: event.maxTokens });
+    });
+    return unsubscribe;
+  }, [executionId]);
+
   // Clear progress summary when execution completes
   useEffect(() => {
     if (execution?.status === "completed" || execution?.status === "failed") {
@@ -532,6 +542,27 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
           <span className="text-xs text-muted-foreground">
             {chunks.length} chunks
           </span>
+          {contextUsage && (
+            <div className="flex items-center gap-1.5" title={`${contextUsage.totalTokens.toLocaleString()} / ${contextUsage.maxTokens.toLocaleString()} tokens`}>
+              <div className="w-16 h-1.5 rounded-full bg-muted overflow-hidden">
+                <div
+                  className={cn(
+                    "h-full rounded-full transition-all",
+                    contextUsage.percentage < 60 ? "bg-emerald-500" :
+                    contextUsage.percentage < 80 ? "bg-amber-500" : "bg-red-500",
+                  )}
+                  style={{ width: `${Math.min(contextUsage.percentage, 100)}%` }}
+                />
+              </div>
+              <span className={cn(
+                "text-[10px] tabular-nums",
+                contextUsage.percentage < 60 ? "text-emerald-600 dark:text-emerald-400" :
+                contextUsage.percentage < 80 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400",
+              )}>
+                {Math.round(contextUsage.percentage)}%
+              </span>
+            </div>
+          )}
         </div>
         <Button
           variant="ghost"

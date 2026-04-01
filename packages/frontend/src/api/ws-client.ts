@@ -35,6 +35,7 @@ class RealWsClient {
     subagent_started: new Set(),
     subagent_completed: new Set(),
     agent_progress: new Set(),
+    context_usage: new Set(),
     "*": new Set(),
   };
 
