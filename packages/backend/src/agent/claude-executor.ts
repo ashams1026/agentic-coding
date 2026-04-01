@@ -139,6 +139,15 @@ function mapMessage(msg: SDKMessage): AgentEvent[] {
         events.push({ type: "thinking", content: block.thinking });
       }
     }
+  } else if (msg.type === "stream_event") {
+    // Partial streaming — extract text deltas from content_block_delta events
+    const evt = msg.event;
+    if (evt.type === "content_block_delta" && "delta" in evt) {
+      const delta = evt.delta as unknown as Record<string, unknown>;
+      if (delta.type === "text_delta" && typeof delta.text === "string") {
+        events.push({ type: "partial", content: delta.text, index: evt.index });
+      }
+    }
   } else if (msg.type === "result") {
     if (msg.subtype === "success") {
       events.push({
@@ -476,6 +485,7 @@ export class ClaudeExecutor implements AgentExecutor {
           permissionMode: "bypassPermissions",
           allowDangerouslySkipPermissions: true,
           enableFileCheckpointing: true,
+          includePartialMessages: true,
           maxBudgetUsd: options.maxBudget > 0 ? options.maxBudget : undefined,
           effort,
           thinking,

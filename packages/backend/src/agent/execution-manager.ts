@@ -266,6 +266,7 @@ function eventToChunk(event: AgentEvent): string {
     case "tool_result": return event.output;
     case "error": return `Error: ${event.message}`;
     case "result": return event.summary;
+    case "partial": return "";
     case "checkpoint": return "";
   }
 }
@@ -439,6 +440,19 @@ async function runExecutionStream(
       // Capture file checkpoint message ID
       if (event.type === "checkpoint") {
         checkpointMessageId = event.messageId;
+        continue;
+      }
+
+      // Partial streaming events: broadcast but don't log (too granular)
+      if (event.type === "partial") {
+        broadcast({
+          type: "agent_output_chunk",
+          executionId: executionId as ExecutionId,
+          personaId: persona.id as PersonaId,
+          chunk: event.content,
+          chunkType: "text",
+          timestamp: new Date().toISOString(),
+        });
         continue;
       }
 

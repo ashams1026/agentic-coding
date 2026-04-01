@@ -53,6 +53,12 @@ export interface ResultEvent {
   structuredOutput?: unknown;
 }
 
+export interface PartialEvent {
+  type: "partial";
+  content: string;
+  index: number;
+}
+
 export interface CheckpointEvent {
   type: "checkpoint";
   messageId: string;
@@ -65,6 +71,7 @@ export type AgentEvent =
   | TextEvent
   | ErrorEvent
   | ResultEvent
+  | PartialEvent
   | CheckpointEvent;
 
 // ── Agent Task ────────────────────────────────────────────────────

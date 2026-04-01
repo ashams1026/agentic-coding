@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 04:40 PDT — SDK.ST.1: Enable partial message streaming
+
+**Done:** Added `includePartialMessages: true` to `query()` options. Handles `stream_event` type in `mapMessage()`: extracts `content_block_delta` events with `text_delta` type, emits as `PartialEvent { type: "partial", content, index }`. In execution manager: partial events are broadcast via WS as `agent_output_chunk` (chunkType: "text") but NOT logged to execution `logs` field (too granular). Added `PartialEvent` to `AgentEvent` union type.
+**Files:** `packages/backend/src/agent/claude-executor.ts`, `packages/backend/src/agent/types.ts`, `packages/backend/src/agent/execution-manager.ts`
+
+---
+
 ## 2026-04-01 04:20 PDT — Review: SDK.ET.5 (approved)
 
 **Reviewed:** Effort & thinking configuration in `docs/personas.md`.
