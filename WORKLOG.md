@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 07:00 PDT — Review: SDK.SB.1 (approved)
+
+**Reviewed:** SDK native sandbox in `claude-executor.ts`.
+- `sandbox.enabled: true` with `autoAllowBashIfSandboxed` — correct for non-interactive execution
+- Filesystem: allowWrite=[projectPath], denyWrite=[/, /etc, /usr, /var] — comprehensive
+- Network: 4 allowed domains (Anthropic API, npm, GitHub) — reasonable defaults
+- PreToolUse hook preserved as defense-in-depth — good layering
+- Project-specific config deferred to SDK.SB.2 (correct scoping)
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 06:55 PDT — SDK.SB.1: Migrate to SDK native sandbox
 
 **Done:** Added SDK `sandbox` option to `query()`: `enabled: true`, `autoAllowBashIfSandboxed: true`, filesystem allows writes only to project path (denies /, /etc, /usr, /var), network allows api.anthropic.com, npmjs, github. Kept the existing `PreToolUse` hook as a defense-in-depth fallback (application-level validation on top of OS-level sandbox). `sandbox.ts` module preserved for non-sandboxed environments.
