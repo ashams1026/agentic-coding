@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-01 07:40 PDT — Review: SDK.SB.3 (approved)
+
+**Reviewed:** Permission callback in `claude-executor.ts`.
+- 9 destructive Bash patterns with word boundaries — no false positives on substrings
+- WebFetch domain check with subdomain support, invalid URL passthrough
+- Deny decisions logged to audit trail with truncated command/URL
+- Three-layer defense: SDK sandbox (OS) + PreToolUse hook (app) + canUseTool (permission)
+- Domain list from project settings with fallback defaults
+- `as never` cast pragmatic for simplified signature
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 07:35 PDT — SDK.SB.3: Permission callback for sensitive operations
 
 **Done:** Added `buildCanUseTool()` factory that creates a `canUseTool` callback. Checks Bash commands against 9 destructive patterns (rm -rf, git push --force, git reset --hard, DROP TABLE, etc.) — returns `{ behavior: "deny" }` with reason. Checks WebFetch URLs against project's allowed domains list (hostname match with subdomain support). All deny decisions logged to audit trail. Wired into `query()` options as defense-in-depth on top of SDK sandbox and PreToolUse hook.
