@@ -49,7 +49,7 @@
 
 ### Dashboard Bugs
 
-- [ ] **FX.UX.DASH.3** — Activity items all link to generic `/items` instead of specific work item. Page `/`. All Recent Activity events in `recent-activity.tsx` set `targetPath: "/items"` regardless of which work item they relate to. Clicking any event navigates to the work items list page, not the specific work item detail. Expected: link to `/items?selected={workItemId}` or a route that opens the relevant work item's detail panel.
+- [review] **FX.UX.DASH.3** — Activity items all link to generic `/items` instead of specific work item. Page `/`. All Recent Activity events in `recent-activity.tsx` set `targetPath: "/items"` regardless of which work item they relate to. Clicking any event navigates to the work items list page, not the specific work item detail. Expected: link to `/items?selected={workItemId}` or a route that opens the relevant work item's detail panel.
 
 ### Work Items (`/items`)
 

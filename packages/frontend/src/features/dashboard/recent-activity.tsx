@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import {
   ArrowRightLeft,
   Bot,
@@ -10,6 +10,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { useExecutions, useProposals, usePersonas, useRecentComments, useSelectedProject } from "@/hooks";
+import { useWorkItemsStore } from "@/stores/work-items-store";
 import { subscribeAll } from "@/api/ws";
 import type { Persona } from "@agentops/shared";
 import type {
@@ -34,7 +35,7 @@ interface ActivityEvent {
   type: ActivityEventType;
   description: string;
   personaId: string | null;
-  targetPath: string;
+  workItemId: string | null;
   timestamp: string;
   isLive?: boolean;
 }
@@ -97,7 +98,7 @@ function useActivityEvents(): ActivityEvent[] {
             type: "agent_completed",
             description: exec.summary || "Agent completed work item",
             personaId: exec.personaId,
-            targetPath: "/items",
+            workItemId: exec.workItemId,
             timestamp: exec.completedAt ?? exec.startedAt,
           });
         }
@@ -113,7 +114,7 @@ function useActivityEvents(): ActivityEvent[] {
             type: "state_change",
             description: comment.content,
             personaId: null,
-            targetPath: "/items",
+            workItemId: comment.workItemId,
             timestamp: comment.createdAt,
           });
         } else {
@@ -122,7 +123,7 @@ function useActivityEvents(): ActivityEvent[] {
             type: "comment_posted",
             description: `${comment.authorName}: ${comment.content.slice(0, 80)}${comment.content.length > 80 ? "..." : ""}`,
             personaId: comment.authorId,
-            targetPath: "/items",
+            workItemId: comment.workItemId,
             timestamp: comment.createdAt,
           });
         }
@@ -137,7 +138,7 @@ function useActivityEvents(): ActivityEvent[] {
           type: "proposal_created",
           description: `New ${proposal.type.replace(/_/g, " ")} proposal`,
           personaId: null,
-          targetPath: "/items",
+          workItemId: proposal.workItemId,
           timestamp: proposal.createdAt,
         });
       }
@@ -163,7 +164,7 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
         type: "agent_completed",
         description: `Agent started: ${e.workItemTitle}`,
         personaId: e.personaId,
-        targetPath: "/items",
+        workItemId: e.workItemId,
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -175,7 +176,7 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
         type: "agent_completed",
         description: `Agent completed work item ($${e.costUsd.toFixed(2)})`,
         personaId: e.personaId,
-        targetPath: "/items",
+        workItemId: e.workItemId,
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -187,7 +188,7 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
         type: "state_change",
         description: `Work item moved to ${e.toState}`,
         personaId: null,
-        targetPath: "/items",
+        workItemId: e.workItemId,
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -199,7 +200,7 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
         type: "comment_posted",
         description: `${e.authorName}: ${e.contentPreview}`,
         personaId: null,
-        targetPath: "/items",
+        workItemId: e.workItemId,
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -211,7 +212,7 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
         type: "proposal_created",
         description: `New ${e.proposalType.replace(/_/g, " ")} proposal`,
         personaId: null,
-        targetPath: "/items",
+        workItemId: e.workItemId,
         timestamp: e.timestamp,
         isLive: true,
       };
@@ -245,13 +246,25 @@ interface ActivityRowProps {
 }
 
 function ActivityRow({ event, personaMap }: ActivityRowProps) {
+  const navigate = useNavigate();
+  const setSelectedItemId = useWorkItemsStore((s) => s.setSelectedItemId);
   const config = eventConfig[event.type];
   const persona = event.personaId ? personaMap.get(event.personaId) : null;
 
+  const handleClick = () => {
+    if (event.workItemId) {
+      setSelectedItemId(event.workItemId as Parameters<typeof setSelectedItemId>[0]);
+    }
+    navigate("/items");
+  };
+
   return (
-    <Link
-      to={event.targetPath}
-      className={`flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-accent/50 ${
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleClick}
+      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleClick(); } }}
+      className={`flex items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-accent/50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
         event.isLive ? "animate-slide-down" : ""
       }`}
     >
@@ -279,7 +292,7 @@ function ActivityRow({ event, personaMap }: ActivityRowProps) {
         </div>
         <p className="text-xs text-muted-foreground">{relativeTime(event.timestamp)}</p>
       </div>
-    </Link>
+    </div>
   );
 }
 

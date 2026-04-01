@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 22:25 PDT — FX.UX.DASH.3: Activity items link to specific work item
+
+**Done:** Replaced generic `targetPath: "/items"` with `workItemId` on all `ActivityEvent` objects in `recent-activity.tsx`. Data sources: executions (`exec.workItemId`), comments (`comment.workItemId`), proposals (`proposal.workItemId`), WS events (`e.workItemId`). Changed `ActivityRow` from `<Link to="/items">` to a `<div role="button">` with onClick that calls `setSelectedItemId(workItemId)` then `navigate("/items")` — matching the command palette pattern. Added a11y: `role="button"`, `tabIndex`, `onKeyDown`, `focus-visible` ring. Verified: clicking an activity row navigates to `/items` and opens the correct work item detail panel.
+**Files:** `packages/frontend/src/features/dashboard/recent-activity.tsx`
+
+---
+
 ## 2026-04-01 22:10 PDT — Review: FX.UX.DASH.2 (approved)
 
 **Reviewed:** A11y fix for dashboard stat cards and agent cards.
