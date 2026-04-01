@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 12:30 PDT — Review: DOC.1 (approved)
+
+**Reviewed:** Getting-started.md updates.
+- Mock mode removed, demo seed tip added
+- Settings section renamed, Board view reference cleaned
+- Pico added as 6th persona, Dev Tips section with 4 items
+- MCP Tools link in What's Next
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 12:25 PDT — DOC.1: Update getting-started.md
 
 **Done:** Removed mock mode references (deleted since FX.MOCK1). Added `pnpm db:seed-demo` tip for demo data. Renamed "API Keys" → "Agent Configuration". Updated work item creation flow (Board view reference removed). Added Pico as 6th persona. Added "Development Tips" section with dev server port check, DB reset, demo seed, separate databases. Added MCP Tools link to "What's Next".
