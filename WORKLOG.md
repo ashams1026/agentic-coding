@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 06:40 PDT — FX.UX.PERSONA.3: Fix delete selected persona 404 toast
+
+**Done:** Two-part fix: (1) Widened `onSelect` prop type to `PersonaId | null` and added `onSelect(null)` call in `handleDeleteConfirm` when deleting the selected persona — closes the detail panel. (2) Added `queryClient.removeQueries()` for the deleted persona's individual query key in `useDeletePersona` hook — prevents stale query refetch that triggered the `get()` helper's global error toast (same root cause pattern as FX.UX.AGENT.2).
+**Files:** `packages/frontend/src/features/persona-manager/persona-list.tsx`, `packages/frontend/src/hooks/use-personas.ts`
+**Notes:** Both changes needed — without removeQueries, the toast still fires from a race between cache invalidation and component unmount.
+
+---
+
 ## 2026-04-02 06:30 PDT — Review: FX.UX.PERSONA.2 (approved)
 
 **Reviewed:** Built-in persona label mismatch fix.

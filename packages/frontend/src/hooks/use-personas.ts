@@ -49,7 +49,8 @@ export function useDeletePersona() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: PersonaId) => deletePersona(id),
-    onSuccess: () => {
+    onSuccess: (_data, id) => {
+      queryClient.removeQueries({ queryKey: queryKeys.persona(id) });
       queryClient.invalidateQueries({ queryKey: queryKeys.personas });
     },
   });

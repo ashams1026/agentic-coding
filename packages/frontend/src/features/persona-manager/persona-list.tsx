@@ -74,7 +74,7 @@ export const BUILT_IN_IDS = new Set<string>([
 
 interface PersonaListProps {
   selectedId: PersonaId | null;
-  onSelect: (id: PersonaId) => void;
+  onSelect: (id: PersonaId | null) => void;
 }
 
 // ── Persona card ────────────────────────────────────────────────
@@ -250,9 +250,11 @@ export function PersonaList({ selectedId, onSelect }: PersonaListProps) {
 
   const handleDeleteConfirm = () => {
     if (!deleteTarget) return;
+    const deletingSelected = selectedId === deleteTarget.id;
     deleteMutation.mutate(deleteTarget.id, {
       onSuccess: () => {
         setDeleteTarget(null);
+        if (deletingSelected) onSelect(null);
       },
     });
   };
