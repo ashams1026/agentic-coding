@@ -5,6 +5,15 @@
 
 ---
 
+## 2026-04-01 12:00 PDT — Review: SDK.UX.8 (approved)
+
+**Reviewed:** Frontend docs update in `docs/frontend.md`.
+- 3 sections: Pico suggestions (SSE, hook, styling), model switching (dropdown vs badge, dialog), in-process MCP (dual config)
+- All 3 task requirements covered, accurate to implementation
+- **Verdict: approved.** Completes Part 4 (UX) of Sprint 20.
+
+---
+
 ## 2026-04-01 11:55 PDT — SDK.UX.8: Update frontend docs with UX features
 
 **Done:** Added 3 sections to `docs/frontend.md`: "Pico — Prompt Suggestions" (SSE events, usePicoChat hook, pill button styling), "Agent Monitor — Model Switching" (ModelSwitcher component, dropdown vs badge, confirmation dialog), "In-Process MCP Server" (createSdkMcpServer, dual server config). All 3 task requirements covered.
