@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 07:35 PDT — SDK.SB.3: Permission callback for sensitive operations
+
+**Done:** Added `buildCanUseTool()` factory that creates a `canUseTool` callback. Checks Bash commands against 9 destructive patterns (rm -rf, git push --force, git reset --hard, DROP TABLE, etc.) — returns `{ behavior: "deny" }` with reason. Checks WebFetch URLs against project's allowed domains list (hostname match with subdomain support). All deny decisions logged to audit trail. Wired into `query()` options as defense-in-depth on top of SDK sandbox and PreToolUse hook.
+**Files:** `packages/backend/src/agent/claude-executor.ts`
+
+---
+
 ## 2026-04-01 07:20 PDT — Review: SDK.SB.2 (approved)
 
 **Reviewed:** Sandbox config in shared types, executor, and settings UI.

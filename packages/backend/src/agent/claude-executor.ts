@@ -395,6 +395,49 @@ function buildSubagentHooks(
   return { subagentStart, subagentStop };
 }
 
+// ── Permission callback ──────────────────────────────────────────
+
+const DESTRUCTIVE_PATTERNS = [
+  /\brm\s+-rf\b/,
+  /\bgit\s+push\s+--force\b/,
+  /\bgit\s+reset\s+--hard\b/,
+  /\bDROP\s+TABLE\b/i,
+  /\bDROP\s+DATABASE\b/i,
+  /\bTRUNCATE\s+TABLE\b/i,
+  /\bDELETE\s+FROM\b.*\bWHERE\s+1\s*=\s*1\b/i,
+  /\bmkfs\b/,
+  /\bdd\s+if=/,
+];
+
+function buildCanUseTool(allowedDomains: string[], auditFn: (opts: { executionId: string; toolName: string; durationMs: number; success: boolean; command?: string }) => void, executionId: string) {
+  return async (toolName: string, input: Record<string, unknown>): Promise<{ behavior: "allow" } | { behavior: "deny"; message: string }> => {
+    // Check destructive Bash commands
+    if (toolName === "Bash" && typeof input.command === "string") {
+      for (const pattern of DESTRUCTIVE_PATTERNS) {
+        if (pattern.test(input.command)) {
+          auditFn({ executionId, toolName, durationMs: 0, success: false, command: `BLOCKED: ${input.command.slice(0, 100)}` });
+          return { behavior: "deny", message: `Destructive command blocked by policy: ${pattern.source}` };
+        }
+      }
+    }
+
+    // Check WebFetch domain restrictions
+    if (toolName === "WebFetch" && typeof input.url === "string") {
+      try {
+        const url = new URL(input.url);
+        if (!allowedDomains.some((d) => url.hostname === d || url.hostname.endsWith(`.${d}`))) {
+          auditFn({ executionId, toolName, durationMs: 0, success: false, command: `BLOCKED: ${input.url}` });
+          return { behavior: "deny", message: `Domain ${url.hostname} not in allowed list` };
+        }
+      } catch {
+        // Invalid URL — let the tool handle it
+      }
+    }
+
+    return { behavior: "allow" };
+  };
+}
+
 // ── Router structured output schema ──────────────────────────────
 
 const ROUTER_OUTPUT_SCHEMA = {
@@ -522,6 +565,11 @@ export class ClaudeExecutor implements AgentExecutor {
               ],
             },
           },
+          canUseTool: buildCanUseTool(
+            project.settings.sandbox?.allowedDomains ?? ["api.anthropic.com", "registry.npmjs.org", "github.com", "raw.githubusercontent.com"],
+            auditToolUse,
+            options.executionId,
+          ) as never, // SDK expects full CanUseTool signature; our simplified version is compatible at runtime
           includePartialMessages: true,
           agentProgressSummaries: true,
           maxBudgetUsd: options.maxBudget > 0 ? options.maxBudget : undefined,
