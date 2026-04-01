@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import {
   Dog,
-  X,
   Plus,
   Send,
   AlertCircle,
@@ -328,7 +327,7 @@ export function ChatPanel() {
           onClick={() => setOpen(false)}
           title="Minimize"
         >
-          <X className="h-4 w-4" />
+          <ChevronDown className="h-4 w-4" />
         </Button>
       </div>
 
