@@ -58,7 +58,7 @@
 
 - [x] **SDK.ST.6** — E2E test plan: agent monitor streaming & observability. Create `tests/e2e/plans/agent-monitor-streaming.md`: test live streaming appearance, progress summary bar, rate limit banner (mock a rate limit scenario), context usage bar. Visual verification of all new UI elements.
 
-- [ ] **SDK.ST.7** — Run agent monitor streaming e2e test. Execute SDK.ST.6. Record results with screenshots of streaming, progress summary, context bar.
+- [review] **SDK.ST.7** — Run agent monitor streaming e2e test. Execute SDK.ST.6. Record results with screenshots of streaming, progress summary, context bar.
 
 - [ ] **SDK.ST.8** — Update `docs/frontend.md` with streaming and observability features. Document: partial message handling, progress summaries, rate limit display, context usage monitoring, WebSocket event types.
 
