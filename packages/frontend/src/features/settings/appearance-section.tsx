@@ -253,7 +253,7 @@ function ServiceStatusSection() {
       <div>
         <p className="text-sm font-medium mb-1">Service Status</p>
         <p className="text-xs text-muted-foreground mb-3">
-          AgentOps background service managed by pm2.
+          Woof background service managed by pm2.
         </p>
       </div>
 

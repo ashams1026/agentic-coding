@@ -14,6 +14,7 @@ import {
   Sun,
   Moon,
   Monitor,
+  Dog,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
@@ -80,8 +81,24 @@ export function Sidebar() {
         sidebarCollapsed ? "w-sidebar-collapsed" : "w-sidebar",
       )}
     >
+      {/* App brand */}
+      <div className={cn(
+        "flex items-center border-b border-border px-2",
+        sidebarCollapsed ? "h-10 justify-center" : "h-10 gap-2 px-3",
+      )}>
+        <div
+          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
+          style={{ backgroundColor: "#f59e0b" }}
+        >
+          <Dog className="h-3.5 w-3.5 text-white" />
+        </div>
+        {!sidebarCollapsed && (
+          <span className="text-sm font-bold tracking-tight">Woof</span>
+        )}
+      </div>
+
       {/* Project switcher */}
-      <div className="flex h-14 items-center border-b border-border px-2 justify-center">
+      <div className="flex h-12 items-center border-b border-border px-2 justify-center">
         {sidebarCollapsed ? (
           <Tooltip>
             <TooltipTrigger asChild>

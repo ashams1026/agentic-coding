@@ -36,7 +36,7 @@ export function RootLayout() {
             >
               <Menu className="h-5 w-5" />
             </Button>
-            <span className="ml-2 text-sm font-semibold">AgentOps</span>
+            <span className="ml-2 text-sm font-semibold">Woof</span>
           </div>
           <main className="flex-1 overflow-y-auto pb-8">
             <Outlet />

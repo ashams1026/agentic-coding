@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#f59e0b"/>
+  <!-- Paw pad (main) -->
+  <ellipse cx="16" cy="20" rx="5.5" ry="4.5" fill="white"/>
+  <!-- Toe pads -->
+  <circle cx="9.5" cy="13" r="2.8" fill="white"/>
+  <circle cx="16" cy="10.5" r="2.8" fill="white"/>
+  <circle cx="22.5" cy="13" r="2.8" fill="white"/>
+</svg>

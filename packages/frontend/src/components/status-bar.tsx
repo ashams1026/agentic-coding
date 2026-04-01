@@ -31,7 +31,7 @@ export function StatusBar() {
   return (
     <footer className="flex h-8 items-center justify-between border-t border-border bg-card px-4 text-xs text-muted-foreground">
       <div className="flex items-center gap-3">
-        <span className="font-medium">AgentOps</span>
+        <span className="font-medium">Woof</span>
         <Tooltip>
           <TooltipTrigger asChild>
             <button

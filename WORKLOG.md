@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 16:05 PDT — UX.BRAND.WOOF: Rebrand app as Woof
+
+**Done:** Rebranded all user-visible "AgentOps" references to "Woof". Changes: (1) page title in index.html → "Woof", (2) new SVG paw-print favicon (amber background, white paw) in `public/favicon.svg` with link tag in index.html, (3) sidebar header — added Woof brand row with amber Dog icon + "Woof" text above the project switcher, (4) status bar "AgentOps" → "Woof", (5) mobile top bar "AgentOps" → "Woof", (6) settings appearance "AgentOps background service" → "Woof background service", (7) tool-configuration "AgentOps Tools" → "Woof Tools". Pico's avatar already uses Dog icon with amber theme — no changes needed. No login/splash screen exists. Code/package names and developer-facing docs left as "AgentOps".
+**Files:** `packages/frontend/index.html`, `packages/frontend/public/favicon.svg` (new), `packages/frontend/src/components/sidebar.tsx`, `packages/frontend/src/components/status-bar.tsx`, `packages/frontend/src/layouts/root-layout.tsx`, `packages/frontend/src/features/settings/appearance-section.tsx`, `packages/frontend/src/features/persona-manager/tool-configuration.tsx`
+
+---
+
 ## 2026-04-02 15:45 PDT — Review: UX.PICO.COLLAPSE (approved)
 
 **Reviewed:** Replace X icon with ChevronDown on mini chat panel.

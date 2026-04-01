@@ -218,10 +218,10 @@ export function ToolConfiguration({
           </div>
         </div>
 
-        {/* AgentOps Tools */}
+        {/* Woof Tools */}
         <div>
           <span className="text-xs text-muted-foreground mb-2 block">
-            AgentOps Tools
+            Woof Tools
             <Badge variant="outline" className="ml-2 text-xs px-1 py-0">
               {mcpTools.length}
             </Badge>
