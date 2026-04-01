@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 03:50 PDT — Review: SDK.ET.3 (approved)
+
+**Reviewed:** E2E test plan at `tests/e2e/plans/persona-effort-thinking.md`.
+- 13 steps across 4 parts: read-only badges, edit dropdowns, save/persist, visual quality
+- Dropdown options match implementation exactly (4 effort levels, 3 thinking modes with descriptions)
+- Tests conditional rendering (badges present/absent based on settings)
+- Save persistence tested through page reload
+- Settings merge safety noted in expected results
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 03:45 PDT — SDK.ET.3: E2E test plan for effort & thinking settings
 
 **Done:** Created `tests/e2e/plans/persona-effort-thinking.md` — 13 steps across 4 parts: read-only display (3), edit mode dropdowns (5), save and persist (3), visual quality (2). Covers dropdown options with descriptions, badge display, save persistence, settings merge safety, dark mode.
