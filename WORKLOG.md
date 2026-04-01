@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 01:20 PDT — Review: FX.UX.AGENT.2 (approved)
+
+**Reviewed:** MCP status 404 error toast fix.
+- Root cause correct: `get()` helper fires `showErrorToast` before throwing
+- Fix uses raw `fetch()` returning `[]` on failure — clean, targeted, no global side effects
+- McpStatus already handles empty array (renders nothing at line 59)
+- Verified: 0 toasts after navigating to `/agents`
+- Build passes clean
+- **Verdict: approved.** Both agent monitor bugs (FX.UX.AGENT.1-2) resolved.
+
+---
+
 ## 2026-04-02 01:15 PDT — FX.UX.AGENT.2: Fix MCP status 404 error toast
 
 **Done:** Root cause: `getMcpStatus` used the `get()` helper which calls `showErrorToast` before throwing — so even though `McpStatus` component catches the error, the toast fires first. Fix: replaced `get()` with raw `fetch()` that returns empty array on non-ok response, bypassing the global error toast. The McpStatus component already handles empty arrays (renders nothing). Verified: navigated to `/agents`, waited 2 seconds — no error toast, 0 toast elements in DOM.
