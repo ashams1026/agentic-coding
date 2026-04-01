@@ -58,7 +58,8 @@ import type { RewindResult } from "@/api/client";
 import { useToastStore } from "@/stores/toast-store";
 import { TerminalRenderer } from "./terminal-renderer";
 import { RouterDecisionCard, isRouterDecision } from "./router-decision-card";
-import type { Execution, ExecutionId } from "@agentops/shared";
+import { SubagentCard } from "./subagent-card";
+import type { Execution, ExecutionId, Persona } from "@agentops/shared";
 
 // ── Helpers ───────────────────────────────────────────────────────
 
@@ -400,6 +401,8 @@ interface HistoryRowProps {
   targetName: string;
   isExpanded: boolean;
   onToggle: () => void;
+  childExecutions: Execution[];
+  personaMap: Map<string, Persona>;
 }
 
 function HistoryRow({
@@ -409,6 +412,8 @@ function HistoryRow({
   targetName,
   isExpanded,
   onToggle,
+  childExecutions,
+  personaMap,
 }: HistoryRowProps) {
   const outcome = execution.outcome
     ? outcomeBadge[execution.outcome]
@@ -485,6 +490,24 @@ function HistoryRow({
             <div className="h-[300px] border-b">
               <TerminalRenderer executionId={execution.id} />
             </div>
+            {childExecutions.length > 0 && (
+              <div className="px-4 py-3 border-b bg-muted/20">
+                <p className="text-xs font-medium text-muted-foreground mb-2">
+                  Subagents ({childExecutions.length})
+                </p>
+                {childExecutions.map((child) => {
+                  const childPersona = personaMap.get(child.personaId as string);
+                  return (
+                    <SubagentCard
+                      key={child.id}
+                      execution={child}
+                      personaName={childPersona?.name ?? "Agent"}
+                      personaColor={childPersona?.avatar.color ?? "#6b7280"}
+                    />
+                  );
+                })}
+              </div>
+            )}
           </td>
         </tr>
       </CollapsibleContent>
@@ -505,9 +528,9 @@ export function AgentHistory() {
   const [expandedId, setExpandedId] = useState<ExecutionId | null>(null);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
 
-  // Past executions (not running)
+  // Past executions (not running, top-level only — children shown nested)
   const historyExecutions = useMemo(
-    () => executions.filter((e) => e.status !== "running"),
+    () => executions.filter((e) => e.status !== "running" && !e.parentExecutionId),
     [executions],
   );
 
@@ -571,6 +594,19 @@ export function AgentHistory() {
     for (const item of allItems) map.set(item.id as string, item.title);
     return map;
   }, [allItems]);
+
+  // Group child executions by parent
+  const childExecutionMap = useMemo(() => {
+    const map = new Map<string, Execution[]>();
+    for (const exec of executions) {
+      if (exec.parentExecutionId) {
+        const children = map.get(exec.parentExecutionId) ?? [];
+        children.push(exec);
+        map.set(exec.parentExecutionId, children);
+      }
+    }
+    return map;
+  }, [executions]);
 
   // Unique personas that appear in history (for filter dropdown)
   const historyPersonas = useMemo(() => {
@@ -678,6 +714,8 @@ export function AgentHistory() {
                     onToggle={() =>
                       setExpandedId(expandedId === exec.id ? null : exec.id)
                     }
+                    childExecutions={childExecutionMap.get(exec.id as string) ?? []}
+                    personaMap={personaMap}
                   />
                 );
               })
