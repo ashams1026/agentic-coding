@@ -188,3 +188,13 @@ All personas updated in both seed.ts and default-personas.ts. Key pattern: no pe
 **FX.PICO3:** Executed Pico e2e test — 30/38 PASS, 4 FAIL, 4 SKIP. All failures from CORS bug on SSE endpoint. 8 screenshots captured. Bug filed as FX.PICO4 (HIGH severity).
 
 **FX.SDK6:** Exposed available subagents in persona config via SDK `supportedAgents()` — agents array from capabilities endpoint, multi-select in persona editor.
+
+---
+
+## Sprint 19 (Hooks + File Checkpointing Docs) + Sprint 17 (FX.PICO5) — 2026-03-31
+
+**FX.PICO5:** Fixed Pico chat scroll overflow — `min-h-0 overflow-hidden` on ScrollArea in chat-panel.tsx.
+
+**SDK.FC.4-FC.7:** MCP rewind tool for Code Reviewer (HTTP delegation), e2e test plan (17 steps), test execution (7/17 PASS, 10 SKIP), documentation updates across architecture/API/MCP docs.
+
+**SDK.HK.1-HK.5:** Replaced manual sandbox with PreToolUse hook, added PostToolUse audit logging (timing + sanitized commands), SessionStart/SessionEnd lifecycle hooks (audit + WS), FileChanged hook (file_changed WS events), file changes panel UI (collapsible, real-time, deduplication).

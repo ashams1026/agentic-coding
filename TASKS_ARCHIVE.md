@@ -141,3 +141,19 @@
 - [x] **SDK.HK.3** — Added SessionStart/SessionEnd hooks (audit trail + `execution_update` WS event). *(completed 2026-03-31)*
 - [x] **SDK.HK.4** — Added FileChanged hook broadcasting `file_changed` WS events. *(completed 2026-03-31)*
 - [x] **SDK.HK.5** — Agent monitor file changes panel UI (collapsible, real-time via WS). *(completed 2026-03-31)*
+- [x] **SDK.HK.6** — E2E test plan: agent monitor file tracking (16 steps, 5 parts). *(completed 2026-04-01)*
+- [x] **SDK.HK.7** — Executed file tracking e2e test (4/16 PASS, 12 SKIP — no live agents). *(completed 2026-04-01)*
+- [x] **SDK.HK.8** — Updated docs/architecture.md with hooks architecture (7 hooks table, diagram, audit trail). *(completed 2026-04-01)*
+
+### Sprint 17 Bug Fix — archived 2026-04-01
+- [x] **FX.PROJ1** — Fixed stale project ID fallback (`retry: false` + auto-select first available project). *(completed 2026-04-01)*
+
+### Part 4: Structured Output — archived 2026-04-01
+- [x] **SDK.SO.1** — Added structured output for Router persona (`isRouter` flag, `outputFormat` JSON schema). *(completed 2026-04-01)*
+- [x] **SDK.SO.2** — Router decision cards in agent monitor + activity feed (state badge, confidence dot, reasoning). *(completed 2026-04-01)*
+- [x] **SDK.SO.3** — E2E test plan: Router structured output (13 steps, 3 parts). *(completed 2026-04-01)*
+- [x] **SDK.SO.4** — Executed Router structured output e2e test (5/13 PASS, 8 SKIP — no structured data). *(completed 2026-04-01)*
+- [x] **SDK.SO.5** — Updated docs/workflow.md and docs/personas.md with structured Router output. *(completed 2026-04-01)*
+
+### Part 5: Subagent Definitions — archived 2026-04-01
+- [x] **SDK.SA.1** — All personas registered as SDK subagents in `query()` options (primary 30 turns, subagents 15). *(completed 2026-04-01)*

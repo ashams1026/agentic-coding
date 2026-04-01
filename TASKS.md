@@ -5,15 +5,13 @@
 
 ---
 
-> Sprints 1-18 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 19 V2.1-V2.2, V2.4, FC.1-FC.7, HK.1-HK.5 archived.
+> Sprints 1-18 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 19 V2.1-V2.2, V2.4, FC.1-FC.7, HK.1-HK.8, SO.1-SO.5, SA.1 archived.
 
 ---
 
 ## Sprint 17: Agent Pipeline Fixes & Monitor UX (remaining)
 
 > Blocked and remaining tasks.
-
-- [x] **FX.PROJ1** — Fix stale project ID causing Pico 500 error. The `selectedProjectId` in the Zustand UI store is persisted to localStorage. If the dev DB is reset or the project is deleted, the stale ID remains and causes FK constraint failures when Pico tries to create a chat session (`POST /api/chat/sessions` → `FOREIGN KEY constraint failed`). Fix: in `packages/frontend/src/hooks/use-selected-project.ts`, detect when `useProject()` returns a 404/error for the stored ID, and fall back to the first available project from `useProjects()`. Also add `retry: false` to the `useProject` query so it fails fast instead of retrying 3 times.
 
 ### SDK-Native Skills & Tool Discovery
 
@@ -33,29 +31,7 @@
 
 - [blocked: SDKSessionOptions does not support agent/agents, mcpServers, cwd, skills, or maxBudgetUsd — only query() Options does. V2 sessions can't be configured as Pico (custom personality, MCP server, project cwd). Need SDK to add these fields to SDKSessionOptions first.] **SDK.V2.3** — Refactor Pico to use V2 sessions. Update PICO.2 and PICO.3 design: instead of a custom `chat_sessions`/`chat_messages` DB table + manual conversation history assembly, use the SDK's native session management. `POST /api/chat/sessions` → calls `unstable_v2_createSession()` and stores the SDK session ID. `POST /api/chat/sessions/:id/messages` → calls `session.send(message)` and streams from `session.stream()`. `GET /api/chat/sessions` → calls `listSessions()` from the SDK. `GET /api/chat/sessions/:id/messages` → calls `getSessionMessages(sessionId)`. This eliminates our custom chat persistence layer entirely — the SDK handles conversation history, context compaction, and session storage. Keep the `chat_sessions` table only as a lightweight index (sessionId, projectId, title, createdAt) for the UI list. Remove `chat_messages` table from the schema design.
 
-### Part 3: Infrastructure — Hooks System (remaining)
-
-- [x] **SDK.HK.6** — E2E test plan: agent monitor file tracking. Create `tests/e2e/plans/agent-monitor-files.md`: test the files panel — verify it shows modified files during/after execution, badge count updates, file paths are correct. Visual verification of the panel layout.
-
-- [x] **SDK.HK.7** — Run agent monitor file tracking e2e test. Execute SDK.HK.6 test plan. Record results. Screenshots of files panel in both running and completed states.
-
-- [x] **SDK.HK.8** — Update `docs/architecture.md` with hooks architecture. Document: which hooks are registered (PreToolUse, PostToolUse, SessionStart, SessionEnd, FileChanged), what each does, how they replace the previous custom implementations, audit trail integration.
-
-### Part 4: Agent Quality — Structured Output
-
-- [x] **SDK.SO.1** — Add structured output for Router persona. In `packages/backend/src/agent/claude-executor.ts`: when the persona is the Router (check `persona.name === "Router"` or a `persona.settings.isRouter` flag), pass `outputFormat` to `query()` with a JSON schema: `{ nextState: string, reasoning: string, confidence: "high" | "medium" | "low" }`. Parse the structured response in `execution-manager.ts` instead of extracting state from free-text tool calls. This eliminates parsing failures and makes Router decisions machine-readable. Add `isRouter?: boolean` to Persona settings type.
-
-- [x] **SDK.SO.2** — Display structured Router decisions in UI. In the agent monitor and activity feed: when showing a Router execution result, render the structured JSON as a formatted card: state badge (color-coded), reasoning text, confidence indicator (green/yellow/red dot). This replaces the current raw text display of Router output.
-
-- [x] **SDK.SO.3** — E2E test plan: Router structured output. Create `tests/e2e/plans/router-structured-output.md`: verify Router decision cards display correctly in agent monitor and activity feed. Visual check of the state badge, reasoning, and confidence indicator.
-
-- [x] **SDK.SO.4** — Run Router structured output e2e test. Execute SDK.SO.3. Record results with screenshots of Router decision cards.
-
-- [x] **SDK.SO.5** — Update `docs/workflow.md` and `docs/personas.md` with structured Router output. Document: the JSON schema, how Router decisions are parsed, the confidence field and its meaning.
-
-### Part 5: Agent Quality — Custom Subagent Definitions
-
-- [x] **SDK.SA.1** — Define personas as SDK subagents. In `packages/backend/src/agent/claude-executor.ts`: when spawning an execution, pass all project personas as `agents` in the `query()` options. Map each Persona to an `AgentDefinition`: `{ description: persona.description, prompt: persona.systemPrompt, model: resolveModel(persona.model), tools: persona.allowedTools, skills: persona.skills, mcpServers: [...], maxTurns: 30 }`. This means any agent can invoke another persona as a subagent via the `Agent` tool — e.g., the Engineer can spawn the Code Reviewer for a quick review before committing. The Router no longer needs custom dispatch logic — it can directly invoke the next persona as a subagent.
+### Part 5: Agent Quality — Custom Subagent Definitions (remaining)
 
 - [ ] **SDK.SA.2** — Add subagent invocation tracking. When an agent spawns a subagent (detected via `SubagentStart`/`SubagentStop` hooks), create a child execution record linked to the parent. In the agent monitor: show subagent executions as nested cards under the parent. Activity feed: "Engineer spawned Code Reviewer as subagent for [Work Item]". Track subagent costs as part of the parent execution's total.
 
