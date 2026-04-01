@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 23:15 PDT — Review: RES.ANALYTICS.UX (approved)
+
+**Reviewed:** Analytics dashboard UX design research.
+- All 5 areas covered: where analytics live (4 options compared, hybrid recommended — dedicated /analytics page + dashboard link; nav item between Activity Feed and Chat; dashboard enhancement wireframe), time range controls (5 presets with default 7d, comparison mode with dashed overlay, URL query params for shareability), visualizations (7 chart types: summary cards with deltas, cost LineChart, outcomes stacked BarChart, cost-by-persona horizontal BarChart, persona leaderboard Table, activity heatmap via CSS Grid, workflow bottlenecks; full-page wireframe; each chart with specific Recharts component and API endpoint), drill-down (7 click targets → actions mapped, execution list modal wireframe with "View Detail" link to Agent Monitor, filter chips for persona/state), export (CSV with 11-column spec, JSON alternative, dashboard snapshot deferred)
+- Source code claims verified: dashboard.tsx stat cards grid at :68, cost-summary.tsx Recharts AreaChart at :4/:129, agent-history.tsx stats at :141-167, costs-section.tsx BarChart at :3/:236, sidebar.tsx 7 nav items at :38-46 with correct insertion point
+- Responsive design well-considered (3 breakpoints, ResponsiveContainer pattern from cost-summary.tsx)
+- 3-phase plan correctly defers workflow bottlenecks to Phase 2 (audit log dependency)
+- 6 cross-references accurate, 5 design decisions well-reasoned
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 23:00 PDT — RES.ANALYTICS.UX: Research analytics dashboard UX
 
 **Done:** Researched analytics dashboard UX design. Doc covers all 5 investigation areas: (1) where analytics live — 4 options compared (dedicated page/embedded/settings tab/hybrid), audited 4 existing surfaces (dashboard stat cards at dashboard.tsx:68-97, cost widget with Recharts AreaChart in cost-summary.tsx, agent-history stats bar at :143-172, settings costs with BarChart in costs-section.tsx), recommended hybrid — dedicated /analytics page + dashboard link, new nav item between Activity Feed and Chat; (2) time range controls — 5 presets (24h/7d/30d/90d/custom), comparison mode (vs previous period with dashed overlay), URL query params for shareability, backend endpoint extension needed; (3) visualizations — 7 chart types (summary cards with deltas, cost line chart, outcomes stacked bar, cost-by-persona horizontal bar, persona leaderboard table, activity heatmap via CSS Grid, workflow bottlenecks bar), full-page wireframe, each chart with data source API endpoint, Recharts for all except custom heatmap; (4) drill-down — click targets mapped to actions (7 interactions), execution list modal design, filter chips for persona/state, "View Detail" to Agent Monitor; (5) export — CSV with column spec, JSON alternative, dashboard snapshot deferred to Phase 3. Also: responsive breakpoints (3 tiers), 3-phase implementation plan, 6 cross-references, 5 design decisions.
