@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-03-31 — Review: FX.LIC1 (approved)
+
+**Reviewed:** Apache 2.0 license addition.
+- LICENSE file: standard Apache 2.0 text, complete (191 lines), copyright notice included
+- `"license": "Apache-2.0"` present in all 4 package.json files
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — FX.LIC1: Add Apache 2.0 license
 
 **Task:** Add Apache 2.0 license to the repository.
