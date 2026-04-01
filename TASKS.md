@@ -64,7 +64,7 @@
 
 - [x] **SDK.MCP.4** — Run MCP status e2e test. Execute SDK.MCP.3. Record results with screenshots.
 
-- [ ] **SDK.MCP.5** — Update `docs/mcp-tools.md` with dynamic MCP management. Document: runtime toggle/reconnect APIs, status monitoring, how to recover from MCP failures.
+- [review] **SDK.MCP.5** — Update `docs/mcp-tools.md` with dynamic MCP management. Document: runtime toggle/reconnect APIs, status monitoring, how to recover from MCP failures.
 
 ### Part 4: UX — Prompt Suggestions & Model Switching
 

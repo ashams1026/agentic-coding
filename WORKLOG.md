@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 09:35 PDT — SDK.MCP.5: Update MCP docs with dynamic management
+
+**Done:** Added "Dynamic MCP Management" section to `docs/mcp-tools.md`. Documents: 3 API endpoints table, status response format, agent monitor UI (colored dots, tooltip, click-to-reconnect), failure recovery 5-step flow, implementation details (runningQueries Map, SDK control methods). All 3 task requirements covered.
+**Files:** `docs/mcp-tools.md`
+
+---
+
 ## 2026-04-01 09:25 PDT — Review: SDK.MCP.4 (approved)
 
 **Reviewed:** MCP status e2e test results at `tests/e2e/results/mcp-status.md`.

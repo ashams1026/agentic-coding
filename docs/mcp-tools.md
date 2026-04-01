@@ -397,6 +397,65 @@ Reverts all file changes from a specific execution back to their pre-execution s
 
 Note: The actual tool names registered in the MCP server are the 8 listed in `TOOL_NAMES`. Access is controlled by the `ALLOWED_TOOLS` environment variable passed to the MCP server process.
 
+## Dynamic MCP Management
+
+During a running execution, MCP servers can be managed at runtime via API endpoints. This is useful when an MCP server crashes during a long agent run — the user can reconnect without restarting the entire execution.
+
+### API Endpoints
+
+| Endpoint | Method | Purpose |
+|---|---|---|
+| `/api/executions/:id/mcp/status` | GET | Get status of all MCP servers for a running execution |
+| `/api/executions/:id/mcp/toggle` | POST | Enable or disable an MCP server by name |
+| `/api/executions/:id/mcp/reconnect` | POST | Reconnect a failed MCP server |
+
+All endpoints return 404 if the execution is not currently running (query object no longer active).
+
+### Status Response
+
+```json
+[
+  {
+    "name": "agentops",
+    "status": "connected",
+    "tools": [{ "name": "post_comment" }, { "name": "route_to_state" }]
+  }
+]
+```
+
+**Status values:** `connected` (green), `failed` (red), `needs-auth` (amber), `pending` (amber), `disabled` (gray).
+
+### Agent Monitor UI
+
+During running executions, the terminal renderer toolbar shows colored dots for each MCP server:
+- **Green dot** — connected and operational
+- **Red dot** — failed (click to reconnect)
+- **Amber dot** — pending connection or needs authentication
+- **Gray dot** — disabled
+
+Hover over a dot to see: server name, status, error message (if failed), tool count. Click a failed server's dot to trigger reconnection.
+
+Status is polled every 30 seconds via `GET /api/executions/:id/mcp/status`.
+
+### Recovering from MCP Failures
+
+1. Agent monitor shows a red dot for the failed MCP server
+2. User clicks the red dot → triggers `POST /api/executions/:id/mcp/reconnect`
+3. The SDK reconnects the MCP server subprocess
+4. Dot turns green when connection is re-established
+5. The agent can resume using MCP tools
+
+Alternatively, use `POST /api/executions/:id/mcp/toggle` to disable a problematic server entirely (the agent continues without those tools).
+
+### Implementation
+
+Runtime MCP management uses the SDK's control methods on the active query object:
+- `query.mcpServerStatus()` — returns array of `McpServerStatus`
+- `query.toggleMcpServer(serverName, enabled)` — enable/disable a server
+- `query.reconnectMcpServer(serverName)` — reconnect a failed server
+
+Active query references are stored in a module-level `runningQueries` Map in `claude-executor.ts`, keyed by execution ID. The map is cleaned up when executions complete.
+
 ## Source Files
 
 | File | Purpose |
