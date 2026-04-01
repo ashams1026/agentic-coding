@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 00:00 PDT — UX.AGENT.MAIN: Audit Agent Monitor main layout
+
+**Done:** Audited `/agents` at 1440x900 and dark mode. Layout renders correctly: left sidebar shows 2 active agents (Engineer, Code Reviewer) with green dots, work item descriptions, elapsed time, cost. Main area shows header bar (agent name, model, time, cost, Work Item/Parent links, Stop/Force Stop buttons) + terminal with output lines. Live/History tabs work. Split view toggle present. Dark mode: good contrast, terminal green-on-dark readable. Filed 1 bug: FX.UX.AGENT.1 — "Work Item" and "Parent" links use non-existent `/work-items/:id` route → 404 error.
+**Files:** `tests/e2e/results/ux-agent-main-initial.png`, `tests/e2e/results/ux-agent-main-workitem-link.png`, `tests/e2e/results/ux-agent-main-dark.png`
+
+---
+
 ## 2026-04-01 23:50 PDT — Review: UX.DETAIL (approved)
 
 **Reviewed:** Work item detail panel audit — 3 screenshots, 0 bugs.
