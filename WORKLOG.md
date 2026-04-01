@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 00:50 PDT — Review: SDK.SO.3 (approved)
+
+**Reviewed:** E2E test plan at `tests/e2e/plans/router-structured-output.md`.
+- 13 steps across 3 parts covering agent monitor card, activity feed events, visual quality
+- Follows template format with visual inspection protocol and screenshot checkpoints
+- Handles data dependency with SKIP guidance for seeded data without structuredOutput
+- Step 10 comparison test verifies conditional rendering (non-Router events don't show cards)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 00:45 PDT — SDK.SO.3: E2E test plan for Router structured output
 
 **Done:** Created `tests/e2e/plans/router-structured-output.md` — 13 steps across 3 parts: agent monitor history card (5), activity feed events (5), visual quality (3). Covers state badge coloring, confidence dot, reasoning text, compact vs full variants, fallback for null structuredOutput. Notes data dependency — seeded executions predate the feature.
