@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 16:25 PDT — Review: SDK.FUT.6 (approved)
+
+**Reviewed:** Doc updates across 4 files for SDK.FUT.1-5 spike references.
+- architecture.md: 5-feature table with spike links and status — accurate
+- deployment.md: HTTP hooks config, remote execution, worktree settings — practical examples
+- personas.md: plugin-based skills with code example, worktree isolation — correct
+- getting-started.md: bullet list with all 5 spike links in What's Next
+- All spike links verified, content matches spike conclusions
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 16:20 PDT — SDK.FUT.6: Update docs for future SDK features
 
 **Done:** Updated 4 docs to reference evaluated SDK capabilities from FUT.1-5 spikes. architecture.md: added "Evaluated SDK Capabilities" table (5 features with spike links and status). deployment.md: added "Evaluated Future Capabilities" section (HTTP hooks config, remote execution, worktree settings). personas.md: added plugin-based skills and worktree isolation sections. getting-started.md: added "Evaluated SDK Features" links in What's Next.
