@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 16:35 PDT — RES.PROMPTS.VARS: Research template variables for prompts
+
+**Done:** Researched and documented template variable support for persona prompts. Doc covers all 5 investigation areas: (1) syntax — recommends `{{variable.name}}` (Mustache-style), with comparison table vs `${var}`, `{var}`, etc., (2) built-in variables — 10 prompt-time vars (project.*, persona.*, date.*) + 5 execution-time vars (workItem.*, workflow.*), with table of what's NOT available as variables and why, (3) user-defined variables — `vars.*` namespace, `project_variables` table schema, Settings UI location, (4) resolution — `resolveVariables()` in `buildSystemPrompt()`, undefined vars left as-is with warning, no logic/conditionals, (5) UI — autocomplete on `{{`, variable reference panel, enhanced preview with resolved values. Includes 4-phase implementation plan and architecture relationship.
+**Files:** `docs/proposals/persona-prompts/template-variables.md` (new)
+
+---
+
 ## 2026-04-02 16:25 PDT — Review: RES.PROMPTS.DOC (approved)
 
 **Reviewed:** Persona prompt pipeline documentation.
