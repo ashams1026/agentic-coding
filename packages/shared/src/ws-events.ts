@@ -22,7 +22,8 @@ export type WsEventType =
   | "proposal_created"
   | "proposal_updated"
   | "cost_update"
-  | "execution_update";
+  | "execution_update"
+  | "file_changed";
 
 // ── Event payloads ─────────────────────────────────────────────────
 
@@ -103,6 +104,14 @@ export interface ExecutionUpdateEvent {
   timestamp: string;
 }
 
+export interface FileChangedEvent {
+  type: "file_changed";
+  executionId: ExecutionId;
+  filePath: string;
+  changeType: "created" | "modified" | "deleted";
+  timestamp: string;
+}
+
 // ── Union type ─────────────────────────────────────────────────────
 
 export type WsEvent =
@@ -114,7 +123,8 @@ export type WsEvent =
   | ProposalCreatedEvent
   | ProposalUpdatedEvent
   | CostUpdateEvent
-  | ExecutionUpdateEvent;
+  | ExecutionUpdateEvent
+  | FileChangedEvent;
 
 // ── Subscriber API ─────────────────────────────────────────────────
 
@@ -130,4 +140,5 @@ export type WsEventMap = {
   proposal_updated: ProposalUpdatedEvent;
   cost_update: CostUpdateEvent;
   execution_update: ExecutionUpdateEvent;
+  file_changed: FileChangedEvent;
 };

@@ -4,7 +4,7 @@
  */
 
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import type { SDKMessage, AgentDefinition, HookCallback, PreToolUseHookInput, PostToolUseHookInput, PostToolUseFailureHookInput, SessionStartHookInput, SessionEndHookInput } from "@anthropic-ai/claude-agent-sdk";
+import type { SDKMessage, AgentDefinition, HookCallback, PreToolUseHookInput, PostToolUseHookInput, PostToolUseFailureHookInput, SessionStartHookInput, SessionEndHookInput, FileChangedHookInput } from "@anthropic-ai/claude-agent-sdk";
 import type {
   AgentExecutor,
   AgentTask,
@@ -294,6 +294,31 @@ function buildSessionHooks(ctx: {
   return { sessionStart, sessionEnd };
 }
 
+// ── File change hook ─────────────────────────────────────────────
+
+const FILE_EVENT_MAP: Record<string, "created" | "modified" | "deleted"> = {
+  add: "created",
+  change: "modified",
+  unlink: "deleted",
+};
+
+function buildFileChangedHook(executionId: string): HookCallback {
+  return async (input, _toolUseID, _options) => {
+    const fileInput = input as FileChangedHookInput;
+    const changeType = FILE_EVENT_MAP[fileInput.event] ?? "modified";
+
+    broadcast({
+      type: "file_changed",
+      executionId: executionId as ExecutionId,
+      filePath: fileInput.file_path,
+      changeType,
+      timestamp: new Date().toISOString(),
+    });
+
+    return {};
+  };
+}
+
 // ── Executor ──────────────────────────────────────────────────────
 
 export class ClaudeExecutor implements AgentExecutor {
@@ -379,6 +404,7 @@ export class ClaudeExecutor implements AgentExecutor {
             PostToolUseFailure: [{ hooks: [auditHooks.postToolUseFailure] }],
             SessionStart: [{ hooks: [sessionHooks.sessionStart] }],
             SessionEnd: [{ hooks: [sessionHooks.sessionEnd] }],
+            FileChanged: [{ hooks: [buildFileChangedHook(options.executionId)] }],
           },
           mcpServers: {
             agentops: {

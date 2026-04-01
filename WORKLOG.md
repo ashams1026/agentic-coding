@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-03-31 22:15 PDT — SDK.HK.4: FileChanged hook for live file tracking
+
+**Done:** Added `FileChanged` SDK hook that broadcasts `file_changed` WS events when agents modify files. New `FileChangedEvent` type in `packages/shared/src/ws-events.ts` with `{ executionId, filePath, changeType: "created"|"modified"|"deleted" }`. Hook maps SDK's `event` field (`add`/`change`/`unlink`) to user-friendly change types. Added `file_changed` to `WsEventType`, `WsEvent` union, `WsEventMap`, and frontend `ws-client.ts` listener initialization.
+**Files:** `packages/backend/src/agent/claude-executor.ts`, `packages/shared/src/ws-events.ts`, `packages/frontend/src/api/ws-client.ts`
+
+---
+
 ## 2026-03-31 22:00 PDT — Review: SDK.HK.3 (approved)
 
 **Reviewed:** SessionStart/SessionEnd lifecycle hooks in `claude-executor.ts` and `audit.ts`.

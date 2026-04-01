@@ -31,6 +31,7 @@ class RealWsClient {
     proposal_updated: new Set(),
     cost_update: new Set(),
     execution_update: new Set(),
+    file_changed: new Set(),
     "*": new Set(),
   };
 
