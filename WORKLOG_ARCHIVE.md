@@ -164,3 +164,27 @@ All personas updated in both seed.ts and default-personas.ts. Key pattern: no pe
 **SDK.V2.1:** Persistent SDK session manager (`sdk-session.ts`). Lazy singleton via `getSdkSession()`, `unstable_v2_createSession()` with sonnet model, bypassPermissions, core tools. Exponential backoff retry (3 attempts). Reads first stream message to capture sessionId. `closeSdkSession()` in graceful shutdown. `reconnectSdkSession()` tries resume then fallback.
 
 **SDK.V2.2:** SDK capabilities discovery endpoint (`routes/sdk.ts`). `withDiscoveryQuery()` — temporary `query()` subprocess, reads first message, calls control method, interrupts/drains. `initializationResult()` returns commands/agents/models. Cache on first call. `reloadPlugins()` for refresh. Unblocked FX.SDK3-6. Key finding: `initializationResult()` does NOT return built-in tool names — FX.SDK3/SDK5 remain blocked.
+
+---
+
+## Sprint 19 (File Checkpointing) + Sprint 17 (Bug Fixes, Testing, License) — 2026-03-31
+
+**SDK.V2.4:** Updated `docs/architecture.md` with V2 session architecture — singleton lifecycle, discovery, Pico integration, relationship to per-execution `query()` calls.
+
+**SDK.FC.1:** Enabled file checkpointing in executor — `enableFileCheckpointing: true` in `query()` options, `CheckpointEvent` type in AgentEvent union (internal, not broadcast), `checkpointMessageId` column on executions table (nullable), populated from first `SDKAssistantMessage`.
+
+**SDK.FC.2:** Rewind API endpoint — `POST /api/executions/:id/rewind` with dry-run support. Creates temporary `query()` session at project cwd, calls `rewindFiles(messageId, { dryRun })`, interrupt+drain. Posts system comment and audit trail on non-dry-run. Validates: execution exists, has checkpoint, not running.
+
+**SDK.FC.3:** Rewind button in agent monitor — `RewindButton` component (~120 lines) in `agent-history.tsx`. Undo2 icon, disabled for legacy executions (no checkpoint), hidden for running. Click: dry-run preview → AlertDialog modal showing file list (scrollable, mono font, insertions/deletions) → confirm → success toast.
+
+**FX.PICO1:** Verified "Pico persona not found" error already fixed — seed.ts creates Pico with `isAssistant: true`, chat.ts looks up by that flag. Issue was stale dev DB.
+
+**FX.PICO4:** Fixed CORS headers on Pico SSE endpoint — replaced `reply.raw.writeHead(200, { SSE headers })` with `reply.header()` + `reply.raw.writeHead(200, reply.getHeaders())`. This preserves CORS headers from `@fastify/cors` plugin without duplicating config.
+
+**FX.LIC1:** Added Apache 2.0 LICENSE file (191 lines) and `"license": "Apache-2.0"` to all 4 package.json files.
+
+**FX.PICO2:** Wrote Pico e2e test plan — 38 steps across 11 parts in `tests/e2e/plans/pico-chat.md`. Covers bubble visibility, panel open/close, quick actions, manual input, markdown rendering, session management, title editing, persistence, mobile viewport, error state, clear sessions.
+
+**FX.PICO3:** Executed Pico e2e test — 30/38 PASS, 4 FAIL, 4 SKIP. All failures from CORS bug on SSE endpoint. 8 screenshots captured. Bug filed as FX.PICO4 (HIGH severity).
+
+**FX.SDK6:** Exposed available subagents in persona config via SDK `supportedAgents()` — agents array from capabilities endpoint, multi-select in persona editor.

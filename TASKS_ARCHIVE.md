@@ -160,3 +160,25 @@
 ### Part 1: Infrastructure — V2 Persistent Sessions — archived 2026-03-31
 - [x] **SDK.V2.1** — Persistent SDK session manager: lazy singleton, `unstable_v2_createSession()`, retry with backoff, shutdown integration. *(completed 2026-03-31)*
 - [x] **SDK.V2.2** — SDK capabilities endpoint: `GET /api/sdk/capabilities` + `POST /api/sdk/reload` using `initializationResult()` Query control method. Unblocked FX.SDK3-6. *(completed 2026-03-31)*
+- [x] **SDK.V2.4** — Updated `docs/architecture.md` with V2 session architecture (singleton lifecycle, discovery, Pico integration). *(completed 2026-03-31)*
+
+### Part 2: Infrastructure — File Checkpointing — archived 2026-03-31
+- [x] **SDK.FC.1** — Enabled file checkpointing in executor: `enableFileCheckpointing: true`, `checkpointMessageId` column, `CheckpointEvent` type. *(completed 2026-03-31)*
+- [x] **SDK.FC.2** — Rewind API endpoint: `POST /api/executions/:id/rewind` with dry-run support, temporary `query()` session, audit trail. *(completed 2026-03-31)*
+- [x] **SDK.FC.3** — Rewind button in agent monitor: Undo2 icon, dry-run preview modal, success toast, disabled for legacy executions. *(completed 2026-03-31)*
+
+---
+
+## Sprint 17: Bug Fixes, Testing & License — archived 2026-03-31
+
+### Bug Fixes — archived 2026-03-31
+- [x] **FX.PICO1** — Fixed "Pico persona not found" error (stale dev DB, confirmed seed.ts creates Pico correctly). *(completed 2026-03-31)*
+- [x] **FX.PICO4** — Fixed CORS headers on Pico SSE endpoint: `reply.header()` + `reply.getHeaders()` instead of raw `writeHead()`. *(completed 2026-03-31)*
+- [x] **FX.LIC1** — Added Apache 2.0 LICENSE file and `"license": "Apache-2.0"` to all 4 package.json files. *(completed 2026-03-31)*
+
+### Pico UX Testing — archived 2026-03-31
+- [x] **FX.PICO2** — Wrote Pico e2e test plan: 38 steps across 11 parts in `tests/e2e/plans/pico-chat.md`. *(completed 2026-03-31)*
+- [x] **FX.PICO3** — Executed Pico e2e test: 30/38 PASS, 4 FAIL (CORS), 4 SKIP. Results in `tests/e2e/results/pico-chat.md`, 8 screenshots. *(completed 2026-03-31)*
+
+### SDK-Native Skills — archived 2026-03-31
+- [x] **FX.SDK6** — Exposed available subagents in persona config via SDK `supportedAgents()`. *(completed 2026-03-31)*

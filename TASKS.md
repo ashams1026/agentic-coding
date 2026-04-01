@@ -5,37 +5,23 @@
 
 ---
 
-> Sprints 1-16 complete and archived. Sprint 17 archived except blocked FX.SDK3/SDK5 and pending FX.SDK6. Sprint 18 fully archived. Sprint 19 V2.1-V2.2 archived.
+> Sprints 1-18 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 19 V2.1-V2.2, V2.4, FC.1-FC.3 archived.
 
 ---
 
 ## Sprint 17: Agent Pipeline Fixes & Monitor UX (remaining)
 
-> Blocked and remaining SDK tasks.
+> Blocked and remaining tasks.
 
 ### Bug Fixes
 
-- [x] **FX.PICO1** — Fix "Pico persona not found" error when chatting.
-
-- [x] **FX.PICO4** — Fix CORS headers on Pico SSE endpoint. The `POST /api/chat/sessions/:id/messages` endpoint writes SSE headers manually via `reply.raw.writeHead()` in `packages/backend/src/routes/chat.ts` (line ~315), which bypasses Fastify's `@fastify/cors` plugin. Browser console shows: `Access to fetch... blocked by CORS policy: No 'Access-Control-Allow-Origin' header`. Fix: add CORS headers to the `writeHead()` call, or use `reply.header()` before `reply.raw.writeHead()` to let Fastify's CORS plugin inject its headers. This blocks all Pico chat functionality in the browser (curl works fine). Severity: HIGH. The Pico chat endpoint (`POST /api/chat/sessions/:id/messages`) fails with "Pico persona not found". Likely cause: Pico persona (`ps-pico`) was added to `seed.ts` but the dev database wasn't re-seeded after the schema change, so the persona row doesn't exist. Fix: check if the chat route looks up Pico by ID (`ps-pico`) or by `isAssistant` flag, verify the persona exists in the current dev DB, and if not, ensure `pnpm db:seed` inserts it. Also add a defensive check — if Pico persona is missing, return a clear error message suggesting re-seeding instead of a generic 404.
-
-- [x] **FX.LIC1** — Add Apache 2.0 license. Create a `LICENSE` file at the repo root with the standard Apache License 2.0 text. Add `"license": "Apache-2.0"` to the root `package.json` and each workspace package.json (`packages/shared`, `packages/backend`, `packages/frontend`).
-
 - [ ] **FX.PICO5** — Fix Pico chat panel scroll overflow. The chat panel message area doesn't scroll within its container — messages overflow off screen instead of scrolling inside the panel. In `packages/frontend/src/features/pico/chat-panel.tsx`: ensure the message area has a fixed height with `overflow-y: auto` (or uses ScrollArea) so messages scroll within the panel bounds. Verify auto-scroll to bottom still works on new messages.
-
-### Pico UX Testing
-
-- [x] **FX.PICO2** — Write Pico e2e test plan. Create `tests/e2e/plans/pico-chat.md`: a step-by-step test plan covering the full Pico UX. Steps should include: (1) verify chat bubble is visible on every page, (2) click bubble to open chat panel, (3) verify welcome message and quick-action buttons, (4) click a quick-action suggestion and verify it sends as a message, (5) type a custom message and send via Cmd+Enter, (6) verify streaming response appears with typing indicator, (7) verify markdown rendering in Pico responses, (8) verify thinking blocks are collapsible, (9) verify tool call cards render correctly, (10) test session management — create new session, switch sessions, verify history loads, (11) close and reopen panel — verify state persists, (12) test on mobile viewport — verify panel is usable, (13) test error state — what happens when backend is down. Each step should include visual verification via screenshot.
-
-- [x] **FX.PICO3** — Execute Pico e2e test plan. Run the test plan from FX.PICO2 using chrome-devtools MCP against the running app. Record results to `tests/e2e/results/pico-chat.md`. Take screenshots at each visual checkpoint. Document any bugs found with severity and reproduction steps. File new FX tasks for any failures.
 
 ### SDK-Native Skills & Tool Discovery
 
 - [blocked: SDK initializationResult() does not return built-in tool names/descriptions — only commands (skills), agents, and models. No tool discovery API exists in the SDK. The hardcoded SDK_TOOLS list in tool-configuration.tsx is actually correct since built-in tools are a fixed set.]  **FX.SDK3** — Replace hardcoded tool list with SDK discovery in persona editor. In the persona editor UI (`packages/frontend/src/features/persona-manager/`): replace any freeform text input or hardcoded tool checkboxes for `allowedTools` with a multi-select populated from `GET /api/sdk/capabilities`. Show each tool with its name and description. Group by category: File tools, Search tools, Execution, Web, Agent, Other. Same for `mcpTools` — show available MCP tools from the discovery response. Validate on save: warn if a selected tool isn't in the available set.
 
 - [blocked: same as FX.SDK3 — no tool discovery API in SDK. Can validate skills (commands) and agents from capabilities, but not built-in tools.] **FX.SDK5** — Add startup tool validation. In `packages/backend/src/agent/execution-manager.ts`: on first dispatch (or server start), fetch the SDK capabilities and validate all persona `allowedTools` and `skills` against the actual available set. Log warnings for any mismatches: "Persona 'Engineer' references unknown tool 'FooBar' — will be ignored by SDK." This catches stale tool names early (like the `transition_state` vs `route_to_state` incident).
-
-- [x] **FX.SDK6** — Expose available subagents in persona config. The SDK provides `supportedAgents()` returning agent name, description, and model. In the persona editor: add a "Subagents" section showing available agents from the SDK discovery. Allow personas to reference specific subagents (e.g., the Engineer persona might use the `code-reviewer` subagent). Store as `subagents: string[]` on the Persona entity. Pass via query options if the SDK supports it, otherwise inject as guidance in the system prompt.
 
 ---
 
@@ -49,15 +35,7 @@
 
 - [blocked: SDKSessionOptions does not support agent/agents, mcpServers, cwd, skills, or maxBudgetUsd — only query() Options does. V2 sessions can't be configured as Pico (custom personality, MCP server, project cwd). Need SDK to add these fields to SDKSessionOptions first.] **SDK.V2.3** — Refactor Pico to use V2 sessions. Update PICO.2 and PICO.3 design: instead of a custom `chat_sessions`/`chat_messages` DB table + manual conversation history assembly, use the SDK's native session management. `POST /api/chat/sessions` → calls `unstable_v2_createSession()` and stores the SDK session ID. `POST /api/chat/sessions/:id/messages` → calls `session.send(message)` and streams from `session.stream()`. `GET /api/chat/sessions` → calls `listSessions()` from the SDK. `GET /api/chat/sessions/:id/messages` → calls `getSessionMessages(sessionId)`. This eliminates our custom chat persistence layer entirely — the SDK handles conversation history, context compaction, and session storage. Keep the `chat_sessions` table only as a lightweight index (sessionId, projectId, title, createdAt) for the UI list. Remove `chat_messages` table from the schema design.
 
-- [x] **SDK.V2.4** — Update `docs/architecture.md` with V2 session architecture. Document: the persistent SDK session singleton, its role in discovery and Pico, session lifecycle (startup → ready → reconnect → shutdown), how it relates to per-execution `query()` calls for workflow agents.
-
 ### Part 2: Infrastructure — File Checkpointing
-
-- [x] **SDK.FC.1** — Enable file checkpointing in executor. In `packages/backend/src/agent/claude-executor.ts`: add `enableFileCheckpointing: true` to the `query()` options. This makes `rewindFiles(messageId)` available on every agent execution. Store the initial message ID (first assistant message) in the execution record so we can rewind to pre-execution state. Add a `checkpointMessageId` column to the executions table (nullable string). Populate it from the first `SDKAssistantMessage` received during streaming.
-
-- [x] **SDK.FC.2** — Add rewind API endpoint. Add `POST /api/executions/:id/rewind` route in `packages/backend/src/routes/executions.ts`. Accepts `{ dryRun?: boolean }`. Looks up the execution's `checkpointMessageId`, creates a temporary `query()` session pointed at the same project directory, calls `rewindFiles(checkpointMessageId, { dryRun })`. Returns `{ files: RewindFilesResult[] }` — list of files that were/would be restored. If not a dry run, post a system comment on the work item: "Files reverted to pre-execution state by [user]." Log the rewind in the audit trail.
-
-- [x] **SDK.FC.3** — Add rewind button to agent monitor UI. In `packages/frontend/src/features/agent-monitor/`: add a "Rewind" button (undo icon) to the execution header bar, next to the existing controls. Only visible on completed executions (not running ones). Click flow: (1) call rewind with `dryRun: true`, (2) show a confirmation modal listing files that will be reverted, (3) on confirm, call rewind without dryRun, (4) show success toast. Disable the button if `checkpointMessageId` is null (legacy executions without checkpointing). Add tooltip: "Revert all file changes made by this agent run."
 
 - [ ] **SDK.FC.4** — Add rewind to REVIEW state workflow. Update the Code Reviewer persona's system prompt: after reviewing an agent's work, if the review outcome is REJECT, the reviewer can call the rewind API to automatically restore files before re-routing to a previous state. Add `rewind_execution` as a new MCP tool in the agentops MCP server: takes `executionId`, calls the rewind endpoint internally. Add to the reviewer's `mcpTools` allowlist.
 
@@ -130,6 +108,11 @@
 > Real-time streaming, progress tracking, rate limit handling, context usage monitoring.
 > Safety improvements: SDK-native sandbox, permission callbacks, dynamic MCP management.
 > UX enhancements: prompt suggestions, model switching.
+> **Runs in parallel with Sprint 21 (Documentation Refresh)** — agents should alternate between implementation and docs.
+
+### Regression Testing Checkpoint
+
+- [ ] **SDK.REG.2** — Full e2e regression sweep after Sprint 20. Re-run all e2e test suites (including new ones from Sprints 19-20) against the current app state. Record results to `tests/e2e/results/regression-post-sprint20.md`. Compare against Sprint 19 regression baseline. File new FX tasks for any regressions. This is the final quality gate before moving to backlog work.
 
 ### Part 1: Real-Time Streaming
 
@@ -193,6 +176,36 @@
 
 - [ ] **SDK.UX.8** — Update `docs/frontend.md` with prompt suggestions and model switching. Document: how prompt suggestions work in Pico, model switching in agent monitor, in-process MCP server architecture change.
 
+### Regression Testing Checkpoint
+
+- [ ] **SDK.REG.1** — Full e2e regression sweep after Sprint 19. Re-run all 19 original e2e test suites from `tests/e2e/plans/` against the current app state. Record results to `tests/e2e/results/regression-post-sprint19.md`. Compare pass rates against the previous run (97.3% baseline from Sprint 16). File new FX tasks for any regressions introduced by Sprint 19 changes. This catches breakage from hooks migration, rewind button, structured output, subagent nesting, and effort/thinking UI changes.
+
+---
+
+## Sprint 21: Documentation Refresh
+
+> All docs were written on 2026-03-30 and haven't been updated since. 200+ commits have landed since then.
+> Each task: run `git log --oneline --since="<last_edit_date>" -- <relevant_source_paths>` to find what changed, read the current doc, update it to reflect the new state of the code. Don't rewrite from scratch — update what's stale, add what's missing, remove what's been deleted.
+> **This sprint runs in parallel with Sprint 20** — agents should alternate between implementation and docs to keep documentation current.
+
+- [ ] **DOC.1** — Update `docs/getting-started.md`. Check commits touching `packages/backend/src/index.ts`, `packages/backend/src/cli.ts`, `packages/backend/src/db/seed.ts`, `package.json`, `scripts/`. Update: install steps, first-run commands, any new CLI commands, seed script changes, new prerequisites. The mock mode instructions should be removed (mock layer was deleted). Add the `pnpm db:seed:demo` command if it exists.
+
+- [ ] **DOC.2** — Update `docs/architecture.md`. Check commits touching `packages/backend/src/agent/`, `packages/backend/src/routes/`, `packages/frontend/src/api/`, `packages/frontend/src/features/`. Update: system diagram if new components were added (Pico chat, sandbox, audit trail), data flow if the execution chain changed (router loop fixes, rate limiter logging), any new backend services or routes.
+
+- [ ] **DOC.3** — Update `docs/data-model.md`. Check commits touching `packages/shared/src/entities.ts`, `packages/backend/src/db/schema.ts`. Update: any new fields added to entities (skills on Persona, isAssistant flag, chat_sessions/chat_messages tables), any changed field names or types, update the ER diagram if relationships changed.
+
+- [ ] **DOC.4** — Update `docs/workflow.md`. Check commits touching `packages/shared/src/workflow.ts`, `packages/backend/src/agent/router.ts`, `packages/backend/src/agent/dispatch.ts`, `packages/backend/src/agent/coordination.ts`, `packages/backend/src/agent/execution-manager.ts`. Update: router behavior changes (same-state blocking, loop detection, transition history), rate limiter logging, any new states or transition rules, play/pause auto-routing UX.
+
+- [ ] **DOC.5** — Update `docs/personas.md`. Check commits touching `packages/backend/src/db/seed.ts` persona entries, `packages/backend/src/agent/claude-executor.ts`. Update: any persona prompt changes from the FX.P1-P5 overhaul, corrected tool names, new skills system, SDK tool name verification results, Pico as a new built-in persona (if implemented). Document the full list of correct MCP and SDK tool names per persona.
+
+- [ ] **DOC.6** — Update `docs/api.md`. Check commits touching `packages/backend/src/routes/`, `packages/backend/src/server.ts`. Update: any new routes (chat sessions, service status, browse-directory, audit), any changed request/response shapes, any removed routes. Add curl examples for new endpoints.
+
+- [ ] **DOC.7** — Update `docs/mcp-tools.md`. Check commits touching `packages/backend/src/agent/mcp-server.ts`. Update: any tool schema changes, new tools added, tool name corrections, per-persona allowlist changes from the audit.
+
+- [ ] **DOC.8** — Update `docs/deployment.md`. Check commits touching `packages/backend/src/cli.ts`, `ecosystem.config.cjs`, `packages/backend/src/config.ts`, `packages/backend/src/logger.ts`, `packages/backend/src/audit.ts`, `scripts/`. Update: any new CLI commands, config file changes, log file paths, pm2 config changes, new scripts (test-e2e, dev wrapper).
+
+- [ ] **DOC.9** — Update `docs/frontend.md`. Check commits touching `packages/frontend/src/`. Update: mock layer removal, new features (Pico chat, resizable panels, flow view redesign, play/pause control), deleted directories (mocks/), new stores or hooks, design system changes from the polish sprint.
+
 ---
 
 ## Backlog: SDK Future Features
@@ -233,6 +246,12 @@
 
 - [ ] **PLUG.7** — Update `docs/architecture.md` with pluggable executor documentation. Document: the executor interface contract, how to implement a custom executor, the registry pattern, the composition root, the `@agentops/core` package boundary, and a diagram showing which packages depend on what. Include a "Building on AgentOps" section for external developers.
 
+- [ ] **PLUG.8** — Integration tests for executor registry. Create `packages/backend/tests/executor-registry.test.ts`: test registering multiple executors, switching between them at runtime, verifying the correct executor is selected by environment (test/dev/prod). Test that an unregistered executor name throws a clear error. Test that the REST API (`GET/PUT /api/settings/executor-mode`) reflects registry state. Use the real `ExecutionManager` class with `MockExecutor` instances — no mocking the system under test.
+
+- [ ] **PLUG.9** — E2E test plan: executor switching UI. Create `tests/e2e/plans/executor-switching.md`: test the Settings executor toggle (only visible in dev mode), verify switching between mock and claude modes, verify the status bar shows current executor mode, verify the health endpoint reflects the change. Visual verification of the settings UI.
+
+- [ ] **PLUG.10** — Run executor switching e2e test. Execute PLUG.9 test plan. Record results with screenshots.
+
 ---
 
 ## Backlog: Agent Workflow Improvements
@@ -241,28 +260,4 @@
 
 - [ ] **AW.2** — Add visual check to REVIEW state. Update `AGENT_PROMPT.md`: in the REVIEW state's `[INSPECT WORK]` step, add: if the worker's WORKLOG entry lists frontend files, open the affected pages in a browser via chrome-devtools MCP and visually verify the UI looks correct. This gives the reviewer a second pair of eyes on visual quality. Add a review checklist item: "If UI was changed: does it look correct visually? No broken layout, clipping, or styling issues?"
 
----
-
-## Backlog: Documentation Refresh
-
-> All docs were written on 2026-03-30 and haven't been updated since. 153+ commits have landed since then.
-> Each task: run `git log --oneline --since="<last_edit_date>" -- <relevant_source_paths>` to find what changed, read the current doc, update it to reflect the new state of the code. Don't rewrite from scratch — update what's stale, add what's missing, remove what's been deleted.
-
-- [ ] **DOC.1** — Update `docs/getting-started.md`. Check commits touching `packages/backend/src/index.ts`, `packages/backend/src/cli.ts`, `packages/backend/src/db/seed.ts`, `package.json`, `scripts/`. Update: install steps, first-run commands, any new CLI commands, seed script changes, new prerequisites. The mock mode instructions should be removed (mock layer was deleted). Add the `pnpm db:seed:demo` command if it exists.
-
-- [ ] **DOC.2** — Update `docs/architecture.md`. Check commits touching `packages/backend/src/agent/`, `packages/backend/src/routes/`, `packages/frontend/src/api/`, `packages/frontend/src/features/`. Update: system diagram if new components were added (Pico chat, sandbox, audit trail), data flow if the execution chain changed (router loop fixes, rate limiter logging), any new backend services or routes.
-
-- [ ] **DOC.3** — Update `docs/data-model.md`. Check commits touching `packages/shared/src/entities.ts`, `packages/backend/src/db/schema.ts`. Update: any new fields added to entities (skills on Persona, isAssistant flag, chat_sessions/chat_messages tables), any changed field names or types, update the ER diagram if relationships changed.
-
-- [ ] **DOC.4** — Update `docs/workflow.md`. Check commits touching `packages/shared/src/workflow.ts`, `packages/backend/src/agent/router.ts`, `packages/backend/src/agent/dispatch.ts`, `packages/backend/src/agent/coordination.ts`, `packages/backend/src/agent/execution-manager.ts`. Update: router behavior changes (same-state blocking, loop detection, transition history), rate limiter logging, any new states or transition rules, play/pause auto-routing UX.
-
-- [ ] **DOC.5** — Update `docs/personas.md`. Check commits touching `packages/backend/src/db/seed.ts` persona entries, `packages/backend/src/agent/claude-executor.ts`. Update: any persona prompt changes from the FX.P1-P5 overhaul, corrected tool names, new skills system, SDK tool name verification results, Pico as a new built-in persona (if implemented). Document the full list of correct MCP and SDK tool names per persona.
-
-- [ ] **DOC.6** — Update `docs/api.md`. Check commits touching `packages/backend/src/routes/`, `packages/backend/src/server.ts`. Update: any new routes (chat sessions, service status, browse-directory, audit), any changed request/response shapes, any removed routes. Add curl examples for new endpoints.
-
-- [ ] **DOC.7** — Update `docs/mcp-tools.md`. Check commits touching `packages/backend/src/agent/mcp-server.ts`. Update: any tool schema changes, new tools added, tool name corrections, per-persona allowlist changes from the audit.
-
-- [ ] **DOC.8** — Update `docs/deployment.md`. Check commits touching `packages/backend/src/cli.ts`, `ecosystem.config.cjs`, `packages/backend/src/config.ts`, `packages/backend/src/logger.ts`, `packages/backend/src/audit.ts`, `scripts/`. Update: any new CLI commands, config file changes, log file paths, pm2 config changes, new scripts (test-e2e, dev wrapper).
-
-- [ ] **DOC.9** — Update `docs/frontend.md`. Check commits touching `packages/frontend/src/`. Update: mock layer removal, new features (Pico chat, resizable panels, flow view redesign, play/pause control), deleted directories (mocks/), new stores or hooks, design system changes from the polish sprint.
 
