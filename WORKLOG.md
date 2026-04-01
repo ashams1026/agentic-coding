@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-03-31 — Review: SDK.FC.3 (approved)
+
+**Reviewed:** Rewind button in agent monitor history.
+- `RewindButton` component: clean separation, proper state management (loading, preview, dialog)
+- Visibility: returns null for running executions, disabled for null checkpointMessageId — both correct
+- UX flow: dry-run preview → modal with file list → confirm → toast — matches task spec exactly
+- `e.stopPropagation()` prevents row toggle on click — good attention to detail
+- Contextual tooltip: explains purpose or why disabled for legacy executions
+- AlertDialog modal: file count with plural handling, mono font paths, scrollable list (max-h-200px), insertions/deletions stats
+- Error handling: toast on both preview and confirm failures
+- API client: `rewindExecution(id, dryRun)` with proper typing, re-exported from index
+- Build passes clean
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — SDK.FC.3: Add rewind button to agent monitor UI
 
 **Task:** Add rewind button to execution history with dry-run preview modal.
