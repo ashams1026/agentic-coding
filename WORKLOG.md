@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 10:25 PDT — Review: SDK.UX.2 (approved)
+
+**Reviewed:** Model switching across routes, API client, ModelSwitcher component, terminal renderer.
+- Backend: 2 routes (GET models, POST model) using `supportedModels()` and `setModel()` on running query
+- Frontend: Select dropdown for running, Badge fallback for completed
+- AlertDialog confirmation with cost warning before switching
+- Badge updates on successful switch
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 10:20 PDT — SDK.UX.2: Model switching for long-running agents
 
 **Done:** Full-stack model switching. Backend: `GET /api/executions/:id/models` (returns available models via `supportedModels()`), `POST /api/executions/:id/model` (calls `setModel()` on running query). Frontend: `ModelSwitcher` component — Select dropdown for running executions, static Badge for completed. AlertDialog confirmation before switching with cost warning. API client functions `getAvailableModels()` and `switchModel()`. Replaces static model badge in terminal renderer header.
