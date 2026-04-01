@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 04:45 PDT — Review: UX.DARK (approved)
+
+**Reviewed:** Comprehensive dark mode audit.
+- 9 screenshots verified covering all 8 views (6 pages + Pico + Command Palette + item detail) ✓
+- All pages have proper dark backgrounds, readable text, colored badges visible ✓
+- No invisible text, low-contrast elements, missing backgrounds, broken borders, or white flashes ✓
+- No bugs found — clean audit
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 04:35 PDT — UX.DARK: Comprehensive dark mode audit
 
 **Done:** Switched to dark mode via Settings > Appearance. Visited all 8 views: Dashboard, Work Items (list + detail panel), Agent Monitor, Activity Feed, Persona Manager, Settings, Pico Chat, and Command Palette. Each page screenshotted and inspected for invisible text, low-contrast elements, missing dark backgrounds, broken borders, and white flashes on navigation. All pages render correctly in dark mode — proper dark backgrounds, readable text, colored badges/labels visible, no white flash between navigations. No bugs found.

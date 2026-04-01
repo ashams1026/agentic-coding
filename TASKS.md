@@ -81,7 +81,7 @@
 
 - [x] **UX.CMD** — Audit Command Palette. Open command palette (Cmd+K or shortcut). Verify: overlay appears, search input is focused, typing filters commands/pages, selecting a command navigates or executes the action, Escape closes the palette. Check that all registered commands appear. Screenshot. File bugs. *(completed 2026-04-02 04:15 PDT)*
 
-- [review] **UX.DARK** — Comprehensive dark mode audit. Switch to dark mode. Visit every page in sequence (`/`, `/items`, `/agents`, `/activity`, `/personas`, `/settings`), plus open Pico and command palette. For each: screenshot and check for invisible text, low-contrast elements, missing dark backgrounds, broken borders, white flashes on navigation. File all visual issues as individual bugs with page and element identified.
+- [x] **UX.DARK** — Comprehensive dark mode audit. Switch to dark mode. Visit every page in sequence (`/`, `/items`, `/agents`, `/activity`, `/personas`, `/settings`), plus open Pico and command palette. For each: screenshot and check for invisible text, low-contrast elements, missing dark backgrounds, broken borders, white flashes on navigation. File all visual issues as individual bugs with page and element identified.
 
 - [ ] **UX.RESPONSIVE** — Comprehensive responsive audit. Set viewport to 1024px width, then 768px. Visit every page in sequence. For each: screenshot and check for horizontal overflow, clipped content, overlapping elements, unreadable text, broken layouts, inaccessible buttons. File all layout issues as individual bugs.
 
@@ -100,6 +100,12 @@
 - [ ] **FX.UX.PERSONA.3** — Delete selected persona causes 404 error toast. Page `/personas`. After deleting a persona that is currently selected in the detail panel, the detail panel still tries to fetch the deleted persona's data, resulting in an "API request failed" error toast and a stuck "Loading..." state. Root cause: `handleDeleteConfirm` in `persona-list.tsx` (~line 247) calls `setDeleteTarget(null)` on success but does NOT clear the parent's `selectedId`. Fix: accept an `onDeselect` callback prop (or extend `onSelect` to accept `null`) and call it when the deleted persona matches `selectedId`. Screenshot: `tests/e2e/results/ux-persona-after-delete.png`.
 
 - [blocked: TestRunPanel component exists in persona-editor.tsx but PersonaManagerPage uses PersonaDetailPanel instead. The test-run feature is not accessible from the UI — no route or button leads to persona-editor.tsx. Cannot audit what users can't reach.] **FX.UX.PERSONA.4** — Wire TestRunPanel into Persona Manager UI. The `TestRunPanel` component (`packages/frontend/src/features/persona-manager/test-run-panel.tsx`) exists and is imported in `persona-editor.tsx`, but the page (`pages/persona-manager.tsx` line 38) uses `PersonaDetailPanel` which does not include it. Users cannot test-run a persona. Fix: either add a collapsible TestRunPanel to `PersonaDetailPanel` (at the bottom of the read-only view), or replace `PersonaDetailPanel` with `PersonaEditor` in the page layout.
+
+---
+
+## UX Improvements
+
+- [ ] **UX.AGENT.BREADCRUMB** — Replace "Work Item" and "Parent" navigation links in Agent Monitor with a breadcrumb trail + side panel. Currently in `packages/frontend/src/features/agent-monitor/agent-control-bar.tsx` (~lines 127-135): two ghost buttons ("Work Item", "Parent") call `navigate("/items")` which takes the user away from the Agent Monitor. Change to: (1) replace the buttons with a breadcrumb trail matching the pattern in `packages/frontend/src/features/work-items/detail-panel.tsx` `ParentBreadcrumb` component (~line 450) — show `Parent Story > Work Item Title` as linked breadcrumb segments, (2) clicking a breadcrumb segment should open the work item detail side panel as an overlay on the Agent Monitor page (not navigate away), using the existing `DetailPanel` component and `setSelectedItemId` pattern, (3) the side panel should be dismissible so the user stays on the Agent Monitor. Consider reusing or extracting the `ParentBreadcrumb` component from detail-panel.tsx into a shared location.
 
 ---
 
