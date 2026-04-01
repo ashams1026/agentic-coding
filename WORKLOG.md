@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 04:15 PDT — SDK.ET.5: Update personas docs with effort & thinking
+
+**Done:** Added "Effort & Thinking Configuration" section to `docs/personas.md`. Includes: effort levels table (4 levels with cost impact), thinking modes table (3 modes with behavior), recommended defaults table (6 personas with rationale), UI configuration instructions. All three task requirements covered.
+**Files:** `docs/personas.md`
+
+---
+
 ## 2026-04-01 04:05 PDT — Review: SDK.ET.4 (approved)
 
 **Reviewed:** Persona effort & thinking e2e test results at `tests/e2e/results/persona-effort-thinking.md`.

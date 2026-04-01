@@ -304,6 +304,46 @@ The `subagents` field on the Persona entity stores preferred subagent persona ID
 - `parentExecutionId` column on executions table links child records to parent
 - Agent monitor renders subagent executions as nested cards under the parent
 
+## Effort & Thinking Configuration
+
+Each persona can be configured with an **effort level** and **thinking mode** that control how much reasoning Claude applies during execution. These are set in `persona.settings` and passed to the SDK's `query()` options.
+
+### Effort Levels
+
+| Level | Description | Cost Impact | Best For |
+|---|---|---|---|
+| `low` | Fast, minimal reasoning | Lowest | Simple routing decisions, lightweight tasks |
+| `medium` | Balanced speed and quality | Moderate | Acceptance criteria, planning |
+| `high` | Thorough reasoning (default) | Higher | Code review, decomposition |
+| `max` | Maximum depth | Highest | Complex implementation, deep analysis |
+
+### Thinking Modes
+
+| Mode | Description | Behavior |
+|---|---|---|
+| `adaptive` | Claude decides when to think deeply (default) | SDK manages thinking automatically based on task complexity |
+| `enabled` | Always show reasoning chain | Extended thinking with a token budget (`thinkingBudgetTokens`, default 10000) |
+| `disabled` | No extended thinking | Fastest responses, no reasoning chain |
+
+### Recommended Defaults
+
+| Persona | Effort | Thinking | Rationale |
+|---|---|---|---|
+| Product Manager | `medium` | `adaptive` | AC writing doesn't need deep reasoning |
+| Tech Lead | `high` | `adaptive` | Decomposition benefits from thorough analysis |
+| Engineer | `max` | `enabled` (16K budget) | Implementation needs maximum depth and visible reasoning |
+| Code Reviewer | `high` | `adaptive` | Reviews need thoroughness but not maximum cost |
+| Router | `low` | `disabled` | Routing decisions are lightweight — cost efficiency |
+| Pico | `high` | `adaptive` | General assistant — balanced (inherits defaults) |
+
+### Configuring in the UI
+
+In the **Persona Manager**, click a persona and select **Edit**. The "Effort & Thinking" section appears below Budget with two dropdowns:
+- **Effort Level** — low/medium/high/max with descriptions
+- **Thinking Mode** — adaptive/enabled/disabled with descriptions
+
+Values are saved to `persona.settings` and merged with existing settings (system flags like `isSystem` and `isRouter` are preserved).
+
 ## The Router as a Special Persona
 
 The Router differs from other personas in several ways:
