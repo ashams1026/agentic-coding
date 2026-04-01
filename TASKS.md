@@ -69,7 +69,7 @@
 
 ### Settings (`/settings`)
 
-- [review] **UX.SETTINGS** — Audit Settings page (all sections). Open `/settings`. Navigate each section tab/panel: Projects (CRUD operations, project switching), API Keys (add/remove/mask), Workflow Config, Appearance (theme toggle, layout options), Costs, Security, Executor mode (if visible in dev). Verify: forms save correctly, validation messages appear, toasts confirm actions. Screenshot each section. File bugs.
+- [x] **UX.SETTINGS** — Audit Settings page (all sections). Open `/settings`. Navigate each section tab/panel: Projects (CRUD operations, project switching), API Keys (add/remove/mask), Workflow Config, Appearance (theme toggle, layout options), Costs, Security, Executor mode (if visible in dev). Verify: forms save correctly, validation messages appear, toasts confirm actions. Screenshot each section. File bugs.
 
 ### Pico Chat
 
