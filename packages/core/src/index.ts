@@ -41,3 +41,6 @@ export type {
   WorkItemEdgeRepository,
   Repositories,
 } from "./repositories.js";
+
+export { ExecutorRegistry } from "./executor-registry.js";
+export type { ExecutorFactoryFn } from "./executor-registry.js";

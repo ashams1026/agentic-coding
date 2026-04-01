@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 18:10 PDT — PLUG.4: Executor registry with named registration
+
+**Done:** Added `ExecutorRegistry` class to `@agentops/core` with `register()`, `get()`, `has()`, `list()` methods. Refactored `ExecutionManager` to accept registry instead of plain factory. Updated `setup.ts` to use `createDefaultRegistry()` with "claude" and "mock" registered. REST API `GET /api/settings/executor-mode` now returns `available` array from registry. `PUT` validates against registered names. Marked PLUG.3c/3d as blocked (non-DB dependencies need broader abstraction).
+**Files:** `packages/core/src/executor-registry.ts` (new), `packages/core/src/index.ts`, `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/agent/setup.ts`, `packages/backend/src/routes/settings.ts`, `TASKS.md` (PLUG.3c/3d blocked)
+
+---
+
 ## 2026-04-01 17:50 PDT — Review: PLUG.3b (approved)
 
 **Reviewed:** Repository interfaces in `@agentops/core` + Drizzle implementations.

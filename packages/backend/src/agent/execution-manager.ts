@@ -19,6 +19,7 @@ import type {
   WsEvent,
 } from "@agentops/shared";
 import type { AgentExecutor, AgentTask, AgentEvent } from "./types.js";
+import type { ExecutorRegistry } from "@agentops/core";
 import { logger } from "../logger.js";
 import { auditAgentDispatch, auditAgentComplete, auditCostEvent } from "../audit.js";
 import { trackExecution, onComplete, getProjectCostSummary } from "./concurrency.js";
@@ -76,24 +77,29 @@ const LOOP_HISTORY_SIZE = 6;
 
 export class ExecutionManager {
   private executor: AgentExecutor;
-  private runtimeOverride: "mock" | "claude" | null = null;
+  private runtimeOverride: string | null = null;
   private transitionLog = new Map<string, number[]>();
   private stateHistory = new Map<string, string[]>();
-  private executorFactory: ExecutorFactory;
+  private registry: ExecutorRegistry;
   private db: DbHandle;
   private broadcastFn: BroadcastFn;
 
-  constructor(executorFactory: ExecutorFactory, dbHandle: DbHandle, broadcastFn: BroadcastFn) {
-    this.executorFactory = executorFactory;
+  constructor(registry: ExecutorRegistry, dbHandle: DbHandle, broadcastFn: BroadcastFn) {
+    this.registry = registry;
     this.db = dbHandle;
     this.broadcastFn = broadcastFn;
-    this.executor = executorFactory(this.getExecutorMode());
+    this.executor = registry.get(this.getExecutorMode());
+  }
+
+  /** Get the executor registry (for listing available modes). */
+  getRegistry(): ExecutorRegistry {
+    return this.registry;
   }
 
   // ── Executor selection ──────────────────────────────────────
 
-  /** Resolve executor mode: "mock" or "claude". */
-  getExecutorMode(): "mock" | "claude" {
+  /** Resolve executor mode: name of the registered executor to use. */
+  getExecutorMode(): string {
     const nodeEnv = process.env["NODE_ENV"] ?? "development";
     if (nodeEnv === "test") return "mock";
     if (nodeEnv === "production") return "claude";
@@ -103,13 +109,21 @@ export class ExecutionManager {
     return "claude";
   }
 
-  /** Set executor mode at runtime (dev only). Recreates the executor. */
-  setExecutorMode(mode: "mock" | "claude"): void {
+  /** Set executor mode at runtime (dev only). Recreates the executor from registry. */
+  setExecutorMode(mode: string): void {
     const nodeEnv = process.env["NODE_ENV"] ?? "development";
     if (nodeEnv === "production") return;
+    if (!this.registry.has(mode)) {
+      throw new Error(`Unknown executor mode "${mode}". Available: ${this.registry.list().join(", ")}`);
+    }
     this.runtimeOverride = mode;
-    this.executor = this.executorFactory(mode);
+    this.executor = this.registry.get(mode);
     logger.info({ mode }, "Executor mode changed at runtime");
+  }
+
+  /** List available executor modes from the registry. */
+  listExecutorModes(): string[] {
+    return this.registry.list();
   }
 
   // ── Transition rate limiter ─────────────────────────────────

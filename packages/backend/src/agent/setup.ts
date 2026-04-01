@@ -2,7 +2,7 @@
  * Composition root for executor wiring.
  *
  * This is the ONLY file that imports concrete executor implementations.
- * To use a custom executor, replace the factory function or this entire file.
+ * To use a custom executor, register it in the registry below.
  *
  * Exports a lazily-initialized ExecutionManager singleton via Proxy,
  * deferring construction until first method call (required for test mocks).
@@ -11,39 +11,38 @@
 import { ClaudeExecutor } from "./claude-executor.js";
 import { MockExecutor } from "./mock-executor.js";
 import { ExecutionManager } from "./execution-manager.js";
-import type { DbHandle, BroadcastFn, ExecutorFactory } from "./execution-manager.js";
-import type { AgentExecutor } from "./types.js";
+import type { DbHandle, BroadcastFn } from "./execution-manager.js";
+import { ExecutorRegistry } from "@agentops/core";
 import { db } from "../db/connection.js";
 import { broadcast } from "../ws.js";
 import { logger } from "../logger.js";
 
 /**
- * Default executor factory — creates ClaudeExecutor or MockExecutor
- * based on the resolved mode. This is the single point where concrete
- * executor implementations are selected.
- *
- * To swap in a custom executor, replace this function:
- *   const myFactory: ExecutorFactory = (mode) => new MyExecutor();
- *   export const executionManager = createExecutionManager(myFactory);
+ * Create the default executor registry with built-in executors.
+ * Custom projects can add their own executors:
+ *   const registry = createDefaultRegistry();
+ *   registry.register("my-executor", () => new MyExecutor());
  */
-function defaultExecutorFactory(mode: string): AgentExecutor {
-  if (mode === "mock") {
+export function createDefaultRegistry(): ExecutorRegistry {
+  const registry = new ExecutorRegistry();
+  registry.register("claude", () => new ClaudeExecutor());
+  registry.register("mock", () => {
     logger.info("Using MockExecutor (simulated agent runs)");
     return new MockExecutor();
-  }
-  return new ClaudeExecutor();
+  });
+  return registry;
 }
 
 /**
- * Create an ExecutionManager with the given factory, db, and broadcast.
- * Useful for custom projects that want to provide their own executor.
+ * Create an ExecutionManager with the given registry, db, and broadcast.
+ * Useful for custom projects that want to provide their own executors.
  */
 export function createExecutionManager(
-  factory: ExecutorFactory = defaultExecutorFactory,
+  registry: ExecutorRegistry = createDefaultRegistry(),
   dbHandle: DbHandle = db as unknown as DbHandle,
   broadcastFn: BroadcastFn = broadcast,
 ): ExecutionManager {
-  return new ExecutionManager(factory, dbHandle, broadcastFn);
+  return new ExecutionManager(registry, dbHandle, broadcastFn);
 }
 
 // ── Default singleton (lazy via Proxy) ──────────────────────────

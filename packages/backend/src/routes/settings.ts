@@ -362,21 +362,23 @@ export async function settingsRoutes(app: FastifyInstance) {
     const nodeEnv = process.env["NODE_ENV"] ?? "development";
     return {
       mode: executionManager.getExecutorMode(),
+      available: executionManager.listExecutorModes(),
       isProduction: nodeEnv === "production",
     };
   });
 
   // PUT /api/settings/executor-mode
   app.put<{
-    Body: { mode: "mock" | "claude" };
+    Body: { mode: string };
   }>("/api/settings/executor-mode", async (request, reply) => {
     const nodeEnv = process.env["NODE_ENV"] ?? "development";
     if (nodeEnv === "production") {
       return reply.status(403).send({ error: { code: "FORBIDDEN", message: "Cannot change executor mode in production" } });
     }
     const { mode } = request.body;
-    if (mode !== "mock" && mode !== "claude") {
-      return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "Mode must be 'mock' or 'claude'" } });
+    const available = executionManager.listExecutorModes();
+    if (!available.includes(mode)) {
+      return reply.status(400).send({ error: { code: "BAD_REQUEST", message: `Unknown executor mode "${mode}". Available: ${available.join(", ")}` } });
     }
     executionManager.setExecutorMode(mode);
     return { mode: executionManager.getExecutorMode() };
