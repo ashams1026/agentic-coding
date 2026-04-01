@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 10:30 PDT — Review: RES.WORKFLOW.DATA (approved)
+
+**Reviewed:** Custom workflow data model and state machine storage proposal.
+- All 5 investigation points addressed: 3-table schema with DDL (workflows, workflow_states, workflow_transitions), current→dynamic comparison table with 7 components mapped, execution workflow context (workflowId + workflowStateName), soft versioning with publish/draft lifecycle, 3-level persona binding with resolution order ✓
+- Current state accurately documented (verified: isValidTransition in mcp-server.ts, WORKFLOW constant, personaAssignments composite PK) ✓
+- Migration SQL detailed with seed data, backfill, and personaAssignments PK migration ✓
+- Backwards compatibility via hardcoded fallback during migration ✓
+- Minor: "copy-on-edit" rejected then essentially re-recommended as "soft versioning" — cosmetic contradiction, final design is sound ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 10:15 PDT — RES.WORKFLOW.DATA: Custom workflow data model research
 
 **Done:** Analyzed current hardcoded workflow system (8 states in `workflow.ts`, `personaAssignments` table, router with hardcoded prompt, `route_to_state` MCP tool, `dispatch.ts` state→persona lookup). Designed 3-table schema: `workflows` (versioned, scoped), `workflow_states` (typed as initial/intermediate/terminal, with position data for visual editor, optional default persona), `workflow_transitions` (labeled edges with optional conditions). Proposed soft versioning: each published version is a separate row, work items pin to their version. 2-level persona binding (workflow defaults + project overrides). Migration seeds "Default" workflow from hardcoded constant, backfills existing items. Detailed SQL for all new tables, modified columns on `workItems` and `executions`, and migration path for `personaAssignments`.
