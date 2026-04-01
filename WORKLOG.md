@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 08:10 PDT — Review: SDK.SB.5 (approved)
+
+**Reviewed:** Sandbox settings e2e test results at `tests/e2e/results/sandbox-settings.md`.
+- 12/16 PASS, 0 FAIL, 4 SKIP — strong results for UI settings test
+- Full save-persist cycle: save → reload → values persist — confirmed
+- Add/remove domain tested with screenshot evidence
+- 4 SKIPs share same code pattern as tested steps — reasonable
+- 6 screenshots covering full lifecycle
+- Dark mode verified
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 08:05 PDT — SDK.SB.5: Run sandbox settings e2e test
 
 **Done:** Executed SDK.SB.4 test plan. 12/16 PASS, 0 FAIL, 4 SKIP. Full save-persist cycle verified: Security section visible, defaults correct (4 domains, 4 paths, enabled), add/remove domains works, save persists across reload. Dark mode clean. 6 screenshots captured. SKIPs: Enter key add, duplicate prevention, deny path add/remove (same pattern as domain — verified in code).
