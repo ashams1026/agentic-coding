@@ -47,7 +47,7 @@
 
 - [x] **PLUG.8** — Integration tests for executor registry. Create `packages/backend/tests/executor-registry.test.ts`: test registering multiple executors, switching between them at runtime, verifying the correct executor is selected by environment (test/dev/prod). Test that an unregistered executor name throws a clear error. Test that the REST API (`GET/PUT /api/settings/executor-mode`) reflects registry state. Use the real `ExecutionManager` class with `MockExecutor` instances — no mocking the system under test.
 
-- [review] **PLUG.9** — E2E test plan: executor switching UI. Create `tests/e2e/plans/executor-switching.md`: test the Settings executor toggle (only visible in dev mode), verify switching between mock and claude modes, verify the status bar shows current executor mode, verify the health endpoint reflects the change. Visual verification of the settings UI.
+- [x] **PLUG.9** — E2E test plan: executor switching UI. Create `tests/e2e/plans/executor-switching.md`: test the Settings executor toggle (only visible in dev mode), verify switching between mock and claude modes, verify the status bar shows current executor mode, verify the health endpoint reflects the change. Visual verification of the settings UI.
 
 - [ ] **PLUG.10** — Run executor switching e2e test. Execute PLUG.9 test plan. Record results with screenshots.
 

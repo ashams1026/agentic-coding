@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 19:55 PDT — Review: PLUG.9 (approved)
+
+**Reviewed:** E2E test plan at `tests/e2e/plans/executor-switching.md`.
+- 14 steps across 5 parts: baseline → toggle → mock verify → claude verify → error handling
+- UI button labels verified against actual code ("Claude API (real)" / "Simulated (no API calls)")
+- Status bar "Simulated" badge check matches `executorMode === "mock"` code
+- Production hide check (`isProduction → return null`) noted in prerequisites
+- Template format followed: screenshot checkpoints, visual quality, failure criteria
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 19:50 PDT — PLUG.9: E2E test plan for executor switching
 
 **Done:** Created `tests/e2e/plans/executor-switching.md` with 14 steps across 5 parts: health endpoint baseline (2 API checks), Settings toggle location (3 UI steps), switch to mock mode (4 steps — UI + API + status bar badge), switch back to claude (3 steps — UI + badge disappears + API), API validation (invalid mode → 400 error). Visual quality and failure criteria included.
