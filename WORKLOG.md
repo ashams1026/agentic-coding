@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 16:15 PDT — RES.SWAP.HOSTED: Research hosted frontend deployment model
+
+**Done:** Researched hosted frontend deployment model. Doc covers all 6 investigation areas: (1) onboarding flow — step-by-step first visit experience with install/start/connect instructions, auto-polling "Test Connection" button, returning user reconnection banner; (2) local backend discovery — mixed content analysis confirms all modern browsers allow HTTP localhost from HTTPS origins, silent localhost:3001 probe for auto-detection, documented what doesn't work (LAN IPs, mDNS from HTTPS); (3) tunnel/remote access — compared ngrok, Cloudflare Tunnel, Tailscale for user-managed tunnels with free tier/auth/URL persistence comparison, security implications (mandatory auth, rate limiting), CORS requirements for tunnel URLs, deferred built-in tunnel; (4) multi-backend management — localStorage-based connection storage, workspace switcher dropdown in sidebar, independent backend instances (no data merging), online/offline status polling, cross-device via export/import + URL params; (5) hosted frontend infrastructure — current build output analysis (1.2MB/300KB gzipped), CDN platform comparison (5 options), recommended Cloudflare Pages (unlimited free bandwidth), CI/CD pipeline via GitHub Actions, versioning/compatibility matrix with apiVersion check, cache busting, canary deployments; (6) business model — free frontend on CDN (~$0 cost), value in backend+agent execution, 3-tier future model (free local/team managed/enterprise), local-first always fully functional, open source compatible. Also: 3-phase implementation approach with prerequisites, 7 cross-references, 6 design decisions.
+**Files:** `docs/proposals/frontend-backend-swappability/hosted-frontend.md` (new)
+
+---
+
 ## 2026-04-03 01:45 PDT — Review: RES.SWAP.ARCH (approved)
 
 **Reviewed:** Frontend/backend decoupling architecture research doc.
