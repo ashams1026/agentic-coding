@@ -417,6 +417,45 @@ For `WebFetch`, URLs are checked against the project's allowed domains list. All
 
 The original `validateCommand()` from `sandbox.ts` runs as a `PreToolUse` hook, checking Bash commands against project directory escapes. This is the innermost layer — if a command passes OS sandbox and `canUseTool`, the hook provides final validation.
 
+## Evaluated Future Capabilities
+
+The following deployment-relevant SDK features have been evaluated but not yet implemented:
+
+### HTTP Hooks for Webhooks
+
+The SDK supports HTTP hooks that POST event data to external URLs (Slack, PagerDuty, etc.) with zero code changes — configure in `.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "SessionEnd": [{
+      "hooks": [{ "type": "http", "url": "https://hooks.slack.com/services/...", "timeout": 10 }]
+    }]
+  }
+}
+```
+
+Security controls: `allowedHttpHookUrls` restricts target URLs, `httpHookAllowedEnvVars` restricts env var interpolation in headers. See [HTTP hooks spike](spikes/http-hooks.md).
+
+### Remote Execution
+
+Agent processes can run on remote hosts via a custom `spawnClaudeCodeProcess` function that returns a `SpawnedProcess` (stdin/stdout interface). Options: SSH tunnel, Docker container, or cloud instance. The local AgentOps server retains hooks, MCP, and observability while the agent process runs remotely. See [bridge API spike](spikes/bridge-api-remote.md).
+
+### Worktree Isolation
+
+For concurrent agent executions, the SDK supports git worktree isolation via `worktree` settings:
+
+```json
+{
+  "worktree": {
+    "symlinkDirectories": ["node_modules"],
+    "sparsePaths": ["packages/"]
+  }
+}
+```
+
+Each agent gets an independent file system snapshot. See [worktree isolation spike](spikes/worktree-isolation.md).
+
 ## Source Files
 
 | File | Purpose |

@@ -453,3 +453,15 @@ The backend broadcasts `WsEvent` messages to all connected clients. The frontend
 | `subagent_completed` | Subagent finished (SubagentStop hook) | Agent monitor (direct) |
 | `agent_progress` | AI-generated progress summary (~30s) | Agent monitor progress bar |
 | `context_usage` | Context window usage (60s polling) | Agent monitor context bar |
+
+## Evaluated SDK Capabilities
+
+The following SDK features have been evaluated via spike documents. They are not yet implemented in AgentOps but are available in the Claude Agent SDK for future use.
+
+| Feature | SDK Mechanism | Spike | Status |
+|---|---|---|---|
+| **Browser SDK for Pico** | `@anthropic-ai/claude-agent-sdk/browser` — WebSocket transport, OAuth auth | [browser-sdk-pico.md](spikes/browser-sdk-pico.md) | Deferred — requires WebSocket relay infrastructure |
+| **Remote execution** | `spawnClaudeCodeProcess` custom spawn function — SSH, Docker, or Cloud process | [bridge-api-remote.md](spikes/bridge-api-remote.md) | Deferred — SSH path is low-medium effort when needed |
+| **Plugin system** | `plugins: [{ type: 'local', path }]` and `enabledPlugins`/`extraKnownMarketplaces` settings | [plugin-system.md](spikes/plugin-system.md) | Ready — local plugins work now, marketplace is settings-based |
+| **HTTP hooks** | `type: 'http'` hooks with `url`, `headers`, `allowedEnvVars` in settings | [http-hooks.md](spikes/http-hooks.md) | Ready — zero code changes, configure in settings |
+| **Worktree isolation** | `EnterWorktree`/`ExitWorktree` tools, `isolation: "worktree"` on Agent, `worktree` settings | [worktree-isolation.md](spikes/worktree-isolation.md) | Deferred — needed when parallel execution is added |

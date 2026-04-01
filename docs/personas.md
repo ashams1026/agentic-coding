@@ -378,6 +378,24 @@ The Router differs from other personas in several ways:
 
 The Router is auto-created by `getOrCreateRouterPersona()` in `router.ts` if it doesn't exist. It can also be pre-seeded. Auto-routing can be toggled on/off per project in Settings.
 
+## Evaluated Future Capabilities
+
+### Plugin-Based Skills
+
+The SDK supports a plugin system for extending persona capabilities with custom commands, agents, MCP servers, and hooks. Local plugins work now:
+
+```typescript
+query({ prompt, options: {
+  plugins: [{ type: 'local', path: './my-plugin' }]
+}});
+```
+
+Marketplace plugins are settings-based via `enabledPlugins` and `extraKnownMarketplaces`. This enables community-built persona skills installable from registries. See [plugin system spike](spikes/plugin-system.md).
+
+### Worktree Isolation for Concurrent Personas
+
+When multiple personas run concurrently (e.g., two Engineers on sibling tasks), the SDK's `isolation: "worktree"` parameter on Agent spawning gives each persona an independent git worktree. The SDK manages creation and cleanup automatically. Not needed yet — AgentOps currently runs personas sequentially. See [worktree isolation spike](spikes/worktree-isolation.md).
+
 ## Source Files
 
 | File | Purpose |

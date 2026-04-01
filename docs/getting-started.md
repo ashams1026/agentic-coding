@@ -179,3 +179,13 @@ Watch the **Agent Monitor** page for live terminal output, and the **Activity Fe
 - [MCP Tools](mcp-tools.md) — tools available to AI agents
 - [API Reference](api.md) — integrate with the REST API and WebSocket
 - [Deployment](deployment.md) — run AgentOps as a production service
+
+### Evaluated SDK Features
+
+These SDK capabilities have been evaluated and documented for future use:
+
+- **[Plugins](spikes/plugin-system.md)** — extend personas with custom skills from local directories or marketplace registries
+- **[HTTP Hooks](spikes/http-hooks.md)** — send webhook notifications to Slack, PagerDuty, etc. on agent events (zero code — settings only)
+- **[Worktree Isolation](spikes/worktree-isolation.md)** — isolate concurrent agent executions in separate git worktrees
+- **[Remote Execution](spikes/bridge-api-remote.md)** — run agent processes on remote hosts via SSH, Docker, or cloud
+- **[Browser SDK](spikes/browser-sdk-pico.md)** — client-side Pico chat via WebSocket transport
