@@ -104,7 +104,7 @@ export async function seedDefaultPersonasForProject(projectId: string): Promise<
       allowedTools: p.allowedTools,
       mcpTools: p.mcpTools,
       maxBudgetPerRun: p.maxBudgetPerRun,
-      settings: p.name === "Router" ? { isSystem: true } : p.name === "Pico" ? { isSystem: true, isAssistant: true } : {},
+      settings: p.name === "Router" ? { isSystem: true, isRouter: true } : p.name === "Pico" ? { isSystem: true, isAssistant: true } : {},
     }));
 
     await db.insert(personas).values(rows);

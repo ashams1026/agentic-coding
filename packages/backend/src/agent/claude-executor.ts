@@ -147,6 +147,7 @@ function mapMessage(msg: SDKMessage): AgentEvent[] {
         outcome: "success",
         costUsd: msg.total_cost_usd,
         durationMs: msg.duration_ms,
+        structuredOutput: msg.structured_output ?? undefined,
       });
     } else {
       // error result
@@ -319,6 +320,18 @@ function buildFileChangedHook(executionId: string): HookCallback {
   };
 }
 
+// ── Router structured output schema ──────────────────────────────
+
+const ROUTER_OUTPUT_SCHEMA = {
+  type: "object" as const,
+  properties: {
+    nextState: { type: "string" as const },
+    reasoning: { type: "string" as const },
+    confidence: { type: "string" as const, enum: ["high", "medium", "low"] },
+  },
+  required: ["nextState", "reasoning", "confidence"],
+};
+
 // ── Executor ──────────────────────────────────────────────────────
 
 export class ClaudeExecutor implements AgentExecutor {
@@ -384,6 +397,8 @@ export class ClaudeExecutor implements AgentExecutor {
         workItemId: task.workItemId,
       });
 
+      const isRouter = persona.settings?.isRouter === true;
+
       const q = query({
         prompt,
         options: {
@@ -395,6 +410,7 @@ export class ClaudeExecutor implements AgentExecutor {
           maxBudgetUsd: options.maxBudget > 0 ? options.maxBudget : undefined,
           agent: agentId,
           agents: { [agentId]: agentDef },
+          ...(isRouter ? { outputFormat: { type: "json_schema" as const, schema: ROUTER_OUTPUT_SCHEMA } } : {}),
           hooks: {
             PreToolUse: [
               { matcher: "Bash", hooks: [buildSandboxHook(project.path)] },

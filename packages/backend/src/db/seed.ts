@@ -466,7 +466,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       allowedTools: [],
       mcpTools: ["route_to_state", "list_items", "get_context", "post_comment"],
       maxBudgetPerRun: 10,
-      settings: { isSystem: true },
+      settings: { isSystem: true, isRouter: true },
     },
     {
       id: "ps-pico",

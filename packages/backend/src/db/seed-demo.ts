@@ -125,7 +125,7 @@ async function main() {
       systemPrompt: "You are a Router. Route work items to the correct next state.",
       model: "haiku", allowedTools: [],
       mcpTools: ["route_to_state", "list_items", "get_context", "post_comment"],
-      maxBudgetPerRun: 5, settings: {},
+      maxBudgetPerRun: 5, settings: { isSystem: true, isRouter: true },
     },
   ]);
 

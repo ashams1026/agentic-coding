@@ -85,6 +85,7 @@ export interface PersonaAssignment {
 export interface PersonaSettings {
   isSystem?: boolean;
   isAssistant?: boolean;
+  isRouter?: boolean;
   [key: string]: unknown;
 }
 

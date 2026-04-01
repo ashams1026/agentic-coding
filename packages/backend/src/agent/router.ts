@@ -171,7 +171,7 @@ async function getOrCreateRouterPersona(): Promise<string> {
     allowedTools: [],
     mcpTools: ROUTER_MCP_TOOLS,
     maxBudgetPerRun: 0,
-    settings: { isSystem: true },
+    settings: { isSystem: true, isRouter: true },
   });
 
   return id;

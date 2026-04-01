@@ -50,6 +50,7 @@ export interface ResultEvent {
   outcome: ExecutionOutcome;
   costUsd: number;
   durationMs: number;
+  structuredOutput?: unknown;
 }
 
 export interface CheckpointEvent {

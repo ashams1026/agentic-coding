@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 00:00 PDT — SDK.SO.1: Structured output for Router persona
+
+**Done:** Added `isRouter?: boolean` to `PersonaSettings` in shared entities. Added `ROUTER_OUTPUT_SCHEMA` (nextState, reasoning, confidence) to `claude-executor.ts`. When persona has `isRouter: true`, passes `outputFormat: { type: "json_schema", schema }` to `query()`. Captures `structured_output` from SDK result messages into `ResultEvent.structuredOutput`. Updated Router persona settings in all 4 locations: `router.ts`, `seed.ts`, `seed-demo.ts`, `default-personas.ts`.
+**Files:** `packages/shared/src/entities.ts`, `packages/backend/src/agent/types.ts`, `packages/backend/src/agent/claude-executor.ts`, `packages/backend/src/agent/router.ts`, `packages/backend/src/db/seed.ts`, `packages/backend/src/db/seed-demo.ts`, `packages/backend/src/db/default-personas.ts`
+
+---
+
 ## 2026-03-31 23:55 PDT — Review: SDK.HK.8 (approved)
 
 **Reviewed:** SDK Hooks section added to `docs/architecture.md`.

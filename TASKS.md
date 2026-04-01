@@ -43,7 +43,7 @@
 
 ### Part 4: Agent Quality — Structured Output
 
-- [ ] **SDK.SO.1** — Add structured output for Router persona. In `packages/backend/src/agent/claude-executor.ts`: when the persona is the Router (check `persona.name === "Router"` or a `persona.settings.isRouter` flag), pass `outputFormat` to `query()` with a JSON schema: `{ nextState: string, reasoning: string, confidence: "high" | "medium" | "low" }`. Parse the structured response in `execution-manager.ts` instead of extracting state from free-text tool calls. This eliminates parsing failures and makes Router decisions machine-readable. Add `isRouter?: boolean` to Persona settings type.
+- [review] **SDK.SO.1** — Add structured output for Router persona. In `packages/backend/src/agent/claude-executor.ts`: when the persona is the Router (check `persona.name === "Router"` or a `persona.settings.isRouter` flag), pass `outputFormat` to `query()` with a JSON schema: `{ nextState: string, reasoning: string, confidence: "high" | "medium" | "low" }`. Parse the structured response in `execution-manager.ts` instead of extracting state from free-text tool calls. This eliminates parsing failures and makes Router decisions machine-readable. Add `isRouter?: boolean` to Persona settings type.
 
 - [ ] **SDK.SO.2** — Display structured Router decisions in UI. In the agent monitor and activity feed: when showing a Router execution result, render the structured JSON as a formatted card: state badge (color-coded), reasoning text, confidence indicator (green/yellow/red dot). This replaces the current raw text display of Router output.
 
