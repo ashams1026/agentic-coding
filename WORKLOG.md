@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 04:20 PDT — Review: SDK.ET.5 (approved)
+
+**Reviewed:** Effort & thinking configuration in `docs/personas.md`.
+- Effort levels table: 4 levels with cost impact and use cases — matches SDK options
+- Thinking modes table: 3 modes with behavior descriptions, includes budgetTokens detail
+- Recommended defaults table: all 6 personas with rationale — matches seed.ts exactly
+- UI configuration instructions with settings merge note
+- **Verdict: approved.** Completes Part 6 (Effort & Thinking) of Sprint 19.
+
+---
+
 ## 2026-04-01 04:15 PDT — SDK.ET.5: Update personas docs with effort & thinking
 
 **Done:** Added "Effort & Thinking Configuration" section to `docs/personas.md`. Includes: effort levels table (4 levels with cost impact), thinking modes table (3 modes with behavior), recommended defaults table (6 personas with rationale), UI configuration instructions. All three task requirements covered.

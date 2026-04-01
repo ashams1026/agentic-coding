@@ -53,7 +53,7 @@
 
 - [x] **SDK.ET.4** — Run persona effort & thinking e2e test. Execute SDK.ET.3. Record results with screenshots.
 
-- [review] **SDK.ET.5** — Update `docs/personas.md` with effort and thinking configuration. Document: effort levels and their effect on cost/quality, thinking modes, recommended defaults per persona type.
+- [x] **SDK.ET.5** — Update `docs/personas.md` with effort and thinking configuration. Document: effort levels and their effect on cost/quality, thinking modes, recommended defaults per persona type.
 
 ---
 
