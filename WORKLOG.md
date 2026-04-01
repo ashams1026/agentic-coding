@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 03:35 PDT — Review: SDK.ET.2 (approved)
+
+**Reviewed:** Effort & thinking controls in persona editor and backend settings merge.
+- Edit mode: two Select dropdowns with descriptive options (Low/Medium/High/Max effort, Adaptive/Enabled/Disabled thinking)
+- Read-only mode: conditional badges showing current values
+- Backend PATCH: merges settings with existing to preserve system flags — safe
+- `UpdatePersonaRequest` gains `settings?: Record<string, unknown>` — clean API extension
+- Sync, save, and cancel all handle effort/thinking correctly
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 03:30 PDT — SDK.ET.2: Effort & thinking controls in persona editor
 
 **Done:** Added "Effort Level" and "Thinking Mode" dropdowns to persona editor in edit mode (Select components with descriptions). Added `settings` field to `UpdatePersonaRequest` and backend PATCH route (merges with existing settings to preserve system flags). Read-only mode shows effort/thinking as outline badges. Syncs from persona settings on load, included in save handler.
