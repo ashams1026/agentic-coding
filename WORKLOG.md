@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 10:50 PDT — RES.WORKFLOW.BUILDER: Workflow builder UX research
+
+**Done:** Evaluated 3 editor models (visual node/edge, form list, hybrid). Recommended hybrid: form-based state list in left panel + auto-laid-out visual preview in right panel. No graph library for Phase 1 — hand-built CSS like existing flow-view.tsx. Designed: add step flow (inline defaults, transition definition with target dropdown + label), delete step (auto-cascade transitions + confirmation with fallback state for active work items), reorder (drag handle, visual only — doesn't affect transitions). 8-rule validation system (errors block publish, warnings advisory). Router: shared router with workflow-aware dynamic prompt (Phase 1), declarative conditions (Phase 2). 3 interaction flows (create, edit, assign personas). ASCII wireframe of full builder layout with validation panel.
+**Files:** `docs/proposals/custom-workflows/builder-ux.md`
+
+---
+
 ## 2026-04-02 10:30 PDT — Review: RES.WORKFLOW.DATA (approved)
 
 **Reviewed:** Custom workflow data model and state machine storage proposal.
