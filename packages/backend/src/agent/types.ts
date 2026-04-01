@@ -95,6 +95,8 @@ export interface SpawnOptions {
   maxBudget: number;
   /** SDK built-in tool names this persona is allowed to use (e.g., 'Read', 'Bash') */
   tools: string[];
+  /** All project personas available as subagents */
+  allPersonas: Persona[];
 }
 
 // ── Agent Executor Interface ──────────────────────────────────────

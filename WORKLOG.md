@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 01:30 PDT — SDK.SA.1: Define personas as SDK subagents
+
+**Done:** All project personas are now passed as `AgentDefinition` entries in the `agents` option of `query()`. Primary persona gets full system prompt (via `buildSystemPrompt`), 30 max turns. Other personas get their own system prompt, 15 max turns, and are available as subagents via the `Agent` tool. Added `allPersonas: Persona[]` to `SpawnOptions`. Execution manager queries all personas, serializes them, and passes through `runExecutionStream` to the executor. Fallback ensures primary persona is always present even if `allPersonas` is empty.
+**Files:** `packages/backend/src/agent/types.ts`, `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/agent/claude-executor.ts`
+
+---
+
 ## 2026-04-01 01:20 PDT — Review: SDK.SO.5 (approved)
 
 **Reviewed:** Structured Router output documentation in `docs/workflow.md` and `docs/personas.md`.

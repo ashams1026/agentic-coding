@@ -307,6 +307,9 @@ export async function runExecution(
     throw new Error(`Project ${item.projectId} not found`);
   }
 
+  // Query all personas for subagent definitions
+  const allPersonaRows = await db.select().from(personas);
+
   // Create execution record and track concurrency
   await db.insert(executions).values({
     id: executionId,
@@ -376,12 +379,29 @@ export async function runExecution(
     createdAt: project.createdAt.toISOString(),
   };
 
+  // Serialize all personas for subagent definitions
+  const allPersonaEntities = allPersonaRows.map((p) => ({
+    id: p.id as PersonaId,
+    name: p.name,
+    description: p.description,
+    avatar: p.avatar,
+    systemPrompt: p.systemPrompt,
+    model: p.model as "opus" | "sonnet" | "haiku",
+    allowedTools: p.allowedTools,
+    mcpTools: p.mcpTools,
+    skills: p.skills,
+    subagents: p.subagents ?? [],
+    maxBudgetPerRun: p.maxBudgetPerRun,
+    settings: p.settings,
+  }));
+
   // Run execution in background
   runExecutionStream(
     executionId,
     task,
     personaEntity,
     projectEntity,
+    allPersonaEntities,
   ).catch((err) => {
     logger.error({ err, executionId }, "Execution failed");
   });
@@ -396,6 +416,7 @@ async function runExecutionStream(
   task: AgentTask,
   persona: Parameters<typeof executor.spawn>[1],
   project: Parameters<typeof executor.spawn>[2],
+  allPersonas: Parameters<typeof executor.spawn>[1][],
 ): Promise<void> {
   let logs = "";
   let finalOutcome: ExecutionOutcome = "failure";
@@ -411,6 +432,7 @@ async function runExecutionStream(
       model: persona.model,
       maxBudget: persona.maxBudgetPerRun,
       tools: persona.allowedTools.length > 0 ? persona.allowedTools : [],
+      allPersonas,
     });
 
     for await (const event of events) {

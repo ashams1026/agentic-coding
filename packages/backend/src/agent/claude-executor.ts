@@ -375,18 +375,34 @@ export class ClaudeExecutor implements AgentExecutor {
     const abortController = new AbortController();
 
     try {
-      // Define persona as a named agent so the SDK handles skills natively.
-      // Skills are SDK skill names (e.g., "commit", "review-pr") — the SDK
-      // loads, tokenizes, and manages their context automatically.
+      // Build agent definitions for all personas — the primary persona runs
+      // the execution, and all others are available as subagents via the Agent tool.
       const agentId = persona.id;
-      const agentDef: AgentDefinition = {
-        description: persona.description,
-        prompt: buildSystemPrompt(persona, task, project),
-        tools: persona.allowedTools.length > 0 ? persona.allowedTools : [],
-        model: resolveModel(options.model),
-        maxTurns: 30,
-        ...(persona.skills.length > 0 ? { skills: persona.skills } : {}),
-      };
+      const agents: Record<string, AgentDefinition> = {};
+
+      for (const p of options.allPersonas) {
+        const isPrimary = p.id === persona.id;
+        agents[p.id] = {
+          description: p.description,
+          prompt: isPrimary ? buildSystemPrompt(persona, task, project) : (p.systemPrompt || p.description),
+          tools: p.allowedTools.length > 0 ? p.allowedTools : [],
+          model: resolveModel(p.model),
+          maxTurns: isPrimary ? 30 : 15,
+          ...(p.skills.length > 0 ? { skills: p.skills } : {}),
+        };
+      }
+
+      // Ensure the primary persona is always present (even if allPersonas is empty)
+      if (!agents[agentId]) {
+        agents[agentId] = {
+          description: persona.description,
+          prompt: buildSystemPrompt(persona, task, project),
+          tools: persona.allowedTools.length > 0 ? persona.allowedTools : [],
+          model: resolveModel(options.model),
+          maxTurns: 30,
+          ...(persona.skills.length > 0 ? { skills: persona.skills } : {}),
+        };
+      }
 
       const auditHooks = buildAuditHooks(options.executionId);
       const sessionHooks = buildSessionHooks({
@@ -409,7 +425,7 @@ export class ClaudeExecutor implements AgentExecutor {
           enableFileCheckpointing: true,
           maxBudgetUsd: options.maxBudget > 0 ? options.maxBudget : undefined,
           agent: agentId,
-          agents: { [agentId]: agentDef },
+          agents,
           ...(isRouter ? { outputFormat: { type: "json_schema" as const, schema: ROUTER_OUTPUT_SCHEMA } } : {}),
           hooks: {
             PreToolUse: [
