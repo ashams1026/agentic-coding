@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-01 13:45 PDT — Review: DOC.5 (approved)
+
+**Reviewed:** Personas.md updates.
+- All 4 stale MCP tool names fixed (PM, TL, Engineer, Reviewer) — verified against seed.ts
+- Pico added as 6th persona with complete section
+- Reviewer role updated with rewind_execution capability
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 13:40 PDT — DOC.5: Update personas.md
 
 **Done:** Fixed stale MCP tool names for all 5 workflow personas: PM (`transition_state` → correct tools), TL (`create_tasks` → `create_children`), Engineer (`transition_state` → `get_context`), Reviewer (added `get_context`, `list_items`, `rewind_execution`). Added Pico as 6th built-in persona section with full field table and role description. Reviewer role updated to mention `rewind_execution` capability.
