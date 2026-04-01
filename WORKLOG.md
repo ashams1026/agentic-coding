@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 18:00 PDT — Review: RES.RECOVERY.AGENTS (approved)
+
+**Reviewed:** Agent error handling and recovery patterns research doc.
+- All 6 areas covered: current failure modes (5 modules audited with specific line numbers — execution-manager try-catch/rejections/loop detection/rate limiter, claude-executor SDK errors/sandbox/checkpointing, start.ts orphan recovery/shutdown, concurrency slot leak, dispatch no-try-catch), automatic retry (7 error categories classified retryable/terminal, RetryPolicy interface, per-persona config, 3 new execution statuses), graceful shutdown (current flow adequate, proposed interrupt+checkpoint, orphan detection enhanced), stuck detection (watchdog with per-persona thresholds, warn/timeout actions), partial results (keep+warn default, auto-rollback opt-in via existing rewind API), error reporting (10-category ExecutionError schema, JSON column, UI badges, aggregate trends)
+- Source code claims verified: execution-manager.ts constants (MAX_REJECTIONS=3 :75, LOOP_HISTORY_SIZE=6 :76, MAX_TRANSITIONS_PER_HOUR=10 :74), try-catch :678, FATAL :680, onComplete :579. claude-executor.ts catch :672, api_retry :164, buildSandboxHook :199-220 (exact), no-API-key :477-481, enableFileCheckpointing :564, checkpointMessageId :655-661. start.ts recoverOrphanedState :38, SHUTDOWN_TIMEOUT_MS=30000 :15. concurrency.ts canSpawn :46, DEFAULT_MAX_CONCURRENT=3 :12, enqueue :76, checkMonthlyCost :143. dispatch.ts dispatchForState :23. schema.ts parentExecutionId :158. POST rewind :171. RewindButton :275.
+- All 5 cross-reference files exist (rollback, analytics, notifications, scheduling, collaboration)
+- Minor note: handleRejection() is at line 212, doc says 227 — off by 15 lines. Content correct.
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 17:50 PDT — RES.RECOVERY.AGENTS: Research agent error handling and recovery
 
 **Done:** Researched agent error handling and recovery patterns. Doc covers all 6 investigation areas: (1) current failure modes — audited 5 backend modules (execution-manager.ts: outer try-catch at line 678, MAX_REJECTIONS=3, LOOP_HISTORY_SIZE=6, MAX_TRANSITIONS_PER_HOUR=10; claude-executor.ts: SDK api_retry events, sandbox hooks, enableFileCheckpointing; start.ts: recoverOrphanedState() at line 38 marks running/pending as failed, SHUTDOWN_TIMEOUT_MS=30000; concurrency.ts: DEFAULT_MAX_CONCURRENT=3, slot leak on crash; dispatch.ts: no try-catch). Key finding: error handling is defensive but non-resilient — no retries, no circuit breakers. (2) automatic retry — classified 7 error categories (timeout/process_crash retryable, config_error/permission terminal), RetryPolicy interface (maxRetries, backoffMs, upgradeModel), retry in onComplete(), per-persona config, proposed new statuses (retrying, timed_out, interrupted). (3) graceful shutdown — current flow adequate; proposed interrupt+checkpoint enhancement using AbortController + SDK checkpoints, distinguish interrupted vs crashed orphans, auto-retry orphans. (4) stuck detection — watchdog design with per-persona thresholds (Router 2min, Engineer 10min), warn vs timeout actions, WS event for "possibly stuck." (5) partial results — keep+warn default, auto-rollback opt-in via existing rewindFiles/checkpointMessageId, conflict detection before retry. (6) error reporting — ExecutionError schema with 10 error categories, JSON error column on executions, UI badges/callouts, aggregate trends for analytics. 3-phase implementation plan, 7 cross-references, 6 design decisions.
