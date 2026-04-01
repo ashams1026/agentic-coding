@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 15:15 PDT — Review: SDK.FUT.2 (approved)
+
+**Reviewed:** Bridge API spike at `docs/spikes/bridge-api-remote.md`.
+- Correctly identifies `spawnClaudeCodeProcess` as actual mechanism (not speculated APIs)
+- SpawnedProcess interface documented from types
+- 3 implementation paths with code examples
+- Architecture confirms local observability works with remote process
+- **Verdict: approved.** 10 [x] — CLEANUP next.
+
+---
+
 ## 2026-04-01 15:10 PDT — SDK.FUT.2: Bridge API spike for remote execution
 
 **Done:** Evaluated SDK remote execution via `spawnClaudeCodeProcess` custom spawn function. No `attachBridgeSession`/`createCodeSession` exists — the mechanism is a custom process factory returning `SpawnedProcess` (stdin/stdout). Documented 3 implementation options (SSH, Docker, Cloud), architecture diagram showing local hooks/MCP with remote process. Recommendation: defer, SSH path is low-medium effort when needed.
