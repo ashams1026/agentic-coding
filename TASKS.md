@@ -59,7 +59,7 @@
 
 ### Pico Chat Panel
 
-- [review] **FX.PICO.OVERFLOW** — Pico chat content overflows out of the chat panel. Messages extend beyond the visible area of the chat window instead of wrapping/scrolling within it. Fix the container in `packages/frontend/src/features/pico/chat-panel.tsx` to properly constrain content width and enable scroll within the message area.
+- [x] **FX.PICO.OVERFLOW** — Pico chat content overflows out of the chat panel. Messages extend beyond the visible area of the chat window instead of wrapping/scrolling within it. Fix the container in `packages/frontend/src/features/pico/chat-panel.tsx` to properly constrain content width and enable scroll within the message area.
 
 - [ ] **FX.PICO.EMPTY.BUBBLE** — Empty chat bubble with "..." appears before thinking content arrives. When Pico is processing but hasn't started thinking yet, an empty message bubble renders with the typing indicator dots below it, then gets replaced when thinking content streams in. The empty bubble should not appear — either show only the typing indicator until content arrives, or delay rendering the bubble until the first content chunk.
 

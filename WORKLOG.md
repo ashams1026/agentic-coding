@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 13:20 PDT — Review: FX.PICO.OVERFLOW (approved)
+
+**Reviewed:** Fix for Pico chat content overflowing out of the panel.
+- `w-0 min-w-full` on inner ScrollArea container is correct pattern for preventing Radix viewport content expansion ✓
+- `overflow-hidden break-words min-w-0` on bubble ensures text wraps and flex item shrinks ✓
+- `overflow-hidden` on message row and PicoMarkdown root prevents child-driven expansion ✓
+- Visual verification: text wraps properly, long paths break, all content within panel borders ✓
+- Build passes clean, minimal two-file CSS-only change ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 13:10 PDT — FX.PICO.OVERFLOW: Fix chat content overflow
 
 **Done:** Content in Pico chat panel was overflowing past the panel's right edge. Three CSS fixes: (1) Inner messages container inside ScrollArea uses `w-0 min-w-full overflow-hidden` to prevent content from expanding beyond the Radix ScrollArea viewport width, (2) message bubble gets `min-w-0 overflow-hidden break-words` to clip and wrap long content, (3) message row gets `overflow-hidden` to prevent children from pushing the flex row wider. Also added `overflow-hidden` on PicoMarkdown root div. Verified visually: text now wraps properly, long paths break correctly, all content stays within panel borders.
