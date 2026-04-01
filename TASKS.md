@@ -55,7 +55,7 @@
 
 ### Pico Chat Panel
 
-- [ ] **FX.PICO.EMPTY.BUBBLE** — Empty chat bubble with "..." appears before thinking content arrives. When Pico is processing but hasn't started thinking yet, an empty message bubble renders with the typing indicator dots below it, then gets replaced when thinking content streams in. The empty bubble should not appear — either show only the typing indicator until content arrives, or delay rendering the bubble until the first content chunk.
+- [review] **FX.PICO.EMPTY.BUBBLE** — Empty chat bubble with "..." appears before thinking content arrives. When Pico is processing but hasn't started thinking yet, an empty message bubble renders with the typing indicator dots below it, then gets replaced when thinking content streams in. The empty bubble should not appear — either show only the typing indicator until content arrives, or delay rendering the bubble until the first content chunk.
 
 - [ ] **UX.PICO.MINI.CONTENT** — Reduce thinking and tool call content in mini chat panel. Showing full thinking blocks and tool call details in the small overlay panel is too verbose — it overwhelms the compact space. In the mini panel mode: (1) collapse thinking blocks to a single "Thinking..." line (not expandable — save that for the full page), (2) show tool calls as a compact one-liner (e.g. "Used Read on file.ts") instead of the full card with params/output, (3) keep full markdown rendering for the actual response text. The full verbose rendering should only appear in the expanded full-page view (UX.PICO.FULLPAGE).
 

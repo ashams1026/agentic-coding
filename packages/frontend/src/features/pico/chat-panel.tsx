@@ -305,6 +305,14 @@ export function ChatPanel() {
             </div>
           )}
           {messages.map((msg, i) => {
+            // Skip rendering the last message if it has no content yet (streaming)
+            // — the TypingIndicator below will show instead
+            const isEmptyStreaming =
+              isStreaming &&
+              i === messages.length - 1 &&
+              msg.content.length === 0;
+            if (isEmptyStreaming) return null;
+
             const prev = i > 0 ? messages[i - 1] : null;
             const showAvatar = !prev || prev.role !== msg.role;
             return (
@@ -317,7 +325,7 @@ export function ChatPanel() {
             );
           })}
           {isStreaming && messages[messages.length - 1]?.content.length === 0 && (
-            <div className="mt-1">
+            <div className="mt-3">
               <TypingIndicator />
             </div>
           )}
