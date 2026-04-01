@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 03:05 PDT — UX.SETTINGS: Audit Settings page (all sections)
+
+**Done:** Audited all 8 settings sections: Projects (project list + add button), Workflow (auto-routing status, persona assignments per state), Agent Configuration (API key, executor mode toggle, concurrency slider, per-persona limits), Security (sandbox checkbox, allowed domains, denied paths, save button), Costs (monthly cap, warning threshold, daily limit, cost history chart), Appearance (theme Light/Dark/System, density Comfortable/Compact), Service (status, uptime, memory, restarts, restart button), Data (database info, export/import/clear actions). Dark mode verified — all sections render correctly. No bugs found.
+**Files:** `TASKS.md`
+**Notes:** Screenshots in `tests/e2e/results/ux-settings-*.png` (9 screenshots covering all sections + dark mode).
+
+---
+
 ## 2026-04-02 02:50 PDT — Review: UX.PERSONA.TEST (approved)
 
 **Reviewed:** Persona Manager test run and creation audit.
