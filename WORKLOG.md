@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 08:55 PDT — Review: SDK.MCP.2 (approved)
+
+**Reviewed:** MCP status component and API client functions.
+- Colored dots (5 states) with tooltip showing name, status, error, tool count
+- 30s polling with cleanup, hidden when not running
+- Click-to-reconnect on failed servers with `animate-spin` feedback
+- `McpServerStatusInfo` type matches SDK's `McpServerStatus` shape
+- Integrated in toolbar alongside context usage bar
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 08:50 PDT — SDK.MCP.2: MCP server status in agent monitor
 
 **Done:** Created `McpStatus` component — colored dots for each MCP server (green=connected, red=failed, amber=pending, gray=disabled). Polls `GET /api/executions/:id/mcp/status` every 30s during running executions. Tooltip shows server name, status, error message (if failed), tool count. Click failed server to reconnect. Added `getMcpStatus()` and `reconnectMcpServer()` to frontend API client. Integrated into terminal renderer toolbar.
