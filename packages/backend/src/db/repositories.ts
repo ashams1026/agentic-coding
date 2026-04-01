@@ -28,7 +28,7 @@ import type {
   WorkItemEdgeRepository,
   Repositories,
 } from "@agentops/core";
-import type { ExecutionContextEntry, Priority, PersonaModel, PersonaSettings } from "@agentops/shared";
+import type { ExecutionContextEntry, ExecutionOutcome, RejectionPayload, Priority, PersonaModel, PersonaSettings } from "@agentops/shared";
 
 // ── WorkItem Repository ─────────────────────────────────────────
 
@@ -141,15 +141,43 @@ export class DrizzleWorkItemRepository implements WorkItemRepository {
 // ── Execution Repository ────────────────────────────────────────
 
 export class DrizzleExecutionRepository implements ExecutionRepository {
-  async create(execution: Parameters<ExecutionRepository["create"]>[0]): Promise<void> {
+  async create(execution: {
+    id: string;
+    workItemId: string;
+    personaId: string;
+    status: string;
+    startedAt: Date;
+    costUsd: number;
+    durationMs: number;
+    summary: string;
+    outcome: ExecutionOutcome | null;
+    rejectionPayload: RejectionPayload | null;
+    logs: string;
+  }): Promise<void> {
     await db.insert(executions).values(execution);
   }
 
-  async updateCompleted(id: string, data: Parameters<ExecutionRepository["updateCompleted"]>[1]): Promise<void> {
+  async updateCompleted(id: string, data: {
+    status: string;
+    completedAt: Date;
+    costUsd: number;
+    durationMs: number;
+    summary: string;
+    outcome: ExecutionOutcome;
+    logs: string;
+    checkpointMessageId: string | null;
+    structuredOutput: Record<string, unknown> | null;
+  }): Promise<void> {
     await db.update(executions).set(data).where(eq(executions.id, id));
   }
 
-  async updateFailed(id: string, data: Parameters<ExecutionRepository["updateFailed"]>[1]): Promise<void> {
+  async updateFailed(id: string, data: {
+    status: string;
+    completedAt: Date;
+    summary: string;
+    outcome: ExecutionOutcome;
+    logs: string;
+  }): Promise<void> {
     await db.update(executions).set(data).where(eq(executions.id, id));
   }
 }
@@ -192,7 +220,18 @@ export class DrizzlePersonaRepository implements PersonaRepository {
     return row?.id ?? null;
   }
 
-  async create(persona: Parameters<PersonaRepository["create"]>[0]): Promise<void> {
+  async create(persona: {
+    id: string;
+    name: string;
+    description: string;
+    avatar: { color: string; icon: string };
+    systemPrompt: string;
+    model: string;
+    allowedTools: string[];
+    mcpTools: string[];
+    maxBudgetPerRun: number;
+    settings: Record<string, unknown>;
+  }): Promise<void> {
     await db.insert(personas).values(persona);
   }
 
@@ -215,7 +254,16 @@ export class DrizzlePersonaRepository implements PersonaRepository {
 // ── Comment Repository ──────────────────────────────────────────
 
 export class DrizzleCommentRepository implements CommentRepository {
-  async create(comment: Parameters<CommentRepository["create"]>[0]): Promise<void> {
+  async create(comment: {
+    id: string;
+    workItemId: string;
+    authorType: string;
+    authorId: string | null;
+    authorName: string;
+    content: string;
+    metadata: Record<string, unknown>;
+    createdAt: Date;
+  }): Promise<void> {
     await db.insert(comments).values(comment);
   }
 
@@ -262,7 +310,12 @@ export class DrizzleProjectRepository implements ProjectRepository {
 // ── WorkItemEdge Repository ─────────────────────────────────────
 
 export class DrizzleWorkItemEdgeRepository implements WorkItemEdgeRepository {
-  async create(edge: Parameters<WorkItemEdgeRepository["create"]>[0]): Promise<void> {
+  async create(edge: {
+    id: string;
+    fromId: string;
+    toId: string;
+    type: string;
+  }): Promise<void> {
     await db.insert(workItemEdges).values(edge);
   }
 }

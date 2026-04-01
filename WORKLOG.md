@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 18:30 PDT — PLUG.5: Publish-ready package.json for shared and core
+
+**Done:** Updated both `@agentops/shared` and `@agentops/core` package.json with proper `main`/`types` pointing to `dist/`, conditional `exports` (`types` + `import` + source via `./src/*`), `files` whitelist (`dist`, `src`, `package.json`), `prepublishOnly` scripts. Added `tsconfig.build.json` for shared to exclude `__tests__` from dist output. Fixed backend `repositories.ts` — replaced `Parameters<>` type inference (broke with dist-based resolution) with explicit inline types. Cleaned stale `.tsbuildinfo` files that prevented rebuilds.
+**Files:** `packages/shared/package.json`, `packages/shared/tsconfig.build.json` (new), `packages/core/package.json`, `packages/backend/src/db/repositories.ts`
+
+---
+
 ## 2026-04-01 18:15 PDT — Review: PLUG.4 (approved)
 
 **Reviewed:** Executor registry implementation.
