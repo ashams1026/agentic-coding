@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 00:15 PDT — UX.AGENT.CONTROLS: Audit Agent Monitor controls and panels
+
+**Done:** Audited agent monitor control panels on `/agents`. Stop button opens confirmation dialog ("Stop agent?" with agent name and work item, Cancel/Stop Agent buttons). Force Stop button also has dialog. Split view shows both agents side-by-side with independent terminals. All panel components are wired into `terminal-renderer.tsx`: ModelSwitcher (line 525, renders as "Sonnet" badge), McpStatus (line 570), FileChangesPanel (line 630). RouterDecisionCard and SubagentCard are in `agent-history.tsx` (history view only). McpStatus and FileChangesPanel render empty in simulated mode (no data). Filed 1 bug: FX.UX.AGENT.2 — McpStatus triggers error toast on 404 response in simulated mode.
+**Files:** `tests/e2e/results/ux-agent-controls-split.png`, `tests/e2e/results/ux-agent-controls-stop.png`
+
+---
+
 ## 2026-04-02 00:05 PDT — Review: UX.AGENT.MAIN (approved)
 
 **Reviewed:** Agent Monitor main layout audit — 3 screenshots, 1 bug filed.
