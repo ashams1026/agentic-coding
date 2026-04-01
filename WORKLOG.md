@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 07:05 PDT — Review: UX.AGENT.BREADCRUMB (approved)
+
+**Reviewed:** Breadcrumb trail + side panel overlay for Agent Monitor.
+- Breadcrumb `Parent > Work Item` with ChevronRight replaces ghost buttons ✓
+- `onWorkItemClick` callback prop, optional for backwards compat ✓
+- Side panel: absolute positioned overlay with X close, renders DetailPanel ✓
+- `useNavigate`/`useWorkItemsStore` moved from control bar to layout ✓
+- No unused imports, build clean ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 07:00 PDT — UX.AGENT.BREADCRUMB: Breadcrumb trail + side panel overlay
 
 **Done:** Replaced "Work Item" and "Parent" ghost buttons in `agent-control-bar.tsx` with inline breadcrumb trail (`Parent Title > Work Item Title`) using `ChevronRight` separators. Clicking a breadcrumb segment calls `onWorkItemClick` callback instead of navigating away. Added side panel overlay to `agent-monitor-layout.tsx` — absolute-positioned panel with close button renders `DetailPanel` from work-items feature. Removed `useNavigate` and `useWorkItemsStore` imports from control bar (moved to layout). Added `handleWorkItemClick` callback that sets `selectedItemId` in store and opens the overlay.
