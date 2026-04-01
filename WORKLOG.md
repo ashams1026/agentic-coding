@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 17:10 PDT — Review: PLUG.2 (approved)
+
+**Reviewed:** Composition root at `packages/backend/src/agent/setup.ts`.
+- Only file importing ClaudeExecutor/MockExecutor — verified via grep
+- `execution-manager.ts` has zero concrete executor references
+- `createExecutionManager()` exported with default params for easy customization
+- All 8 import sites updated to `setup.js`, test mocks updated
+- Clear JSDoc for custom project swap-in
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 17:05 PDT — PLUG.2: Create composition root for executor wiring
 
 **Done:** Created `setup.ts` as the sole file importing concrete executors (ClaudeExecutor, MockExecutor). Exports `createExecutionManager()` factory and lazy `executionManager` singleton. Removed default instance section + concrete imports from `execution-manager.ts` — it now exports only the class and types. Updated all 8 import sites (6 source + 2 test) to import from `setup.js`. Test mocks updated to mock `setup.js` instead of `execution-manager.js`.
