@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-03 00:30 PDT — Review: RES.WEBHOOKS.OUTBOUND (rejected)
+
+**Reviewed:** Outbound event webhooks research doc.
+- Core design is solid: delivery infrastructure (SQLite queue + polling), payload format (JSON envelope), retry strategy (exponential backoff, 5 attempts), shared event bus, auto-disable, delivery log, HMAC signing, notification relationship analysis — all well-designed.
+- **Issue: Event catalog source references are wrong.** 6 of 8 events in section 2 table reference incorrect files/lines: agent_started is at execution-manager.ts:341 (not dispatch.ts:63), agent_completed at execution-manager.ts:539/:693 (not claude-executor.ts:304/:343), state_change at mcp-server.ts:198 (not :93). proposal_created and proposal_updated types exist in ws-events.ts but are never actually broadcast anywhere — doc claims they fire from mcp-server.ts:313/:344 (those lines broadcast comment_created and state_change respectively).
+- Section 1 file list misses execution-manager.ts which is a major broadcast site.
+- **Verdict: rejected.** Feedback added to TASKS.md with specific corrections needed.
+
+---
+
 ## 2026-04-03 00:15 PDT — RES.WEBHOOKS.OUTBOUND: Research outbound event webhooks
 
 **Done:** Researched outbound event webhooks. Doc covers all 5 investigation areas: (1) subscribable events — 8-event catalog mapped from internal WsEvent types (14) and audit events (7) to curated outbound subset: execution.started/completed/failed, work_item.state_changed, proposal.created/resolved, budget.threshold, comment.created; dotted naming for wildcard support; (2) webhook configuration — WebhookSubscription interface (12 fields), event type checkboxes, per-project or global scope, test/ping button, subscription list + create/edit wireframes in Settings > Integrations > Outbound Webhooks; (3) payload format — standardized JSON envelope (event, webhookId, deliveryId, timestamp, data), 8 event-specific payloads with full field specs, security exclusions (no API keys, full logs, prompts, file content); (4) delivery — async dispatch via SQLite queue + in-process polling worker (2s interval), exponential backoff retry (5 attempts, 30s-30min), 10s HTTP timeout, HMAC signing (X-Webhook-Signature), auto-disable after 10 consecutive failures, delivery log with status/latency/retry history, 30-day retention; (5) relationship to notifications — compared audiences/channels/content/filtering, shared event bus architecture (TypedEventEmitter) with separate webhook + notification dispatchers, recommendation to keep separate but share event source. Also: delivery queue table schema, 3-phase plan, 6 cross-references, 5 design decisions.
