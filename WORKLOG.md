@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 03:15 PDT — SDK.ET.1: Add effort and thinking to Persona settings
+
+**Done:** Added `EffortLevel` (`low`/`medium`/`high`/`max`) and `ThinkingMode` (`adaptive`/`enabled`/`disabled`) types to shared entities. Added `effort`, `thinking`, `thinkingBudgetTokens` to `PersonaSettings`. In `claude-executor.ts`: builds `effort` and `thinking` config from persona settings, passes to `query()` options. Defaults: PM=medium/adaptive, TL=high/adaptive, Engineer=max/enabled(16K tokens), Code Reviewer=high/adaptive, Router=low/disabled. Updated seed.ts and router.ts with per-persona defaults.
+**Files:** `packages/shared/src/entities.ts`, `packages/backend/src/agent/claude-executor.ts`, `packages/backend/src/db/seed.ts`, `packages/backend/src/agent/router.ts`
+
+---
+
 ## 2026-04-01 03:05 PDT — Review: SDK.SA.6 (approved)
 
 **Reviewed:** Subagent system documentation in `docs/architecture.md` and `docs/personas.md`.

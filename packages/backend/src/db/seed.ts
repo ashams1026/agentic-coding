@@ -151,7 +151,7 @@ Post a comment with this structure:
       allowedTools: ["Read", "Glob", "Grep", "WebSearch"],
       mcpTools: ["post_comment", "list_items", "get_context", "request_review"],
       maxBudgetPerRun: 50,
-      settings: {},
+      settings: { effort: "medium", thinking: "adaptive" },
     },
     {
       id: PERSONA_TECH_LEAD,
@@ -216,7 +216,7 @@ If the work item is already small enough for a single agent session:
       allowedTools: ["Read", "Glob", "Grep", "WebSearch", "Bash"],
       mcpTools: ["create_children", "post_comment", "get_context", "list_items"],
       maxBudgetPerRun: 100,
-      settings: {},
+      settings: { effort: "high", thinking: "adaptive" },
     },
     {
       id: PERSONA_ENGINEER,
@@ -291,7 +291,7 @@ Do NOT flag as blocked just because a task is difficult.
       allowedTools: ["Read", "Edit", "Write", "Glob", "Grep", "Bash", "WebFetch"],
       mcpTools: ["post_comment", "flag_blocked", "get_context"],
       maxBudgetPerRun: 200,
-      settings: {},
+      settings: { effort: "max", thinking: "enabled", thinkingBudgetTokens: 16000 },
     },
     {
       id: PERSONA_REVIEWER,
@@ -386,7 +386,7 @@ Only rewind when the implementation is fundamentally wrong and the Engineer shou
       allowedTools: ["Read", "Glob", "Grep", "Bash"],
       mcpTools: ["post_comment", "get_context", "list_items", "request_review", "rewind_execution"],
       maxBudgetPerRun: 50,
-      settings: {},
+      settings: { effort: "high", thinking: "adaptive" },
     },
     {
       id: PERSONA_ROUTER,
@@ -466,7 +466,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       allowedTools: [],
       mcpTools: ["route_to_state", "list_items", "get_context", "post_comment"],
       maxBudgetPerRun: 10,
-      settings: { isSystem: true, isRouter: true },
+      settings: { isSystem: true, isRouter: true, effort: "low", thinking: "disabled" },
     },
     {
       id: "ps-pico",

@@ -82,10 +82,16 @@ export interface PersonaAssignment {
   personaId: PersonaId;
 }
 
+export type EffortLevel = "low" | "medium" | "high" | "max";
+export type ThinkingMode = "adaptive" | "enabled" | "disabled";
+
 export interface PersonaSettings {
   isSystem?: boolean;
   isAssistant?: boolean;
   isRouter?: boolean;
+  effort?: EffortLevel;
+  thinking?: ThinkingMode;
+  thinkingBudgetTokens?: number;
   [key: string]: unknown;
 }
 

@@ -461,6 +461,13 @@ export class ClaudeExecutor implements AgentExecutor {
       const subagentHooks = buildSubagentHooks(options.executionId, options.allPersonas);
       const isRouter = persona.settings?.isRouter === true;
 
+      // Build effort and thinking config from persona settings
+      const effort = persona.settings?.effort ?? "high";
+      const thinkingMode = persona.settings?.thinking ?? "adaptive";
+      const thinking = thinkingMode === "enabled"
+        ? { type: "enabled" as const, budgetTokens: persona.settings?.thinkingBudgetTokens ?? 10000 }
+        : { type: thinkingMode as "adaptive" | "disabled" };
+
       const q = query({
         prompt,
         options: {
@@ -470,6 +477,8 @@ export class ClaudeExecutor implements AgentExecutor {
           allowDangerouslySkipPermissions: true,
           enableFileCheckpointing: true,
           maxBudgetUsd: options.maxBudget > 0 ? options.maxBudget : undefined,
+          effort,
+          thinking,
           agent: agentId,
           agents,
           ...(isRouter ? { outputFormat: { type: "json_schema" as const, schema: ROUTER_OUTPUT_SCHEMA } } : {}),
