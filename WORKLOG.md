@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-03-31 23:50 PDT — SDK.HK.8: Update architecture docs with hooks
+
+**Done:** Added "SDK Hooks" section to `docs/architecture.md` before File Checkpointing. Documents: registered hooks table (7 hooks across 6 event types with matchers, purpose, and what they replace), hook architecture diagram showing factory functions and query() wiring, audit trail integration table (3 audit functions with fields), Bash command sanitization note.
+**Files:** `docs/architecture.md`
+
+---
+
 ## 2026-03-31 23:40 PDT — Review: SDK.HK.7 (approved)
 
 **Reviewed:** File changes panel e2e test results at `tests/e2e/results/agent-monitor-files.md`.

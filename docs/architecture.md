@@ -134,6 +134,59 @@ The agent subsystem lives in `packages/backend/src/agent/`:
 | `sdk-session.ts` | Persistent V2 SDK session — lazy singleton for capabilities discovery |
 | `sandbox.ts` | Command sandbox — validates Bash commands against project directory escapes |
 
+## SDK Hooks
+
+Every agent execution registers SDK hooks via the `hooks` option in `query()`. These are programmatic `HookCallback` functions (not shell command hooks) that fire during the SDK's agent loop.
+
+### Registered Hooks
+
+| Hook Event | Matcher | Purpose | Replaces |
+|---|---|---|---|
+| `PreToolUse` | `Bash` | **Sandbox validation** — calls `validateCommand()` from `sandbox.ts`, returns `permissionDecision: "deny"` if the command escapes the project directory | Manual `validateCommand()` check in the streaming loop + `abortController.abort()` |
+| `PreToolUse` | (all) | **Audit timing** — records `Date.now()` keyed by `tool_use_id` for duration calculation | N/A (new) |
+| `PostToolUse` | (all) | **Audit logging** — logs `{ executionId, toolName, durationMs, success: true }` to audit trail. For Bash tools, also logs the sanitized command string | N/A (new) |
+| `PostToolUseFailure` | (all) | **Failure audit** — same as PostToolUse but with `success: false` | N/A (new) |
+| `SessionStart` | (all) | **Lifecycle audit** — logs `{ executionId, personaName, model, workItemId }` to audit trail + broadcasts `execution_update` WS event (status: "running") | Manual `agent_started` broadcast timing (still preserved for different payload) |
+| `SessionEnd` | (all) | **Lifecycle audit** — logs `{ executionId, reason, durationMs }` to audit trail. Duration computed from SessionStart timestamp | Manual `agent_completed` broadcast timing (still preserved for cost/outcome payload) |
+| `FileChanged` | (all) | **Live file tracking** — broadcasts `file_changed` WS event with `{ executionId, filePath, changeType }`. Maps SDK events (`add`/`change`/`unlink`) to `created`/`modified`/`deleted` | N/A (new) |
+
+### Hook Architecture
+
+```
+ClaudeExecutor.spawn()
+    │
+    ├── buildSandboxHook(projectPath)     → PreToolUse [Bash only]
+    ├── buildAuditHooks(executionId)       → PreToolUse + PostToolUse + PostToolUseFailure
+    ├── buildSessionHooks(ctx)             → SessionStart + SessionEnd
+    └── buildFileChangedHook(executionId)  → FileChanged
+    │
+    ▼
+query({
+  options: {
+    hooks: {
+      PreToolUse:        [{ matcher: "Bash", hooks: [sandbox] }, { hooks: [auditTiming] }],
+      PostToolUse:       [{ hooks: [auditSuccess] }],
+      PostToolUseFailure:[{ hooks: [auditFailure] }],
+      SessionStart:      [{ hooks: [sessionStart] }],
+      SessionEnd:        [{ hooks: [sessionEnd] }],
+      FileChanged:       [{ hooks: [fileChanged] }],
+    }
+  }
+})
+```
+
+### Audit Trail Integration
+
+Tool-level and session-level audit events are written to `~/.agentops/logs/audit.log` via dedicated functions in `audit.ts`:
+
+| Function | Action | Fields |
+|---|---|---|
+| `auditToolUse()` | `tool_use` | executionId, toolName, durationMs, success, command? |
+| `auditSessionStart()` | `session_start` | executionId, personaName, model, workItemId |
+| `auditSessionEnd()` | `session_end` | executionId, reason, durationMs |
+
+Bash commands are sanitized before logging — secrets matching `ANTHROPIC_API_KEY`, `API_KEY`, `SECRET`, `TOKEN`, or `PASSWORD` patterns have their values replaced with `***`.
+
 ## File Checkpointing
 
 Every agent execution runs with `enableFileCheckpointing: true` in the `query()` options. The SDK creates a checkpoint of the project's file state before the agent makes any changes.

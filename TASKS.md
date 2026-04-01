@@ -39,7 +39,7 @@
 
 - [x] **SDK.HK.7** — Run agent monitor file tracking e2e test. Execute SDK.HK.6 test plan. Record results. Screenshots of files panel in both running and completed states.
 
-- [ ] **SDK.HK.8** — Update `docs/architecture.md` with hooks architecture. Document: which hooks are registered (PreToolUse, PostToolUse, SessionStart, SessionEnd, FileChanged), what each does, how they replace the previous custom implementations, audit trail integration.
+- [review] **SDK.HK.8** — Update `docs/architecture.md` with hooks architecture. Document: which hooks are registered (PreToolUse, PostToolUse, SessionStart, SessionEnd, FileChanged), what each does, how they replace the previous custom implementations, audit trail integration.
 
 ### Part 4: Agent Quality — Structured Output
 
