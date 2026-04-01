@@ -370,7 +370,10 @@ function truncStr(s: string, max: number): string {
 
 function StatusLine({ items }: { items: (ContentBlock & { type: "thinking" | "tool_use" })[] }) {
   const statusItems = items.map(blockToStatusItem);
-  const [visibleIdx, setVisibleIdx] = useState(0);
+  // Start at the last item on mount — history loads all items at once,
+  // so no cycling needed. During streaming, mounts with 1 item (idx 0)
+  // and the timer advances as new items arrive.
+  const [visibleIdx, setVisibleIdx] = useState(() => Math.max(0, items.length - 1));
   const [expanded, setExpanded] = useState(false);
   const lastAdvanceRef = useRef(Date.now());
 

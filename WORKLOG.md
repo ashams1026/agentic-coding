@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 15:05 PDT — Review: UX.PICO.STATUSBAR (approved)
+
+**Reviewed:** Consolidated status line for thinking/tool calls in compact mode.
+- Single StatusLine replaces separate one-liners — timer-based cycling with 1.5s min display ✓
+- Counter + expandable chevron with border-left styled list ✓
+- Rich labels via getToolDescription (file paths, commands, patterns, queries) ✓
+- History fix: useState lazy init skips to last item on mount — no cycling for loaded history ✓
+- CompactMessageBody separates status/text blocks cleanly ✓
+- Full non-compact rendering unchanged ✓
+- Build passes, visual check confirms layout, expand, and history behavior ✓
+- **Verdict: approved.** Includes post-review history fix (no-delay for non-streaming).
+
+---
+
 ## 2026-04-02 14:55 PDT — UX.PICO.STATUSBAR: Consolidated status line for thinking/tool calls
 
 **Done:** Replaced separate compact thinking/tool_use one-liners with a single animated `StatusLine` component. In compact mode, all thinking and tool_use blocks are collected into status items and rendered as one updating line that auto-advances through items with 1.5s minimum display time. Shows a counter (e.g. "3/3") and an expand chevron to reveal the full list with left-border styling. Added `getToolDescription()` for rich labels — extracts file paths from Read/Edit/Write (`pathBasename`), commands from Bash (`truncStr`), patterns from Grep/Glob, queries from WebSearch, descriptions from Agent tool. `CompactMessageBody` separates status blocks from text blocks, rendering StatusLine + PicoMarkdown. Updated mock data to use Read tool for better demo labels. Full (non-compact) rendering unchanged.
