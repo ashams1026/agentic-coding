@@ -68,6 +68,14 @@ export interface ProgressEvent {
   durationMs: number;
 }
 
+export interface RateLimitEvent {
+  type: "rate_limit";
+  retryDelayMs: number;
+  attempt: number;
+  maxRetries: number;
+  errorStatus: number | null;
+}
+
 export interface CheckpointEvent {
   type: "checkpoint";
   messageId: string;
@@ -82,6 +90,7 @@ export type AgentEvent =
   | ResultEvent
   | PartialEvent
   | ProgressEvent
+  | RateLimitEvent
   | CheckpointEvent;
 
 // ── Agent Task ────────────────────────────────────────────────────

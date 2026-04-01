@@ -268,6 +268,7 @@ function eventToChunk(event: AgentEvent): string {
     case "result": return event.summary;
     case "partial": return "";
     case "progress": return "";
+    case "rate_limit": return "";
     case "checkpoint": return "";
   }
 }
@@ -451,6 +452,20 @@ async function runExecutionStream(
           executionId: executionId as ExecutionId,
           personaId: persona.id as PersonaId,
           chunk: event.content,
+          chunkType: "text",
+          timestamp: new Date().toISOString(),
+        });
+        continue;
+      }
+
+      // Rate limit events: broadcast as text chunk, don't log
+      if (event.type === "rate_limit") {
+        const retrySeconds = Math.ceil(event.retryDelayMs / 1000);
+        broadcast({
+          type: "agent_output_chunk",
+          executionId: executionId as ExecutionId,
+          personaId: persona.id as PersonaId,
+          chunk: `⏳ Rate limited — retrying in ${retrySeconds}s (attempt ${event.attempt}/${event.maxRetries})`,
           chunkType: "text",
           timestamp: new Date().toISOString(),
         });

@@ -159,6 +159,16 @@ function mapMessage(msg: SDKMessage): AgentEvent[] {
       toolUses: progressMsg.usage.tool_uses,
       durationMs: progressMsg.usage.duration_ms,
     });
+  } else if (msg.type === "system" && "subtype" in msg && msg.subtype === "api_retry") {
+    // API retry / rate limit — extract retry info
+    const retryMsg = msg as { attempt: number; max_retries: number; retry_delay_ms: number; error_status: number | null };
+    events.push({
+      type: "rate_limit",
+      retryDelayMs: retryMsg.retry_delay_ms,
+      attempt: retryMsg.attempt,
+      maxRetries: retryMsg.max_retries,
+      errorStatus: retryMsg.error_status,
+    });
   } else if (msg.type === "result") {
     if (msg.subtype === "success") {
       events.push({
