@@ -52,7 +52,7 @@
 
 - [x] **SDK.UX.4** — E2E test plan: Pico prompt suggestions. Create `tests/e2e/plans/pico-suggestions.md`: verify suggestion buttons appear after Pico responses, clicking sends the suggestion, buttons fade on typing. Visual check.
 
-- [review] **SDK.UX.5** — Run Pico prompt suggestions e2e test. Execute SDK.UX.4. Record results with screenshots.
+- [x] **SDK.UX.5** — Run Pico prompt suggestions e2e test. Execute SDK.UX.4. Record results with screenshots.
 
 - [ ] **SDK.UX.6** — E2E test plan: model switching. Create `tests/e2e/plans/model-switching.md`: verify model dropdown appears on running executions, model badge updates, confirmation dialog. Visual check.
 
