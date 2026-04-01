@@ -49,7 +49,7 @@
 
 - [x] **PLUG.9** — E2E test plan: executor switching UI. Create `tests/e2e/plans/executor-switching.md`: test the Settings executor toggle (only visible in dev mode), verify switching between mock and claude modes, verify the status bar shows current executor mode, verify the health endpoint reflects the change. Visual verification of the settings UI.
 
-- [ ] **PLUG.10** — Run executor switching e2e test. Execute PLUG.9 test plan. Record results with screenshots.
+- [review] **PLUG.10** — Run executor switching e2e test. Execute PLUG.9 test plan. Record results with screenshots.
 
 ---
 
