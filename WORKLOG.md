@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-31 — Review: FX.PICO4 (approved)
+
+**Reviewed:** CORS fix in `packages/backend/src/routes/chat.ts`.
+- Replaced `reply.raw.writeHead(200, { SSE headers })` with `reply.header()` + `reply.raw.writeHead(200, reply.getHeaders())`
+- CORS headers from `@fastify/cors` plugin now included in SSE response without duplicating config
+- Only `writeHead` in the backend — no other SSE endpoints affected
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 — FX.PICO4: Fix CORS headers on Pico SSE endpoint
 
 **Task:** Fix CORS headers missing on the SSE streaming endpoint for Pico chat.
