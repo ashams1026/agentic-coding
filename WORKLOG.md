@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 00:15 PDT — RES.WEBHOOKS.OUTBOUND: Research outbound event webhooks
+
+**Done:** Researched outbound event webhooks. Doc covers all 5 investigation areas: (1) subscribable events — 8-event catalog mapped from internal WsEvent types (14) and audit events (7) to curated outbound subset: execution.started/completed/failed, work_item.state_changed, proposal.created/resolved, budget.threshold, comment.created; dotted naming for wildcard support; (2) webhook configuration — WebhookSubscription interface (12 fields), event type checkboxes, per-project or global scope, test/ping button, subscription list + create/edit wireframes in Settings > Integrations > Outbound Webhooks; (3) payload format — standardized JSON envelope (event, webhookId, deliveryId, timestamp, data), 8 event-specific payloads with full field specs, security exclusions (no API keys, full logs, prompts, file content); (4) delivery — async dispatch via SQLite queue + in-process polling worker (2s interval), exponential backoff retry (5 attempts, 30s-30min), 10s HTTP timeout, HMAC signing (X-Webhook-Signature), auto-disable after 10 consecutive failures, delivery log with status/latency/retry history, 30-day retention; (5) relationship to notifications — compared audiences/channels/content/filtering, shared event bus architecture (TypedEventEmitter) with separate webhook + notification dispatchers, recommendation to keep separate but share event source. Also: delivery queue table schema, 3-phase plan, 6 cross-references, 5 design decisions.
+**Files:** `docs/proposals/webhooks/outbound-events.md` (new)
+
+---
+
 ## 2026-04-02 23:45 PDT — Review: RES.WEBHOOKS.INBOUND (approved)
 
 **Reviewed:** Inbound triggers from external systems research doc.
