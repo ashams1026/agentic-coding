@@ -46,70 +46,9 @@
 
 ---
 
-## Sprint 17 (partial): Security + Mock Removal + Settings — 2026-03-30
+## Sprint 17 (consolidated): Agent Pipeline Fixes — 2026-03-30 to 2026-03-31
 
-**FX.SEC1:** Command sandbox (sandbox.ts) — validates Bash commands against project directory escapes. Wired into executor system prompt + event stream.
-
-**FX.MOCK1:** Removed mock API mode — deleted apiMode from store, rewrote api/index.ts as re-exports, ws.ts always uses realWs, removed status bar toggle + Settings Data Source + DemoButton/DemoControls. Bundle -43KB.
-
-**FX.MOCK2:** Deleted mocks/ directory + use-demo.ts + demo-controls.tsx. -2283 lines.
-
-**FX.MOCK3:** E2E test database script — seed-e2e.ts (reuses seed with temp DB), test-e2e.sh (setup/teardown/seed), 3 pnpm scripts.
-
-**FX.MOCK4:** Demo seed — 3 projects, 14 work items across all 8 states, 14 executions, 13 comments, realistic cost data.
-
-**FX.SET1:** Removed duplicate "Concurrency" nav, renamed "API Keys" → "Agent Configuration".
-
-**FX.SET2:** Removed workflow SVG state machine diagram from settings (~135 lines).
-
-**E2E test execution details (AI.19-AI.28):**
-AI.19: filtering 14/14 PASS. AI.20: sorting 12/12 PASS. AI.21: agent-monitor-layout 7/9 PASS, 2 N/A. AI.22: agent-monitor-history 14/14 PASS. AI.23: activity-feed 14/14 PASS. AI.24: settings-projects 11/11 PASS. AI.25: settings-workflow 12/12 PASS. AI.26: settings-appearance 11/11 PASS. AI.27: persona-manager 19/19 PASS. AI.28: navigation 17/19 PASS, 2 N/A.
-
----
-
-## Sprint 17 (continued): Settings, UI & Mock Removal — 2026-03-30
-
-**FX.SET3:** Replaced auto-routing ON/OFF toggle with play/pause metaphor across 3 locations (status bar, settings, work items header). Consistent emerald/amber color scheme.
-
-**FX.RST1:** Graceful restart flow — backend `GET /api/service/status` (joins executions+personas+workItems), `POST /api/service/restart` with force flag. Frontend modal with agent list, 3s polling, auto-restart, force restart with double-click confirm.
-
-**FX.FLOW1:** Replaced SVG BFS graph with vertical CSS flex layout — state nodes top-to-bottom, Router pills between states, Blocked branch to the right. Removed ~140 lines of SVG computation.
-
-**FX.NAV1:** Fixed sidebar icon/label stacking (root cause: animated w-0/w-auto CSS on label wrapper). Replaced with conditional render. Added hover/active/border states.
-
-**FX.PM1:** Inline system prompt preview on persona cards — expand/collapse, markdown via MarkdownPreview, MCP/SDK tool badges, model + budget display. One card expanded at a time.
-
-**FX.0:** Fixed MCP tool name mismatches: `transition_state` → `route_to_state` (3 personas), `create_tasks` → `create_children` (TL). Updated seed.ts, default-personas.ts, test/setup.ts.
-
-**FX.P1-P4 (Persona Overhauls):** All 4 workflow personas audited and overhauled:
-- PM: mcpTools → post_comment, list_items, get_context, request_review. Prompt: AC template, workflow context, anti-patterns.
-- TL: mcpTools → create_children, post_comment, get_context, list_items. Prompt: 3-step decomposition, granularity 2-8, skip-decomposition.
-- Engineer: mcpTools → post_comment, flag_blocked, get_context. Prompt: 4-step (read → implement → build → comment), rejection handling, flag_blocked guidance.
-- Code Reviewer: mcpTools → post_comment, get_context, list_items, request_review. Prompt: 5-step (context → read files → build → checklist → verdict), severity-tagged rejections.
-
-All personas updated in both seed.ts and default-personas.ts. Key pattern: no persona has route_to_state except Router — all state transitions are Router's responsibility.
-
----
-
-## Sprint 17 (continued): Persona Panel, Skills, Router Loop Defense, Monitor UX, DB/Executor Env Separation — 2026-03-30
-
-**FX.P5-P6:** Router persona audit — fixed swapped allowedTools/mcpTools (critical: MCP names in SDK field), overhauled systemPrompt with valid transitions map. SDK tool verification — confirmed short names, fixed `tools: []` bug in executor (agents had zero built-in tools), fixed MCP env var.
-
-**FX.PM2-PM3:** Replaced persona card expand with side detail panel (45%/55% split layout). Fixed panel to open read-only by default with explicit Edit button.
-
-**FX.P7-P9:** Added `skills: string[]` to Persona entity + DB + API. Built skill browser modal (filesystem `.md` browser with preview). Skill injection into system prompt (section 5 in `buildSystemPrompt`, 8K char cap).
-
-**FX.1-FX.3 (Router loop defense):** Three-layer system: (1) same-state rejection in `route_to_state` MCP tool, (2) transition history awareness in Router's dynamic system prompt, (3) rate limiter logging with system comment + WS broadcast when chaining is paused.
-
-**FX.4-FX.5:** Transition loop detection (6-entry history, 3-occurrence threshold, auto-Blocked). Cost aggregation audit — fixed cents→dollars in 4 dashboard routes + execution serializer.
-
-**FX.6-FX.8 (Agent Monitor UX):** Persona identity header (avatar, model badge, work item title). Chat thread restructure (grouped text bubbles, collapsible thinking, tool cards, timestamps). Historical log chunk detection (JSON/tool_call/thinking heuristics via `parseLogLine`).
-
-**FX.DB1-DB4 (DB & Executor):** Dev/prod DB separation by NODE_ENV (`agentops-dev.db` local, `~/.agentops/data/agentops.db` prod). MockExecutor (6 events, configurable delay, zero cost). Executor selection by NODE_ENV with health endpoint indicator. Settings toggle for executor mode (runtime swapping, hidden in production).
-
-**FX.DEV1:** Port-check wrapper `scripts/dev.sh` — skips backend/frontend if already running.
-
-**FX.SDK2:** Replaced custom skill file injection with SDK native `skills` param. Skills are now SDK skill names on `AgentDefinition`, not file paths. Key pattern: `agent`/`agents` option in `query()`.
+Command sandbox, mock removal (-2283 lines), demo seed, settings fixes, auto-routing play/pause, graceful restart, Flow view redesign, sidebar fixes, all 5 persona overhauls (MCP tools + system prompts), persona detail panel (45/55 split), skills system (entity+DB+browser+injection), router loop defense (3 layers), cost audit, agent monitor UX (identity header, chat thread, log parsing), DB/executor env separation, SDK native skills. E2E tests AI.19-AI.28 all passed.
 
 ---
 
@@ -198,3 +137,17 @@ All personas updated in both seed.ts and default-personas.ts. Key pattern: no pe
 **SDK.FC.4-FC.7:** MCP rewind tool for Code Reviewer (HTTP delegation), e2e test plan (17 steps), test execution (7/17 PASS, 10 SKIP), documentation updates across architecture/API/MCP docs.
 
 **SDK.HK.1-HK.5:** Replaced manual sandbox with PreToolUse hook, added PostToolUse audit logging (timing + sanitized commands), SessionStart/SessionEnd lifecycle hooks (audit + WS), FileChanged hook (file_changed WS events), file changes panel UI (collapsible, real-time, deduplication).
+
+---
+
+## Sprint 19 (Hooks docs, Structured Output, Subagents, Effort) — 2026-03-31 to 2026-04-01
+
+**SDK.HK.6-HK.8:** File tracking e2e test plan + execution (4/16 PASS, 12 SKIP — no live agents), hooks architecture documentation (7 hooks table, diagram, audit trail).
+
+**FX.PROJ1:** Fixed stale project ID fallback — `retry: false` on useProject, auto-select first available project.
+
+**SDK.SO.1-SO.5:** Structured output for Router (isRouter flag, JSON schema), RouterDecisionCard UI (full + compact variants), structuredOutput column + migration, e2e test (5/13 PASS), docs updated.
+
+**SDK.SA.1-SA.6:** All personas as SDK subagents (AgentDefinition mapping), SubagentStart/SubagentStop hooks + WS events, parentExecutionId column, nested SubagentCard UI, e2e test (1/12 PASS — empty DB), docs updated.
+
+**SDK.ET.1-ET.5:** Effort/thinking on PersonaSettings, passed to query() options, per-persona defaults (Router=low/disabled, Engineer=max/enabled), persona editor dropdowns, e2e test (11/13 PASS — full save-persist), docs updated.

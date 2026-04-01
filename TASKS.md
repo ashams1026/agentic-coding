@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-18 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 19 V2.1-V2.2, V2.4, FC.1-FC.7, HK.1-HK.8, SO.1-SO.5, SA.1 archived.
+> Sprints 1-18 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 19 complete and archived (V2, FC, HK, SO, SA, ET).
 
 ---
 
@@ -30,30 +30,6 @@
 ### Part 1: Infrastructure — V2 Persistent Sessions
 
 - [blocked: SDKSessionOptions does not support agent/agents, mcpServers, cwd, skills, or maxBudgetUsd — only query() Options does. V2 sessions can't be configured as Pico (custom personality, MCP server, project cwd). Need SDK to add these fields to SDKSessionOptions first.] **SDK.V2.3** — Refactor Pico to use V2 sessions. Update PICO.2 and PICO.3 design: instead of a custom `chat_sessions`/`chat_messages` DB table + manual conversation history assembly, use the SDK's native session management. `POST /api/chat/sessions` → calls `unstable_v2_createSession()` and stores the SDK session ID. `POST /api/chat/sessions/:id/messages` → calls `session.send(message)` and streams from `session.stream()`. `GET /api/chat/sessions` → calls `listSessions()` from the SDK. `GET /api/chat/sessions/:id/messages` → calls `getSessionMessages(sessionId)`. This eliminates our custom chat persistence layer entirely — the SDK handles conversation history, context compaction, and session storage. Keep the `chat_sessions` table only as a lightweight index (sessionId, projectId, title, createdAt) for the UI list. Remove `chat_messages` table from the schema design.
-
-### Part 5: Agent Quality — Custom Subagent Definitions (remaining)
-
-- [x] **SDK.SA.2** — Add subagent invocation tracking. When an agent spawns a subagent (detected via `SubagentStart`/`SubagentStop` hooks), create a child execution record linked to the parent. In the agent monitor: show subagent executions as nested cards under the parent. Activity feed: "Engineer spawned Code Reviewer as subagent for [Work Item]". Track subagent costs as part of the parent execution's total.
-
-- [x] **SDK.SA.3** — Agent monitor: nested subagent view UI. In `packages/frontend/src/features/agent-monitor/`: when an execution has child subagent executions, render them as indented/nested cards with a tree connector line. Each subagent card shows: persona avatar, model, status, cost. Expandable to see the subagent's full output. Collapse by default to keep the view clean.
-
-- [x] **SDK.SA.4** — E2E test plan: subagent nesting. Create `tests/e2e/plans/subagent-nesting.md`: verify nested subagent cards in agent monitor, tree connector rendering, expand/collapse, cost rollup.
-
-- [x] **SDK.SA.5** — Run subagent nesting e2e test. Execute SDK.SA.4. Record results with screenshots of nested view.
-
-- [x] **SDK.SA.6** — Update `docs/personas.md` and `docs/architecture.md` with subagent system. Document: how personas map to AgentDefinitions, subagent invocation flow, cost tracking, when to use subagents vs. state transitions.
-
-### Part 6: Agent Quality — Effort & Thinking
-
-- [x] **SDK.ET.1** — Add effort level to Persona entity. In `packages/shared/src/entities.ts`: add `effort?: 'low' | 'medium' | 'high' | 'max'` and `thinking?: 'adaptive' | 'enabled' | 'disabled'` to Persona settings. In `packages/backend/src/agent/claude-executor.ts`: pass `effort: persona.settings.effort ?? 'high'` and `thinking: { type: persona.settings.thinking ?? 'adaptive' }` to `query()` options. Defaults: Router = `low` effort + `disabled` thinking, PM = `medium` + `adaptive`, Tech Lead = `high` + `adaptive`, Engineer = `max` + `enabled` (with budget), Code Reviewer = `high` + `adaptive`. Update seed data with these defaults.
-
-- [x] **SDK.ET.2** — Add effort & thinking controls to persona editor UI. In the persona editor form: add an "Effort Level" dropdown (low/medium/high/max) with descriptions — low: "Fast, minimal reasoning", medium: "Balanced", high: "Thorough", max: "Maximum depth, highest cost". Add a "Thinking Mode" dropdown (adaptive/enabled/disabled) — adaptive: "Claude decides when to think deeply", enabled: "Always show reasoning chain", disabled: "No extended thinking". Show estimated relative cost indicator next to effort selection.
-
-- [x] **SDK.ET.3** — E2E test plan: persona effort & thinking settings. Create `tests/e2e/plans/persona-effort-thinking.md`: verify dropdowns render correctly in persona editor, values save and persist, descriptions display. Visual check of the effort/thinking controls.
-
-- [x] **SDK.ET.4** — Run persona effort & thinking e2e test. Execute SDK.ET.3. Record results with screenshots.
-
-- [x] **SDK.ET.5** — Update `docs/personas.md` with effort and thinking configuration. Document: effort levels and their effect on cost/quality, thinking modes, recommended defaults per persona type.
 
 ---
 

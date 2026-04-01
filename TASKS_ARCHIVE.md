@@ -157,3 +157,15 @@
 
 ### Part 5: Subagent Definitions — archived 2026-04-01
 - [x] **SDK.SA.1** — All personas registered as SDK subagents in `query()` options (primary 30 turns, subagents 15). *(completed 2026-04-01)*
+- [x] **SDK.SA.2** — SubagentStart/SubagentStop hooks, `parentExecutionId` column, `subagent_started`/`subagent_completed` WS events. *(completed 2026-04-01)*
+- [x] **SDK.SA.3** — Nested SubagentCard UI in agent monitor (tree connector, collapsible, child grouping). *(completed 2026-04-01)*
+- [x] **SDK.SA.4** — E2E test plan: subagent nesting (12 steps, 4 parts). *(completed 2026-04-01)*
+- [x] **SDK.SA.5** — Executed subagent nesting e2e test (1/12 PASS, 11 SKIP — empty DB). *(completed 2026-04-01)*
+- [x] **SDK.SA.6** — Updated docs/architecture.md and docs/personas.md with subagent system. *(completed 2026-04-01)*
+
+### Part 6: Effort & Thinking — archived 2026-04-01
+- [x] **SDK.ET.1** — Added effort/thinking to PersonaSettings, passed to `query()` options, per-persona defaults in seed. *(completed 2026-04-01)*
+- [x] **SDK.ET.2** — Effort & thinking dropdowns in persona editor (Select components, settings merge on save). *(completed 2026-04-01)*
+- [x] **SDK.ET.3** — E2E test plan: persona effort & thinking settings (13 steps, 4 parts). *(completed 2026-04-01)*
+- [x] **SDK.ET.4** — Executed effort & thinking e2e test (11/13 PASS — full save-persist cycle verified). *(completed 2026-04-01)*
+- [x] **SDK.ET.5** — Updated docs/personas.md with effort levels, thinking modes, recommended defaults. *(completed 2026-04-01)*
