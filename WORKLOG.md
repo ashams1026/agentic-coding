@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 09:45 PDT — RES.GLOBAL.UX: Global agent chat and scheduling UX
+
+**Done:** Designed UX flows for 5 investigation points. (1) Global chat entry: Pico panel with scope toggle + persona picker in header, supplemented by command palette quick actions; full-page chat deferred to RES.CHAT.UX. (2) Scheduling: built on new `POST /api/executions/run` endpoint for ad-hoc dispatch; Agent Monitor "New Run" button with modal (persona, scope, prompt, budget). (3) Agent Monitor: scope badges on execution rows, filter dropdown (All/Project/Global), clicking badge navigates to context. (4) Mid-conversation context switch: `set_project_context` MCP tool + UI dropdown fallback; flow diagram with multi-project switching. (5) Artifacts: global workspace `~/.agentops/workspace/runs/<execution>/` with per-execution isolation. Also addressed workflow interaction: global agents use `set_project_context` to access project workflows.
+**Files:** `docs/proposals/global-agents/ux-design.md`
+
+---
+
 ## 2026-04-02 09:25 PDT — Review: RES.GLOBAL.NAV (approved)
 
 **Reviewed:** Navigation restructure research proposal for project vs global scope.
