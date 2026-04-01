@@ -329,15 +329,17 @@ function RewindButton({ execution }: RewindButtonProps) {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0"
-              disabled={!hasCheckpoint || loading}
-              onClick={handleClick}
-            >
-              <Undo2 className="h-3.5 w-3.5" />
-            </Button>
+            <span className="inline-flex">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0"
+                disabled={!hasCheckpoint || loading}
+                onClick={handleClick}
+              >
+                <Undo2 className="h-3.5 w-3.5" />
+              </Button>
+            </span>
           </TooltipTrigger>
           <TooltipContent>
             {hasCheckpoint
