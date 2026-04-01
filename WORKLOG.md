@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 01:20 PDT — Review: SDK.SO.5 (approved)
+
+**Reviewed:** Structured Router output documentation in `docs/workflow.md` and `docs/personas.md`.
+- workflow.md: new "Structured Output" subsection with JSON example, field table, storage/UI explanation
+- personas.md: Router description updated with `isRouter` flag, comparison table gains "Output format" row
+- All three task requirements covered: JSON schema, parsing mechanism, confidence field meaning
+- Accurate to implementation (ROUTER_OUTPUT_SCHEMA, isRouter flag)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 01:15 PDT — SDK.SO.5: Update docs with structured Router output
 
 **Done:** Updated `docs/workflow.md`: added "Structured Output" subsection under Router with JSON schema example, field descriptions table, storage/UI notes. Updated `isRouter` in Router Configuration settings. Updated `docs/personas.md`: expanded Router description with `isRouter` flag and structured output details, added "Output format" row to Router comparison table.

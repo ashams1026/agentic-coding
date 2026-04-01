@@ -51,7 +51,7 @@
 
 - [x] **SDK.SO.4** — Run Router structured output e2e test. Execute SDK.SO.3. Record results with screenshots of Router decision cards.
 
-- [review] **SDK.SO.5** — Update `docs/workflow.md` and `docs/personas.md` with structured Router output. Document: the JSON schema, how Router decisions are parsed, the confidence field and its meaning.
+- [x] **SDK.SO.5** — Update `docs/workflow.md` and `docs/personas.md` with structured Router output. Document: the JSON schema, how Router decisions are parsed, the confidence field and its meaning.
 
 ### Part 5: Agent Quality — Custom Subagent Definitions
 
