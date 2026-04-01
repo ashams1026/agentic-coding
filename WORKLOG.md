@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 03:35 PDT — Review: UX.PICO (approved)
+
+**Reviewed:** Pico Chat panel audit.
+- 6 screenshots covering all checklist items: open, typing, response, new session, minimized, dark mode ✓
+- All features tested: open/close, message send, error display, new session, session switching, dark mode ✓
+- SDK error correctly classified as config issue, not UI bug ✓
+- No bugs — clean audit
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 03:30 PDT — UX.PICO: Audit Pico Chat panel
 
 **Done:** Audited Pico chat panel. Floating button opens panel with correct styling. Previous session loads with messages and timestamps. Message input functional — typed and sent "What is this project about?" via ⌘Enter. Response shows SDK error (executable not found — expected in dev, not a UI bug) with red error styling and Retry button. New session creates fresh chat with "Woof! I'm Pico" welcome and 4 suggested prompt chips. Session selector dropdown works. Minimize closes panel cleanly. Dark mode verified — proper contrast, readable text. No UI bugs found.
