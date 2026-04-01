@@ -59,7 +59,7 @@
 
 ### Pico Chat Panel
 
-- [ ] **FX.PICO.OVERFLOW** — Pico chat content overflows out of the chat panel. Messages extend beyond the visible area of the chat window instead of wrapping/scrolling within it. Fix the container in `packages/frontend/src/features/pico/chat-panel.tsx` to properly constrain content width and enable scroll within the message area.
+- [review] **FX.PICO.OVERFLOW** — Pico chat content overflows out of the chat panel. Messages extend beyond the visible area of the chat window instead of wrapping/scrolling within it. Fix the container in `packages/frontend/src/features/pico/chat-panel.tsx` to properly constrain content width and enable scroll within the message area.
 
 - [ ] **FX.PICO.EMPTY.BUBBLE** — Empty chat bubble with "..." appears before thinking content arrives. When Pico is processing but hasn't started thinking yet, an empty message bubble renders with the typing indicator dots below it, then gets replaced when thinking content streams in. The empty bubble should not appear — either show only the typing indicator until content arrives, or delay rendering the bubble until the first content chunk.
 
@@ -72,6 +72,20 @@
 - [ ] **UX.PICO.COLLAPSE** — Replace close (X) button with collapse caret on mini chat panel. The X button implies closing/ending the chat, but it only minimizes the overlay. Replace with a downward chevron/caret icon (ChevronDown from lucide-react) to indicate collapse/minimize behavior. Tooltip should say "Minimize" not "Close".
 
 - [blocked: TestRunPanel component exists in persona-editor.tsx but PersonaManagerPage uses PersonaDetailPanel instead. The test-run feature is not accessible from the UI — no route or button leads to persona-editor.tsx. Cannot audit what users can't reach.] **FX.UX.PERSONA.4** — Wire TestRunPanel into Persona Manager UI. The `TestRunPanel` component (`packages/frontend/src/features/persona-manager/test-run-panel.tsx`) exists and is imported in `persona-editor.tsx`, but the page (`pages/persona-manager.tsx` line 38) uses `PersonaDetailPanel` which does not include it. Users cannot test-run a persona. Fix: either add a collapsible TestRunPanel to `PersonaDetailPanel` (at the bottom of the read-only view), or replace `PersonaDetailPanel` with `PersonaEditor` in the page layout.
+
+### Branding
+
+- [ ] **UX.BRAND.WOOF** — Rebrand the app as "Woof". The app is being branded as "Woof" — a play on words since Pico (the main assistant agent) is named after the user's dog. Updates needed: (1) page title — change `<title>` in `index.html` from "AgentOps" to "Woof", (2) favicon — replace with a dog-themed favicon (paw print or simple dog silhouette, works at 16x16 and 32x32), (3) sidebar/header — add "Woof" branding text or logo mark in the sidebar header area (where the app name would go), (4) login/splash — if there's a loading screen or empty state, show the Woof name, (5) browser tab — ensure the tab shows "Woof" with the new favicon, (6) Pico's avatar/identity — lean into the dog theme for Pico's chat bubble avatar (paw print, dog emoji, or small icon), (7) audit all references to "AgentOps" in user-visible UI text (tooltips, empty states, footer, about dialog) and update to "Woof" where appropriate. Keep "AgentOps" in code/package names and developer-facing docs — this is a UI/brand change only.
+
+---
+
+## Research: Persona Prompt System
+
+> Document how persona prompts work today and research template variable support. Output is design docs only — do NOT add implementation tasks to TASKS.md. All proposals go to `docs/proposals/persona-prompts/`.
+
+- [ ] **RES.PROMPTS.DOC** — Document the current persona prompt storage and assembly pipeline. Trace the full path: (1) how `system_prompt` is stored in the personas DB table and edited in the UI (`system-prompt-editor.tsx`), (2) how `buildSystemPrompt()` in `packages/backend/src/agent/claude-executor.ts` assembles the final prompt — what sections are injected (project context, persona identity, workflow instructions, MCP tool descriptions, memory), in what order, with what separators, (3) how the Pico chat route (`packages/backend/src/routes/chat.ts`) builds its prompt differently from the executor, (4) how `AgentDefinition.prompt` is passed to the SDK `query()` call, (5) what the user controls (system_prompt field) vs what the system injects automatically. Write a clear reference doc to `docs/proposals/persona-prompts/current-architecture.md`. Commit the doc only.
+
+- [ ] **RES.PROMPTS.VARS** — Research template variable support for persona prompts. Investigate: (1) syntax — what variable format to use in prompts (e.g. `{{project.name}}`, `${project.path}`, Mustache/Handlebars-style); must be visually distinct from natural language and not conflict with code blocks or JSON in prompts, (2) built-in variables — what system variables are available: `project.name`, `project.path`, `project.description`, `persona.name`, `workflow.currentState`, `workItem.title`, `workItem.description`, `date.now`, `user.name`; which are available at prompt-build time vs only at execution time, (3) user-defined variables — can users define custom key-value pairs per project or per persona (e.g. `{{coding_style}}` = "Follow Google TypeScript style guide") that get substituted at runtime; where are these stored and edited, (4) variable resolution — when in the pipeline does substitution happen (before passing to SDK, or in `buildSystemPrompt()`); what happens when a variable is undefined — leave the placeholder, replace with empty string, or warn, (5) UI support — autocomplete/suggestions when typing `{{` in the system prompt editor; variable reference panel showing available variables with descriptions; preview button that shows the fully-hydrated prompt. Write to `docs/proposals/persona-prompts/template-variables.md`. Commit the doc only.
 
 ---
 

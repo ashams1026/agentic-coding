@@ -100,7 +100,7 @@ export function ChatMessage({ message, showAvatar }: ChatMessageProps) {
   return (
     <div
       className={cn(
-        "group flex gap-2",
+        "group flex gap-2 overflow-hidden",
         isUser ? "flex-row-reverse" : "flex-row",
         !showAvatar && !isUser && "pl-9",
       )}
@@ -118,7 +118,7 @@ export function ChatMessage({ message, showAvatar }: ChatMessageProps) {
       {/* Bubble */}
       <div
         className={cn(
-          "max-w-[85%] rounded-lg px-3 py-2 text-sm",
+          "max-w-[85%] min-w-0 rounded-lg px-3 py-2 text-sm overflow-hidden break-words",
           isUser
             ? "bg-primary text-primary-foreground"
             : "bg-muted text-foreground",
@@ -363,7 +363,7 @@ function PicoMarkdown({ text }: { text: string }) {
     idx++;
   }
 
-  return <div className="space-y-0.5">{elements}</div>;
+  return <div className="space-y-0.5 overflow-hidden">{elements}</div>;
 }
 
 // ── Inline markdown (bold, code, links) ───────────────────────────

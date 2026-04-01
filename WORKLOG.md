@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 13:10 PDT — FX.PICO.OVERFLOW: Fix chat content overflow
+
+**Done:** Content in Pico chat panel was overflowing past the panel's right edge. Three CSS fixes: (1) Inner messages container inside ScrollArea uses `w-0 min-w-full overflow-hidden` to prevent content from expanding beyond the Radix ScrollArea viewport width, (2) message bubble gets `min-w-0 overflow-hidden break-words` to clip and wrap long content, (3) message row gets `overflow-hidden` to prevent children from pushing the flex row wider. Also added `overflow-hidden` on PicoMarkdown root div. Verified visually: text now wraps properly, long paths break correctly, all content stays within panel borders.
+**Files:** `packages/frontend/src/features/pico/chat-panel.tsx`, `packages/frontend/src/features/pico/chat-message.tsx`
+
+---
+
 ## 2026-04-02 12:50 PDT — Review: FX.PERSONA.SEED (approved)
 
 **Reviewed:** Fix for built-in personas missing — only Pico visible.
