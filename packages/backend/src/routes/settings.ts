@@ -6,7 +6,7 @@ import { resolve } from "node:path";
 import { loadConfig, setConfigValue } from "../config.js";
 import { logger } from "../logger.js";
 import { getActiveCount, getQueueLength, getActiveExecutionIds, clearAll } from "../agent/concurrency.js";
-import { executionManager } from "../agent/execution-manager.js";
+import { executionManager } from "../agent/setup.js";
 import { db, sqlite } from "../db/connection.js";
 import { projects, personas, personaAssignments, executions, workItems } from "../db/schema.js";
 import { eq, inArray } from "drizzle-orm";

@@ -15,7 +15,7 @@ import { chatRoutes } from "./routes/chat.js";
 import { sdkRoutes } from "./routes/sdk.js";
 import { registerWebSocket } from "./ws.js";
 import { getActiveCount } from "./agent/concurrency.js";
-import { executionManager } from "./agent/execution-manager.js";
+import { executionManager } from "./agent/setup.js";
 import { loggerConfig } from "./logger.js";
 
 export async function buildServer() {

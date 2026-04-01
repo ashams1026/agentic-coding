@@ -8,7 +8,7 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { personaAssignments, workItems, comments } from "../db/schema.js";
-import { executionManager } from "./execution-manager.js";
+import { executionManager } from "./setup.js";
 import { canSpawn, enqueue, checkMonthlyCost } from "./concurrency.js";
 import { createId } from "@agentops/shared";
 import type { CommentId, WorkItemId } from "@agentops/shared";

@@ -27,7 +27,7 @@ vi.mock("../agent/dispatch.js", () => ({
 }));
 
 import { clearAll, getActiveCount, getQueueLength, trackExecution, enqueue } from "../agent/concurrency.js";
-import { executionManager } from "../agent/execution-manager.js";
+import { executionManager } from "../agent/setup.js";
 import { recoverOrphanedState } from "../start.js";
 
 let testDb: TestDatabase;

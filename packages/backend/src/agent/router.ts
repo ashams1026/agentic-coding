@@ -9,7 +9,7 @@
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { workItems, projects, comments } from "../db/schema.js";
-import { executionManager } from "./execution-manager.js";
+import { executionManager } from "./setup.js";
 import { createId } from "@agentops/shared";
 import { personas } from "../db/schema.js";
 

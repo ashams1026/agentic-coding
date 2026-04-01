@@ -14,7 +14,7 @@ vi.mock("../../db/connection.js", () => ({
 
 // Stub the executor spawn — we're testing dispatch decisions, not agent execution
 const mockRunExecution = vi.fn().mockResolvedValue("ex-mock001");
-vi.mock("../execution-manager.js", () => ({
+vi.mock("../setup.js", () => ({
   executionManager: {
     runExecution: (...args: unknown[]) => mockRunExecution(...args),
   },

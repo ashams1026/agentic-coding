@@ -19,7 +19,7 @@ import type { CommentId, WorkItemId, PersonaId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 import { checkParentCoordination } from "./coordination.js";
 import { checkMemoryGeneration, getRecentMemories } from "./memory.js";
-import { executionManager } from "./execution-manager.js";
+import { executionManager } from "./setup.js";
 import { logger } from "../logger.js";
 import { auditStateTransition } from "../audit.js";
 

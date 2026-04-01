@@ -50,7 +50,7 @@ vi.mock("../concurrency.js", () => ({
   getProjectCostSummary: (...args: unknown[]) => mockGetProjectCostSummary(...args),
 }));
 
-import { executionManager, _resetExecutionManager } from "../execution-manager.js";
+import { executionManager, _resetExecutionManager } from "../setup.js";
 // Access methods through the proxy at call time (not module load) to avoid early db init
 const runExecution = (...args: Parameters<typeof executionManager.runExecution>) => executionManager.runExecution(...args);
 const canTransition = (...args: Parameters<typeof executionManager.canTransition>) => executionManager.canTransition(...args);

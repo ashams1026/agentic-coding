@@ -24,10 +24,6 @@ import { auditAgentDispatch, auditAgentComplete, auditCostEvent } from "../audit
 import { trackExecution, onComplete, getProjectCostSummary } from "./concurrency.js";
 import { runRouter } from "./router.js";
 import { dispatchForState } from "./dispatch.js";
-import { ClaudeExecutor } from "./claude-executor.js";
-import { MockExecutor } from "./mock-executor.js";
-import { db } from "../db/connection.js";
-import { broadcast } from "../ws.js";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -701,35 +697,3 @@ export class ExecutionManager {
   }
 }
 
-// ── Default instance (composition root — moves to setup.ts in PLUG.2) ──
-// Lazy initialization: the instance is created on first access, not at module
-// load time. This allows test mocks for db/broadcast to be set up before use.
-
-function defaultExecutorFactory(mode: string): AgentExecutor {
-  if (mode === "mock") {
-    logger.info("Using MockExecutor (simulated agent runs)");
-    return new MockExecutor();
-  }
-  return new ClaudeExecutor();
-}
-
-let _defaultInstance: ExecutionManager | null = null;
-
-/** Reset the default instance. Used in tests where the db mock changes between runs. */
-export function _resetExecutionManager(): void {
-  _defaultInstance = null;
-}
-
-export const executionManager = new Proxy({} as ExecutionManager, {
-  get(_target, prop) {
-    if (prop === "_resetExecutionManager") return _resetExecutionManager;
-    if (!_defaultInstance) {
-      _defaultInstance = new ExecutionManager(defaultExecutorFactory, db as unknown as DbHandle, broadcast);
-    }
-    const value = (_defaultInstance as any)[prop];
-    if (typeof value === "function") {
-      return value.bind(_defaultInstance);
-    }
-    return value;
-  },
-});
