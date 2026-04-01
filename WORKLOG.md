@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 11:10 PDT — SDK.UX.5: Run Pico prompt suggestions e2e test
+
+**Done:** Executed SDK.UX.4 test plan. 1/9 PASS, 0 FAIL, 8 SKIP. API key not configured — Pico can't generate responses or suggestions. Pico panel opens correctly with existing conversation. 1 screenshot. Component verified via code review.
+**Files:** `tests/e2e/results/pico-suggestions.md`, `tests/e2e/results/psg-01-pico-panel.png`
+
+---
+
 ## 2026-04-01 11:00 PDT — Review: SDK.UX.4 (approved)
 
 **Reviewed:** E2E test plan at `tests/e2e/plans/pico-suggestions.md`.
