@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 14:45 PDT — Review: DOC.9 (approved)
+
+**Reviewed:** Frontend.md updates.
+- Mock data layer removed (40+ lines → 3-line API Layer section)
+- Directory tree: mocks/ gone, pico/ added, features updated
+- api/ descriptions cleaned (no mock delegation)
+- Intro and State Management mock references fixed
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 14:40 PDT — DOC.9: Update frontend.md
 
 **Done:** Removed mock data layer section entirely (mocks deleted in FX.MOCK1/MOCK2) — replaced with brief "API Layer" section with seed-demo note. Removed `mocks/` from directory tree. Updated feature directories: added pico/, updated agent-monitor, persona-manager, settings descriptions. Updated api/ descriptions (removed mock delegation). Fixed "mock layer" reference in State Management.
