@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 04:05 PDT — Review: SDK.ET.4 (approved)
+
+**Reviewed:** Persona effort & thinking e2e test results at `tests/e2e/results/persona-effort-thinking.md`.
+- 11/13 PASS, 0 FAIL, 2 SKIP — excellent coverage for a UI feature test
+- Full save-persist cycle: change effort → save → reload → values persist — all confirmed
+- Both dropdowns tested with exact description text matching implementation
+- Conditional rendering verified: no section before edit, section appears after save
+- 7 screenshots covering all key states
+- Settings merge works correctly (effort/thinking saved without affecting other persona fields)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 04:00 PDT — SDK.ET.4: Run persona effort & thinking e2e test
 
 **Done:** Executed SDK.ET.3 test plan. 11/13 PASS, 0 FAIL, 2 SKIP. Full save→persist cycle verified: changed Engineer effort from High to Medium, saved, reloaded page — values persisted. Both dropdowns render with correct options and descriptions. Read-only badges display after save. 7 screenshots captured.

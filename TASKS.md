@@ -51,7 +51,7 @@
 
 - [x] **SDK.ET.3** — E2E test plan: persona effort & thinking settings. Create `tests/e2e/plans/persona-effort-thinking.md`: verify dropdowns render correctly in persona editor, values save and persist, descriptions display. Visual check of the effort/thinking controls.
 
-- [review] **SDK.ET.4** — Run persona effort & thinking e2e test. Execute SDK.ET.3. Record results with screenshots.
+- [x] **SDK.ET.4** — Run persona effort & thinking e2e test. Execute SDK.ET.3. Record results with screenshots.
 
 - [ ] **SDK.ET.5** — Update `docs/personas.md` with effort and thinking configuration. Document: effort levels and their effect on cost/quality, thinking modes, recommended defaults per persona type.
 
