@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 07:00 PDT — UX.AGENT.BREADCRUMB: Breadcrumb trail + side panel overlay
+
+**Done:** Replaced "Work Item" and "Parent" ghost buttons in `agent-control-bar.tsx` with inline breadcrumb trail (`Parent Title > Work Item Title`) using `ChevronRight` separators. Clicking a breadcrumb segment calls `onWorkItemClick` callback instead of navigating away. Added side panel overlay to `agent-monitor-layout.tsx` — absolute-positioned panel with close button renders `DetailPanel` from work-items feature. Removed `useNavigate` and `useWorkItemsStore` imports from control bar (moved to layout). Added `handleWorkItemClick` callback that sets `selectedItemId` in store and opens the overlay.
+**Files:** `packages/frontend/src/features/agent-monitor/agent-control-bar.tsx`, `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`
+**Notes:** Cannot visually test breadcrumb with no running agents, but build passes and page renders clean. Breadcrumb only shows when an agent execution has a work item.
+
+---
+
 ## 2026-04-02 06:45 PDT — Review: FX.UX.PERSONA.3 (approved)
 
 **Reviewed:** Delete selected persona 404 toast fix.

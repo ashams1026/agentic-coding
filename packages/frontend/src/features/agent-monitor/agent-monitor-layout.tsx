@@ -1,15 +1,17 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Link } from "react-router";
-import { Monitor, ArrowRight, Columns2, Square } from "lucide-react";
+import { Monitor, ArrowRight, Columns2, Square, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useExecutions, useSelectedProject } from "@/hooks";
+import { useWorkItemsStore } from "@/stores/work-items-store";
 import { ActiveAgentSidebar } from "./active-agent-sidebar";
 import { AgentControlBar } from "./agent-control-bar";
 import { AgentHistory } from "./agent-history";
 import { TerminalRenderer } from "./terminal-renderer";
 import { SplitView } from "./split-view";
-import type { ExecutionId } from "@agentops/shared";
+import { DetailPanel } from "@/features/work-items/detail-panel";
+import type { ExecutionId, WorkItemId } from "@agentops/shared";
 
 // ── Empty state ────────────────────────────────────────────────
 
@@ -47,6 +49,7 @@ interface LiveViewProps {
   selectedId: ExecutionId | null;
   setSelectedId: (id: ExecutionId) => void;
   hasActiveAgents: boolean;
+  onWorkItemClick: (id: WorkItemId) => void;
 }
 
 function LiveView({
@@ -57,6 +60,7 @@ function LiveView({
   selectedId: _selectedId,
   setSelectedId,
   hasActiveAgents,
+  onWorkItemClick,
 }: LiveViewProps) {
   if (!hasActiveAgents) {
     return <EmptyState />;
@@ -98,7 +102,7 @@ function LiveView({
 
         {/* Agent control bar (single view only) */}
         {!splitMode && effectiveSelectedId && (
-          <AgentControlBar executionId={effectiveSelectedId} />
+          <AgentControlBar executionId={effectiveSelectedId} onWorkItemClick={onWorkItemClick} />
         )}
 
         {/* Content area */}
@@ -125,10 +129,17 @@ function LiveView({
 export function AgentMonitorLayout() {
   const { projectId } = useSelectedProject();
   const { data: executions = [] } = useExecutions(undefined, projectId ?? undefined);
+  const { setSelectedItemId } = useWorkItemsStore();
 
   const [selectedId, setSelectedId] = useState<ExecutionId | null>(null);
   const [splitMode, setSplitMode] = useState(false);
   const [tab, setTab] = useState<"live" | "history">("live");
+  const [showDetailPanel, setShowDetailPanel] = useState(false);
+
+  const handleWorkItemClick = useCallback((id: WorkItemId) => {
+    setSelectedItemId(id);
+    setShowDetailPanel(true);
+  }, [setSelectedItemId]);
 
   // Active (running) executions
   const activeExecutions = useMemo(
@@ -150,7 +161,7 @@ export function AgentMonitorLayout() {
   }, [selectedId, activeExecutions]);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full relative">
       {/* Tab bar */}
       <div className="flex items-center px-4 py-2 border-b">
         <Tabs value={tab} onValueChange={(v) => setTab(v as "live" | "history")}>
@@ -181,11 +192,32 @@ export function AgentMonitorLayout() {
             selectedId={selectedId}
             setSelectedId={setSelectedId}
             hasActiveAgents={activeExecutions.length > 0}
+            onWorkItemClick={handleWorkItemClick}
           />
         ) : (
           <AgentHistory />
         )}
       </div>
+
+      {/* Work item detail side panel overlay */}
+      {showDetailPanel && (
+        <div className="absolute inset-y-0 right-0 w-[45%] min-w-[360px] max-w-[560px] border-l border-border bg-background shadow-xl z-20 flex flex-col">
+          <div className="flex items-center justify-between px-3 py-1.5 border-b bg-muted/30">
+            <span className="text-xs font-medium text-muted-foreground">Work Item Details</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6"
+              onClick={() => setShowDetailPanel(false)}
+            >
+              <X className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            <DetailPanel />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

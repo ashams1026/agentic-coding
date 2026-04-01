@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
 import {
   Bot,
+  ChevronRight,
   DollarSign,
-  ExternalLink,
   OctagonX,
   StopCircle,
   Timer,
@@ -22,7 +21,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useExecution, usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
-import { useWorkItemsStore } from "@/stores/work-items-store";
 import type { ExecutionId, WorkItemId } from "@agentops/shared";
 
 // ── Helpers ───────────────────────────────────────────────────────
@@ -48,11 +46,10 @@ const modelConfig: Record<string, { label: string; color: string }> = {
 
 interface AgentControlBarProps {
   executionId: ExecutionId;
+  onWorkItemClick?: (id: WorkItemId) => void;
 }
 
-export function AgentControlBar({ executionId }: AgentControlBarProps) {
-  const navigate = useNavigate();
-  const setSelectedItemId = useWorkItemsStore((s) => s.setSelectedItemId);
+export function AgentControlBar({ executionId, onWorkItemClick }: AgentControlBarProps) {
   const { projectId } = useSelectedProject();
   const { data: execution } = useExecution(executionId);
   const { data: personas = [] } = usePersonas();
@@ -70,8 +67,10 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
 
   const targetName = workItem?.title ?? execution?.workItemId ?? "";
 
-  // Find parent work item
-  const parentWorkItemId = workItem?.parentId ?? null;
+  // Build breadcrumb chain: parent(s) → work item
+  const parentItem = workItem?.parentId
+    ? allItems.find((item) => item.id === workItem.parentId)
+    : null;
 
   // Live elapsed timer
   useEffect(() => {
@@ -123,18 +122,29 @@ export function AgentControlBar({ executionId }: AgentControlBarProps) {
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Navigation links */}
-      {execution.workItemId && (
-        <Button variant="ghost" size="xs" className="gap-1" onClick={() => { setSelectedItemId(execution.workItemId as WorkItemId); navigate("/items"); }}>
-          Work Item
-          <ExternalLink className="h-2.5 w-2.5" />
-        </Button>
-      )}
-      {parentWorkItemId && (
-        <Button variant="ghost" size="xs" className="gap-1" onClick={() => { setSelectedItemId(parentWorkItemId as WorkItemId); navigate("/items"); }}>
-          Parent
-          <ExternalLink className="h-2.5 w-2.5" />
-        </Button>
+      {/* Breadcrumb: Parent > Work Item */}
+      {(parentItem || workItem) && (
+        <div className="flex items-center gap-1 text-xs text-muted-foreground min-w-0">
+          {parentItem && (
+            <>
+              <button
+                onClick={() => onWorkItemClick?.(parentItem.id)}
+                className="hover:text-foreground transition-colors truncate max-w-[120px]"
+              >
+                {parentItem.title}
+              </button>
+              <ChevronRight className="h-3 w-3 shrink-0" />
+            </>
+          )}
+          {workItem && (
+            <button
+              onClick={() => onWorkItemClick?.(workItem.id)}
+              className="text-foreground font-medium truncate max-w-[180px]"
+            >
+              {targetName}
+            </button>
+          )}
+        </div>
       )}
 
       {/* Stop button — graceful cancel */}
