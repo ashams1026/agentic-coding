@@ -177,3 +177,17 @@ Command sandbox, mock removal (-2283 lines), demo seed, settings fixes, auto-rou
 **Agent Monitor audits (UX.AGENT.MAIN, UX.AGENT.CONTROLS, UX.AGENT.HISTORY):** Main layout — sidebar + terminal + header bar, 3 screenshots, 1 bug (broken Work Item/Parent links → 404). Controls — Stop/Force Stop dialogs, split view, panel components, 2 screenshots, 1 bug (MCP status 404 toast). History — 8 execution entries, summary stats, filters, disabled rewind buttons (existing FX.UX.REWIND), 3 screenshots, 0 new bugs.
 
 **Activity Feed audit (UX.ACTIVITY):** Chronological events grouped by date, colored type icons, filters, scrolling, dark mode. 3 screenshots, 1 bug (same generic `/items` link issue as dashboard).
+
+---
+
+### Sprint 22 batch 2 — Remaining audits, bug fixes, UX improvements, housekeeping, research (2026-04-02 05:15–07:55 PDT)
+
+**Remaining audits:** UX.RESPONSIVE completed (12 screenshots, 0 bugs at 1024px/768px). UX.DARK completed (9 screenshots, 0 bugs). UX.CMD, UX.NAV, UX.PICO, UX.SETTINGS, UX.PERSONA.LIST, UX.PERSONA.TEST all completed and approved.
+
+**Bug fixes:** FX.PICO.EXEC (SDK executable path resolution — added getClaudeCodeExecutablePath() to config.ts, pathToClaudeCodeExecutable to all 4 query() call sites). FX.UX.REWIND (disabled button tooltip — span wrapper for TooltipTrigger). FX.UX.PERSONA.1 (keyboard a11y — role/tabIndex/onKeyDown on PersonaCard). FX.UX.PERSONA.2 (label mismatch — shared BUILT_IN_IDS set). FX.UX.PERSONA.3 (delete 404 toast — onSelect(null) + removeQueries). All approved.
+
+**UX improvements:** UX.AGENT.BREADCRUMB — replaced nav buttons with breadcrumb trail + dismissible side panel overlay in Agent Monitor.
+
+**Housekeeping:** HK.TEST.RESULTS — restructured 269 files from flat tests/e2e/results/ into 46 timestamped directories.
+
+**Research:** RES.SDK.TOOLS — found sdk-tools.d.ts with 21 tools, recommended version-pinned shared manifest. RES.V2.SESSIONS — SDKSessionOptions missing 12+ fields vs query() Options, recommended query() with resume.

@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-21 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-6, PLUG.1-10, AW.1-2 archived. Sprint 22 mostly archived (all audits complete: UX.DASH through UX.DARK; remaining: UX.RESPONSIVE).
+> Sprints 1-22 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Backlog FUT.1-6, PLUG.1-10, AW.1-2 archived. Sprint 22 fully archived. Bug fixes (FX.PICO.EXEC, FX.UX.REWIND, FX.UX.PERSONA.1-3), UX improvements (UX.AGENT.BREADCRUMB), housekeeping (HK.TEST.RESULTS), and research (RES.SDK.TOOLS, RES.V2.SESSIONS) archived.
 
 ---
 
@@ -51,47 +51,15 @@
 
 - [blocked: Board view component exists (board-view.tsx) but is not exposed in the UI — WorkItemView type is "list" | "flow" only, viewOptions array has no board entry. Cannot audit what users can't access.] **UX.WORK.BOARD** — Audit Work Items board view. Switch to board/kanban view. Verify: columns render by workflow state, cards show title/status/assignee, drag-and-drop works (attempt to move a card between columns). Check empty columns display correctly. Screenshot. File bugs.
 
-### Cross-Cutting
-
-- [x] **UX.RESPONSIVE** — Comprehensive responsive audit. Set viewport to 1024px width, then 768px. Visit every page in sequence. For each: screenshot and check for horizontal overflow, clipped content, overlapping elements, unreadable text, broken layouts, inaccessible buttons. File all layout issues as individual bugs. *(completed 2026-04-02 05:15 PDT)*
-
----
-
 ## Bug Fixes
 
-- [x] **FX.PICO.EXEC** — Fix "Claude Code executable not found" error in Pico chat and agent executor. The SDK `query()` call in `packages/backend/src/routes/chat.ts` (~line 351) and `packages/backend/src/agent/claude-executor.ts` (~line 556) does not set `pathToClaudeCodeExecutable`, so the SDK falls back to looking for `cli.js` inside its own package which doesn't exist. Add `pathToClaudeCodeExecutable` to the `options` object in both locations, resolving the path from `which claude` or an env var (e.g. `CLAUDE_CLI_PATH`). Also check `packages/backend/src/agent/memory.ts` (~lines 183, 346) for the same issue. *(completed 2026-04-02 05:45 PDT)*
-
-- [x] **FX.UX.REWIND** — Fix disabled rewind button tooltip in Agent Monitor history. In `packages/frontend/src/features/agent-monitor/agent-history.tsx` (~line 329): disabled `<Button>` elements don't fire pointer events, so Radix UI `TooltipTrigger asChild` never activates. Wrap the `<Button>` in a `<span>` so the tooltip trigger remains interactive even when the button is disabled. The tooltip should explain why rewind is unavailable. Found in `tests/e2e/results/file-checkpointing.md` BUG-1.
-
-- [x] **FX.UX.PERSONA.1** — Persona cards lack keyboard accessibility. In `packages/frontend/src/features/persona-manager/persona-list.tsx` (~line 98): `PersonaCard` uses `<div onClick={onSelect}>` without `role="button"`, `tabIndex={0}`, or `onKeyDown` handler. Cards are not keyboard-navigable. Same pattern as FX.UX.DASH.2 (fixed for dashboard StatCards). Fix: add `role="button"`, `tabIndex={0}`, `onKeyDown` (Enter/Space), and `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2` class. Also apply to `CreateCard` component (~line 182).
-
-- [x] **FX.UX.PERSONA.2** — Built-in persona label mismatch between list and detail panel. Page `/personas`. `PersonaList` (persona-list.tsx line 291) uses `BUILT_IN_IDS.has(p.id)` to show "Built-in" badge, but `PersonaDetailPanel` (persona-detail-panel.tsx line 212) uses `persona.settings?.isSystem === true`. Result: Engineer shows "Built-in" badge in the card grid but "Custom persona" in the detail panel header. Fix: use the same `BUILT_IN_IDS` set in both components, or ensure mock data sets `settings.isSystem = true` for all built-in personas. Screenshots: `tests/e2e/results/ux-persona-list-light.png`, `tests/e2e/results/ux-persona-detail-engineer.png`.
-
-- [x] **FX.UX.PERSONA.3** — Delete selected persona causes 404 error toast. Page `/personas`. After deleting a persona that is currently selected in the detail panel, the detail panel still tries to fetch the deleted persona's data, resulting in an "API request failed" error toast and a stuck "Loading..." state. Root cause: `handleDeleteConfirm` in `persona-list.tsx` (~line 247) calls `setDeleteTarget(null)` on success but does NOT clear the parent's `selectedId`. Fix: accept an `onDeselect` callback prop (or extend `onSelect` to accept `null`) and call it when the deleted persona matches `selectedId`. Screenshot: `tests/e2e/results/ux-persona-after-delete.png`.
-
 - [blocked: TestRunPanel component exists in persona-editor.tsx but PersonaManagerPage uses PersonaDetailPanel instead. The test-run feature is not accessible from the UI — no route or button leads to persona-editor.tsx. Cannot audit what users can't reach.] **FX.UX.PERSONA.4** — Wire TestRunPanel into Persona Manager UI. The `TestRunPanel` component (`packages/frontend/src/features/persona-manager/test-run-panel.tsx`) exists and is imported in `persona-editor.tsx`, but the page (`pages/persona-manager.tsx` line 38) uses `PersonaDetailPanel` which does not include it. Users cannot test-run a persona. Fix: either add a collapsible TestRunPanel to `PersonaDetailPanel` (at the bottom of the read-only view), or replace `PersonaDetailPanel` with `PersonaEditor` in the page layout.
-
----
-
-## UX Improvements
-
-- [x] **UX.AGENT.BREADCRUMB** — Replace "Work Item" and "Parent" navigation links in Agent Monitor with a breadcrumb trail + side panel. Currently in `packages/frontend/src/features/agent-monitor/agent-control-bar.tsx` (~lines 127-135): two ghost buttons ("Work Item", "Parent") call `navigate("/items")` which takes the user away from the Agent Monitor. Change to: (1) replace the buttons with a breadcrumb trail matching the pattern in `packages/frontend/src/features/work-items/detail-panel.tsx` `ParentBreadcrumb` component (~line 450) — show `Parent Story > Work Item Title` as linked breadcrumb segments, (2) clicking a breadcrumb segment should open the work item detail side panel as an overlay on the Agent Monitor page (not navigate away), using the existing `DetailPanel` component and `setSelectedItemId` pattern, (3) the side panel should be dismissible so the user stays on the Agent Monitor. Consider reusing or extracting the `ParentBreadcrumb` component from detail-panel.tsx into a shared location.
-
----
-
-## Housekeeping
-
-- [x] **HK.TEST.RESULTS** — Restructure `tests/e2e/results/` directory by run date and test name. Current state: all screenshots and report `.md` files are dumped flat into `tests/e2e/results/`. Restructure to `tests/e2e/results/YYYY-MM-DD_HHMMSS/<test-name>/` — each run gets a timestamped directory containing the report `.md` and its screenshots. Move existing results into appropriately dated subdirectories (use git log dates for the original run timestamps). Update the e2e test plan template (`tests/e2e/plans/_template.md`) and any agent instructions that reference result paths to use the new structure. This makes it easy to identify and delete old test runs.
 
 ---
 
 ## Research: Proposals for Blocked Tasks
 
 > For each blocked issue, research the current SDK/architecture state, explore workarounds or alternative approaches, and write a proposal doc to `docs/proposals/`. Do NOT add tasks to TASKS.md or implement anything — just commit the proposal doc.
-
-- [x] **RES.SDK.TOOLS** — Research SDK tool discovery alternatives (unblocks FX.SDK3 + FX.SDK5). Investigate: (1) check if newer versions of `@anthropic-ai/claude-agent-sdk` have added tool discovery APIs since the block was filed, (2) examine the SDK source/types for any undocumented way to list built-in tools, (3) evaluate whether the `canUseTool` callback or `PreToolUse` hook can be used to dynamically discover tools at runtime, (4) consider maintaining a version-pinned tool manifest that's auto-verified on SDK upgrade. Write findings and recommended approach to `docs/proposals/sdk-tool-discovery.md`. Commit the doc only.
-
-- [x] **RES.V2.SESSIONS** — Research V2 session configuration for Pico (unblocks SDK.V2.3). Investigate: (1) check if `SDKSessionOptions` in the latest SDK version now supports `agent`/`agents`, `mcpServers`, `cwd`, `skills`, or `maxBudgetUsd`, (2) examine whether `session.send()` accepts per-message options that could configure these at send-time instead of session-creation time, (3) evaluate a hybrid approach — V2 session for conversation persistence but `query()` with full options for actual execution, (4) check SDK changelog/issues for planned V2 improvements. Write findings and recommended approach to `docs/proposals/v2-session-pico.md`. Commit the doc only.
 
 - [ ] **RES.PLUG.CORE** — Research core package extraction strategy (unblocks PLUG.3c + PLUG.3d). Investigate: (1) catalog all non-DB dependencies of ExecutionManager (logger, audit, concurrency, runRouter, dispatchForState, drizzle operators, etc.) and MCP server module, (2) evaluate a service-locator or dependency container pattern that would let core define interfaces for all deps (not just repositories), (3) consider whether a thinner extraction is viable — move only the executor interface, registry, and workflow engine to core, leaving ExecutionManager in backend, (4) look at how other TS monorepos (e.g., tRPC, Effect) handle this boundary. Write findings and recommended approach to `docs/proposals/core-package-extraction.md`. Commit the doc only.
 

@@ -152,3 +152,13 @@ Full refresh of all 9 doc files: getting-started, architecture, data-model, work
 - [x] **UX.NAV** — Audit navigation and sidebar. 5 screenshots, 0 bugs. *(completed 2026-04-02 04:00 PDT)*
 - [x] **UX.CMD** — Audit Command Palette. 4 screenshots, 0 bugs. *(completed 2026-04-02 04:15 PDT)*
 - [x] **UX.DARK** — Comprehensive dark mode audit. 9 screenshots, 0 bugs. *(completed 2026-04-02 04:35 PDT)*
+- [x] **UX.RESPONSIVE** — Comprehensive responsive audit at 1024px and 768px. 12 screenshots, 0 bugs. *(completed 2026-04-02 05:15 PDT)*
+- [x] **FX.PICO.EXEC** — Fix "Claude Code executable not found" — added getClaudeCodeExecutablePath() to config.ts, pathToClaudeCodeExecutable to all 4 query() call sites. *(completed 2026-04-02 05:45 PDT)*
+- [x] **FX.UX.REWIND** — Fix disabled rewind button tooltip — wrapped Button in span for TooltipTrigger activation. *(completed 2026-04-02 06:00 PDT)*
+- [x] **FX.UX.PERSONA.1** — Persona cards keyboard accessibility — added role="button", tabIndex, onKeyDown, focus-visible ring. *(completed 2026-04-02 06:15 PDT)*
+- [x] **FX.UX.PERSONA.2** — Built-in persona label mismatch — exported BUILT_IN_IDS, used in both list and detail panel. *(completed 2026-04-02 06:30 PDT)*
+- [x] **FX.UX.PERSONA.3** — Delete selected persona 404 toast — clear selection + removeQueries on delete. *(completed 2026-04-02 06:45 PDT)*
+- [x] **UX.AGENT.BREADCRUMB** — Breadcrumb trail + side panel overlay replacing nav buttons in Agent Monitor. *(completed 2026-04-02 07:05 PDT)*
+- [x] **HK.TEST.RESULTS** — Restructured tests/e2e/results/ into 46 timestamped directories. *(completed 2026-04-02 07:25 PDT)*
+- [x] **RES.SDK.TOOLS** — Research SDK tool discovery — found sdk-tools.d.ts with 21 tools, recommended version-pinned shared manifest. *(completed 2026-04-02 07:40 PDT)*
+- [x] **RES.V2.SESSIONS** — Research V2 sessions for Pico — SDKSessionOptions missing 12+ fields, recommended query() with resume. *(completed 2026-04-02 07:55 PDT)*
