@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 08:35 PDT — RES.GLOBAL.DATA: Research data model changes for global agents
+
+**Done:** Audited all 9 tables for projectId FKs. 4 have explicit projectId (workItems, personaAssignments, projectMemories, chatSessions). Personas already global (no projectId). Recommended: make chatSessions.projectId nullable, add optional projectId to executions (unified history), create global_memories table. Analyzed system prompt assembly in claude-executor.ts and chat.ts — defined AgentScope type for conditional project context injection. Designed Pico global mode: nullable projectId sessions, scope toggle, adjusted system prompt. 4-phase migration plan.
+**Files:** `docs/proposals/global-agents/data-model.md`
+
+---
+
 ## 2026-04-02 08:20 PDT — Review: RES.PLUG.CORE (approved)
 
 **Reviewed:** Core package extraction strategy research proposal.
