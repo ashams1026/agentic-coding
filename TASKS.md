@@ -5,17 +5,13 @@
 
 ---
 
-> Sprints 1-18 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 19 V2.1-V2.2, V2.4, FC.1-FC.3 archived.
+> Sprints 1-18 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. Sprint 19 V2.1-V2.2, V2.4, FC.1-FC.7, HK.1-HK.5 archived.
 
 ---
 
 ## Sprint 17: Agent Pipeline Fixes & Monitor UX (remaining)
 
 > Blocked and remaining tasks.
-
-### Bug Fixes
-
-- [x] **FX.PICO5** — Fix Pico chat panel scroll overflow. The chat panel message area doesn't scroll within its container — messages overflow off screen instead of scrolling inside the panel. In `packages/frontend/src/features/pico/chat-panel.tsx`: ensure the message area has a fixed height with `overflow-y: auto` (or uses ScrollArea) so messages scroll within the panel bounds. Verify auto-scroll to bottom still works on new messages.
 
 - [ ] **FX.PROJ1** — Fix stale project ID causing Pico 500 error. The `selectedProjectId` in the Zustand UI store is persisted to localStorage. If the dev DB is reset or the project is deleted, the stale ID remains and causes FK constraint failures when Pico tries to create a chat session (`POST /api/chat/sessions` → `FOREIGN KEY constraint failed`). Fix: in `packages/frontend/src/hooks/use-selected-project.ts`, detect when `useProject()` returns a 404/error for the stored ID, and fall back to the first available project from `useProjects()`. Also add `retry: false` to the `useProject` query so it fails fast instead of retrying 3 times.
 
@@ -37,27 +33,7 @@
 
 - [blocked: SDKSessionOptions does not support agent/agents, mcpServers, cwd, skills, or maxBudgetUsd — only query() Options does. V2 sessions can't be configured as Pico (custom personality, MCP server, project cwd). Need SDK to add these fields to SDKSessionOptions first.] **SDK.V2.3** — Refactor Pico to use V2 sessions. Update PICO.2 and PICO.3 design: instead of a custom `chat_sessions`/`chat_messages` DB table + manual conversation history assembly, use the SDK's native session management. `POST /api/chat/sessions` → calls `unstable_v2_createSession()` and stores the SDK session ID. `POST /api/chat/sessions/:id/messages` → calls `session.send(message)` and streams from `session.stream()`. `GET /api/chat/sessions` → calls `listSessions()` from the SDK. `GET /api/chat/sessions/:id/messages` → calls `getSessionMessages(sessionId)`. This eliminates our custom chat persistence layer entirely — the SDK handles conversation history, context compaction, and session storage. Keep the `chat_sessions` table only as a lightweight index (sessionId, projectId, title, createdAt) for the UI list. Remove `chat_messages` table from the schema design.
 
-### Part 2: Infrastructure — File Checkpointing
-
-- [x] **SDK.FC.4** — Add rewind to REVIEW state workflow. Update the Code Reviewer persona's system prompt: after reviewing an agent's work, if the review outcome is REJECT, the reviewer can call the rewind API to automatically restore files before re-routing to a previous state. Add `rewind_execution` as a new MCP tool in the agentops MCP server: takes `executionId`, calls the rewind endpoint internally. Add to the reviewer's `mcpTools` allowlist.
-
-- [x] **SDK.FC.5** — E2E test plan: file checkpointing. Create `tests/e2e/plans/file-checkpointing.md`: test the rewind button in agent monitor — verify dry run shows file list, confirm rewind restores files, verify button state (disabled for legacy executions, hidden for running ones). Include visual verification of the confirmation modal and success state.
-
-- [x] **SDK.FC.6** — Run file checkpointing e2e test. Execute the test plan from SDK.FC.5 using chrome-devtools MCP. Record results to `tests/e2e/results/file-checkpointing.md`. Take screenshots at: rewind button visible, dry run modal, post-rewind success state.
-
-- [x] **SDK.FC.7** — Update `docs/architecture.md` and `docs/api.md` with file checkpointing. Document: the rewind API endpoint (request/response), how checkpointing works (message IDs, file restoration), the rewind MCP tool for the reviewer persona, limitations (only works for executions with checkpointing enabled). *(completed 2026-03-31 20:30 PDT)*
-
-### Part 3: Infrastructure — Hooks System
-
-- [x] **SDK.HK.1** — Replace custom sandbox with PreToolUse hook. In `packages/backend/src/agent/claude-executor.ts`: remove the manual `validateCommand()` check from the streaming loop (lines 273-286). Instead, pass a `hooks` option to `query()` with a `PreToolUse` handler that runs for `Bash` tool calls. The hook calls `validateCommand(input.command, projectPath)` and returns `{ continue: false, stopReason: "[SANDBOX] Blocked: ..." }` if the command is disallowed. This is cleaner — the SDK handles the interruption natively instead of us aborting the controller. Keep the `sandbox.ts` module for the validation logic itself.
-
-- [x] **SDK.HK.2** — Add PostToolUse audit logging hook. Add a `PostToolUse` hook to the `query()` options: after every tool execution, log `{ executionId, toolName, durationMs, success }` to the audit trail (`packages/backend/src/audit.ts`). For Bash tools, also log the command string (sanitized — redact anything after `ANTHROPIC_API_KEY=` or similar patterns). This gives us a complete tool-by-tool audit trail for every agent execution without polluting the main execution logs.
-
-- [x] **SDK.HK.3** — Add SessionStart/SessionEnd hooks for execution lifecycle. Add hooks: `SessionStart` → log execution start with persona, model, work item ID to audit trail + emit a WebSocket event so the frontend agent monitor updates immediately. `SessionEnd` → log completion reason, final cost, duration. This replaces our manual "execution started/completed" event emission — the SDK tells us exactly when sessions begin and end.
-
-- [x] **SDK.HK.4** — Add FileChanged hook for live file tracking. Add a `FileChanged` hook: when an agent modifies a file, emit a WebSocket event `{ type: "file_changed", executionId, filePath, changeType }`. In the agent monitor UI: show a real-time "Files modified" badge/counter on the execution card. Click to expand and see the list of changed files. This gives users live visibility into what an agent is doing to their codebase.
-
-- [x] **SDK.HK.5** — Agent monitor: file changes panel UI. In `packages/frontend/src/features/agent-monitor/`: add a "Files" tab or collapsible section showing files modified by the current execution. Each entry shows: file path (relative to project), change type (created/modified/deleted), timestamp. Badge on the tab shows count. For completed executions, show the final file list. For running executions, update in real-time via WebSocket events from SDK.HK.4.
+### Part 3: Infrastructure — Hooks System (remaining)
 
 - [ ] **SDK.HK.6** — E2E test plan: agent monitor file tracking. Create `tests/e2e/plans/agent-monitor-files.md`: test the files panel — verify it shows modified files during/after execution, badge count updates, file paths are correct. Visual verification of the panel layout.
 
