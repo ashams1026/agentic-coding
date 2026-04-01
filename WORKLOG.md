@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 01:05 PDT — Review: FX.UX.AGENT.1 (approved)
+
+**Reviewed:** Agent monitor Work Item/Parent link fix.
+- Both links changed from `<Link to="/work-items/:id">` to `setSelectedItemId` + `navigate("/items")`
+- Imports clean: `Link` removed, `useNavigate` + `useWorkItemsStore` + `WorkItemId` added
+- Screenshot confirms: "Work Item" click → `/items` with correct detail panel (was 404)
+- Matches established pattern (command palette, dashboard activity)
+- Build passes clean
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 01:00 PDT — FX.UX.AGENT.1: Fix Work Item/Parent links in agent header
 
 **Done:** Replaced broken `<Link to="/work-items/:id">` with `setSelectedItemId(id)` + `navigate("/items")` in `agent-control-bar.tsx` for both "Work Item" and "Parent" buttons. Changed import from `Link` to `useNavigate`, added `useWorkItemsStore` import. Removed `asChild` prop (no longer wrapping a Link). Verified: clicking "Work Item" on Engineer agent navigates to `/items` and opens "Build login UI component" detail panel. No more 404.
