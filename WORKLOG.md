@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 06:45 PDT — Review: SDK.ST.8 (approved)
+
+**Reviewed:** Streaming & observability documentation in `docs/frontend.md`.
+- All 5 task requirements covered: partial messages, progress summaries, rate limit, context usage, WS events
+- WS event table cleanly documents 5 event types with sources and purposes
+- Technical details accurate to implementation (rAF batching, 500ms cursor, 60s polling, color thresholds)
+- Placed logically after Detail Panel section
+- **Verdict: approved.** Completes Part 1 (Real-Time Streaming) of Sprint 20.
+
+---
+
 ## 2026-04-01 06:40 PDT — SDK.ST.8: Update frontend docs with streaming features
 
 **Done:** Added "Agent Monitor — Streaming & Observability" section to `docs/frontend.md`. Documents: live token streaming (rAF batching, cursor), progress summary bar, rate limit display, context usage bar, and WebSocket event types table (5 events). All 5 task requirements covered.

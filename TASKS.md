@@ -60,7 +60,7 @@
 
 - [x] **SDK.ST.7** — Run agent monitor streaming e2e test. Execute SDK.ST.6. Record results with screenshots of streaming, progress summary, context bar.
 
-- [review] **SDK.ST.8** — Update `docs/frontend.md` with streaming and observability features. Document: partial message handling, progress summaries, rate limit display, context usage monitoring, WebSocket event types.
+- [x] **SDK.ST.8** — Update `docs/frontend.md` with streaming and observability features. Document: partial message handling, progress summaries, rate limit display, context usage monitoring, WebSocket event types.
 
 ### Part 2: Safety — SDK Native Sandbox
 
