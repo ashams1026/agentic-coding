@@ -77,7 +77,7 @@
 
 ### Cross-Cutting
 
-- [ ] **UX.NAV** — Audit navigation and sidebar. Verify: sidebar renders with all page links (Dashboard, Work Items, Agents, Activity, Personas, Settings), active page is highlighted, clicking each link navigates correctly without full reload, project selector in sidebar/header works (switch projects, shows current project name). Test keyboard shortcut for command palette. Check responsive sidebar collapse on narrow viewport. Screenshot. File bugs.
+- [review] **UX.NAV** — Audit navigation and sidebar. Verify: sidebar renders with all page links (Dashboard, Work Items, Agents, Activity, Personas, Settings), active page is highlighted, clicking each link navigates correctly without full reload, project selector in sidebar/header works (switch projects, shows current project name). Test keyboard shortcut for command palette. Check responsive sidebar collapse on narrow viewport. Screenshot. File bugs.
 
 - [ ] **UX.CMD** — Audit Command Palette. Open command palette (Cmd+K or shortcut). Verify: overlay appears, search input is focused, typing filters commands/pages, selecting a command navigates or executes the action, Escape closes the palette. Check that all registered commands appear. Screenshot. File bugs.
 

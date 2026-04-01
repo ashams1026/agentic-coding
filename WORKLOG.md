@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 03:45 PDT — UX.NAV: Audit navigation and sidebar
+
+**Done:** Audited sidebar navigation. All 6 page links present (Dashboard, Work Items, Agents, Activity, Personas, Settings) with correct URLs. Active page highlighted. Clicked all 6 links — SPA navigation (no full reload, sidebar UIDs persist). Project selector shows "AgentOps" as combobox. Sidebar collapse button works — collapses to icon-only mode, content area expands. Responsive at 768px — sidebar remains visible with labels, content adapts to narrower width. No bugs found.
+**Files:** `TASKS.md`
+**Notes:** Screenshots in `tests/e2e/results/ux-nav-*.png` (5 screenshots: dashboard, items, project-selector, 768px, collapsed).
+
+---
+
 ## 2026-04-02 03:35 PDT — Review: UX.PICO (approved)
 
 **Reviewed:** Pico Chat panel audit.
