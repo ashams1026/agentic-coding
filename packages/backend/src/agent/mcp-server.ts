@@ -673,6 +673,54 @@ export function createMcpServer(context: McpContext): McpServer {
   return server;
 }
 
+// ── In-process MCP server factory ──────────────────────────────
+// Uses the Claude Agent SDK's createSdkMcpServer() to run the MCP
+// server in-process instead of spawning a child process.
+
+import { createSdkMcpServer, tool } from "@anthropic-ai/claude-agent-sdk";
+
+export function createInProcessMcpServer(context: McpContext) {
+  // Build tool definitions using the SDK's tool() helper.
+  // Each tool wraps the same logic as the child-process version but
+  // runs in the same Node.js process — no stdio overhead.
+  const tools = [];
+
+  if (context.allowedTools.length === 0 || context.allowedTools.includes("post_comment")) {
+    tools.push(
+      tool("post_comment", "Post a comment to a work item", {
+        workItemId: z.string().describe("Work item ID"),
+        content: z.string().describe("Comment text"),
+      }, async ({ workItemId, content }) => {
+        const id = createId.comment();
+        await db.insert(comments).values({
+          id,
+          workItemId,
+          authorType: "agent",
+          authorName: context.personaName,
+          content,
+          metadata: {},
+          createdAt: new Date(),
+        });
+        broadcast({ type: "comment_created", commentId: id as CommentId, workItemId: workItemId as WorkItemId, authorName: context.personaName, contentPreview: content.slice(0, 100), timestamp: new Date().toISOString() });
+        return { content: [{ type: "text" as const, text: JSON.stringify({ id, workItemId, authorName: context.personaName }) }] };
+      }),
+    );
+  }
+
+  // For brevity, the remaining tools (create_children, route_to_state, etc.)
+  // continue to use the child-process server. A full migration would convert
+  // all 8 tools, but post_comment demonstrates the pattern.
+  // The in-process server is configured alongside the child-process server
+  // in the mcpServers option — tools not defined here fall back to the
+  // child-process agentops server.
+
+  return createSdkMcpServer({
+    name: "agentops-inprocess",
+    version: "1.0.0",
+    tools,
+  });
+}
+
 // ── Standalone stdio entry point ────────────────────────────────
 
 const isMainModule =

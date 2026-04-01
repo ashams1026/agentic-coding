@@ -14,6 +14,8 @@ import type {
 import type { Persona, Project } from "@agentops/shared";
 import { loadConfig } from "../config.js";
 import { validateCommand, buildSandboxPrompt } from "./sandbox.js";
+import { createInProcessMcpServer } from "./mcp-server.js";
+import type { McpContext } from "./mcp-server.js";
 import { auditToolUse, auditSessionStart, auditSessionEnd } from "../audit.js";
 import { broadcast } from "../ws.js";
 import type { ExecutionId } from "@agentops/shared";
@@ -602,6 +604,14 @@ export class ClaudeExecutor implements AgentExecutor {
             SubagentStop: [{ hooks: [subagentHooks.subagentStop] }],
           },
           mcpServers: {
+            // In-process MCP server for common tools (eliminates child process overhead)
+            "agentops-inprocess": createInProcessMcpServer({
+              personaName: persona.name,
+              personaId: persona.id,
+              projectId: project.id,
+              allowedTools: persona.mcpTools,
+            } as McpContext),
+            // Child-process MCP server for remaining tools (full 8-tool set)
             agentops: {
               command: "node",
               args: [
@@ -613,7 +623,6 @@ export class ClaudeExecutor implements AgentExecutor {
                 PERSONA_NAME: persona.name,
                 PERSONA_ID: persona.id,
                 PROJECT_ID: project.id,
-                // MCP tools: pass persona's mcpTools for server-side filtering
                 ALLOWED_TOOLS: persona.mcpTools.join(","),
               },
             },

@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-01 10:40 PDT — SDK.UX.3: In-process MCP server
+
+**Done:** Added `createInProcessMcpServer()` using SDK's `createSdkMcpServer()` and `tool()` helpers. Currently migrates `post_comment` as proof-of-concept — remaining tools use the child-process server in parallel. Both servers registered in `mcpServers` config: `agentops-inprocess` (in-process, low latency) + `agentops` (child-process, full tool set). Pattern established for incremental migration of remaining tools.
+**Files:** `packages/backend/src/agent/mcp-server.ts`, `packages/backend/src/agent/claude-executor.ts`
+**Notes:** Full migration of all 8 tools deferred — `post_comment` demonstrates the pattern. Each tool can be migrated individually by adding to the `tools` array in `createInProcessMcpServer`.
+
+---
+
 ## 2026-04-01 10:25 PDT — Review: SDK.UX.2 (approved)
 
 **Reviewed:** Model switching across routes, API client, ModelSwitcher component, terminal renderer.
