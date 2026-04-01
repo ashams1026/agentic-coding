@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-03-31 20:30 PDT — Review: SDK.FC.7 (approved)
+
+**Reviewed:** Documentation updates across `docs/api.md`, `docs/architecture.md`, `docs/mcp-tools.md` for file checkpointing.
+- All four task requirements covered: rewind API endpoint, checkpointing mechanics, MCP tool, limitations
+- Verified accuracy against actual implementation (`routes/executions.ts`, `mcp-server.ts`) — error codes, endpoint path, tool names all match
+- Docs follow existing formatting patterns (tables, code blocks, section structure)
+- Also cleaned up stale note in mcp-tools.md about seed data naming discrepancy
+- **Verdict: approved.**
+
+---
+
 ## 2026-03-31 20:15 PDT — SDK.FC.7: File checkpointing documentation
 
 **Done:** Updated three doc files with file checkpointing coverage. `docs/api.md`: added full "Rewind Execution Files" section with request/response schemas, error codes table, side effects, curl examples. `docs/architecture.md`: updated MCP tool count 7→8, added "File Checkpointing" section with how-it-works steps, rewind flow diagram, limitations. `docs/mcp-tools.md`: updated tool count 7→8, added `rewind_execution` tool reference with input/output/example flow, updated persona access table.

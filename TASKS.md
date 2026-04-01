@@ -45,7 +45,7 @@
 
 - [x] **SDK.FC.6** — Run file checkpointing e2e test. Execute the test plan from SDK.FC.5 using chrome-devtools MCP. Record results to `tests/e2e/results/file-checkpointing.md`. Take screenshots at: rewind button visible, dry run modal, post-rewind success state.
 
-- [review] **SDK.FC.7** — Update `docs/architecture.md` and `docs/api.md` with file checkpointing. Document: the rewind API endpoint (request/response), how checkpointing works (message IDs, file restoration), the rewind MCP tool for the reviewer persona, limitations (only works for executions with checkpointing enabled).
+- [x] **SDK.FC.7** — Update `docs/architecture.md` and `docs/api.md` with file checkpointing. Document: the rewind API endpoint (request/response), how checkpointing works (message IDs, file restoration), the rewind MCP tool for the reviewer persona, limitations (only works for executions with checkpointing enabled). *(completed 2026-03-31 20:30 PDT)*
 
 ### Part 3: Infrastructure — Hooks System
 
