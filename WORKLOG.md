@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 11:15 PDT — CUX.DOC.2: Document Notifications system
+
+**Done:** Updated `docs/api.md` with Notifications documentation. Added `notification` WebSocket event type with full Notification object shape. Documented `NotificationEventType` enum (5 types) with priority levels and trigger descriptions in a table. Documented `NotificationPriority` (4 levels) with toast behavior (critical = no auto-dismiss). Added backend emission points table (4 files/events). Documented frontend handling (dual dispatch to notification store + toast store). Added "Notification Preferences" section with full `NotificationPreferences` schema, defaults, quiet hours behavior, and 60-second batching rules.
+**Files:** `docs/api.md`
+
+---
+
 ## 2026-04-02 11:05 PDT — Review: CUX.DOC.1 (approved)
 
 **Reviewed:** Agent Chat and Persona Prompts API documentation in docs/api.md.

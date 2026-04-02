@@ -1392,6 +1392,90 @@ Fired when an execution status changes.
 }
 ```
 
+#### `notification`
+
+Fired when a notification-worthy event occurs. Delivered to the frontend notification store and toast system.
+
+```typescript
+{
+  type: "notification";
+  notification: Notification;
+  timestamp: string;
+}
+```
+
+**Notification object:**
+
+```typescript
+{
+  id: string;                        // unique ID (ntf-<hex>)
+  type: NotificationEventType;       // event classification
+  priority: NotificationPriority;    // determines toast behavior
+  title: string;                     // short display title
+  description?: string;              // optional detail (1-2 lines)
+  projectId?: ProjectId;             // scoping
+  workItemId?: WorkItemId;           // context link
+  executionId?: ExecutionId;         // context link
+  read: boolean;                     // always false on emission
+  createdAt: string;                 // ISO 8601
+}
+```
+
+**`NotificationEventType`:**
+
+| Type | Priority | Trigger |
+|------|----------|---------|
+| `proposal_needs_approval` | critical | Proposal created with type `review_request` |
+| `agent_errored` | critical | Execution failed with error |
+| `budget_threshold` | high | Monthly spend >= 80% of cap |
+| `execution_stuck` | high | Agent inactive for 10+ minutes |
+| `agent_completed` | low | Execution completed successfully |
+
+**`NotificationPriority`:** `"critical" | "high" | "low" | "info"`
+
+- **Critical**: toast does NOT auto-dismiss, requires manual close
+- **High/Low/Info**: toast auto-dismisses after 5 seconds
+
+**Backend emission points:**
+
+| File | Event | Priority |
+|------|-------|----------|
+| `execution-manager.ts` | Agent completed | low |
+| `execution-manager.ts` | Agent errored | critical |
+| `execution-manager.ts` | Budget >= 80% | high |
+| `proposals.ts` | Review request created | critical |
+
+**Frontend handling:**
+
+The `use-toast-events.ts` hook listens for `notification` WebSocket events and dispatches to both:
+1. **Notification store** (`addNotification`) — persistent, displayed in drawer
+2. **Toast store** (`addToast`) — transient popup with action buttons
+
+---
+
+## Notification Preferences
+
+Stored in frontend localStorage under `woof-notifications` via Zustand persist.
+
+```typescript
+interface NotificationPreferences {
+  enabledEvents: Record<NotificationEventType, boolean>;  // per-type in-app toggle
+  soundEvents: Record<NotificationEventType, boolean>;    // per-type sound toggle
+  quietHours: {
+    enabled: boolean;
+    from: string;   // "HH:MM" (e.g., "22:00")
+    to: string;     // "HH:MM" (e.g., "08:00")
+  };
+  scope: "all" | "current-project";
+}
+```
+
+**Defaults:** All in-app events enabled. Sound enabled only for `proposal_needs_approval` and `agent_errored`. Quiet hours disabled. Scope: all projects.
+
+**Quiet hours behavior:** Non-critical notifications suppressed during the time window. Critical notifications (`proposal_needs_approval`, `agent_errored`) always come through.
+
+**Batching:** Multiple `agent_completed` notifications within a 60-second window are batched into a single "N agents completed" summary notification.
+
 ## Chat (Multi-Persona)
 
 Chat sessions support any persona, not just Pico. Each session is linked to a persona via `personaId`.
