@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 20:05 PDT — RES.TOKENS.TRACKING: Research per-execution token usage collection and storage
+
+**Done:** Researched token usage collection and storage. Doc covers all 5 investigation areas: (1) what data to capture — audited SDK result message (total_cost_usd, duration_ms at claude-executor.ts:174-191; NO per-category token breakdown in result), progress events (total_tokens at :155-163 broadcast but not persisted); recommended P0 fields: costUsd (fix unit), totalTokens, model, toolUses. (2) storage schema — recommended additional columns on executions table (model, total_tokens, tool_uses) over separate table; unit consistency fix (executions store cents :520, chat stores USD :418 — standardize on cents). (3) collection points — audited 6 query() call sites: claude-executor :556 and chat :352 capture cost, memory.ts :184/:348 and executions.ts :238 do NOT (gap); proposed persist lastTotalTokens from progress events, track background operation costs. (4) per-turn granularity — execution-total sufficient for Phase 1 dashboards; per-turn deferred (SDK doesn't expose per-message hooks); per-API-call even more complex. (5) relationship to existing data — 6 data points already captured (cost, duration, streaming tokens), 5 gaps identified (no token columns, no model on executions, invisible background costs, chat costs in JSON not queryable, no direct projectId on executions). 3-phase implementation plan, 8 cross-references, 6 design decisions.
+**Files:** `docs/proposals/token-usage/tracking.md` (new)
+
+---
+
 ## 2026-04-01 19:40 PDT — Review: RES.DATA.GROWTH (approved)
 
 **Reviewed:** Data growth and retention strategy research doc.
