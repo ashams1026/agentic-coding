@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 07:25 PDT — Decompose Sprint 28: Scheduling, Templates & Notification Channels
+
+**Done:** Decomposed Sprint 28 into 14 tasks across 4 sections: Scheduling (SCH.1-4: schedules table, node-cron scheduler with missed-run catch-up + auto-disable, CRUD API + run-now, Persona Manager UI with cron presets), Templates P1 (TPL.1-3: templates table + 3 built-in seeds, CRUD API + apply endpoint, template picker in work item creation), Notification External Channels (NEC.1-2: webhook channel wrapping outbound infra + notification event catalog, Settings UI toggle), Testing & Docs (S28.TEST.1-3, S28.DOC.1). Selected from Tier 3 roadmap: Scheduling (first pick, low complexity, high interest) + Templates (low complexity) + Notification Channels (builds on Sprint 27 webhook infra).
+**Files:** `TASKS.md`
+
+---
+
 ## 2026-04-03 07:15 PDT — Review: S27.TEST.5 (approved)
 
 **Reviewed:** Post-Sprint 27 regression checkpoint.
