@@ -57,8 +57,8 @@
 ### Phase 1: Router + Project Context
 
 - [x] **NAV.1** — Frontend: Create `useProjectFromUrl()` hook. Reads `projectId` from URL params via React Router `useParams()`. Returns `{ projectId, project, isGlobal }` by looking up the project. Replaces `useSelectedProject()`. File: `packages/frontend/src/hooks/use-project-from-url.ts`. *(completed 2026-04-02 14:20 PDT)*
-- [ ] **NAV.2** — Frontend: Refactor router for project-scoped routes. New structure: `{ path: "p/:projectId", element: <ProjectLayout />, children: [ { path: "items" }, { path: "automations" }, { path: "automations/:workflowId" }, { path: "agents" }, { path: "monitor" }, { path: "activity" }, { path: "analytics" }, { path: "chat" }, { path: "settings" } ] }`. Keep top-level: Dashboard (`/`) and App Settings (`/app-settings`). Update `router.tsx`.
-- [ ] **NAV.3** — Frontend: Create `ProjectLayout` wrapper component at `layouts/project-layout.tsx`. Reads `projectId` from URL, validates project exists (404 if not), provides project context to children via `<Outlet />`.
+- [in-progress: 2026-04-02 14:17 PDT] **NAV.2** — Frontend: Refactor router for project-scoped routes. New structure: `{ path: "p/:projectId", element: <ProjectLayout />, children: [ { path: "items" }, { path: "automations" }, { path: "automations/:workflowId" }, { path: "agents" }, { path: "monitor" }, { path: "activity" }, { path: "analytics" }, { path: "chat" }, { path: "settings" } ] }`. Keep top-level: Dashboard (`/`) and App Settings (`/app-settings`). Update `router.tsx`.
+- [x] **NAV.3** — Frontend: Create `ProjectLayout` wrapper component at `layouts/project-layout.tsx`. Reads `projectId` from URL, validates project exists (404 if not), provides project context to children via `<Outlet />`. *(completed 2026-04-02 14:18 PDT)*
 
 ### Phase 2: Sidebar Redesign
 

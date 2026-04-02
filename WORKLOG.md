@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 14:18 PDT — NAV.3: Create ProjectLayout wrapper component
+
+**Done:** Created `ProjectLayout` at `layouts/project-layout.tsx`. Uses `useProjectFromUrl()` to read project context from URL. Shows spinner while loading, 404 with "Go to Dashboard" CTA when project not found, and renders `<Outlet />` for valid projects. No Context Provider needed — children call `useProjectFromUrl()` directly.
+**Files:** `packages/frontend/src/layouts/project-layout.tsx`
+
+---
+
 ## 2026-04-02 14:20 PDT — NAV.1: Create useProjectFromUrl() hook
 
 **Done:** Created `useProjectFromUrl()` hook that reads `projectId` from React Router `useParams()` and returns `{ projectId, project, isGlobal, isLoading }`. When no `projectId` is in the URL (Dashboard, App Settings), returns null values. Passes `null` to `useProject()` which disables the query via its `enabled: !!id` guard. Exported from hooks barrel.
