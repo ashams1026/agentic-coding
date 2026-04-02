@@ -1,12 +1,12 @@
 import type { FastifyInstance } from "fastify";
 import { eq, and, inArray, isNull, isNotNull } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { workItems, workItemEdges, comments, proposals, projectMemories, executions } from "../db/schema.js";
+import { workItems, workItemEdges, comments, proposals, projectMemories, executions, projects } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import { dispatchForState } from "../agent/dispatch.js";
 import { checkParentCoordination } from "../agent/coordination.js";
 import { checkMemoryGeneration } from "../agent/memory.js";
-import { WORKFLOW, isValidTransition } from "@agentops/shared";
+import { getWorkflowInitialState, isValidTransitionDynamic } from "../agent/workflow-runtime.js";
 import { broadcast } from "../ws.js";
 import { auditStateTransition } from "../audit.js";
 import type {
@@ -95,6 +95,11 @@ export async function workItemRoutes(app: FastifyInstance) {
     const now = new Date();
     const id = createId.workItem();
 
+    // Look up project's workflow to resolve initial state
+    const [project] = await db.select({ workflowId: projects.workflowId }).from(projects).where(eq(projects.id, body.projectId));
+    const projectWorkflowId = project?.workflowId ?? null;
+    const initialState = await getWorkflowInitialState(projectWorkflowId);
+
     const [row] = await db
       .insert(workItems)
       .values({
@@ -104,7 +109,8 @@ export async function workItemRoutes(app: FastifyInstance) {
         title: body.title,
         description: body.description ?? "",
         context: body.context ?? {},
-        currentState: WORKFLOW.initialState,
+        currentState: initialState,
+        workflowId: projectWorkflowId,
         priority: body.priority ?? "p2",
         labels: body.labels ?? [],
         assignedPersonaId: null,
@@ -129,7 +135,7 @@ export async function workItemRoutes(app: FastifyInstance) {
     let previousState: string | undefined;
     if (body.currentState !== undefined) {
       const [existing] = await db
-        .select({ currentState: workItems.currentState })
+        .select({ currentState: workItems.currentState, workflowId: workItems.workflowId })
         .from(workItems)
         .where(eq(workItems.id, id));
 
@@ -137,7 +143,8 @@ export async function workItemRoutes(app: FastifyInstance) {
         return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Work item ${id} not found` } });
       }
 
-      if (!isValidTransition(existing.currentState, body.currentState)) {
+      const valid = await isValidTransitionDynamic(existing.workflowId ?? null, existing.currentState, body.currentState);
+      if (!valid) {
         return reply.status(400).send({
           error: {
             code: "INVALID_TRANSITION",
