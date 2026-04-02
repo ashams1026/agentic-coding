@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-03 11:45 PDT — Review: FX.NTF.2 (approved)
+
+**Reviewed:** Notification batching double-count fix.
+- `flushBatch` now uses `batchState.count - 1` to exclude the individually-shown first notification ✓
+- Scenario traces: 1 completion (no batch), 2 (1 more), 5 (4 more) — all correct ✓
+- State cleanup before early return — no stale timer/count ✓
+- Plural handling and "N more" wording clear ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 11:40 PDT — FX.NTF.2: Fix notification batching double-count
 
 **Done:** Fixed `flushBatch()` in `notification-store.ts` to exclude the first `agent_completed` notification from the batch summary count. The first notification is added immediately (with its specific details), so the batch should only summarize additional ones. Changed count to `batchState.count - 1`, early-returns if 0 additional. Batch title now says "N more agent(s) completed" instead of double-counting. Example: 3 completions → user sees individual first + "2 more agents completed" summary.
