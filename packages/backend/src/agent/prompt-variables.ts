@@ -1,5 +1,3 @@
-import type { Persona, Project } from "@agentops/shared";
-
 // ── Variable resolution ─────────────────────────────────────────
 
 const VAR_REGEX = /(?<!\\)\{\{\s*([a-zA-Z_][a-zA-Z0-9_.]*)\s*\}\}/g;
@@ -20,9 +18,11 @@ export function resolveVariables(
 
 // ── Context builder ─────────────────────────────────────────────
 
+// Minimal shapes — accepts both shared types and Drizzle row types
+// without requiring unsafe double casts (e.g., `as unknown as Project`)
 interface VariableContextOptions {
-  project?: Project | null;
-  persona?: Persona | null;
+  project?: { name: string; path: string; settings: Record<string, unknown> } | null;
+  persona?: { name: string; description: string; model: string } | null;
   workItem?: {
     id: string;
     title: string;

@@ -364,8 +364,8 @@ export async function chatRoutes(app: FastifyInstance) {
     if (chatAgent.systemPrompt) {
       // Resolve template variables (no workItem in chat path)
       const varContext = buildVariableContext({
-        project: project ? project as unknown as import("@agentops/shared").Project : null,
-        persona: chatAgent as unknown as import("@agentops/shared").Persona,
+        project: project ?? null,
+        persona: chatAgent,
       });
       systemSections.push(resolveVariables(chatAgent.systemPrompt, varContext));
     }

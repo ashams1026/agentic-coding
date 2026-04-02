@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 14:10 PDT — FX.TYPE.1: Fix unsafe double type casts in chat routes
+
+**Done:** Widened `VariableContextOptions` in `prompt-variables.ts` to accept minimal shapes (`{ name, path, settings }` for project, `{ name, description, model }` for persona) instead of requiring the full shared `Project`/`Persona` types. Removed the `import type { Persona, Project }` from prompt-variables.ts. Removed the double casts (`as unknown as Project`, `as unknown as Persona`) from `chat.ts` — Drizzle rows now satisfy the interface directly.
+**Files:** `packages/backend/src/agent/prompt-variables.ts`, `packages/backend/src/routes/chat.ts`
+
+---
+
 ## 2026-04-03 14:00 PDT — Review: FX.HIST.1 (approved)
 
 **Reviewed:** Agent Monitor history table row fix.

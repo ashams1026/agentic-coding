@@ -24,7 +24,7 @@
 
 ### Warning — Code Quality
 
-- [ ] **FX.TYPE.1** — Fix unsafe double type casts in chat routes. `packages/backend/src/routes/chat.ts:367-369` — `project as unknown as Project` and `chatAgent as unknown as Persona` are fragile double casts. Create proper mapping functions or use the correct types directly.
+- [review] **FX.TYPE.1** — Fix unsafe double type casts in chat routes. `packages/backend/src/routes/chat.ts:367-369` — `project as unknown as Project` and `chatAgent as unknown as Persona` are fragile double casts. Create proper mapping functions or use the correct types directly.
 - [ ] **FX.TYPE.2** — Import HandoffNote from shared instead of duplicating. `packages/backend/src/agent/handoff-notes.ts:11` — `HandoffNote` type is duplicated instead of imported from `@agentops/shared`. Remove the local definition and import from shared.
 - [ ] **FX.PERF.1** — Fix N+1 query in dependency check. `packages/backend/src/agent/dispatch.ts:56-63` — dependency check runs one query per upstream dependency. Batch into a single query with `IN (...)` clause.
 
@@ -79,9 +79,19 @@
 
 - [ ] **UXO.23** — Enable work items for global scope. Remove sidebar nav dimming when global project selected. Seed a simple 3-state workflow for the global project: Backlog → In Progress → Done (autoRouting: false, no agents assigned).
 
+### Phase 8: Settings Reorganization
+
+- [ ] **UXO.28** — Frontend: Reorganize Settings page into Global and Project sections. Split the settings sidebar into two labeled groups with headers: "Global" (API Keys & Executor, Appearance, Notifications, Service, Data) and "Project: {name}" (Security, Costs & Limits, Integrations). Project section shows current project name and scope badge. When global project is selected, project section shows "All Projects" settings. Remove the "Workflow" and "Scheduling" tabs (moved to Automations in UXO.26/UXO.27).
+- [ ] **UXO.29** — Frontend: Break up "Agent Configuration" section. Move API Key and Executor Mode into a new "API Keys & Executor" global section. Move Max Concurrent Agents into "Costs & Limits" project section (alongside monthly cap, warning threshold, daily limit). Remove the empty "Agent Configuration" tab. Drop the unpersisted "Per-Persona Limits" table (local-only state that does nothing).
+- [ ] **UXO.30** — Frontend: Fix Recently Deleted scope. `GET /api/work-items/deleted` should filter by the current projectId so users only see deleted items from the selected project. Add the project filter to the API call in the Recently Deleted component. Show scope badge on the section.
+
+### Phase 9: Status Bar Update
+
+- [ ] **UXO.31** — Frontend: Rework status bar auto-routing indicator. The current play/pause button for auto-routing no longer makes sense with per-workflow/per-schedule toggles. Replace it with a read-only "Automations active" indicator showing count of active automations (workflows with `autoRouting: true` + schedules with `isActive: true`). Move it to the right side with the other status indicators (WS connection, agent count). Not clickable — clicking navigates to the Automations page instead. Remove the old `project.settings.autoRouting` toggle from the status bar.
+
 ### Testing & Documentation
 
-- [ ] **UXO.TEST.1** — Write e2e test plan: `tests/e2e/plans/ux-overhaul.md`. Cover: global project, scope breadcrumb, agent rename in UI, chat fixes, agent-grouped sessions, Automations page (workflow + schedule cards, play/pause, new automation flow), per-workflow auto-routing, label overrides, global work items.
+- [ ] **UXO.TEST.1** — Write e2e test plan: `tests/e2e/plans/ux-overhaul.md`. Cover: global project, scope breadcrumb, agent rename in UI, chat fixes, agent-grouped sessions, Automations page (workflow + schedule cards, play/pause, new automation flow), per-workflow auto-routing, label overrides, global work items, Settings reorganization (global vs project sections, scope badges).
 - [ ] **UXO.TEST.2** — Execute UX Overhaul e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
 - [ ] **UXO.DOC.1** — Update all docs for UX Overhaul. Rename persona → agent throughout `docs/`. Document: global project model, agent scope, `agentOverrides`, per-workflow `autoRouting`, flow view removal. Update `docs/api.md` with renamed endpoints.
 - [ ] **UXO.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
