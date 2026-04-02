@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-27 complete and archived. Blocked tasks in `BLOCKED_TASKS.md`. Roadmap in `docs/roadmap.md`.
+> Sprints 1-27 complete and archived. Sprint 29 Bug Fixes/Phase 4/Design Polish archived. Blocked tasks in `BLOCKED_TASKS.md`. Roadmap in `docs/roadmap.md`.
 
 ---
 
@@ -14,28 +14,11 @@
 > Major UX rework based on user feedback. **Prioritized ahead of remaining Sprint 28 and future roadmap work.** Themes: global-as-project foundation, persona→agent rename, chat UX fixes, workflow rework with label triggers, scope clarity.
 > Bug Fixes (Sprints 24-27), Phases 1-6, 9 complete and archived. Phases 4, 8 partially complete.
 
-### Bug Fixes (Sprint 29 Review — remaining)
-
-- [x] **FX.UXO13** — Warning: Chat page shows empty state with no feedback when no project selected. Show "Select a project" message. *(completed 2026-04-02 13:28 PDT)*
-- [x] **FX.UXO20** — Info: Dead `toolCallMap` in `use-pico-chat.ts`. Remove. *(completed 2026-04-02 13:28 PDT)*
-
-### Phase 4: Workflow Rework (remaining)
-
-- [x] **UXO.27** — Frontend: Move Schedules out of Settings onto Automations page. Remove the schedules section from Settings. Schedule cards on the Automations page link to an edit view (inline dialog or dedicated page) for cron expression, agent selection, prompt template, and project scope. Active/disabled toggle directly on the card. *(completed 2026-04-02 13:42 PDT)*
-- [x] **UXO.22** — Frontend: Per-workflow auto-routing toggle on overview page and in builder header. Calls `PATCH /api/workflows/:id { autoRouting }`. Label: "Auto-routing OFF" / "Auto-routing ON". *(completed 2026-04-02 13:28 PDT)*
-- [x] **UXO.26** — Frontend: Move workflow settings from Settings page into workflow builder. Remove `workflow-config-section.tsx` from Settings. Move the agent-state assignment table (PersonaStateTable → AgentStateTable) into the workflow builder as a "State Agents" tab or section alongside the state cards. The auto-routing toggle is already on the workflow (UXO.22). The workflow selector dropdown in Settings is no longer needed since each workflow is managed from its own builder page. Clean up any orphaned Settings references. *(completed 2026-04-02 13:55 PDT)*
-
 ### Remaining Sprint 29 (not superseded by Sprint 30)
 
 > These tasks are independent of the navigation rewrite. UXO.28-29, GW.*, DES.2, DES.15 are superseded by Sprint 30.
 
-- [x] **FX.WI1** — Critical: Work item edit revert bug. Edits snap back immediately. Root cause: `onSettled` in `use-work-items.ts:89-92` always invalidates queries, and `use-ws-sync.ts:20-22` WebSocket `state_change` broadly invalidates `["workItems"]`. Both refetch stale data over optimistic updates. Fix: use `onSuccess` to set response data directly; guard WS invalidation during active mutations. *(completed 2026-04-02 13:41 PDT)*
-- [x] **DES.1** — Dashboard: Add onboarding/getting-started section for fresh installs. Guided checklist: register project, configure API key, create work item, watch agent run. *(completed 2026-04-02 14:15 PDT)*
-- [x] **DES.3** — Chat: Auto-generate session names from first user message (first 40 chars). Already implemented in backend (chat.ts:297-309) and frontend refreshes sessions after SSE stream. *(completed 2026-04-02 13:41 PDT)*
-- [x] **DES.7** — Automations: Normalize workflow card heights with min-height. Cards with no states show "Configure states" CTA. *(completed 2026-04-02 13:41 PDT)*
 - [ ] **DES.13** — Settings: Fix grammar in terminal states note. Rewrite to "Terminal states (like Done) don't need assigned agents."
-- [x] **DES.14** — Settings: Fix Per-Agent Limits table — empty columns. Hide when no limits configured. *(completed 2026-04-02 13:41 PDT)*
-- [x] **DES.17** — Activity Feed: Add filter bar with time range selector and event type filter. Already implemented: FeedFilterBar with event type checkboxes, agent dropdown, date range selector. *(completed 2026-04-02 13:41 PDT)*
 - [ ] **DES.19** — Empty states: Audit all pages for consistent empty states (icon + heading + description + CTA).
 - [ ] **FX.UXO24** — Info: `AgentId` type uses `ps-` prefix. Tech debt — requires migration.
 - [ ] **UXO.TEST.2** — Execute UX Overhaul e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.

@@ -169,3 +169,11 @@
 **UXO.17 (Workflow):** Backlog/Done auto-create on POST, immutable guards on PATCH, canonical ID anchoring.
 **UXO.23 (Global):** Sidebar dimming removed, migration 0001 seeding 3-state workflow for pj-global.
 **UXO.TEST.1:** 37 e2e test cases across all 8 UX Overhaul phases.
+
+### Sprint 29 Bug Fixes + Remaining Phases — 2026-04-02 12:17–13:14 PDT
+
+**Bug Fixes (FX.UXO1-24):** 16 entries covering router paths /automations (FX.UXO1), auto-routing toggle wired to workflow (FX.UXO3), built-in Backlog/Done state locks (FX.UXO4), global project workflow backfill (FX.UXO5), Recently Deleted scope (FX.UXO6), queue endpoint projectId filter (FX.UXO7), agent-grouped sessions (FX.UXO8), globe icon for pj-global (FX.UXO9), Automations string rename (FX.UXO10), isPico name-only match (FX.UXO11), scope UI in agent detail (FX.UXO15), agent create passes scope/projectId (FX.UXO16), dead agent-editor deleted (FX.UXO17), agent route FK validation (FX.UXO18/19), dead board-view/AgentScope removed (FX.UXO21/22), AgentId ps- prefix tracked (FX.UXO24).
+
+**Phase 4 Completion (UXO.20-21, UXO.31):** Automations page redesign with workflow + schedule cards, agent overrides in workflow builder (collapsible chips), status bar automations indicator replacing old toggle.
+
+**Phase 8-9 + Docs (UXO.13, UXO.15-16, UXO.DOC.1):** Improved chat header (avatar ring, editable title, context menu), per-workflow router system prompt (3-section structured), label-based agent resolution (3-tier priority), full documentation update (persona→agent across 10 doc files).

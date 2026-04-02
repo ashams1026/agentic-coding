@@ -177,4 +177,10 @@
 
 **Bug Fixes (FX.UXO1-21):** 10 tasks. Router paths /automations (FX.UXO1), dead board view removed (FX.UXO2/21), auto-routing toggle fixed to use workflow (FX.UXO3), built-in state guards in builder (FX.UXO4), global project workflow backfill fix (FX.UXO5), Automations page strings (FX.UXO10), agent scope UI in detail panel (FX.UXO15), agent route FK validation (FX.UXO18/19).
 
+**Bug Fixes Continued (FX.UXO13, FX.UXO20, FX.WI1):** 3 tasks. Chat empty state for no project (FX.UXO13), dead toolCallMap removed (FX.UXO20), work item edit revert bug fixed — removed onSettled, added onSuccess with direct cache set, guarded WS invalidation with isMutating (FX.WI1).
+
+**Phase 4 Completion (UXO.22, UXO.26, UXO.27):** 3 tasks. Per-workflow auto-routing toggle on overview + builder (UXO.22), workflow settings moved into builder with AgentAssignmentsSection (UXO.26), schedules moved from Settings to Automations page with edit/delete/run-now (UXO.27).
+
+**Design Polish (DES.1, DES.3, DES.7, DES.14, DES.17):** 5 tasks. Dashboard onboarding checklist (DES.1), chat auto-generate session names — already implemented (DES.3), workflow card min-height + Configure States CTA (DES.7), Per-Agent Limits table collapsed when empty (DES.14), activity feed filter bar — already implemented (DES.17).
+
 **Bug Fixes Continued (FX.UXO6-24, DES.5):** 13 tasks. All Projects scope fix in recently-deleted (FX.UXO6), queue endpoint projectId filter (FX.UXO7), chat panel agent grouping (FX.UXO8), Globe icon pj-global check (FX.UXO9), isPico name-only match (FX.UXO11), stale closure in deleteSession (FX.UXO12), chat header DropdownMenu a11y (FX.UXO14), agent create scope/projectId (FX.UXO16), dead agent-editor.tsx deleted (FX.UXO17), dead AgentScope type removed (FX.UXO22), BUILT_IN_IDS wrong ID fixed (FX.UXO23), ps- prefix tech debt tracked (FX.UXO24). Design: "stories"→"work items" in agent monitor (DES.5).
