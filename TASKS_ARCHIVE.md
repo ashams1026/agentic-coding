@@ -60,55 +60,11 @@
 
 **Backlog Spikes (SDK.FUT.1-6):** 6 tasks. Browser SDK, Bridge API, plugin system, HTTP hooks, worktree isolation, doc updates.
 
-**Pluggable Executor (PLUG.1-10):** 10 tasks. ExecutorFactory refactor, core package, registry, example executor, integration tests, e2e (12/14 PASS).
-- [x] **PLUG.8** — Integration tests for executor registry. 15 tests in `executor-registry.test.ts`. *(completed 2026-04-01)*
-- [x] **PLUG.9** — E2E test plan: executor switching UI. 14 steps across 5 parts. *(completed 2026-04-01)*
-- [x] **PLUG.10** — Run executor switching e2e test. 12/14 PASS, 0 FAIL, 2 SKIP. *(completed 2026-04-01)*
+**Pluggable Executor (PLUG.1-10):** 10 tasks. ExecutorFactory refactor, core package, registry, example executor, integration tests (15 tests), e2e (12/14 PASS).
 
----
+**Backlog: Agent Workflow (AW.1-2):** 2 tasks. Visual UI check in WORK state, visual check in REVIEW state.
 
-## Backlog: Agent Workflow Improvements — archived 2026-04-01
-
-- [x] **AW.1** — Add conditional visual UI check to agent WORK state. `[VISUAL CHECK]` step between `[IMPLEMENT]` and `[VERIFY]` in AGENT_PROMPT.md. *(completed 2026-04-01)*
-- [x] **AW.2** — Add visual check to REVIEW state. Visual verification in `[INSPECT WORK]` step of AGENT_PROMPT.md. *(completed 2026-04-01)*
-
----
-
-## Sprint 22: Visual UX Audit (partial) — archived 2026-04-01
-
-- [x] **UX.DASH** — Audit Dashboard page. 7 screenshots, 3 bugs filed (FX.UX.DASH.1-3). *(completed 2026-04-01)*
-- [x] **FX.UX.DASH.1** — Cost Summary widget below fold. Fixed: `lg:grid-cols-2` → `md:grid-cols-2 lg:grid-cols-3` in dashboard.tsx. *(completed 2026-04-01)*
-- [x] **FX.UX.DASH.2** — Stat cards and agent cards not accessible. Fixed: added `role="button"`, `tabIndex={0}`, `onKeyDown`, focus-visible ring. *(completed 2026-04-01)*
-- [x] **FX.UX.DASH.3** — Activity items link to generic `/items`. Fixed: `setSelectedItemId` + `navigate("/items")` pattern. *(completed 2026-04-01)*
-- [x] **UX.WORK.LIST** — Audit Work Items list view. 9 screenshots, 1 bug (FX.UX.ITEMS.1). *(completed 2026-04-01)*
-- [x] **UX.WORK.FLOW** — Audit Work Items flow view. 6 screenshots, 0 bugs. *(completed 2026-04-01)*
-- [x] **UX.WORK.CREATE** — Audit Work Item creation. Quick-add pattern, 0 bugs. *(completed 2026-04-01)*
-- [x] **FX.UX.ITEMS.1** — Empty state for grouped filter results. Fixed: `topLevel.length === 0` check + "Clear filters" button. *(completed 2026-04-01)*
-- [x] **UX.DETAIL** — Audit detail panel. 3 screenshots, 0 bugs. *(completed 2026-04-01)*
-- [x] **UX.AGENT.MAIN** — Audit Agent Monitor main layout. 3 screenshots, 1 bug (FX.UX.AGENT.1). *(completed 2026-04-02)*
-- [x] **UX.AGENT.CONTROLS** — Audit Agent Monitor controls. 2 screenshots, 1 bug (FX.UX.AGENT.2). *(completed 2026-04-02)*
-- [x] **UX.AGENT.HISTORY** — Audit Agent Monitor history. 3 screenshots, 0 bugs. *(completed 2026-04-02)*
-- [x] **UX.ACTIVITY** — Audit Activity Feed. 3 screenshots, 1 bug (FX.UX.ACTIVITY.1). *(completed 2026-04-02)*
-- [x] **FX.UX.AGENT.1** — "Work Item" and "Parent" links in agent header bar navigate to 404. *(completed 2026-04-02)*
-- [x] **FX.UX.AGENT.2** — MCP status panel triggers error toast on 404. *(completed 2026-04-02)*
-- [x] **FX.UX.ACTIVITY.1** — Activity feed events all link to generic `/items` instead of specific work item. *(completed 2026-04-02 02:00 PDT)*
-- [x] **UX.PERSONA.LIST** — Audit Persona Manager list and editor. 10 screenshots, 2 bugs (FX.UX.PERSONA.1-2). *(completed 2026-04-02)*
-- [x] **UX.PERSONA.TEST** — Audit Persona Manager test run and creation. 4 screenshots, 2 bugs (FX.UX.PERSONA.3-4). *(completed 2026-04-02)*
-- [x] **UX.SETTINGS** — Audit Settings page (all sections). 9 screenshots, 0 bugs. *(completed 2026-04-02)*
-- [x] **UX.PICO** — Audit Pico Chat panel. 6 screenshots, 0 bugs. *(completed 2026-04-02)*
-- [x] **UX.NAV** — Audit navigation and sidebar. 5 screenshots, 0 bugs. *(completed 2026-04-02 04:00 PDT)*
-- [x] **UX.CMD** — Audit Command Palette. 4 screenshots, 0 bugs. *(completed 2026-04-02 04:15 PDT)*
-- [x] **UX.DARK** — Comprehensive dark mode audit. 9 screenshots, 0 bugs. *(completed 2026-04-02 04:35 PDT)*
-- [x] **UX.RESPONSIVE** — Comprehensive responsive audit at 1024px and 768px. 12 screenshots, 0 bugs. *(completed 2026-04-02 05:15 PDT)*
-- [x] **FX.PICO.EXEC** — Fix "Claude Code executable not found" — added getClaudeCodeExecutablePath() to config.ts, pathToClaudeCodeExecutable to all 4 query() call sites. *(completed 2026-04-02 05:45 PDT)*
-- [x] **FX.UX.REWIND** — Fix disabled rewind button tooltip — wrapped Button in span for TooltipTrigger activation. *(completed 2026-04-02 06:00 PDT)*
-- [x] **FX.UX.PERSONA.1** — Persona cards keyboard accessibility — added role="button", tabIndex, onKeyDown, focus-visible ring. *(completed 2026-04-02 06:15 PDT)*
-- [x] **FX.UX.PERSONA.2** — Built-in persona label mismatch — exported BUILT_IN_IDS, used in both list and detail panel. *(completed 2026-04-02 06:30 PDT)*
-- [x] **FX.UX.PERSONA.3** — Delete selected persona 404 toast — clear selection + removeQueries on delete. *(completed 2026-04-02 06:45 PDT)*
-- [x] **UX.AGENT.BREADCRUMB** — Breadcrumb trail + side panel overlay replacing nav buttons in Agent Monitor. *(completed 2026-04-02 07:05 PDT)*
-- [x] **HK.TEST.RESULTS** — Restructured tests/e2e/results/ into 46 timestamped directories. *(completed 2026-04-02 07:25 PDT)*
-- [x] **RES.SDK.TOOLS** — Research SDK tool discovery — found sdk-tools.d.ts with 21 tools, recommended version-pinned shared manifest. *(completed 2026-04-02 07:40 PDT)*
-- [x] **RES.V2.SESSIONS** — Research V2 sessions for Pico — SDKSessionOptions missing 12+ fields, recommended query() with resume. *(completed 2026-04-02 07:55 PDT)*
+**Sprint 22: Visual UX Audit (UX.*, FX.UX.*, HK.*, RES.SDK/V2):** 35 tasks. 14 UI audits (Dashboard, Work Items list/flow/create, Detail, Agent Monitor main/controls/history, Activity, Persona list/test, Settings, Pico, Nav, Cmd, Dark, Responsive) + 10 bug fixes (dashboard links, stat a11y, empty filter, agent links, MCP 404, activity links, Pico exec path, rewind tooltip, persona a11y/labels/delete) + Agent Monitor breadcrumb, test results restructure, 2 SDK research spikes (tools, V2 sessions).
 
 ---
 
@@ -190,3 +146,20 @@ Scheduling infrastructure, rollback UX, templates, analytics metrics/UX, inbound
 - [x] **FND.TEST.2** — E2E test plan for Work Item Lifecycle. *(completed 2026-04-02 01:30 PDT)*
 - [x] **FND.TEST.3** — Execute Error Recovery e2e tests — 8/8 pass. *(completed 2026-04-02 01:45 PDT)*
 - [x] **FND.TEST.4** — Execute Work Item Lifecycle e2e tests — 9/10 pass, 1 skip. *(completed 2026-04-02 02:05 PDT)*
+- [x] **FND.TEST.5** — Execute Global Agents Phase 1 e2e tests — 7/7 pass. *(completed 2026-04-02 02:30 PDT)*
+- [x] **FND.TEST.6** — Regression checkpoint post-Sprint 23 — 34 suites, 0 regressions. *(completed 2026-04-02 02:55 PDT)*
+- [x] **FND.DOC.1** — Document Work Item Lifecycle API endpoints in docs/api.md. *(completed 2026-04-02 03:25 PDT)*
+- [x] **FND.DOC.2** — Document Global Agents data model and API changes in docs/api.md. *(completed 2026-04-02 03:40 PDT)*
+
+---
+
+## Sprint 24: Core UX (partial) — archived 2026-04-02
+
+### Agent Chat Phase 1
+
+- [x] **ACH.1** — Schema migration: add persona_id, work_item_id, sdk_session_id to chat_sessions + backfill. *(completed 2026-04-02 04:10 PDT)*
+- [x] **ACH.2** — Backend: persist personaId/workItemId, join persona data on session list/messages. *(completed 2026-04-02 04:25 PDT)*
+- [x] **ACH.3** — Backend: multi-persona chat — load persona from session, gate Pico-specific behavior. *(completed 2026-04-02 04:40 PDT)*
+- [x] **ACH.4** — Frontend: persona selector grid for new chat sessions. *(completed 2026-04-02 05:00 PDT)*
+- [x] **ACH.5** — Frontend: session sidebar with persona avatars, date grouping, filter, last message preview. *(completed 2026-04-02 05:35 PDT)*
+- [x] **ACH.6** — Frontend: chat header bar with persona info, project badge, editable title, context menu. *(completed 2026-04-02 05:55 PDT)*

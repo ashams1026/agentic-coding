@@ -173,3 +173,11 @@
 ### Sprint 23 Foundations batch 3 — 2026-04-01 22:32–23:25 PDT
 
 **Global Agents early (FND.GA.1-4, all approved):** Schema migration — chatSessions.projectId nullable, executions.projectId added, global_memories table (migration 0009, chat.ts null-safety fixes). AgentScope discriminated union type + nullable workItemId/projectId on shared entities (4 downstream TS fixes). "All Projects" sidebar selector with "__all__" sentinel in zustand store, auto-select guards in sidebar + use-selected-project. Dashboard scope-awareness — "All Projects" heading with Global badge, Projects Overview table, dimmed Work Items link with tooltip.
+
+---
+
+### Sprint 23 Foundations batch 4 — Global Agents late + Testing (2026-04-01 23:35 – 2026-04-02 02:50 PDT)
+
+**Global Agents late (FND.GA.5-10, all approved):** Agent Monitor scope badges (violet "Global" / project name) + scope filter dropdown. "New Run" modal (persona picker, scope selector, prompt, budget, POST /api/executions/run). Backend standalone execution endpoint (nullable workItemId, migration 0010, 8 downstream TS fixes). Pico scope toggle + persona picker (scopeOverride/selectedPersonaId in Zustand, compact dropdowns). Backend nullable projectId + persona override in chat sessions (201 for empty body, optional personaId). E2E test plan for Global Agents (7 test cases).
+
+**Sprint 23 Testing (FND.TEST.1-6, all approved):** E2E test plans for Error Recovery (8 cases) and Work Item Lifecycle (10 cases). Executed Error Recovery tests — 8/8 PASS. Executed Work Item Lifecycle tests — 9/10 PASS, 1 SKIP. Executed Global Agents tests — 7/7 PASS. Full regression checkpoint — 34 suites, 24 UI-verified, 0 regressions.

@@ -5,21 +5,7 @@
 
 ---
 
-> Sprints 1-22 complete and archived. Sprint 23: Error Recovery (FND.ERR.1-7), Work Item Lifecycle (FND.WIL.1-8), Global Agents (FND.GA.1-10), Testing partial (FND.TEST.1-4) archived. All research proposals (RES.*) complete and archived. Blocked tasks (FX.SDK3, FX.SDK5, SDK.V2.3) moved to `BLOCKED_TASKS.md`. Full roadmap for Sprints 24-27 and Tier 3 backlog in `docs/roadmap.md`.
-
----
-
-## Sprint 23: Foundations
-
-> Reliability fixes + data hygiene + the keystone feature (Global Agents). See `docs/roadmap.md` for full context.
-> Proposal docs: `docs/proposals/error-recovery/`, `docs/proposals/work-item-lifecycle/`, `docs/proposals/global-agents/`
-
-### Testing & Documentation
-
-- [x] **FND.TEST.5** — Execute Global Agents Phase 1 e2e tests. Run the test plan from `tests/e2e/plans/global-agents-phase1.md` via chrome-devtools MCP. Screenshot each test case. Record results to `tests/e2e/results/`. File bugs as `FX.*` tasks for any failures. *(completed 2026-04-02 02:30 PDT)*
-- [x] **FND.TEST.6** — Regression checkpoint: re-run all existing e2e test suites. Run every test plan in `tests/e2e/plans/` against the current build. Record results to `tests/e2e/results/`. Compare against previous results to identify regressions. File bugs as `FX.REG.*` tasks for any new failures not present in prior runs. *(completed 2026-04-02 02:55 PDT)*
-- [x] **FND.DOC.1** — Document new Work Item Lifecycle API endpoints. Update `docs/` with the new endpoints: `POST /api/work-items/:id/archive`, `POST /api/work-items/:id/unarchive`, `POST /api/work-items/:id/restore`, `POST /api/work-items/bulk/archive`, `POST /api/work-items/bulk/unarchive`, `DELETE /api/work-items/bulk`. Include request/response shapes, 409 guard behavior, 30-day grace period, and cascade rules. Also document the `archived_at`/`deleted_at` schema additions. *(completed 2026-04-02 03:25 PDT)*
-- [x] **FND.DOC.2** — Document Global Agents data model and API changes. Update `docs/` with: nullable `projectId` on chat sessions and executions, `global_memories` table schema, `AgentScope` type, `POST /api/executions/run` standalone execution endpoint (request/response shape, validation rules). Document the "All Projects" navigation behavior and scope-awareness rules for Dashboard and Agent Monitor. *(completed 2026-04-02 03:40 PDT)*
+> Sprints 1-23 complete and archived. Sprint 24 partial: Agent Chat Phase 1 (ACH.1-6) archived. All research proposals (RES.*) complete and archived. Blocked tasks (FX.SDK3, FX.SDK5, SDK.V2.3) moved to `BLOCKED_TASKS.md`. Full roadmap for Sprints 24-27 and Tier 3 backlog in `docs/roadmap.md`.
 
 ---
 
@@ -30,12 +16,6 @@
 
 ### Agent Chat Phase 1
 
-- [x] **ACH.1** — Schema migration: add `persona_id` (TEXT FK nullable), `work_item_id` (TEXT FK nullable), `sdk_session_id` (TEXT nullable) columns to `chat_sessions` table in `packages/backend/src/db/schema.ts`. Update `serializeSession()` in `packages/backend/src/routes/chat.ts` to include new fields. Backfill existing sessions: set `persona_id` to the Pico persona's ID (query personas where `settings.isAssistant = true`). *(completed 2026-04-02 04:10 PDT)*
-- [x] **ACH.2** — Backend: update `POST /api/chat/sessions` to persist `personaId` and `workItemId` from request body into the new columns. Update `GET /api/chat/sessions` to join persona data (name, avatar) and return it alongside each session. Update `GET /api/chat/sessions/:id/messages` response to include the session's persona info. *(completed 2026-04-02 04:25 PDT)*
-- [x] **ACH.3** — Backend: update `POST /api/chat/sessions/:id/messages` to load the persona from the session's `persona_id` instead of always looking up the default Pico persona. Build the system prompt using the loaded persona's `systemPrompt`. If the persona is not Pico, skip injecting pico-skill.md and the Pico personality instructions. Keep Pico-specific behavior only when `persona.settings.isAssistant` is true. *(completed 2026-04-02 04:40 PDT)*
-- [x] **ACH.4** — Frontend: create persona selector grid component at `packages/frontend/src/features/pico/persona-selector.tsx`. Display all personas as cards (avatar, name, description, model badge). Highlight Pico as default. On selection, create a new chat session with the chosen `personaId`. Wire into the "New Chat" button on the `/chat` page. If in project scope, pass `projectId`. *(completed 2026-04-02 05:00 PDT)*
-- [x] **ACH.5** — Frontend: enhance session sidebar on `/chat` page to show persona avatar next to each session title. Group sessions by date (Today, Yesterday, This Week, Older). Add a persona filter dropdown to filter sessions by persona. Show last message preview (truncated to 60 chars) under each session title. *(completed 2026-04-02 05:35 PDT)*
-- [x] **ACH.6** — Frontend: add chat header bar to the `/chat` page message area. Show persona avatar + name, project badge (or "Global" if no projectId), and editable session title. Double-click title to rename (calls `PATCH /api/chat/sessions/:id`). Add a context menu (three-dot) with: Rename, Delete session. *(completed 2026-04-02 05:55 PDT)*
 - [ ] **ACH.7** — Frontend: add session management actions. Right-click context menu on session sidebar items: Rename, Delete (with confirmation dialog). Wire Delete to `DELETE /api/chat/sessions/:id` and refresh session list. When the active session is deleted, auto-select the most recent remaining session or show empty state.
 
 ### Persona Prompts Phase 1
