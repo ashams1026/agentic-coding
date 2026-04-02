@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 23:00 PDT — Review: ANL.3 (approved)
+
+**Reviewed:** Analytics aggregate endpoints.
+- 4 endpoints: cost-by-persona, cost-by-model, tokens-over-time, top-executions ✓
+- All with projectId + range (24h/7d/30d/90d) filters ✓
+- Cents→USD conversion, null handling ✓
+- SQLite DATE grouping for time series, persona name joins ✓
+- Registered in server.ts ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 22:55 PDT — ANL.3: Analytics aggregate endpoints
 
 **Done:** Created `packages/backend/src/routes/analytics.ts` with 4 endpoints. `GET /api/analytics/cost-by-persona` — groups by personaId, joins persona name, sums costUsd + totalTokens + count. `GET /api/analytics/cost-by-model` — groups by model, same aggregates. `GET /api/analytics/tokens-over-time` — daily aggregates using `DATE(startedAt/1000, 'unixepoch')`, ordered by date. `GET /api/analytics/top-executions` — top N by costUsd DESC with persona join, limit 10-50. All endpoints accept `projectId` and `range` (24h/7d/30d/90d) filters. CostUsd converted from cents to USD in responses. Registered in server.ts.
