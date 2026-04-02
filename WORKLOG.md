@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-03 12:05 PDT — Review: FX.WF.2 (approved)
+
+**Reviewed:** Workflow CRUD transaction wrapping.
+- PATCH: `db.transaction((tx) => ...)` wraps update + delete/insert states + delete/insert transitions ✓
+- DELETE: `db.transaction((tx) => ...)` wraps delete transitions + states + workflow ✓
+- All ops use `tx` not `db`, `.run()` for sync execution ✓
+- `stateIdMap` closured correctly in synchronous callback ✓
+- DELETE uses `.returning().all()` for 404 check ✓
+- Automatic rollback on exception ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 12:00 PDT — FX.WF.2: Wrap workflow CRUD mutations in DB transactions
 
 **Done:** Wrapped PATCH and DELETE workflow handlers in `db.transaction()`. PATCH handler: update metadata + delete/insert states + delete/insert transitions now atomic — crash between delete and insert won't lose data. DELETE handler: delete transitions + states + workflow now atomic. Used synchronous Drizzle better-sqlite3 transaction API with `.run()` for mutations and `.all()` for returning queries inside the transaction callback.
