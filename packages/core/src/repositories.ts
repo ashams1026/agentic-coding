@@ -90,6 +90,7 @@ export interface ExecutionRepository {
     id: string;
     workItemId: string;
     personaId: string;
+    projectId: string;
     status: string;
     startedAt: Date;
     costUsd: number;

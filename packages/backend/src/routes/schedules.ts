@@ -127,7 +127,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
       id,
       name,
       personaId,
-      projectId: projectId ?? null,
+      projectId: projectId ?? "pj-global",
       cronExpression,
       promptTemplate: promptTemplate ?? "",
       isActive: true,
@@ -143,7 +143,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
         name,
         personaId,
         personaName: null,
-        projectId: projectId ?? null,
+        projectId: projectId ?? "pj-global",
         cronExpression,
         promptTemplate: promptTemplate ?? "",
         isActive: true,
@@ -186,7 +186,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
     if (body.cronExpression !== undefined) updates.cronExpression = body.cronExpression;
     if (body.promptTemplate !== undefined) updates.promptTemplate = body.promptTemplate;
     if (body.isActive !== undefined) updates.isActive = body.isActive;
-    if (body.projectId !== undefined) updates.projectId = body.projectId;
+    if (body.projectId !== undefined) updates.projectId = body.projectId ?? "pj-global";
 
     // Recompute nextRunAt if cron changed or schedule re-enabled
     if (body.cronExpression !== undefined || body.isActive === true) {

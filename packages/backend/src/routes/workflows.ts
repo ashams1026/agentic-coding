@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { eq, or, isNull } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { workflows, workflowStates, workflowTransitions, workItems } from "../db/schema.js";
 import { createId } from "@agentops/shared";
@@ -17,7 +17,7 @@ function serializeWorkflow(row: typeof workflows.$inferSelect) {
     name: row.name,
     description: row.description,
     scope: row.scope as "global" | "project",
-    projectId: (row.projectId as ProjectId) ?? null,
+    projectId: row.projectId as ProjectId,
     version: row.version,
     isPublished: row.isPublished,
     createdAt: toIso(row.createdAt),
@@ -67,12 +67,12 @@ export async function workflowRoutes(app: FastifyInstance) {
       rows = await db
         .select()
         .from(workflows)
-        .where(or(isNull(workflows.projectId), eq(workflows.projectId, projectId)));
+        .where(or(eq(workflows.projectId, "pj-global"), eq(workflows.projectId, projectId)));
     } else if (scope === "global") {
       rows = await db
         .select()
         .from(workflows)
-        .where(isNull(workflows.projectId));
+        .where(eq(workflows.projectId, "pj-global"));
     } else {
       rows = await db.select().from(workflows);
     }
@@ -179,7 +179,7 @@ export async function workflowRoutes(app: FastifyInstance) {
       name: name.trim(),
       description: description ?? "",
       scope: scope ?? "global",
-      projectId: projectId ?? null,
+      projectId: projectId ?? "pj-global",
       version: 1,
       isPublished: false,
       createdAt: now,

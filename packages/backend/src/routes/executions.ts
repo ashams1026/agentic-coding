@@ -98,12 +98,19 @@ export async function executionRoutes(app: FastifyInstance) {
     const body = request.body;
     const id = createId.execution();
 
+    // Look up the work item to get its projectId
+    const [workItem] = await db
+      .select({ projectId: workItems.projectId })
+      .from(workItems)
+      .where(eq(workItems.id, body.workItemId));
+
     const [row] = await db
       .insert(executions)
       .values({
         id,
         workItemId: body.workItemId,
         personaId: body.personaId,
+        projectId: workItem?.projectId ?? "pj-global",
         status: "pending",
         startedAt: new Date(),
         completedAt: null,
@@ -156,7 +163,7 @@ export async function executionRoutes(app: FastifyInstance) {
         id,
         workItemId: null,
         personaId,
-        projectId: projectId ?? null,
+        projectId: projectId ?? "pj-global",
         status: "pending",
         startedAt: new Date(),
         completedAt: null,

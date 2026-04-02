@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 15:15 PDT — UXO.2: Migrate nullable projectId to pj-global
+
+**Done:** Made `projectId` NOT NULL on 5 tables: `executions`, `chat_sessions`, `workflows`, `webhook_triggers`, `schedules`. Migration `0021` backfills NULL → `pj-global` before table recreation. Updated all route handlers to use `?? "pj-global"` instead of `?? null`. Replaced `isNull(workflows.projectId)` with `eq(workflows.projectId, "pj-global")` in workflow list query. Updated dashboard to skip filtering when global project selected (`isGlobalProject()` helper). Fixed all seed/test files to include `projectId` in execution inserts. Updated `ExecutionRepository.create` interface in core package. `global_memories` table has no `projectId` column — skipped (already implicitly global).
+**Files:** `packages/backend/src/db/schema.ts`, `packages/backend/drizzle/0021_fluffy_multiple_man.sql`, `packages/backend/src/routes/chat.ts`, `packages/backend/src/routes/workflows.ts`, `packages/backend/src/routes/executions.ts`, `packages/backend/src/routes/dashboard.ts`, `packages/backend/src/routes/webhook-triggers.ts`, `packages/backend/src/routes/schedules.ts`, `packages/backend/src/db/seed.ts`, `packages/backend/src/db/seed-demo.ts`, `packages/backend/src/db/seed-workflow.ts`, `packages/backend/src/db/repositories.ts`, `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/__tests__/startup-cleanup.test.ts`, `packages/backend/src/test/setup.ts`, `packages/core/src/repositories.ts`
+
+---
+
 ## 2026-04-03 14:55 PDT — Review: UXO.1 (approved)
 
 **Reviewed:** isGlobal column addition to projects.

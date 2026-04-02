@@ -145,6 +145,7 @@ export class DrizzleExecutionRepository implements ExecutionRepository {
     id: string;
     workItemId: string;
     personaId: string;
+    projectId: string;
     status: string;
     startedAt: Date;
     costUsd: number;

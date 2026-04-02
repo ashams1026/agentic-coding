@@ -74,6 +74,7 @@ describe("startup crash recovery", () => {
       id: "ex-pending1",
       workItemId: TEST_IDS.WI_TOP_1,
       personaId: TEST_IDS.PERSONA_PM,
+      projectId: TEST_IDS.PROJECT_ID,
       status: "pending",
       startedAt: new Date(),
       costUsd: 0,

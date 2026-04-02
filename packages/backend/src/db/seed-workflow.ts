@@ -39,7 +39,7 @@ export async function seedDefaultWorkflow(): Promise<void> {
     name: "Default",
     description: "The built-in 8-state workflow: Backlog → Planning → Ready → In Progress → In Review → Done",
     scope: "global",
-    projectId: null,
+    projectId: "pj-global",
     version: 1,
     isPublished: true,
     createdAt: now,

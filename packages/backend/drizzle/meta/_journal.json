@@ -148,6 +148,13 @@
       "when": 1775148125066,
       "tag": "0020_gigantic_cable",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "6",
+      "when": 1775148792142,
+      "tag": "0021_fluffy_multiple_man",
+      "breakpoints": true
     }
   ]
 }

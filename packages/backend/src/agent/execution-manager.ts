@@ -340,6 +340,7 @@ export class ExecutionManager {
       id: executionId,
       workItemId: isStandalone ? null : workItemId,
       personaId,
+      projectId: item?.projectId ?? "pj-global",
       status: "running",
       startedAt: now,
       costUsd: 0,

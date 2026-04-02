@@ -148,7 +148,7 @@ export const executions = sqliteTable("executions", {
   id: text("id").primaryKey(), // ExecutionId
   workItemId: text("work_item_id").references(() => workItems.id), // nullable — standalone/global executions
   personaId: text("persona_id").notNull().references(() => personas.id),
-  projectId: text("project_id").references(() => projects.id), // nullable — for standalone/global executions
+  projectId: text("project_id").notNull().references(() => projects.id),
   status: text("status").notNull().default("pending"), // ExecutionStatus
   startedAt: integer("started_at", { mode: "timestamp_ms" }).notNull(),
   completedAt: integer("completed_at", { mode: "timestamp_ms" }),
@@ -256,7 +256,7 @@ export const projectMemoriesRelations = relations(projectMemories, ({ one }) => 
 
 export const chatSessions = sqliteTable("chat_sessions", {
   id: text("id").primaryKey(), // ChatSessionId
-  projectId: text("project_id").references(() => projects.id), // nullable for global sessions
+  projectId: text("project_id").notNull().references(() => projects.id),
   personaId: text("persona_id").references(() => personas.id), // nullable — null means default Pico
   workItemId: text("work_item_id").references(() => workItems.id), // nullable — for chat-in-context
   sdkSessionId: text("sdk_session_id"), // nullable — for future SDK session tracking
@@ -324,7 +324,7 @@ export const workflows = sqliteTable("workflows", {
   name: text("name").notNull(),
   description: text("description").notNull().default(""),
   scope: text("scope").notNull().default("global"), // "global" | "project"
-  projectId: text("project_id").references(() => projects.id), // nullable — null for global workflows
+  projectId: text("project_id").notNull().references(() => projects.id),
   version: integer("version").notNull().default(1),
   isPublished: integer("is_published", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
@@ -437,7 +437,7 @@ export const webhookTriggers = sqliteTable("webhook_triggers", {
   name: text("name").notNull(),
   secret: text("secret").notNull(),
   personaId: text("persona_id").notNull().references(() => personas.id),
-  projectId: text("project_id").references(() => projects.id),
+  projectId: text("project_id").notNull().references(() => projects.id),
   promptTemplate: text("prompt_template").notNull().default(""),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
@@ -460,7 +460,7 @@ export const schedules = sqliteTable("schedules", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   personaId: text("persona_id").notNull().references(() => personas.id),
-  projectId: text("project_id").references(() => projects.id),
+  projectId: text("project_id").notNull().references(() => projects.id),
   cronExpression: text("cron_expression").notNull(), // e.g. "*/30 * * * *"
   promptTemplate: text("prompt_template").notNull().default(""),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),

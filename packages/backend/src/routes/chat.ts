@@ -34,7 +34,7 @@ function toIso(d: Date): string {
 function serializeSession(row: typeof chatSessions.$inferSelect) {
   return {
     id: row.id as ChatSessionId,
-    projectId: (row.projectId as ProjectId) ?? null,
+    projectId: row.projectId as ProjectId,
     personaId: (row.personaId as PersonaId) ?? null,
     workItemId: (row.workItemId as WorkItemId) ?? null,
     sdkSessionId: row.sdkSessionId ?? null,
@@ -83,7 +83,7 @@ export async function chatRoutes(app: FastifyInstance) {
 
     await db.insert(chatSessions).values({
       id,
-      projectId: projectId ?? null,
+      projectId: projectId ?? "pj-global",
       personaId: personaId ?? null,
       workItemId: workItemId ?? null,
       title: "New chat",

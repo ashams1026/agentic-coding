@@ -716,7 +716,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
   // ── Executions ────────────────────────────────────────────────────
   await db.insert(executions).values([
     {
-      id: EXEC_7, workItemId: WI_AUTH_1, personaId: PERSONA_REVIEWER,
+      id: EXEC_7, workItemId: WI_AUTH_1, personaId: PERSONA_REVIEWER, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-25T08:00:00Z"), completedAt: d("2026-03-25T08:03:15Z"),
       costUsd: 22, durationMs: 195000,
       summary: "Reviewed initial OAuth implementation. Found session handling bypasses passport.js and routes lack CSRF protection.",
@@ -725,7 +725,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Reading auth routes...\nChecking session handling...\nFound: express-session used directly without passport serialize/deserialize.\nChecking CSRF protection...\nNo csurf middleware found.\nRejecting with high severity.",
     },
     {
-      id: EXEC_1, workItemId: WI_AUTH_1, personaId: PERSONA_ENGINEER,
+      id: EXEC_1, workItemId: WI_AUTH_1, personaId: PERSONA_ENGINEER, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-25T10:00:00Z"), completedAt: d("2026-03-25T10:04:32Z"),
       costUsd: 42, durationMs: 272000,
       summary: "Implemented OAuth2 routes for Google and GitHub using passport.js strategies.",
@@ -733,7 +733,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Reading project structure...\nCreating auth routes...\nAdding passport strategies...\nTesting OAuth flow...\nAll tests passing.",
     },
     {
-      id: EXEC_2, workItemId: WI_AUTH, personaId: PERSONA_PM,
+      id: EXEC_2, workItemId: WI_AUTH, personaId: PERSONA_PM, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-24T09:15:00Z"), completedAt: d("2026-03-24T09:17:45Z"),
       costUsd: 18, durationMs: 165000,
       summary: "Wrote acceptance criteria for OAuth2 authentication.",
@@ -741,7 +741,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Analyzing requirements...\nWriting acceptance criteria...\nPosting criteria as comment.",
     },
     {
-      id: EXEC_3, workItemId: WI_AUTH, personaId: PERSONA_TECH_LEAD,
+      id: EXEC_3, workItemId: WI_AUTH, personaId: PERSONA_TECH_LEAD, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-24T09:30:00Z"), completedAt: d("2026-03-24T09:35:12Z"),
       costUsd: 85, durationMs: 312000,
       summary: "Decomposed auth item into 3 children with dependency graph.",
@@ -749,14 +749,14 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Reading item and acceptance criteria...\nDesigning breakdown...\nCreating 3 children...\nSetting up dependency edges.",
     },
     {
-      id: EXEC_4, workItemId: WI_AUTH_2, personaId: PERSONA_ENGINEER,
+      id: EXEC_4, workItemId: WI_AUTH_2, personaId: PERSONA_ENGINEER, projectId: PROJECT_ID,
       status: "running", startedAt: d("2026-03-27T14:25:00Z"), completedAt: null,
       costUsd: 31, durationMs: 0,
       summary: "", outcome: null, rejectionPayload: null,
       logs: "Reading context...\nScanning existing components...\nCreating login page component...",
     },
     {
-      id: EXEC_5, workItemId: WI_DASH, personaId: PERSONA_PM,
+      id: EXEC_5, workItemId: WI_DASH, personaId: PERSONA_PM, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-25T11:00:00Z"), completedAt: d("2026-03-25T11:02:30Z"),
       costUsd: 15, durationMs: 150000,
       summary: "Wrote acceptance criteria for dashboard analytics.",
@@ -764,7 +764,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Analyzing dashboard requirements...\nWriting acceptance criteria...\nDone.",
     },
     {
-      id: EXEC_6, workItemId: WI_DASH, personaId: PERSONA_TECH_LEAD,
+      id: EXEC_6, workItemId: WI_DASH, personaId: PERSONA_TECH_LEAD, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-26T10:00:00Z"), completedAt: d("2026-03-26T10:06:15Z"),
       costUsd: 92, durationMs: 375000,
       summary: "Decomposed dashboard item into 3 children.",
@@ -772,14 +772,14 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Reading item...\nDesigning component breakdown...\nCreating children with descriptions...\nDone.",
     },
     {
-      id: EXEC_8, workItemId: WI_AUTH_3, personaId: PERSONA_REVIEWER,
+      id: EXEC_8, workItemId: WI_AUTH_3, personaId: PERSONA_REVIEWER, projectId: PROJECT_ID,
       status: "running", startedAt: d("2026-03-27T14:30:00Z"), completedAt: null,
       costUsd: 12, durationMs: 0,
       summary: "", outcome: null, rejectionPayload: null,
       logs: "Reading submitted code changes...\nChecking OAuth token handling...\nVerifying CSRF middleware integration...",
     },
     {
-      id: EXEC_9, workItemId: WI_AUTH_1, personaId: PERSONA_ROUTER,
+      id: EXEC_9, workItemId: WI_AUTH_1, personaId: PERSONA_ROUTER, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-25T10:05:00Z"), completedAt: d("2026-03-25T10:05:08Z"),
       costUsd: 2, durationMs: 8000,
       summary: "Routed wi-au01001 from In Review → Done after successful review.",
@@ -787,7 +787,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Reading work item context...\nExecution outcome: success. Review passed.\nRouting to Done.",
     },
     {
-      id: EXEC_10, workItemId: WI_AUTH, personaId: PERSONA_ROUTER,
+      id: EXEC_10, workItemId: WI_AUTH, personaId: PERSONA_ROUTER, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-24T09:36:00Z"), completedAt: d("2026-03-24T09:36:05Z"),
       costUsd: 1, durationMs: 5000,
       summary: "Routed wi-auth001 from Planning → Decomposition after PM wrote criteria.",

@@ -37,7 +37,7 @@
 ### Phase 1: Global as Project
 
 - [x] **UXO.1** — Schema: Add `isGlobal` boolean (default false) to `projects` table. Generate migration. Update seed to create a permanent global project (`id: "pj-global"`, `name: "All Projects"`, `isGlobal: true`, no path). Add delete guard to `DELETE /api/projects/:id` — reject with 409 if `isGlobal`.
-- [ ] **UXO.2** — Backend: Migrate all nullable `projectId` references to use `pj-global`. Backfill `chat_sessions`, `executions`, `global_memories` where `projectId IS NULL` → set to `pj-global`. Make `projectId` NOT NULL on all tables. Update API endpoints to stop treating null as "global" — filter by projectId like normal. Dashboard: when `project.isGlobal`, aggregate stats across all projects.
+- [review] **UXO.2** — Backend: Migrate all nullable `projectId` references to use `pj-global`. Backfill `chat_sessions`, `executions`, `global_memories` where `projectId IS NULL` → set to `pj-global`. Make `projectId` NOT NULL on all tables. Update API endpoints to stop treating null as "global" — filter by projectId like normal. Dashboard: when `project.isGlobal`, aggregate stats across all projects.
 - [ ] **UXO.3** — Frontend: Replace `"__all__"` sentinel with global project ID. Update `useSelectedProject()` to return `"pj-global"` instead of null. Remove `isGlobalScope === "__all__"` checks — use `project.isGlobal` instead. Update sidebar selector to always show global project first with distinct styling.
 - [ ] **UXO.4** — Frontend: Add persistent scope breadcrumb. Create `scope-indicator.tsx` below the sidebar header showing current project name with colored dot (violet for global, project color otherwise). Always visible even when sidebar is collapsed (colored accent strip on left edge). Mount in root layout.
 
