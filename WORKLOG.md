@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 09:20 PDT — Review: NTF.7 (approved)
+
+**Reviewed:** Enhanced toasts across 3 files.
+- Critical toasts skip auto-dismiss (toast-store `!toast.critical` gate) ✓
+- Max 3 visible, overflow "+N more" link opens notification drawer ✓
+- `notification` WS events dispatched to both notification store + toast store ✓
+- CRITICAL_TYPES set (proposal/error/budget), action buttons per type ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 09:15 PDT — NTF.7: Enhanced toasts with critical flag and notification dispatch
 
 **Done:** Updated toast store: added `critical` flag to Toast interface — critical toasts skip auto-dismiss timer. Added `overflowCount` state tracking. Updated toast renderer: shows "+N more" link above toasts when overflow > 0, clicking opens notification drawer. Updated `use-toast-events.ts`: handles `notification` WS event type — dispatches to both notification store (`addNotification`) and toast store (`addToast`). Critical notification types (proposal_needs_approval, agent_errored, budget_threshold) get `critical: true` on their toasts. Existing proposal_created toast also marked critical. Action buttons on toasts (View, Review, Settings) based on notification type.
