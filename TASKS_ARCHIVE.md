@@ -172,9 +172,22 @@ Scheduling infrastructure, rollback UX, templates, analytics metrics/UX, inbound
 - [x] **PPR.3** — Frontend: autocomplete popup on {{ in system prompt editor (13 variables, 4 groups). *(completed 2026-04-02 07:05 PDT)*
 - [x] **PPR.4** — Frontend: collapsible variables reference panel + resolved preview with highlighting. *(completed 2026-04-02 07:25 PDT)*
 
-### Notifications UX Phase 1 (partial)
+### Notifications UX Phase 1
 
 - [x] **NTF.1** — Shared types: NotificationEventType, Notification, NotificationEvent in ws-events.ts. *(completed 2026-04-02 07:40 PDT)*
 - [x] **NTF.2** — Backend: broadcastNotification() helper + 4 emission points (completed/errored/proposal/budget). *(completed 2026-04-02 08:00 PDT)*
 - [x] **NTF.3** — Frontend: Zustand notification store with localStorage persist, 60s batching, quiet hours. *(completed 2026-04-02 08:15 PDT)*
 - [x] **NTF.4** — Frontend: NotificationBell in sidebar footer with unread count badge. *(completed 2026-04-02 08:30 PDT)*
+- [x] **NTF.5** — Frontend: NotificationDrawer — 320px sliding panel with date grouping, empty state. *(completed 2026-04-02 08:50 PDT)*
+- [x] **NTF.6** — Frontend: NotificationCard with 5 type-specific icons + action buttons. *(completed 2026-04-02 09:05 PDT)*
+- [x] **NTF.7** — Frontend: enhanced toasts — critical non-dismiss, overflow +N link, dual dispatch. *(completed 2026-04-02 09:20 PDT)*
+- [x] **NTF.8** — Frontend: Notifications tab in Settings — event toggles, quiet hours, scope. *(completed 2026-04-02 09:35 PDT)*
+
+### Testing & Documentation
+
+- [x] **CUX.TEST.1** — E2E test plan for Agent Chat Phase 1 — 7 test cases. *(completed 2026-04-02 09:50 PDT)*
+- [x] **CUX.TEST.2** — Execute Agent Chat e2e tests — 7/7 PASS, 10 screenshots. *(completed 2026-04-02 10:15 PDT)*
+- [x] **CUX.TEST.3** — E2E test plan for Notifications UX — 7 test cases. *(completed 2026-04-02 10:30 PDT)*
+- [x] **CUX.TEST.4** — Execute Notifications UX e2e tests — 7/7 PASS, 6 screenshots. *(completed 2026-04-02 10:50 PDT)*
+- [x] **CUX.DOC.1** — Document Agent Chat multi-persona API + template variables in docs/api.md. *(completed 2026-04-02 11:05 PDT)*
+- [x] **CUX.DOC.2** — Document Notifications system — WS event, types, preferences in docs/api.md. *(completed 2026-04-02 11:20 PDT)*
