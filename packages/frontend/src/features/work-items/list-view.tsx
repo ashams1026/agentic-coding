@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { ChevronRight, Bot, Plus, ListTodo } from "lucide-react";
+import { ChevronRight, Bot, Plus, ListTodo, Archive } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -138,6 +138,7 @@ interface ListRowProps {
   isExpanded: boolean;
   hasChildren: boolean;
   isSelected: boolean;
+  isArchived: boolean;
   searchQuery: string;
   onToggleExpand: () => void;
   onSelect: () => void;
@@ -153,6 +154,7 @@ function ListRow({
   isExpanded,
   hasChildren,
   isSelected,
+  isArchived,
   searchQuery,
   onToggleExpand,
   onSelect,
@@ -166,6 +168,7 @@ function ListRow({
       className={cn(
         "flex w-full items-center gap-2 rounded-md px-3 py-2 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         isSelected ? "bg-accent text-accent-foreground ring-2 ring-primary/50" : "hover:bg-muted/50",
+        isArchived && "opacity-50",
       )}
       style={{ paddingLeft: `${12 + depth * 20}px` }}
     >
@@ -235,6 +238,14 @@ function ListRow({
         <TooltipContent>{item.title}</TooltipContent>
       </Tooltip>
 
+      {/* Archived badge */}
+      {isArchived && (
+        <Badge variant="outline" className="text-xs px-1.5 py-0 shrink-0 text-muted-foreground border-muted-foreground/40 gap-1">
+          <Archive className="h-3 w-3" />
+          Archived
+        </Badge>
+      )}
+
       {/* Progress (if has children) */}
       {childrenTotal > 0 && (
         <Tooltip>
@@ -302,11 +313,11 @@ function EmptyWorkItemsState({ projectId }: { projectId: string | null }) {
 
 export function ListView() {
   const { projectId } = useSelectedProject();
-  const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined);
+  const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterPersonas, filterLabels, showArchived, selectedItemId, setSelectedItemId, clearFilters, setFilterState } =
+    useWorkItemsStore();
+  const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined, showArchived || undefined);
   const { data: personas } = usePersonas();
   const { data: executions } = useExecutions(undefined, projectId ?? undefined);
-  const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterPersonas, filterLabels, selectedItemId, setSelectedItemId, clearFilters, setFilterState } =
-    useWorkItemsStore();
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
@@ -432,6 +443,7 @@ export function ListView() {
           isExpanded={isExpanded}
           hasChildren={hasChildren}
           isSelected={selectedItemId === item.id}
+          isArchived={item.archivedAt !== null}
           searchQuery={searchQuery}
           onToggleExpand={() => toggleExpand(item.id)}
           onSelect={() => setSelectedItemId(item.id)}
@@ -555,6 +567,7 @@ export function ListView() {
                           isExpanded={isExpanded}
                           hasChildren={hasChildren}
                           isSelected={selectedItemId === item.id}
+                          isArchived={item.archivedAt !== null}
                           searchQuery={searchQuery}
                           onToggleExpand={() => toggleExpand(item.id)}
                           onSelect={() => setSelectedItemId(item.id)}

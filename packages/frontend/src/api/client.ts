@@ -150,10 +150,11 @@ export async function deleteProject(id: ProjectId): Promise<boolean> {
 
 // ── Work Items ───────────────────────────────────────────────────
 
-export async function getWorkItems(parentId?: WorkItemId | null, projectId?: ProjectId): Promise<WorkItem[]> {
+export async function getWorkItems(parentId?: WorkItemId | null, projectId?: ProjectId, includeArchived?: boolean): Promise<WorkItem[]> {
   const params = new URLSearchParams();
   if (parentId !== undefined && parentId !== null) params.set("parentId", parentId);
   if (projectId) params.set("projectId", projectId);
+  if (includeArchived) params.set("includeArchived", "true");
   const qs = params.toString();
   const res = await get<{ data: WorkItem[]; total: number }>(`/api/work-items${qs ? `?${qs}` : ""}`);
   return res.data;

@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 21:25 PDT — FND.WIL.5: Frontend "Show archived" toggle and archived item styling
+
+**Done:** Added `showArchived` state to `work-items-store.ts` with setter and inclusion in `clearFilters()`. Updated `getWorkItems` API client to accept `includeArchived` param. Updated `query-keys.ts` and `useWorkItems` hook to include `includeArchived` in query key and API call. Added "Archived" toggle button (with Archive icon) to `filter-bar.tsx` — uses `variant="secondary"` when active. Updated `ListRow` in `list-view.tsx`: accepts `isArchived` prop, renders with `opacity-50` and an "Archived" badge (outline variant with Archive icon) when item has `archivedAt` set. Both tree and grouped render paths pass the new prop. Visual check: toggle button renders correctly, archived items show badge with muted styling.
+**Files:** `packages/frontend/src/stores/work-items-store.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/hooks/query-keys.ts`, `packages/frontend/src/hooks/use-work-items.ts`, `packages/frontend/src/features/work-items/filter-bar.tsx`, `packages/frontend/src/features/work-items/list-view.tsx`
+
+---
+
 ## 2026-04-01 21:20 PDT — Review: FND.WIL.4 (approved)
 
 **Reviewed:** Bulk operations API and background hard-delete job.

@@ -6,8 +6,8 @@ export const queryKeys = {
   project: (id: ProjectId) => ["projects", id] as const,
 
   // Work Items
-  workItems: (parentId?: WorkItemId | null, projectId?: ProjectId) => {
-    if (parentId !== undefined || projectId) return ["workItems", { parentId, projectId }] as const;
+  workItems: (parentId?: WorkItemId | null, projectId?: ProjectId, includeArchived?: boolean) => {
+    if (parentId !== undefined || projectId || includeArchived) return ["workItems", { parentId, projectId, includeArchived }] as const;
     return ["workItems"] as const;
   },
   workItem: (id: WorkItemId) => ["workItems", id] as const,

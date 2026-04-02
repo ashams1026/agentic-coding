@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Search, X, Bot, ArrowUp, ArrowDown } from "lucide-react";
+import { Search, X, Bot, ArrowUp, ArrowDown, Archive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -59,6 +59,7 @@ export function FilterBar() {
     filterPriority,
     filterPersonas,
     filterLabels,
+    showArchived,
     setSearchQuery,
     setGroupBy,
     setSortBy,
@@ -67,6 +68,7 @@ export function FilterBar() {
     setFilterPriority,
     toggleFilterPersona,
     toggleFilterLabel,
+    setShowArchived,
     clearFilters,
   } = useWorkItemsStore();
 
@@ -108,7 +110,8 @@ export function FilterBar() {
     filterState !== null ||
     filterPriority !== null ||
     filterPersonas.length > 0 ||
-    filterLabels.length > 0;
+    filterLabels.length > 0 ||
+    showArchived;
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
@@ -247,6 +250,22 @@ export function FilterBar() {
           </DropdownMenuContent>
         </DropdownMenu>
       )}
+
+      {/* Show archived toggle */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant={showArchived ? "secondary" : "outline"}
+            size="sm"
+            className="h-8 text-xs gap-1.5"
+            onClick={() => setShowArchived(!showArchived)}
+          >
+            <Archive className="h-3.5 w-3.5" />
+            Archived
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>{showArchived ? "Hide archived items" : "Show archived items"}</TooltipContent>
+      </Tooltip>
 
       {/* Group by */}
       <Select

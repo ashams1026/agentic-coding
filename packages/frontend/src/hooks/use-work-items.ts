@@ -22,10 +22,10 @@ import { queryKeys } from "./query-keys";
 
 // ── Work Item queries ────────────────────────────────────────────
 
-export function useWorkItems(parentId?: WorkItemId | null, projectId?: ProjectId) {
+export function useWorkItems(parentId?: WorkItemId | null, projectId?: ProjectId, includeArchived?: boolean) {
   return useQuery({
-    queryKey: queryKeys.workItems(parentId, projectId),
-    queryFn: () => getWorkItems(parentId, projectId),
+    queryKey: queryKeys.workItems(parentId, projectId, includeArchived),
+    queryFn: () => getWorkItems(parentId, projectId, includeArchived),
   });
 }
 

@@ -22,6 +22,7 @@ interface WorkItemsState {
   filterPersonas: string[];
   filterLabels: string[];
   filterParent: WorkItemId | null;
+  showArchived: boolean;
 
   setView: (view: WorkItemView) => void;
   setGroupBy: (groupBy: GroupBy) => void;
@@ -36,6 +37,7 @@ interface WorkItemsState {
   toggleFilterPersona: (personaId: string) => void;
   toggleFilterLabel: (label: string) => void;
   setFilterParent: (parentId: WorkItemId | null) => void;
+  setShowArchived: (show: boolean) => void;
   clearFilters: () => void;
 }
 
@@ -55,6 +57,7 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       filterPersonas: [],
       filterLabels: [],
       filterParent: null,
+      showArchived: false,
 
       setView: (view) => set({ view }),
       setGroupBy: (groupBy) => set({ groupBy }),
@@ -81,6 +84,7 @@ export const useWorkItemsStore = create<WorkItemsState>()(
             : [...state.filterLabels, label],
         })),
       setFilterParent: (filterParent) => set({ filterParent }),
+      setShowArchived: (showArchived) => set({ showArchived }),
       clearFilters: () =>
         set({
           searchQuery: "",
@@ -89,6 +93,7 @@ export const useWorkItemsStore = create<WorkItemsState>()(
           filterPersonas: [],
           filterLabels: [],
           filterParent: null,
+          showArchived: false,
         }),
     }),
     {
