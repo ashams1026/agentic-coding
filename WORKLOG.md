@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 21:55 PDT — Review: SRC.4 (approved)
+
+**Reviewed:** Server-backed Command Palette search.
+- 300ms debounced search via searchApi(), min 2 chars ✓
+- Results grouped by 6 categories with type-specific icons ✓
+- Snippet highlights via dangerouslySetInnerHTML (FTS5 <b> tags) ✓
+- Loading spinner, cleanup on unmount ✓
+- Static nav/action items still filter client-side ✓
+- SearchResult type + searchApi() in API client ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 21:50 PDT — SRC.4: Server-backed Command Palette search
 
 **Done:** Upgraded `command-palette.tsx` from client-side work item filtering to server-backed FTS5 search. Added `searchApi()` function + `SearchResult` type to API client. On keystroke (2+ chars), debounces 300ms then calls `GET /api/search?q=...&projectId=...&limit=20`. Results grouped by type: navigation (static), actions (static), work_item, persona, comment, chat_message. Each result shows title + snippet (rendered as HTML with `<b>` highlights from FTS5 `snippet()`). Spinner indicator while searching. Type-specific icons (FileText, User, MessageSquare). Navigation on select: work items → /items with selected ID, personas → /personas, comments → /items, chat → /chat.
