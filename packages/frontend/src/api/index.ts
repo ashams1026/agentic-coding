@@ -21,6 +21,8 @@ export {
   unarchiveWorkItem,
   bulkArchiveWorkItems,
   bulkDeleteWorkItems,
+  getDeletedWorkItems,
+  restoreWorkItem,
   retryWorkItem,
   // Work Item Edges
   getWorkItemEdges,

@@ -30,6 +30,8 @@ function serializeWorkItem(row: typeof workItems.$inferSelect) {
     assignedPersonaId: (row.assignedPersonaId as PersonaId) ?? null,
     createdAt: toIso(row.createdAt),
     updatedAt: toIso(row.updatedAt),
+    archivedAt: row.archivedAt ? toIso(row.archivedAt) : null,
+    deletedAt: row.deletedAt ? toIso(row.deletedAt) : null,
   };
 }
 

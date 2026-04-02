@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 22:18 PDT — FND.WIL.8: Settings "Recently deleted" recovery view
+
+**Done:** Created `recently-deleted.tsx` with a component that fetches `GET /api/work-items?deleted=true` and renders a table showing title, delete date, days remaining, and [Restore] button. Items past 30-day grace show "Permanently deleted" badge instead. Wired into `DataSection` in `appearance-section.tsx` between Database and Actions. Added `getDeletedWorkItems` and `restoreWorkItem` to API client + exports. Fixed `serializeWorkItem` in backend to explicitly serialize `archivedAt`/`deletedAt` fields (were missing from JSON responses). Visual check: delete date, countdown badge, Restore button all render correctly; restore removes item and shows success toast.
+**Files:** `packages/frontend/src/features/settings/recently-deleted.tsx` (new), `packages/frontend/src/features/settings/appearance-section.tsx`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`, `packages/backend/src/routes/work-items.ts`
+
+---
+
 ## 2026-04-01 22:08 PDT — Review: FND.WIL.7 (approved after rework)
 
 **Reviewed:** Rework of `bulkDeleteWorkItems` error handling in client.ts.

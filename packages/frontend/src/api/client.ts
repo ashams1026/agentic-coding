@@ -215,6 +215,16 @@ export async function bulkDeleteWorkItems(ids: string[], cascade?: boolean): Pro
   return res.ok;
 }
 
+export async function getDeletedWorkItems(): Promise<WorkItem[]> {
+  const res = await get<{ data: WorkItem[]; total: number }>("/api/work-items?deleted=true");
+  return res.data;
+}
+
+export async function restoreWorkItem(id: WorkItemId): Promise<WorkItem> {
+  const res = await post<{ data: WorkItem }>(`/api/work-items/${id}/restore`, {});
+  return res.data;
+}
+
 // ── Work Item Edges ──────────────────────────────────────────────
 
 export async function getWorkItemEdges(workItemId?: WorkItemId): Promise<WorkItemEdge[]> {

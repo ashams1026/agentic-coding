@@ -27,6 +27,7 @@ import { useUIStore, type Density } from "@/stores/ui-store";
 import { cn } from "@/lib/utils";
 import { getDbStats, clearExecutionHistory, exportSettings, importSettings, getServiceStatus, restartService } from "@/api";
 import type { ActiveExecutionInfo } from "@/api/client";
+import { RecentlyDeleted } from "./recently-deleted";
 
 // ── Theme toggle ───────────────────────────────────────────────────
 
@@ -549,6 +550,8 @@ export function DataSection() {
   return (
     <div className="space-y-6">
       <DatabaseInfo />
+      <Separator />
+      <RecentlyDeleted />
       <Separator />
       <DataActionsSection />
     </div>
