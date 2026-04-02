@@ -63,8 +63,8 @@
 ### Phase 2: Sidebar Redesign
 
 - [x] **NAV.4** — Frontend: Redesign sidebar as project tree. *(completed 2026-04-02 14:26 PDT)* Replace flat nav + project dropdown with: (1) Global section at top: Dashboard + App Settings, (2) "Projects" separator, (3) Collapsible project sections — each with globe/folder icon, project name, nested child links (Work Items, Automations, Agents, Agent Monitor, Activity Feed, Analytics, Chat, Project Settings). Global Workspace pinned at top with globe icon + violet accent. Child links navigate to `/p/:projectId/:page`.
-- [ ] **NAV.5** — Frontend: Sidebar state persistence. Store expanded/collapsed per project in localStorage. Auto-expand the project matching current URL. Highlight active child link. Add expand/collapse all toggle.
-- [ ] **NAV.6** — Frontend: Remove old project selector dropdown, scope breadcrumb (`scope-indicator.tsx`), and `selectedProjectId` from `useUIStore`. All replaced by sidebar tree + URL params.
+- [x] **NAV.5** — Frontend: Sidebar state persistence. Store expanded/collapsed per project in localStorage. Auto-expand the project matching current URL. Highlight active child link. Add expand/collapse all toggle. *(completed 2026-04-02 14:29 PDT)*
+- [x] **NAV.6** — Frontend: Remove old project selector dropdown, scope breadcrumb (`scope-indicator.tsx`), and `selectedProjectId` from `useUIStore`. All replaced by sidebar tree + URL params. *(completed 2026-04-02 14:29 PDT)*
 - [ ] **NAV.7** — Frontend + Backend: Add "New Project" button at bottom of Projects section. Dialog has: project name input, working directory with two options: (1) "Choose existing directory" with browse starting from `~/` (user's home dir), (2) "Create new" which auto-generates `~/woof/<slugified-name>/` from the project name (user can override). Backend `mkdir -p`'s the directory on project creation if it doesn't exist. Label as "Working Directory — where agents will operate."
 
 ### Phase 3: Migrate Pages to URL-based Project Context

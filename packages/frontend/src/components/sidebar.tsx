@@ -20,6 +20,7 @@ import {
   Globe,
   ChevronDown,
   ChevronRight,
+  ChevronsUpDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
@@ -68,10 +69,33 @@ export function Sidebar() {
   const unreadActivityCount = useActivityStore((s) => s.unreadCount);
   const location = useLocation();
 
-  // Expand/collapse state for project sections
-  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(
-    () => new Set(["pj-global"]),
-  );
+  // Expand/collapse state for project sections — persisted to localStorage
+  const SIDEBAR_EXPANDED_KEY = "agentops-sidebar-expanded";
+
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem(SIDEBAR_EXPANDED_KEY);
+      if (stored) {
+        const arr = JSON.parse(stored) as string[];
+        return new Set(arr);
+      }
+    } catch {
+      /* ignore — localStorage may be blocked */
+    }
+    return new Set(["pj-global"]);
+  });
+
+  // Persist expanded state to localStorage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        SIDEBAR_EXPANDED_KEY,
+        JSON.stringify([...expandedProjects]),
+      );
+    } catch {
+      /* ignore */
+    }
+  }, [expandedProjects]);
 
   // Sort projects: global first, then alphabetical
   const sortedProjects = projectsList
@@ -375,12 +399,40 @@ export function Sidebar() {
               <span className="flex-1 truncate">App Settings</span>
             </Link>
 
-            {/* Projects separator */}
-            <div className="flex items-center gap-2 px-3 pt-3 pb-1">
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Projects
-              </span>
-              <Separator className="flex-1" />
+            {/* Projects separator with expand/collapse all toggle */}
+            <div className="flex items-center justify-between px-3 pt-3 pb-1">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground shrink-0">
+                  Projects
+                </span>
+                <Separator className="flex-1" />
+              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-5 w-5 shrink-0 ml-1"
+                    onClick={() => {
+                      const allIds = sortedProjects.map((p) => p.id);
+                      const allExpanded = allIds.every((id) =>
+                        expandedProjects.has(id),
+                      );
+                      setExpandedProjects(
+                        allExpanded ? new Set() : new Set(allIds),
+                      );
+                    }}
+                  >
+                    <ChevronsUpDown className="h-3 w-3" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  {sortedProjects.length > 0 &&
+                  sortedProjects.every((p) => expandedProjects.has(p.id))
+                    ? "Collapse all"
+                    : "Expand all"}
+                </TooltipContent>
+              </Tooltip>
             </div>
 
             {/* Project tree */}

@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 14:29 PDT — NAV.5: Sidebar state persistence
+
+**Done:** Added localStorage persistence for sidebar expanded/collapsed state using key `agentops-sidebar-expanded`. Initializer reads from localStorage on mount, falls back to `["pj-global"]`. A `useEffect` writes to localStorage on every state change. Added expand/collapse all toggle button (ChevronsUpDown icon) next to "Projects" separator label — expands all if any collapsed, collapses all if all expanded. All localStorage calls wrapped in try/catch. Auto-expand on URL navigation still works (adds to persisted set).
+**Files:** `packages/frontend/src/components/sidebar.tsx`
+
+---
+
+## 2026-04-02 14:29 PDT — NAV.6: Remove orphaned scope-indicator component
+
+**Done:** Deleted `scope-indicator.tsx` — the old scope breadcrumb component replaced by the sidebar project tree in NAV.4. Verified no remaining imports across the codebase. No separate project selector/switcher component existed. `useSelectedProject()` and `selectedProjectId` in `useUIStore` intentionally left intact (deferred to NAV.25 after page migrations).
+**Files:** `packages/frontend/src/components/scope-indicator.tsx` (deleted)
+
+---
+
 ## 2026-04-02 14:26 PDT — NAV.4: Redesign sidebar as project tree
 
 **Done:** Full rewrite of sidebar. Replaced flat nav + project dropdown with: (1) Global section — Dashboard + App Settings top-level links, (2) "Projects" separator, (3) Collapsible project tree — each project expandable with chevron, child links to `/p/:projectId/:page` for all 8 pages. Global Workspace pinned first with violet accent, expanded by default. Auto-expands project on URL navigation. Badge counters on Work Items/Agent Monitor/Activity Feed. Collapsed sidebar mode with icon tooltips and badge indicators. Removed project dropdown and ScopeIndicator. Preserved theme toggle, notification bell, collapse button, mobile overlay.
