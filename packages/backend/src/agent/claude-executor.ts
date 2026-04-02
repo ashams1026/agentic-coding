@@ -14,6 +14,7 @@ import type {
 import type { Persona, Project } from "@agentops/shared";
 import { loadConfig, getClaudeCodeExecutablePath } from "../config.js";
 import { validateCommand, buildSandboxPrompt } from "./sandbox.js";
+import { resolveVariables, buildVariableContext } from "./prompt-variables.js";
 import { createInProcessMcpServer } from "./mcp-server.js";
 import type { McpContext } from "./mcp-server.js";
 import { auditToolUse, auditSessionStart, auditSessionEnd } from "../audit.js";
@@ -29,9 +30,19 @@ export function buildSystemPrompt(
 ): string {
   const sections: string[] = [];
 
-  // (1) Persona identity
+  // (1) Persona identity — resolve template variables before adding
   if (persona.systemPrompt) {
-    sections.push(persona.systemPrompt);
+    const varContext = buildVariableContext({
+      project,
+      persona,
+      workItem: {
+        id: task.workItemId,
+        title: task.context.title,
+        state: task.context.currentState,
+        description: task.context.description,
+      },
+    });
+    sections.push(resolveVariables(persona.systemPrompt, varContext));
   }
 
   // (2) Project context

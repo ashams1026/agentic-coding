@@ -6,6 +6,7 @@ import { db, sqlite } from "../db/connection.js";
 import { chatSessions, chatMessages, personas, projects } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import { getClaudeCodeExecutablePath } from "../config.js";
+import { resolveVariables, buildVariableContext } from "../agent/prompt-variables.js";
 import type {
   ChatSessionId,
   ChatMessageId,
@@ -361,7 +362,12 @@ export async function chatRoutes(app: FastifyInstance) {
     const systemSections: string[] = [];
 
     if (chatAgent.systemPrompt) {
-      systemSections.push(chatAgent.systemPrompt);
+      // Resolve template variables (no workItem in chat path)
+      const varContext = buildVariableContext({
+        project: project ? project as unknown as import("@agentops/shared").Project : null,
+        persona: chatAgent as unknown as import("@agentops/shared").Persona,
+      });
+      systemSections.push(resolveVariables(chatAgent.systemPrompt, varContext));
     }
 
     // Inject Pico-specific project knowledge skill (only for Pico)

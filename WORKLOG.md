@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 06:40 PDT — PPR.2: Integrate resolveVariables into executor and chat paths
+
+**Done:** Integrated `resolveVariables()` + `buildVariableContext()` into both prompt-building paths. Executor path (`claude-executor.ts`): resolve variables in persona.systemPrompt before adding to sections, passing project + persona + date + workItem context (id, title, state, description). Chat path (`chat.ts`): resolve variables in chatAgent.systemPrompt before adding to sections, passing project + persona + date context (no workItem in chat). Added imports in both files. Fixed type mismatch for DB row types vs shared entity types with cast.
+**Files:** `packages/backend/src/agent/claude-executor.ts`, `packages/backend/src/routes/chat.ts`
+
+---
+
 ## 2026-04-02 06:30 PDT — Review: PPR.1 (approved)
 
 **Reviewed:** prompt-variables.ts in `packages/backend/src/agent/`.
