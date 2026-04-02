@@ -42,6 +42,7 @@ class RealWsClient {
   private ws: WebSocket | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private shouldReconnect = true;
+  private reconnectAttempt = 0;
   private reconnectCallbacks = new Set<() => void>();
 
   /** Connect to the backend WebSocket server. */
@@ -57,6 +58,7 @@ class RealWsClient {
     const isReconnect = this.shouldReconnect && this.reconnectTimer !== null || this.listeners["*"].size > 0;
 
     this.ws.onopen = () => {
+      this.reconnectAttempt = 0;
       if (isReconnect) {
         this.reconnectCallbacks.forEach((cb) => cb());
       }
@@ -135,10 +137,14 @@ class RealWsClient {
 
   private scheduleReconnect(): void {
     if (this.reconnectTimer) return;
+    const base = Math.min(1000 * 2 ** this.reconnectAttempt, 30_000);
+    const jitter = base * 0.2 * Math.random();
+    const delay = base + jitter;
+    this.reconnectAttempt++;
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
       this.connect();
-    }, 3000);
+    }, delay);
   }
 }
 

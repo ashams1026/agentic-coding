@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 20:27 PDT — FND.ERR.2: WS reconnect exponential backoff + jitter
+
+**Done:** Replaced fixed 3s WS reconnect with exponential backoff + jitter. Added `reconnectAttempt` counter, reset on successful connection in `onopen`. Formula: `Math.min(1000 * 2^attempt, 30_000) + 20% jitter`. Delays: 1s → 2s → 4s → 8s → 16s → 30s cap.
+**Files:** `packages/frontend/src/api/ws-client.ts`
+
+---
+
 ## 2026-04-01 20:26 PDT — Review: FND.ERR.1 (approved)
 
 **Reviewed:** busy_timeout and synchronous PRAGMAs added to SQLite connection.
