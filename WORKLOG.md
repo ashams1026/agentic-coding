@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 03:25 PDT — Review: FND.DOC.1 (approved)
+
+**Reviewed:** Work Item Lifecycle API documentation in `docs/api.md`.
+- All 6 new endpoints documented with accurate request/response shapes ✓
+- List Work Items updated with `includeArchived`/`deleted` query params matching implementation ✓
+- 409 guard, 30-day grace period (410 GONE), cascade BFS rules all accurate ✓
+- Schema Additions section correctly describes `archived_at`/`deleted_at` columns ✓
+- Source files table updated ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 03:10 PDT — FND.DOC.1: Document Work Item Lifecycle API endpoints
 
 **Done:** Updated `docs/api.md` with all Work Item Lifecycle endpoints: archive (single + bulk with cascade), unarchive (single + bulk), restore (with 30-day grace period + 410 GONE), bulk delete (soft delete + 409 guard). Updated List Work Items to document `includeArchived` and `deleted` query params. Updated Delete to reflect soft-delete behavior with 409 guard and cascade rules. Added "Schema Additions" section documenting `archived_at`/`deleted_at` columns and cascade rules. Updated source files table.
