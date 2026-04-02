@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 23:40 PDT — ANL.5: Analytics overview tab with summary cards + charts
+
+**Done:** Created `packages/frontend/src/features/analytics/overview-tab.tsx`. 4 summary cards using `useExecutionStats` + `useCostSummary` (Total Cost, Executions, Success Rate, Avg Duration with colored icons). Time range selector (7d/30d/90d toggle buttons). Cost Trend line chart using Recharts `LineChart` with `tokensOverTime` data. Cost by Persona horizontal bar chart using `BarChart` with per-persona colors. Empty state messages when no data. Wired into `analytics.tsx` page replacing placeholder. Visual check passed.
+**Files:** `packages/frontend/src/features/analytics/overview-tab.tsx` (new), `packages/frontend/src/pages/analytics.tsx`
+**Notes:** Execution outcomes stacked bar chart deferred — the `executionStats` endpoint returns aggregate success rate, not per-outcome breakdown needed for stacked bars. Would need a new endpoint or data source.
+
+---
+
 ## 2026-04-02 23:30 PDT — Review: ANL.7 (approved)
 
 **Reviewed:** Analytics React Query hooks + API client.

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { OverviewTab } from "@/features/analytics/overview-tab";
 
 type AnalyticsTab = "overview" | "token-usage";
 
@@ -43,11 +44,7 @@ export function AnalyticsPage() {
 
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto px-6 py-6">
-        {activeTab === "overview" && (
-          <div className="rounded-lg border border-dashed p-12 text-center">
-            <p className="text-sm text-muted-foreground">Overview charts will render here (ANL.5)</p>
-          </div>
-        )}
+        {activeTab === "overview" && <OverviewTab />}
         {activeTab === "token-usage" && (
           <div className="rounded-lg border border-dashed p-12 text-center">
             <p className="text-sm text-muted-foreground">Token usage charts will render here (ANL.6)</p>
