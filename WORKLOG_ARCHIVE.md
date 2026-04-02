@@ -42,69 +42,11 @@
 
 ---
 
-## Sprint 22: Visual UX Audit (batch 1) — 2026-04-01 22:25 to 2026-04-02 00:45
+## Sprint 22 + Research Proposals (consolidated) — 2026-04-01 to 2026-04-02
 
-**Dashboard bugs (FX.UX.DASH.3):** Activity items in dashboard's Recent Activity linked to generic `/items` instead of specific work items. Fixed with `setSelectedItemId` + `navigate("/items")` pattern, added a11y attributes.
+**Sprint 22 (35 tasks):** Visual UX audit across all screens (dashboard, work items, detail panel, agent monitor, activity feed, settings, command palette, responsive, dark mode). 14 audits, 10 bug fixes (SDK paths, keyboard a11y, label mismatches, link targets), breadcrumb UX, test restructuring, 2 SDK research spikes.
 
-**Work Items audits (UX.WORK.LIST, UX.WORK.FLOW, UX.WORK.CREATE, FX.UX.ITEMS.1):** List view audited at 3 viewport sizes + dark mode — 9 screenshots, 1 bug (empty filter state blank). Flow view audited — 8 workflow state nodes with Router edges, click-to-filter interaction, 6 screenshots. Creation uses quick-add pattern (instant Backlog item + edit-in-panel). Empty filter state fixed with `topLevel.length === 0` check + "Clear filters" button in list-view.tsx. Board view marked blocked (not wired into UI).
-
-**Detail panel audit (UX.DETAIL):** All sections verified on data-rich OAuth2 item — title, status, priority, labels, description, 3 children, 6 comments, 3 execution history entries, metadata. Scrolls internally, dark mode clean. 0 bugs.
-
-**Agent Monitor audits (UX.AGENT.MAIN, UX.AGENT.CONTROLS, UX.AGENT.HISTORY):** Main layout — sidebar + terminal + header bar, 3 screenshots, 1 bug (broken Work Item/Parent links → 404). Controls — Stop/Force Stop dialogs, split view, panel components, 2 screenshots, 1 bug (MCP status 404 toast). History — 8 execution entries, summary stats, filters, disabled rewind buttons (existing FX.UX.REWIND), 3 screenshots, 0 new bugs.
-
-**Activity Feed audit (UX.ACTIVITY):** Chronological events grouped by date, colored type icons, filters, scrolling, dark mode. 3 screenshots, 1 bug (same generic `/items` link issue as dashboard).
-
----
-
-### Sprint 22 batch 2 — Remaining audits, bug fixes, UX improvements, housekeeping, research (2026-04-02 05:15–07:55 PDT)
-
-**Remaining audits:** UX.RESPONSIVE completed (12 screenshots, 0 bugs at 1024px/768px). UX.DARK completed (9 screenshots, 0 bugs). UX.CMD, UX.NAV, UX.PICO, UX.SETTINGS, UX.PERSONA.LIST, UX.PERSONA.TEST all completed and approved.
-
-**Bug fixes:** FX.PICO.EXEC (SDK executable path resolution — added getClaudeCodeExecutablePath() to config.ts, pathToClaudeCodeExecutable to all 4 query() call sites). FX.UX.REWIND (disabled button tooltip — span wrapper for TooltipTrigger). FX.UX.PERSONA.1 (keyboard a11y — role/tabIndex/onKeyDown on PersonaCard). FX.UX.PERSONA.2 (label mismatch — shared BUILT_IN_IDS set). FX.UX.PERSONA.3 (delete 404 toast — onSelect(null) + removeQueries). All approved.
-
-**UX improvements:** UX.AGENT.BREADCRUMB — replaced nav buttons with breadcrumb trail + dismissible side panel overlay in Agent Monitor.
-
-**Housekeeping:** HK.TEST.RESULTS — restructured 269 files from flat tests/e2e/results/ into 46 timestamped directories.
-
-**Research:** RES.SDK.TOOLS — found sdk-tools.d.ts with 21 tools, recommended version-pinned shared manifest. RES.V2.SESSIONS — SDKSessionOptions missing 12+ fields vs query() Options, recommended query() with resume.
-
----
-
-### Research & bug fixes batch — 2026-04-02 08:15–13:20 PDT
-
-**Research (7 tasks, all approved):** RES.PLUG.CORE — cataloged 25 deps of ExecutionManager/MCP, recommended thin interface extraction (Option B). RES.GLOBAL.DATA — nullable projectId on 4 tables, global_memories table, AgentScope type. RES.GLOBAL.NAV — keep flat nav, add "All Projects" option, scope-aware pages. RES.GLOBAL.UX — Pico scope toggle, `set_project_context` MCP tool, global workspace. RES.WORKFLOW.DATA — 3-table schema (workflows/states/transitions), soft versioning, 2-level persona binding. RES.WORKFLOW.BUILDER — hybrid form+preview editor, 8-rule validation, shared router. RES.WORKFLOW.RUNTIME — dynamic router prompt from DB, per-project/item binding, 3-phase migration.
-
-**Bug fixes (3 tasks, all approved):** FX.WORK.EDIT — stale selectedProjectId in localStorage + silent error swallowing in updateWorkItem(). FX.PERSONA.SEED — extracted idempotent ensureBuiltInPersonas() for server startup. FX.PICO.OVERFLOW — w-0 min-w-full overflow-hidden on ScrollArea container, break-words on bubbles.
-
----
-
-### Pico UX polish & Woof rebrand — 2026-04-02 13:35–16:10 PDT
-
-**Bug fix + 6 UX tasks (all approved):** FX.PICO.EMPTY.BUBBLE — skip rendering empty message during streaming, TypingIndicator handles the gap. UX.PICO.MINI.CONTENT — compact prop on ChatMessage (thinking=one-liner, tool calls=one-liner). UX.PICO.RESIZE — drag-to-resize on top/left/corner edges (320x400 min, 600x80vh max, persisted in Zustand). UX.PICO.STATUSBAR — consolidated StatusLine component auto-cycling through thinking+tool_use items with counter/expand chevron. UX.PICO.FULLPAGE — `/chat` page with session sidebar, verbose rendering, Maximize2 button in mini panel. UX.PICO.COLLAPSE — ChevronDown replaces X icon on mini panel. UX.BRAND.WOOF — rebranded all user-facing "AgentOps" to "Woof" (title, favicon, sidebar, status bar, mobile header, settings, tool config).
-
----
-
-### Research proposals batch 1 — 2026-04-02 16:20–17:55 PDT
-
-**6 research docs (all approved):** RES.PROMPTS.DOC — traced 5-section buildSystemPrompt() pipeline (persona→project→work item→sandbox→history) + Pico 4-section variant. RES.PROMPTS.VARS — {{var}} Mustache syntax, 15 built-ins, vars.* user-defined, resolveVariables() regex, 4-phase plan. RES.WORKFLOW.EDGE — 7 edge cases (deletion, cloning, import/export, permissions, global agents, testing, chat interaction). RES.CHAT.UX — session sidebar + main chat, Pico as special case, 5 entry points, 3-phase migration. RES.CHAT.RICH — 8 content types (DiffBlock, ToolCallCard, TerminalBlock, FileTreeSummary, ProposalCard, ThinkingBlock, ImageBlock, MultiStepProgress). RES.CHAT.DATA — hybrid contentBlocks, SSE + control endpoints, execution linking, V2 readiness.
-
----
-
-### Research proposals batch 2 — 2026-04-02 18:10–20:40 PDT
-
-**8 research docs (all approved):** RES.LIFECYCLE.UX — archive primary, 3-tier confirmation, bulk ops, 30-day soft delete, "Show archived" toggle. RES.LIFECYCLE.DATA — archived_at/deleted_at timestamps, cascade rules per table, API endpoints, canDispatch() guard, 5-step migration. RES.NOTIFY.UX — 10-event catalog with 4 priority levels, bell icon + sliding drawer, toast vs persistent matrix, quiet hours. RES.NOTIFY.INTEGRATIONS — Slack (Block Kit), email (Resend), webhooks (HMAC, retry), NotificationService event bus with channel fan-out. RES.COLLAB.CONTEXT — handoff notes (structured schema), shared scratchpad, 4-tier context windowing, @persona tagging. RES.COLLAB.COORD — parallel execution (advisory file locking), dependency enforcement (edges exist but aren't checked), human-in-loop (create_proposal MCP), escalation chain, fan-out/fan-in completion gates. RES.SCHED.UX — per-persona schedules in Persona Manager, presets/cron with live preview, standalone execution model, silent success notifications. RES.SCHED.INFRA — node-cron + SQLite persistence, missed run catch-up, 14-column schedules table, shared concurrency pool, trigger separation (2 work+review entries, 21:05–21:15).
-
----
-
-### Research proposals batch 3 + cleanup — 2026-04-01 16:15–16:45 PDT
-
-**6 research docs (all approved) + 1 cleanup:** RES.SWAP.ARCH — frontend/backend decoupling architecture, Zustand connection store, 5 deployment models. RES.SWAP.HOSTED — hosted frontend via Cloudflare Pages, localhost mixed content OK, multi-backend localStorage model. RES.SWAP.API — ~70 endpoints audited, OpenAPI 3.1 code-first, apiVersion + capabilities. RES.SEARCH — FTS5 recommended over Fuse.js/Meilisearch, 8 searchable entities, 3 access surfaces (Cmd+K, filter bar, /search). RES.RECOVERY.AGENTS — 5 modules audited for failure modes, 7 error categories, RetryPolicy, watchdog. RES.RECOVERY.SYSTEM — WS fixed 3s reconnect gap, missing busy_timeout PRAGMA, zero ErrorBoundaries. Cleanup: archived RES.SCHED.INFRA–RES.SWAP.API batch + trimmed worklog.
-
----
-
-### Research proposals batch 4 + fix — 2026-04-01 19:00–21:00 PDT
-
-**5 research docs (all approved) + 1 fix:** RES.DATA.BACKUP — SQLite backup() API, 4 triggers, ~/.agentops/backups/, 6-step restore flow, full ProjectExport JSON. RES.DATA.GROWTH — execution logs are 80% of DB growth, truncate-not-delete insight, 4-tier retention, dbstat virtual table monitoring. RES.TOKENS.TRACKING — SDK result fields audited, unit inconsistency bug found (cents vs USD), 6 query() sites, 5 data gaps. RES.TOKENS.DASHBOARD — tab within Analytics page, 5 visualizations, on-the-fly SQL aggregation, missing startedAt index. FX.UX.PERSONA.4 — wired TestRunPanel into Persona Manager detail panel.
+**Research Proposals (25 docs):** Prompt pipeline + template variables. Workflow edge cases + builder + runtime. Chat UX + rich messages + data model. Lifecycle UX + data model. Notifications UX + integrations. Collaboration context + coordination. Scheduling UX + infra. Swappability arch + hosted + API. Search. Recovery agents + system. Data backup + growth. Token tracking + dashboard. Pico UX polish (6 tasks) + Woof rebrand.
 
 ---
 
@@ -207,3 +149,15 @@
 **Phase 1 completion (UXO.1-2 implementations + reviews):** Migrated nullable projectId → pj-global with NOT NULL on 5 tables (migration 0021). Updated all route handlers, dashboard aggregation, seed/test files. Replaced `__all__` frontend sentinel with real global project. Added scope breadcrumb indicator.
 
 **Bug fixes batch 3 (FX.NAV.1, FX.WF.4, FX.DOC.1, FX.HIST.1, FX.TYPE.1, FX.TYPE.2, FX.PERF.1, all approved):** Updated command palette nav items to match sidebar (9 items). Added transition sortOrder to workflow save payload. Rewrote docs/workflow.md for custom workflow engine. Fixed Agent Monitor history table row misalignment (Collapsible → conditional rendering). Widened VariableContextOptions to remove unsafe double casts in chat routes. Deduplicated HandoffNote import from shared. Batched N+1 dependency check query with inArray.
+
+---
+
+### Sprint 29 Phases 2-9 + Testing/Docs — 2026-04-02 10:49–12:28 PDT
+
+**Phase 2 — Agent Rename (UXO.5-8):** Persona→Agent rename across shared types (4 files), backend schema+routes (56 files, migration 0022), frontend (54 files, 8 git mv). Agent scope (global/project) with projectId FK, migration 0023. All reviewed and approved.
+
+**Phase 3 — Chat UX (UXO.9-13):** Session loading on /chat mount, removed click-outside-close, dynamic empty state per agent, agent-grouped sessions (collapsible headers with avatars), improved header (enlarged avatar, project name, editable title, context menu with rename/delete).
+
+**Phase 4 — Workflow Rework (UXO.14-21):** autoRouting + agentOverrides schema migration (0002), per-workflow router prompt (3-section structured), label-based agent resolution (3-tier priority), Backlog/Done immutable states, flow view removal, Workflows→Automations rename, Automations page redesign (workflow + schedule cards), agent overrides in workflow builder (collapsible with chips).
+
+**Phase 5-9 + Testing:** Queue endpoint + tab (UXO.24-25), global work items + seeded workflow (UXO.23), recently deleted scope (UXO.30), status bar automations indicator (UXO.31). E2e test plan with 37 cases (UXO.TEST.1). Full docs update — persona→agent rename across 10 files, global model, autoRouting, agentOverrides (UXO.DOC.1).

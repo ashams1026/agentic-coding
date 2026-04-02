@@ -155,40 +155,22 @@
 
 ---
 
-## Sprint 29: UX Overhaul Phase 1 (Global as Project) — archived 2026-04-03
+## Sprint 29: UX Overhaul — archived 2026-04-02
 
-- [x] **UXO.1** — Schema: Add isGlobal boolean to projects table + seed pj-global + delete guard. *(completed 2026-04-03 14:55 PDT)*
-- [x] **UXO.2** — Backend: Migrate nullable projectId → pj-global, NOT NULL on 5 tables, dashboard aggregation. *(completed 2026-04-03 15:25 PDT)*
-- [x] **UXO.3** — Frontend: Replace __all__ sentinel with global project from API, isGlobal flag. *(completed 2026-04-03 15:45 PDT)*
-- [x] **UXO.4** — Frontend: Add scope breadcrumb indicator (colored dot + accent strip). *(completed 2026-04-03 15:55 PDT)*
+**Phase 1 (UXO.1-4):** 4 tasks. Global project model — isGlobal flag, pj-global sentinel, nullable→notNull migration, scope breadcrumb indicator.
 
----
+**Phase 2 (UXO.5-8):** 4 tasks. Persona→Agent rename across shared/backend/frontend (54 files), agent scope (global/project) with projectId FK.
 
-## Sprint 29: UX Overhaul Phases 2-5 — archived 2026-04-02
+**Phase 3 (UXO.9-13):** 5 tasks. Chat fixes — session load on mount, remove click-outside-close, dynamic empty state, agent-grouped sessions, improved header (avatar, project name, editable title, context menu).
 
-### Phase 2: Agent Rename (Persona → Agent)
+**Phase 4 (UXO.14-21, UXO.18-20):** 8 tasks. autoRouting + agentOverrides schema migration, per-workflow router prompt, label-based agent resolution, Backlog/Done immutable states, flow view removal, Workflows→Automations rename, Automations page redesign (workflow + schedule cards), agent overrides in workflow builder.
 
-- [x] **UXO.5** — Shared types: Rename Persona → Agent, PersonaId → AgentId, PersonaSettings → AgentSettings across shared exports. *(completed 2026-04-03 16:15 PDT)*
-- [x] **UXO.6** — Schema + Backend: Rename personas table → agents, all personaId columns → agentId, migration 0022, API paths /api/agents. *(completed 2026-04-03 16:45 PDT)*
-- [x] **UXO.7** — Frontend: Rename all persona references → agent across 54 files, features/persona-manager/ → agent-builder/, hooks, API client, routes. *(completed 2026-04-02 10:49 PDT)*
-- [x] **UXO.8** — Add project scope to agents: scope field (global/project), projectId FK, migration 0023, filtered GET, scope badge + editor dropdown. *(completed 2026-04-02 11:07 PDT)*
+**Phase 5 (UXO.24-25):** 2 tasks. Queue endpoint + Queue tab in Agent Monitor.
 
-### Phase 3: Chat UX Fixes (partial)
+**Phase 6 (UXO.23):** 1 task. Global work items — sidebar dimming removed, seeded 3-state workflow.
 
-- [x] **UXO.9** — Fix: Chat session list loading on /chat page mount (independent of panel isOpen state). *(completed 2026-04-02 11:13 PDT)*
-- [x] **UXO.10** — Fix: Remove click-outside-to-close from chat panel (minimize button only). *(completed 2026-04-02 11:13 PDT)*
-- [x] **UXO.11** — Fix: Dynamic empty chat state — shows selected agent's name/avatar/description instead of always Pico. *(completed 2026-04-02 11:23 PDT)*
+**Phase 8 (UXO.30):** 1 task. Recently Deleted scope filter.
 
-### Phase 4: Workflow Rework (partial)
+**Phase 9 (UXO.31):** 1 task. Status bar "Automations active" indicator replacing old toggle.
 
-- [x] **UXO.18** — Frontend: Remove flow view from work items page, delete flow-view.tsx, list-only. *(completed 2026-04-02 11:13 PDT)*
-- [x] **UXO.19** — Frontend: Rename Workflows → Automations in sidebar/routes/command palette. *(completed 2026-04-02 11:23 PDT)*
-
-### Phase 5: Agent Monitor Queue
-
-- [x] **UXO.24** — Backend: GET /api/executions/queue endpoint with name resolution and metadata. *(completed 2026-04-02 11:13 PDT)*
-- [x] **UXO.25** — Frontend: Queue tab in Agent Monitor with priority badges, polling, empty state. *(completed 2026-04-02 11:23 PDT)*
-
-### Phase 8: Settings Reorganization (partial)
-
-- [x] **UXO.30** — Frontend: Fix Recently Deleted scope filter by projectId with scope badge. *(completed 2026-04-02 11:23 PDT)*
+**Testing (UXO.TEST.1, UXO.DOC.1):** 2 tasks. E2e test plan (37 cases), full docs update (persona→agent, global model, autoRouting, agentOverrides).

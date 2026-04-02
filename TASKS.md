@@ -12,43 +12,41 @@
 ## Sprint 29: UX Overhaul (Priority)
 
 > Major UX rework based on user feedback. **Prioritized ahead of remaining Sprint 28 and future roadmap work.** Themes: global-as-project foundation, persona→agent rename, chat UX fixes, workflow rework with label triggers, scope clarity.
-> Bug Fixes (Sprints 24-27), Phase 1 (Global as Project), Phase 2 (Agent Rename), and Phase 5 (Agent Monitor Queue) complete and archived. Phases 3, 4, 8 partially complete.
+> Bug Fixes (Sprints 24-27), Phases 1-6, 9 complete and archived. Phases 4, 8 partially complete.
 
-### Phase 3: Chat UX Fixes
+### Bug Fixes (Sprint 29 Review)
 
-- [x] **UXO.12** — Frontend: Group chat sessions by agent name. Replace date-based grouping in session sidebar with agent-based collapsible groups. Each group header: agent avatar + name + session count + expand/collapse caret. Sessions within each group sorted by recency. Default all expanded. *(completed 2026-04-02 11:44 PDT)*
-- [x] **UXO.13** — Frontend: Improve chat header. Show agent avatar + name prominently (larger, left-aligned). Show resolved project name. Editable session title. Context menu (rename, delete). Clear visual identity of which agent you're talking to. *(completed 2026-04-02 12:17 PDT)*
+- [ ] **FX.UXO1** — Critical: Router path `workflows/:id` not renamed to `automations/:id` in `router.tsx:26`. Internal navigation in `workflows.tsx:552,631` still uses `/workflows/` paths. Both must use `/automations/`.
+- [ ] **FX.UXO2** — Critical: Board view (`board-view.tsx`) hardcoded to 8-state `WORKFLOW` constant from shared. Must fetch workflow states dynamically from backend based on selected project's workflowId. Global project has 3 states but board renders 8 columns.
+- [ ] **FX.UXO3** — Critical: Frontend auto-routing toggle in `workflow-config-section.tsx` reads/writes `project.settings.autoRouting` but backend now reads `workflow.autoRouting`. Toggle has zero effect. Must read/write via `PATCH /api/workflows/:id { autoRouting }`.
+- [ ] **FX.UXO4** — Critical: Workflow builder `state-card.tsx` allows renaming/deleting Backlog/Done states. Backend rejects with 400, but frontend has no guards. Disable name input, type dropdown, and delete button for built-in states. Show lock icon or "Built-in" badge.
+- [ ] **FX.UXO5** — Warning: Global project gets wrong workflow. `seed-workflow.ts:backfillWorkflowReferences` overwrites `pj-global.workflowId` with `wf-default` instead of `wf-global`. Fix: skip global project in backfill, or set workflowId explicitly in `ensure-global-project.ts`.
+- [ ] **FX.UXO6** — Warning: "All Projects" scope in `recently-deleted.tsx` passes `projectId="pj-global"` to API, which filters to only global-project items. When `isGlobal` is true, should pass `undefined` to return items from ALL projects.
+- [ ] **FX.UXO7** — Warning: Queue endpoint (`routes/executions.ts`) accepts `projectId` param but doesn't filter queue entries by it. Returns all projects' data. Either filter by project or remove the misleading param.
+- [ ] **FX.UXO8** — Warning: Chat panel overlay (`chat-panel.tsx`) has no agent-based session grouping — only the full `/chat` page got it (UXO.12). Apply same `groupSessionsByAgent` pattern for consistent UX.
+- [ ] **FX.UXO9** — Warning: Chat header Globe icon (`chat.tsx:400`) checks `cs.projectId === null` but projectId is notNull in schema. Should also check for `"pj-global"` to show Globe for global project.
+- [ ] **FX.UXO10** — Warning: `workflows.tsx:568,607` page subtitle and section header still say "Workflows" instead of "Automations". Complete the rename for all user-visible strings.
+- [ ] **FX.UXO11** — Warning: `isPico` heuristic in `chat.tsx:128` and `chat-panel.tsx:105` matches `avatar.icon === "dog"`. Any custom agent with dog icon gets Pico's greeting. Remove icon check, match on name or dedicated flag only.
+- [ ] **FX.UXO12** — Warning: `use-pico-chat.ts:440-455` stale closure in `deleteSession` — `remaining` computed from pre-update sessions array. Compute `remaining` first, pass to `setSessions`, then use for `setCurrentSessionId`.
+- [ ] **FX.UXO13** — Warning: Chat page shows empty state with no feedback when no project is selected (`use-pico-chat.ts:167`). Should show "Select a project to start chatting" message.
+- [ ] **FX.UXO14** — Warning: Chat header context menu (`chat.tsx:449`) lacks keyboard accessibility — no Escape to close. Migrate to proper `DropdownMenu` component.
+- [ ] **FX.UXO15** — Info: Dead code — `toolCallMap` in `use-pico-chat.ts:304` is populated but never read. `lastToolCallIndex` is the actual pairing mechanism. Remove.
+- [ ] **FX.UXO16** — Info: Dead code — `board-view.tsx` exists but is unreachable (flow view removed). Vestigial `view` state, `setView`, and `WorkItemView` type in `work-items-store.ts`. Remove all.
 
-### Phase 4: Workflow Rework
+### Phase 4: Workflow Rework (remaining)
 
-- [x] **UXO.14** — Schema: Add `autoRouting` boolean (default false) to `workflows` table. Add `agentOverrides` JSON column to `workflow_states`: `[{ labelMatch: string, agentId: string }]` for label-based agent selection. Generate migration. Remove `autoRouting` from project `settings` JSON. *(completed 2026-04-02 11:56 PDT)*
-- [x] **UXO.15** — Backend: Per-workflow auto-routing. Update `runRouter()` to read `workflow.autoRouting` instead of `project.settings.autoRouting`. Build Router system prompt from the specific workflow's state machine via `workflowId`. *(completed 2026-04-02 12:17 PDT)*
-- [x] **UXO.16** — Backend: Label-based agent resolution. Update `resolveAgentForState()` to check work item labels against `workflowStates.agentOverrides`. Priority: label match override → state default agent → null. *(completed 2026-04-02 12:17 PDT)*
-- [x] **UXO.17** — Backend: Enforce Backlog/Done as immutable built-in states. Every workflow must have exactly one initial state ("Backlog") and at least one terminal state ("Done"). These names cannot be changed or deleted. Auto-create them on `POST /api/workflows`. *(completed 2026-04-02 11:44 PDT)*
-- [x] **UXO.20** — Frontend: Redesign Automations page as unified live overview. Two card types side by side: **Workflow cards** (name, auto-routing play/pause, live state pipeline with item counts per state and active agents, edit button) and **Schedule cards** (name, agent avatar+name, cron expression in human-readable form, next run time, active play/pause toggle, last run status). "New Automation" button offers choice: Workflow or Schedule. Extract flow-view metrics logic for workflow cards. *(completed 2026-04-02 12:28 PDT)*
 - [ ] **UXO.27** — Frontend: Move Schedules out of Settings onto Automations page. Remove the schedules section from Settings. Schedule cards on the Automations page link to an edit view (inline dialog or dedicated page) for cron expression, agent selection, prompt template, and project scope. Active/disabled toggle directly on the card.
-- [x] **UXO.21** — Frontend: Update workflow builder for label-based agent overrides. In state card, add collapsible "Agent Overrides" section below default agent selector. Each row: label match input + agent dropdown. "Add override" button. Show overrides as chips on the state card. *(completed 2026-04-02 12:28 PDT)*
 - [ ] **UXO.22** — Frontend: Per-workflow auto-routing toggle on overview page and in builder header. Calls `PATCH /api/workflows/:id { autoRouting }`. Label: "Auto-routing OFF" / "Auto-routing ON".
 - [ ] **UXO.26** — Frontend: Move workflow settings from Settings page into workflow builder. Remove `workflow-config-section.tsx` from Settings. Move the agent-state assignment table (PersonaStateTable → AgentStateTable) into the workflow builder as a "State Agents" tab or section alongside the state cards. The auto-routing toggle is already on the workflow (UXO.22). The workflow selector dropdown in Settings is no longer needed since each workflow is managed from its own builder page. Clean up any orphaned Settings references.
-
-### Phase 6: Global Work Items
-
-- [x] **UXO.23** — Enable work items for global scope. Remove sidebar nav dimming when global project selected. Seed a simple 3-state workflow for the global project: Backlog → In Progress → Done (autoRouting: false, no agents assigned). *(completed 2026-04-02 11:44 PDT)*
 
 ### Phase 8: Settings Reorganization
 
 - [ ] **UXO.28** — Frontend: Reorganize Settings page into Global and Project sections. Split the settings sidebar into two labeled groups with headers: "Global" (API Keys & Executor, Appearance, Notifications, Service, Data) and "Project: {name}" (Security, Costs & Limits, Integrations). Project section shows current project name and scope badge. When global project is selected, project section shows "All Projects" settings. Remove the "Workflow" and "Scheduling" tabs (moved to Automations in UXO.26/UXO.27).
 - [ ] **UXO.29** — Frontend: Break up "Agent Configuration" section. Move API Key and Executor Mode into a new "API Keys & Executor" global section. Move Max Concurrent Agents into "Costs & Limits" project section (alongside monthly cap, warning threshold, daily limit). Remove the empty "Agent Configuration" tab. Drop the unpersisted "Per-Persona Limits" table (local-only state that does nothing).
 
-### Phase 9: Status Bar Update
-
-- [x] **UXO.31** — Frontend: Rework status bar auto-routing indicator. The current play/pause button for auto-routing no longer makes sense with per-workflow/per-schedule toggles. Replace it with a read-only "Automations active" indicator showing count of active automations (workflows with `autoRouting: true` + schedules with `isActive: true`). Move it to the right side with the other status indicators (WS connection, agent count). Not clickable — clicking navigates to the Automations page instead. Remove the old `project.settings.autoRouting` toggle from the status bar. *(completed 2026-04-02 12:28 PDT)*
-
 ### Testing & Documentation
 
-- [x] **UXO.TEST.1** — Write e2e test plan: `tests/e2e/plans/ux-overhaul.md`. Cover: global project, scope breadcrumb, agent rename in UI, chat fixes, agent-grouped sessions, Automations page (workflow + schedule cards, play/pause, new automation flow), per-workflow auto-routing, label overrides, global work items, Settings reorganization (global vs project sections, scope badges). *(completed 2026-04-02 11:44 PDT)*
 - [ ] **UXO.TEST.2** — Execute UX Overhaul e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
-- [x] **UXO.DOC.1** — Update all docs for UX Overhaul. Rename persona → agent throughout `docs/`. Document: global project model, agent scope, `agentOverrides`, per-workflow `autoRouting`, flow view removal. Update `docs/api.md` with renamed endpoints. *(completed 2026-04-02 12:17 PDT)*
 - [ ] **UXO.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
 
 ---
