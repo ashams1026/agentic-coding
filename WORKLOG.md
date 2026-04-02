@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 06:25 PDT — S27.TEST.3: Execute Outbound Webhooks e2e tests
+
+**Done:** Executed outbound-webhooks test plan. 14/17 pass, 3 skip (code review already done), 0 fail. API: POST creates with wh-/whsec_ prefixes, GET list omits secret, DELETE returns 204. UI: Integrations tab shows outbound webhooks list with URL, event badge, active toggle, Log/Delete buttons + Inbound Triggers section. 1 screenshot.
+**Files:** `tests/e2e/results/outbound-webhooks/results.md`, `tests/e2e/results/outbound-webhooks/01-integrations.png`
+
+---
+
 ## 2026-04-03 06:15 PDT — Review: S27.TEST.2 (approved)
 
 **Reviewed:** Inbound Webhooks + Data Management e2e test plan.

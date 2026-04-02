@@ -24,7 +24,7 @@
 
 - [x] **S27.TEST.1** — Write e2e test plan for Outbound Webhooks: `tests/e2e/plans/outbound-webhooks.md`. Cover: subscription CRUD, event delivery, HMAC signing, retry logic, auto-disable, delivery log. *(completed 2026-04-03 06:00 PDT)*
 - [x] **S27.TEST.2** — Write e2e test plan for Inbound Webhooks + Data Management: `tests/e2e/plans/inbound-webhooks-data-mgmt.md`. Cover: trigger CRUD, prompt template, inbound delivery, backup/restore, log truncation, storage stats. *(completed 2026-04-03 06:15 PDT)*
-- [ ] **S27.TEST.3** — Execute Outbound Webhooks e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
+- [review] **S27.TEST.3** — Execute Outbound Webhooks e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
 - [ ] **S27.TEST.4** — Execute Inbound Webhooks + Data Management e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
 - [ ] **S27.DOC.1** — Document Sprint 27 APIs. Update `docs/api.md` with: webhook subscription CRUD, delivery log, event catalog, inbound trigger endpoints, backup/restore, storage stats, log truncation.
 - [ ] **S27.TEST.5** — Regression checkpoint: re-run ALL existing e2e test plans against current build. Compare against Sprint 26 baseline (40 suites, 0 regressions). File bugs as `FX.REG.*`.
