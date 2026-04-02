@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 15:20 PDT — Plan: Decompose Sprint 31 — Agent Chat P2 (Rich Messages)
+
+**Done:** Planned Sprint 31 from `docs/proposals/agent-chat/rich-messages.md`. 13 tasks across 4 phases + testing/docs: (1) Utilities — ANSI parser, diff parser. (2) Core P0 — enhanced ThinkingBlock, enhanced ToolCallCard. (3) Specialized P1 — TerminalBlock, DiffBlock, FileTreeSummary. (4) Integration — ContentBlockRenderer dispatch update, expand/collapse state. ProposalCard, ImageBlock, MultiStepProgress deferred as P2/P3.
+**Files:** `TASKS.md`
+
+---
+
 ## 2026-04-02 15:16 PDT — S28.DOC.1: Document Sprint 28 APIs
 
 **Done:** Updated `docs/api.md` with 3 new sections: Schedules (5 endpoints with cron validation, request/response shapes, curl examples), Templates (5 endpoints + built-in template table for frontend picker), Notification Webhook Channel (3 event types with payload schemas, flow diagram, subscription instructions). Added 3 notification events to webhook event catalog. Added 4 source file entries.
