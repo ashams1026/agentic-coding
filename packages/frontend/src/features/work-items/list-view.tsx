@@ -25,7 +25,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useWorkItems, usePersonas, useExecutions, useSelectedProject, useCreateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem, useBulkArchiveWorkItems, useBulkDeleteWorkItems } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { useToastStore } from "@/stores/toast-store";
-import { WORKFLOW, getStateByName } from "@agentops/shared";
+import { useWorkflowStates } from "@/hooks/use-workflows";
 import type { WorkItem, WorkItemId, Priority, Persona, ProjectId } from "@agentops/shared";
 
 // ── Text highlight ─────────────────────────────────────────────
@@ -163,6 +163,7 @@ interface ListRowProps {
   onToggleExpand: () => void;
   onSelect: () => void;
   onToggleMultiSelect: () => void;
+  stateColor: string;
 }
 
 function ListRow({
@@ -181,9 +182,9 @@ function ListRow({
   onToggleExpand,
   onSelect,
   onToggleMultiSelect,
+  stateColor,
 }: ListRowProps) {
   const pCfg = priorityConfig[item.priority];
-  const stateInfo = getStateByName(item.currentState);
 
   return (
     <button
@@ -237,9 +238,9 @@ function ListRow({
             variant="secondary"
             className="text-xs px-1.5 py-0 shrink-0 font-medium"
             style={{
-              backgroundColor: stateInfo ? `${stateInfo.color}20` : undefined,
-              color: stateInfo?.color,
-              borderColor: stateInfo ? `${stateInfo.color}40` : undefined,
+              backgroundColor: `${stateColor}20`,
+              color: stateColor,
+              borderColor: `${stateColor}40`,
             }}
           >
             {item.currentState}
@@ -345,18 +346,30 @@ function EmptyWorkItemsState({ projectId }: { projectId: string | null }) {
 // ── Main list view ──────────────────────────────────────────────
 
 export function ListView() {
-  const { projectId } = useSelectedProject();
+  const { projectId, project } = useSelectedProject();
   const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterPersonas, filterLabels, showArchived, selectedItemId, setSelectedItemId, selectedIds, toggleSelectId, clearSelection, clearFilters, setFilterState } =
     useWorkItemsStore();
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined, showArchived || undefined);
   const { data: personas } = usePersonas();
   const { data: executions } = useExecutions(undefined, projectId ?? undefined);
+  const { data: workflowStatesData } = useWorkflowStates(project?.workflowId ?? null);
   const archiveWorkItem = useArchiveWorkItem();
   const unarchiveWorkItem = useUnarchiveWorkItem();
   const deleteWorkItem = useDeleteWorkItem();
   const bulkArchive = useBulkArchiveWorkItems();
   const bulkDelete = useBulkDeleteWorkItems();
   const addToast = useToastStore((s) => s.addToast);
+
+  // Build state color lookup from dynamic workflow data
+  const stateColorMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of (workflowStatesData ?? [])) {
+      map.set(s.name, s.color);
+    }
+    return map;
+  }, [workflowStatesData]);
+
+  const getStateColor = useCallback((name: string) => stateColorMap.get(name) ?? "#6b7280", [stateColorMap]);
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
@@ -541,6 +554,7 @@ export function ListView() {
                 onToggleExpand={() => toggleExpand(item.id)}
                 onSelect={() => setSelectedItemId(item.id)}
                 onToggleMultiSelect={() => toggleSelectId(item.id)}
+                stateColor={getStateColor(item.currentState)}
               />
             </div>
           </ContextMenuTrigger>
@@ -695,10 +709,10 @@ export function ListView() {
       groups.set(key, arr);
     }
 
-    // Order groups: for state grouping, follow WORKFLOW order
+    // Order groups: for state grouping, follow workflow order
     let orderedKeys: string[];
-    if (groupBy === "state") {
-      orderedKeys = WORKFLOW.states.map((s) => s.name).filter((name) => groups.has(name));
+    if (groupBy === "state" && workflowStatesData) {
+      orderedKeys = workflowStatesData.map((s) => s.name).filter((name) => groups.has(name));
     } else {
       orderedKeys = [...groups.keys()];
     }
@@ -709,14 +723,14 @@ export function ListView() {
           {orderedKeys.map((key) => {
             const items = groups.get(key)!;
             const isCollapsed = collapsedGroups.has(key);
-            const stateInfo = groupBy === "state" ? getStateByName(key) : undefined;
+            const stateGroupColor = groupBy === "state" ? getStateColor(key) : undefined;
 
             return (
               <div key={key}>
                 <GroupHeader
                   label={key}
                   count={items.length}
-                  color={stateInfo?.color}
+                  color={stateGroupColor}
                   collapsed={isCollapsed}
                   onToggle={() => toggleGroup(key)}
                 />
@@ -751,6 +765,7 @@ export function ListView() {
                                 onToggleExpand={() => toggleExpand(item.id)}
                                 onSelect={() => setSelectedItemId(item.id)}
                                 onToggleMultiSelect={() => toggleSelectId(item.id)}
+                                stateColor={getStateColor(item.currentState)}
                               />
                               {hasChildren && isExpanded && renderTree(item.id, 1)}
                             </div>

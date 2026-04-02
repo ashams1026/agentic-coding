@@ -42,7 +42,7 @@ import { useWorkItemsStore } from "@/stores/work-items-store";
 import { useToastStore } from "@/stores/toast-store";
 import { CommentStream } from "@/features/common/comment-stream";
 import { ExecutionTimeline } from "@/features/common/execution-timeline";
-import { getStateByName, getValidTransitions } from "@agentops/shared";
+import { useWorkflowStates, useWorkflowTransitions } from "@/hooks/use-workflows";
 import type { WorkItem, WorkItemId, Priority, Persona } from "@agentops/shared";
 
 // ── Editable title ──────────────────────────────────────────────
@@ -423,13 +423,23 @@ function StateTransitionControl({
   item,
   assignmentMap,
   onTransition,
+  workflowStates,
+  workflowTransitions,
 }: {
   item: WorkItem;
   assignmentMap: Map<string, Persona>;
   onTransition: (toState: string) => void;
+  workflowStates?: Array<{ name: string; color: string }>;
+  workflowTransitions?: Array<{ fromStateName: string; toStateName: string }>;
 }) {
-  const validStates = getValidTransitions(item.currentState);
+  // Compute valid target states from transitions
+  const validStates = (workflowTransitions ?? [])
+    .filter((t) => t.fromStateName === item.currentState)
+    .map((t) => t.toStateName);
+
   if (validStates.length === 0) return null;
+
+  const stateColorMap = new Map((workflowStates ?? []).map((s: { name: string; color: string }) => [s.name, s.color]));
 
   return (
     <Select onValueChange={onTransition}>
@@ -438,14 +448,14 @@ function StateTransitionControl({
       </SelectTrigger>
       <SelectContent>
         {validStates.map((state) => {
-          const stateInfo = getStateByName(state);
+          const stateColor = stateColorMap.get(state) ?? "#6b7280";
           const assignedPersona = assignmentMap.get(state);
           return (
             <SelectItem key={state} value={state}>
               <span className="flex items-center gap-1.5">
                 <span
                   className="h-2 w-2 rounded-full shrink-0"
-                  style={{ backgroundColor: stateInfo?.color ?? "#888" }}
+                  style={{ backgroundColor: stateColor ?? "#888" }}
                 />
                 {state}
                 {assignedPersona && (
@@ -508,9 +518,11 @@ function ParentBreadcrumb({
 function ChildrenList({
   children,
   onNavigate,
+  stateColorMap,
 }: {
   children: WorkItem[];
   onNavigate: (id: WorkItemId) => void;
+  stateColorMap: Map<string, string>;
 }) {
   if (children.length === 0) {
     return (
@@ -533,7 +545,7 @@ function ChildrenList({
       </div>
       <div className="space-y-1">
         {children.map((child) => {
-          const stateInfo = getStateByName(child.currentState);
+          const childStateColor = stateColorMap.get(child.currentState) ?? "#6b7280";
           return (
             <button
               key={child.id}
@@ -544,8 +556,8 @@ function ChildrenList({
                 variant="secondary"
                 className="text-xs px-1.5 py-0 shrink-0 font-medium"
                 style={{
-                  backgroundColor: stateInfo ? `${stateInfo.color}20` : undefined,
-                  color: stateInfo?.color,
+                  backgroundColor: `${childStateColor}20`,
+                  color: childStateColor,
                 }}
               >
                 {child.currentState}
@@ -645,12 +657,14 @@ function MetadataSection({ item }: { item: WorkItem }) {
 // ── Main detail panel ───────────────────────────────────────────
 
 export function DetailPanel() {
-  const { projectId } = useSelectedProject();
+  const { projectId, project } = useSelectedProject();
   const { selectedItemId, setSelectedItemId } = useWorkItemsStore();
   const { data: item } = useWorkItem(selectedItemId!);
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
   const { data: personas = [] } = usePersonas();
   const { data: assignments = [] } = usePersonaAssignments(projectId);
+  const { data: workflowStatesData } = useWorkflowStates(project?.workflowId ?? null);
+  const { data: workflowTransitionsData } = useWorkflowTransitions(project?.workflowId ?? null);
   const createWorkItem = useCreateWorkItem();
   const updateWorkItem = useUpdateWorkItem();
   const archiveWorkItem = useArchiveWorkItem();
@@ -706,7 +720,10 @@ export function DetailPanel() {
     );
   }
 
-  const stateInfo = getStateByName(item.currentState);
+  // Dynamic state color lookup
+  const stateColorMap = new Map((workflowStatesData ?? []).map((s: { name: string; color: string }) => [s.name, s.color]));
+  const getColor = (name: string) => stateColorMap.get(name) ?? "#6b7280";
+  const stateInfo = { color: getColor(item.currentState) };
 
   const handleClose = () => setSelectedItemId(null);
   const handleNavigate = (id: WorkItemId) => setSelectedItemId(id);
@@ -852,6 +869,11 @@ export function DetailPanel() {
             item={item}
             assignmentMap={assignmentMap}
             onTransition={handleTransition}
+            workflowStates={workflowStatesData}
+            workflowTransitions={workflowTransitionsData?.map((t) => ({
+              fromStateName: workflowStatesData?.find((s) => s.id === t.fromStateId)?.name ?? "",
+              toStateName: workflowStatesData?.find((s) => s.id === t.toStateId)?.name ?? "",
+            }))}
           />
           <PrioritySelector
             value={item.priority}
@@ -895,7 +917,7 @@ export function DetailPanel() {
 
           {/* Children */}
           <div>
-            <ChildrenList children={children} onNavigate={handleNavigate} />
+            <ChildrenList children={children} onNavigate={handleNavigate} stateColorMap={stateColorMap} />
             <div className="flex gap-2 mt-2">
               <Button variant="outline" size="sm" className="gap-1" onClick={handleAddChild}>
                 <Plus className="h-3 w-3" />

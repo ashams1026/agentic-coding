@@ -19,8 +19,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { WORKFLOW } from "@agentops/shared";
 import { usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
+import { useWorkflowStates } from "@/hooks/use-workflows";
 import {
   useWorkItemsStore,
   type GroupBy,
@@ -72,9 +72,10 @@ export function FilterBar() {
     clearFilters,
   } = useWorkItemsStore();
 
-  const { projectId } = useSelectedProject();
+  const { projectId, project } = useSelectedProject();
   const { data: personas } = usePersonas();
   const { data: allItems } = useWorkItems(undefined, projectId ?? undefined);
+  const { data: workflowStatesData } = useWorkflowStates(project?.workflowId ?? null);
 
   // Local input state for debounce
   const [inputValue, setInputValue] = useState(searchQuery);
@@ -148,7 +149,7 @@ export function FilterBar() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All states</SelectItem>
-          {WORKFLOW.states.map((s) => (
+          {(workflowStatesData ?? []).map((s) => (
             <SelectItem key={s.name} value={s.name}>
               <span className="flex items-center gap-2">
                 <span
