@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 03:15 PDT — OWH.4: Webhook CRUD endpoints
+
+**Done:** Created `packages/backend/src/routes/webhooks.ts` with 5 endpoints: `GET /api/webhooks` (list subscriptions desc by createdAt), `POST /api/webhooks` (create with auto-generated `whsec_` secret + `wh-` ID), `PATCH /api/webhooks/:id` (update url/events/isActive, resets failureCount on re-enable), `DELETE /api/webhooks/:id` (cascade deletes deliveries via FK), `GET /api/webhooks/:id/deliveries` (delivery log desc by createdAt, limit 50-200). POST returns secret in response for user to copy. Registered in server.ts.
+**Files:** `packages/backend/src/routes/webhooks.ts` (new), `packages/backend/src/server.ts`
+
+---
+
 ## 2026-04-03 03:05 PDT — Review: OWH.3 (approved)
 
 **Reviewed:** Webhook delivery worker.
