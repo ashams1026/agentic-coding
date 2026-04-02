@@ -37,6 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { ScopeIndicator } from "@/components/scope-indicator";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -152,6 +153,9 @@ export function Sidebar() {
           </Select>
         )}
       </div>
+
+      {/* Scope indicator */}
+      <ScopeIndicator collapsed={sidebarCollapsed} />
 
       {/* Navigation */}
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-2">

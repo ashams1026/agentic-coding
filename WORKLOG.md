@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 15:50 PDT — UXO.4: Add scope breadcrumb indicator
+
+**Done:** Created `scope-indicator.tsx` component showing current project name with colored dot (violet for global, emerald for regular projects). When sidebar is collapsed, renders a thin 3px colored accent strip on the left edge. When expanded, shows dot + project name in `text-xs text-muted-foreground`. Mounted in sidebar between project switcher and navigation. Uses `useSelectedProject` hook for project data and `isGlobal` flag.
+**Files:** `packages/frontend/src/components/scope-indicator.tsx` (new), `packages/frontend/src/components/sidebar.tsx`
+
+---
+
 ## 2026-04-03 15:45 PDT — Review: UXO.3 (approved)
 
 **Reviewed:** __all__ sentinel removal and global project integration.
