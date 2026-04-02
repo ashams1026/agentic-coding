@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 08:10 PDT — SCH.3: Schedules CRUD route + startup integration
+
+**Done:** Created `packages/backend/src/routes/schedules.ts` with 5 endpoints: `GET /api/schedules` (list with persona name join), `POST /api/schedules` (create with cron validation + persona existence check + nextRunAt computation), `PATCH /api/schedules/:id` (update with cron revalidation, nextRunAt recompute on cron change or re-enable, failure count reset on re-enable), `DELETE /api/schedules/:id`, `POST /api/schedules/:id/run-now` (manual trigger via executionManager). Added `ScheduleId` type + `createId.schedule()` to shared IDs. Registered route in `server.ts`. Added `startScheduler()` on startup and `stopScheduler()` on graceful shutdown in `start.ts`.
+**Files:** `packages/backend/src/routes/schedules.ts` (new), `packages/backend/src/server.ts`, `packages/backend/src/start.ts`, `packages/shared/src/ids.ts`
+
+---
+
 ## 2026-04-03 08:00 PDT — Review: SCH.2 (approved)
 
 **Reviewed:** Cron scheduler implementation.

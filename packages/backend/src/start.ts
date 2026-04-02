@@ -185,6 +185,10 @@ async function gracefulShutdown(
   // Stop lifecycle cleanup interval
   stopLifecycleCleanup();
 
+  // Stop cron scheduler
+  const { stopScheduler } = await import("./scheduling/scheduler.js");
+  stopScheduler();
+
   // Stop webhook delivery worker
   const { stopWebhookWorker } = await import("./events/webhook-delivery.js");
   stopWebhookWorker();
@@ -258,6 +262,10 @@ export async function startServer(options: StartOptions = {}): Promise<void> {
   const { startWebhookWorker } = await import("./events/webhook-delivery.js");
   initWebhookBridge();
   startWebhookWorker();
+
+  // Start cron scheduler (polls every 60s for due schedules)
+  const { startScheduler } = await import("./scheduling/scheduler.js");
+  await startScheduler();
 
   const server = await buildServer();
 
