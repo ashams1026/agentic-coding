@@ -5,6 +5,8 @@ import {
   Copy,
   Eye,
   GitBranch,
+  Globe,
+  FolderOpen,
   Plus,
   TestTube,
   Trash2,
@@ -60,6 +62,21 @@ const MODEL_CONFIG: Record<AgentModel, { label: string; className: string }> = {
   },
 };
 
+// ── Scope badge config ──────────────────────────────────────────
+
+const SCOPE_CONFIG: Record<"global" | "project", { label: string; className: string; Icon: LucideIcon }> = {
+  global: {
+    label: "Global",
+    className: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+    Icon: Globe,
+  },
+  project: {
+    label: "Project",
+    className: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+    Icon: FolderOpen,
+  },
+};
+
 // ── Built-in agent IDs ────────────────────────────────────────
 
 export const BUILT_IN_IDS = new Set<string>([
@@ -92,6 +109,7 @@ interface AgentCardProps {
 function AgentCard({ agent, isBuiltIn, isAssistant, isSelected, onSelect, onDuplicate, onDelete }: AgentCardProps) {
   const Icon = getAgentIcon(agent.avatar.icon);
   const model = MODEL_CONFIG[agent.model];
+  const scope = SCOPE_CONFIG[agent.scope ?? "global"];
   const toolCount = agent.allowedTools.length + agent.mcpTools.length;
 
   return (
@@ -150,13 +168,22 @@ function AgentCard({ agent, isBuiltIn, isAssistant, isSelected, onSelect, onDupl
           )}
         </div>
 
-        {/* Model badge */}
-        <Badge
-          variant="outline"
-          className={cn("text-xs px-1.5 py-0 border-0 mb-2", model.className)}
-        >
-          {model.label}
-        </Badge>
+        {/* Model + scope badges */}
+        <div className="flex items-center gap-1.5 mb-2">
+          <Badge
+            variant="outline"
+            className={cn("text-xs px-1.5 py-0 border-0", model.className)}
+          >
+            {model.label}
+          </Badge>
+          <Badge
+            variant="outline"
+            className={cn("text-xs px-1.5 py-0 border-0 gap-1", scope.className)}
+          >
+            <scope.Icon className="h-3 w-3" />
+            {scope.label}
+          </Badge>
+        </div>
 
         {/* Description — 2 lines */}
         <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">
@@ -239,6 +266,8 @@ export function AgentList({ selectedId, onSelect }: AgentListProps) {
         allowedTools: [...agent.allowedTools],
         mcpTools: [...agent.mcpTools],
         maxBudgetPerRun: agent.maxBudgetPerRun,
+        scope: agent.scope,
+        projectId: agent.projectId ?? undefined,
       },
       {
         onSuccess: (p) => {

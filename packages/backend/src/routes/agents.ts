@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { eq } from "drizzle-orm";
+import { eq, or, and } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { agents } from "../db/schema.js";
 import { createId } from "@agentops/shared";
@@ -23,13 +23,34 @@ function serializeAgent(row: typeof agents.$inferSelect) {
     subagents: row.subagents,
     maxBudgetPerRun: row.maxBudgetPerRun,
     settings: row.settings,
+    scope: row.scope as "global" | "project",
+    projectId: row.projectId,
   };
 }
 
 export async function agentRoutes(app: FastifyInstance) {
-  // GET /api/agents — list all agents
-  app.get("/api/agents", async () => {
-    const rows = await db.select().from(agents);
+  // GET /api/agents — list agents, optionally filtered by projectId
+  app.get<{
+    Querystring: { projectId?: string };
+  }>("/api/agents", async (request) => {
+    const { projectId } = request.query;
+
+    let rows;
+    if (projectId) {
+      // Return global agents + project-scoped agents for this project
+      rows = await db
+        .select()
+        .from(agents)
+        .where(
+          or(
+            eq(agents.scope, "global"),
+            and(eq(agents.scope, "project"), eq(agents.projectId, projectId)),
+          ),
+        );
+    } else {
+      rows = await db.select().from(agents);
+    }
+
     return { data: rows.map(serializeAgent), total: rows.length };
   });
 
@@ -58,6 +79,12 @@ export async function agentRoutes(app: FastifyInstance) {
     const body = request.body;
     const id = createId.agent();
 
+    const scope = body.scope ?? "global";
+    if (scope === "project" && !body.projectId) {
+      return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "projectId is required when scope is 'project'" } });
+    }
+    const projectId = scope === "project" ? body.projectId! : null;
+
     const [row] = await db
       .insert(agents)
       .values({
@@ -73,6 +100,8 @@ export async function agentRoutes(app: FastifyInstance) {
         subagents: body.subagents ?? [],
         maxBudgetPerRun: body.maxBudgetPerRun ?? 0,
         settings: {},
+        scope,
+        projectId,
       })
       .returning();
 
@@ -102,6 +131,16 @@ export async function agentRoutes(app: FastifyInstance) {
       // Merge with existing settings to preserve system flags
       const [existing] = await db.select({ settings: agents.settings }).from(agents).where(eq(agents.id, id));
       updates["settings"] = { ...(existing?.settings ?? {}), ...body.settings };
+    }
+    if (body.scope !== undefined) {
+      updates["scope"] = body.scope;
+      if (body.scope === "global") {
+        updates["projectId"] = null;
+      } else if (body.scope === "project" && body.projectId !== undefined) {
+        updates["projectId"] = body.projectId;
+      }
+    } else if (body.projectId !== undefined) {
+      updates["projectId"] = body.projectId;
     }
 
     if (Object.keys(updates).length === 0) {

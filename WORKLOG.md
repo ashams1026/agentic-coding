@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 11:07 PDT — UXO.8: Add project scope to agents
+
+**Done:** Added `scope` ('global'|'project') and `projectId` (nullable FK) to agents across the full stack. Shared types: added fields to Agent interface, CreateAgentRequest, UpdateAgentRequest. Schema: two new columns on agents table with project relation. Migration 0023. Backend routes: GET filters by projectId (global + matching project), POST validates projectId required for project scope, PATCH handles scope↔projectId transitions correctly. Core: updated AgentRow interface and toAgentRow mapper. Frontend: scope badge (Globe/purple for global, FolderOpen/emerald for project) on agent cards, scope Select dropdown in agent editor auto-sets projectId. Updated useAgents hook and query keys to pass projectId filter.
+**Files:** `packages/shared/src/entities.ts`, `packages/shared/src/api.ts`, `packages/backend/src/db/schema.ts`, `packages/backend/drizzle/0023_add_agent_scope.sql`, `packages/backend/drizzle/meta/_journal.json`, `packages/backend/src/routes/agents.ts`, `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/routes/dashboard.ts`, `packages/backend/src/db/repositories.ts`, `packages/core/src/repositories.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/hooks/use-agents.ts`, `packages/frontend/src/hooks/query-keys.ts`, `packages/frontend/src/features/agent-builder/agent-list.tsx`, `packages/frontend/src/features/agent-builder/agent-editor.tsx`
+
+---
+
 ## 2026-04-02 10:49 PDT — Review: UXO.7 (approved)
 
 **Done:** Reviewed frontend persona→agent rename. Code review: all 54 files verified, zero remaining persona references, correct renames across hooks/API client/router/sidebar/command palette/CSS vars. Build check: all 4 packages compile clean. Visual check: Agent Builder page (/agent-builder), Chat page (/chat), Dashboard (/) all render correctly with updated labels. Fixed minor grammar: "Choose a agent" → "Choose an agent" in agent-selector.tsx:88.

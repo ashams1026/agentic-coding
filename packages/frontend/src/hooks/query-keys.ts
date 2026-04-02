@@ -22,7 +22,10 @@ export const queryKeys = {
   agentAssignments: (projectId: ProjectId) => ["agentAssignments", { projectId }] as const,
 
   // Agents
-  agents: ["agents"] as const,
+  agents: (projectId?: string) => {
+    if (projectId) return ["agents", { projectId }] as const;
+    return ["agents"] as const;
+  },
   agent: (id: AgentId) => ["agents", id] as const,
 
   // Executions

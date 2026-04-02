@@ -199,6 +199,8 @@ function toAgentRow(row: typeof agents.$inferSelect): AgentRow {
     subagents: row.subagents ?? [],
     maxBudgetPerRun: row.maxBudgetPerRun,
     settings: row.settings as AgentSettings,
+    scope: row.scope as "global" | "project",
+    projectId: row.projectId,
   };
 }
 

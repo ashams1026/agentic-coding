@@ -256,8 +256,9 @@ export async function updateAgentAssignment(req: UpsertAgentAssignmentRequest): 
 
 // ── Agents ─────────────────────────────────────────────────────
 
-export async function getAgents(): Promise<Agent[]> {
-  const res = await get<{ data: Agent[]; total: number }>("/api/agents");
+export async function getAgents(projectId?: string): Promise<Agent[]> {
+  const qs = projectId ? `?projectId=${projectId}` : "";
+  const res = await get<{ data: Agent[]; total: number }>(`/api/agents${qs}`);
   return res.data;
 }
 

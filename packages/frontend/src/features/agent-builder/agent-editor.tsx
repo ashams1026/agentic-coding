@@ -25,6 +25,13 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -120,7 +127,7 @@ interface AgentEditorProps {
 export function AgentEditor({ agentId, open, onClose }: AgentEditorProps) {
   const { data: agent } = useAgent(agentId);
   const updateMutation = useUpdateAgent();
-  const { project } = useSelectedProject();
+  const { project, projectId } = useSelectedProject();
 
   // ── Local form state ──────────────────────────────────────────
   const [name, setName] = useState("");
@@ -132,6 +139,7 @@ export function AgentEditor({ agentId, open, onClose }: AgentEditorProps) {
   const [allowedTools, setAllowedTools] = useState<string[]>([]);
   const [mcpTools, setMcpTools] = useState<string[]>([]);
   const [maxBudget, setMaxBudget] = useState("1.00");
+  const [scope, setScope] = useState<"global" | "project">("global");
 
   // Sync form state when agent data loads
   useEffect(() => {
@@ -145,6 +153,7 @@ export function AgentEditor({ agentId, open, onClose }: AgentEditorProps) {
     setAllowedTools([...agent.allowedTools]);
     setMcpTools([...agent.mcpTools]);
     setMaxBudget(agent.maxBudgetPerRun.toFixed(2));
+    setScope(agent.scope ?? "global");
   }, [agent]);
 
   const handleSave = useCallback(() => {
@@ -160,12 +169,14 @@ export function AgentEditor({ agentId, open, onClose }: AgentEditorProps) {
       allowedTools,
       mcpTools,
       maxBudgetPerRun: isNaN(budget) ? 1.0 : budget,
+      scope,
+      projectId: scope === "project" ? projectId : null,
     }, {
       onSuccess: () => {
         onClose();
       },
     });
-  }, [agent, agentId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, maxBudget, updateMutation, onClose]);
+  }, [agent, agentId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, maxBudget, scope, projectId, updateMutation, onClose]);
 
   const AvatarIcon = getIcon(avatarIcon);
 
@@ -304,6 +315,30 @@ export function AgentEditor({ agentId, open, onClose }: AgentEditorProps) {
                   </div>
                 </div>
               </div>
+            </div>
+          </section>
+
+          <Separator />
+
+          {/* ── Scope ──────────────────────────────────────────── */}
+          <section>
+            <h3 className="text-sm font-semibold mb-3">Scope</h3>
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">Availability</label>
+              <Select value={scope} onValueChange={(v) => setScope(v as "global" | "project")}>
+                <SelectTrigger className="h-9 w-64">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="global">Global -- available in all projects</SelectItem>
+                  <SelectItem value="project">Project -- only in {project?.name ?? "current project"}</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1.5">
+                {scope === "global"
+                  ? "This agent is available across all projects."
+                  : `This agent will only appear in "${project?.name ?? "current project"}".`}
+              </p>
             </div>
           </section>
 

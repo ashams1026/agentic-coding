@@ -139,6 +139,8 @@ export interface AgentRow {
   subagents: string[];
   maxBudgetPerRun: number;
   settings: AgentSettings;
+  scope: "global" | "project";
+  projectId: string | null;
 }
 
 export interface AgentRepository {

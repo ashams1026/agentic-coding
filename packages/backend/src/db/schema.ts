@@ -135,9 +135,15 @@ export const agents = sqliteTable("agents", {
   subagents: text("subagents", { mode: "json" }).notNull().$type<string[]>().default([]),
   maxBudgetPerRun: integer("max_budget_per_run").notNull().default(0),
   settings: text("settings", { mode: "json" }).notNull().$type<Record<string, unknown>>().default({}),
+  scope: text("scope").notNull().default("global"), // 'global' | 'project'
+  projectId: text("project_id").references(() => projects.id), // nullable FK
 });
 
-export const agentsRelations = relations(agents, ({ many }) => ({
+export const agentsRelations = relations(agents, ({ one, many }) => ({
+  project: one(projects, {
+    fields: [agents.projectId],
+    references: [projects.id],
+  }),
   executions: many(executions),
   assignments: many(agentAssignments),
 }));

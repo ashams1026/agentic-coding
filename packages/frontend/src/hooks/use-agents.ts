@@ -8,11 +8,13 @@ import {
   deleteAgent,
 } from "@/api";
 import { queryKeys } from "./query-keys";
+import { useSelectedProject } from "./use-selected-project";
 
 export function useAgents() {
+  const { projectId } = useSelectedProject();
   return useQuery({
-    queryKey: queryKeys.agents,
-    queryFn: getAgents,
+    queryKey: queryKeys.agents(projectId),
+    queryFn: () => getAgents(projectId),
   });
 }
 
@@ -28,7 +30,7 @@ export function useCreateAgent() {
   return useMutation({
     mutationFn: (req: CreateAgentRequest) => createAgent(req),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.agents });
+      queryClient.invalidateQueries({ queryKey: ["agents"] });
     },
   });
 }
@@ -39,7 +41,7 @@ export function useUpdateAgent() {
     mutationFn: ({ id, ...req }: UpdateAgentRequest & { id: AgentId }) =>
       updateAgent(id, req),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.agents });
+      queryClient.invalidateQueries({ queryKey: ["agents"] });
       queryClient.invalidateQueries({ queryKey: queryKeys.agent(variables.id) });
     },
   });
@@ -51,7 +53,7 @@ export function useDeleteAgent() {
     mutationFn: (id: AgentId) => deleteAgent(id),
     onSuccess: (_data, id) => {
       queryClient.removeQueries({ queryKey: queryKeys.agent(id) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.agents });
+      queryClient.invalidateQueries({ queryKey: ["agents"] });
     },
   });
 }

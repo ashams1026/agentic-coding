@@ -139,6 +139,8 @@ export interface CreateAgentRequest {
   skills?: string[];
   subagents?: string[];
   maxBudgetPerRun?: number;
+  scope?: "global" | "project";
+  projectId?: string;
 }
 
 export interface UpdateAgentRequest {
@@ -153,6 +155,8 @@ export interface UpdateAgentRequest {
   subagents?: string[];
   maxBudgetPerRun?: number;
   settings?: Record<string, unknown>;
+  scope?: "global" | "project";
+  projectId?: string | null;
 }
 
 export type AgentResponse = ApiResponse<Agent>;

@@ -418,6 +418,8 @@ export class ExecutionManager {
       subagents: agent.subagents ?? [],
       maxBudgetPerRun: agent.maxBudgetPerRun,
       settings: agent.settings,
+      scope: agent.scope ?? "global",
+      projectId: agent.projectId ?? null,
     };
 
     const projectEntity = project
@@ -453,6 +455,8 @@ export class ExecutionManager {
       subagents: p.subagents ?? [],
       maxBudgetPerRun: p.maxBudgetPerRun,
       settings: p.settings,
+      scope: p.scope ?? "global",
+      projectId: p.projectId ?? null,
     }));
 
     this.runExecutionStream(

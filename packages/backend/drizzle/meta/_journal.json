@@ -162,6 +162,13 @@
       "when": 1775152800000,
       "tag": "0022_rename_persona_to_agent",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "6",
+      "when": 1775200000000,
+      "tag": "0023_add_agent_scope",
+      "breakpoints": true
     }
   ]
 }

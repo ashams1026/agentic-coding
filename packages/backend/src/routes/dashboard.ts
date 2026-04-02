@@ -183,6 +183,8 @@ export async function dashboardRoutes(app: FastifyInstance) {
             subagents: agent.subagents ?? [],
             maxBudgetPerRun: agent.maxBudgetPerRun,
             settings: agent.settings,
+            scope: (agent.scope ?? "global") as "global" | "project",
+            projectId: agent.projectId ?? null,
           }
         : null;
       return { workItem, agent: serializedAgent };
