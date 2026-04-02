@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 14:25 PDT — FX.TYPE.2: Import HandoffNote from shared
+
+**Done:** Removed the duplicated `HandoffNote` interface from `handoff-notes.ts` and replaced it with `import type { HandoffNote } from "@agentops/shared"`. Added `export type { HandoffNote }` re-export so the module's public API is unchanged. The shared definition in `entities.ts` is identical — no behavioral change.
+**Files:** `packages/backend/src/agent/handoff-notes.ts`
+
+---
+
 ## 2026-04-03 14:15 PDT — Review: FX.TYPE.1 (approved)
 
 **Reviewed:** Double type cast removal in chat routes.

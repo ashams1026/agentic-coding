@@ -5,17 +5,11 @@
  */
 
 import { eq, desc, and } from "drizzle-orm";
+import type { HandoffNote } from "@agentops/shared";
 import { db } from "../db/connection.js";
 import { executions } from "../db/schema.js";
 
-export interface HandoffNote {
-  fromState: string;
-  targetState: string;
-  summary: string;
-  decisions: string[];
-  filesChanged: string[];
-  openQuestions: string[];
-}
+export type { HandoffNote } from "@agentops/shared";
 
 /**
  * Build a handoff note from execution context.
