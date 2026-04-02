@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 13:55 PDT — Review: CWF.7 (approved)
+
+**Reviewed:** MCP server tools dynamic workflow integration.
+- route_to_state: selects workflowId, isValidTransitionDynamic() ✓
+- create_children: inherits workflowId, dynamic initial state ✓
+- flag_blocked: getWorkflowStates() lookup, dynamic "Blocked" name ✓
+- No hardcoded WORKFLOW/isValidTransition imports remain ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 13:50 PDT — CWF.7: Update MCP server tools for dynamic workflow
 
 **Done:** Updated 3 MCP tools in `packages/backend/src/agent/mcp-server.ts`. `route_to_state`: selects workflowId, validates via `isValidTransitionDynamic()` instead of sync `isValidTransition()`. `create_children`: selects parent's workflowId, resolves initial state via `getWorkflowInitialState()`, inherits `workflowId` on child items. `flag_blocked`: queries workflow states via `getWorkflowStates()` to find "Blocked" state by name (case-insensitive), uses dynamic name in update and broadcast. Replaced `WORKFLOW` and `isValidTransition` imports with workflow-runtime functions.
