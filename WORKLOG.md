@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 01:15 PDT — S26.TEST.5: Execute Search e2e tests
+
+**Done:** Executed search-phase1 test plan. 14/16 pass, 2 skip, 0 fail. Command Palette: opens correctly, "game board" query returns work item with snippet, "zzzznonexistent" shows "No results found." Filter bar: "game" filters from 2→1 items with highlighted match. API: search returns correct JSON with BM25 scores, type filter works (persona), empty query returns 400. 4 screenshots saved.
+**Files:** `tests/e2e/results/search-phase1/results.md`, `tests/e2e/results/search-phase1/*.png` (4 screenshots)
+
+---
+
 ## 2026-04-03 01:05 PDT — Review: S26.TEST.4 (approved)
 
 **Reviewed:** Agent Collaboration e2e test execution.
