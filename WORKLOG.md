@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 12:00 PDT — FX.WF.2: Wrap workflow CRUD mutations in DB transactions
+
+**Done:** Wrapped PATCH and DELETE workflow handlers in `db.transaction()`. PATCH handler: update metadata + delete/insert states + delete/insert transitions now atomic — crash between delete and insert won't lose data. DELETE handler: delete transitions + states + workflow now atomic. Used synchronous Drizzle better-sqlite3 transaction API with `.run()` for mutations and `.all()` for returning queries inside the transaction callback.
+**Files:** `packages/backend/src/routes/workflows.ts`
+
+---
+
 ## 2026-04-03 11:55 PDT — Review: FX.WF.1 (approved)
 
 **Reviewed:** Workflow publish race condition fix.

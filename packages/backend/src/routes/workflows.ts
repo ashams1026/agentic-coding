@@ -200,48 +200,50 @@ export async function workflowRoutes(app: FastifyInstance) {
     if (body.name !== undefined) updates.name = body.name.trim();
     if (body.description !== undefined) updates.description = body.description;
 
-    await db.update(workflows).set(updates).where(eq(workflows.id, id));
-
-    // Replace states if provided — build ID mapping for transition remapping
-    // Client may send temporary IDs (e.g. "s-new-123") for new states — generate real IDs
-    // and track the mapping so transitions can be remapped
     const stateIdMap = new Map<string, string>();
-    if (body.states) {
-      await db.delete(workflowStates).where(eq(workflowStates.workflowId, id));
-      for (const s of body.states) {
-        const clientId = s.id;
-        const isTemporary = !clientId || clientId.startsWith("s-new-");
-        const dbId = isTemporary ? createId.workflowState() : clientId;
-        if (clientId) stateIdMap.set(clientId, dbId);
-        await db.insert(workflowStates).values({
-          id: dbId,
-          workflowId: id,
-          name: s.name,
-          type: s.type,
-          color: s.color,
-          personaId: s.personaId ?? null,
-          sortOrder: s.sortOrder,
-        });
-      }
-    }
+    db.transaction((tx) => {
+      tx.update(workflows).set(updates).where(eq(workflows.id, id)).run();
 
-    // Replace transitions if provided — remap state IDs using the mapping
-    if (body.transitions) {
-      await db.delete(workflowTransitions).where(eq(workflowTransitions.workflowId, id));
-      for (const t of body.transitions) {
-        const isTemporaryTransition = !t.id || t.id.startsWith("t-new-");
-        const fromId = stateIdMap.get(t.fromStateId) ?? t.fromStateId;
-        const toId = stateIdMap.get(t.toStateId) ?? t.toStateId;
-        await db.insert(workflowTransitions).values({
-          id: isTemporaryTransition ? createId.workflowTransition() : t.id!,
-          workflowId: id,
-          fromStateId: fromId,
-          toStateId: toId,
-          label: t.label ?? "",
-          sortOrder: t.sortOrder ?? 0,
-        });
+      // Replace states if provided — build ID mapping for transition remapping
+      // Client may send temporary IDs (e.g. "s-new-123") for new states — generate real IDs
+      // and track the mapping so transitions can be remapped
+      if (body.states) {
+        tx.delete(workflowStates).where(eq(workflowStates.workflowId, id)).run();
+        for (const s of body.states) {
+          const clientId = s.id;
+          const isTemporary = !clientId || clientId.startsWith("s-new-");
+          const dbId = isTemporary ? createId.workflowState() : clientId;
+          if (clientId) stateIdMap.set(clientId, dbId);
+          tx.insert(workflowStates).values({
+            id: dbId,
+            workflowId: id,
+            name: s.name,
+            type: s.type,
+            color: s.color,
+            personaId: s.personaId ?? null,
+            sortOrder: s.sortOrder,
+          }).run();
+        }
       }
-    }
+
+      // Replace transitions if provided — remap state IDs using the mapping
+      if (body.transitions) {
+        tx.delete(workflowTransitions).where(eq(workflowTransitions.workflowId, id)).run();
+        for (const t of body.transitions) {
+          const isTemporaryTransition = !t.id || t.id.startsWith("t-new-");
+          const fromId = stateIdMap.get(t.fromStateId) ?? t.fromStateId;
+          const toId = stateIdMap.get(t.toStateId) ?? t.toStateId;
+          tx.insert(workflowTransitions).values({
+            id: isTemporaryTransition ? createId.workflowTransition() : t.id!,
+            workflowId: id,
+            fromStateId: fromId,
+            toStateId: toId,
+            label: t.label ?? "",
+            sortOrder: t.sortOrder ?? 0,
+          }).run();
+        }
+      }
+    });
 
     // Re-fetch full workflow
     const [updated] = await db.select().from(workflows).where(eq(workflows.id, id));
@@ -286,10 +288,13 @@ export async function workflowRoutes(app: FastifyInstance) {
       });
     }
 
-    // Delete transitions, states, then workflow
-    await db.delete(workflowTransitions).where(eq(workflowTransitions.workflowId, id));
-    await db.delete(workflowStates).where(eq(workflowStates.workflowId, id));
-    const [deleted] = await db.delete(workflows).where(eq(workflows.id, id)).returning();
+    // Delete transitions, states, then workflow — atomically
+    const deleted = db.transaction((tx) => {
+      tx.delete(workflowTransitions).where(eq(workflowTransitions.workflowId, id)).run();
+      tx.delete(workflowStates).where(eq(workflowStates.workflowId, id)).run();
+      const [row] = tx.delete(workflows).where(eq(workflows.id, id)).returning().all();
+      return row;
+    });
 
     if (!deleted) {
       return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Workflow ${id} not found` } });
