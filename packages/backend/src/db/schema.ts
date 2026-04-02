@@ -305,3 +305,77 @@ export const globalMemoriesRelations = relations(globalMemories, ({ one }) => ({
     references: [personas.id],
   }),
 }));
+
+// ── Workflows ───────────────────────────────────────────────────────
+
+export const workflows = sqliteTable("workflows", {
+  id: text("id").primaryKey(), // WorkflowId
+  name: text("name").notNull(),
+  description: text("description").notNull().default(""),
+  scope: text("scope").notNull().default("global"), // "global" | "project"
+  projectId: text("project_id").references(() => projects.id), // nullable — null for global workflows
+  version: integer("version").notNull().default(1),
+  isPublished: integer("is_published", { mode: "boolean" }).notNull().default(false),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+export const workflowsRelations = relations(workflows, ({ one, many }) => ({
+  project: one(projects, {
+    fields: [workflows.projectId],
+    references: [projects.id],
+  }),
+  states: many(workflowStates),
+  transitions: many(workflowTransitions),
+}));
+
+// ── Workflow States ─────────────────────────────────────────────────
+
+export const workflowStates = sqliteTable("workflow_states", {
+  id: text("id").primaryKey(), // WorkflowStateId
+  workflowId: text("workflow_id").notNull().references(() => workflows.id),
+  name: text("name").notNull(),
+  type: text("type").notNull().default("intermediate"), // "initial" | "intermediate" | "terminal"
+  color: text("color").notNull().default("#6b7280"),
+  personaId: text("persona_id").references(() => personas.id), // nullable — default persona for this state
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const workflowStatesRelations = relations(workflowStates, ({ one }) => ({
+  workflow: one(workflows, {
+    fields: [workflowStates.workflowId],
+    references: [workflows.id],
+  }),
+  persona: one(personas, {
+    fields: [workflowStates.personaId],
+    references: [personas.id],
+  }),
+}));
+
+// ── Workflow Transitions ────────────────────────────────────────────
+
+export const workflowTransitions = sqliteTable("workflow_transitions", {
+  id: text("id").primaryKey(), // WorkflowTransitionId
+  workflowId: text("workflow_id").notNull().references(() => workflows.id),
+  fromStateId: text("from_state_id").notNull().references(() => workflowStates.id),
+  toStateId: text("to_state_id").notNull().references(() => workflowStates.id),
+  label: text("label").notNull().default(""),
+  sortOrder: integer("sort_order").notNull().default(0),
+});
+
+export const workflowTransitionsRelations = relations(workflowTransitions, ({ one }) => ({
+  workflow: one(workflows, {
+    fields: [workflowTransitions.workflowId],
+    references: [workflows.id],
+  }),
+  fromState: one(workflowStates, {
+    fields: [workflowTransitions.fromStateId],
+    references: [workflowStates.id],
+    relationName: "fromState",
+  }),
+  toState: one(workflowStates, {
+    fields: [workflowTransitions.toStateId],
+    references: [workflowStates.id],
+    relationName: "toState",
+  }),
+}));

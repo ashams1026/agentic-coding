@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 12:15 PDT — CWF.1: Schema for workflows, workflow_states, workflow_transitions
+
+**Done:** Added 3 new tables to `packages/backend/src/db/schema.ts`. `workflows`: id, name, description, scope (global/project), projectId (nullable FK), version, isPublished (boolean), timestamps. `workflow_states`: id, workflowId (FK notNull), name, type (initial/intermediate/terminal), color, personaId (nullable FK), sortOrder. `workflow_transitions`: id, workflowId (FK notNull), fromStateId (FK notNull), toStateId (FK notNull), label, sortOrder. Added Drizzle relations: workflow → states/transitions, state → workflow/persona, transition → workflow/fromState/toState. Generated migration `0012_bright_jack_flag.sql`.
+**Files:** `packages/backend/src/db/schema.ts`, `packages/backend/drizzle/0012_bright_jack_flag.sql`, `packages/backend/drizzle/meta/0012_snapshot.json`, `packages/backend/drizzle/meta/_journal.json`
+
+---
+
 ## 2026-04-02 12:00 PDT — DECOMPOSE: Sprint 25 — Workflow Engine
 
 **Done:** Decomposed Sprint 25 into 22 tasks across 6 sections: Schema & Data Model (CWF.1-3), Backend Runtime (CWF.4-8), API Routes (CWF.9-10), Frontend Dynamic Views (CWF.11-14), Frontend Workflow Builder (CWF.15-18), Testing & Docs (CWF.TEST.1-3, CWF.DOC.1). Read all 4 proposal docs + explored current codebase (26 files import WORKFLOW, isValidTransition used in 2 backend files). Key decisions: 3 new tables (workflows/states/transitions), seed default from hardcoded constant, dual-read fallback during migration, Phase 1 form-list builder (no graph editor), regression checkpoint critical after runtime replacement.
