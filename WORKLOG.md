@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 13:25 PDT — Review: CWF.5 (approved)
+
+**Reviewed:** Work-items routes dynamic workflow integration.
+- POST: project workflowId lookup → getWorkflowInitialState() → sets workflowId on item ✓
+- PATCH: selects workflowId, validates via isValidTransitionDynamic() ✓
+- Imports replaced: workflow-runtime functions instead of hardcoded WORKFLOW ✓
+- projects added to schema import ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 13:20 PDT — CWF.5: Update work-items routes to use dynamic workflow
 
 **Done:** Updated `packages/backend/src/routes/work-items.ts`. POST: looks up project's `workflowId`, resolves initial state via `getWorkflowInitialState()`, sets `workflowId` on created items. PATCH: selects `workflowId` alongside `currentState`, validates transitions via `isValidTransitionDynamic()` instead of sync `isValidTransition()`. Replaced `WORKFLOW` and `isValidTransition` imports with `getWorkflowInitialState` and `isValidTransitionDynamic` from workflow-runtime. Added `projects` to schema import for project lookup.
