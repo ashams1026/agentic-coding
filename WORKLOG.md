@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 12:20 PDT — Review: CWF.1 (approved)
+
+**Reviewed:** Workflow schema in schema.ts + migration 0012.
+- workflows: 9 columns with scope, versioning, publishing ✓
+- workflow_states: 7 columns with type/color/persona/sortOrder ✓
+- workflow_transitions: 6 columns with from/to state FKs + label ✓
+- Relations: workflows→states/transitions, states→workflow/persona, transitions→fromState/toState (named) ✓
+- Migration CREATE TABLE correct ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 12:15 PDT — CWF.1: Schema for workflows, workflow_states, workflow_transitions
 
 **Done:** Added 3 new tables to `packages/backend/src/db/schema.ts`. `workflows`: id, name, description, scope (global/project), projectId (nullable FK), version, isPublished (boolean), timestamps. `workflow_states`: id, workflowId (FK notNull), name, type (initial/intermediate/terminal), color, personaId (nullable FK), sortOrder. `workflow_transitions`: id, workflowId (FK notNull), fromStateId (FK notNull), toStateId (FK notNull), label, sortOrder. Added Drizzle relations: workflow → states/transitions, state → workflow/persona, transition → workflow/fromState/toState. Generated migration `0012_bright_jack_flag.sql`.
