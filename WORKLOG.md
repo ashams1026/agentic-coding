@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-01 23:25 PDT — Review: FND.GA.4 (approved)
+
+**Reviewed:** Dashboard scope-awareness with global aggregated view.
+- "All Projects" heading with "Global" badge when `projectId === null` ✓
+- Aggregated stats via `useDashboardStats(undefined)` ✓
+- `AllProjectsSummary` component: project table with name/path/created + empty state ✓
+- Project-scoped widgets replaced by summary table in global scope ✓
+- Sidebar Work Items dimmed: `opacity-40`, `cursor-not-allowed`, `preventDefault`, `aria-disabled` ✓
+- Tooltip "Select a project to view work items" on hover ✓
+- Build passes; visual check confirmed both scopes render correctly
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 23:20 PDT — FND.GA.4: Dashboard scope-awareness
 
 **Done:** When `projectId` is null (global scope), dashboard shows "All Projects" heading with "Global" badge, "Aggregated status across all projects." subtitle, and per-project summary table (Projects Overview card with name, path, created date). Stat cards show aggregated data across all projects (backend already supports this). Normal project-scoped widgets (ActiveAgentsStrip, RecentActivity, UpcomingWork, CostSummary) replaced by the summary table. Sidebar Work Items link dimmed with `opacity-40 cursor-not-allowed` when global scope active; tooltip shows "Select a project to view work items"; click is prevented via `preventDefault`.
