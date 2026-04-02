@@ -223,6 +223,10 @@ export async function startServer(options: StartOptions = {}): Promise<void> {
   // Ensure built-in personas exist (idempotent)
   await ensureBuiltInPersonas();
 
+  // Ensure default workflow exists (idempotent) + backfill references
+  const { seedDefaultWorkflow } = await import("./db/seed-workflow.js");
+  await seedDefaultWorkflow();
+
   // Production-grade crash recovery
   const recovery = await recoverOrphanedState();
   if (recovery.executionsReset > 0) {

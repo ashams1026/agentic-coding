@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 12:50 PDT — CWF.3: Seed default workflow
+
+**Done:** Created `packages/backend/src/db/seed-workflow.ts` with `seedDefaultWorkflow()`. Uses fixed ID `wf-default` for idempotency. Inserts default workflow (8 states from WORKFLOW constant with type classification: Backlog=initial, Done=terminal, rest=intermediate). Creates all valid transitions from WORKFLOW.transitions. Deterministic state IDs (`ws-default-backlog`, etc.) and transition IDs. Backfills `projects.workflowId` and `work_items.workflowId` where null. Wired into startup in `start.ts` after migrations + personas via dynamic import.
+**Files:** `packages/backend/src/db/seed-workflow.ts` (new), `packages/backend/src/start.ts`
+
+---
+
 ## 2026-04-02 12:40 PDT — Review: CWF.2 (approved)
 
 **Reviewed:** workflowId columns + migration + shared types + serialization.
