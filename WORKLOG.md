@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 03:30 PDT — OWH.5: Frontend integrations section in Settings
+
+**Done:** Created `packages/frontend/src/features/settings/integrations-section.tsx`. Add Webhook form with URL input + event checkbox pills + secret display (show/hide/copy). Webhook list with toggle (custom switch button), URL, event badges, failure count badge, delivery log button, delete. Delivery log table: date, event, status (delivered/failed/pending with icons), latency, attempt. Added "Integrations" with Webhook icon to settings-layout.tsx sections + wired component. Uses direct fetch() calls to /api/webhooks endpoints.
+**Files:** `packages/frontend/src/features/settings/integrations-section.tsx` (new), `packages/frontend/src/features/settings/settings-layout.tsx`
+
+---
+
 ## 2026-04-03 03:20 PDT — Review: OWH.4 (approved)
 
 **Reviewed:** Webhook CRUD endpoints.

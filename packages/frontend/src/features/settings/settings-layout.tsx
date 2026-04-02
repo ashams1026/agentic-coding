@@ -9,6 +9,7 @@ import {
   Settings2,
   Shield,
   Bell,
+  Webhook,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -20,6 +21,7 @@ import { AppearanceSection, ServiceSection, DataSection } from "./appearance-sec
 import { WorkflowConfigSection } from "./workflow-config-section";
 import { SecuritySection } from "./security-section";
 import { NotificationsSection } from "./notifications-section";
+import { IntegrationsSection } from "./integrations-section";
 
 // ── Section definitions ─────────────────────────────────────────
 
@@ -37,6 +39,7 @@ const SECTIONS: SectionDef[] = [
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "costs", label: "Costs", icon: DollarSign },
   { id: "appearance", label: "Appearance", icon: Palette },
+  { id: "integrations", label: "Integrations", icon: Webhook },
   { id: "service", label: "Service", icon: Server },
   { id: "data", label: "Data", icon: Database },
 ];
@@ -113,6 +116,8 @@ export function SettingsLayout() {
             <NotificationsSection />
           ) : activeSection === "costs" ? (
             <CostsSection />
+          ) : activeSection === "integrations" ? (
+            <IntegrationsSection />
           ) : activeSection === "appearance" ? (
             <AppearanceSection />
           ) : activeSection === "service" ? (
