@@ -5,10 +5,10 @@
  * Respects concurrency limits: if at capacity, the task is enqueued.
  */
 
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { workItems, comments } from "../db/schema.js";
-import { resolvePersonaForState } from "./workflow-runtime.js";
+import { workItems, workItemEdges, comments } from "../db/schema.js";
+import { resolvePersonaForState, getWorkflowStates } from "./workflow-runtime.js";
 import { executionManager } from "./setup.js";
 import { canSpawn, enqueue, checkMonthlyCost } from "./concurrency.js";
 import { createId } from "@agentops/shared";
@@ -37,6 +37,57 @@ export async function dispatchForState(
   const personaId = await resolvePersonaForState(item.projectId, item.workflowId ?? null, stateName);
 
   if (!personaId) return; // No persona assigned to this state
+
+  // Check dependency enforcement — block if upstream items aren't complete
+  const dependencies = await db
+    .select({ fromId: workItemEdges.fromId })
+    .from(workItemEdges)
+    .where(and(eq(workItemEdges.toId, workItemId), eq(workItemEdges.type, "depends_on")));
+
+  if (dependencies.length > 0) {
+    // Get terminal state names for this workflow
+    const workflowStates = await getWorkflowStates(item.workflowId ?? null);
+    const terminalStateNames = new Set(
+      workflowStates.filter((s) => s.type === "terminal").map((s) => s.name),
+    );
+
+    // Check each upstream item's current state
+    const pendingDeps: { id: string; title: string; currentState: string }[] = [];
+    for (const dep of dependencies) {
+      const [upstream] = await db
+        .select({ id: workItems.id, title: workItems.title, currentState: workItems.currentState })
+        .from(workItems)
+        .where(eq(workItems.id, dep.fromId));
+      if (upstream && !terminalStateNames.has(upstream.currentState)) {
+        pendingDeps.push(upstream);
+      }
+    }
+
+    if (pendingDeps.length > 0) {
+      const now = new Date();
+      const commentId = createId.comment();
+      const depList = pendingDeps.map((d) => `"${d.title}" (${d.currentState})`).join(", ");
+      await db.insert(comments).values({
+        id: commentId,
+        workItemId,
+        authorType: "system",
+        authorId: null,
+        authorName: "System",
+        content: `Dispatch blocked: ${pendingDeps.length} upstream ${pendingDeps.length === 1 ? "dependency" : "dependencies"} not complete — ${depList}`,
+        metadata: { dependencyBlock: true, pendingDeps: pendingDeps.map((d) => d.id) },
+        createdAt: now,
+      });
+      broadcast({
+        type: "comment_created",
+        commentId: commentId as CommentId,
+        workItemId: workItemId as WorkItemId,
+        authorName: "System",
+        contentPreview: `Dispatch blocked: upstream dependencies not complete.`,
+        timestamp: now.toISOString(),
+      });
+      return;
+    }
+  }
 
   const assignment = { personaId };
 
