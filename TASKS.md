@@ -95,12 +95,12 @@
 
 ### Phase 4: Integration
 
-- [ ] **RICH.8** — Frontend: Update ContentBlockRenderer in `features/pico/chat-message.tsx` to dispatch to new components. ThinkingBlock replaces inline thinking. ToolCallCard replaces existing tool_use rendering. Add FileTreeSummary at top of message when 2+ Edit/Write calls. Keep existing PicoMarkdown for text blocks. Both Pico panel and full-page chat must use the new renderers.
+- [x] **RICH.8** — Frontend: Update ContentBlockRenderer in `features/pico/chat-message.tsx` to dispatch to new components. ThinkingBlock replaces inline thinking. ToolCallCard replaces existing tool_use rendering. Add FileTreeSummary at top of message when 2+ Edit/Write calls. Keep existing PicoMarkdown for text blocks. Both Pico panel and full-page chat must use the new renderers. *(completed 2026-04-02 15:45 PDT)*
 - [ ] **RICH.9** — Frontend: Expand/collapse state management. Track which tool cards are expanded/collapsed per session using a `Map<string, boolean>` in component state. Default expand rules: Edit/Write/Bash expanded, Read/Grep/Glob collapsed. "Collapse all tools" / "Expand all tools" toggle at message level.
 
 ### Testing & Documentation
 
 - [x] **RICH.TEST.1** — Write e2e test plan: `tests/e2e/plans/rich-messages.md`. Cover: ThinkingBlock expand/collapse/truncation, ToolCallCard per tool type (Edit→diff, Bash→terminal, Grep→generic), TerminalBlock ANSI colors/scroll/copy, DiffBlock line highlighting, FileTreeSummary for multi-file changes, expand/collapse defaults. *(completed 2026-04-02 15:35 PDT)*
-- [ ] **RICH.DOC.1** — Update `docs/frontend.md` with rich message component hierarchy, rendering dispatch logic, and new component descriptions.
-- [ ] **RICH.TEST.2** — Execute rich messages e2e tests. Screenshot each case. File bugs as `FX.RICH.*`.
-- [ ] **RICH.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
+- [x] **RICH.DOC.1** — Update `docs/frontend.md` with rich message component hierarchy, rendering dispatch logic, and new component descriptions. *(completed 2026-04-02 15:45 PDT)*
+- [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **RICH.TEST.2** — Execute rich messages e2e tests. Screenshot each case. File bugs as `FX.RICH.*`.
+- [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **RICH.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.

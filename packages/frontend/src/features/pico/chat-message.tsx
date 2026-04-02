@@ -18,6 +18,9 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ThinkingBlock as EnhancedThinkingBlock } from "@/features/chat/thinking-block";
+import { ToolCallCard as EnhancedToolCallCard, type ToolUseBlock } from "@/features/chat/tool-call-card";
+import { FileTreeSummary } from "@/features/chat/file-tree-summary";
 
 // ── Types ─────────────────────────────────────────────────────────
 
@@ -135,11 +138,7 @@ export function ChatMessage({ message, showAvatar, compact = true }: ChatMessage
         ) : compact ? (
           <CompactMessageBody content={message.content} />
         ) : (
-          <div className="space-y-2">
-            {message.content.map((block, i) => (
-              <ContentBlockRenderer key={i} block={block} compact={false} />
-            ))}
-          </div>
+          <FullPageMessageBody content={message.content} />
         )}
       </div>
 
@@ -164,46 +163,35 @@ function ContentBlockRenderer({ block, compact }: { block: ContentBlock; compact
     case "text":
       return <PicoMarkdown text={block.text} />;
     case "thinking":
-      return compact ? <CompactThinking /> : <ThinkingBlock text={block.text} />;
+      return compact ? <CompactThinking /> : <EnhancedThinkingBlock text={block.text} />;
     case "tool_use":
       return compact ? (
         <CompactToolCall toolName={block.toolName} summary={block.summary} status={block.status} />
       ) : (
-        <ToolCallCard {...block} />
+        <EnhancedToolCallCard block={block as ToolUseBlock} />
       );
   }
 }
 
-// ── Thinking block (collapsible, collapsed by default) ────────────
+// ── Full-page message body (with FileTreeSummary) ───────────────
 
-function ThinkingBlock({ text }: { text: string }) {
-  const [open, setOpen] = useState(false);
+function FullPageMessageBody({ content }: { content: ContentBlock[] }) {
+  const toolUseBlocks = content.filter(
+    (b): b is ContentBlock & { type: "tool_use" } => b.type === "tool_use",
+  );
+  const editWriteBlocks = toolUseBlocks.filter(
+    (b) => b.toolName === "Edit" || b.toolName === "Write",
+  );
+  const showFileTree = editWriteBlocks.length >= 2;
 
   return (
-    <div className="rounded-md border border-border/50 bg-background/30 overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 w-full px-2 py-1 text-left hover:bg-background/50 transition-colors"
-      >
-        <Brain className="h-3 w-3 text-muted-foreground shrink-0" />
-        <span className="text-xs text-muted-foreground">
-          Pico is thinking...
-        </span>
-        <ChevronDown
-          className={cn(
-            "ml-auto h-3 w-3 text-muted-foreground transition-transform",
-            open && "rotate-180",
-          )}
-        />
-      </button>
-      {open && (
-        <div className="border-t border-border/50 px-2 py-1.5">
-          <p className="text-xs italic text-muted-foreground whitespace-pre-wrap">
-            {text}
-          </p>
-        </div>
+    <div className="space-y-2">
+      {showFileTree && (
+        <FileTreeSummary toolCalls={toolUseBlocks as ToolUseBlock[]} />
       )}
+      {content.map((block, i) => (
+        <ContentBlockRenderer key={i} block={block} compact={false} />
+      ))}
     </div>
   );
 }
@@ -462,81 +450,6 @@ function StatusLine({ items }: { items: (ContentBlock & { type: "thinking" | "to
               </div>
             );
           })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── Tool call card (full, expandable) ────────────────────────────
-
-function ToolCallCard({
-  toolName,
-  summary,
-  status,
-  input,
-  output,
-}: {
-  toolName: string;
-  summary: string;
-  status: "running" | "success" | "error";
-  input: Record<string, unknown>;
-  output?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const Icon = TOOL_ICONS[toolName] ?? Wrench;
-
-  return (
-    <div className="rounded-md border border-border/50 bg-background/30 overflow-hidden">
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 w-full px-2 py-1 text-left hover:bg-background/50 transition-colors"
-      >
-        <Icon className="h-3 w-3 text-muted-foreground shrink-0" />
-        <span className="text-xs font-medium">{toolName}</span>
-        {status === "running" && (
-          <Loader2 className="h-3 w-3 animate-spin text-blue-400" />
-        )}
-        {status === "success" && (
-          <Check className="h-3 w-3 text-emerald-400" />
-        )}
-        {status === "error" && <XIcon className="h-3 w-3 text-red-400" />}
-        <span className="flex-1 text-xs text-muted-foreground truncate">
-          {summary}
-        </span>
-        <ChevronDown
-          className={cn(
-            "h-3 w-3 text-muted-foreground transition-transform shrink-0",
-            open && "rotate-180",
-          )}
-        />
-      </button>
-      {open && (
-        <div className="border-t border-border/50 px-2 py-1.5 space-y-1.5">
-          {input && (
-            <div>
-              <p className="text-xs text-muted-foreground mb-0.5">Input</p>
-              <pre className="text-xs text-foreground/70 whitespace-pre-wrap break-words">
-                {typeof input === "string"
-                  ? input
-                  : JSON.stringify(input, null, 2)}
-              </pre>
-            </div>
-          )}
-          {output && (
-            <div>
-              <p className="text-xs text-muted-foreground mb-0.5">Output</p>
-              <pre className="text-xs text-foreground/70 whitespace-pre-wrap break-words max-h-32 overflow-y-auto">
-                {output}
-              </pre>
-            </div>
-          )}
-          {status === "running" && (
-            <p className="text-xs italic text-muted-foreground">
-              Waiting for result...
-            </p>
-          )}
         </div>
       )}
     </div>

@@ -23,6 +23,12 @@ packages/frontend/src/
     settings/           # Agent config, security, costs, workflow, appearance, data management
     activity-feed/      # Chronological event stream with Router decision cards
     pico/               # Floating chat bubble, chat panel, message components
+    chat/               # Rich message rendering components
+      thinking-block.tsx   # Collapsible thinking block with markdown
+      tool-call-card.tsx   # Tool call display with status badges
+      terminal-block.tsx   # Terminal output with ANSI color support
+      diff-block.tsx       # Side-by-side diff viewer
+      file-tree-summary.tsx # Changed-files tree summary
     common/             # Shared feature components (detail panels, etc.)
     command-palette/    # Global command palette (Cmd+K)
     toasts/             # Toast notification system
@@ -68,6 +74,8 @@ packages/frontend/src/
     project-layout.tsx  # Project context wrapper (/p/:projectId) — loading spinner, 404 state
   lib/
     utils.ts            # cn() utility for class merging
+    ansi-parser.tsx     # ANSI escape sequence → React elements
+    diff-parser.ts      # Myers' diff algorithm for line-by-line diffs
 ```
 
 ## Routes
@@ -239,6 +247,41 @@ The `usePicoChat` hook collects up to 3 suggestions in state (`setSuggestions`),
 - Click sends the suggestion text as the next message
 - Hidden during streaming (`!isStreaming`)
 - Truncated at 200px max width
+
+### Chat — Rich Message Components
+
+Sprint 31 added specialized rendering components for AI chat messages. These live in `features/chat/` and are consumed by the `ContentBlockRenderer` in `features/pico/chat-message.tsx`.
+
+#### Content Block Dispatch
+
+`ContentBlockRenderer` receives a content block and a `compact` flag (for the mini panel), then dispatches to the appropriate component:
+
+| Block type | Full view component | Compact variant |
+|---|---|---|
+| `text` | `PicoMarkdown` | `PicoMarkdown` |
+| `thinking` | `EnhancedThinkingBlock` (from `thinking-block.tsx`) | `CompactThinking` (inline label) |
+| `tool_use` | `EnhancedToolCallCard` (from `tool-call-card.tsx`) | `CompactToolCall` (inline icon + name) |
+
+When an assistant message contains 2+ Edit/Write tool calls, a `FileTreeSummary` is rendered at the top of the message before the individual content blocks.
+
+#### Components
+
+| Component | File | Description |
+|---|---|---|
+| `ThinkingBlock` | `features/chat/thinking-block.tsx` | Collapsible thinking block with purple left accent. Renders markdown (headings, code blocks, bold, inline code, links). Truncates at 2,000 characters with a "Show more" toggle. |
+| `ToolCallCard` | `features/chat/tool-call-card.tsx` | Displays a tool call with an icon (mapped per tool name), auto-generated description (file basename or command preview), status badge (Running/Success/Error), and collapsible input/output sections. Edit, Write, and Bash tools expand by default. |
+| `TerminalBlock` | `features/chat/terminal-block.tsx` | Dark terminal aesthetic (`bg-zinc-900`) for Bash command output. Shows the command in a header bar, renders ANSI color codes via `parseAnsi()`, provides copy-to-clipboard (stripped of ANSI), exit code indicator, and truncates at 500 lines with expand toggle. |
+| `DiffBlock` | `features/chat/diff-block.tsx` | File diff viewer for Edit/Write results. Shows filename, +/- line count summary, and a table with old/new line numbers, colored add/remove/context rows. Uses `computeDiff()` from `diff-parser.ts`. Copy button exports unified diff text. |
+| `FileTreeSummary` | `features/chat/file-tree-summary.tsx` | Collapsible directory tree of files changed by Edit/Write tool calls. Shows M (edit, amber) / A (write, emerald) indicators with +/- line stats. Collapses single-child directory chains (e.g., `src/features/chat`). Clicking a file scrolls to its `ToolCallCard`. Only renders when 2+ file-modifying tool calls exist. |
+
+#### Utility Libraries
+
+| Export | File | Description |
+|---|---|---|
+| `parseAnsi(text)` | `lib/ansi-parser.tsx` | Converts ANSI escape sequences (SGR codes) to React `<span>` elements with Tailwind color classes. Supports standard colors (30-37), bright colors (90-97), 256-color mode (`38;5;N`), bold, dim, and italic. Returns plain string when no codes are present. |
+| `stripAnsi(text)` | `lib/ansi-parser.tsx` | Removes all ANSI escape sequences, returning plain text. Used for copy-to-clipboard. |
+| `computeDiff(old, new)` | `lib/diff-parser.ts` | Pure TypeScript implementation of Myers' O(ND) diff algorithm. Returns `DiffResult` with typed lines (`add`/`remove`/`context`), line numbers, and aggregate counts. |
+| `formatDiffText(result)` | `lib/diff-parser.ts` | Formats a `DiffResult` as a unified-diff-style string (`+ added`, `- removed`, `  context`) for clipboard export. |
 
 ### Agent Monitor — Model Switching
 
@@ -417,4 +460,11 @@ Two density modes controlled by `data-density` attribute on `<html>`:
 | `packages/frontend/src/stores/work-items-store.ts` | Work items view state (filters, sort, selection) |
 | `packages/frontend/src/hooks/index.ts` | TanStack Query hook barrel export |
 | `packages/frontend/src/hooks/use-ws-sync.ts` | WebSocket → query cache invalidation |
+| `packages/frontend/src/features/chat/thinking-block.tsx` | Collapsible thinking block with markdown rendering |
+| `packages/frontend/src/features/chat/tool-call-card.tsx` | Tool call card with icon, status badge, collapsible I/O |
+| `packages/frontend/src/features/chat/terminal-block.tsx` | Terminal output renderer with ANSI color support |
+| `packages/frontend/src/features/chat/diff-block.tsx` | File diff viewer with line numbers and colored rows |
+| `packages/frontend/src/features/chat/file-tree-summary.tsx` | Changed-files directory tree with click-to-scroll |
+| `packages/frontend/src/lib/ansi-parser.tsx` | ANSI escape sequence parser (React elements + strip) |
+| `packages/frontend/src/lib/diff-parser.ts` | Myers' diff algorithm and unified diff formatter |
 | `packages/frontend/src/index.css` | Theme tokens, typography, dark mode, density |

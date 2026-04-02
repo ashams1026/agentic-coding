@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 15:45 PDT — RICH.8, RICH.DOC.1: Integration + docs
+
+**Done:** (1) RICH.8: Updated ContentBlockRenderer in `chat-message.tsx` to dispatch to new enhanced components. Full-page view (compact=false) now uses EnhancedThinkingBlock, EnhancedToolCallCard, and FileTreeSummary. Mini panel (compact=true) keeps compact variants. Added FullPageMessageBody component that renders FileTreeSummary at top when 2+ Edit/Write tool calls. Removed dead inline ThinkingBlock and ToolCallCard. (2) RICH.DOC.1: Updated `docs/frontend.md` with new "Chat — Rich Message Components" section: component hierarchy, ContentBlockRenderer dispatch table, all 5 components + 2 utilities documented, directory structure and source files table updated.
+**Files:** `features/pico/chat-message.tsx`, `docs/frontend.md`
+
+---
+
 ## 2026-04-02 15:35 PDT — RICH.5, RICH.6, RICH.7, RICH.TEST.1: Specialized renderers + test plan
 
 **Done:** (1) RICH.5: TerminalBlock at `features/chat/terminal-block.tsx`. Dark bg-zinc-900, `$ command` header, ANSI-colored output via parseAnsi(), 300px max-height scroll, copy strips ANSI, exit code in green/red, >500 lines truncation with expand. (2) RICH.6: DiffBlock at `features/chat/diff-block.tsx`. File path header with basename, red/green line highlighting with dual-column line numbers, handles Edit (old→new diff), Write (all adds), copy produces unified diff via formatDiffText(), useMemo for diff computation. (3) RICH.7: FileTreeSummary at `features/chat/file-tree-summary.tsx`. Aggregates Edit/Write tool calls into directory tree, amber Pencil for edits, green Plus for writes, +N/-M line counts, collapses single-child directories, collapsed by default if >10 files, click-to-scroll via scrollIntoView. Also added `id={block.toolCallId}` to ToolCallCard root div for scroll targeting. (4) RICH.TEST.1: 29-case e2e test plan (47 steps, 30+ screenshots) covering all 5 rich message components + integration.
