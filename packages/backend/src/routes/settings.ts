@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { lt } from "drizzle-orm";
+import { lt, inArray, eq } from "drizzle-orm";
 import { readdirSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
@@ -9,8 +9,7 @@ import { getActiveCount, getQueueLength, getActiveExecutionIds, clearAll } from 
 import { executionManager } from "../agent/setup.js";
 import { db, sqlite } from "../db/connection.js";
 import { createBackup, listBackups, restoreBackup } from "../db/backup.js";
-import { projects, personas, personaAssignments, executions, workItems } from "../db/schema.js";
-import { eq, inArray } from "drizzle-orm";
+import { projects, personas, personaAssignments, executions, workItems, proposals } from "../db/schema.js";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
@@ -135,15 +134,30 @@ export async function settingsRoutes(app: FastifyInstance) {
     };
   });
 
-  // DELETE /api/settings/executions — clear executions older than 30 days
+  // DELETE /api/settings/executions — clear executions older than 30 days (with cascade)
   app.delete("/api/settings/executions", async () => {
     const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    const result = await db
-      .delete(executions)
+
+    // Get IDs of executions to delete (for cascade)
+    const toDelete = await db
+      .select({ id: executions.id })
+      .from(executions)
       .where(lt(executions.startedAt, cutoff));
 
-    logger.info({ cutoff: cutoff.toISOString() }, "Cleared old execution history");
-    return { deleted: result.changes };
+    if (toDelete.length === 0) {
+      return { deleted: 0 };
+    }
+
+    const ids = toDelete.map((r) => r.id);
+
+    // Cascade: delete proposals linked to these executions
+    await db.delete(proposals).where(inArray(proposals.executionId, ids));
+
+    // Delete the executions themselves
+    await db.delete(executions).where(lt(executions.startedAt, cutoff));
+
+    logger.info({ cutoff: cutoff.toISOString(), deleted: toDelete.length }, "Cleared old execution history with cascade");
+    return { deleted: toDelete.length };
   });
 
   // GET /api/settings/export — export projects, personas, persona-assignments
@@ -436,5 +450,41 @@ export async function settingsRoutes(app: FastifyInstance) {
 
     logger.info({ days, truncated: result.changes }, "Execution logs truncated");
     return { data: { truncated: result.changes, olderThanDays: days } };
+  });
+
+  // ── Storage Stats ───────────────────────────────────────────
+
+  // GET /api/settings/storage-stats — per-table size breakdown
+  app.get("/api/settings/storage-stats", async () => {
+    const rows = sqlite.prepare(`
+      SELECT
+        name,
+        (SELECT COUNT(*) FROM pragma_table_info(name)) as columnCount
+      FROM sqlite_master
+      WHERE type = 'table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_drizzle%' AND name NOT LIKE '%_fts%' AND name NOT LIKE 'fts_%'
+      ORDER BY name
+    `).all() as Array<{ name: string; columnCount: number }>;
+
+    const tables = rows.map((r) => {
+      const countResult = sqlite.prepare(`SELECT COUNT(*) as cnt FROM "${r.name}"`).get() as { cnt: number };
+      // Estimate size using page_count * page_size for the whole DB, proportional to row count
+      return {
+        name: r.name,
+        rowCount: countResult.cnt,
+      };
+    });
+
+    // Get total DB file size
+    const pageSize = (sqlite.prepare("PRAGMA page_size").get() as { page_size: number }).page_size;
+    const pageCount = (sqlite.prepare("PRAGMA page_count").get() as { page_count: number }).page_count;
+    const totalSizeBytes = pageSize * pageCount;
+
+    return {
+      data: {
+        tables,
+        totalSizeBytes,
+        totalSizeMb: +(totalSizeBytes / (1024 * 1024)).toFixed(2),
+      },
+    };
   });
 }
