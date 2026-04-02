@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-03 03:20 PDT — Review: OWH.4 (approved)
+
+**Reviewed:** Webhook CRUD endpoints.
+- 5 endpoints: list, create (auto-secret), update, delete (cascade), delivery log ✓
+- Secret only returned on create, not in list ✓
+- Re-enable resets failureCount ✓
+- 404 handling, 204 on delete ✓
+- Registered in server.ts ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 03:15 PDT — OWH.4: Webhook CRUD endpoints
 
 **Done:** Created `packages/backend/src/routes/webhooks.ts` with 5 endpoints: `GET /api/webhooks` (list subscriptions desc by createdAt), `POST /api/webhooks` (create with auto-generated `whsec_` secret + `wh-` ID), `PATCH /api/webhooks/:id` (update url/events/isActive, resets failureCount on re-enable), `DELETE /api/webhooks/:id` (cascade deletes deliveries via FK), `GET /api/webhooks/:id/deliveries` (delivery log desc by createdAt, limit 50-200). POST returns secret in response for user to copy. Registered in server.ts.
