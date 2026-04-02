@@ -16,6 +16,8 @@ import {
   deleteWorkItem,
   archiveWorkItem,
   unarchiveWorkItem,
+  bulkArchiveWorkItems,
+  bulkDeleteWorkItems,
   getWorkItemEdges,
   createWorkItemEdge,
   deleteWorkItemEdge,
@@ -116,6 +118,28 @@ export function useUnarchiveWorkItem() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (id: WorkItemId) => unarchiveWorkItem(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workItems"] });
+    },
+  });
+}
+
+export function useBulkArchiveWorkItems() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ ids, cascade }: { ids: string[]; cascade?: boolean }) =>
+      bulkArchiveWorkItems(ids, cascade),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["workItems"] });
+    },
+  });
+}
+
+export function useBulkDeleteWorkItems() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ ids, cascade }: { ids: string[]; cascade?: boolean }) =>
+      bulkDeleteWorkItems(ids, cascade),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["workItems"] });
     },

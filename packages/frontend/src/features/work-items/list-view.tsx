@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { ChevronRight, Bot, Plus, ListTodo, Archive, ArchiveRestore, Trash2 } from "lucide-react";
+import { ChevronRight, Bot, Plus, ListTodo, Archive, ArchiveRestore, Trash2, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -21,7 +21,8 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
-import { useWorkItems, usePersonas, useExecutions, useSelectedProject, useCreateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem } from "@/hooks";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useWorkItems, usePersonas, useExecutions, useSelectedProject, useCreateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem, useBulkArchiveWorkItems, useBulkDeleteWorkItems } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { useToastStore } from "@/stores/toast-store";
 import { WORKFLOW, getStateByName } from "@agentops/shared";
@@ -157,9 +158,11 @@ interface ListRowProps {
   hasChildren: boolean;
   isSelected: boolean;
   isArchived: boolean;
+  isMultiSelected: boolean;
   searchQuery: string;
   onToggleExpand: () => void;
   onSelect: () => void;
+  onToggleMultiSelect: () => void;
 }
 
 function ListRow({
@@ -173,9 +176,11 @@ function ListRow({
   hasChildren,
   isSelected,
   isArchived,
+  isMultiSelected,
   searchQuery,
   onToggleExpand,
   onSelect,
+  onToggleMultiSelect,
 }: ListRowProps) {
   const pCfg = priorityConfig[item.priority];
   const stateInfo = getStateByName(item.currentState);
@@ -190,6 +195,16 @@ function ListRow({
       )}
       style={{ paddingLeft: `${12 + depth * 20}px` }}
     >
+      {/* Multi-select checkbox */}
+      <Checkbox
+        checked={isMultiSelected}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleMultiSelect();
+        }}
+        className="shrink-0 h-4 w-4"
+      />
+
       {/* Expand/collapse chevron */}
       {hasChildren ? (
         <span
@@ -331,7 +346,7 @@ function EmptyWorkItemsState({ projectId }: { projectId: string | null }) {
 
 export function ListView() {
   const { projectId } = useSelectedProject();
-  const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterPersonas, filterLabels, showArchived, selectedItemId, setSelectedItemId, clearFilters, setFilterState } =
+  const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterPersonas, filterLabels, showArchived, selectedItemId, setSelectedItemId, selectedIds, toggleSelectId, clearSelection, clearFilters, setFilterState } =
     useWorkItemsStore();
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined, showArchived || undefined);
   const { data: personas } = usePersonas();
@@ -339,6 +354,8 @@ export function ListView() {
   const archiveWorkItem = useArchiveWorkItem();
   const unarchiveWorkItem = useUnarchiveWorkItem();
   const deleteWorkItem = useDeleteWorkItem();
+  const bulkArchive = useBulkArchiveWorkItems();
+  const bulkDelete = useBulkDeleteWorkItems();
   const addToast = useToastStore((s) => s.addToast);
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -393,6 +410,26 @@ export function ListView() {
       },
     });
   }, [deleteTarget, deleteWorkItem, selectedItemId, setSelectedItemId]);
+
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+
+  const handleBulkArchive = useCallback(() => {
+    bulkArchive.mutate({ ids: selectedIds }, {
+      onSuccess: () => {
+        addToast({ type: "success", title: `${selectedIds.length} item(s) archived` });
+        clearSelection();
+      },
+    });
+  }, [bulkArchive, selectedIds, addToast, clearSelection]);
+
+  const handleBulkDeleteConfirm = useCallback(() => {
+    bulkDelete.mutate({ ids: selectedIds }, {
+      onSuccess: () => {
+        clearSelection();
+        setBulkDeleteOpen(false);
+      },
+    });
+  }, [bulkDelete, selectedIds, clearSelection]);
 
   // Build lookup maps
   const personaMap = useMemo(() => {
@@ -499,9 +536,11 @@ export function ListView() {
                 hasChildren={hasChildren}
                 isSelected={selectedItemId === item.id}
                 isArchived={isArchived}
+                isMultiSelected={selectedIds.includes(item.id)}
                 searchQuery={searchQuery}
                 onToggleExpand={() => toggleExpand(item.id)}
                 onSelect={() => setSelectedItemId(item.id)}
+                onToggleMultiSelect={() => toggleSelectId(item.id)}
               />
             </div>
           </ContextMenuTrigger>
@@ -580,6 +619,45 @@ export function ListView() {
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
             Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
+  // Bulk action bar (rendered when items are selected)
+  const bulkBar = selectedIds.length > 0 ? (
+    <div className="sticky bottom-0 z-10 flex items-center gap-3 border-t bg-background/95 backdrop-blur px-4 py-2">
+      <span className="text-sm font-medium">{selectedIds.length} item{selectedIds.length > 1 ? "s" : ""} selected</span>
+      <Button variant="outline" size="sm" className="gap-1.5" onClick={handleBulkArchive}>
+        <Archive className="h-3.5 w-3.5" />
+        Archive
+      </Button>
+      <Button variant="outline" size="sm" className="gap-1.5 text-destructive border-destructive/40 hover:bg-destructive/10" onClick={() => setBulkDeleteOpen(true)}>
+        <Trash2 className="h-3.5 w-3.5" />
+        Delete
+      </Button>
+      <Button variant="ghost" size="sm" className="gap-1.5 ml-auto" onClick={clearSelection}>
+        <X className="h-3.5 w-3.5" />
+        Clear
+      </Button>
+    </div>
+  ) : null;
+
+  // Bulk delete confirmation dialog
+  const bulkDeleteDialog = (
+    <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete {selectedIds.length} work item{selectedIds.length > 1 ? "s" : ""}?</AlertDialogTitle>
+          <AlertDialogDescription>
+            The selected items and all their related data will be soft-deleted. You can restore them within 30 days from Settings.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleBulkDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Delete {selectedIds.length} item{selectedIds.length > 1 ? "s" : ""}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -668,9 +746,11 @@ export function ListView() {
                                 hasChildren={hasChildren}
                                 isSelected={selectedItemId === item.id}
                                 isArchived={isItemArchived}
+                                isMultiSelected={selectedIds.includes(item.id)}
                                 searchQuery={searchQuery}
                                 onToggleExpand={() => toggleExpand(item.id)}
                                 onSelect={() => setSelectedItemId(item.id)}
+                                onToggleMultiSelect={() => toggleSelectId(item.id)}
                               />
                               {hasChildren && isExpanded && renderTree(item.id, 1)}
                             </div>
@@ -702,7 +782,9 @@ export function ListView() {
             );
           })}
         </div>
+        {bulkBar}
         {deleteDialog}
+        {bulkDeleteDialog}
       </>
     );
   }
@@ -713,7 +795,9 @@ export function ListView() {
       <div className="space-y-0.5 overflow-y-auto h-full">
         {renderTree(null, 0)}
       </div>
+      {bulkBar}
       {deleteDialog}
+      {bulkDeleteDialog}
     </>
   );
 }

@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 21:50 PDT — FND.WIL.7: Frontend bulk action bar for multi-select
+
+**Done:** Added `selectedIds`, `toggleSelectId`, `clearSelection` to work-items-store.ts. Created `bulkArchiveWorkItems`/`bulkDeleteWorkItems` API functions in client.ts (bulk delete uses direct fetch since `del()` doesn't support body). Created `useBulkArchiveWorkItems`/`useBulkDeleteWorkItems` hooks. Added Checkbox to each `ListRow` for multi-select. When items are selected, a sticky bottom bar shows "N items selected" with [Archive], [Delete], [Clear] buttons. Bulk archive shows success toast; bulk delete opens confirmation AlertDialog. Both tree and grouped render paths pass `isMultiSelected`/`onToggleMultiSelect`. Visual check: checkbox toggles selection, bulk bar appears with correct count and buttons.
+**Files:** `packages/frontend/src/stores/work-items-store.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`, `packages/frontend/src/hooks/use-work-items.ts`, `packages/frontend/src/hooks/index.ts`, `packages/frontend/src/features/work-items/list-view.tsx`
+
+---
+
 ## 2026-04-01 21:43 PDT — Review: FND.WIL.6 (approved)
 
 **Reviewed:** Archive/delete actions in context menus and detail panel.

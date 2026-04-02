@@ -197,6 +197,20 @@ export async function unarchiveWorkItem(id: WorkItemId): Promise<WorkItem> {
   return res.data;
 }
 
+export async function bulkArchiveWorkItems(ids: string[], cascade?: boolean): Promise<{ archivedCount: number }> {
+  const res = await post<{ data: { archivedCount: number } }>("/api/work-items/bulk/archive", { ids, cascade });
+  return res.data;
+}
+
+export async function bulkDeleteWorkItems(ids: string[], cascade?: boolean): Promise<boolean> {
+  const res = await fetch(`${BASE_URL}/api/work-items/bulk`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ids, cascade }),
+  });
+  return res.ok;
+}
+
 // ── Work Item Edges ──────────────────────────────────────────────
 
 export async function getWorkItemEdges(workItemId?: WorkItemId): Promise<WorkItemEdge[]> {
@@ -672,6 +686,8 @@ export const apiClient = {
   deleteWorkItem,
   archiveWorkItem,
   unarchiveWorkItem,
+  bulkArchiveWorkItems,
+  bulkDeleteWorkItems,
   // Work Item Edges
   getWorkItemEdges,
   createWorkItemEdge,

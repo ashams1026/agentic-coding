@@ -19,6 +19,8 @@ export {
   deleteWorkItem,
   archiveWorkItem,
   unarchiveWorkItem,
+  bulkArchiveWorkItems,
+  bulkDeleteWorkItems,
   retryWorkItem,
   // Work Item Edges
   getWorkItemEdges,
