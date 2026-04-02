@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-03 03:05 PDT — Review: OWH.3 (approved)
+
+**Reviewed:** Webhook delivery worker.
+- 2s polling, 10s HTTP timeout, HMAC-SHA256 signing ✓
+- 5 attempts, exponential backoff (30s/2m/8m/30m) ✓
+- Auto-disable after 10 consecutive failures ✓
+- Success resets failureCount, failure increments + schedules retry ✓
+- Poll: max 10 pending, retry-aware query ✓
+- start/stop lifecycle functions ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 03:00 PDT — OWH.3: Webhook delivery worker
 
 **Done:** Created `packages/backend/src/events/webhook-delivery.ts`. `deliverWebhook()`: fetches delivery + subscription, sends HTTP POST with JSON payload + `X-Webhook-Signature: sha256=<hmac>` header, 10s timeout via AbortController. On success: marks delivered, resets subscription failureCount. On failure: `handleFailure()` with exponential backoff (30s/2m/8m/30m), max 5 attempts. Auto-disables subscription after 10 consecutive failures. `pollPendingDeliveries()`: queries pending deliveries where nextRetryAt <= now or attempt=0, processes up to 10 per poll. `startWebhookWorker()`/`stopWebhookWorker()` with 2s setInterval. Custom headers: X-Webhook-Event, X-Webhook-Delivery.
