@@ -23,6 +23,7 @@ import type { ExecutorRegistry } from "@agentops/core";
 import { logger } from "../logger.js";
 import { auditAgentDispatch, auditAgentComplete, auditCostEvent } from "../audit.js";
 import { trackExecution, onComplete, getProjectCostSummary } from "./concurrency.js";
+import { broadcastNotification } from "../ws.js";
 import { runRouter } from "./router.js";
 import { dispatchForState } from "./dispatch.js";
 
@@ -556,6 +557,16 @@ export class ExecutionManager {
         durationMs: finalDurationMs,
       });
 
+      // Emit notification for agent completion
+      broadcastNotification({
+        type: "agent_completed",
+        priority: "low",
+        title: `${persona.name} completed`,
+        description: finalSummary?.slice(0, 100) || undefined,
+        workItemId: task.workItemId,
+        executionId,
+      });
+
       if (finalCostUsd > 0) {
         auditCostEvent({
           workItemId: task.workItemId,
@@ -572,6 +583,17 @@ export class ExecutionManager {
           monthCostUsd: costSummary.monthCostUsd,
           timestamp: new Date().toISOString(),
         });
+        // Budget threshold notification at 80%
+        const cap = (costSummary as Record<string, number>).monthCapUsd ?? 50;
+        if (cap > 0 && costSummary.monthCostUsd >= cap * 0.8) {
+          broadcastNotification({
+            type: "budget_threshold",
+            priority: "high",
+            title: "Budget threshold reached",
+            description: `Monthly spend $${costSummary.monthCostUsd.toFixed(2)} / $${cap.toFixed(2)} (${Math.round((costSummary.monthCostUsd / cap) * 100)}%)`,
+            projectId: project.id,
+          });
+        }
       }).catch((err) => {
         logger.error({ err }, "Cost summary broadcast failed");
       });
@@ -706,6 +728,16 @@ export class ExecutionManager {
         durationMs: 0,
         costUsd: 0,
         timestamp: new Date().toISOString(),
+      });
+
+      // Emit critical notification for agent error
+      broadcastNotification({
+        type: "agent_errored",
+        priority: "critical",
+        title: `${persona.name} failed`,
+        description: errorMsg.slice(0, 100),
+        workItemId: task.workItemId,
+        executionId,
       });
 
       const nextTask = onComplete(executionId);

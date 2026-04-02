@@ -1,7 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import websocket from "@fastify/websocket";
 import type { WebSocket } from "ws";
-import type { WsEvent } from "@agentops/shared";
+import type { WsEvent, Notification, NotificationEventType, NotificationPriority, ProjectId, WorkItemId, ExecutionId } from "@agentops/shared";
+import crypto from "node:crypto";
 
 const clients = new Set<WebSocket>();
 
@@ -16,6 +17,38 @@ export function broadcast(event: WsEvent): void {
       client.send(message);
     }
   }
+}
+
+/**
+ * Broadcast a notification event to all connected clients.
+ * Creates a Notification object and wraps it in a NotificationEvent.
+ */
+export function broadcastNotification(opts: {
+  type: NotificationEventType;
+  priority: NotificationPriority;
+  title: string;
+  description?: string;
+  projectId?: string;
+  workItemId?: string;
+  executionId?: string;
+}): void {
+  const notification: Notification = {
+    id: `ntf-${crypto.randomBytes(6).toString("hex")}`,
+    type: opts.type,
+    priority: opts.priority,
+    title: opts.title,
+    description: opts.description,
+    projectId: opts.projectId as ProjectId | undefined,
+    workItemId: opts.workItemId as WorkItemId | undefined,
+    executionId: opts.executionId as ExecutionId | undefined,
+    read: false,
+    createdAt: new Date().toISOString(),
+  };
+  broadcast({
+    type: "notification",
+    notification,
+    timestamp: notification.createdAt,
+  });
 }
 
 /**

@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { eq } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { proposals, workItems } from "../db/schema.js";
+import { broadcastNotification } from "../ws.js";
 import { createId } from "@agentops/shared";
 import type {
   ProposalId,
@@ -90,6 +91,18 @@ export async function proposalRoutes(app: FastifyInstance) {
         createdAt: new Date(),
       })
       .returning();
+
+    // Emit notification for review_request proposals
+    if (body.type === "review_request") {
+      broadcastNotification({
+        type: "proposal_needs_approval",
+        priority: "critical",
+        title: "Proposal needs approval",
+        description: `Review request for work item ${body.workItemId}`,
+        workItemId: body.workItemId,
+        executionId: body.executionId,
+      });
+    }
 
     return reply.status(201).send({ data: serializeProposal(row!) });
   });
