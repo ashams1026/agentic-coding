@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { usePicoStore } from "@/features/pico/pico-store";
 import { ChatMessage } from "@/features/pico/chat-message";
 import { usePicoChat } from "@/hooks/use-pico-chat";
+import { PersonaSelector } from "@/features/pico/persona-selector";
 import type { ChatSessionId } from "@agentops/shared";
 
 export function ChatPage() {
@@ -39,6 +40,9 @@ export function ChatPage() {
   } = usePicoChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Persona selector modal
+  const [showPersonaSelector, setShowPersonaSelector] = useState(false);
 
   // Editable title
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
@@ -105,8 +109,8 @@ export function ChatPage() {
               variant="ghost"
               size="icon"
               className="h-7 w-7"
-              onClick={() => newSession()}
-              title="New session"
+              onClick={() => setShowPersonaSelector(true)}
+              title="New chat with persona"
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -292,6 +296,17 @@ export function ChatPage() {
           </p>
         </div>
       </div>
+
+      {/* Persona selector modal */}
+      {showPersonaSelector && (
+        <PersonaSelector
+          onSelect={(personaId) => {
+            setShowPersonaSelector(false);
+            newSession(personaId);
+          }}
+          onClose={() => setShowPersonaSelector(false)}
+        />
+      )}
     </div>
   );
 }

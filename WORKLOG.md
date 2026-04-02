@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 04:55 PDT — ACH.4: Persona selector grid for chat
+
+**Done:** Created `packages/frontend/src/features/pico/persona-selector.tsx` — modal grid showing all personas as cards with avatar (color+icon), name, description, and model badge. Pico highlighted as default with amber ring. Router (system-only) persona filtered out. Updated `createChatSession()` API client to accept optional `personaId`. Updated `usePicoChat.newSession()` to accept optional `personaId` and pass it through. Wired Plus button on `/chat` page to open persona selector modal; on selection creates new session with chosen persona.
+**Files:** `packages/frontend/src/features/pico/persona-selector.tsx` (new), `packages/frontend/src/pages/chat.tsx`, `packages/frontend/src/hooks/use-pico-chat.ts`, `packages/frontend/src/api/client.ts`
+
+---
+
 ## 2026-04-02 04:40 PDT — Review: ACH.3 (approved)
 
 **Reviewed:** Multi-persona chat message endpoint in `packages/backend/src/routes/chat.ts`.

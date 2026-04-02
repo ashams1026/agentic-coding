@@ -231,11 +231,7 @@ export function usePicoChat() {
   const ensureSession = useCallback(async (): Promise<ChatSessionId> => {
     if (currentSessionId) return currentSessionId;
 
-    if (!selectedProjectId) {
-      throw new Error("No project selected");
-    }
-
-    const session = await createChatSession(selectedProjectId);
+    const session = await createChatSession(selectedProjectId ?? undefined);
     const id = session.id as ChatSessionId;
     setCurrentSessionId(id);
     return id;
@@ -390,10 +386,9 @@ export function usePicoChat() {
     [isStreaming, ensureSession, setHasUnread, refreshSessions],
   );
 
-  // Create a new session (for "new chat" button)
-  const newSession = useCallback(async () => {
-    if (!selectedProjectId) return;
-    const session = await createChatSession(selectedProjectId);
+  // Create a new session (for "new chat" button), optionally with a specific persona
+  const newSession = useCallback(async (personaId?: string) => {
+    const session = await createChatSession(selectedProjectId ?? undefined, personaId);
     setCurrentSessionId(session.id as ChatSessionId);
     setMessages([]);
     setError(null);

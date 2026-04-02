@@ -657,8 +657,11 @@ export async function getChatSessions(projectId?: string): Promise<ChatSession[]
   return res.data;
 }
 
-export async function createChatSession(projectId: string): Promise<ChatSession> {
-  const res = await post<{ data: ChatSession }>("/api/chat/sessions", { projectId });
+export async function createChatSession(projectId?: string, personaId?: string): Promise<ChatSession> {
+  const body: Record<string, string> = {};
+  if (projectId) body.projectId = projectId;
+  if (personaId) body.personaId = personaId;
+  const res = await post<{ data: ChatSession }>("/api/chat/sessions", body);
   return res.data;
 }
 
