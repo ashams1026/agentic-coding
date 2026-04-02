@@ -26,11 +26,12 @@ export function WorkflowsPage() {
     // Send client-side IDs as-is (including temporary s-new-*/t-new-* IDs)
     // Backend handles mapping temporary IDs to real IDs
     const allTransitions = states.flatMap((s) =>
-      s.transitions.map((t) => ({
+      s.transitions.map((t, i) => ({
         id: t.id,
         fromStateId: s.id,
         toStateId: t.toStateId,
         label: t.label,
+        sortOrder: i,
       })),
     );
     updateWorkflow.mutate({
@@ -52,11 +53,12 @@ export function WorkflowsPage() {
     if (!id) return;
     // Save first, then publish — must be sequential to avoid race condition
     const allTransitions = states.flatMap((s) =>
-      s.transitions.map((t) => ({
+      s.transitions.map((t, i) => ({
         id: t.id,
         fromStateId: s.id,
         toStateId: t.toStateId,
         label: t.label,
+        sortOrder: i,
       })),
     );
     await updateWorkflow.mutateAsync({

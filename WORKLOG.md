@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 13:15 PDT — FX.WF.4: Include transition sortOrder in workflow save payload
+
+**Done:** Added `sortOrder: i` (array index) to the transition mapping in both `handleSave` and `handlePublish` in `workflows.tsx`. Previously all transitions were saved with `sortOrder: 0` (backend default). Now preserves transition ordering within each state.
+**Files:** `packages/frontend/src/pages/workflows.tsx`
+
+---
+
 ## 2026-04-03 12:55 PDT — Review: FX.NAV.1 (approved)
 
 **Reviewed:** Command palette navigation items update.

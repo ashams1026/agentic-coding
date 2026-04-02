@@ -15,7 +15,7 @@
 
 ### Warning — Missing Data & Stale UI
 
-- [ ] **FX.WF.4** — Include transition sortOrder in workflow save payload. `packages/frontend/src/pages/workflows.tsx:28-35` — `sortOrder` is omitted from transitions when saving, so all transitions get `sortOrder: 0`. Preserve the correct order.
+- [review] **FX.WF.4** — Include transition sortOrder in workflow save payload. `packages/frontend/src/pages/workflows.tsx:28-35` — `sortOrder` is omitted from transitions when saving, so all transitions get `sortOrder: 0`. Preserve the correct order.
 - [ ] **FX.DOC.1** — Update `docs/workflow.md` to reflect custom workflows. Still says "hardcoded" and "not user-configurable" — needs to document the Sprint 25 workflow engine.
 
 ### Warning — Code Quality
@@ -64,7 +64,12 @@
 - [ ] **UXO.21** — Frontend: Update workflow builder for label-based agent overrides. In state card, add collapsible "Agent Overrides" section below default agent selector. Each row: label match input + agent dropdown. "Add override" button. Show overrides as chips on the state card.
 - [ ] **UXO.22** — Frontend: Per-workflow auto-routing toggle on overview page and in builder header. Calls `PATCH /api/workflows/:id { autoRouting }`. Label: "Auto-routing OFF" / "Auto-routing ON".
 
-### Phase 5: Global Work Items
+### Phase 5: Agent Monitor Queue
+
+- [ ] **UXO.24** — Backend: Add `GET /api/executions/queue` endpoint. Expose the in-memory concurrency queue from `concurrency.ts`. Return array of `{ workItemId, workItemTitle, agentId, agentName, priority, enqueuedAt, position }`. Resolve workItemId and personaId (→ agentId) to display names via DB joins. Also return `{ activeCount, maxConcurrent, queueLength }` metadata.
+- [ ] **UXO.25** — Frontend: Add "Queue" tab to Agent Monitor alongside Live and History. Show queued executions as a list: position number, agent avatar + name, work item title, priority badge (p0=red, p1=orange, p2=blue, p3=gray), time waiting (relative). Show empty state "No queued agents" when queue is empty. Show active/max count in tab badge: "Queue (3)". Auto-refresh via polling or WS event when queue changes.
+
+### Phase 6: Global Work Items
 
 - [ ] **UXO.23** — Enable work items for global scope. Remove sidebar nav dimming when global project selected. Seed a simple 3-state workflow for the global project: Backlog → In Progress → Done (autoRouting: false, no agents assigned).
 
