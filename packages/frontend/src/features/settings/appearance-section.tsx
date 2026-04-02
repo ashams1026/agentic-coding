@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { DataManagementSection } from "./data-management-section";
 import {
   Dialog,
   DialogContent,
@@ -550,6 +551,8 @@ export function DataSection() {
   return (
     <div className="space-y-6">
       <DatabaseInfo />
+      <Separator />
+      <DataManagementSection />
       <Separator />
       <RecentlyDeleted />
       <Separator />
