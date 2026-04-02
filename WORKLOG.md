@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-03 14:40 PDT — Review: FX.PERF.1 (approved)
+
+**Reviewed:** N+1 dependency check batch query fix.
+- `inArray` imported from drizzle-orm ✓
+- Loop replaced with single `inArray(workItems.id, depIds)` query ✓
+- JS-side `.filter()` preserves same terminal-state check logic ✓
+- `pendingDeps` shape unchanged — downstream code (depList, comment) unaffected ✓
+- Empty `depIds` guarded by `if (dependencies.length > 0)` ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 14:35 PDT — FX.PERF.1: Fix N+1 query in dependency check
 
 **Done:** Replaced per-dependency loop query (N queries for N upstream deps) with a single `inArray(workItems.id, depIds)` query. Collect all `fromId` values first, fetch all upstream items in one batch, then filter for non-terminal states in JS. Added `inArray` import from drizzle-orm.
