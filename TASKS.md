@@ -21,7 +21,7 @@
 
 ### Critical — Dead Code & Unimplemented Stubs
 
-- [ ] **FX.DEAD.1** — Wire prompt template into inbound webhook execution. `packages/backend/src/routes/webhook-triggers.ts:76-83` — `resolveTemplate()` output is computed but never passed to `runExecution()`. Pass the resolved prompt to the execution so inbound webhook templates actually work end-to-end.
+- [review] **FX.DEAD.1** — Wire prompt template into inbound webhook execution. `packages/backend/src/routes/webhook-triggers.ts:76-83` — `resolveTemplate()` output is computed but never passed to `runExecution()`. Pass the resolved prompt to the execution so inbound webhook templates actually work end-to-end.
 - [ ] **FX.DEAD.2** — Implement or remove `execution_stuck` notification type. Backend never emits `execution_stuck` — the type is defined in `packages/shared/src/ws-events.ts`, UI handles it in notification cards, and Settings has a toggle for it, but no backend code ever fires it. Either implement a periodic check for stalled executions (e.g., no progress events for >10min) or remove the type, UI, and settings toggle entirely.
 - [ ] **FX.DEAD.3** — Replace stub navigation on proposal notification actions. `packages/frontend/src/features/notifications/notification-card.tsx:107-108` — Approve/Reject buttons just navigate to `/items` without passing proposal ID. Wire them to actually call `PATCH /api/proposals/:id` with the approve/reject action, then mark notification as read.
 

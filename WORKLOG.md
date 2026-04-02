@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 10:10 PDT — FX.DEAD.1: Wire prompt template into webhook execution
+
+**Done:** Added optional `prompt` parameter to `executionManager.runExecution()`. When no work item is found but a prompt is provided, creates a synthetic `AgentTask` with the prompt as title/description (standalone execution). Updated `webhook-triggers.ts` to pass the resolved template prompt to `runExecution()`. Previously the `resolveTemplate()` output was computed but discarded — now it flows through to the execution as the agent's task context.
+**Files:** `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/routes/webhook-triggers.ts`
+
+---
+
 ## 2026-04-03 10:00 PDT — Review: FX.SEC.3 (approved)
 
 **Reviewed:** FTS snippet XSS sanitization.

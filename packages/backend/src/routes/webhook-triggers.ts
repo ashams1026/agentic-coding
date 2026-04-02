@@ -75,11 +75,12 @@ export async function webhookTriggerRoutes(app: FastifyInstance) {
     // Resolve prompt template with payload
     const prompt = resolveTemplate(trigger.promptTemplate, request.body);
 
-    // Spawn execution
+    // Spawn execution with resolved prompt
     try {
       const executionId = await executionManager.runExecution(
         null as any, // no work item — standalone trigger
         trigger.personaId,
+        prompt,
       );
 
       logger.info({ triggerId, executionId, personaId: trigger.personaId }, "Webhook trigger fired");

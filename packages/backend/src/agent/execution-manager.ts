@@ -292,6 +292,7 @@ export class ExecutionManager {
   async runExecution(
     workItemId: string,
     personaId: string,
+    prompt?: string,
   ): Promise<ExecutionId> {
     const now = new Date();
     const executionId = createId.execution();
@@ -368,7 +369,21 @@ export class ExecutionManager {
       personaName: persona.name,
     });
 
-    const task = await this.buildAgentTask(workItemId);
+    let task = await this.buildAgentTask(workItemId);
+    if (!task && prompt) {
+      // Standalone execution with a prompt (e.g., webhook trigger, scheduled run)
+      task = {
+        workItemId: "" as WorkItemId,
+        context: {
+          title: prompt.slice(0, 100),
+          description: prompt,
+          currentState: "standalone",
+          parentChain: [],
+          inheritedContext: {},
+        },
+        executionHistory: [],
+      };
+    }
     if (!task) {
       await (this.db as any)
         .update(executions)
