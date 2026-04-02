@@ -1680,6 +1680,200 @@ POST /api/executions/:id/model
 
 Switches the model mid-execution. Returns 404 if not running.
 
+## Workflows
+
+Custom workflows define the state machine for work items. Each workflow has states (initial, intermediate, terminal) and transitions between them. A default 8-state workflow is seeded on startup.
+
+### Schema
+
+```typescript
+interface Workflow {
+  id: string;                    // "wf-xxx"
+  name: string;
+  description: string;
+  scope: "global" | "project";
+  projectId: string | null;      // null = global
+  version: number;
+  isPublished: boolean;
+  createdAt: string;             // ISO 8601
+  updatedAt: string;
+}
+
+interface WorkflowState {
+  id: string;                    // "ws-xxx"
+  workflowId: string;
+  name: string;
+  type: "initial" | "intermediate" | "terminal";
+  color: string;                 // hex, e.g. "#7c3aed"
+  personaId: string | null;      // default persona for this state
+  sortOrder: number;
+}
+
+interface WorkflowTransition {
+  id: string;                    // "wt-xxx"
+  workflowId: string;
+  fromStateId: string;
+  toStateId: string;
+  label: string;
+  sortOrder: number;
+}
+```
+
+### List Workflows
+
+```
+GET /api/workflows
+GET /api/workflows?projectId={id}
+GET /api/workflows?scope=global
+```
+
+Returns global workflows + those scoped to the given project.
+
+**Response:** `{ data: Workflow[], total: number }`
+
+### Get Workflow
+
+```
+GET /api/workflows/:id
+```
+
+Returns workflow with nested states and transitions arrays.
+
+**Response:** `{ data: Workflow & { states: WorkflowState[], transitions: WorkflowTransition[] } }`
+
+### List States / Transitions
+
+```
+GET /api/workflows/:id/states
+GET /api/workflows/:id/transitions
+```
+
+**Response:** `{ data: WorkflowState[], total: number }` / `{ data: WorkflowTransition[], total: number }`
+
+States ordered by `sortOrder`. Returns 404 if workflow not found.
+
+### Create Workflow
+
+```
+POST /api/workflows
+```
+
+**Body:**
+
+```json
+{ "name": "Bug Triage", "description": "...", "scope": "project", "projectId": "proj-xxx" }
+```
+
+Creates a draft workflow (`isPublished: false`). `scope` defaults to `"global"`.
+
+**Response:** `201 { data: Workflow }`
+
+### Update Workflow (Bulk Replace)
+
+```
+PATCH /api/workflows/:id
+```
+
+**Body:**
+
+```json
+{
+  "name": "Updated Name",
+  "states": [
+    { "id": "ws-existing", "name": "Backlog", "type": "initial", "color": "#6b7280", "sortOrder": 0 },
+    { "id": "s-new-123",   "name": "Done",    "type": "terminal", "color": "#16a34a", "sortOrder": 1 }
+  ],
+  "transitions": [
+    { "id": "t-new-456", "fromStateId": "ws-existing", "toStateId": "s-new-123", "label": "complete" }
+  ]
+}
+```
+
+States and transitions are **replaced in bulk** — existing ones deleted and re-inserted. Temporary client IDs (`s-new-*`, `t-new-*`) are automatically replaced with server-generated IDs. The backend builds a mapping from client state IDs to actual IDs so transitions reference the correct states.
+
+**Response:** `{ data: Workflow }`
+
+### Publish Workflow
+
+```
+POST /api/workflows/:id/publish
+```
+
+Sets `isPublished: true`.
+
+**Response:** `{ data: Workflow }`
+
+### Delete Workflow
+
+```
+DELETE /api/workflows/:id
+```
+
+Deletes the workflow, its states, and transitions. Returns **409** if any work items reference this workflow.
+
+**Response:** `204` (no content)
+
+### Clone Workflow
+
+```
+POST /api/workflows/:id/clone
+```
+
+**Body:** `{ "name": "Clone Name" }` (optional — defaults to `"Original (copy)"`)
+
+Deep copies the workflow with all states and transitions. State IDs are remapped so transitions point to the new state copies. Clone is always a draft.
+
+**Response:** `201 { data: Workflow }`
+
+### Validate Workflow
+
+```
+POST /api/workflows/:id/validate
+```
+
+Static analysis of the workflow structure. Returns errors and warnings.
+
+**Response:**
+
+```json
+{
+  "data": {
+    "valid": false,
+    "errors": ["No initial state defined"],
+    "warnings": ["State \"Review\" is unreachable (no incoming transitions)"]
+  }
+}
+```
+
+**Checks performed:**
+- Exactly one initial state (error if missing, warning if multiple)
+- At least one terminal state (error if missing)
+- Unreachable states (no incoming transitions, excluding initial) — warning
+- Dead-end states (no outgoing transitions, excluding terminal) — warning
+
+### Dynamic State Resolution
+
+Work items reference their workflow via `workflowId`. When a work item is created, the initial state is resolved from the workflow:
+
+```
+POST /api/work-items → resolves getWorkflowInitialState(project.workflowId)
+PATCH /api/work-items/:id → validates via isValidTransitionDynamic(workflowId, from, to)
+```
+
+The runtime falls back to the hardcoded `WORKFLOW` constant when `workflowId` is null (legacy items).
+
+### Migration from Hardcoded Workflow
+
+The default workflow (`wf-default`) is seeded on startup by `seed-workflow.ts`:
+- Creates 8 states (Backlog → Planning → Decomposition → Ready → In Progress → In Review → Done + Blocked)
+- Creates all valid transitions from the hardcoded `WORKFLOW.transitions` constant
+- Backfills `workflowId` on existing projects and work items where null
+- Idempotent — safe to run multiple times (checks for `wf-default` before inserting)
+
+All backend modules (`dispatch.ts`, `execution-manager.ts`, `mcp-server.ts`, `router.ts`, `work-items.ts`) now use dynamic query functions from `workflow-runtime.ts` with fallback to hardcoded constants.
+
+---
+
 ## Source Files
 
 | File | Purpose |
@@ -1697,6 +1891,9 @@ Switches the model mid-execution. Returns 404 if not running.
 | `packages/backend/src/routes/audit.ts` | Audit log query |
 | `packages/backend/src/ws.ts` | WebSocket registration and broadcast |
 | `packages/backend/src/routes/chat.ts` | Pico chat sessions + SSE messaging |
+| `packages/backend/src/routes/workflows.ts` | Workflow CRUD + publish + clone + validate |
+| `packages/backend/src/agent/workflow-runtime.ts` | Dynamic workflow query functions with hardcoded fallback |
+| `packages/backend/src/db/seed-workflow.ts` | Default workflow seeding + backfill |
 | `packages/shared/src/api.ts` | Request/response TypeScript types |
 | `packages/shared/src/entities.ts` | Entity types including AgentScope |
 | `packages/shared/src/ws-events.ts` | WebSocket event type definitions |

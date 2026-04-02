@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 18:35 PDT — CWF.DOC.1: Document Custom Workflows API
+
+**Done:** Added "## Workflows" section to `docs/api.md`. Covers: 3 schema types (Workflow, WorkflowState, WorkflowTransition), 10 endpoints (list, get, states, transitions, create, update/bulk-replace, publish, delete with 409 guard, clone, validate), dynamic state resolution in work items (initial state + transition validation), migration from hardcoded workflow (seed, backfill, fallback). Added 3 source files to Source Files table (workflows.ts, workflow-runtime.ts, seed-workflow.ts).
+**Files:** `docs/api.md`
+
+---
+
 ## 2026-04-02 18:25 PDT — Review: FX.CWF.1 (approved)
 
 **Reviewed:** Workflow PATCH save bug fix.
