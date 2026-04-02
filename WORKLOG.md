@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 04:10 PDT — Review: ACH.1 (approved)
+
+**Reviewed:** Chat sessions schema migration.
+- 3 new nullable columns (persona_id FK, work_item_id FK, sdk_session_id) in schema.ts ✓
+- Drizzle relations for persona + workItem added alongside existing project + messages ✓
+- Shared ChatSession interface updated with PersonaId|null, WorkItemId|null, string|null ✓
+- serializeSession() casts and null-falls all 3 fields, imports added ✓
+- Migration 0011: ALTERs + backfill UPDATE using LIKE '%"isAssistant":true%' ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 04:00 PDT — ACH.1: Schema migration for chat_sessions
 
 **Done:** Added `persona_id` (TEXT FK nullable → personas), `work_item_id` (TEXT FK nullable → work_items), `sdk_session_id` (TEXT nullable) columns to `chat_sessions` table. Updated shared `ChatSession` interface to include new fields. Updated `serializeSession()` in chat routes to serialize new fields. Added Drizzle relations for persona and workItem on chatSessions. Generated migration `0011_tricky_blacklash.sql` with ALTER TABLE statements + backfill UPDATE that sets `persona_id` to the Pico persona for existing sessions.
