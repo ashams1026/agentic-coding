@@ -387,3 +387,42 @@ export const workflowTransitionsRelations = relations(workflowTransitions, ({ on
     relationName: "toState",
   }),
 }));
+
+// ── Webhook Subscriptions ─────────────────────────────────────────
+
+export const webhookSubscriptions = sqliteTable("webhook_subscriptions", {
+  id: text("id").primaryKey(),
+  url: text("url").notNull(),
+  secret: text("secret").notNull(),
+  events: text("events", { mode: "json" }).notNull().$type<string[]>(), // e.g. ["execution.completed", "work_item.state_changed"]
+  isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
+  failureCount: integer("failure_count").notNull().default(0),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+// ── Webhook Deliveries ────────────────────────────────────────────
+
+export const webhookDeliveries = sqliteTable("webhook_deliveries", {
+  id: text("id").primaryKey(),
+  subscriptionId: text("subscription_id").notNull().references(() => webhookSubscriptions.id, { onDelete: "cascade" }),
+  event: text("event").notNull(), // e.g. "execution.completed"
+  payload: text("payload", { mode: "json" }).notNull().$type<Record<string, unknown>>(),
+  status: text("status").notNull().default("pending"), // pending | delivered | failed
+  statusCode: integer("status_code"), // HTTP response status code
+  latencyMs: integer("latency_ms"), // delivery round-trip time
+  attempt: integer("attempt").notNull().default(0),
+  nextRetryAt: integer("next_retry_at", { mode: "timestamp_ms" }),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+export const webhookSubscriptionsRelations = relations(webhookSubscriptions, ({ many }) => ({
+  deliveries: many(webhookDeliveries),
+}));
+
+export const webhookDeliveriesRelations = relations(webhookDeliveries, ({ one }) => ({
+  subscription: one(webhookSubscriptions, {
+    fields: [webhookDeliveries.subscriptionId],
+    references: [webhookSubscriptions.id],
+  }),
+}));

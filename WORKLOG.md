@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 02:45 PDT — OWH.2: Webhook subscriptions + deliveries schema
+
+**Done:** Added 2 tables to schema.ts: `webhook_subscriptions` (id, url, secret, events JSON array, isActive boolean, failureCount, timestamps) and `webhook_deliveries` (id, subscriptionId FK with cascade delete, event, payload JSON, status pending/delivered/failed, statusCode, latencyMs, attempt, nextRetryAt, createdAt). Added Drizzle relations (subscription → deliveries). Generated migration `0016_natural_dragon_lord.sql` (2 CREATE TABLE).
+**Files:** `packages/backend/src/db/schema.ts`, `packages/backend/drizzle/0016_natural_dragon_lord.sql`
+
+---
+
 ## 2026-04-03 02:35 PDT — Review: OWH.1 (approved)
 
 **Reviewed:** TypedEventBus + event emissions.
