@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 04:58 PDT — DM.2: Pre-migration backup hook
+
+**Done:** Replaced the existing ad-hoc pre-migration backup in `migrate.ts` with centralized `createBackup()` from `backup.ts`. Removed old `.pre-migration-{timestamp}.bak` pattern + `pruneOldBackups()` function — now uses `~/.agentops/backups/` with 7d+4w retention from DM.1. Simplified from 52 lines to 19 lines. Still skips backup if DB doesn't exist (first startup). Error logging continues migration even if backup fails.
+**Files:** `packages/backend/src/db/migrate.ts`
+
+---
+
 ## 2026-04-03 04:50 PDT — Review: DM.1 (approved)
 
 **Reviewed:** SQLite backup with retention.
