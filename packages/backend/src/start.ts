@@ -227,6 +227,10 @@ export async function startServer(options: StartOptions = {}): Promise<void> {
   const { seedDefaultWorkflow } = await import("./db/seed-workflow.js");
   await seedDefaultWorkflow();
 
+  // Set up FTS5 virtual tables for search (idempotent)
+  const { setupFts5 } = await import("./db/fts5-setup.js");
+  setupFts5();
+
   // Production-grade crash recovery
   const recovery = await recoverOrphanedState();
   if (recovery.executionsReset > 0) {

@@ -25,7 +25,7 @@
 
 ### Search Phase 1
 
-- [ ] **SRC.1** — Backend: create FTS5 virtual tables in `packages/backend/src/db/schema.ts`. Add `work_items_fts` (title + description), `personas_fts` (name + system_prompt), `comments_fts` (body), `chat_messages_fts` (content). Create migration with FTS5 CREATE VIRTUAL TABLE statements. Add rowid bridging tables for text-ID join.
+- [review] **SRC.1** — Backend: create FTS5 virtual tables in `packages/backend/src/db/schema.ts`. Add `work_items_fts` (title + description), `personas_fts` (name + system_prompt), `comments_fts` (body), `chat_messages_fts` (content). Create migration with FTS5 CREATE VIRTUAL TABLE statements. Add rowid bridging tables for text-ID join.
 - [ ] **SRC.2** — Backend: create FTS5 sync triggers in a new migration. INSERT/UPDATE/DELETE triggers on each source table that keep the FTS5 tables in sync. Add a one-time backfill script that populates FTS5 from existing data (run at startup if FTS tables are empty).
 - [ ] **SRC.3** — Backend: create `packages/backend/src/routes/search.ts`. Implement `GET /api/search?q=...&type=...&projectId=...`. Query across FTS5 tables with BM25 ranking. Return unified results: `{ data: SearchResult[], total }` where `SearchResult = { type, id, title, snippet, score, projectId }`. Respect `archived_at`/`deleted_at` filters. Register in server.ts.
 - [ ] **SRC.4** — Frontend: upgrade Command Palette (`packages/frontend/src/components/command-palette.tsx` or equivalent) from client-side filtering to server-backed search. On keystroke, debounce 300ms then call `GET /api/search?q=...`. Show results grouped by type (work items, personas, comments, messages) with snippet highlights.
