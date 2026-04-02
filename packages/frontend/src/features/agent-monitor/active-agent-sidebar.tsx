@@ -3,7 +3,7 @@ import { Bot, DollarSign } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { useExecutions, useAgents, useWorkItems, useSelectedProject, useProjects } from "@/hooks";
+import { useExecutions, useAgents, useWorkItems, useProjectFromUrl, useProjects } from "@/hooks";
 import type { Execution, ExecutionId } from "@agentops/shared";
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -117,7 +117,7 @@ interface ActiveAgentSidebarProps {
 }
 
 export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarProps) {
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const { data: executions = [] } = useExecutions(undefined, projectId ?? undefined);
   const { data: agents = [] } = useAgents();
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);

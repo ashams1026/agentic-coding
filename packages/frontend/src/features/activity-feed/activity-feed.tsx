@@ -35,7 +35,7 @@ import {
   useProposals,
   useAgents,
   useRecentComments,
-  useSelectedProject,
+  useProjectFromUrl,
 } from "@/hooks";
 import { subscribeAll } from "@/api/ws";
 import { useActivityStore } from "@/stores/activity-store";
@@ -197,7 +197,7 @@ function getDateCutoff(preset: DatePreset): Date | null {
 // ── Build events from mock data ──────────────────────────────────
 
 function useBaseActivityEvents(): ActivityEvent[] {
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const { data: executions } = useExecutions(undefined, projectId ?? undefined);
   const { data: workItems } = useWorkItems(undefined, projectId ?? undefined);
   const { data: proposals } = useProposals(undefined, projectId ?? undefined);
@@ -640,9 +640,10 @@ function FeedFilterBar({ filters, onFiltersChange, agents }: FilterBarProps) {
 interface EventRowProps {
   event: ActivityEvent;
   agentMap: Map<string, Agent>;
+  projectId: string | null;
 }
 
-function EventRow({ event, agentMap }: EventRowProps) {
+function EventRow({ event, agentMap, projectId }: EventRowProps) {
   const navigate = useNavigate();
   const setSelectedItemId = useWorkItemsStore((s) => s.setSelectedItemId);
   const config = eventConfig[event.type];
@@ -654,7 +655,7 @@ function EventRow({ event, agentMap }: EventRowProps) {
     if (event.workItemId) {
       setSelectedItemId(event.workItemId as WorkItemId);
     }
-    navigate("/items");
+    navigate(projectId ? `/p/${projectId}/items` : "/items");
   };
 
   return (
@@ -715,7 +716,7 @@ function EventRow({ event, agentMap }: EventRowProps) {
 // ── Main component ────────────────────────────────────────────────
 
 export function ActivityFeed() {
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const { data: agents } = useAgents();
   const { data: workItems } = useWorkItems(undefined, projectId ?? undefined);
   const resetUnread = useActivityStore((s) => s.reset);
@@ -819,7 +820,7 @@ export function ActivityFeed() {
             Activity events will appear here as agents work on items in this project.
           </p>
           <Button variant="outline" size="sm" className="mt-4 gap-1.5" asChild>
-            <Link to="/items">
+            <Link to={projectId ? `/p/${projectId}/items` : "/items"}>
               <ArrowRightLeft className="h-3.5 w-3.5" />
               Go to Work Items
             </Link>
@@ -874,6 +875,7 @@ export function ActivityFeed() {
                       key={event.id}
                       event={event}
                       agentMap={agentMap}
+                      projectId={projectId}
                     />
                   ))}
                 </div>

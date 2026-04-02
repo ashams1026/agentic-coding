@@ -49,7 +49,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useExecutions, useAgents, useWorkItems, useSelectedProject } from "@/hooks";
+import { useExecutions, useAgents, useWorkItems, useProjectFromUrl } from "@/hooks";
 import { rewindExecution } from "@/api";
 import type { RewindResult } from "@/api/client";
 import { useToastStore } from "@/stores/toast-store";
@@ -515,7 +515,7 @@ function HistoryRow({
 // ── Main component ────────────────────────────────────────────────
 
 export function AgentHistory() {
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const { data: executions = [] } = useExecutions(undefined, projectId ?? undefined);
   const { data: agents = [] } = useAgents();
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
@@ -632,7 +632,7 @@ export function AgentHistory() {
             Past agent runs will appear here once completed.
           </p>
           <Button variant="outline" size="sm" className="mt-4 gap-1.5" asChild>
-            <Link to="/items">
+            <Link to={projectId ? `/p/${projectId}/items` : "/items"}>
               Go to Work Items
             </Link>
           </Button>

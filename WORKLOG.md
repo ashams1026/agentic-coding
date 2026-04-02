@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 14:42 PDT — NAV.11-14: Page migrations (Agent Monitor, Activity Feed, Analytics, Chat)
+
+**Done:** Migrated 4 more page groups from `useSelectedProject()` to `useProjectFromUrl()`: (1) Agent Monitor — 6 feature files, Links updated to `/p/:projectId/items`. (2) Activity Feed — activity-feed.tsx, EventRow navigates to project-scoped route. (3) Analytics — overview-tab.tsx, token-usage-tab.tsx. (4) Chat — replaced `useUIStore` selectedProjectId with URL-based projectId, updated guard and navigate to `/app-settings`.
+**Files:** `features/agent-monitor/{split-view,active-agent-sidebar,queue-view,agent-control-bar,agent-history,agent-monitor-layout}.tsx`, `features/activity-feed/activity-feed.tsx`, `features/analytics/{overview-tab,token-usage-tab}.tsx`, `pages/chat.tsx`
+
+---
+
 ## 2026-04-02 14:38 PDT — NAV.7: New Project button + backend mkdir
 
 **Done:** Added "+ New Project" button to sidebar with dialog: project name input, working directory with "Create new" (auto-generates `~/woof/<slug>/`) and "Choose existing" modes. Backend `mkdir -p` on project creation with tilde expansion via `os.homedir()`. Navigates to `/p/:newProjectId/items` on success.

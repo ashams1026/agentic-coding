@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getExecutionQueue } from "@/api";
-import { useSelectedProject } from "@/hooks";
+import { useProjectFromUrl } from "@/hooks";
 
 // ── Priority badge config ──────────────────────────────────────
 
@@ -48,6 +48,7 @@ function formatTimeWaiting(enqueuedAtMs: number): string {
 // ── Empty state ────────────────────────────────────────────────
 
 function QueueEmptyState() {
+  const { projectId } = useProjectFromUrl();
   return (
     <div className="flex h-full items-center justify-center">
       <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -57,7 +58,7 @@ function QueueEmptyState() {
           When agent concurrency is maxed out, new executions will queue here.
         </p>
         <Button variant="outline" size="sm" className="mt-4 gap-1.5" asChild>
-          <Link to="/items">
+          <Link to={projectId ? `/p/${projectId}/items` : "/items"}>
             Go to Work Items
           </Link>
         </Button>
@@ -123,7 +124,7 @@ function QueueRow({ position, agentName, workItemTitle, priority, enqueuedAt }: 
 // ── Main component ─────────────────────────────────────────────
 
 export function QueueView() {
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
 
   const { data, isLoading } = useQuery({
     queryKey: ["executionQueue", projectId],

@@ -4,7 +4,7 @@ import {
   LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
-import { useSelectedProject, useExecutionStats, useCostSummary } from "@/hooks";
+import { useProjectFromUrl, useExecutionStats, useCostSummary } from "@/hooks";
 import { useAnalyticsCostByAgent, useAnalyticsTokensOverTime } from "@/hooks/use-analytics";
 import { cn } from "@/lib/utils";
 
@@ -50,7 +50,7 @@ const AGENT_COLORS = [
 
 export function OverviewTab() {
   const [range, setRange] = useState("7d");
-  const { projectId, isGlobal } = useSelectedProject();
+  const { projectId, isGlobal } = useProjectFromUrl();
   const effectiveProjectId = isGlobal ? undefined : (projectId ?? undefined);
 
   const { data: execStats } = useExecutionStats(effectiveProjectId);

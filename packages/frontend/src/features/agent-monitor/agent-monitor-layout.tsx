@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useExecutions, useSelectedProject, useProjects, useWorkItems } from "@/hooks";
+import { useExecutions, useProjectFromUrl, useProjects, useWorkItems } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { ActiveAgentSidebar } from "./active-agent-sidebar";
 import { AgentControlBar } from "./agent-control-bar";
@@ -27,6 +27,7 @@ import type { ExecutionId, WorkItemId } from "@agentops/shared";
 // ── Empty state ────────────────────────────────────────────────
 
 function EmptyState() {
+  const { projectId } = useProjectFromUrl();
   return (
     <div className="flex h-full items-center justify-center">
       <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -36,7 +37,7 @@ function EmptyState() {
           Agents start when work items move through workflow states.
         </p>
         <Button variant="outline" size="sm" className="mt-4 gap-1.5" asChild>
-          <Link to="/items">
+          <Link to={projectId ? `/p/${projectId}/items` : "/items"}>
             <ArrowRight className="h-3.5 w-3.5" />
             Go to Work Items
           </Link>
@@ -134,7 +135,7 @@ function LiveView({
 // ── Main layout ────────────────────────────────────────────────
 
 export function AgentMonitorLayout() {
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const { data: executions = [] } = useExecutions(undefined, projectId ?? undefined);
   const { data: projectsList = [] } = useProjects();
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);

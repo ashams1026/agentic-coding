@@ -20,7 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useExecution, useAgents, useWorkItems, useSelectedProject } from "@/hooks";
+import { useExecution, useAgents, useWorkItems, useProjectFromUrl } from "@/hooks";
 import type { ExecutionId, WorkItemId } from "@agentops/shared";
 
 // ── Helpers ───────────────────────────────────────────────────────
@@ -50,7 +50,7 @@ interface AgentControlBarProps {
 }
 
 export function AgentControlBar({ executionId, onWorkItemClick }: AgentControlBarProps) {
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const { data: execution } = useExecution(executionId);
   const { data: agents = [] } = useAgents();
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);

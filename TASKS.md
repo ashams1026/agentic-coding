@@ -59,10 +59,10 @@
 - [x] **NAV.8** — Frontend: Migrate Work Items page. Replace `useSelectedProject()` with `useProjectFromUrl()`. Update all query keys and API calls. *(completed 2026-04-02 14:38 PDT)*
 - [x] **NAV.9** — Frontend: Migrate Automations page + Workflow Builder. Replace project context. Update `navigate()` calls to include project prefix. *(completed 2026-04-02 14:38 PDT)*
 - [x] **NAV.10** — Frontend: Migrate Agents page (rename from Agent Builder). Replace `useSelectedProject()`. Page title changed to "Agents". *(completed 2026-04-02 14:38 PDT)*
-- [ ] **NAV.11** — Frontend: Migrate Agent Monitor page. Replace project context. Filter agents/executions by project from URL.
-- [ ] **NAV.12** — Frontend: Migrate Activity Feed page. Replace project context. Filter events by project from URL.
-- [ ] **NAV.13** — Frontend: Migrate Analytics page. Replace project context. Show per-project cost/usage.
-- [ ] **NAV.14** — Frontend: Migrate Chat page. Replace project context. Sessions scoped to project from URL. Agent selector shows project + global agents.
+- [x] **NAV.11** — Frontend: Migrate Agent Monitor page. Replaced useSelectedProject in 6 agent-monitor feature files, updated Links to project-scoped routes. *(completed 2026-04-02 14:42 PDT)*
+- [x] **NAV.12** — Frontend: Migrate Activity Feed page. Replaced in activity-feed.tsx, updated navigate and Link to project-scoped routes. *(completed 2026-04-02 14:42 PDT)*
+- [x] **NAV.13** — Frontend: Migrate Analytics page. Replaced in overview-tab.tsx and token-usage-tab.tsx. *(completed 2026-04-02 14:42 PDT)*
+- [x] **NAV.14** — Frontend: Migrate Chat page. Replaced useUIStore selectedProjectId with useProjectFromUrl, updated guard and navigate. *(completed 2026-04-02 14:42 PDT)*
 - [ ] **NAV.15** — Frontend: Migrate Pico chat panel (overlay). Use current project from URL context. Default to Global Workspace when on Dashboard/App Settings (no project in URL).
 
 ### Phase 4: Settings Split

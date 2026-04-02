@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useExecutions, useAgents, useWorkItems, useSelectedProject } from "@/hooks";
+import { useExecutions, useAgents, useWorkItems, useProjectFromUrl } from "@/hooks";
 import { TerminalRenderer } from "./terminal-renderer";
 import type { ExecutionId } from "@agentops/shared";
 
@@ -19,7 +19,7 @@ interface AgentSelectorProps {
 }
 
 function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const { data: executions = [] } = useExecutions(undefined, projectId ?? undefined);
   const { data: agents = [] } = useAgents();
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);

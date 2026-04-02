@@ -45,8 +45,7 @@ import { cn } from "@/lib/utils";
 import { usePicoStore } from "@/features/pico/pico-store";
 import { ChatMessage } from "@/features/pico/chat-message";
 import { usePicoChat } from "@/hooks/use-pico-chat";
-import { useAgents, useProjects } from "@/hooks";
-import { useUIStore } from "@/stores/ui-store";
+import { useAgents, useProjects, useProjectFromUrl } from "@/hooks";
 import { AgentSelector } from "@/features/pico/agent-selector";
 import type { ChatSessionId } from "@agentops/shared";
 import type { ChatSessionWithAgent } from "@/api";
@@ -105,7 +104,7 @@ function groupSessionsByAgent(sessions: ChatSessionWithAgent[]): AgentGroup[] {
 
 export function ChatPage() {
   const navigate = useNavigate();
-  const selectedProjectId = useUIStore((s) => s.selectedProjectId);
+  const { projectId } = useProjectFromUrl();
   const { setOpen, selectedAgentId } = usePicoStore();
   const [input, setInput] = useState("");
   const {
@@ -220,8 +219,8 @@ export function ChatPage() {
     ? "Your project assistant. I know everything about this project \u2014 the architecture, the workflow, all the agents. Ask me anything, or I can help you manage work items."
     : selectedAgent!.description;
 
-  // Guard: no project selected yet
-  if (!selectedProjectId) {
+  // Guard: no project in URL (shouldn't happen inside ProjectLayout)
+  if (!projectId) {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="flex flex-col items-center justify-center py-16 text-center px-4">
@@ -230,7 +229,7 @@ export function ChatPage() {
           <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
             Select a project from the sidebar to start chatting with your agents.
           </p>
-          <Button variant="outline" size="sm" className="mt-4 gap-1.5" onClick={() => navigate("/settings")}>
+          <Button variant="outline" size="sm" className="mt-4 gap-1.5" onClick={() => navigate("/app-settings")}>
             Go to Settings
           </Button>
         </div>

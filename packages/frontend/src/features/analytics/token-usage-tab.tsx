@@ -5,7 +5,7 @@ import {
   PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
-import { useSelectedProject } from "@/hooks";
+import { useProjectFromUrl } from "@/hooks";
 import {
   useAnalyticsTokensOverTime,
   useAnalyticsCostByModel,
@@ -49,7 +49,7 @@ function formatDuration(ms: number): string {
 
 export function TokenUsageTab() {
   const [range, setRange] = useState("7d");
-  const { projectId, isGlobal } = useSelectedProject();
+  const { projectId, isGlobal } = useProjectFromUrl();
   const effectiveProjectId = isGlobal ? undefined : (projectId ?? undefined);
 
   const { data: tokensOverTime = [] } = useAnalyticsTokensOverTime(effectiveProjectId, range);
