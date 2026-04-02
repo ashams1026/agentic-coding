@@ -27,6 +27,7 @@ import { broadcastNotification } from "../ws.js";
 import { runRouter } from "./router.js";
 import { dispatchForState } from "./dispatch.js";
 import { buildHandoffNote, buildAccumulatedContext } from "./handoff-notes.js";
+import { eventBus } from "../events/event-bus.js";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -351,6 +352,15 @@ export class ExecutionManager {
       timestamp: now.toISOString(),
     });
 
+    eventBus.emit({
+      type: "execution.started",
+      executionId: executionId as ExecutionId,
+      workItemId: workItemId as WorkItemId,
+      personaId: personaId as PersonaId,
+      projectId: (item.projectId as ProjectId) ?? null,
+      timestamp: now.toISOString(),
+    });
+
     auditAgentDispatch({
       workItemId,
       executionId,
@@ -594,6 +604,19 @@ export class ExecutionManager {
         timestamp: new Date().toISOString(),
       });
 
+      eventBus.emit({
+        type: "execution.completed",
+        executionId: executionId as ExecutionId,
+        workItemId: task.workItemId ?? null,
+        personaId: persona.id as PersonaId,
+        projectId: (project.id as ProjectId) ?? null,
+        outcome: finalOutcome,
+        costUsd: finalCostUsd,
+        durationMs: finalDurationMs,
+        summary: finalSummary,
+        timestamp: new Date().toISOString(),
+      });
+
       auditAgentComplete({
         workItemId: task.workItemId,
         executionId,
@@ -773,6 +796,16 @@ export class ExecutionManager {
         outcome: "failure",
         durationMs: 0,
         costUsd: 0,
+        timestamp: new Date().toISOString(),
+      });
+
+      eventBus.emit({
+        type: "execution.failed",
+        executionId: executionId as ExecutionId,
+        workItemId: task.workItemId ?? null,
+        personaId: persona.id as PersonaId,
+        projectId: (project.id as ProjectId) ?? null,
+        error: errorMsg,
         timestamp: new Date().toISOString(),
       });
 

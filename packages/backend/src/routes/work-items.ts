@@ -8,6 +8,7 @@ import { checkParentCoordination } from "../agent/coordination.js";
 import { checkMemoryGeneration } from "../agent/memory.js";
 import { getWorkflowInitialState, isValidTransitionDynamic } from "../agent/workflow-runtime.js";
 import { broadcast } from "../ws.js";
+import { eventBus } from "../events/event-bus.js";
 import { auditStateTransition } from "../audit.js";
 import type {
   WorkItemId,
@@ -135,7 +136,7 @@ export async function workItemRoutes(app: FastifyInstance) {
     let previousState: string | undefined;
     if (body.currentState !== undefined) {
       const [existing] = await db
-        .select({ currentState: workItems.currentState, workflowId: workItems.workflowId })
+        .select({ currentState: workItems.currentState, workflowId: workItems.workflowId, projectId: workItems.projectId })
         .from(workItems)
         .where(eq(workItems.id, id));
 
@@ -184,6 +185,15 @@ export async function workItemRoutes(app: FastifyInstance) {
         fromState: previousState,
         toState: body.currentState,
         triggeredBy: "user",
+        timestamp: new Date().toISOString(),
+      });
+
+      eventBus.emit({
+        type: "work_item.state_changed",
+        workItemId: id as WorkItemId,
+        projectId: row.projectId as ProjectId,
+        fromState: previousState,
+        toState: body.currentState,
         timestamp: new Date().toISOString(),
       });
 
