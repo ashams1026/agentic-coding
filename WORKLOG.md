@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 21:10 PDT — Review: SRC.1 (approved)
+
+**Reviewed:** FTS5 virtual tables + bridging tables setup.
+- 4 FTS5 tables: work_items (title+desc), personas (name+prompt), comments (body), chat_messages (content) ✓
+- 4 bridging tables with integer rowid + text entity_id UNIQUE ✓
+- Startup script approach (not Drizzle migration) — correct for FTS5 ✓
+- IF NOT EXISTS on all DDL for idempotency ✓
+- Wired into start.ts after workflow seed ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 21:05 PDT — SRC.1: FTS5 virtual tables + bridging tables
 
 **Done:** Created `packages/backend/src/db/fts5-setup.ts` with `setupFts5()` function. Creates 4 bridging tables (`fts_*_bridge` with integer rowid + text entity_id UNIQUE) and 4 FTS5 virtual tables (`work_items_fts` title+description, `personas_fts` name+system_prompt, `comments_fts` body, `chat_messages_fts` content). All DDL uses IF NOT EXISTS for idempotency. Used startup script approach instead of Drizzle migration since FTS5 virtual tables aren't supported by drizzle-kit. Wired into `start.ts` after workflow seed.
