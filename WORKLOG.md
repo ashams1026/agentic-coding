@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 15:22 PDT — RICH.2: Diff parser utility
+
+**Done:** Created `diff-parser.ts` exporting `computeDiff(oldString, newString)` and `formatDiffText(result)`. Implements Myers' diff algorithm (O(ND)) for optimal shortest-edit-script diffs. Returns typed `DiffLine[]` with `add/remove/context` types and separate old/new line numbers. Handles edge cases: empty/undefined inputs, identical strings, new file (all adds), deletion (all removes). Zero external dependencies.
+**Files:** `packages/frontend/src/lib/diff-parser.ts`
+
+---
+
 ## 2026-04-02 15:25 PDT — RICH.1: ANSI color parser utility
 
 **Done:** Created `ansi-parser.tsx` exporting `parseAnsi(text)` and `stripAnsi(text)`. Supports standard foreground (30-37), bright foreground (90-97), 256-color mode (38;5;N), bold/dim/italic, combined codes, and reset. Maps to Tailwind classes. Uses `React.createElement` with proper keys. Fast path returns plain string when no ANSI codes present.
