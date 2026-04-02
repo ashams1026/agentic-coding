@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import type { AgentDefinition } from "@anthropic-ai/claude-agent-sdk";
 import { db } from "../db/connection.js";
@@ -57,9 +57,9 @@ function serializeMessage(row: typeof chatMessages.$inferSelect) {
 export async function chatRoutes(app: FastifyInstance) {
   // POST /api/chat/sessions — create a new chat session
   app.post<{
-    Body: { projectId?: string; personaId?: string };
+    Body: { projectId?: string; personaId?: string; workItemId?: string };
   }>("/api/chat/sessions", async (request, reply) => {
-    const { projectId, personaId } = request.body ?? {};
+    const { projectId, personaId, workItemId } = request.body ?? {};
 
     // Validate project if provided
     if (projectId) {
@@ -83,6 +83,8 @@ export async function chatRoutes(app: FastifyInstance) {
     await db.insert(chatSessions).values({
       id,
       projectId: projectId ?? null,
+      personaId: personaId ?? null,
+      workItemId: workItemId ?? null,
       title: "New chat",
       createdAt: now,
       updatedAt: now,
@@ -102,21 +104,38 @@ export async function chatRoutes(app: FastifyInstance) {
   }>("/api/chat/sessions", async (request) => {
     const { projectId } = request.query;
 
-    let rows;
+    const conditions = [];
     if (projectId) {
-      rows = await db
-        .select()
-        .from(chatSessions)
-        .where(eq(chatSessions.projectId, projectId))
-        .orderBy(desc(chatSessions.updatedAt));
-    } else {
-      rows = await db
-        .select()
-        .from(chatSessions)
-        .orderBy(desc(chatSessions.updatedAt));
+      conditions.push(eq(chatSessions.projectId, projectId));
     }
 
-    return { data: rows.map(serializeSession), total: rows.length };
+    const rows = conditions.length > 0
+      ? await db
+          .select({
+            session: chatSessions,
+            personaName: personas.name,
+            personaAvatar: personas.avatar,
+          })
+          .from(chatSessions)
+          .leftJoin(personas, eq(chatSessions.personaId, personas.id))
+          .where(and(...conditions))
+          .orderBy(desc(chatSessions.updatedAt))
+      : await db
+          .select({
+            session: chatSessions,
+            personaName: personas.name,
+            personaAvatar: personas.avatar,
+          })
+          .from(chatSessions)
+          .leftJoin(personas, eq(chatSessions.personaId, personas.id))
+          .orderBy(desc(chatSessions.updatedAt));
+
+    const data = rows.map((r) => ({
+      ...serializeSession(r.session),
+      persona: r.personaName ? { name: r.personaName, avatar: r.personaAvatar } : null,
+    }));
+
+    return { data, total: data.length };
   });
 
   // GET /api/chat/sessions/:id/messages — get message history
@@ -125,15 +144,22 @@ export async function chatRoutes(app: FastifyInstance) {
   }>("/api/chat/sessions/:id/messages", async (request, reply) => {
     const { id } = request.params;
 
-    // Verify session exists
-    const [session] = await db
-      .select()
+    // Verify session exists and load persona info
+    const sessionRows = await db
+      .select({
+        session: chatSessions,
+        personaName: personas.name,
+        personaAvatar: personas.avatar,
+      })
       .from(chatSessions)
+      .leftJoin(personas, eq(chatSessions.personaId, personas.id))
       .where(eq(chatSessions.id, id));
 
-    if (!session) {
+    if (sessionRows.length === 0) {
       return reply.status(404).send({ error: "Session not found" });
     }
+
+    const sessionRow = sessionRows[0]!;
 
     const rows = await db
       .select()
@@ -141,7 +167,14 @@ export async function chatRoutes(app: FastifyInstance) {
       .where(eq(chatMessages.sessionId, id))
       .orderBy(chatMessages.createdAt);
 
-    return { data: rows.map(serializeMessage), total: rows.length };
+    return {
+      data: rows.map(serializeMessage),
+      total: rows.length,
+      session: {
+        ...serializeSession(sessionRow.session),
+        persona: sessionRow.personaName ? { name: sessionRow.personaName, avatar: sessionRow.personaAvatar } : null,
+      },
+    };
   });
 
   // PATCH /api/chat/sessions/:id — update session (title)

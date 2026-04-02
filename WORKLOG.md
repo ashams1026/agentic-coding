@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 04:20 PDT — ACH.2: Backend chat session API updates
+
+**Done:** Updated `POST /api/chat/sessions` to accept and persist `workItemId` alongside existing `personaId` into the new schema columns. Updated `GET /api/chat/sessions` to LEFT JOIN personas table and return `persona: { name, avatar }` alongside each session. Updated `GET /api/chat/sessions/:id/messages` to include `session` object with persona info in the response. Added `and` to drizzle-orm imports for conditional query building.
+**Files:** `packages/backend/src/routes/chat.ts`
+
+---
+
 ## 2026-04-02 04:10 PDT — Review: ACH.1 (approved)
 
 **Reviewed:** Chat sessions schema migration.
