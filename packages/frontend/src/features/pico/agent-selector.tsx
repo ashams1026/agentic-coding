@@ -85,7 +85,7 @@ export function AgentSelector({ onSelect, onClose }: AgentSelectorProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <h2 className="text-base font-semibold">Choose a agent to chat with</h2>
+          <h2 className="text-base font-semibold">Choose an agent to chat with</h2>
           <button
             type="button"
             onClick={onClose}

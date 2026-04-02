@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 10:49 PDT — Review: UXO.7 (approved)
+
+**Done:** Reviewed frontend persona→agent rename. Code review: all 54 files verified, zero remaining persona references, correct renames across hooks/API client/router/sidebar/command palette/CSS vars. Build check: all 4 packages compile clean. Visual check: Agent Builder page (/agent-builder), Chat page (/chat), Dashboard (/) all render correctly with updated labels. Fixed minor grammar: "Choose a agent" → "Choose an agent" in agent-selector.tsx:88.
+**Files:** `packages/frontend/src/features/pico/agent-selector.tsx` (grammar fix)
+
+---
+
 ## 2026-04-03 17:15 PDT — UXO.7: Frontend persona→agent rename
 
 **Done:** Renamed all persona references → agent across 54 frontend files. Renamed `features/persona-manager/` → `features/agent-builder/` (3 files within: persona-list→agent-list, persona-editor→agent-editor, persona-detail-panel→agent-detail-panel). Renamed hooks: `use-personas.ts`→`use-agents.ts`, `use-persona-assignments.ts`→`use-agent-assignments.ts`. Renamed page `persona-manager.tsx`→`agent-builder.tsx`. Renamed `pico/persona-selector.tsx`→`agent-selector.tsx`. Updated API client: function names (getPersonas→getAgents, etc.), paths (`/api/personas`→`/api/agents`), types. Updated query keys, hooks index, router (path `/personas`→`/agent-builder`), sidebar label "Agent Builder", command palette. Updated all imports and variable names across 54 files. CSS vars `--color-persona-*`→`--color-agent-*`. Frontend builds clean.
