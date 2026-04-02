@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 06:40 PDT — S27.TEST.4: Execute Inbound Webhooks + Data Management e2e tests
+
+**Done:** Executed test plan. 15/20 pass, 5 skip, 0 fail. Trigger CRUD: POST creates with wht-/whtsec_ + triggerUrl, GET list joins persona name, DELETE 204. Backup: POST creates in ~/.agentops/backups/, GET list with size. Truncation: POST returns truncated count. Storage stats: returns 19 tables with row counts. UI: Data section shows backup list with Restore buttons, truncation controls, storage table. 1 screenshot.
+**Files:** `tests/e2e/results/inbound-webhooks-data-mgmt/results.md`, `tests/e2e/results/inbound-webhooks-data-mgmt/01-data-section.png`
+
+---
+
 ## 2026-04-03 06:30 PDT — Review: S27.TEST.3 (approved)
 
 **Reviewed:** Outbound Webhooks e2e test execution.
