@@ -16,7 +16,7 @@
 
 ### Testing & Documentation
 
-- [ ] **CUX.TEST.5** — Regression checkpoint: re-run all existing e2e test suites in `tests/e2e/plans/` against the current build. Record results to `tests/e2e/results/`. Compare against Sprint 23 regression baseline. File bugs as `FX.REG.*` tasks for any new failures.
+- [review] **CUX.TEST.5** — Regression checkpoint: re-run all existing e2e test suites in `tests/e2e/plans/` against the current build. Record results to `tests/e2e/results/`. Compare against Sprint 23 regression baseline. File bugs as `FX.REG.*` tasks for any new failures.
 
 ---
 

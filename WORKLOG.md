@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 11:40 PDT — CUX.TEST.5: Regression checkpoint post-Sprint 24
+
+**Done:** Full regression sweep across all 36 test plans. 26 UI-verified, 10 code-review only. **0 regressions found.** All Sprint 1-18 suites PASS, Sprint 19-20 PASS, Sprint 23 (error recovery, lifecycle, global agents) PASS, Sprint 24 (agent chat, notifications) PASS. 13 API endpoints verified including new chat session persona join, lastMessagePreview, lifecycle filters, standalone execution validation. 7 screenshots covering all major UI pages. Build compiles clean.
+**Files:** `tests/e2e/results/2026-04-02_11-30_regression-sprint24/RESULTS.md`, 7 screenshot PNGs
+
+---
+
 ## 2026-04-02 11:20 PDT — Review: CUX.DOC.2 (approved)
 
 **Reviewed:** Notifications system documentation in docs/api.md.
