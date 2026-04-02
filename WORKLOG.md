@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 23:45 PDT — Review: ANL.5 (approved)
+
+**Reviewed:** Analytics overview tab.
+- 4 summary cards using existing dashboard hooks ✓
+- Cost trend LineChart with 7d/30d/90d range selector ✓
+- Cost-by-persona horizontal BarChart with per-persona colors ✓
+- Empty states for no data ✓
+- Visual check: clean layout, cards + charts render correctly ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 23:40 PDT — ANL.5: Analytics overview tab with summary cards + charts
 
 **Done:** Created `packages/frontend/src/features/analytics/overview-tab.tsx`. 4 summary cards using `useExecutionStats` + `useCostSummary` (Total Cost, Executions, Success Rate, Avg Duration with colored icons). Time range selector (7d/30d/90d toggle buttons). Cost Trend line chart using Recharts `LineChart` with `tokensOverTime` data. Cost by Persona horizontal bar chart using `BarChart` with per-persona colors. Empty state messages when no data. Wired into `analytics.tsx` page replacing placeholder. Visual check passed.
