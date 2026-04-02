@@ -2,6 +2,7 @@ export { queryKeys } from "./query-keys";
 export { useThemeSync } from "./use-theme";
 export { useProjects, useProject, useCreateProject, useUpdateProject, useDeleteProject } from "./use-projects";
 export { useSelectedProject } from "./use-selected-project";
+export { useProjectFromUrl } from "./use-project-from-url";
 export { useWorkItems, useWorkItem, useCreateWorkItem, useUpdateWorkItem, useDeleteWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useBulkArchiveWorkItems, useBulkDeleteWorkItems, useWorkItemEdges, useCreateWorkItemEdge, useDeleteWorkItemEdge } from "./use-work-items";
 export { useAgentAssignments, useUpdateAgentAssignment } from "./use-agent-assignments";
 export { useAgents, useAgent, useCreateAgent, useUpdateAgent, useDeleteAgent } from "./use-agents";

@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 14:20 PDT — NAV.1: Create useProjectFromUrl() hook
+
+**Done:** Created `useProjectFromUrl()` hook that reads `projectId` from React Router `useParams()` and returns `{ projectId, project, isGlobal, isLoading }`. When no `projectId` is in the URL (Dashboard, App Settings), returns null values. Passes `null` to `useProject()` which disables the query via its `enabled: !!id` guard. Exported from hooks barrel.
+**Files:** `packages/frontend/src/hooks/use-project-from-url.ts`, `packages/frontend/src/hooks/index.ts`
+
+---
+
 ## 2026-04-02 14:10 PDT — DX.1: Frontend-only dev mode with mock API
 
 **Done:** Added `pnpm dev:frontend` (frontend-only with mock API), `pnpm dev:backend` (backend-only), kept `pnpm dev` as full-stack. Created lightweight fetch interceptor at `packages/frontend/src/api/mock-api.ts` with in-memory data for all API endpoints (projects, work items, agents, executions, comments, proposals, workflows, dashboard stats, settings, chat, analytics, search). WebSocket connection is skipped in mock mode. Mock layer is tree-shaken from production builds.
