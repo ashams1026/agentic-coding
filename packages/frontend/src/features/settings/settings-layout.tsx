@@ -8,6 +8,7 @@ import {
   GitBranch,
   Settings2,
   Shield,
+  Bell,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -18,6 +19,7 @@ import { CostsSection } from "./costs-section";
 import { AppearanceSection, ServiceSection, DataSection } from "./appearance-section";
 import { WorkflowConfigSection } from "./workflow-config-section";
 import { SecuritySection } from "./security-section";
+import { NotificationsSection } from "./notifications-section";
 
 // ── Section definitions ─────────────────────────────────────────
 
@@ -32,6 +34,7 @@ const SECTIONS: SectionDef[] = [
   { id: "workflow", label: "Workflow", icon: GitBranch },
   { id: "agent-config", label: "Agent Configuration", icon: Settings2 },
   { id: "security", label: "Security", icon: Shield },
+  { id: "notifications", label: "Notifications", icon: Bell },
   { id: "costs", label: "Costs", icon: DollarSign },
   { id: "appearance", label: "Appearance", icon: Palette },
   { id: "service", label: "Service", icon: Server },
@@ -106,6 +109,8 @@ export function SettingsLayout() {
             <SecuritySection />
           ) : activeSection === "agent-config" ? (
             <ApiKeysSection />
+          ) : activeSection === "notifications" ? (
+            <NotificationsSection />
           ) : activeSection === "costs" ? (
             <CostsSection />
           ) : activeSection === "appearance" ? (
