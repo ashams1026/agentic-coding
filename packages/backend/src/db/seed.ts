@@ -16,6 +16,7 @@ import {
 
 // ── Fixed IDs (matching frontend fixtures) ────────────────────────
 
+const PROJECT_GLOBAL = "pj-global";
 const PROJECT_ID = "pj-agntops";
 
 const PERSONA_PM = "ps-pm00001";
@@ -82,13 +83,24 @@ export async function seed() {
   await db.delete(projects);
 
   // ── Projects ──────────────────────────────────────────────────────
-  await db.insert(projects).values({
-    id: PROJECT_ID,
-    name: "AgentOps",
-    path: "/Users/dev/projects/agentops",
-    settings: { maxConcurrent: 3, monthCap: 50, autoRouting: true },
-    createdAt: d("2026-03-20T10:00:00Z"),
-  });
+  await db.insert(projects).values([
+    {
+      id: PROJECT_GLOBAL,
+      name: "All Projects",
+      path: "",
+      isGlobal: true,
+      settings: {},
+      createdAt: d("2026-03-20T09:00:00Z"),
+    },
+    {
+      id: PROJECT_ID,
+      name: "AgentOps",
+      path: "/Users/dev/projects/agentops",
+      isGlobal: false,
+      settings: { maxConcurrent: 3, monthCap: 50, autoRouting: true },
+      createdAt: d("2026-03-20T10:00:00Z"),
+    },
+  ]);
 
   // ── Personas ──────────────────────────────────────────────────────
   await db.insert(personas).values([

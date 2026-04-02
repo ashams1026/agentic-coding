@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 14:45 PDT — UXO.1: Add isGlobal to projects schema
+
+**Done:** Added `isGlobal` boolean column (default false) to `projects` table in schema. Added `isGlobal` to shared `Project` interface. Generated migration `0020_gigantic_cable.sql`. Updated seed to create permanent global project (`id: "pj-global"`, `name: "All Projects"`, `isGlobal: true`, empty path). Added delete guard in `DELETE /api/projects/:id` — returns 409 if `isGlobal`. Updated `serializeProject` to include `isGlobal`. Fixed `execution-manager.ts` project entity construction to include `isGlobal`.
+**Files:** `packages/backend/src/db/schema.ts`, `packages/shared/src/entities.ts`, `packages/backend/src/routes/projects.ts`, `packages/backend/src/db/seed.ts`, `packages/backend/src/agent/execution-manager.ts`, `packages/backend/drizzle/0020_gigantic_cable.sql`
+
+---
+
 ## 2026-04-03 14:40 PDT — Review: FX.PERF.1 (approved)
 
 **Reviewed:** N+1 dependency check batch query fix.

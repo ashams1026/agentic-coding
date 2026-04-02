@@ -7,6 +7,7 @@ export const projects = sqliteTable("projects", {
   id: text("id").primaryKey(), // ProjectId
   name: text("name").notNull(),
   path: text("path").notNull(),
+  isGlobal: integer("is_global", { mode: "boolean" }).notNull().default(false),
   settings: text("settings", { mode: "json" }).notNull().$type<Record<string, unknown>>().default({}),
   workflowId: text("workflow_id"), // nullable FK — set after workflows table exists; references workflows.id
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),

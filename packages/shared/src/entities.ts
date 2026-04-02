@@ -58,6 +58,7 @@ export interface Project {
   id: ProjectId;
   name: string;
   path: string;
+  isGlobal: boolean;
   settings: ProjectSettings;
   workflowId: string | null;
   createdAt: string;

@@ -20,6 +20,7 @@ function serializeProject(row: typeof projects.$inferSelect) {
     id: row.id as ProjectId,
     name: row.name,
     path: row.path,
+    isGlobal: row.isGlobal,
     settings: row.settings,
     workflowId: row.workflowId ?? null,
     createdAt: toIso(row.createdAt),
@@ -127,14 +128,21 @@ export async function projectRoutes(app: FastifyInstance) {
   app.delete<{
     Params: { id: string };
   }>("/api/projects/:id", async (request, reply) => {
-    const [row] = await db
-      .delete(projects)
-      .where(eq(projects.id, request.params.id))
-      .returning();
+    // Guard: cannot delete the global project
+    const [existing] = await db
+      .select({ isGlobal: projects.isGlobal })
+      .from(projects)
+      .where(eq(projects.id, request.params.id));
 
-    if (!row) {
+    if (!existing) {
       return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Project ${request.params.id} not found` } });
     }
+
+    if (existing.isGlobal) {
+      return reply.status(409).send({ error: { code: "CONFLICT", message: "Cannot delete the global project" } });
+    }
+
+    await db.delete(projects).where(eq(projects.id, request.params.id));
 
     return reply.status(204).send();
   });

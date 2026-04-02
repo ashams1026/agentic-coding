@@ -141,6 +141,13 @@
       "when": 1775142017569,
       "tag": "0019_flimsy_captain_universe",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1775148125066,
+      "tag": "0020_gigantic_cable",
+      "breakpoints": true
     }
   ]
 }
