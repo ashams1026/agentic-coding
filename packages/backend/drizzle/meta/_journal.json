@@ -36,6 +36,20 @@
       "when": 1775002629072,
       "tag": "0004_sloppy_juggernaut",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1775025688727,
+      "tag": "0005_futuristic_chamber",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1775027423211,
+      "tag": "0006_groovy_red_wolf",
+      "breakpoints": true
     }
   ]
 }
