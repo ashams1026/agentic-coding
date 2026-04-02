@@ -17,7 +17,7 @@
 
 - [x] **FX.SEC.1** — Fix path traversal in backup restore. `packages/backend/src/db/backup.ts:95-111` accepts any file path from the API — attacker can overwrite DB with arbitrary file. Validate that the provided path resolves within the backups directory. Reject paths with `..` or absolute paths outside the backup root. *(completed 2026-04-03 09:30 PDT)*
 - [x] **FX.SEC.2** — Fix FTS5 MATCH crash on special characters. `packages/backend/src/routes/search.ts:36,57` passes user input directly to FTS5 MATCH — characters like `AND NOT`, `NEAR(`, unbalanced quotes crash the endpoint with unhandled 500. Wrap queries in try-catch and sanitize/escape FTS5 special syntax before querying. *(completed 2026-04-03 09:45 PDT)*
-- [ ] **FX.SEC.3** — Sanitize FTS snippets before rendering. `packages/frontend/src/features/command-palette/command-palette.tsx:311` uses `dangerouslySetInnerHTML` with unsanitized FTS snippet content. Sanitize HTML or use a safe rendering approach to prevent XSS.
+- [review] **FX.SEC.3** — Sanitize FTS snippets before rendering. `packages/frontend/src/features/command-palette/command-palette.tsx:311` uses `dangerouslySetInnerHTML` with unsanitized FTS snippet content. Sanitize HTML or use a safe rendering approach to prevent XSS.
 
 ### Critical — Dead Code & Unimplemented Stubs
 

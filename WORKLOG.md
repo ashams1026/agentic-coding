@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 09:55 PDT — FX.SEC.3: Sanitize FTS snippets before rendering
+
+**Done:** Added `sanitizeSnippet()` to `command-palette.tsx`. Uses placeholder-based approach: temporarily replaces allowed `<b>`/`</b>` tags with null-byte placeholders, escapes all remaining HTML entities (`&`, `<`, `>`, `"`), then restores the allowed tags. Applied to the `dangerouslySetInnerHTML` usage at line 311. Prevents XSS from stored data appearing in FTS5 snippets while preserving match highlighting.
+**Files:** `packages/frontend/src/features/command-palette/command-palette.tsx`
+
+---
+
 ## 2026-04-03 09:45 PDT — Review: FX.SEC.2 (approved)
 
 **Reviewed:** FTS5 MATCH crash fix.

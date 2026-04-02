@@ -23,6 +23,31 @@ import type { SearchResult } from "@/api/client";
 import type { WorkItemId } from "@agentops/shared";
 import { cn } from "@/lib/utils";
 
+// ── HTML sanitization ─────────────────────────────────────────────
+
+/**
+ * Sanitize FTS snippet HTML — only allow <b> and </b> tags (used by FTS5
+ * for match highlighting). All other HTML is escaped to prevent XSS.
+ */
+function sanitizeSnippet(html: string): string {
+  // Temporarily replace allowed <b> and </b> with placeholders
+  const safe = html
+    .replace(/<b>/gi, "\x00B_OPEN\x00")
+    .replace(/<\/b>/gi, "\x00B_CLOSE\x00");
+
+  // Escape all remaining HTML
+  const escaped = safe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
+  // Restore allowed tags
+  return escaped
+    .replace(/\x00B_OPEN\x00/g, "<b>")
+    .replace(/\x00B_CLOSE\x00/g, "</b>");
+}
+
 // ── Types ──────────────────────────────────────────────────────────
 
 interface CommandItem {
@@ -308,7 +333,7 @@ export function CommandPalette() {
                         {item.snippet && (
                           <span
                             className="text-xs text-muted-foreground truncate block mt-0.5"
-                            dangerouslySetInnerHTML={{ __html: item.snippet }}
+                            dangerouslySetInnerHTML={{ __html: sanitizeSnippet(item.snippet) }}
                           />
                         )}
                       </div>
