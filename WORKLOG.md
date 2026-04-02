@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 05:35 PDT — Review: ACH.5 (approved)
+
+**Reviewed:** Session sidebar enhancements (rework) in chat.tsx + backend chat.ts.
+- Persona avatar next to each session ✓
+- Date grouping (Today/Yesterday/This Week/Older) ✓
+- Persona filter dropdown ✓
+- Last message preview: batched SQLite query, 60-char truncation, displayed as second line ✓
+- ChatSessionWithPersona type includes lastMessagePreview ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 05:30 PDT — ACH.5 (rework): Add last message preview to session sidebar
 
 **Done:** Addressed review feedback — added `lastMessagePreview` to session list response. Backend: raw SQLite query fetches last message per session in a single batched query (correlated subquery with MAX(created_at)), truncates to 60 chars + "...". Added `sqlite` import from connection.ts. Frontend: added `lastMessagePreview: string | null` to `ChatSessionWithPersona` type. Display preview as second line under session title in sidebar (text-[10px], muted color). Removed unused `inArray` import.
