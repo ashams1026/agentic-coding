@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 11:20 PDT — Review: CUX.DOC.2 (approved)
+
+**Reviewed:** Notifications system documentation in docs/api.md.
+- notification WS event with full Notification object shape ✓
+- NotificationEventType: 5 types with priority/trigger table ✓
+- NotificationPriority: 4 levels, critical = no auto-dismiss ✓
+- Backend emission points: 4 entries matching implementation ✓
+- NotificationPreferences schema: enabledEvents, soundEvents, quietHours, scope ✓
+- Defaults, quiet hours behavior, 60s batching documented ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 11:15 PDT — CUX.DOC.2: Document Notifications system
 
 **Done:** Updated `docs/api.md` with Notifications documentation. Added `notification` WebSocket event type with full Notification object shape. Documented `NotificationEventType` enum (5 types) with priority levels and trigger descriptions in a table. Documented `NotificationPriority` (4 levels) with toast behavior (critical = no auto-dismiss). Added backend emission points table (4 files/events). Documented frontend handling (dual dispatch to notification store + toast store). Added "Notification Preferences" section with full `NotificationPreferences` schema, defaults, quiet hours behavior, and 60-second batching rules.

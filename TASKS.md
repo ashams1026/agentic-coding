@@ -28,7 +28,7 @@
 - [x] **CUX.TEST.3** — Write e2e test plan for Notifications UX: `tests/e2e/plans/notifications-ux.md`. Cover: bell icon with badge, drawer open/close, notification grouping by date, notification card actions, mark all read, enhanced toasts (critical non-dismissable), notification preferences in Settings, quiet hours. *(completed 2026-04-02 10:30 PDT)*
 - [x] **CUX.TEST.4** — Execute Notifications UX e2e tests. Run the test plan via chrome-devtools MCP. Screenshot each test case. Record results to `tests/e2e/results/`. File bugs as `FX.*` tasks for any failures. *(completed 2026-04-02 10:50 PDT)*
 - [x] **CUX.DOC.1** — Document Agent Chat and Persona Prompts API changes. Update `docs/api.md` with: updated `POST /api/chat/sessions` (personaId, workItemId params), updated session response shape (persona info), template variable resolution behavior. Document built-in variable namespaces and resolution rules. *(completed 2026-04-02 11:05 PDT)*
-- [review] **CUX.DOC.2** — Document Notifications system. Update `docs/api.md` with: `notification` WebSocket event type and payload shape, NotificationEventType enum, notification priority levels. Document frontend notification preferences schema.
+- [x] **CUX.DOC.2** — Document Notifications system. Update `docs/api.md` with: `notification` WebSocket event type and payload shape, NotificationEventType enum, notification priority levels. Document frontend notification preferences schema. *(completed 2026-04-02 11:20 PDT)*
 - [ ] **CUX.TEST.5** — Regression checkpoint: re-run all existing e2e test suites in `tests/e2e/plans/` against the current build. Record results to `tests/e2e/results/`. Compare against Sprint 23 regression baseline. File bugs as `FX.REG.*` tasks for any new failures.
 
 ---
