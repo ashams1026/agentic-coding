@@ -138,8 +138,10 @@ export function OverviewTab() {
             </LineChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-[250px] flex items-center justify-center text-sm text-muted-foreground">
-            No data for this time range
+          <div className="h-[250px] flex flex-col items-center justify-center text-center">
+            <DollarSign className="h-8 w-8 text-muted-foreground/40 mb-2" />
+            <p className="text-sm font-medium text-muted-foreground">No cost data</p>
+            <p className="text-xs text-muted-foreground/60 mt-1">Run some agents to see cost trends here.</p>
           </div>
         )}
       </div>
@@ -165,8 +167,10 @@ export function OverviewTab() {
             </BarChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-[200px] flex items-center justify-center text-sm text-muted-foreground">
-            No data for this time range
+          <div className="h-[200px] flex flex-col items-center justify-center text-center">
+            <Zap className="h-8 w-8 text-muted-foreground/40 mb-2" />
+            <p className="text-sm font-medium text-muted-foreground">No agent data</p>
+            <p className="text-xs text-muted-foreground/60 mt-1">Agent cost breakdown will appear after executions.</p>
           </div>
         )}
       </div>

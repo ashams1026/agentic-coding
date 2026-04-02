@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   Bot,
@@ -75,8 +75,18 @@ function AllProjectsSummary() {
   if (!projectsList || projectsList.length === 0) {
     return (
       <Card>
-        <CardContent className="py-8 text-center text-muted-foreground">
-          No projects yet. Create a project in Settings to get started.
+        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+          <Layers className="h-10 w-10 text-muted-foreground/40 mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">No projects yet</p>
+          <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+            Create a project in Settings to start orchestrating your AI agents.
+          </p>
+          <Button variant="outline" size="sm" className="mt-4 gap-1.5" asChild>
+            <Link to="/settings">
+              <ArrowRight className="h-3.5 w-3.5" />
+              Go to Settings
+            </Link>
+          </Button>
         </CardContent>
       </Card>
     );

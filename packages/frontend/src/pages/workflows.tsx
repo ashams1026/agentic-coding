@@ -245,9 +245,11 @@ function WorkflowCard({ workflow, states, onEdit, onToggleAutoRouting }: Workflo
 
       <CardContent className="flex-1">
         {sortedStates.length === 0 ? (
-          <div className="flex flex-col items-center justify-center flex-1 gap-2 py-4">
-            <p className="text-xs text-muted-foreground">No states configured</p>
-            <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={onEdit}>
+          <div className="flex flex-col items-center justify-center flex-1 gap-1.5 py-4 text-center">
+            <GitBranch className="h-6 w-6 text-muted-foreground/40" />
+            <p className="text-xs font-medium text-muted-foreground">No states configured</p>
+            <p className="text-[11px] text-muted-foreground/60">Add states to define your workflow pipeline.</p>
+            <Button variant="outline" size="sm" className="h-7 text-xs gap-1 mt-1" onClick={onEdit}>
               <Plus className="h-3 w-3" />
               Configure States
             </Button>
@@ -757,13 +759,16 @@ function AutomationsOverview() {
                 <span className="ml-auto text-xs text-muted-foreground">{workflows.length}</span>
               </div>
               {workflows.length === 0 ? (
-                <div className="rounded-lg border border-dashed p-10 text-center">
-                  <GitBranch className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
-                  <p className="text-sm text-muted-foreground">No automations yet.</p>
+                <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-center">
+                  <GitBranch className="h-10 w-10 text-muted-foreground/40 mb-3" />
+                  <p className="text-sm font-medium text-muted-foreground">No workflows yet</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+                    Workflows define how work items move through states and which agents handle each step.
+                  </p>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="mt-3 gap-1.5"
+                    className="mt-4 gap-1.5"
                     onClick={() => setCreateWorkflowOpen(true)}
                   >
                     <Plus className="h-3.5 w-3.5" />
@@ -794,9 +799,12 @@ function AutomationsOverview() {
                 <span className="ml-auto text-xs text-muted-foreground">{schedules.length}</span>
               </div>
               {schedules.length === 0 ? (
-                <div className="rounded-lg border border-dashed p-10 text-center">
-                  <Clock className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
-                  <p className="text-sm text-muted-foreground">No schedules configured.</p>
+                <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-center">
+                  <Clock className="h-10 w-10 text-muted-foreground/40 mb-3" />
+                  <p className="text-sm font-medium text-muted-foreground">No schedules configured</p>
+                  <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+                    Schedules let you run agents automatically on a recurring basis.
+                  </p>
                   <Button
                     variant="outline"
                     size="sm"

@@ -155,8 +155,9 @@ export function CostSummary() {
               </AreaChart>
             </ResponsiveContainer>
           ) : (
-            <div className="flex h-full items-center justify-center">
-              <p className="text-xs text-muted-foreground">No spend data</p>
+            <div className="flex flex-col h-full items-center justify-center text-center">
+              <DollarSign className="h-8 w-8 text-muted-foreground/40 mb-2" />
+              <p className="text-xs text-muted-foreground">No spend data yet</p>
             </div>
           )}
         </div>

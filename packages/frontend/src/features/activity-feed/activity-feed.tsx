@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, Link } from "react-router";
 import {
+  Activity,
   ArrowRightLeft,
   Bot,
   CheckCircle2,
@@ -811,11 +812,18 @@ export function ActivityFeed() {
   if (allEvents.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="text-center space-y-2">
-          <p className="text-sm font-medium">No activity yet</p>
-          <p className="text-xs text-muted-foreground">
-            Activity events will appear here as agents work on this project.
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <Activity className="h-10 w-10 text-muted-foreground/40 mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">No activity yet</p>
+          <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+            Activity events will appear here as agents work on items in this project.
           </p>
+          <Button variant="outline" size="sm" className="mt-4 gap-1.5" asChild>
+            <Link to="/items">
+              <ArrowRightLeft className="h-3.5 w-3.5" />
+              Go to Work Items
+            </Link>
+          </Button>
         </div>
       </div>
     );
@@ -845,9 +853,11 @@ export function ActivityFeed() {
 
         <div className="mt-3">
           {filteredEvents.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-sm text-muted-foreground">
-                No events match the current filters.
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <Filter className="h-8 w-8 text-muted-foreground/40 mb-2" />
+              <p className="text-sm font-medium text-muted-foreground">No events match the current filters</p>
+              <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+                Try adjusting your filter criteria to see more events.
               </p>
             </div>
           ) : (

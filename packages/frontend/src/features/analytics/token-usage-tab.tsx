@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BarChart3, DollarSign, PieChart as PieChartIcon } from "lucide-react";
 import {
   ComposedChart, Line, Bar,
   PieChart, Pie, Cell,
@@ -93,8 +94,10 @@ export function TokenUsageTab() {
             </ComposedChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-[280px] flex items-center justify-center text-sm text-muted-foreground">
-            No data for this time range
+          <div className="h-[280px] flex flex-col items-center justify-center text-center">
+            <BarChart3 className="h-8 w-8 text-muted-foreground/40 mb-2" />
+            <p className="text-sm font-medium text-muted-foreground">No token data</p>
+            <p className="text-xs text-muted-foreground/60 mt-1">Token usage will appear after agent executions.</p>
           </div>
         )}
       </div>
@@ -124,8 +127,10 @@ export function TokenUsageTab() {
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[250px] flex items-center justify-center text-sm text-muted-foreground">
-              No data
+            <div className="h-[250px] flex flex-col items-center justify-center text-center">
+              <PieChartIcon className="h-8 w-8 text-muted-foreground/40 mb-2" />
+              <p className="text-sm font-medium text-muted-foreground">No model data</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">Model breakdown will appear after executions.</p>
             </div>
           )}
           {/* Model legend */}
@@ -180,8 +185,10 @@ export function TokenUsageTab() {
               </table>
             </div>
           ) : (
-            <div className="h-[250px] flex items-center justify-center text-sm text-muted-foreground">
-              No executions in this time range
+            <div className="h-[250px] flex flex-col items-center justify-center text-center">
+              <DollarSign className="h-8 w-8 text-muted-foreground/40 mb-2" />
+              <p className="text-sm font-medium text-muted-foreground">No executions yet</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">The most expensive executions will be listed here.</p>
             </div>
           )}
         </div>

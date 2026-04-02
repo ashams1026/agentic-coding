@@ -79,9 +79,11 @@ export function UpcomingWork() {
           </Link>
         </div>
         {items.length === 0 ? (
-          <div className="flex items-center justify-center py-6">
-            <p className="text-sm text-muted-foreground">
-              No work items ready for dispatch
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <CheckCircle2 className="h-8 w-8 text-muted-foreground/40 mb-2" />
+            <p className="text-sm font-medium text-muted-foreground">All caught up</p>
+            <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+              No work items are ready for dispatch right now.
             </p>
           </div>
         ) : (

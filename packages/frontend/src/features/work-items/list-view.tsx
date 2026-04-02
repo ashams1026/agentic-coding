@@ -326,18 +326,14 @@ function EmptyWorkItemsState({ projectId }: { projectId: string | null }) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-full text-center p-12 gap-4">
-      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted">
-        <ListTodo className="h-8 w-8 text-muted-foreground" />
-      </div>
-      <div className="space-y-1">
-        <h3 className="text-lg font-semibold">No work items yet</h3>
-        <p className="text-sm text-muted-foreground max-w-sm">
-          Create your first work item to get started. Work items track features, bugs, and tasks for your project.
-        </p>
-      </div>
-      <Button onClick={handleCreate} className="gap-1.5 mt-2">
-        <Plus className="h-4 w-4" />
+    <div className="flex flex-col items-center justify-center h-full py-16 text-center">
+      <ListTodo className="h-10 w-10 text-muted-foreground/40 mb-3" />
+      <p className="text-sm font-medium text-muted-foreground">No work items yet</p>
+      <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+        Create your first work item to get started. Work items track features, bugs, and tasks for your project.
+      </p>
+      <Button variant="outline" size="sm" className="mt-4 gap-1.5" onClick={handleCreate}>
+        <Plus className="h-3.5 w-3.5" />
         Create work item
       </Button>
     </div>
@@ -637,9 +633,13 @@ export function ListView() {
     const hasFilters = searchQuery || filterState || filterPriority || filterAgents.length > 0 || filterLabels.length > 0;
     if (hasFilters) {
       return (
-        <div className="flex flex-col items-center justify-center h-full text-center p-8 gap-3">
-          <p className="text-sm text-muted-foreground">No items match your filters.</p>
-          <Button variant="outline" size="sm" onClick={() => { clearFilters(); setFilterState(null); }}>
+        <div className="flex flex-col items-center justify-center h-full text-center p-8">
+          <ListTodo className="h-10 w-10 text-muted-foreground/40 mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">No items match your filters</p>
+          <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+            Try adjusting your search or filter criteria.
+          </p>
+          <Button variant="outline" size="sm" className="mt-4" onClick={() => { clearFilters(); setFilterState(null); }}>
             Clear filters
           </Button>
         </div>
@@ -718,9 +718,13 @@ export function ListView() {
       const hasFilters = searchQuery || filterState || filterPriority || filterAgents.length > 0 || filterLabels.length > 0;
       if (hasFilters) {
         return (
-          <div className="flex flex-col items-center justify-center h-full text-center p-8 gap-3">
-            <p className="text-sm text-muted-foreground">No items match your filters.</p>
-            <Button variant="outline" size="sm" onClick={() => { clearFilters(); setFilterState(null); }}>
+          <div className="flex flex-col items-center justify-center h-full text-center p-8">
+            <ListTodo className="h-10 w-10 text-muted-foreground/40 mb-3" />
+            <p className="text-sm font-medium text-muted-foreground">No items match your filters</p>
+            <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+              Try adjusting your search or filter criteria.
+            </p>
+            <Button variant="outline" size="sm" className="mt-4" onClick={() => { clearFilters(); setFilterState(null); }}>
               Clear filters
             </Button>
           </div>

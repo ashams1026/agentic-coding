@@ -326,8 +326,12 @@ export function RecentActivity() {
           </Link>
         </div>
         {events.length === 0 ? (
-          <div className="flex items-center justify-center py-6">
-            <p className="text-sm text-muted-foreground">No activity yet</p>
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <MessageSquare className="h-8 w-8 text-muted-foreground/40 mb-2" />
+            <p className="text-sm font-medium text-muted-foreground">No activity yet</p>
+            <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+              Events will appear here as agents work on items.
+            </p>
           </div>
         ) : (
           <div className="space-y-1">

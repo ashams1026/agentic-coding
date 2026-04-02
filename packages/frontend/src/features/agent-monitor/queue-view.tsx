@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router";
 import { Bot, Clock, Inbox } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getExecutionQueue } from "@/api";
 import { useSelectedProject } from "@/hooks";
@@ -48,16 +50,17 @@ function formatTimeWaiting(enqueuedAtMs: number): string {
 function QueueEmptyState() {
   return (
     <div className="flex h-full items-center justify-center">
-      <div className="text-center space-y-3">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-          <Inbox className="h-6 w-6 text-muted-foreground" />
-        </div>
-        <div>
-          <p className="text-sm font-medium">No queued agents</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            When agent concurrency is maxed out, new executions will queue here.
-          </p>
-        </div>
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <Inbox className="h-10 w-10 text-muted-foreground/40 mb-3" />
+        <p className="text-sm font-medium text-muted-foreground">No queued agents</p>
+        <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+          When agent concurrency is maxed out, new executions will queue here.
+        </p>
+        <Button variant="outline" size="sm" className="mt-4 gap-1.5" asChild>
+          <Link to="/items">
+            Go to Work Items
+          </Link>
+        </Button>
       </div>
     </div>
   );

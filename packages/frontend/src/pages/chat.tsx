@@ -224,14 +224,15 @@ export function ChatPage() {
   if (!selectedProjectId) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="flex flex-col items-center text-center px-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
-            <FolderOpen className="h-7 w-7 text-muted-foreground" />
-          </div>
-          <h3 className="text-lg font-semibold mb-1">No project selected</h3>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            Select a project from the sidebar to start chatting.
+        <div className="flex flex-col items-center justify-center py-16 text-center px-4">
+          <FolderOpen className="h-10 w-10 text-muted-foreground/40 mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">No project selected</p>
+          <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+            Select a project from the sidebar to start chatting with your agents.
           </p>
+          <Button variant="outline" size="sm" className="mt-4 gap-1.5" onClick={() => navigate("/settings")}>
+            Go to Settings
+          </Button>
         </div>
       </div>
     );
@@ -271,9 +272,22 @@ export function ChatPage() {
         <ScrollArea className="flex-1">
           <div className="flex flex-col p-2">
             {sessions.length === 0 && (
-              <p className="px-2 py-4 text-xs text-muted-foreground text-center">
-                No conversations yet
-              </p>
+              <div className="flex flex-col items-center py-6 text-center px-2">
+                <MessageSquare className="h-7 w-7 text-muted-foreground/40 mb-2" />
+                <p className="text-xs font-medium text-muted-foreground">No conversations yet</p>
+                <p className="text-[10px] text-muted-foreground/60 mt-1">
+                  Start a new chat to get going.
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-3 gap-1 text-xs h-7"
+                  onClick={() => setShowAgentSelector(true)}
+                >
+                  <Plus className="h-3 w-3" />
+                  New Chat
+                </Button>
+              </div>
             )}
             {groupedSessions.map((group) => {
               const groupKey = group.agentId ?? "__pico__";

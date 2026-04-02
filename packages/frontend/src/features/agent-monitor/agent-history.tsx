@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { Link } from "react-router";
 import {
   Bot,
   ChevronDown,
@@ -624,11 +625,17 @@ export function AgentHistory() {
   if (historyExecutions.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="text-center space-y-2">
-          <p className="text-sm font-medium">No execution history</p>
-          <p className="text-xs text-muted-foreground">
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <Clock className="h-10 w-10 text-muted-foreground/40 mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">No execution history</p>
+          <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
             Past agent runs will appear here once completed.
           </p>
+          <Button variant="outline" size="sm" className="mt-4 gap-1.5" asChild>
+            <Link to="/items">
+              Go to Work Items
+            </Link>
+          </Button>
         </div>
       </div>
     );

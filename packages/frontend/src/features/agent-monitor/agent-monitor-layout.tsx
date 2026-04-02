@@ -29,20 +29,16 @@ import type { ExecutionId, WorkItemId } from "@agentops/shared";
 function EmptyState() {
   return (
     <div className="flex h-full items-center justify-center">
-      <div className="text-center space-y-3">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-          <Monitor className="h-6 w-6 text-muted-foreground" />
-        </div>
-        <div>
-          <p className="text-sm font-medium">No agents running</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Agents start when work items move through workflow states.
-          </p>
-        </div>
-        <Button variant="outline" size="sm" asChild>
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <Monitor className="h-10 w-10 text-muted-foreground/40 mb-3" />
+        <p className="text-sm font-medium text-muted-foreground">No agents running</p>
+        <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+          Agents start when work items move through workflow states.
+        </p>
+        <Button variant="outline" size="sm" className="mt-4 gap-1.5" asChild>
           <Link to="/items">
+            <ArrowRight className="h-3.5 w-3.5" />
             Go to Work Items
-            <ArrowRight className="ml-1 h-3 w-3" />
           </Link>
         </Button>
       </div>

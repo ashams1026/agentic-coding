@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 13:55 PDT — DES.19: Empty states audit
+
+**Done:** Audited all pages and sub-components for consistent empty states. Added missing icons, descriptions, and CTA buttons across 15 empty states. Normalized styling to use consistent pattern: muted icon (h-10 w-10), font-medium heading, muted/60 description, outline CTA button.
+**Files:** `features/activity-feed/activity-feed.tsx`, `features/agent-monitor/agent-history.tsx`, `features/agent-monitor/agent-monitor-layout.tsx`, `features/agent-monitor/queue-view.tsx`, `features/agent-builder/agent-list.tsx`, `features/work-items/list-view.tsx`, `features/dashboard/recent-activity.tsx`, `features/dashboard/upcoming-work.tsx`, `features/dashboard/cost-summary.tsx`, `features/analytics/overview-tab.tsx`, `features/analytics/token-usage-tab.tsx`, `pages/dashboard.tsx`, `pages/chat.tsx`, `pages/workflows.tsx`
+
+---
+
 ## 2026-04-02 13:41 PDT — FX.WI1: Fix work item edit revert bug
 
 **Done:** Removed `onSettled` from `useUpdateWorkItem` that was always invalidating queries (overwriting optimistic updates). Replaced with `onSuccess` that sets server response directly into query cache. Added `mutationKey: ["workItems"]` and guarded WebSocket `state_change` handler with `isMutating` check to prevent stale refetches during active mutations.

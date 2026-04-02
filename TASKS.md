@@ -18,11 +18,11 @@
 
 > These tasks are independent of the navigation rewrite. UXO.28-29, GW.*, DES.2, DES.15 are superseded by Sprint 30.
 
-- [ ] **DES.13** — Settings: Fix grammar in terminal states note. Rewrite to "Terminal states (like Done) don't need assigned agents."
-- [ ] **DES.19** — Empty states: Audit all pages for consistent empty states (icon + heading + description + CTA).
-- [ ] **FX.UXO24** — Info: `AgentId` type uses `ps-` prefix. Tech debt — requires migration.
-- [ ] **UXO.TEST.2** — Execute UX Overhaul e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
-- [ ] **UXO.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
+- [x] **DES.13** — Settings: Fix grammar in terminal states note. N/A — target file `workflow-config-section.tsx` was deleted in UXO.26. *(completed 2026-04-02 13:50 PDT)*
+- [x] **DES.19** — Empty states: Audit all pages for consistent empty states (icon + heading + description + CTA). *(completed 2026-04-02 13:55 PDT)*
+- [x] **FX.UXO24** — Info: `AgentId` type uses `ps-` prefix. Tech debt — track-only, requires future migration. *(completed 2026-04-02 13:50 PDT)*
+- [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **UXO.TEST.2** — Execute UX Overhaul e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
+- [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **UXO.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
 
 ---
 

@@ -315,15 +315,13 @@ export function AgentList({ selectedId, onSelect }: AgentListProps) {
   if (agents.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="text-center space-y-3">
-          <Users className="h-12 w-12 text-muted-foreground/30 mx-auto" />
-          <div>
-            <p className="text-sm font-medium">No agents yet</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Set up your team of AI agents.
-            </p>
-          </div>
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={handleCreate}>
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <Users className="h-10 w-10 text-muted-foreground/40 mb-3" />
+          <p className="text-sm font-medium text-muted-foreground">No agents yet</p>
+          <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+            Set up your team of AI agents to automate workflows and handle work items.
+          </p>
+          <Button variant="outline" size="sm" className="mt-4 gap-1.5" onClick={handleCreate}>
             <Plus className="h-3.5 w-3.5" />
             Create your first agent
           </Button>
