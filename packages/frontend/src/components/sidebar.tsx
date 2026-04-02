@@ -15,6 +15,7 @@ import {
   Moon,
   Monitor,
   Dog,
+  GitBranch,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
@@ -43,6 +44,7 @@ const navItems = [
   { to: "/activity", icon: Activity, label: "Activity Feed" },
   { to: "/chat", icon: MessageSquare, label: "Chat" },
   { to: "/personas", icon: Users, label: "Personas" },
+  { to: "/workflows", icon: GitBranch, label: "Workflows" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ] as const;
 

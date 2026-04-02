@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 17:10 PDT — CWF.18: Workflow route, sidebar, API wiring
+
+**Done:** Added `/workflows` and `/workflows/:id` routes in router.tsx. Created `pages/workflows.tsx` — list view with workflow cards + "New Workflow" button, builder view loading data from `useWorkflow()` and converting to `StateCardData[]`. Added "Workflows" (GitBranch icon) to sidebar nav. Added CRUD API client functions: `createWorkflow`, `updateWorkflow`, `publishWorkflow`, `validateWorkflowApi`, `deleteWorkflow`. Added mutation hooks: `useCreateWorkflow`, `useUpdateWorkflow`, `usePublishWorkflow`, `useDeleteWorkflow` with query invalidation. Settings workflow selector already existed from CWF.14.
+**Files:** `packages/frontend/src/pages/workflows.tsx`, `packages/frontend/src/router.tsx`, `packages/frontend/src/components/sidebar.tsx`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/hooks/use-workflows.ts`
+**Notes:** Visual check passed — workflows list shows default workflow card, builder loads with all 8 states + SVG preview.
+
+---
+
 ## 2026-04-02 16:50 PDT — Review: CWF.17 (approved)
 
 **Reviewed:** workflow-builder.tsx, validation-panel.tsx, create-workflow-dialog.tsx.

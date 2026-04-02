@@ -731,6 +731,38 @@ export async function getWorkflowTransitions(workflowId: string): Promise<Workfl
   return res.data;
 }
 
+export async function createWorkflow(data: { name: string; projectId?: string }): Promise<Workflow> {
+  const res = await post<{ data: Workflow }>("/api/workflows", data);
+  return res.data;
+}
+
+export async function updateWorkflow(
+  id: string,
+  data: {
+    name?: string;
+    description?: string;
+    states?: { id?: string; name: string; type: string; color: string; personaId?: string | null; sortOrder: number }[];
+    transitions?: { id?: string; fromStateId: string; toStateId: string; label: string }[];
+  },
+): Promise<Workflow> {
+  const res = await patch<{ data: Workflow }>(`/api/workflows/${id}`, data);
+  return res.data;
+}
+
+export async function publishWorkflow(id: string): Promise<Workflow> {
+  const res = await post<{ data: Workflow }>(`/api/workflows/${id}/publish`, {});
+  return res.data;
+}
+
+export async function validateWorkflowApi(id: string): Promise<{ valid: boolean; errors: { type: string; message: string }[] }> {
+  const res = await post<{ data: { valid: boolean; errors: { type: string; message: string }[] } }>(`/api/workflows/${id}/validate`, {});
+  return res.data;
+}
+
+export async function deleteWorkflow(id: string): Promise<boolean> {
+  return del(`/api/workflows/${id}`);
+}
+
 // ── Bundled API (mirrors mockApi shape) ──────────────────────────
 
 export const apiClient = {
