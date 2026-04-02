@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 20:58 PDT — Review: FND.WIL.2 (approved)
+
+**Reviewed:** Soft delete and 409 guard for work items.
+- 409 guard at :239-257: checks `executions.status = "running"` for all descendant IDs via `inArray` ✓
+- Cascade-delete at :260-264: hard-deletes edges (both directions), comments, proposals, memories — prevents orphans ✓
+- Soft delete at :267-271: `update().set({ deletedAt: now })` on all IDs ✓
+- Default GET filters at :43-46: `isNull(deletedAt)` + `isNull(archivedAt)` always applied ✓
+- GET by ID intentionally unfiltered — needed for restore (FND.WIL.3) ✓
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 20:57 PDT — FND.WIL.2: Soft delete and 409 guard for work items
 
 **Done:** Replaced hard-delete in `DELETE /api/work-items/:id` with soft delete. Added 409 guard that blocks deletion when any execution is `"running"` for the item or its descendants. Cascade-deletes `work_item_edges` (both directions), `comments`, `proposals`, `project_memories` for all descendant IDs before setting `deleted_at = now()`. Added `isNull(workItems.deletedAt)` and `isNull(workItems.archivedAt)` default filters to `GET /api/work-items` so deleted/archived items are hidden by default.
