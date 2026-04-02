@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 07:50 PDT — SCH.2: Cron scheduler with polling + catch-up
+
+**Done:** Created `packages/backend/src/scheduling/scheduler.ts`. Built-in cron matcher (`matchesCron`, `matchesCronField`) supports *, step, exact, range, comma-separated. `getNextRunTime()` scans next 1440 minutes. `pollSchedules()`: queries due active schedules (nextRunAt <= now or null), spawns execution, updates lastRunAt/nextRunAt, resets consecutiveFailures on success. Auto-disables after 5 consecutive failures. `catchUpMissedRuns()` on startup for downtime recovery. `startScheduler()`/`stopScheduler()` with 60s setInterval. No external dependency (no node-cron).
+**Files:** `packages/backend/src/scheduling/scheduler.ts` (new)
+
+---
+
 ## 2026-04-03 07:40 PDT — Review: SCH.1 (approved)
 
 **Reviewed:** Schedules table + migration.
