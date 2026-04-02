@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 15:20 PDT — Review: CWF.12 (approved)
+
+**Reviewed:** flow-view.tsx dynamic workflow states.
+- WORKFLOW import fully replaced with useWorkflowStates(project.workflowId) ✓
+- mainStates + blockedState computed dynamically ✓
+- State colors from DB, no hardcoded references remain ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 15:15 PDT — CWF.12: Update flow-view.tsx to use dynamic workflow states
 
 **Done:** Updated `packages/frontend/src/features/work-items/flow-view.tsx`. Replaced `WORKFLOW` import with `useWorkflowStates(workflowId)` hook. Gets `workflowId` from `project.workflowId`. `mainStates` and `blockedState` computed via useMemo from dynamic data. State colors come from DB. `stateData` map initialized from `workflowStatesData`. Blocked branch index dynamically calculated from mainStates length. Filter panel color lookup uses `workflowStatesData`. Blocked card uses dynamic `blockedState.name` and `blockedState.color`.

@@ -17,7 +17,7 @@
 ### Frontend: Dynamic Views
 
 - [x] **CWF.11** — Frontend: create `packages/frontend/src/hooks/use-workflows.ts` with React Query hooks: `useWorkflows(projectId?)`, `useWorkflow(id)`, `useWorkflowStates(workflowId)`, `useWorkflowTransitions(workflowId)`. Add API client functions in `packages/frontend/src/api/client.ts`. Cache with 5-minute staleTime. *(completed 2026-04-02 15:00 PDT)*
-- [review] **CWF.12** — Frontend: update `packages/frontend/src/features/work-items/flow-view.tsx` to use `useWorkflowStates()` instead of importing hardcoded `WORKFLOW.states`. Render columns dynamically from the project's workflow. Use state colors from DB.
+- [x] **CWF.12** — Frontend: update `packages/frontend/src/features/work-items/flow-view.tsx` to use `useWorkflowStates()` instead of importing hardcoded `WORKFLOW.states`. Render columns dynamically from the project's workflow. Use state colors from DB. *(completed 2026-04-02 15:20 PDT)*
 - [ ] **CWF.13** — Frontend: update `packages/frontend/src/features/work-items/list-view.tsx` and `filter-bar.tsx` to use dynamic workflow states. State badges use colors from workflow. Filter dropdown options populated from `useWorkflowStates()`. Update `detail-panel.tsx` "Move to" dropdown to show valid transitions from `useWorkflowTransitions()`.
 - [ ] **CWF.14** — Frontend: update `packages/frontend/src/features/settings/workflow-config-section.tsx`. Replace hardcoded state list with dynamic states from `useWorkflowStates()`. Add workflow selector dropdown if multiple workflows exist. Persona assignment uses workflow state IDs.
 
