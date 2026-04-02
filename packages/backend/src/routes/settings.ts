@@ -8,6 +8,7 @@ import { logger } from "../logger.js";
 import { getActiveCount, getQueueLength, getActiveExecutionIds, clearAll } from "../agent/concurrency.js";
 import { executionManager } from "../agent/setup.js";
 import { db, sqlite } from "../db/connection.js";
+import { createBackup, listBackups, restoreBackup } from "../db/backup.js";
 import { projects, personas, personaAssignments, executions, workItems } from "../db/schema.js";
 import { eq, inArray } from "drizzle-orm";
 
@@ -382,5 +383,58 @@ export async function settingsRoutes(app: FastifyInstance) {
     }
     executionManager.setExecutorMode(mode);
     return { mode: executionManager.getExecutorMode() };
+  });
+
+  // ── Backup & Restore ────────────────────────────────────────
+
+  // POST /api/settings/backup — create manual backup
+  app.post("/api/settings/backup", async () => {
+    const backupPath = createBackup();
+    return { data: { path: backupPath, createdAt: new Date().toISOString() } };
+  });
+
+  // GET /api/settings/backups — list available backups
+  app.get("/api/settings/backups", async () => {
+    const backups = listBackups();
+    return {
+      data: backups.map((b) => ({
+        filename: b.filename,
+        path: b.path,
+        sizeBytes: b.sizeBytes,
+        sizeMb: +(b.sizeBytes / (1024 * 1024)).toFixed(2),
+        createdAt: b.createdAt,
+      })),
+      total: backups.length,
+    };
+  });
+
+  // POST /api/settings/restore — restore from backup
+  app.post<{
+    Body: { path: string };
+  }>("/api/settings/restore", async (request, reply) => {
+    const { path } = request.body;
+    try {
+      restoreBackup(path);
+      return { data: { restored: true, path, message: "Database restored. Restart the server to apply changes." } };
+    } catch (err) {
+      return reply.status(400).send({ error: { code: "RESTORE_FAILED", message: (err as Error).message } });
+    }
+  });
+
+  // ── Log Truncation ──────────────────────────────────────────
+
+  // POST /api/settings/truncate-logs — truncate old execution logs
+  app.post<{
+    Querystring: { olderThanDays?: string };
+  }>("/api/settings/truncate-logs", async (request) => {
+    const days = parseInt(request.query.olderThanDays ?? "30", 10) || 30;
+    const threshold = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+    const result = sqlite.prepare(
+      `UPDATE executions SET logs = '' WHERE completed_at IS NOT NULL AND completed_at < ? AND logs != ''`,
+    ).run(threshold.getTime());
+
+    logger.info({ days, truncated: result.changes }, "Execution logs truncated");
+    return { data: { truncated: result.changes, olderThanDays: days } };
   });
 }

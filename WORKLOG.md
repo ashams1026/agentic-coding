@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 05:10 PDT — DM.3: Backup/restore API + log truncation endpoints
+
+**Done:** Added 4 endpoints to `settings.ts`: `POST /api/settings/backup` (triggers `createBackup()`, returns path), `GET /api/settings/backups` (lists with filename/path/sizeBytes/sizeMb/createdAt), `POST /api/settings/restore` (calls `restoreBackup(path)` with error handling), `POST /api/settings/truncate-logs?olderThanDays=30` (UPDATE executions SET logs='' WHERE completed_at < threshold, returns truncated count). Log truncation uses raw `sqlite.prepare()` for direct UPDATE (preserves all metadata, only clears logs text).
+**Files:** `packages/backend/src/routes/settings.ts`
+
+---
+
 ## 2026-04-03 05:00 PDT — Review: DM.2 (approved)
 
 **Reviewed:** Pre-migration backup hook.
