@@ -16,7 +16,7 @@
 
 ### Bugs & Remaining
 
-- [ ] **FX.CWF.1** — Bug: Workflow PATCH API returns 206 on save with new states/transitions. PATCH `/api/workflows/:id` fails when saving a workflow with new entities (temporary `s-new-`/`t-new-` IDs sent as undefined). Publish works. Investigate backend PATCH handler bulk state/transition replacement logic.
+- [review] **FX.CWF.1** — Bug: Workflow PATCH API returns 206 on save with new states/transitions. PATCH `/api/workflows/:id` fails when saving a workflow with new entities (temporary `s-new-`/`t-new-` IDs sent as undefined). Publish works. Investigate backend PATCH handler bulk state/transition replacement logic.
 - [ ] **CWF.DOC.1** — Document Custom Workflows API. Update `docs/api.md` with: workflow CRUD endpoints, state/transition schemas, validation endpoint, dynamic state resolution in work items. Document migration from hardcoded to dynamic workflows.
 - [ ] **CWF.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans in `tests/e2e/plans/` against the current build. This is critical — workflow changes touch 15+ backend files and 8+ frontend views. Compare against Sprint 24 regression baseline. File bugs as `FX.REG.*` for any new failures.
 

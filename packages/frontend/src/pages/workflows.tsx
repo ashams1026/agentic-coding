@@ -23,34 +23,28 @@ export function WorkflowsPage() {
 
   const handleSave = (name: string, states: StateCardData[]) => {
     if (!id) return;
-    // Build transitions from the states' embedded transitions
+    // Send client-side IDs as-is (including temporary s-new-*/t-new-* IDs)
+    // Backend handles mapping temporary IDs to real IDs
     const allTransitions = states.flatMap((s) =>
       s.transitions.map((t) => ({
-        id: t.id.startsWith("t-new-") ? undefined : t.id,
-        fromStateId: s.id.startsWith("s-new-") ? undefined : s.id,
+        id: t.id,
+        fromStateId: s.id,
         toStateId: t.toStateId,
         label: t.label,
-        _fromLocalId: s.id,
-        _toLocalId: t.toStateId,
       })),
     );
     updateWorkflow.mutate({
       id,
       name,
       states: states.map((s) => ({
-        id: s.id.startsWith("s-new-") ? undefined : s.id,
+        id: s.id,
         name: s.name,
         type: s.type,
         color: s.color,
         personaId: s.personaId,
         sortOrder: s.sortOrder,
       })),
-      transitions: allTransitions.map((t) => ({
-        id: t.id,
-        fromStateId: t.fromStateId ?? t._fromLocalId,
-        toStateId: t.toStateId,
-        label: t.label,
-      })),
+      transitions: allTransitions,
     });
   };
 

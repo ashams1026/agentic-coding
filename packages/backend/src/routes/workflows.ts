@@ -202,12 +202,19 @@ export async function workflowRoutes(app: FastifyInstance) {
 
     await db.update(workflows).set(updates).where(eq(workflows.id, id));
 
-    // Replace states if provided
+    // Replace states if provided — build ID mapping for transition remapping
+    // Client may send temporary IDs (e.g. "s-new-123") for new states — generate real IDs
+    // and track the mapping so transitions can be remapped
+    const stateIdMap = new Map<string, string>();
     if (body.states) {
       await db.delete(workflowStates).where(eq(workflowStates.workflowId, id));
       for (const s of body.states) {
+        const clientId = s.id;
+        const isTemporary = !clientId || clientId.startsWith("s-new-");
+        const dbId = isTemporary ? createId.workflowState() : clientId;
+        if (clientId) stateIdMap.set(clientId, dbId);
         await db.insert(workflowStates).values({
-          id: s.id ?? createId.workflowState(),
+          id: dbId,
           workflowId: id,
           name: s.name,
           type: s.type,
@@ -218,17 +225,20 @@ export async function workflowRoutes(app: FastifyInstance) {
       }
     }
 
-    // Replace transitions if provided
+    // Replace transitions if provided — remap state IDs using the mapping
     if (body.transitions) {
       await db.delete(workflowTransitions).where(eq(workflowTransitions.workflowId, id));
       for (const t of body.transitions) {
+        const isTemporaryTransition = !t.id || t.id.startsWith("t-new-");
+        const fromId = stateIdMap.get(t.fromStateId) ?? t.fromStateId;
+        const toId = stateIdMap.get(t.toStateId) ?? t.toStateId;
         await db.insert(workflowTransitions).values({
-          id: t.id ?? createId.workflowTransition(),
+          id: isTemporaryTransition ? createId.workflowTransition() : t.id!,
           workflowId: id,
-          fromStateId: t.fromStateId,
-          toStateId: t.toStateId,
+          fromStateId: fromId,
+          toStateId: toId,
           label: t.label ?? "",
-          sortOrder: t.sortOrder,
+          sortOrder: t.sortOrder ?? 0,
         });
       }
     }
