@@ -17,7 +17,7 @@ export type Priority = "p0" | "p1" | "p2" | "p3";
 
 export type PersonaModel = "opus" | "sonnet" | "haiku";
 
-export type ExecutionStatus = "pending" | "running" | "completed" | "failed" | "cancelled";
+export type ExecutionStatus = "pending" | "running" | "completed" | "failed" | "cancelled" | "interrupted";
 
 export type ExecutionOutcome = "success" | "failure" | "rejected";
 

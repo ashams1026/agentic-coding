@@ -71,14 +71,15 @@ export async function recoverOrphanedState(): Promise<RecoveryReport> {
         );
       }
 
-      // Bulk update all orphaned executions to failed
+      // Bulk update all orphaned executions to interrupted
       await db
         .update(executions)
         .set({
-          status: "failed",
+          status: "interrupted",
           completedAt: now,
           summary: "Interrupted by server restart",
           outcome: "failure",
+          error: { category: "interrupted", message: "Server restarted during execution" },
         })
         .where(
           or(
