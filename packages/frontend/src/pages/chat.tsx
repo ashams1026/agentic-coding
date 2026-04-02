@@ -240,7 +240,7 @@ export function ChatPage() {
   return (
     <div className="flex h-full">
       {/* Session sidebar */}
-      <div className="w-64 border-r border-border flex flex-col bg-card shrink-0">
+      <div className="w-60 border-r border-border flex flex-col bg-card shrink-0">
         <div className="flex items-center justify-between border-b border-border px-3 py-3">
           <div className="flex items-center gap-2">
             <MessageSquare className="h-4 w-4 text-muted-foreground" />

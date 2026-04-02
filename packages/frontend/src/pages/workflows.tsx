@@ -5,6 +5,7 @@ import {
   Pause,
   Plus,
   Pencil,
+  Trash2,
   Clock,
   Calendar,
   ChevronRight,
@@ -162,6 +163,29 @@ async function toggleScheduleApi(id: string, isActive: boolean): Promise<Schedul
   return data.data;
 }
 
+async function updateScheduleApi(id: string, body: Record<string, unknown>): Promise<Schedule> {
+  const res = await fetch(`${BASE_URL}/api/schedules/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error("Failed to update schedule");
+  const data = await res.json();
+  return data.data;
+}
+
+async function deleteScheduleApi(id: string): Promise<void> {
+  const res = await fetch(`${BASE_URL}/api/schedules/${id}`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete schedule");
+}
+
+async function runNowApi(id: string): Promise<{ executionId: string }> {
+  const res = await fetch(`${BASE_URL}/api/schedules/${id}/run-now`, { method: "POST" });
+  if (!res.ok) throw new Error("Failed to trigger schedule");
+  const data = await res.json();
+  return data.data;
+}
+
 // ── Workflow state pipeline ──────────────────────────────────────
 
 const STATE_TYPE_COLORS: Record<string, string> = {
@@ -268,9 +292,13 @@ interface ScheduleCardProps {
   schedule: Schedule;
   agentAvatar: { color: string; icon: string } | null;
   onToggle: (id: string, isActive: boolean) => void;
+  onEdit: (schedule: Schedule) => void;
+  onDelete: (id: string) => void;
+  onRunNow: (id: string) => void;
+  runningId: string | null;
 }
 
-function ScheduleCard({ schedule, agentAvatar, onToggle }: ScheduleCardProps) {
+function ScheduleCard({ schedule, agentAvatar, onToggle, onEdit, onDelete, onRunNow, runningId }: ScheduleCardProps) {
   const lastRunStatus = schedule.consecutiveFailures > 0 ? "failed" : schedule.lastRunAt ? "success" : "pending";
 
   return (
@@ -334,26 +362,64 @@ function ScheduleCard({ schedule, agentAvatar, onToggle }: ScheduleCardProps) {
         </div>
       </CardContent>
 
-      <CardFooter className="pt-3 border-t border-border/50 gap-2">
+      <CardFooter className="pt-3 border-t border-border/50 flex items-center justify-between gap-2">
         {/* Last run status */}
-        {lastRunStatus === "success" && (
-          <Badge variant="outline" className="gap-1 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10">
-            <CheckCircle2 className="h-3 w-3" />
-            Last run OK
-          </Badge>
-        )}
-        {lastRunStatus === "failed" && (
-          <Badge variant="outline" className="gap-1 text-destructive border-destructive/30 bg-destructive/10">
-            <XCircle className="h-3 w-3" />
-            {schedule.consecutiveFailures} failure{schedule.consecutiveFailures > 1 ? "s" : ""}
-          </Badge>
-        )}
-        {lastRunStatus === "pending" && (
-          <Badge variant="outline" className="gap-1 text-muted-foreground">
-            <Circle className="h-3 w-3" />
-            Never run
-          </Badge>
-        )}
+        <div className="flex items-center gap-2">
+          {lastRunStatus === "success" && (
+            <Badge variant="outline" className="gap-1 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 bg-emerald-500/10">
+              <CheckCircle2 className="h-3 w-3" />
+              Last run OK
+            </Badge>
+          )}
+          {lastRunStatus === "failed" && (
+            <Badge variant="outline" className="gap-1 text-destructive border-destructive/30 bg-destructive/10">
+              <XCircle className="h-3 w-3" />
+              {schedule.consecutiveFailures} failure{schedule.consecutiveFailures > 1 ? "s" : ""}
+            </Badge>
+          )}
+          {lastRunStatus === "pending" && (
+            <Badge variant="outline" className="gap-1 text-muted-foreground">
+              <Circle className="h-3 w-3" />
+              Never run
+            </Badge>
+          )}
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex items-center gap-0.5 shrink-0">
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => onRunNow(schedule.id)}
+            disabled={runningId === schedule.id}
+            title="Run Now"
+            className="h-7 w-7 p-0"
+          >
+            {runningId === schedule.id ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Play className="h-3.5 w-3.5" />
+            )}
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => onEdit(schedule)}
+            title="Edit Schedule"
+            className="h-7 w-7 p-0"
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => onDelete(schedule.id)}
+            title="Delete Schedule"
+            className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );
@@ -361,14 +427,15 @@ function ScheduleCard({ schedule, agentAvatar, onToggle }: ScheduleCardProps) {
 
 // ── New Schedule Dialog ──────────────────────────────────────────
 
-interface NewScheduleDialogProps {
+interface ScheduleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   projectId: string | undefined;
-  onCreated: () => void;
+  onSaved: () => void;
+  editingSchedule?: Schedule;
 }
 
-function NewScheduleDialog({ open, onOpenChange, projectId, onCreated }: NewScheduleDialogProps) {
+function ScheduleDialog({ open, onOpenChange, projectId, onSaved, editingSchedule }: ScheduleDialogProps) {
   const { data: agents = [] } = useAgents();
   const [name, setName] = useState("");
   const [agentId, setAgentId] = useState("");
@@ -378,12 +445,37 @@ function NewScheduleDialog({ open, onOpenChange, projectId, onCreated }: NewSche
   const [saving, setSaving] = useState(false);
   const addToast = useToastStore((s) => s.addToast);
 
-  // Default agentId when agents load
+  const isEditing = !!editingSchedule;
+
+  // Pre-fill form when editing or reset when creating
   useEffect(() => {
-    if (agents.length > 0 && !agentId) {
+    if (editingSchedule) {
+      setName(editingSchedule.name);
+      setAgentId(editingSchedule.agentId);
+      const matchingPreset = CRON_PRESETS.find((p) => p.value === editingSchedule.cronExpression);
+      if (matchingPreset && matchingPreset.value !== "custom") {
+        setPreset(editingSchedule.cronExpression);
+        setCustomCron("");
+      } else {
+        setPreset("custom");
+        setCustomCron(editingSchedule.cronExpression);
+      }
+      setPrompt(editingSchedule.promptTemplate);
+    } else {
+      setName("");
+      setAgentId(agents[0]?.id ?? "");
+      setPreset("*/30 * * * *");
+      setCustomCron("");
+      setPrompt("");
+    }
+  }, [editingSchedule, agents]);
+
+  // Default agentId when agents load (only for create mode)
+  useEffect(() => {
+    if (!isEditing && agents.length > 0 && !agentId) {
       setAgentId(agents[0]!.id);
     }
-  }, [agents, agentId]);
+  }, [agents, agentId, isEditing]);
 
   const cronExpression = preset === "custom" ? customCron : preset;
 
@@ -395,21 +487,25 @@ function NewScheduleDialog({ open, onOpenChange, projectId, onCreated }: NewSche
     }
     setSaving(true);
     try {
-      await createScheduleApi({
-        name: name.trim(),
-        agentId,
-        cronExpression: cron,
-        promptTemplate: prompt.trim() || undefined,
-        projectId: projectId ?? undefined,
-      });
-      addToast({ type: "success", title: "Schedule created" });
+      if (isEditing) {
+        await updateScheduleApi(editingSchedule.id, {
+          name: name.trim(),
+          cronExpression: cron,
+          promptTemplate: prompt.trim(),
+        });
+        addToast({ type: "success", title: "Schedule updated" });
+      } else {
+        await createScheduleApi({
+          name: name.trim(),
+          agentId,
+          cronExpression: cron,
+          promptTemplate: prompt.trim() || undefined,
+          projectId: projectId ?? undefined,
+        });
+        addToast({ type: "success", title: "Schedule created" });
+      }
       onOpenChange(false);
-      onCreated();
-      setName("");
-      setAgentId(agents[0]?.id ?? "");
-      setPreset("*/30 * * * *");
-      setCustomCron("");
-      setPrompt("");
+      onSaved();
     } catch (err) {
       addToast({ type: "error", title: String(err) });
     } finally {
@@ -421,7 +517,7 @@ function NewScheduleDialog({ open, onOpenChange, projectId, onCreated }: NewSche
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>New Schedule</DialogTitle>
+          <DialogTitle>{isEditing ? "Edit Schedule" : "New Schedule"}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 py-2">
           <div>
@@ -434,21 +530,24 @@ function NewScheduleDialog({ open, onOpenChange, projectId, onCreated }: NewSche
               autoFocus
             />
           </div>
-          <div>
-            <label className="text-sm font-medium">Agent</label>
-            <Select value={agentId} onValueChange={setAgentId}>
-              <SelectTrigger className="mt-1">
-                <SelectValue placeholder="Select agent" />
-              </SelectTrigger>
-              <SelectContent>
-                {agents.map((a) => (
-                  <SelectItem key={a.id} value={a.id}>
-                    {a.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {/* Agent selector — only shown on create; agent can't change after creation */}
+          {!isEditing && (
+            <div>
+              <label className="text-sm font-medium">Agent</label>
+              <Select value={agentId} onValueChange={setAgentId}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select agent" />
+                </SelectTrigger>
+                <SelectContent>
+                  {agents.map((a) => (
+                    <SelectItem key={a.id} value={a.id}>
+                      {a.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div>
             <label className="text-sm font-medium">Frequency</label>
             <Select value={preset} onValueChange={setPreset}>
@@ -499,7 +598,7 @@ function NewScheduleDialog({ open, onOpenChange, projectId, onCreated }: NewSche
           </Button>
           <Button onClick={handleSave} disabled={saving}>
             {saving && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-            Create Schedule
+            {isEditing ? "Save Changes" : "Create Schedule"}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -520,6 +619,8 @@ function AutomationsOverview() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loadingSchedules, setLoadingSchedules] = useState(true);
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [editingSchedule, setEditingSchedule] = useState<Schedule | undefined>(undefined);
+  const [runningScheduleId, setRunningScheduleId] = useState<string | null>(null);
   const [createWorkflowOpen, setCreateWorkflowOpen] = useState(false);
   const addToast = useToastStore((s) => s.addToast);
 
@@ -559,6 +660,34 @@ function AutomationsOverview() {
     }
   }
 
+  function handleEditSchedule(schedule: Schedule) {
+    setEditingSchedule(schedule);
+    setScheduleDialogOpen(true);
+  }
+
+  async function handleDeleteSchedule(id: string) {
+    try {
+      await deleteScheduleApi(id);
+      setSchedules((prev) => prev.filter((s) => s.id !== id));
+      addToast({ type: "success", title: "Schedule deleted" });
+    } catch {
+      addToast({ type: "error", title: "Failed to delete schedule" });
+    }
+  }
+
+  async function handleRunNowSchedule(id: string) {
+    setRunningScheduleId(id);
+    try {
+      const result = await runNowApi(id);
+      addToast({ type: "success", title: `Execution started: ${result.executionId}` });
+      await loadSchedules();
+    } catch (err) {
+      addToast({ type: "error", title: String(err) });
+    } finally {
+      setRunningScheduleId(null);
+    }
+  }
+
   function handleCreateWorkflow(name: string) {
     createWorkflow.mutate(
       { name, projectId: projectId ?? undefined },
@@ -595,7 +724,7 @@ function AutomationsOverview() {
               <GitBranch className="h-4 w-4" />
               New Workflow
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setScheduleDialogOpen(true)} className="gap-2">
+            <DropdownMenuItem onClick={() => { setEditingSchedule(undefined); setScheduleDialogOpen(true); }} className="gap-2">
               <Clock className="h-4 w-4" />
               New Schedule
             </DropdownMenuItem>
@@ -682,6 +811,10 @@ function AutomationsOverview() {
                         schedule={schedule}
                         agentAvatar={agent?.avatar ?? null}
                         onToggle={handleToggleSchedule}
+                        onEdit={handleEditSchedule}
+                        onDelete={handleDeleteSchedule}
+                        onRunNow={handleRunNowSchedule}
+                        runningId={runningScheduleId}
                       />
                     );
                   })}
@@ -700,11 +833,15 @@ function AutomationsOverview() {
         onCreate={handleCreateWorkflow}
       />
 
-      <NewScheduleDialog
+      <ScheduleDialog
         open={scheduleDialogOpen}
-        onOpenChange={setScheduleDialogOpen}
+        onOpenChange={(open) => {
+          setScheduleDialogOpen(open);
+          if (!open) setEditingSchedule(undefined);
+        }}
         projectId={projectId as string | undefined}
-        onCreated={loadSchedules}
+        onSaved={loadSchedules}
+        editingSchedule={editingSchedule}
       />
     </div>
   );

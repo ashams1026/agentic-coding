@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-04-02 13:42 PDT — UXO.27: Move Schedules to Automations page
+
+**Done:** Extended ScheduleCard with edit, delete, and run-now action buttons. Renamed NewScheduleDialog → ScheduleDialog with `editingSchedule` prop for edit mode (pre-fills form, uses PATCH). Added `updateScheduleApi`, `deleteScheduleApi`, `runNowApi` helpers. Removed Scheduling tab from settings-layout.tsx (Clock import, SECTIONS entry, SchedulingSection import/rendering). Deleted dead `scheduling-section.tsx`. Reviewer caught missing `res.ok` check in deleteScheduleApi — fixed.
+**Files:** `packages/frontend/src/pages/workflows.tsx`, `packages/frontend/src/features/settings/settings-layout.tsx`, `packages/frontend/src/features/settings/scheduling-section.tsx` (deleted)
+
+---
+
+## 2026-04-02 13:42 PDT — DES.4: Reduce chat sidebar width
+
+**Done:** Changed chat session sidebar from `w-64` (256px) to `w-60` (240px). Truncation already in place via existing `truncate` classes.
+**Files:** `packages/frontend/src/pages/chat.tsx`
+
+---
+
+## 2026-04-02 13:42 PDT — DES.6: Agent Monitor filter label
+
+**Done:** Added "Scope:" label before the filter dropdown in Agent Monitor Live tab. Changed "All" option text to "All Projects" for clarity.
+**Files:** `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`
+
+---
+
+## 2026-04-02 13:42 PDT — DES.18: Status bar height increase
+
+**Done:** Increased status bar height from `h-8` (32px) to `h-9` (36px) for better readability. Font size (`text-xs` = 12px) already meets minimum.
+**Files:** `packages/frontend/src/components/status-bar.tsx`
+
 ## 2026-04-02 13:28 PDT — FX.UXO13: Chat empty state for no project
 
 **Done:** Added early-return guard in ChatPage when `selectedProjectId` is null. Renders centered empty state with FolderOpen icon, "No project selected" heading, and "Select a project from the sidebar" description. Guard placed after all hooks to respect rules of hooks.

@@ -21,7 +21,7 @@
 
 ### Phase 4: Workflow Rework (remaining)
 
-- [ ] **UXO.27** — Frontend: Move Schedules out of Settings onto Automations page. Remove the schedules section from Settings. Schedule cards on the Automations page link to an edit view (inline dialog or dedicated page) for cron expression, agent selection, prompt template, and project scope. Active/disabled toggle directly on the card.
+- [x] **UXO.27** — Frontend: Move Schedules out of Settings onto Automations page. Remove the schedules section from Settings. Schedule cards on the Automations page link to an edit view (inline dialog or dedicated page) for cron expression, agent selection, prompt template, and project scope. Active/disabled toggle directly on the card. *(completed 2026-04-02 13:42 PDT)*
 - [x] **UXO.22** — Frontend: Per-workflow auto-routing toggle on overview page and in builder header. Calls `PATCH /api/workflows/:id { autoRouting }`. Label: "Auto-routing OFF" / "Auto-routing ON". *(completed 2026-04-02 13:28 PDT)*
 - [ ] **UXO.26** — Frontend: Move workflow settings from Settings page into workflow builder. Remove `workflow-config-section.tsx` from Settings. Move the agent-state assignment table (PersonaStateTable → AgentStateTable) into the workflow builder as a "State Agents" tab or section alongside the state cards. The auto-routing toggle is already on the workflow (UXO.22). The workflow selector dropdown in Settings is no longer needed since each workflow is managed from its own builder page. Clean up any orphaned Settings references.
 
@@ -37,8 +37,8 @@
 - [ ] **DES.1** — Dashboard: Add onboarding/getting-started section for fresh installs. When no work items exist, show a guided checklist: (1) Register a project, (2) Configure API key, (3) Create a work item, (4) Watch an agent run. Replace the empty stat cards + empty table with this flow. Hide once first work item is created.
 - [ ] **DES.2** — Dashboard: Improve Projects Overview table. Add columns: work item count, active agents, workflow name, last activity. Currently just shows name + date — not useful.
 - [ ] **DES.3** — Chat: Auto-generate session names from first user message (first 40 chars). "New chat" repeated 15+ times makes the session sidebar unusable. Fall back to timestamp if no message yet.
-- [ ] **DES.4** — Chat: Reduce session sidebar width. Currently takes disproportionate horizontal space. Cap at ~240px and truncate long session names with ellipsis.
-- [ ] **DES.6** — Agent Monitor: Add label to the filter dropdown next to the tabs. Currently just shows "All" with no context of what it filters (agents? projects?).
+- [x] **DES.4** — Chat: Reduce session sidebar width. Currently takes disproportionate horizontal space. Cap at ~240px and truncate long session names with ellipsis. *(completed 2026-04-02 13:42 PDT)*
+- [x] **DES.6** — Agent Monitor: Add label to the filter dropdown next to the tabs. Currently just shows "All" with no context of what it filters (agents? projects?). *(completed 2026-04-02 13:42 PDT)*
 - [ ] **DES.7** — Automations: Normalize workflow card heights. Default card (with state chips) is taller than cards with no states. Add min-height so cards align in a grid. Cards with no states should show a "Configure states" CTA instead of just "No states defined".
 - [ ] **DES.8** — Automations: Change ALL CAPS section headers ("WORKFLOWS", "SCHEDULES") to Title Case ("Workflows", "Schedules"). Reduce visual heaviness. Apply consistent icon sizing on section headers.
 - [ ] **DES.9** — Agent Builder: Add search/filter input above agent card grid. As agent count grows, users need to find agents by name or scope. Simple text filter is sufficient for v1.
@@ -50,7 +50,7 @@
 - [ ] **DES.15** — Settings > Projects: Add useful columns to projects table — work item count, active agents, workflow name, path. Currently just name + date.
 - [ ] **DES.16** — Work Items: Add tooltip or label explaining the "Auto" badge next to the page title. Users have no context for what this means.
 - [ ] **DES.17** — Activity Feed: Add filter bar with time range selector and event type filter. Currently completely bare — just empty state text. Even in empty state, show the filter controls so users understand what the page will look like.
-- [ ] **DES.18** — Global: Increase status bar font size slightly — current text is hard to read at small size. Consider 12px minimum.
+- [x] **DES.18** — Global: Increase status bar font size slightly — current text is hard to read at small size. Consider 12px minimum. *(completed 2026-04-02 13:42 PDT)*
 - [ ] **DES.19** — Empty states: Audit all empty states across the app for consistency. Every empty state should have: (1) an icon, (2) a heading, (3) a one-line description, (4) a primary CTA button. Pages missing CTAs: Dashboard, Activity Feed. Pages with good empty states to use as template: Agent Monitor, Scheduling.
 
 ### Rename "All Projects" → "Global Workspace"

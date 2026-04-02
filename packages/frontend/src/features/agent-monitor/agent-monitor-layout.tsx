@@ -232,12 +232,13 @@ export function AgentMonitorLayout() {
         {/* Scope filter + New Run */}
         {tab === "live" && (
           <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Scope:</span>
             <Select value={scopeFilter} onValueChange={setScopeFilter}>
               <SelectTrigger className="h-7 w-[160px] text-xs">
                 <SelectValue placeholder="All scopes" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="all">All Projects</SelectItem>
                 <SelectItem value="__global__">Global Only</SelectItem>
                 {projectsList.map((p) => (
                   <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
