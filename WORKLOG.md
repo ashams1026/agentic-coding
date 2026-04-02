@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 14:20 PDT — CWF.9: Read-only workflow API endpoints
+
+**Done:** Created `packages/backend/src/routes/workflows.ts` with 4 read-only endpoints. `GET /api/workflows` — list with optional projectId/scope filters (returns global + project-scoped). `GET /api/workflows/:id` — full workflow with nested states + transitions arrays. `GET /api/workflows/:id/states` — list states ordered by sortOrder. `GET /api/workflows/:id/transitions` — list transitions. Added serialization functions for workflow, state, transition. Registered in server.ts. Added shared types: `Workflow`, `WorkflowStateEntity`, `WorkflowTransitionEntity` to entities.ts.
+**Files:** `packages/backend/src/routes/workflows.ts` (new), `packages/backend/src/server.ts`, `packages/shared/src/entities.ts`
+
+---
+
 ## 2026-04-02 14:10 PDT — Review: CWF.8 (approved)
 
 **Reviewed:** Dynamic router prompt in router.ts.

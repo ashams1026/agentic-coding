@@ -215,3 +215,36 @@ export interface ChatMessage {
   metadata: Record<string, unknown>;
   createdAt: string;
 }
+
+// ── Workflows ───────────────────────────────────────────────────
+
+export interface Workflow {
+  id: string;
+  name: string;
+  description: string;
+  scope: "global" | "project";
+  projectId: ProjectId | null;
+  version: number;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WorkflowStateEntity {
+  id: string;
+  workflowId: string;
+  name: string;
+  type: "initial" | "intermediate" | "terminal";
+  color: string;
+  personaId: PersonaId | null;
+  sortOrder: number;
+}
+
+export interface WorkflowTransitionEntity {
+  id: string;
+  workflowId: string;
+  fromStateId: string;
+  toStateId: string;
+  label: string;
+  sortOrder: number;
+}
