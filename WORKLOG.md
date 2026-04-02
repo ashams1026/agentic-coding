@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 20:44 PDT — Review: FND.ERR.6 (approved)
+
+**Reviewed:** Interrupted execution status for orphan recovery.
+- `ExecutionStatus` in entities.ts:20 now includes `"interrupted"` — correct file (task spec said types.ts but type lives in entities.ts) ✓
+- `recoverOrphanedState()` in start.ts:74-89: `status: "interrupted"`, `error: { category: "interrupted", message: "Server restarted during execution" }`, keeps `outcome: "failure"` and `completedAt` — all correct ✓
+- WHERE clause unchanged (still finds `"running"` or `"pending"` orphans) ✓
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 20:43 PDT — FND.ERR.6: Add interrupted execution status for orphan recovery
 
 **Done:** Added `"interrupted"` to `ExecutionStatus` union type in `packages/shared/src/entities.ts`. Updated `recoverOrphanedState()` in `start.ts` to set `status: "interrupted"` (instead of `"failed"`), with structured `error: { category: "interrupted", message: "Server restarted during execution" }`. Existing frontend code that checks `"completed" || "failed"` is unaffected — `"interrupted"` is a distinct terminal state.
