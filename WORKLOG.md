@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 02:20 PDT — Decompose Sprint 27: Integration & Maintenance
+
+**Done:** Decomposed Sprint 27 into 20 tasks across 4 sections: Outbound Webhooks P1 (OWH.1-6: TypedEventEmitter event bus, webhook subscriptions + deliveries schema, delivery worker with HMAC + retry + auto-disable, CRUD API, Settings Integrations UI, event bus wiring), Inbound Webhooks P1 (IWH.1-3: trigger schema + triggerType/triggerId on executions, generic receiver with HMAC + Handlebars templates, Settings UI), Data Management P1 (DM.1-5: SQLite backup() API with retention, pre-migration backup hook, backup/restore/truncate-logs endpoints, dbstat storage stats, Settings Data tab), Testing & Docs (S27.TEST.1-5 + S27.DOC.1: 2 test plans, 2 test executions, API docs, regression checkpoint). Key findings: no event bus exists yet (audit.ts is function-based logging), no Integrations settings tab, export/import exists but not backup/restore, 23 columns on executions table.
+**Files:** `TASKS.md`
+
+---
+
 ## 2026-04-03 02:10 PDT — Review: S26.TEST.7 (approved)
 
 **Reviewed:** Post-Sprint 26 regression checkpoint.
