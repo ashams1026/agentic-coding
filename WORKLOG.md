@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 20:40 PDT — Review: RES.TOKENS.DASHBOARD (approved)
+
+**Reviewed:** Aggregated token usage dashboard UX research doc.
+- All 6 areas covered: dashboard location (tab within Analytics at /analytics?tab=usage, avoids 8th sidebar item — sidebar.tsx:38-46 confirmed 7 items), key views (5 visualizations with wireframes: usage over time dual-axis LineChart, model PieChart, persona/project horizontal BarCharts, top N sortable Table), time range controls (shared with analytics page, URL params, comparison mode), summary cards (4 cards with delta arrows, K/M formatting), real-time vs batch (on-the-fly SQL aggregation — 10K rows in <10ms; missing startedAt index identified; 6 API endpoints proposed), export (server-side CSV streaming, JSON Phase 2)
+- Source code claims verified: sidebar 7 nav items :38-46, dashboard 4 stat cards :68-97 + 3 widgets :102-105, schema.ts executions table :142-159 (no indexes — gap confirmed), costUsd cents :149, dashboard.ts loads all executions in memory :35, RES.ANALYTICS.UX Section 9 forward reference :401, agent-history.tsx StatsBar :138-177, cost-summary.tsx AreaChart, costs-section.tsx BarChart
+- All 9 cross-reference files exist (4 proposals + 5 source files)
+- Data dependency matrix correctly separates Phase 1 (existing columns) from Phase 1.5 (new columns from RES.TOKENS.TRACKING)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 20:30 PDT — RES.TOKENS.DASHBOARD: Research aggregated token usage dashboard UX
 
 **Done:** Researched aggregated token usage dashboard UX. Doc covers all 6 investigation areas: (1) dashboard location — recommended Tab within Analytics page (`/analytics?tab=usage`) over separate page, shares time range controls and avoids 8th sidebar nav item; relationship to RES.ANALYTICS.UX forward reference confirmed. (2) key views — 5 visualizations: usage over time (dual-axis LineChart, tokens + cost), breakdown by model (PieChart with cost/tokens toggle), breakdown by persona (horizontal BarChart with 3-metric toggle), breakdown by project (same pattern, JOIN via workItems), top N most expensive executions (sortable/paginated Table). (3) time range controls — shared with analytics page (24h/7d/30d/90d/custom), URL query params for shareability, comparison mode with delta arrows. (4) summary cards — 4 cards: total cost, total tokens, avg cost/exec, execution count; delta calculation vs prior period; K/M token formatting. (5) real-time vs batch — recommended on-the-fly SQL aggregation, no pre-computed tables; SQLite handles 10K rows in <10ms; identified missing index on startedAt; proposed 6 new API endpoints using SQL-level aggregation (improvement over current in-memory filter pattern at dashboard.ts:28-117). (6) export — server-side CSV streaming with Content-Disposition, JSON export Phase 2. Also: component architecture tree, responsive breakpoints, data dependency matrix (Phase 1 vs Phase 1.5), graceful degradation for missing columns, 9 cross-references, 6 design decisions.
