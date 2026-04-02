@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-03 10:50 PDT — Review: FX.DEAD.2 (approved)
+
+**Reviewed:** Removal of dead `execution_stuck` notification type.
+- Removed from shared type, notification store, card, settings, docs ✓
+- Unused `Clock` import cleaned up ✓
+- One stale reference in `tests/e2e/plans/notifications-ux.md` (historical doc, not code) — acceptable
+- Never emitted by backend, removal cannot cause regressions ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 10:45 PDT — FX.DEAD.2: Remove dead `execution_stuck` notification type
 
 **Done:** Removed `execution_stuck` from `NotificationEventType` union in `ws-events.ts`. Removed from default preferences (enabledEvents + soundEvents) in `notification-store.ts`. Removed from `TYPE_CONFIG` map + action button in `notification-card.tsx`, cleaned up unused `Clock` import. Removed settings toggle from `notifications-section.tsx`. Removed from docs/api.md notification types table. Chose removal over implementation — no backend code ever emitted this type.
