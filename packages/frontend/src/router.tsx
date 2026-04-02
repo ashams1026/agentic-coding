@@ -7,18 +7,19 @@ import { ActivityFeedPage } from "./pages/activity-feed";
 import { PersonaManagerPage } from "./pages/persona-manager";
 import { SettingsPage } from "./pages/settings";
 import { ChatPage } from "./pages/chat";
+import { PageErrorBoundary } from "./components/error-boundary";
 
 export const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
-      { index: true, element: <DashboardPage /> },
-      { path: "items", element: <WorkItemsPage /> },
-      { path: "agents", element: <AgentMonitorPage /> },
-      { path: "activity", element: <ActivityFeedPage /> },
-      { path: "chat", element: <ChatPage /> },
-      { path: "personas", element: <PersonaManagerPage /> },
-      { path: "settings", element: <SettingsPage /> },
+      { index: true, element: <PageErrorBoundary><DashboardPage /></PageErrorBoundary> },
+      { path: "items", element: <PageErrorBoundary><WorkItemsPage /></PageErrorBoundary> },
+      { path: "agents", element: <PageErrorBoundary><AgentMonitorPage /></PageErrorBoundary> },
+      { path: "activity", element: <PageErrorBoundary><ActivityFeedPage /></PageErrorBoundary> },
+      { path: "chat", element: <PageErrorBoundary><ChatPage /></PageErrorBoundary> },
+      { path: "personas", element: <PageErrorBoundary><PersonaManagerPage /></PageErrorBoundary> },
+      { path: "settings", element: <PageErrorBoundary><SettingsPage /></PageErrorBoundary> },
     ],
   },
 ]);

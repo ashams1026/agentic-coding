@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 20:31 PDT — FND.ERR.3: Add React error boundaries at app and page level
+
+**Done:** Created `error-boundary.tsx` with two class components: `AppErrorBoundary` (wraps full tree in app.tsx, fallback: "Something went wrong. [Reload]") and `PageErrorBoundary` (wraps each page in router.tsx, fallback: "Page error. [Go to Dashboard] [Retry]"). Both use `componentDidCatch` for error logging. AppErrorBoundary wraps QueryClientProvider+RouterProvider. Each of the 7 page routes wrapped individually with PageErrorBoundary. Visual check confirms dashboard renders normally with boundaries in place.
+**Files:** `packages/frontend/src/components/error-boundary.tsx` (new), `packages/frontend/src/app.tsx`, `packages/frontend/src/router.tsx`
+
+---
+
 ## 2026-04-01 20:28 PDT — Review: FND.ERR.2 (approved)
 
 **Reviewed:** WS reconnect exponential backoff + jitter in ws-client.ts.
