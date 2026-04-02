@@ -397,7 +397,7 @@ export function ChatPage() {
                     {agentName}
                   </span>
                   <span className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                    {cs.projectId ? null : <Globe className="h-3 w-3 shrink-0" />}
+                    {(!cs.projectId || cs.projectId === "pj-global") ? <Globe className="h-3 w-3 shrink-0" /> : null}
                     {projectName}
                   </span>
                 </div>

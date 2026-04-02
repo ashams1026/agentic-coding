@@ -29,12 +29,6 @@ export type ProposalStatus = "pending" | "approved" | "rejected" | "expired";
 
 export type WorkItemEdgeType = "blocks" | "depends_on" | "related_to";
 
-// ── Scope ─────────────────────────────────────────────────────────
-
-export type AgentScope =
-  | { type: "project"; projectId: ProjectId; path: string }
-  | { type: "global"; workspacePath: string };
-
 // ── Entities ───────────────────────────────────────────────────────
 
 export interface SandboxConfig {

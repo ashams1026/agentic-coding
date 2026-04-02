@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 12:58 PDT — FX.UXO8, FX.UXO9, FX.UXO17, FX.UXO22: Bug fix + dead code batch
+
+**Done:** (1) FX.UXO8: Added agent-based session grouping to chat-panel.tsx dropdown (compact headers with avatars, collapsible groups). (2) FX.UXO9: Globe icon now shows for `pj-global` projectId, not just null. (3) FX.UXO17: Deleted dead `agent-editor.tsx`. (4) FX.UXO22: Removed dead `AgentScope` discriminated union from shared entities.
+**Files:** `chat-panel.tsx`, `chat.tsx`, `agent-editor.tsx` (deleted), `shared/src/entities.ts`
+
+---
+
 ## 2026-04-02 12:53 PDT — FX.UXO6, FX.UXO7, FX.UXO11, FX.UXO16: Bug fix batch
 
 **Done:** (1) FX.UXO6: Recently Deleted now passes `undefined` when `isGlobal` instead of `"pj-global"`, returning all projects' items. (2) FX.UXO7: Queue endpoint filters entries by projectId via work item lookup, queueLength reflects filtered count. (3) FX.UXO11: Removed `avatar.icon === "dog"` from isPico check in chat.tsx and chat-panel.tsx — now name-only match. (4) FX.UXO16: Agent create now passes scope/projectId from useSelectedProject — project-scoped agents when project selected.

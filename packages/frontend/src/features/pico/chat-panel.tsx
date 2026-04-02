@@ -7,6 +7,7 @@ import {
   RotateCcw,
   Loader2,
   ChevronDown,
+  ChevronRight,
   MessageSquare,
   Trash2,
   Check,
@@ -55,6 +56,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { ChatSessionId } from "@agentops/shared";
+import type { ChatSessionWithAgent } from "@/api";
 
 // ── Icon map ──────────────────────────────────────────────────────
 
@@ -66,6 +68,44 @@ const ICON_MAP: Record<string, LucideIcon> = {
 
 function getIcon(name: string): LucideIcon {
   return ICON_MAP[name] ?? Bot;
+}
+
+// ── Agent grouping ────────────────────────────────────────────────
+
+interface AgentGroup {
+  agentId: string | null;
+  agentName: string;
+  agentAvatar: { color: string; icon: string } | null;
+  sessions: ChatSessionWithAgent[];
+}
+
+function groupSessionsByAgent(sessions: ChatSessionWithAgent[]): AgentGroup[] {
+  const groupMap = new Map<string, AgentGroup>();
+
+  for (const s of sessions) {
+    const key = s.agentId ?? "__pico__";
+    if (!groupMap.has(key)) {
+      groupMap.set(key, {
+        agentId: s.agentId ?? null,
+        agentName: s.agent?.name ?? "Pico",
+        agentAvatar: s.agent?.avatar ?? null,
+        sessions: [],
+      });
+    }
+    groupMap.get(key)!.sessions.push(s);
+  }
+
+  for (const group of groupMap.values()) {
+    group.sessions.sort(
+      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
+  }
+
+  return Array.from(groupMap.values()).sort(
+    (a, b) =>
+      new Date(b.sessions[0]!.updatedAt).getTime() -
+      new Date(a.sessions[0]!.updatedAt).getTime(),
+  );
 }
 
 // ── Component ─────────────────────────────────────────────────────
@@ -212,7 +252,20 @@ export function ChatPanel() {
   };
 
   const sessionTitle = currentSession?.title ?? "New conversation";
-  const recentSessions = sessions.slice(0, 10);
+
+  // Agent-grouped sessions for the session dropdown
+  const groupedSessions = useMemo(() => groupSessionsByAgent(sessions), [sessions]);
+
+  // Collapse state for agent groups inside the dropdown (default: all expanded)
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+  const toggleGroup = (key: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   // Resolve empty-state avatar
   const emptyStateIcon = isPico ? Dog : getIcon(selectedAgent!.avatar.icon);
@@ -357,28 +410,67 @@ export function ChatPanel() {
                 className="w-64"
                 onCloseAutoFocus={(e) => e.preventDefault()}
               >
-                {recentSessions.length === 0 && (
+                {sessions.length === 0 && (
                   <div className="px-2 py-1.5 text-xs text-muted-foreground">
                     No conversations yet
                   </div>
                 )}
-                {recentSessions.map((s) => (
-                  <DropdownMenuItem
-                    key={s.id}
-                    onClick={() => switchSession(s.id as ChatSessionId)}
-                    className={cn(
-                      "flex items-center gap-2 text-xs",
-                      s.id === currentSession?.id && "bg-accent",
-                    )}
-                  >
-                    <MessageSquare className="h-3 w-3 shrink-0 text-muted-foreground" />
-                    <span className="flex-1 truncate">{s.title}</span>
-                    <span className="shrink-0 text-[10px] text-muted-foreground">
-                      {formatSessionDate(s.updatedAt)}
-                    </span>
-                  </DropdownMenuItem>
-                ))}
-                {recentSessions.length > 0 && (
+                {groupedSessions.map((group) => {
+                  const groupKey = group.agentId ?? "__pico__";
+                  const isCollapsed = collapsedGroups.has(groupKey);
+                  const groupColor = group.agentAvatar?.color ?? "#f59e0b";
+                  const GroupIcon = group.agentAvatar?.icon
+                    ? getIcon(group.agentAvatar.icon)
+                    : Dog;
+
+                  return (
+                    <div key={groupKey}>
+                      {/* Agent group header */}
+                      <button
+                        type="button"
+                        onClick={() => toggleGroup(groupKey)}
+                        className="flex items-center gap-1.5 w-full rounded-sm px-2 py-1 hover:bg-accent transition-colors"
+                      >
+                        <div
+                          className="h-4 w-4 rounded-full flex items-center justify-center shrink-0"
+                          style={{ backgroundColor: groupColor + "25" }}
+                        >
+                          <GroupIcon className="h-2.5 w-2.5" style={{ color: groupColor }} />
+                        </div>
+                        <span className="flex-1 text-left text-xs font-medium text-foreground truncate">
+                          {group.agentName}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground shrink-0">
+                          {group.sessions.length}
+                        </span>
+                        {isCollapsed ? (
+                          <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0" />
+                        ) : (
+                          <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0" />
+                        )}
+                      </button>
+
+                      {/* Sessions under this group */}
+                      {!isCollapsed && group.sessions.map((s) => (
+                        <DropdownMenuItem
+                          key={s.id}
+                          onClick={() => switchSession(s.id as ChatSessionId)}
+                          className={cn(
+                            "flex items-center gap-2 text-xs pl-6",
+                            s.id === currentSession?.id && "bg-accent",
+                          )}
+                        >
+                          <MessageSquare className="h-3 w-3 shrink-0 text-muted-foreground" />
+                          <span className="flex-1 truncate">{s.title}</span>
+                          <span className="shrink-0 text-[10px] text-muted-foreground">
+                            {formatSessionDate(s.updatedAt)}
+                          </span>
+                        </DropdownMenuItem>
+                      ))}
+                    </div>
+                  );
+                })}
+                {sessions.length > 0 && (
                   <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
