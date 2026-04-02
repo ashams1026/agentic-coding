@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 05:20 PDT — Review: ACH.5 (rejected)
+
+**Reviewed:** Session sidebar enhancements in `packages/frontend/src/pages/chat.tsx`.
+- Persona avatar next to session title ✓
+- Date grouping (Today/Yesterday/This Week/Older) ✓
+- Persona filter dropdown ✓
+- Last message preview (truncated to 60 chars) — **MISSING**
+- **Verdict: rejected.** Task explicitly requires showing last message preview under each session title. Feedback provided with implementation approach (backend `lastMessagePreview` field + frontend display).
+
+---
+
 ## 2026-04-02 05:15 PDT — ACH.5: Session sidebar enhancements
 
 **Done:** Enhanced `/chat` session sidebar: persona avatar (color+icon) shown next to each session title. Sessions grouped by date (Today, Yesterday, This Week, Older) with section headers. Added persona filter dropdown (shown when 2+ personas used) to filter sessions by persona. Created `ChatSessionWithPersona` extended type in API client to capture persona join data from backend. Updated `usePicoChat` hook to use the extended type. Changed sidebar header from "Pico Chat" to "Chat" for multi-persona consistency. Added icon map and date grouping utilities to chat page.
