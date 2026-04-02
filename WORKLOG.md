@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 23:10 PDT — Review: FND.GA.3 (approved)
+
+**Reviewed:** "All Projects" option in sidebar project selector.
+- `SelectItem value="__all__"` at top of dropdown ✓
+- Auto-select effects guarded with `isGlobalScope` in both sidebar and use-selected-project ✓
+- API calls use `effectiveProjectId` mapping `"__all__"` → `undefined` ✓
+- `useSelectedProject` returns `projectId: null` for global scope ✓
+- Worker used `"__all__"` sentinel instead of `null` — sound decision to avoid ambiguity with initial state
+- Build passes; visual check confirmed dropdown works and persists across navigation
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 23:05 PDT — FND.GA.3: Add "All Projects" option to sidebar project selector
 
 **Done:** Added "All Projects" `SelectItem` with value `"__all__"` at the top of the sidebar project dropdown. When selected, `selectedProjectId` stores `"__all__"` (not null) to distinguish from uninitialized state. Updated auto-select `useEffect` in both `sidebar.tsx` and `use-selected-project.ts` to skip when `"__all__"` is set. API calls in sidebar use `effectiveProjectId` that maps `"__all__"` to `undefined`. `useSelectedProject` hook returns `projectId: null` when global scope is active. Collapsed sidebar tooltip shows "All Projects" correctly.
