@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 20:57 PDT — FND.WIL.2: Soft delete and 409 guard for work items
+
+**Done:** Replaced hard-delete in `DELETE /api/work-items/:id` with soft delete. Added 409 guard that blocks deletion when any execution is `"running"` for the item or its descendants. Cascade-deletes `work_item_edges` (both directions), `comments`, `proposals`, `project_memories` for all descendant IDs before setting `deleted_at = now()`. Added `isNull(workItems.deletedAt)` and `isNull(workItems.archivedAt)` default filters to `GET /api/work-items` so deleted/archived items are hidden by default.
+**Files:** `packages/backend/src/routes/work-items.ts`
+
+---
+
 ## 2026-04-01 20:55 PDT — Review: FND.WIL.1 (approved)
 
 **Reviewed:** Schema additions for work item lifecycle (archived_at, deleted_at).

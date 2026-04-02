@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, inArray, isNull } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { workItems } from "../db/schema.js";
+import { workItems, workItemEdges, comments, proposals, projectMemories, executions } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import { dispatchForState } from "../agent/dispatch.js";
 import { checkParentCoordination } from "../agent/coordination.js";
@@ -40,23 +40,19 @@ export async function workItemRoutes(app: FastifyInstance) {
   }>("/api/work-items", async (request) => {
     const { parentId, projectId } = request.query;
 
-    const conditions = [];
+    const conditions = [
+      isNull(workItems.deletedAt),
+      isNull(workItems.archivedAt),
+    ];
     if (projectId) conditions.push(eq(workItems.projectId, projectId));
     if (parentId) {
       conditions.push(eq(workItems.parentId, parentId));
-    } else if (parentId === undefined && !projectId) {
-      // Default: return top-level items (no parent)
     }
 
-    let rows;
-    if (conditions.length > 0) {
-      rows = await db
-        .select()
-        .from(workItems)
-        .where(conditions.length === 1 ? conditions[0]! : and(...conditions));
-    } else {
-      rows = await db.select().from(workItems);
-    }
+    const rows = await db
+      .select()
+      .from(workItems)
+      .where(and(...conditions));
 
     return { data: rows.map(serializeWorkItem), total: rows.length };
   });
@@ -218,14 +214,14 @@ export async function workItemRoutes(app: FastifyInstance) {
     return { data: { workItemId: id, state: item.currentState, dispatched: true } };
   });
 
-  // DELETE /api/work-items/:id (recursive — deletes children too)
+  // DELETE /api/work-items/:id (soft delete — sets deleted_at, cascades related data)
   app.delete<{
     Params: { id: string };
   }>("/api/work-items/:id", async (request, reply) => {
     const { id } = request.params;
 
-    // Collect all descendant IDs recursively
-    const idsToDelete: string[] = [id];
+    // Collect all descendant IDs recursively (BFS)
+    const allIds: string[] = [id];
     let frontier = [id];
 
     while (frontier.length > 0) {
@@ -235,14 +231,44 @@ export async function workItemRoutes(app: FastifyInstance) {
         .where(inArray(workItems.parentId, frontier));
 
       const childIds = children.map((c) => c.id);
-      idsToDelete.push(...childIds);
+      allIds.push(...childIds);
       frontier = childIds;
     }
 
-    // Delete in reverse order (deepest first)
-    for (const deleteId of idsToDelete.reverse()) {
-      await db.delete(workItems).where(eq(workItems.id, deleteId));
+    // 409 guard: block if any execution is currently running for these items
+    const runningExecs = await db
+      .select({ id: executions.id })
+      .from(executions)
+      .where(
+        and(
+          inArray(executions.workItemId, allIds),
+          eq(executions.status, "running"),
+        ),
+      );
+
+    if (runningExecs.length > 0) {
+      return reply.status(409).send({
+        error: {
+          code: "CONFLICT",
+          message: "Cannot delete work item with active executions",
+          activeExecutions: runningExecs.length,
+        },
+      });
     }
+
+    // Cascade-delete related data for all descendants
+    await db.delete(workItemEdges).where(inArray(workItemEdges.fromId, allIds));
+    await db.delete(workItemEdges).where(inArray(workItemEdges.toId, allIds));
+    await db.delete(comments).where(inArray(comments.workItemId, allIds));
+    await db.delete(proposals).where(inArray(proposals.workItemId, allIds));
+    await db.delete(projectMemories).where(inArray(projectMemories.workItemId, allIds));
+
+    // Soft delete: set deleted_at instead of hard-deleting
+    const now = new Date();
+    await db
+      .update(workItems)
+      .set({ deletedAt: now })
+      .where(inArray(workItems.id, allIds));
 
     return reply.status(204).send();
   });
