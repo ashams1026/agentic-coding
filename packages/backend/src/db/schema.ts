@@ -333,6 +333,7 @@ export const workflows = sqliteTable("workflows", {
   projectId: text("project_id").notNull().references(() => projects.id),
   version: integer("version").notNull().default(1),
   isPublished: integer("is_published", { mode: "boolean" }).notNull().default(false),
+  autoRouting: integer("auto_routing", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
 });
@@ -355,6 +356,7 @@ export const workflowStates = sqliteTable("workflow_states", {
   type: text("type").notNull().default("intermediate"), // "initial" | "intermediate" | "terminal"
   color: text("color").notNull().default("#6b7280"),
   agentId: text("agent_id").references(() => agents.id), // nullable — default agent for this state
+  agentOverrides: text("agent_overrides", { mode: "json" }).notNull().$type<Array<{ labelMatch: string; agentId: string }>>().default([]),
   sortOrder: integer("sort_order").notNull().default(0),
 });
 

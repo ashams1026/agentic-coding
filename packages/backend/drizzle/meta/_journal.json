@@ -15,6 +15,13 @@
       "when": 1743552000000,
       "tag": "0001_seed_global_workflow",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1743724800000,
+      "tag": "0002_add_workflow_auto_routing",
+      "breakpoints": true
     }
   ]
 }

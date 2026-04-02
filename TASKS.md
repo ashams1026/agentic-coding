@@ -21,7 +21,7 @@
 
 ### Phase 4: Workflow Rework
 
-- [ ] **UXO.14** — Schema: Add `autoRouting` boolean (default false) to `workflows` table. Add `agentOverrides` JSON column to `workflow_states`: `[{ labelMatch: string, agentId: string }]` for label-based agent selection. Generate migration. Remove `autoRouting` from project `settings` JSON.
+- [x] **UXO.14** — Schema: Add `autoRouting` boolean (default false) to `workflows` table. Add `agentOverrides` JSON column to `workflow_states`: `[{ labelMatch: string, agentId: string }]` for label-based agent selection. Generate migration. Remove `autoRouting` from project `settings` JSON. *(completed 2026-04-02 11:56 PDT)*
 - [ ] **UXO.15** — Backend: Per-workflow auto-routing. Update `runRouter()` to read `workflow.autoRouting` instead of `project.settings.autoRouting`. Build Router system prompt from the specific workflow's state machine via `workflowId`.
 - [ ] **UXO.16** — Backend: Label-based agent resolution. Update `resolveAgentForState()` to check work item labels against `workflowStates.agentOverrides`. Priority: label match override → state default agent → null.
 - [x] **UXO.17** — Backend: Enforce Backlog/Done as immutable built-in states. Every workflow must have exactly one initial state ("Backlog") and at least one terminal state ("Done"). These names cannot be changed or deleted. Auto-create them on `POST /api/workflows`. *(completed 2026-04-02 11:44 PDT)*

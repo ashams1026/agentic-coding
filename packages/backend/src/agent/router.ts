@@ -8,7 +8,7 @@
 
 import { eq, and, desc } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { workItems, projects, comments } from "../db/schema.js";
+import { workItems, workflows, comments } from "../db/schema.js";
 import { executionManager } from "./setup.js";
 import { createId } from "@agentops/shared";
 import { agents } from "../db/schema.js";
@@ -121,16 +121,18 @@ export async function runRouter(workItemId: string): Promise<boolean> {
 
   if (!item) return false;
 
-  // Check if auto-routing is enabled in project settings
-  const [project] = await db
-    .select({ settings: projects.settings })
-    .from(projects)
-    .where(eq(projects.id, item.projectId));
+  // Work items without a linked workflow default to no routing
+  if (!item.workflowId) return false;
 
-  if (!project) return false;
+  // Check if auto-routing is enabled on the workflow
+  if (item.workflowId) {
+    const [workflow] = await db
+      .select({ autoRouting: workflows.autoRouting })
+      .from(workflows)
+      .where(eq(workflows.id, item.workflowId));
 
-  const autoRouting = project.settings.autoRouting;
-  if (autoRouting === false) return false; // Explicitly disabled
+    if (workflow && !workflow.autoRouting) return false; // Explicitly disabled on workflow
+  }
 
   // Find or create a router agent for this project
   const routerAgentId = await getOrCreateRouterAgent();

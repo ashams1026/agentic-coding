@@ -97,7 +97,7 @@ export async function seed() {
       name: "AgentOps",
       path: "/Users/dev/projects/agentops",
       isGlobal: false,
-      settings: { maxConcurrent: 3, monthCap: 50, autoRouting: true },
+      settings: { maxConcurrent: 3, monthCap: 50 },
       createdAt: d("2026-03-20T10:00:00Z"),
     },
   ]);

@@ -47,7 +47,6 @@ export interface SandboxConfig {
 export interface ProjectSettings {
   maxConcurrent?: number;
   monthCap?: number;
-  autoRouting?: boolean;
   description?: string;
   patterns?: string;
   sandbox?: SandboxConfig;
@@ -242,6 +241,7 @@ export interface Workflow {
   projectId: ProjectId | null;
   version: number;
   isPublished: boolean;
+  autoRouting: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -253,6 +253,7 @@ export interface WorkflowStateEntity {
   type: "initial" | "intermediate" | "terminal";
   color: string;
   agentId: AgentId | null;
+  agentOverrides: Array<{ labelMatch: string; agentId: string }>;
   sortOrder: number;
 }
 

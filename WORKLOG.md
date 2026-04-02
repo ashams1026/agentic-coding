@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 11:56 PDT — UXO.14: Schema autoRouting + agentOverrides migration
+
+**Done:** Added `autoRouting` boolean (default false) to workflows table, `agentOverrides` JSON column to workflow_states. Created migration 0002. Updated shared types: moved autoRouting from ProjectSettings to Workflow, added agentOverrides to WorkflowStateEntity. Updated workflow routes (serialize, POST/PATCH), router.ts (reads workflow.autoRouting instead of project.settings), and seed files. Fixed router regression: work items without workflowId now default to no-routing.
+**Files:** `packages/backend/src/db/schema.ts`, `packages/shared/src/entities.ts`, `packages/backend/drizzle/0002_add_workflow_auto_routing.sql` (new), `packages/backend/drizzle/meta/0002_snapshot.json` (new), `packages/backend/drizzle/meta/_journal.json`, `packages/backend/src/routes/workflows.ts`, `packages/backend/src/agent/router.ts`, `packages/backend/src/db/seed.ts`, `packages/backend/src/db/seed-demo.ts`, `packages/backend/src/agent/__tests__/router.test.ts`
+**Notes:** Frontend files still reference project.settings.autoRouting (dead controls) — will be addressed by UXO.22 and UXO.31.
+
+---
+
 ## 2026-04-02 11:44 PDT — UXO.12: Agent-grouped chat sessions
 
 **Done:** Replaced date-based session grouping with agent-based collapsible groups in `chat.tsx`. Each group shows agent avatar (colored circle with icon), agent name, session count, and expand/collapse chevron. Sessions sorted by recency within groups. All groups default expanded. Removed redundant agent filter dropdown.

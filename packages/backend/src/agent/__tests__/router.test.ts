@@ -22,6 +22,8 @@ vi.mock("../setup.js", () => ({
 
 import { runRouter } from "../router.js";
 
+const TEST_WORKFLOW_ID = "wf-test001";
+
 let testDb: TestDatabase;
 
 describe("router auto-routing toggle", () => {
@@ -29,6 +31,27 @@ describe("router auto-routing toggle", () => {
     testDb = createTestDb();
     mockDb.db = testDb.db;
     await seedTestDb(testDb.db);
+
+    // Seed a workflow that work items can reference
+    await testDb.db.insert(schema.workflows).values({
+      id: TEST_WORKFLOW_ID,
+      name: "Test Workflow",
+      description: "",
+      scope: "project",
+      projectId: TEST_IDS.PROJECT_ID,
+      version: 1,
+      isPublished: true,
+      autoRouting: true,
+      createdAt: new Date("2026-03-20T10:00:00Z"),
+      updatedAt: new Date("2026-03-20T10:00:00Z"),
+    });
+
+    // Assign the workflow to the test work item
+    await testDb.db
+      .update(schema.workItems)
+      .set({ workflowId: TEST_WORKFLOW_ID })
+      .where(eq(schema.workItems.id, TEST_IDS.WI_TOP_1));
+
     mockRunExecution.mockClear();
   });
 
@@ -36,26 +59,23 @@ describe("router auto-routing toggle", () => {
     testDb.cleanup();
   });
 
-  it("routes when autoRouting is true", async () => {
-    // Set autoRouting: true on the project
+  it("routes when workflow autoRouting is true", async () => {
     await testDb.db
-      .update(schema.projects)
-      .set({ settings: { maxConcurrent: 3, monthCap: 50, autoRouting: true } })
-      .where(eq(schema.projects.id, TEST_IDS.PROJECT_ID));
+      .update(schema.workflows)
+      .set({ autoRouting: true })
+      .where(eq(schema.workflows.id, TEST_WORKFLOW_ID));
 
-    // Seed a Router agent (runRouter will getOrCreate one)
     const result = await runRouter(TEST_IDS.WI_TOP_1);
 
     expect(result).toBe(true);
     expect(mockRunExecution).toHaveBeenCalledOnce();
   });
 
-  it("skips routing when autoRouting is false", async () => {
-    // Explicitly disable auto-routing
+  it("skips routing when workflow autoRouting is false", async () => {
     await testDb.db
-      .update(schema.projects)
-      .set({ settings: { maxConcurrent: 3, monthCap: 50, autoRouting: false } })
-      .where(eq(schema.projects.id, TEST_IDS.PROJECT_ID));
+      .update(schema.workflows)
+      .set({ autoRouting: false })
+      .where(eq(schema.workflows.id, TEST_WORKFLOW_ID));
 
     const result = await runRouter(TEST_IDS.WI_TOP_1);
 
@@ -63,12 +83,12 @@ describe("router auto-routing toggle", () => {
     expect(mockRunExecution).not.toHaveBeenCalled();
   });
 
-  it("routes by default when autoRouting is not set", async () => {
-    // Settings without autoRouting field — should default to routing
+  it("routes by default when work item has no workflowId", async () => {
+    // Unset workflowId — router should default to routing
     await testDb.db
-      .update(schema.projects)
-      .set({ settings: { maxConcurrent: 3, monthCap: 50 } })
-      .where(eq(schema.projects.id, TEST_IDS.PROJECT_ID));
+      .update(schema.workItems)
+      .set({ workflowId: null })
+      .where(eq(schema.workItems.id, TEST_IDS.WI_TOP_1));
 
     const result = await runRouter(TEST_IDS.WI_TOP_1);
 

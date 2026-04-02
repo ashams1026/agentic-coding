@@ -20,6 +20,7 @@ function serializeWorkflow(row: typeof workflows.$inferSelect) {
     projectId: row.projectId as ProjectId,
     version: row.version,
     isPublished: row.isPublished,
+    autoRouting: row.autoRouting,
     createdAt: toIso(row.createdAt),
     updatedAt: toIso(row.updatedAt),
   };
@@ -33,6 +34,7 @@ function serializeState(row: typeof workflowStates.$inferSelect) {
     type: row.type as "initial" | "intermediate" | "terminal",
     color: row.color,
     agentId: (row.agentId as AgentId) ?? null,
+    agentOverrides: (row.agentOverrides as Array<{ labelMatch: string; agentId: string }>) ?? [],
     sortOrder: row.sortOrder,
   };
 }
@@ -165,9 +167,9 @@ export async function workflowRoutes(app: FastifyInstance) {
 
   // POST /api/workflows — create new draft workflow
   app.post<{
-    Body: { name: string; description?: string; scope?: string; projectId?: string };
+    Body: { name: string; description?: string; scope?: string; projectId?: string; autoRouting?: boolean };
   }>("/api/workflows", async (request, reply) => {
-    const { name, description, scope, projectId } = request.body;
+    const { name, description, scope, projectId, autoRouting } = request.body;
 
     if (!name || !name.trim()) {
       return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "Workflow name is required" } });
@@ -187,6 +189,7 @@ export async function workflowRoutes(app: FastifyInstance) {
       projectId: projectId ?? "pj-global",
       version: 1,
       isPublished: false,
+      autoRouting: autoRouting ?? false,
       createdAt: now,
       updatedAt: now,
     }).returning();
@@ -222,7 +225,8 @@ export async function workflowRoutes(app: FastifyInstance) {
     Body: {
       name?: string;
       description?: string;
-      states?: Array<{ id?: string; name: string; type: string; color: string; agentId?: string; sortOrder: number }>;
+      autoRouting?: boolean;
+      states?: Array<{ id?: string; name: string; type: string; color: string; agentId?: string; agentOverrides?: Array<{ labelMatch: string; agentId: string }>; sortOrder: number }>;
       transitions?: Array<{ id?: string; fromStateId: string; toStateId: string; label?: string; sortOrder: number }>;
     };
   }>("/api/workflows/:id", async (request, reply) => {
@@ -329,6 +333,7 @@ export async function workflowRoutes(app: FastifyInstance) {
     const updates: Record<string, unknown> = { updatedAt: now };
     if (body.name !== undefined) updates.name = body.name.trim();
     if (body.description !== undefined) updates.description = body.description;
+    if (body.autoRouting !== undefined) updates.autoRouting = body.autoRouting;
 
     // Build a name→id map for existing built-in states so we can anchor their IDs
     // regardless of what the client sends. This prevents ID drift after a round-trip.
@@ -375,6 +380,7 @@ export async function workflowRoutes(app: FastifyInstance) {
             type: s.type,
             color: s.color,
             agentId: s.agentId ?? null,
+            agentOverrides: s.agentOverrides ?? [],
             sortOrder: s.sortOrder,
           }).run();
         }
@@ -482,6 +488,7 @@ export async function workflowRoutes(app: FastifyInstance) {
       projectId: source.projectId,
       version: 1,
       isPublished: false,
+      autoRouting: source.autoRouting,
       createdAt: now,
       updatedAt: now,
     });
@@ -499,6 +506,7 @@ export async function workflowRoutes(app: FastifyInstance) {
         type: s.type,
         color: s.color,
         agentId: s.agentId,
+        agentOverrides: (s.agentOverrides as Array<{ labelMatch: string; agentId: string }>) ?? [],
         sortOrder: s.sortOrder,
       });
     }
