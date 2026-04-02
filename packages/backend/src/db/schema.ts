@@ -8,6 +8,7 @@ export const projects = sqliteTable("projects", {
   name: text("name").notNull(),
   path: text("path").notNull(),
   settings: text("settings", { mode: "json" }).notNull().$type<Record<string, unknown>>().default({}),
+  workflowId: text("workflow_id"), // nullable FK — set after workflows table exists; references workflows.id
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
 });
 
@@ -27,6 +28,7 @@ export const workItems = sqliteTable("work_items", {
   description: text("description").notNull().default(""),
   context: text("context", { mode: "json" }).notNull().$type<Record<string, unknown>>().default({}),
   currentState: text("current_state").notNull(), // WorkflowStateName
+  workflowId: text("workflow_id"), // nullable FK — references workflows.id; pinned workflow version
   priority: text("priority").notNull().default("p2"), // Priority enum
   labels: text("labels", { mode: "json" }).notNull().$type<string[]>().default([]),
   assignedPersonaId: text("assigned_persona_id").references(() => personas.id),
@@ -160,6 +162,8 @@ export const executions = sqliteTable("executions", {
   structuredOutput: text("structured_output", { mode: "json" }).$type<Record<string, unknown> | null>(),
   parentExecutionId: text("parent_execution_id"),
   error: text("error", { mode: "json" }).$type<{ category: string; message: string; details?: Record<string, unknown> } | null>(),
+  workflowId: text("workflow_id"), // nullable — references workflows.id; workflow context for this execution
+  workflowStateName: text("workflow_state_name"), // nullable — state name at time of execution
 });
 
 export const executionsRelations = relations(executions, ({ one, many }) => ({

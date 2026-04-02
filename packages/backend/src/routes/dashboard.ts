@@ -141,6 +141,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
         description: wi.description,
         context: wi.context,
         currentState: wi.currentState,
+        workflowId: wi.workflowId ?? null,
         priority: wi.priority as Priority,
         labels: wi.labels,
         assignedPersonaId: (wi.assignedPersonaId as PersonaId) ?? null,

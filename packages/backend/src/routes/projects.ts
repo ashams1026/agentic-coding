@@ -21,6 +21,7 @@ function serializeProject(row: typeof projects.$inferSelect) {
     name: row.name,
     path: row.path,
     settings: row.settings,
+    workflowId: row.workflowId ?? null,
     createdAt: toIso(row.createdAt),
   };
 }

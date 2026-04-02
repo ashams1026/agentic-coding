@@ -384,6 +384,7 @@ export class ExecutionManager {
       name: project.name,
       path: project.path,
       settings: project.settings,
+      workflowId: project.workflowId ?? null,
       createdAt: project.createdAt.toISOString(),
     };
 

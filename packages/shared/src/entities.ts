@@ -59,6 +59,7 @@ export interface Project {
   name: string;
   path: string;
   settings: ProjectSettings;
+  workflowId: string | null;
   createdAt: string;
 }
 
@@ -70,6 +71,7 @@ export interface WorkItem {
   description: string;
   context: Record<string, unknown>;
   currentState: string;
+  workflowId: string | null;
   priority: Priority;
   labels: string[];
   assignedPersonaId: PersonaId | null;
@@ -154,6 +156,8 @@ export interface Execution {
   checkpointMessageId: string | null;
   structuredOutput: Record<string, unknown> | null;
   parentExecutionId: string | null;
+  workflowId: string | null;
+  workflowStateName: string | null;
 }
 
 export interface Comment {
