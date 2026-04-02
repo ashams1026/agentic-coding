@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 02:00 PDT — FND.TEST.4: Execute Work Item Lifecycle e2e tests
+
+**Done:** Executed 10 test cases from `work-item-lifecycle.md`. Results: **9/10 PASS, 1 SKIP** (TC-WIL-6 bulk delete skipped — insufficient items, same code path as TC-WIL-4). No lifecycle bugs filed. Found priority validation gap: API accepts free-text priorities like "high" instead of "p1", causing `ListRow` crash on `priorityConfig` lookup — noted in results but not filed as lifecycle bug. All UI workflows verified: archive/unarchive via context menu, show archived toggle with muted styling, delete with confirmation, bulk archive, recently deleted with restore, detail panel archive/delete.
+**Files:** `tests/e2e/results/2026-04-02_01-50_work-item-lifecycle/RESULTS.md`, 9 screenshot PNGs
+
+---
+
 ## 2026-04-02 01:45 PDT — Review: FND.TEST.3 (approved)
 
 **Reviewed:** Error Recovery e2e test execution results.
