@@ -435,6 +435,8 @@ export class ExecutionManager {
     let finalDurationMs = 0;
     let checkpointMessageId: string | null = null;
     let structuredOutput: Record<string, unknown> | null = null;
+    let accumulatedTokens = 0;
+    let accumulatedToolUses = 0;
 
     try {
       // Query accumulated handoff context from previous agents (with windowing)
@@ -487,6 +489,9 @@ export class ExecutionManager {
         }
 
         if (event.type === "progress") {
+          // Track latest token/tool counts for persistence on completion
+          if (event.totalTokens) accumulatedTokens = event.totalTokens;
+          if (event.toolUses) accumulatedToolUses = event.toolUses;
           this.broadcastFn({
             type: "agent_progress",
             executionId: executionId as ExecutionId,
@@ -563,6 +568,9 @@ export class ExecutionManager {
           checkpointMessageId,
           structuredOutput,
           handoffNotes,
+          model: persona.model,
+          totalTokens: accumulatedTokens || null,
+          toolUses: accumulatedToolUses || null,
         })
         .where(eq(executions.id, executionId));
 
