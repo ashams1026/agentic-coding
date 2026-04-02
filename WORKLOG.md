@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 20:50 PDT — Review: FND.ERR.7 (approved)
+
+**Reviewed:** Pre-migration SQLite backup in migrate.ts.
+- `sqlite.backup()` creates `${DB_PATH}.pre-migration-${timestamp}.bak` before `migrate()` — matches spec ✓
+- `pruneOldBackups()` keeps only 3 most recent, runs after migration (not inside backup try/catch) — correct failure semantics ✓
+- `existsSync(DB_PATH)` guard skips backup on first startup ✓
+- `start.ts` awaits the now-async `runMigrations()`, CLI entry uses `.then()` ✓
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 20:49 PDT — FND.ERR.7: Pre-migration SQLite backup
 
 **Done:** Made `runMigrations()` async and added a pre-migration backup step using `sqlite.backup()`. Creates `${DB_PATH}.pre-migration-${timestamp}.bak` before running Drizzle migrations. After migration succeeds, prunes old backups keeping only the 3 most recent. Skips backup on first startup (DB doesn't exist yet). Updated `start.ts` to `await runMigrations()`.
