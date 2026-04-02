@@ -215,3 +215,9 @@
 **Agent Collaboration P1 (COL.1-6, all approved):** HandoffNote type + handoffNotes column (migration 0014). buildHandoffNote() with regex extraction (files, decisions, questions). getLastHandoffNote() + formatHandoffForPrompt() + buildAccumulatedContext() with ~2000 token windowing. Dependency enforcement in dispatch (depends_on edges + terminal state check, system comment on block). Handoff context injected into buildSystemPrompt() via SpawnOptions.handoffContext. Frontend display: collapsible card in execution-timeline with icons (GitBranch, Lightbulb, FileText, HelpCircle).
 
 **Search P1 (SRC.1-4, all approved):** FTS5 virtual tables + bridging tables (startup setup, not Drizzle migration). 12 sync triggers (INSERT/UPDATE/DELETE x 4 tables) + backfill script. Unified search API (GET /api/search) with BM25 ranking, snippet extraction, type/project/archived filters. Server-backed Command Palette with 300ms debounce, type grouping, snippet highlights.
+
+### Sprint 26 completion + Sprint 27 early — 2026-04-02 22:10–2026-04-03 02:20 PDT
+
+**Sprint 26 remaining (SRC.5, ANL.1-7, S26.TEST.1-7, S26.DOC.1, all approved):** FTS5 search in filter bar. Analytics schema (model/totalTokens/toolUses migration 0015), token persistence from ProgressEvents, 4 aggregate endpoints (cost-by-persona/model, tokens-over-time, top-executions). Analytics page with Overview (4 stat cards, cost trend LineChart, persona BarChart) + Token Usage (ComposedChart dual-axis, model PieChart, top executions table) tabs. 4 React Query hooks + API client. 3 test plans + 3 test executions + API docs + regression checkpoint (40 suites, 0 regressions). Sprint 26 complete.
+
+**Sprint 27 decomposition:** 20 tasks across Outbound Webhooks P1 (OWH.1-6), Inbound Webhooks P1 (IWH.1-3), Data Management P1 (DM.1-5), Testing/Docs (S27.TEST.1-5, S27.DOC.1).

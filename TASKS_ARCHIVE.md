@@ -184,3 +184,27 @@
 
 - [x] **S26.TEST.1** — E2e test plan for Agent Collaboration P1 (10 steps). *(completed 2026-04-03 00:15 PDT)*
 - [x] **S26.TEST.2** — E2e test plan for Search P1 (16 steps). *(completed 2026-04-03 00:30 PDT)*
+- [x] **S26.TEST.3-7, S26.DOC.1** — Analytics test plan, 3 test executions, API docs, regression (40 suites, 0 regressions). *(completed 2026-04-03 00:50–02:10 PDT)*
+
+---
+
+## Sprint 27: Integration & Maintenance — archived 2026-04-03
+
+### Outbound Webhooks P1
+
+- [x] **OWH.1** — TypedEventBus with 4 event types + emissions. *(completed 2026-04-03 02:35 PDT)*
+- [x] **OWH.2** — webhook_subscriptions + webhook_deliveries schema + migration 0016. *(completed 2026-04-03 02:50 PDT)*
+- [x] **OWH.3** — Delivery worker: HMAC, 5-retry backoff, auto-disable. *(completed 2026-04-03 03:05 PDT)*
+- [x] **OWH.4** — Webhook CRUD + delivery log endpoints. *(completed 2026-04-03 03:20 PDT)*
+- [x] **OWH.5** — Settings Integrations UI (outbound webhooks). *(completed 2026-04-03 03:35 PDT)*
+- [x] **OWH.6** — Event bus → delivery bridge + startup wiring. *(completed 2026-04-03 03:50 PDT)*
+
+### Inbound Webhooks P1
+
+- [x] **IWH.1** — webhook_triggers schema + triggerType/triggerId on executions + migration 0017. *(completed 2026-04-03 04:05 PDT)*
+- [x] **IWH.2** — Generic receiver with HMAC + template resolver + CRUD. *(completed 2026-04-03 04:20 PDT)*
+- [x] **IWH.3** — Inbound triggers UI in Settings Integrations. *(completed 2026-04-03 04:35 PDT)*
+
+### Data Management P1 (partial)
+
+- [x] **DM.1** — SQLite backup() API + retention (7d+4w) + restore. *(completed 2026-04-03 04:50 PDT)*
