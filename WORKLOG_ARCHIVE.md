@@ -10,65 +10,11 @@
 
 ---
 
-## Sprint 16: AI-Based E2E Testing (consolidated) — 2026-03-30
+**Sprint 16 (consolidated):** 42 tasks. 17 test plans + visual inspection protocol, executed all suites (263 steps, 97.3% PASS). Filed FX.CMD1, FX.EDIT1.
 
-**Phase 1 (AI.1-AI.11):** 17 test plan files + template + README. All reviewed and approved.
+**Sprint 17 (consolidated):** 48 tasks. Command sandbox, mock removal, persona overhauls, skills system, sidebar redo, activity feed enrichment, agent monitor fixes.
 
-**Phase 1.5 (AI.V1-AI.V11):** Visual inspection protocol added to all plans. Screenshot checkpoints, Visual Quality/Failure criteria.
-
-**Phase 2 (AI.12-AI.28):** 17 test suites executed via chrome-devtools MCP. 243/253 PASS, 2 FAIL (detail-panel-edit: list reactivity + mock persistence), 4 N/A. All reviewed and approved.
-
-**Phase 2 (AI.29-AI.30):** dark-mode 19/19 PASS, keyboard-shortcuts 16/17 PASS (1 FAIL: work item route 404).
-
-**Phase 3 (AI.31):** Triage — 263 total steps, 256 PASS, 3 FAIL, 4 N/A (97.3%). Filed FX.CMD1, FX.EDIT1.
-
----
-
-## Sprint 17 (consolidated): Agent Pipeline Fixes — 2026-03-30 to 2026-03-31
-
-Command sandbox, mock removal (-2283 lines), demo seed, settings fixes, auto-routing play/pause, graceful restart, Flow view redesign, sidebar fixes, all 5 persona overhauls (MCP tools + system prompts), persona detail panel (45/55 split), skills system (entity+DB+browser+injection), router loop defense (3 layers), cost audit, agent monitor UX (identity header, chat thread, log parsing), DB/executor env separation, SDK native skills. E2E tests AI.19-AI.28 all passed.
-
----
-
-## Sprint 17 (final): Sidebar, E2E Bugs, Activity Feed — 2026-03-31
-
-**FX.NAV2:** Ground-up sidebar redo — Radix `asChild` + NavLink incompatibility (stringified className function). Fixed with `Link` + manual `isActive`. CSS cascade: global `*` border-color outside `@layer` beat utilities — moved to `@layer base`. Sidebar 224px, `flex flex-col gap-1`, 3px primary left border active state.
-
-**FX.AM1:** Agent monitor empty state: "Go to Story Board" → "Go to Work Items", `/board` → `/items`.
-
-**FX.CMD1:** Command palette: `setSelectedItemId(wi.id); navigate("/items")` instead of 404 route. NAV_ITEMS updated (removed Story Board, Workflow Designer; added Work Items). `Kanban` → `ListTodo` icon.
-
-**FX.EDIT1:** List row reactivity: `setQueriesData<WorkItem[]>({ queryKey: ["workItems"] }, ...)` for optimistic updates across all cached list variants.
-
-**FX.9:** Activity feed enrichment: `personaMap`/`itemTitleMap` lookup maps, `wsEventToActivity(event, maps)` with enriched formats like "[Persona] started work on [Title]", "[Title] moved from [Old] to [New]".
-
----
-
-## Sprint 18 (partial): Pico Backend — 2026-03-31
-
-**PICO.1:** Pico as built-in assistant persona. `PersonaSettings` interface with `isAssistant?` flag. Seed: `ps-pico`, amber #f59e0b, dog icon, sonnet, $5 budget. System prompt: personality + knowledge + capabilities + guidelines. Excluded from workflow assignments, non-editable/deletable in UI.
-
-**PICO.2:** Chat session API. `chat_sessions` + `chat_messages` tables (Drizzle migration). 4 endpoints: create session, list sessions, get messages, delete session. `ChatSessionId`/`ChatMessageId` shared types.
-
-**PICO.3:** Chat streaming endpoint. `POST /api/chat/sessions/:id/messages` — saves user message, assembles conversation history, spawns Claude SDK `query()` with Pico config, streams SSE (text/thinking/tool_use/tool_result/error/done). Saves assistant message with metadata on completion. Auto-generates session title from first message.
-
-**PICO.4:** Project knowledge skill. `pico-skill.md` (~700 tokens): AgentOps description, 8 workflow states, 5 personas, work item lifecycle, execution history, 5 common Q&A, docs/ directory pointer. Loaded at module level in chat.ts, injected into system prompt. Also fixed seed prompt: "Triage" → "Backlog", added docs/ instruction.
-
----
-
-## Sprint 18 (continued): Pico Frontend — 2026-03-31
-
-**PICO.5:** Floating chat bubble — 56px circle, bottom-right, dog icon, bounce animation, unread indicator. Render in root-layout.
-
-**PICO.6:** Chat panel — 400x500px, header (title/session switch/new/minimize), scrollable messages with auto-scroll, textarea input (Cmd+Enter), typing indicator, click-outside dismiss, scale+opacity animation.
-
-**PICO.7:** Chat message components — user (right-aligned primary bubble), assistant (left-aligned muted + avatar). Markdown rendering, collapsible thinking blocks, tool call cards with expand/collapse, code blocks with syntax highlighting. Timestamps on hover, consecutive grouping.
-
-**PICO.8:** Streaming chat hook (`use-pico-chat.ts`) — `sendMessage()` with SSE parser (async generator, buffer management), `ensureSession()` lazy creation, optimistic user messages, incremental assistant updates (text/thinking/tool_use). Zustand-persisted `currentSessionId`.
-
-**PICO.9:** Session management — DropdownMenu for recent 10 sessions, switch/rename/clear-all. Inline title editing (Input with Enter/Escape/blur). `refreshSessions()`, `switchSession()`, `renameSession()`, `clearAllSessions()`. PATCH route for title updates.
-
-**PICO.10:** Personality & onboarding — welcome message ("Woof! I'm Pico..."), 4 quick-action buttons (BarChart3/GitBranch/Activity/PenLine icons). Backend personality guidelines in system prompt (dog puns, concise, technically accurate).
+**Sprint 18 (consolidated):** Pico assistant — backend (persona, chat API, SSE streaming, knowledge skill, session management) + frontend (bubble, panel, messages, streaming hook, personality).
 
 ---
 
@@ -195,3 +141,15 @@ Command sandbox, mock removal (-2283 lines), demo seed, settings fixes, auto-rou
 ### Research proposals batch 2 — 2026-04-02 18:10–20:40 PDT
 
 **8 research docs (all approved):** RES.LIFECYCLE.UX — archive primary, 3-tier confirmation, bulk ops, 30-day soft delete, "Show archived" toggle. RES.LIFECYCLE.DATA — archived_at/deleted_at timestamps, cascade rules per table, API endpoints, canDispatch() guard, 5-step migration. RES.NOTIFY.UX — 10-event catalog with 4 priority levels, bell icon + sliding drawer, toast vs persistent matrix, quiet hours. RES.NOTIFY.INTEGRATIONS — Slack (Block Kit), email (Resend), webhooks (HMAC, retry), NotificationService event bus with channel fan-out. RES.COLLAB.CONTEXT — handoff notes (structured schema), shared scratchpad, 4-tier context windowing, @persona tagging. RES.COLLAB.COORD — parallel execution (advisory file locking), dependency enforcement (edges exist but aren't checked), human-in-loop (create_proposal MCP), escalation chain, fan-out/fan-in completion gates. RES.SCHED.UX — per-persona schedules in Persona Manager, presets/cron with live preview, standalone execution model, silent success notifications. RES.SCHED.INFRA — node-cron + SQLite persistence, missed run catch-up, 14-column schedules table, shared concurrency pool, trigger separation (2 work+review entries, 21:05–21:15).
+
+---
+
+### Research proposals batch 3 + cleanup — 2026-04-01 16:15–16:45 PDT
+
+**6 research docs (all approved) + 1 cleanup:** RES.SWAP.ARCH — frontend/backend decoupling architecture, Zustand connection store, 5 deployment models. RES.SWAP.HOSTED — hosted frontend via Cloudflare Pages, localhost mixed content OK, multi-backend localStorage model. RES.SWAP.API — ~70 endpoints audited, OpenAPI 3.1 code-first, apiVersion + capabilities. RES.SEARCH — FTS5 recommended over Fuse.js/Meilisearch, 8 searchable entities, 3 access surfaces (Cmd+K, filter bar, /search). RES.RECOVERY.AGENTS — 5 modules audited for failure modes, 7 error categories, RetryPolicy, watchdog. RES.RECOVERY.SYSTEM — WS fixed 3s reconnect gap, missing busy_timeout PRAGMA, zero ErrorBoundaries. Cleanup: archived RES.SCHED.INFRA–RES.SWAP.API batch + trimmed worklog.
+
+---
+
+### Research proposals batch 4 + fix — 2026-04-01 19:00–21:00 PDT
+
+**5 research docs (all approved) + 1 fix:** RES.DATA.BACKUP — SQLite backup() API, 4 triggers, ~/.agentops/backups/, 6-step restore flow, full ProjectExport JSON. RES.DATA.GROWTH — execution logs are 80% of DB growth, truncate-not-delete insight, 4-tier retention, dbstat virtual table monitoring. RES.TOKENS.TRACKING — SDK result fields audited, unit inconsistency bug found (cents vs USD), 6 query() sites, 5 data gaps. RES.TOKENS.DASHBOARD — tab within Analytics page, 5 visualizations, on-the-fly SQL aggregation, missing startedAt index. FX.UX.PERSONA.4 — wired TestRunPanel into Persona Manager detail panel.

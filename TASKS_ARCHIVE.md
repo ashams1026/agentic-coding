@@ -46,74 +46,21 @@
 
 ---
 
-## Sprint 16: AI-Based E2E Testing — completed 2026-03-30
+**Sprint 16 (AI.1-AI.31):** 42 tasks. AI-based E2E testing — 17 test plans + visual inspection protocol, executed all suites (263 steps, 256 PASS, 3 FAIL, 4 N/A = 97.3%).
 
-**Phase 1 (AI.1-AI.11):** 11 tasks. Test plan directory + template, 17 test plan files covering all UI screens.
+**Sprint 17 (FX.*/PICO.*/FX.SDK*):** 48 tasks. Agent pipeline fixes, mock removal, persona overhauls, skills system, Pico assistant, SDK discovery.
 
-**Phase 1.5 (AI.V1-AI.V11):** 11 tasks. Visual inspection protocol added to all test plans (screenshot checkpoints, Visual Quality/Failure criteria).
+**Sprint 18 (PICO.1-10):** 10 tasks. Pico project assistant (chat API, SSE streaming, knowledge skill, frontend panel).
 
-**Phase 2 (AI.12-AI.28):** 17 tasks. Executed all test plans via chrome-devtools MCP. 243/253 PASS, 2 FAIL, 4 N/A across 17 suites.
+**Sprint 19 (V2/FC/SDK.FC-ET):** 36 tasks. V2 sessions, file checkpointing, SDK hooks, structured output, subagent definitions, effort & thinking.
 
-**Phase 2 (AI.29-AI.30):** 2 tasks. dark-mode (19/19 PASS), keyboard-shortcuts (16/17 PASS, 1 FAIL — work item route 404).
+**Sprint 20 (SDK.ST/SB/MCP/UX/REG):** 30 tasks. Streaming, sandbox, dynamic MCP management, Pico suggestions, model switching, 6 e2e suites. REG.1+REG.2 PASS.
 
-**Phase 3 (AI.31):** 1 task. Triage — 263 total steps, 256 PASS, 3 FAIL, 4 N/A (97.3%). Filed FX.CMD1 (Major), FX.EDIT1 (Minor). FX.MOCK1 already tracked.
+**Sprint 21 (DOC.1-9):** 9 tasks. Full refresh of all 9 doc files.
 
----
+**Backlog Spikes (SDK.FUT.1-6):** 6 tasks. Browser SDK, Bridge API, plugin system, HTTP hooks, worktree isolation, doc updates.
 
-## Sprint 17: Agent Pipeline Fixes (consolidated) — completed 2026-03-31
-
-**Sprint 17 (FX.SEC1-FX.DB4, FX.DEV1, FX.SDK2, FX.NAV2, FX.AM1, FX.CMD1, FX.EDIT1, FX.9):** 40 tasks. Command sandbox, mock layer removal (-2283 lines), demo seed, settings fixes, auto-routing play/pause, graceful restart, Flow view redesign, sidebar fix, persona overhauls (all 5 personas), persona detail panel, skills system (entity+DB+browser+injection), router loop defense (3 layers), cost audit, agent monitor UX (identity header, chat thread, log parsing), DB/executor env separation, dev server port-check, SDK native skills, sidebar/e2e bug fixes, activity feed enrichment.
-
----
-
-**Sprint 18 (PICO.1-PICO.10):** 10 tasks. Pico project assistant — backend (persona, chat API, SSE streaming, knowledge skill), frontend (bubble, panel, messages, SSE hook, session management), personality polish.
-
-**Sprint 17 (remaining, FX.SDK1, FX.SDK4):** 2 tasks. SDK discovery endpoint (superseded by V2), capabilities picker.
-
-**Sprint 19 (V2.1-V2.2, V2.4, FC.1-FC.3):** 6 tasks. V2 persistent session manager, capabilities discovery, architecture docs, file checkpointing (executor, rewind API, rewind button UI).
-
----
-
-**Sprint 17 (bug fixes, FX.PICO1, FX.PICO4, FX.LIC1, FX.PICO2-3, FX.SDK6):** 6 tasks. Pico fixes (persona seed, CORS), Apache license, Pico e2e test (30/38 PASS), subagent browser.
-
----
-
-## Sprint 19 (SDK.FC/HK/SO/SA/ET, FX.PICO5/PROJ1): SDK Hooks & File Checkpointing — 30 tasks — archived 2026-04-01
-
-File checkpointing (rewind MCP tool, e2e test, docs), 8 SDK hooks (PreToolUse sandbox, PostToolUse audit, SessionStart/End, FileChanged + UI), structured Router output (JSON schema, decision cards, e2e), subagent definitions (all personas as subagents, hooks + WS events, nested UI), effort & thinking (persona settings, editor dropdowns, e2e 11/13 PASS), plus FX.PICO5 (scroll fix) and FX.PROJ1 (stale project ID).
-
----
-
-## Sprint 20 (SDK.ST/SB/MCP/UX/REG): Observability & Safety — 30 tasks — archived 2026-04-01
-
-Streaming (partial messages, progress summaries, rate limits, context usage), sandbox (SDK native + canUseTool + per-project UI), dynamic MCP management (toggle/reconnect/status API + dots UI), Pico suggestions (pill buttons), model switching (AlertDialog), in-process MCP server, 6 e2e test suites. Regression sweeps REG.1 + REG.2 both PASS.
-
----
-
-## Sprint 21 (DOC.1-9): Documentation Refresh — 9 tasks — archived 2026-04-01
-
-Full refresh of all 9 doc files: getting-started, architecture, data-model, workflow, personas, api, mcp-tools, deployment, frontend.
-
-### Backlog Spikes (SDK.FUT.1-2) — archived 2026-04-01
-- [x] **SDK.FUT.1** — Browser SDK spike (feasible, not recommended — needs WebSocket relay). *(completed 2026-04-01)*
-- [x] **SDK.FUT.2** — Bridge API spike (`spawnClaudeCodeProcess`, SSH/Docker/Cloud paths). *(completed 2026-04-01)*
-- [x] **SDK.FUT.3** — Plugin system spike (local plugins work, marketplace via settings). *(completed 2026-04-01)*
-- [x] **SDK.FUT.4** — HTTP hooks spike (zero code — settings-only webhooks). *(completed 2026-04-01)*
-- [x] **SDK.FUT.5** — Worktree isolation spike (5 mechanisms, replaces file locking). *(completed 2026-04-01)*
-- [x] **SDK.FUT.6** — Updated docs/architecture, deployment, personas, getting-started for FUT.1-5. *(completed 2026-04-01)*
-
----
-
-## Backlog: Pluggable Executor Architecture — archived 2026-04-01
-
-- [x] **PLUG.1** — Refactored ExecutionManager into class with injected ExecutorFactory, updated 6 call sites. *(completed 2026-04-01)*
-- [x] **PLUG.2** — Created composition root `setup.ts` — sole file importing concrete executors. *(completed 2026-04-01)*
-- [x] **PLUG.3a** — Created `@agentops/core` package, moved types.ts and sandbox.ts. *(completed 2026-04-01)*
-- [x] **PLUG.3b** — Defined 6 repository interfaces in core + Drizzle implementations in backend. *(completed 2026-04-01)*
-- [x] **PLUG.4** — Added ExecutorRegistry class to core, wired into ExecutionManager and REST API. *(completed 2026-04-01)*
-- [x] **PLUG.5** — Publish-ready package.json for shared and core (dist exports, files whitelist, tsconfig.build). *(completed 2026-04-01)*
-- [x] **PLUG.6** — Create example custom executor template. `examples/custom-executor/` with EchoExecutor, setup.ts, README. *(completed 2026-04-01)*
-- [x] **PLUG.7** — Update `docs/architecture.md` with pluggable executor documentation. *(completed 2026-04-01)*
+**Pluggable Executor (PLUG.1-10):** 10 tasks. ExecutorFactory refactor, core package, registry, example executor, integration tests, e2e (12/14 PASS).
 - [x] **PLUG.8** — Integration tests for executor registry. 15 tests in `executor-registry.test.ts`. *(completed 2026-04-01)*
 - [x] **PLUG.9** — E2E test plan: executor switching UI. 14 steps across 5 parts. *(completed 2026-04-01)*
 - [x] **PLUG.10** — Run executor switching e2e test. 12/14 PASS, 0 FAIL, 2 SKIP. *(completed 2026-04-01)*
@@ -198,3 +145,23 @@ Scheduling infrastructure, rollback UX, templates, analytics metrics/UX, inbound
 - [x] **RES.SWAP.ARCH** — Research frontend/backend decoupling — backend selector UX, connection validation, auth, WS reconnection, 5 deployment models. *(completed 2026-04-03 01:45 PDT)*
 - [x] **RES.SWAP.HOSTED** — Research hosted frontend — localhost mixed content OK, Cloudflare Pages CDN, tunnel options, multi-backend localStorage. *(completed 2026-04-01 16:20 PDT)*
 - [x] **RES.SWAP.API** — Research API contract and versioning — ~70 endpoints audited, OpenAPI 3.1 code-first, apiVersion + capabilities, shared package evolution. *(completed 2026-04-01 16:30 PDT)*
+
+---
+
+## Sprint 23: Foundations (partial) — archived 2026-04-01
+
+### Error Recovery Phase 1
+
+- [x] **FND.ERR.1** — Add `busy_timeout` and `synchronous` PRAGMAs to SQLite connection. *(completed 2026-04-01 20:30 PDT)*
+- [x] **FND.ERR.2** — Replace fixed 3s WS reconnect with exponential backoff + jitter. *(completed 2026-04-01 20:33 PDT)*
+- [x] **FND.ERR.3** — Add React error boundaries at app and page level. *(completed 2026-04-01 20:35 PDT)*
+- [x] **FND.ERR.4** — Add WS connection state indicator to status bar and Agent Monitor. *(completed 2026-04-01 20:38 PDT)*
+- [x] **FND.ERR.5** — Add structured `error` JSON column to executions schema. *(completed 2026-04-01 20:42 PDT)*
+- [x] **FND.ERR.6** — Add `interrupted` execution status for orphan recovery. *(completed 2026-04-01 20:44 PDT)*
+- [x] **FND.ERR.7** — Wrap migrations in a pre-migration SQLite backup. *(completed 2026-04-01 20:50 PDT)*
+
+### Work Item Lifecycle (partial)
+
+- [x] **FND.WIL.1** — Schema: add `archived_at` and `deleted_at` nullable timestamp columns to `work_items`. *(completed 2026-04-01 20:55 PDT)*
+- [x] **FND.WIL.2** — Fix DELETE orphan bug and convert to soft delete. *(completed 2026-04-01 20:58 PDT)*
+- [x] **FND.WIL.3** — Archive/unarchive/restore API endpoints. *(completed 2026-04-01 21:03 PDT)*
