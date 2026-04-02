@@ -160,8 +160,21 @@ Scheduling infrastructure, rollback UX, templates, analytics metrics/UX, inbound
 - [x] **FND.ERR.6** — Add `interrupted` execution status for orphan recovery. *(completed 2026-04-01 20:44 PDT)*
 - [x] **FND.ERR.7** — Wrap migrations in a pre-migration SQLite backup. *(completed 2026-04-01 20:50 PDT)*
 
-### Work Item Lifecycle (partial)
+### Work Item Lifecycle
 
 - [x] **FND.WIL.1** — Schema: add `archived_at` and `deleted_at` nullable timestamp columns to `work_items`. *(completed 2026-04-01 20:55 PDT)*
 - [x] **FND.WIL.2** — Fix DELETE orphan bug and convert to soft delete. *(completed 2026-04-01 20:58 PDT)*
 - [x] **FND.WIL.3** — Archive/unarchive/restore API endpoints. *(completed 2026-04-01 21:03 PDT)*
+- [x] **FND.WIL.4** — Bulk operations API and background hard-delete job. *(completed 2026-04-01 21:20 PDT)*
+- [x] **FND.WIL.5** — Frontend: "Show archived" toggle and archived item styling. *(completed 2026-04-01 21:28 PDT)*
+- [x] **FND.WIL.6** — Frontend: archive/delete actions in context menus and detail panel. *(completed 2026-04-01 21:43 PDT)*
+- [x] **FND.WIL.7** — Frontend: bulk action bar for multi-select. *(completed 2026-04-01 22:08 PDT)*
+- [x] **FND.WIL.8** — Settings: "Recently deleted" recovery view. *(completed 2026-04-01 22:24 PDT)*
+
+### Global Agents Phase 1 (partial)
+
+- [x] **FND.GA.1** — Schema migration: make chatSessions.projectId nullable, add projectId to executions, create global_memories table. *(completed 2026-04-01 22:36 PDT)*
+- [x] **FND.GA.2** — Add AgentScope type and update entity types in shared package. *(completed 2026-04-01 22:46 PDT)*
+- [x] **FND.GA.3** — Navigation: add "All Projects" option to sidebar project selector. *(completed 2026-04-01 23:10 PDT)*
+- [x] **FND.GA.4** — Dashboard scope-awareness: aggregated stats when no project selected. *(completed 2026-04-01 23:25 PDT)*
+- [x] **FND.GA.5** — Agent Monitor scope-awareness: scope badges and filter. *(completed 2026-04-01 23:40 PDT)*

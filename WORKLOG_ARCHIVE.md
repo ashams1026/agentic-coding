@@ -153,3 +153,11 @@
 ### Research proposals batch 4 + fix — 2026-04-01 19:00–21:00 PDT
 
 **5 research docs (all approved) + 1 fix:** RES.DATA.BACKUP — SQLite backup() API, 4 triggers, ~/.agentops/backups/, 6-step restore flow, full ProjectExport JSON. RES.DATA.GROWTH — execution logs are 80% of DB growth, truncate-not-delete insight, 4-tier retention, dbstat virtual table monitoring. RES.TOKENS.TRACKING — SDK result fields audited, unit inconsistency bug found (cents vs USD), 6 query() sites, 5 data gaps. RES.TOKENS.DASHBOARD — tab within Analytics page, 5 visualizations, on-the-fly SQL aggregation, missing startedAt index. FX.UX.PERSONA.4 — wired TestRunPanel into Persona Manager detail panel.
+
+---
+
+### Sprint 23 Foundations batch 1 — 2026-04-01 20:24–21:20 PDT
+
+**Error Recovery (FND.ERR.1-7, all approved):** busy_timeout+synchronous PRAGMAs (connection.ts), WS exponential backoff+jitter (ws-client.ts), React error boundaries at app+page level (error-boundary.tsx, app.tsx, router.tsx), tri-state WS status indicator in status bar+Agent Monitor (ws-client.ts, status-bar.tsx, terminal-renderer.tsx, use-ws-status.ts hook), structured error JSON column on executions (schema migration 0007, execution-manager.ts classifies sdk_error/configuration_error/unknown), "interrupted" execution status for orphan recovery (entities.ts, start.ts), pre-migration SQLite backup with 3-backup rotation (migrate.ts).
+
+**Work Item Lifecycle early (FND.WIL.1-4, all approved):** archived_at/deleted_at nullable timestamp columns (schema migration 0008), soft delete with 409 guard for running executions + cascade-delete of related data (work-items.ts), archive/unarchive/restore API endpoints with BFS cascade + 30-day grace period + GET query params for filtering (work-items.ts, shared/api.ts), bulk operations API (bulk/archive, bulk/unarchive, bulk delete) + background hard-delete cleanup job every 6h (lifecycle.ts, start.ts).
