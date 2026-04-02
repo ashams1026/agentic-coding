@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 16:25 PDT — CWF.16: Workflow preview component
+
+**Done:** Created `workflow-preview.tsx` — read-only SVG-based visual graph of workflow states and transitions. States auto-layout horizontally by type (initial → intermediate → terminal) using computed positions. Color-coded nodes with name + type badge. Curved Bezier arrows for transitions with optional labels and arrowhead markers. Empty state placeholder when no states defined. All SVG, no graph library.
+**Files:** `packages/frontend/src/features/workflow-builder/workflow-preview.tsx`
+**Notes:** Component not yet routable — CWF.18 will add the `/workflows/:id` route. Visual check deferred until then.
+
+---
+
 ## 2026-04-02 16:15 PDT — CWF.15: Workflow builder state-card and transition-row
 
 **Done:** Created `state-card.tsx` with editable StateCard component (name input, type selector, 12-color picker, persona selector via usePersonas(), transitions list with add/remove) and `transition-row.tsx` with target state dropdown + label input + delete button. Both components use shadcn/ui primitives and match compact sizing conventions.
