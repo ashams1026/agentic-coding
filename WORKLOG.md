@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 10:30 PDT — Review: CUX.TEST.3 (approved)
+
+**Reviewed:** E2E test plan for Notifications UX.
+- 7 test cases covering all required features ✓
+- Bell icon + badge (TC-NTF-1), drawer open/close (TC-NTF-2), store + badge injection (TC-NTF-3) ✓
+- Card types with 5 icon/color/action configs (TC-NTF-4) ✓
+- Enhanced toasts as code review (TC-NTF-5) — reasonable for WS-dependent features ✓
+- Settings: event toggles, quiet hours, scope (TC-NTF-6) ✓
+- WS types + backend emission as code review (TC-NTF-7) ✓
+- Template compliant ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 10:25 PDT — CUX.TEST.3: E2E test plan for Notifications UX
 
 **Done:** Wrote `tests/e2e/plans/notifications-ux.md` with 7 test cases: TC-NTF-1 (bell icon in sidebar footer), TC-NTF-2 (drawer open/close/empty state/Escape/backdrop), TC-NTF-3 (notification store + badge via JS injection, mark all read), TC-NTF-4 (card types with 5 icon/color configs + action buttons), TC-NTF-5 (enhanced toasts — code review for critical non-dismiss, overflow, dual dispatch), TC-NTF-6 (Settings Notifications tab — event toggles, quiet hours, scope), TC-NTF-7 (WS event types + backend emission — code review). Follows template with screenshot checkpoints, visual quality, failure criteria.
