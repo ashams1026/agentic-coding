@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-24 complete and archived. Blocked tasks (FX.SDK3, FX.SDK5, SDK.V2.3) in `BLOCKED_TASKS.md`. Roadmap in `docs/roadmap.md`.
+> Sprints 1-24 complete and archived. Sprint 25 partial: Schema (CWF.1-3), Backend Runtime (CWF.4-8), API Routes (CWF.9-10) archived. Blocked tasks in `BLOCKED_TASKS.md`. Roadmap in `docs/roadmap.md`.
 
 ---
 
@@ -13,25 +13,6 @@
 
 > Custom Workflows — the biggest single effort. Dedicated sprint, no interleaving.
 > Proposal docs: `docs/proposals/custom-workflows/data-model.md`, `docs/proposals/custom-workflows/builder-ux.md`, `docs/proposals/custom-workflows/runtime-execution.md`, `docs/proposals/custom-workflows/edge-cases.md`
-
-### Schema & Data Model
-
-- [x] **CWF.1** — Schema: create `workflows`, `workflow_states`, `workflow_transitions` tables in `packages/backend/src/db/schema.ts`. Workflows have id, name, description, scope (global/project), projectId (nullable FK), version, isPublished, timestamps. States have workflowId FK, name, type (initial/intermediate/terminal), color, personaId (nullable FK), sortOrder. Transitions have workflowId FK, fromStateId FK, toStateId FK, label, sortOrder. Generate Drizzle migration. *(completed 2026-04-02 12:20 PDT)*
-- [x] **CWF.2** — Schema: add `workflowId` (TEXT FK nullable) column to `projects`, `work_items`, and `executions` tables. Add `workflowStateName` (TEXT nullable) to executions. Generate migration. Update serialization functions in routes to include new fields. Update shared entity types. *(completed 2026-04-02 12:40 PDT)*
-- [x] **CWF.3** — Seed: create `seedDefaultWorkflow()` function in `packages/backend/src/db/seed.ts` (or new file). Insert a "Default" workflow with the 6 states from the hardcoded `WORKFLOW_STATES` constant and all valid transitions. Set `projects.workflowId` to the default workflow ID. Run on startup after migrations (idempotent). Backfill existing `work_items.workflowId` to the default workflow. *(completed 2026-04-02 12:55 PDT)*
-
-### Backend Runtime
-
-- [x] **CWF.4** — Backend: create `packages/backend/src/agent/workflow-runtime.ts` with functions: `isValidTransitionDynamic(workflowId, fromState, toState): Promise<boolean>`, `getWorkflowInitialState(workflowId): Promise<string>`, `resolvePersonaForState(projectId, workflowId, stateName): Promise<PersonaId | null>`, `getWorkflowStates(workflowId): Promise<WorkflowState[]>`, `getWorkflowTransitions(workflowId): Promise<WorkflowTransition[]>`. Query from DB. Fall back to hardcoded `WORKFLOW` if workflowId is null. *(completed 2026-04-02 13:10 PDT)*
-- [x] **CWF.5** — Backend: update `packages/backend/src/routes/work-items.ts`. POST: resolve initial state via `getWorkflowInitialState(project.workflowId)` instead of `WORKFLOW.initialState`. Set `workflowId` on created items. PATCH: validate state transitions via `isValidTransitionDynamic()` instead of sync `isValidTransition()`. Import and use the new runtime functions. *(completed 2026-04-02 13:25 PDT)*
-- [x] **CWF.6** — Backend: update `packages/backend/src/agent/dispatch.ts` to use `resolvePersonaForState(projectId, workflowId, stateName)` with fallback to current `persona_assignments` lookup. Update `packages/backend/src/agent/execution-manager.ts` to set `workflowId` and `workflowStateName` on execution records when creating/updating. *(completed 2026-04-02 13:40 PDT)*
-- [x] **CWF.7** — Backend: update `packages/backend/src/agent/mcp-server.ts`. `route_to_state` tool: validate via `isValidTransitionDynamic()`. `create_children` tool: use `getWorkflowInitialState()` + inherit parent's workflowId. `flag_blocked` tool: look up "Blocked" state by name in the work item's workflow states. *(completed 2026-04-02 13:55 PDT)*
-- [x] **CWF.8** — Backend: update `packages/backend/src/agent/router.ts` to build dynamic router prompt. Replace static `ROUTER_BASE_PROMPT` with `buildDynamicRouterPrompt(workflowId, currentState)` that queries the workflow's transitions for the current state and lists valid target states. Query the work item's workflow before building the prompt. *(completed 2026-04-02 14:10 PDT)*
-
-### API Routes
-
-- [x] **CWF.9** — Backend: create `packages/backend/src/routes/workflows.ts` with read-only endpoints: `GET /api/workflows` (list, filter by projectId/scope), `GET /api/workflows/:id` (full workflow with states + transitions), `GET /api/workflows/:id/states`, `GET /api/workflows/:id/transitions`. Register in server. Add shared types (`Workflow`, `WorkflowState`, `WorkflowTransition`) to `packages/shared/src/entities.ts`. *(completed 2026-04-02 14:25 PDT)*
-- [x] **CWF.10** — Backend: add builder CRUD endpoints to `workflows.ts`: `POST /api/workflows` (create draft), `PATCH /api/workflows/:id` (update states/transitions), `POST /api/workflows/:id/publish` (mark published, create version snapshot), `DELETE /api/workflows/:id` (archive — only if no work items use it), `POST /api/workflows/:id/clone` (deep copy). Add `POST /api/workflows/:id/validate` (check for unreachable states, missing initial/terminal, dead-end transitions). *(completed 2026-04-02 14:40 PDT)*
 
 ### Frontend: Dynamic Views
 

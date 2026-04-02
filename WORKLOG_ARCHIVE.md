@@ -156,19 +156,9 @@
 
 ---
 
-### Sprint 23 Foundations batch 1 — 2026-04-01 20:24–21:20 PDT
+### Sprint 23 Foundations batches 1-3 (consolidated) — 2026-04-01 20:24–23:25 PDT
 
-**Error Recovery (FND.ERR.1-7, all approved):** busy_timeout+synchronous PRAGMAs (connection.ts), WS exponential backoff+jitter (ws-client.ts), React error boundaries at app+page level (error-boundary.tsx, app.tsx, router.tsx), tri-state WS status indicator in status bar+Agent Monitor (ws-client.ts, status-bar.tsx, terminal-renderer.tsx, use-ws-status.ts hook), structured error JSON column on executions (schema migration 0007, execution-manager.ts classifies sdk_error/configuration_error/unknown), "interrupted" execution status for orphan recovery (entities.ts, start.ts), pre-migration SQLite backup with 3-backup rotation (migrate.ts).
-
-**Work Item Lifecycle early (FND.WIL.1-4, all approved):** archived_at/deleted_at nullable timestamp columns (schema migration 0008), soft delete with 409 guard for running executions + cascade-delete of related data (work-items.ts), archive/unarchive/restore API endpoints with BFS cascade + 30-day grace period + GET query params for filtering (work-items.ts, shared/api.ts), bulk operations API (bulk/archive, bulk/unarchive, bulk delete) + background hard-delete cleanup job every 6h (lifecycle.ts, start.ts).
-
----
-
-### Sprint 23 Foundations batch 2 — 2026-04-01 21:25–22:24 PDT
-
-**Work Item Lifecycle late (FND.WIL.5-8, all approved):** "Show archived" toggle with muted styling + "Archived" badge (filter-bar.tsx, list-view.tsx, work-items-store.ts), archive/delete context menus + detail panel actions with toast Undo (context-menu.tsx, list-view.tsx, detail-panel.tsx), bulk action bar for multi-select with Archive/Delete/Clear (work-items-store selectedIds, bulk API hooks), bulkDeleteWorkItems error handling rework (rejected then fixed — added !res.ok guard matching del() pattern), "Recently deleted" recovery view in Settings > Data with 30-day countdown badge + Restore (recently-deleted.tsx, serializeWorkItem fix for archivedAt/deletedAt).
-
----
+**Error Recovery (FND.ERR.1-7):** PRAGMAs, WS backoff, error boundaries, status indicator, structured errors, orphan recovery, backup rotation. **Work Item Lifecycle (FND.WIL.1-8):** archived_at/deleted_at, soft delete + 409 guard, archive/unarchive/restore API, bulk ops, "Show archived" toggle, context menus, bulk action bar, "Recently deleted" in Settings.
 
 ### Sprint 23 Foundations batch 3 — 2026-04-01 22:32–23:25 PDT
 
@@ -196,4 +186,16 @@
 
 **Notifications UX Phase 1 (NTF.1-8, all approved):** Shared types (NotificationEventType, Notification, NotificationEvent). Backend emission via broadcastNotification() at 4 points (completed/errored/proposal/budget). Zustand notification store with localStorage persist, 60s batching, quiet hours. NotificationBell in sidebar footer with red unread badge. NotificationDrawer (320px sliding panel, date grouping, empty state). NotificationCard with 5 type-specific icons + action buttons. Enhanced toasts (critical non-dismiss, overflow link, dual dispatch). Settings Notifications tab (event toggles, quiet hours, scope).
 
-**Testing & Docs (CUX.TEST.1-4, CUX.DOC.1-2, all approved):** Agent Chat e2e test plan (7 cases) + execution (7/7 PASS, 10 screenshots). Notifications UX e2e test plan (7 cases) + execution (7/7 PASS, 6 screenshots). API docs: Chat multi-persona + template variables + Notifications system WS events + preferences.
+**Testing & Docs (CUX.TEST.1-5, CUX.DOC.1-2, all approved):** Agent Chat e2e test plan (7 cases) + execution (7/7 PASS, 10 screenshots). Notifications UX e2e test plan (7 cases) + execution (7/7 PASS, 6 screenshots). API docs: Chat multi-persona + template variables + Notifications system WS events + preferences. Regression checkpoint post-Sprint 24: 36 suites, 0 regressions.
+
+---
+
+### Sprint 25 Workflow Engine — Schema + Backend + API (2026-04-02 12:00–14:40 PDT)
+
+**Sprint 25 decomposition:** 22 tasks across Schema (CWF.1-3), Backend Runtime (CWF.4-8), API Routes (CWF.9-10), Frontend Dynamic Views (CWF.11-14), Workflow Builder (CWF.15-18), Testing/Docs (CWF.TEST.1-3, CWF.DOC.1). Read all 4 proposal docs.
+
+**Schema (CWF.1-3, all approved):** 3 new tables (workflows/workflow_states/workflow_transitions) with versioning, types, colors. workflowId columns on projects/work_items/executions + workflowStateName. Seed default 8-state workflow from WORKFLOW constant, backfill references.
+
+**Backend Runtime (CWF.4-8, all approved):** workflow-runtime.ts with 6 dynamic query functions (all fall back to hardcoded WORKFLOW). work-items.ts uses getWorkflowInitialState + isValidTransitionDynamic. dispatch.ts uses resolvePersonaForState. execution-manager.ts tracks workflowId+workflowStateName. mcp-server.ts 3 tools updated (route/create/block). router.ts uses buildDynamicRouterPrompt for valid target states.
+
+**API Routes (CWF.9-10, all approved):** 4 read-only endpoints (list, get with states+transitions, states, transitions). 6 builder CRUD endpoints (create draft, bulk update states/transitions, publish, delete with 409 guard, clone with state ID remapping, validate for unreachable/dead-end/missing initial-terminal).

@@ -60,11 +60,7 @@
 
 **Backlog Spikes (SDK.FUT.1-6):** 6 tasks. Browser SDK, Bridge API, plugin system, HTTP hooks, worktree isolation, doc updates.
 
-**Pluggable Executor (PLUG.1-10):** 10 tasks. ExecutorFactory refactor, core package, registry, example executor, integration tests (15 tests), e2e (12/14 PASS).
-
-**Backlog: Agent Workflow (AW.1-2):** 2 tasks. Visual UI check in WORK state, visual check in REVIEW state.
-
-**Sprint 22: Visual UX Audit (UX.*, FX.UX.*, HK.*, RES.SDK/V2):** 35 tasks. 14 UI audits (Dashboard, Work Items list/flow/create, Detail, Agent Monitor main/controls/history, Activity, Persona list/test, Settings, Pico, Nav, Cmd, Dark, Responsive) + 10 bug fixes (dashboard links, stat a11y, empty filter, agent links, MCP 404, activity links, Pico exec path, rewind tooltip, persona a11y/labels/delete) + Agent Monitor breadcrumb, test results restructure, 2 SDK research spikes (tools, V2 sessions).
+**Pluggable Executor + Backlog + Sprint 22 (consolidated):** PLUG.1-10 (executor refactor, core package, registry, e2e 12/14 PASS). AW.1-2 (visual check in WORK/REVIEW). Sprint 22: 35 tasks — 14 UI audits, 10 bug fixes, breadcrumb, test restructure, 2 SDK spikes.
 
 ---
 
@@ -72,58 +68,11 @@
 
 ---
 
-## Research: Design Proposals — archived 2026-04-02
+**Research: Design Proposals (RES.CHAT/LIFECYCLE/NOTIFY/COLLAB/SCHED — 10 tasks, archived 2026-04-02):** Agent chat UX/data model/rich messages, work item lifecycle UX/data model, notifications UX/integrations, agent collaboration context/coordination, scheduling UX. All in `docs/proposals/`.
 
-- [x] **RES.CHAT.UX** — Research dedicated agent chat page UX — session sidebar, persona selector, Pico relationship, scoping, navigation. *(completed 2026-04-02 17:10 PDT)*
-- [x] **RES.CHAT.RICH** — Research rich message rendering — 8 content types (diffs, tool calls, terminal, file trees, proposals, thinking, images, progress). *(completed 2026-04-02 17:30 PDT)*
-- [x] **RES.CHAT.DATA** — Research chat data model — hybrid contentBlocks, SSE + control endpoints, execution linking, V2 readiness. *(completed 2026-04-02 17:50 PDT)*
-- [x] **RES.LIFECYCLE.UX** — Research work item delete & archive UX — archive primary, 3-tier confirmation, bulk ops, 30-day soft delete. *(completed 2026-04-02 18:10 PDT)*
-- [x] **RES.LIFECYCLE.DATA** — Research work item lifecycle data model — archived_at/deleted_at timestamps, cascade rules, API design, agent guards. *(completed 2026-04-02 18:30 PDT)*
-- [x] **RES.NOTIFY.UX** — Research notifications UX — 10-event catalog, bell icon + drawer, toast vs persistent, quiet hours, Agent Monitor suppression. *(completed 2026-04-02 18:50 PDT)*
-- [x] **RES.NOTIFY.INTEGRATIONS** — Research notification channels — Slack/email/webhooks, NotificationService event bus, rate limiting, delivery log. *(completed 2026-04-02 19:10 PDT)*
-- [x] **RES.COLLAB.CONTEXT** — Research agent context passing — handoff notes, shared scratchpad, context windowing, agent-to-agent tagging. *(completed 2026-04-02 19:45 PDT)*
-- [x] **RES.COLLAB.COORD** — Research multi-agent coordination — parallel execution, dependency enforcement, human-in-loop, escalation, fan-out/fan-in. *(completed 2026-04-02 20:15 PDT)*
-- [x] **RES.SCHED.UX** — Research scheduling UX — per-persona schedules, presets/cron, standalone executions, schedule management, notification integration. *(completed 2026-04-02 20:40 PDT)*
+**Research batch 3 (RES.SCHED.INFRA–RES.SWAP.API — 10 tasks, archived 2026-04-01):** Scheduling infra, rollback UX, templates, analytics metrics/UX, inbound/outbound webhooks, frontend/backend swappability (arch/hosted/API). All in `docs/proposals/`.
 
----
-
-## Research proposals batch 3 (RES.SCHED.INFRA–RES.SWAP.API): 10 tasks — archived 2026-04-01
-
-Scheduling infrastructure, rollback UX, templates, analytics metrics/UX, inbound/outbound webhooks, frontend/backend swappability (architecture, hosted, API contract). All design docs in `docs/proposals/`.
-
-- [x] **RES.SCHED.INFRA** — Research scheduling infrastructure — node-cron + SQLite persistence, missed run catch-up, 14-column schedules table, shared concurrency pool. *(completed 2026-04-02 21:15 PDT)*
-- [x] **RES.ROLLBACK** — Research rollback UX — per-execution scope, confirmation dialog with diff preview, conflict detection, opt-in git commits, SDK limitations. *(completed 2026-04-02 21:45 PDT)*
-- [x] **RES.TEMPLATES** — Research templates and presets — work item/workflow/project/persona templates, DB vs JSON storage, community gallery. *(completed 2026-04-02 22:15 PDT)*
-- [x] **RES.ANALYTICS.METRICS** — Research metrics collection — per-execution/persona/project/workflow metrics, SQLite aggregation tradeoffs. *(completed 2026-04-02 22:45 PDT)*
-- [x] **RES.ANALYTICS.UX** — Research analytics dashboard UX — time ranges, visualizations, drill-down, export. *(completed 2026-04-02 23:15 PDT)*
-- [x] **RES.WEBHOOKS.INBOUND** — Research inbound triggers — GitHub/Slack/generic webhook receiver, payload-to-prompt mapping, HMAC security. *(completed 2026-04-02 23:45 PDT)*
-- [x] **RES.WEBHOOKS.OUTBOUND** — Research outbound event webhooks — event subscriptions, HMAC signing, retry with backoff, delivery log. *(completed 2026-04-03 01:00 PDT)*
-- [x] **RES.SWAP.ARCH** — Research frontend/backend decoupling — backend selector UX, connection validation, auth, WS reconnection, 5 deployment models. *(completed 2026-04-03 01:45 PDT)*
-- [x] **RES.SWAP.HOSTED** — Research hosted frontend — localhost mixed content OK, Cloudflare Pages CDN, tunnel options, multi-backend localStorage. *(completed 2026-04-01 16:20 PDT)*
-- [x] **RES.SWAP.API** — Research API contract and versioning — ~70 endpoints audited, OpenAPI 3.1 code-first, apiVersion + capabilities, shared package evolution. *(completed 2026-04-01 16:30 PDT)*
-
----
-
-## Sprint 23: Foundations (partial) — archived 2026-04-01
-
-### Error Recovery Phase 1
-
-- [x] **FND.ERR.1** — Add `busy_timeout` and `synchronous` PRAGMAs to SQLite connection. *(completed 2026-04-01 20:30 PDT)*
-- [x] **FND.ERR.2** — Replace fixed 3s WS reconnect with exponential backoff + jitter. *(completed 2026-04-01 20:33 PDT)*
-- [x] **FND.ERR.3** — Add React error boundaries at app and page level. *(completed 2026-04-01 20:35 PDT)*
-- [x] **FND.ERR.4** — Add WS connection state indicator to status bar and Agent Monitor. *(completed 2026-04-01 20:38 PDT)*
-- [x] **FND.ERR.5** — Add structured `error` JSON column to executions schema. *(completed 2026-04-01 20:42 PDT)*
-- [x] **FND.ERR.6** — Add `interrupted` execution status for orphan recovery. *(completed 2026-04-01 20:44 PDT)*
-- [x] **FND.ERR.7** — Wrap migrations in a pre-migration SQLite backup. *(completed 2026-04-01 20:50 PDT)*
-
-### Work Item Lifecycle
-
-- [x] **FND.WIL.1** — Schema: add `archived_at` and `deleted_at` nullable timestamp columns to `work_items`. *(completed 2026-04-01 20:55 PDT)*
-- [x] **FND.WIL.2** — Fix DELETE orphan bug and convert to soft delete. *(completed 2026-04-01 20:58 PDT)*
-- [x] **FND.WIL.3** — Archive/unarchive/restore API endpoints. *(completed 2026-04-01 21:03 PDT)*
-- [x] **FND.WIL.4** — Bulk operations API and background hard-delete job. *(completed 2026-04-01 21:20 PDT)*
-- [x] **FND.WIL.5** — Frontend: "Show archived" toggle and archived item styling. *(completed 2026-04-01 21:28 PDT)*
-- [x] **FND.WIL.6** — Frontend: archive/delete actions in context menus and detail panel. *(completed 2026-04-01 21:43 PDT)*
+**Sprint 23: Foundations (FND.ERR.1-7, FND.WIL.1-8, archived 2026-04-01):** Error Recovery — 7 tasks (PRAGMAs, WS backoff, error boundaries, status indicator, structured errors, orphan recovery, backup). Work Item Lifecycle — 8 tasks (archived_at/deleted_at, soft delete, 409 guard, archive/unarchive/restore, bulk ops, "Show archived", context menus, "Recently deleted").
 - [x] **FND.WIL.7** — Frontend: bulk action bar for multi-select. *(completed 2026-04-01 22:08 PDT)*
 - [x] **FND.WIL.8** — Settings: "Recently deleted" recovery view. *(completed 2026-04-01 22:24 PDT)*
 
@@ -192,3 +141,26 @@ Scheduling infrastructure, rollback UX, templates, analytics metrics/UX, inbound
 - [x] **CUX.DOC.1** — Document Agent Chat multi-persona API + template variables in docs/api.md. *(completed 2026-04-02 11:05 PDT)*
 - [x] **CUX.DOC.2** — Document Notifications system — WS event, types, preferences in docs/api.md. *(completed 2026-04-02 11:20 PDT)*
 - [x] **CUX.TEST.5** — Regression checkpoint post-Sprint 24 — 36 suites, 0 regressions. *(completed 2026-04-02 11:45 PDT)*
+
+---
+
+## Sprint 25: Workflow Engine (partial) — archived 2026-04-02
+
+### Schema & Data Model
+
+- [x] **CWF.1** — Schema: workflows, workflow_states, workflow_transitions tables + migration. *(completed 2026-04-02 12:20 PDT)*
+- [x] **CWF.2** — Add workflowId to projects/work_items/executions + workflowStateName on executions. *(completed 2026-04-02 12:40 PDT)*
+- [x] **CWF.3** — Seed default workflow from hardcoded WORKFLOW constant + backfill. *(completed 2026-04-02 12:55 PDT)*
+
+### Backend Runtime
+
+- [x] **CWF.4** — workflow-runtime.ts: 6 dynamic query functions with hardcoded fallback. *(completed 2026-04-02 13:10 PDT)*
+- [x] **CWF.5** — work-items.ts: dynamic initial state + async transition validation. *(completed 2026-04-02 13:25 PDT)*
+- [x] **CWF.6** — dispatch.ts: resolvePersonaForState. execution-manager.ts: track workflow context. *(completed 2026-04-02 13:40 PDT)*
+- [x] **CWF.7** — mcp-server.ts: 3 tools updated (route/create/block) for dynamic workflow. *(completed 2026-04-02 13:55 PDT)*
+- [x] **CWF.8** — router.ts: dynamic prompt from buildDynamicRouterPrompt(). *(completed 2026-04-02 14:10 PDT)*
+
+### API Routes
+
+- [x] **CWF.9** — Read-only endpoints: list, get (with states+transitions), states, transitions. *(completed 2026-04-02 14:25 PDT)*
+- [x] **CWF.10** — Builder CRUD: create, update, publish, delete (409 guard), clone, validate. *(completed 2026-04-02 14:40 PDT)*
