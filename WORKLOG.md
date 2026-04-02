@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 20:33 PDT — Review: FND.ERR.3 (approved)
+
+**Reviewed:** React error boundaries at app and page level.
+- `error-boundary.tsx`: two class components with `componentDidCatch` + `getDerivedStateFromError` — correct React pattern
+- `AppErrorBoundary`: wraps full tree (QueryClientProvider + RouterProvider) in app.tsx:9-13; fallback: "Something went wrong." + [Reload] ✓
+- `PageErrorBoundary`: wraps all 7 pages individually in router.tsx:16-22; fallback: "Page error." + [Go to Dashboard] (raw `<a>` — correct for error state) + [Retry] (resets error state) ✓
+- Uses shadcn Button, Tailwind dark-mode classes (`bg-background`, `text-foreground`) — follows conventions
+- Build passes; visual check by worker confirms dashboard renders normally
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 20:31 PDT — FND.ERR.3: Add React error boundaries at app and page level
 
 **Done:** Created `error-boundary.tsx` with two class components: `AppErrorBoundary` (wraps full tree in app.tsx, fallback: "Something went wrong. [Reload]") and `PageErrorBoundary` (wraps each page in router.tsx, fallback: "Page error. [Go to Dashboard] [Retry]"). Both use `componentDidCatch` for error logging. AppErrorBoundary wraps QueryClientProvider+RouterProvider. Each of the 7 page routes wrapped individually with PageErrorBoundary. Visual check confirms dashboard renders normally with boundaries in place.
