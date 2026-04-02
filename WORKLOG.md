@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 00:10 PDT — S26.TEST.1: Agent Collaboration e2e test plan
+
+**Done:** Wrote test plan at `tests/e2e/plans/agent-collaboration-phase1.md`. 10 steps across 3 parts: handoff notes display (5 steps — expand timeline, verify card content with icons/sections/state transition), dependency enforcement (2 steps — API-level verify blocking + unblocking), context windowing (2 steps — code review of buildAccumulatedContext + injection). Mix of UI verification and code review since dependency blocking and context windowing require live agent runs not available in test environment.
+**Files:** `tests/e2e/plans/agent-collaboration-phase1.md`
+
+---
+
 ## 2026-04-03 00:00 PDT — Review: ANL.6 (approved)
 
 **Reviewed:** Token usage tab with charts + table.
