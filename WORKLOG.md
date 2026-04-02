@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 19:20 PDT — Decompose Sprint 26: Intelligence & Discovery
+
+**Done:** Decomposed Sprint 26 into 26 tasks across 4 sections: Agent Collaboration P1 (COL.1-6: handoff notes schema+persistence+injection, dependency enforcement in dispatch, context windowing, frontend display), Search P1 (SRC.1-5: FTS5 virtual tables+triggers, unified search API, command palette upgrade, filter bar search), Analytics + Token Usage P1 (ANL.1-7: model/tokens/toolUses columns, persist from execution events, 4 aggregate endpoints, analytics page with overview+token tabs, Recharts charts, React Query hooks), Testing & Docs (S26.TEST.1-7 + S26.DOC.1: 3 test plans, 3 test executions, API docs, regression checkpoint). Key finding: ProgressEvent already emits totalTokens/toolUses but never persists — ANL.1-2 fix this. Task edges exist but dispatch ignores them — COL.4 enforces.
+**Files:** `TASKS.md`
+
+---
+
 ## 2026-04-02 19:05 PDT — Review: CWF.TEST.3 (approved)
 
 **Reviewed:** Post-Sprint 25 regression checkpoint.
