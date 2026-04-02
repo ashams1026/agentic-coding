@@ -14,32 +14,22 @@
 > Major UX rework based on user feedback. **Prioritized ahead of remaining Sprint 28 and future roadmap work.** Themes: global-as-project foundation, persona→agent rename, chat UX fixes, workflow rework with label triggers, scope clarity.
 > Bug Fixes (Sprints 24-27), Phases 1-6, 9 complete and archived. Phases 4, 8 partially complete.
 
-### Bug Fixes (Sprint 29 Review)
+### Bug Fixes (Sprint 29 Review — remaining)
 
-- [x] **FX.UXO1** — Critical: Router path `workflows/:id` not renamed to `automations/:id` in `router.tsx:26`. Internal navigation in `workflows.tsx:552,631` still uses `/workflows/` paths. Both must use `/automations/`. *(completed 2026-04-02 12:42 PDT)*
-- [x] **FX.UXO2** — Critical: Board view (`board-view.tsx`) hardcoded to 8-state `WORKFLOW` constant from shared. Must fetch workflow states dynamically from backend based on selected project's workflowId. Global project has 3 states but board renders 8 columns. *(resolved by FX.UXO21 — dead code removed, 2026-04-02 12:47 PDT)*
-- [x] **FX.UXO3** — Critical: Frontend auto-routing toggle in `workflow-config-section.tsx` reads/writes `project.settings.autoRouting` but backend now reads `workflow.autoRouting`. Toggle has zero effect. Must read/write via `PATCH /api/workflows/:id { autoRouting }`. *(completed 2026-04-02 12:42 PDT)*
-- [x] **FX.UXO4** — Critical: Workflow builder `state-card.tsx` allows renaming/deleting Backlog/Done states. Backend rejects with 400, but frontend has no guards. Disable name input, type dropdown, and delete button for built-in states. Show lock icon or "Built-in" badge. *(completed 2026-04-02 12:42 PDT)*
-- [x] **FX.UXO5** — Warning: Global project gets wrong workflow. `seed-workflow.ts:backfillWorkflowReferences` overwrites `pj-global.workflowId` with `wf-default` instead of `wf-global`. Fix: skip global project in backfill, or set workflowId explicitly in `ensure-global-project.ts`. *(completed 2026-04-02 12:47 PDT)*
-- [ ] **FX.UXO6** — Warning: "All Projects" scope in `recently-deleted.tsx` passes `projectId="pj-global"` to API, which filters to only global-project items. When `isGlobal` is true, should pass `undefined` to return items from ALL projects.
-- [ ] **FX.UXO7** — Warning: Queue endpoint (`routes/executions.ts`) accepts `projectId` param but doesn't filter queue entries by it. Returns all projects' data. Either filter by project or remove the misleading param.
-- [ ] **FX.UXO8** — Warning: Chat panel overlay (`chat-panel.tsx`) has no agent-based session grouping — only the full `/chat` page got it (UXO.12). Apply same `groupSessionsByAgent` pattern for consistent UX.
-- [ ] **FX.UXO9** — Warning: Chat header Globe icon (`chat.tsx:400`) checks `cs.projectId === null` but projectId is notNull in schema. Should also check for `"pj-global"` to show Globe for global project.
-- [x] **FX.UXO10** — Warning: `workflows.tsx:568,607` page subtitle and section header still say "Workflows" instead of "Automations". Complete the rename for all user-visible strings. *(completed 2026-04-02 12:47 PDT)*
-- [ ] **FX.UXO11** — Warning: `isPico` heuristic in `chat.tsx:128` and `chat-panel.tsx:105` matches `avatar.icon === "dog"`. Any custom agent with dog icon gets Pico's greeting. Remove icon check, match on name or dedicated flag only.
-- [ ] **FX.UXO12** — Warning: `use-pico-chat.ts:440-455` stale closure in `deleteSession` — `remaining` computed from pre-update sessions array. Compute `remaining` first, pass to `setSessions`, then use for `setCurrentSessionId`.
-- [ ] **FX.UXO13** — Warning: Chat page shows empty state with no feedback when no project is selected (`use-pico-chat.ts:167`). Should show "Select a project to start chatting" message.
-- [ ] **FX.UXO14** — Warning: Chat header context menu (`chat.tsx:449`) lacks keyboard accessibility — no Escape to close. Migrate to proper `DropdownMenu` component.
-- [x] **FX.UXO15** — Critical: `agent-detail-panel.tsx` (the primary agent editor) has NO scope display or editing UI. The scope feature from UXO.8 is invisible to users. Add scope state, display in read mode, scope/projectId selector in edit mode, and include in save payload. *(completed 2026-04-02 12:42 PDT)*
-- [ ] **FX.UXO16** — Warning: `agent-list.tsx:handleCreate` creates agents without `scope` or `projectId`. New agents always default to global regardless of selected project context. Pass `scope`/`projectId` based on `useSelectedProject()`.
-- [ ] **FX.UXO17** — Warning: `agent-editor.tsx` is dead code — exported but never imported or rendered. It has scope editing that the active `agent-detail-panel.tsx` lacks. Delete it and port scope UI to the active panel.
-- [x] **FX.UXO18** — Warning: Backend `routes/agents.ts:135-144` PATCH allows changing scope to `"project"` without providing `projectId`, creating inconsistent state. Add validation: if `scope === "project"` and no projectId provided (in body or existing record), return 400. *(completed 2026-04-02 12:47 PDT)*
-- [x] **FX.UXO19** — Warning: Backend `routes/agents.ts:83` agent creation with invalid `projectId` gives unhelpful 500 (FK constraint). Add project existence check or catch FK error and return 400. *(resolved by FX.UXO18 — FK validation added, 2026-04-02 12:47 PDT)*
-- [ ] **FX.UXO20** — Info: Dead code — `toolCallMap` in `use-pico-chat.ts:304` is populated but never read. `lastToolCallIndex` is the actual pairing mechanism. Remove.
-- [x] **FX.UXO21** — Info: Dead code — `board-view.tsx` exists but is unreachable (flow view removed). Vestigial `view` state, `setView`, and `WorkItemView` type in `work-items-store.ts`. Remove all. *(completed 2026-04-02 12:47 PDT)*
-- [ ] **FX.UXO22** — Info: Dead `AgentScope` type in `shared/src/entities.ts:34-36` — discriminated union that doesn't match actual `scope` field. Remove to avoid confusion.
-- [ ] **FX.UXO23** — Info: `BUILT_IN_IDS` in `agent-list.tsx:82-88` contains `"ps-qa00001"` which doesn't exist in seed data. Seed has `"ps-rt00001"` (Router). Router agent shows delete button incorrectly. Fix IDs or use `agent.settings.isSystem` flag instead.
-- [ ] **FX.UXO24** — Info: `AgentId` type in `shared/src/ids.ts:6` still uses `ps-` prefix. `createId.agent()` generates `ps-` IDs. Semantically wrong post-rename. Track as tech debt — requires migration + seed updates to change.
+- [ ] **FX.UXO6** — Warning: "All Projects" scope in `recently-deleted.tsx` passes `projectId="pj-global"` to API. When `isGlobal` is true, should pass `undefined` to return items from ALL projects.
+- [ ] **FX.UXO7** — Warning: Queue endpoint (`routes/executions.ts`) accepts `projectId` param but doesn't filter by it. Either filter or remove the param.
+- [ ] **FX.UXO8** — Warning: Chat panel overlay (`chat-panel.tsx`) has no agent-based session grouping — only the full `/chat` page got it. Apply same `groupSessionsByAgent` pattern.
+- [ ] **FX.UXO9** — Warning: Chat header Globe icon (`chat.tsx`) checks `projectId === null` but projectId is notNull in schema. Should also check for `"pj-global"`.
+- [ ] **FX.UXO11** — Warning: `isPico` heuristic in `chat.tsx` and `chat-panel.tsx` matches `avatar.icon === "dog"`. Remove icon check, match on name only.
+- [ ] **FX.UXO12** — Warning: `use-pico-chat.ts` stale closure in `deleteSession`. Compute `remaining` before updating sessions array.
+- [ ] **FX.UXO13** — Warning: Chat page shows empty state with no feedback when no project selected. Show "Select a project" message.
+- [ ] **FX.UXO14** — Warning: Chat header context menu (`chat.tsx`) lacks keyboard accessibility. Migrate to `DropdownMenu` component.
+- [ ] **FX.UXO16** — Warning: `agent-list.tsx:handleCreate` creates agents without `scope`/`projectId`. Pass based on `useSelectedProject()`.
+- [ ] **FX.UXO17** — Warning: `agent-editor.tsx` is dead code. Delete it.
+- [ ] **FX.UXO20** — Info: Dead `toolCallMap` in `use-pico-chat.ts`. Remove.
+- [ ] **FX.UXO22** — Info: Dead `AgentScope` type in `shared/src/entities.ts`. Remove.
+- [ ] **FX.UXO23** — Info: `BUILT_IN_IDS` in `agent-list.tsx` has wrong ID `"ps-qa00001"`. Fix to match seed data.
+- [ ] **FX.UXO24** — Info: `AgentId` type uses `ps-` prefix. Tech debt — track only.
 
 ### Phase 4: Workflow Rework (remaining)
 
@@ -51,6 +41,30 @@
 
 - [ ] **UXO.28** — Frontend: Reorganize Settings page into Global and Project sections. Split the settings sidebar into two labeled groups with headers: "Global" (API Keys & Executor, Appearance, Notifications, Service, Data) and "Project: {name}" (Security, Costs & Limits, Integrations). Project section shows current project name and scope badge. When global project is selected, project section shows "All Projects" settings. Remove the "Workflow" and "Scheduling" tabs (moved to Automations in UXO.26/UXO.27).
 - [ ] **UXO.29** — Frontend: Break up "Agent Configuration" section. Move API Key and Executor Mode into a new "API Keys & Executor" global section. Move Max Concurrent Agents into "Costs & Limits" project section (alongside monthly cap, warning threshold, daily limit). Remove the empty "Agent Configuration" tab. Drop the unpersisted "Per-Persona Limits" table (local-only state that does nothing).
+
+### Design Polish
+
+> Visual and UX quality issues found during full-app design audit. These are polish, not bugs — the features work but look rough, have poor labeling, or lack expected affordances.
+
+- [ ] **DES.1** — Dashboard: Add onboarding/getting-started section for fresh installs. When no work items exist, show a guided checklist: (1) Register a project, (2) Configure API key, (3) Create a work item, (4) Watch an agent run. Replace the empty stat cards + empty table with this flow. Hide once first work item is created.
+- [ ] **DES.2** — Dashboard: Improve Projects Overview table. Add columns: work item count, active agents, workflow name, last activity. Currently just shows name + date — not useful.
+- [ ] **DES.3** — Chat: Auto-generate session names from first user message (first 40 chars). "New chat" repeated 15+ times makes the session sidebar unusable. Fall back to timestamp if no message yet.
+- [ ] **DES.4** — Chat: Reduce session sidebar width. Currently takes disproportionate horizontal space. Cap at ~240px and truncate long session names with ellipsis.
+- [ ] **DES.5** — Agent Monitor: Fix "stories" terminology in Live empty state. "Agents start when stories move through workflow states" should say "work items" not "stories".
+- [ ] **DES.6** — Agent Monitor: Add label to the filter dropdown next to the tabs. Currently just shows "All" with no context of what it filters (agents? projects?).
+- [ ] **DES.7** — Automations: Normalize workflow card heights. Default card (with state chips) is taller than cards with no states. Add min-height so cards align in a grid. Cards with no states should show a "Configure states" CTA instead of just "No states defined".
+- [ ] **DES.8** — Automations: Change ALL CAPS section headers ("WORKFLOWS", "SCHEDULES") to Title Case ("Workflows", "Schedules"). Reduce visual heaviness. Apply consistent icon sizing on section headers.
+- [ ] **DES.9** — Agent Builder: Add search/filter input above agent card grid. As agent count grows, users need to find agents by name or scope. Simple text filter is sufficient for v1.
+- [ ] **DES.10** — Agent Builder: Truncate long agent descriptions to 2 lines with ellipsis on cards. Some cards have long descriptions that push card heights inconsistent.
+- [ ] **DES.11** — Agent Builder: Rewrite "Router" agent description from developer jargon ("Routes work items between workflow states based on execution outcomes") to user-friendly language ("Automatically moves work items to the next step when an agent finishes").
+- [ ] **DES.12** — Settings: Change "SETTINGS" header from ALL CAPS to Title Case. Consistent with the rest of the app's heading style.
+- [ ] **DES.13** — Settings > Workflow: Fix grammar in note below agent assignments table. "Ended at terminal states have no assignable agents" is confusing — rewrite to "Terminal states (like Done) don't need assigned agents."
+- [ ] **DES.14** — Settings > Agent Configuration: Fix Per-Agent Limits table — "Max Concurrent" column is empty for all agents. Either populate with default values from project settings, or hide the table when no per-agent limits are configured, showing "Per-agent limits not configured" with an enable button.
+- [ ] **DES.15** — Settings > Projects: Add useful columns to projects table — work item count, active agents, workflow name, path. Currently just name + date.
+- [ ] **DES.16** — Work Items: Add tooltip or label explaining the "Auto" badge next to the page title. Users have no context for what this means.
+- [ ] **DES.17** — Activity Feed: Add filter bar with time range selector and event type filter. Currently completely bare — just empty state text. Even in empty state, show the filter controls so users understand what the page will look like.
+- [ ] **DES.18** — Global: Increase status bar font size slightly — current text is hard to read at small size. Consider 12px minimum.
+- [ ] **DES.19** — Empty states: Audit all empty states across the app for consistency. Every empty state should have: (1) an icon, (2) a heading, (3) a one-line description, (4) a primary CTA button. Pages missing CTAs: Dashboard, Activity Feed. Pages with good empty states to use as template: Agent Monitor, Scheduling.
 
 ### Testing & Documentation
 

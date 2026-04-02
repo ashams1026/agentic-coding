@@ -174,3 +174,5 @@
 **Phase 9 (UXO.31):** 1 task. Status bar "Automations active" indicator replacing old toggle.
 
 **Testing (UXO.TEST.1, UXO.DOC.1):** 2 tasks. E2e test plan (37 cases), full docs update (persona→agent, global model, autoRouting, agentOverrides).
+
+**Bug Fixes (FX.UXO1-21):** 10 tasks. Router paths /automations (FX.UXO1), dead board view removed (FX.UXO2/21), auto-routing toggle fixed to use workflow (FX.UXO3), built-in state guards in builder (FX.UXO4), global project workflow backfill fix (FX.UXO5), Automations page strings (FX.UXO10), agent scope UI in detail panel (FX.UXO15), agent route FK validation (FX.UXO18/19).
