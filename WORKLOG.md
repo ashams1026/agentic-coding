@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 23:55 PDT — ANL.6: Token usage tab with charts + table
+
+**Done:** Created `packages/frontend/src/features/analytics/token-usage-tab.tsx`. Token Usage Over Time dual-axis chart using Recharts `ComposedChart` (Bar for tokens on left Y-axis, Line for cost on right Y-axis). Breakdown by Model pie chart using `PieChart` with model-specific colors (opus=purple, sonnet=blue, haiku=green) + legend with cost totals. Most Expensive Executions table with 6 columns (date, persona, model with color dot, tokens, cost, duration). Range selector (7d/30d/90d). Empty states for all sections. Wired into analytics.tsx replacing placeholder. Visual check passed.
+**Files:** `packages/frontend/src/features/analytics/token-usage-tab.tsx` (new), `packages/frontend/src/pages/analytics.tsx`
+
+---
+
 ## 2026-04-02 23:45 PDT — Review: ANL.5 (approved)
 
 **Reviewed:** Analytics overview tab.
