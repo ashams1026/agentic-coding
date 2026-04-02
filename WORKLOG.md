@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 20:40 PDT — Review: COL.5 (approved)
+
+**Reviewed:** Context windowing for accumulated handoff notes.
+- buildAccumulatedContext: queries all completed executions, filters null notes ✓
+- Latest note full formatted, older notes one-line `[from → to] summary(120)` ✓
+- Budget: 8000 chars (~2000 tokens), breaks loop when exceeded ✓
+- Returns null when no notes (no empty injection) ✓
+- execution-manager updated to use accumulated context ✓
+- Unused imports cleaned ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 20:35 PDT — COL.5: Context windowing for handoff notes
 
 **Done:** Added `buildAccumulatedContext(workItemId, maxChars=8000)` to `handoff-notes.ts`. Queries all completed executions' handoff notes ordered by completedAt desc. Most recent note gets full formatting via `formatHandoffForPrompt()`. Older notes compressed to one-line summaries: `[fromState → targetState] summary (120 chars)`. Stops adding older notes when character budget exceeded (~2000 tokens). Updated `execution-manager.ts` to use `buildAccumulatedContext()` instead of `getLastHandoffNote()` + `formatHandoffForPrompt()` — now injects the full accumulated context window.
