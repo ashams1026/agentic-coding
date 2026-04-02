@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 05:55 PDT — Review: ACH.6 (approved)
+
+**Reviewed:** Chat header bar in `packages/frontend/src/pages/chat.tsx`.
+- Persona avatar (color+icon) + name with Pico fallback ✓
+- Project badge (projectId or Globe + "Global") ✓
+- Editable title: double-click → input, Enter/Escape/blur handling ✓
+- Three-dot context menu: Rename + Delete (red) actions ✓
+- deleteSession() in hook: API call, local state cleanup, auto-session-switching ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 05:50 PDT — ACH.6: Chat header bar with persona info and context menu
 
 **Done:** Added chat header bar to `/chat` page between sidebar and messages. Shows persona avatar (color+icon), persona name, project badge (projectId or "Global" with globe icon), and editable session title (double-click to rename). Three-dot context menu with Rename and Delete actions. Added `deleteSession()` function to `usePicoChat` hook — deletes session via API, removes from local state, auto-selects most recent remaining session. Imported MoreVertical, Globe, Pencil icons.
