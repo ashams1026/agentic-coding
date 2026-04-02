@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-03 09:00 PDT — Review: TPL.1 (approved)
+
+**Reviewed:** Templates table + seed + migration.
+- 7 columns: id, name, type, description, content (JSON), isBuiltIn, createdAt ✓
+- Migration 0019 ✓
+- 3 built-in templates: Bug Report, Feature Request, Spike with structured content ✓
+- Seed idempotent (skips if templates exist) ✓
+- TemplateId type + createId.template() in shared IDs ✓
+- Wired into start.ts ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 08:55 PDT — TPL.1: Templates table + seed 3 built-in templates
 
 **Done:** Added `templates` table to schema.ts: id, name, type (work_item/persona), description, content (JSON), isBuiltIn, createdAt. Generated migration `0019_flimsy_captain_universe.sql`. Created `seed-templates.ts` with 3 built-in work item templates: Bug Report (steps to reproduce, expected/actual, environment), Feature Request (user story, acceptance criteria, scope), Spike (question, time box, success criteria). Seed runs on startup (idempotent — skips if any templates exist). Added `TemplateId` type + `createId.template()` to shared IDs.
