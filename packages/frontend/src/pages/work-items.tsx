@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { FilterBar } from "@/features/work-items/filter-bar";
 import { ListView } from "@/features/work-items/list-view";
 import { DetailPanel } from "@/features/work-items/detail-panel";
+import { TemplatePickerDialog, type WorkItemTemplate } from "@/features/work-items/template-picker-dialog";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { useCreateWorkItem, useProjectFromUrl, useProjects } from "@/hooks";
 
@@ -93,11 +94,20 @@ export function WorkItemsPage() {
     };
   }, [isResizing, setDetailPanelWidth]);
 
-  const handleQuickAdd = () => {
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+
+  const handleAddClick = () => {
+    setTemplatePickerOpen(true);
+  };
+
+  const handleTemplateSelect = (template: WorkItemTemplate) => {
     if (!projectId) return;
     createWorkItem.mutate({
       projectId,
-      title: "New work item",
+      title: template.title || "New work item",
+      description: template.body || undefined,
+      priority: template.priority,
+      labels: template.labels.length > 0 ? template.labels : undefined,
     });
   };
 
@@ -137,7 +147,7 @@ export function WorkItemsPage() {
             {/* Quick add */}
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button size="sm" className="gap-1.5" onClick={handleQuickAdd}>
+                <Button size="sm" className="gap-1.5" onClick={handleAddClick}>
                   <Plus className="h-3.5 w-3.5" />
                   Add
                 </Button>
@@ -191,6 +201,12 @@ export function WorkItemsPage() {
           {selectedItemId && <DetailPanel />}
         </div>
       </div>
+
+      <TemplatePickerDialog
+        open={templatePickerOpen}
+        onOpenChange={setTemplatePickerOpen}
+        onSelect={handleTemplateSelect}
+      />
     </div>
   );
 }

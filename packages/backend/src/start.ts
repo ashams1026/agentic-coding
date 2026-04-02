@@ -268,7 +268,9 @@ export async function startServer(options: StartOptions = {}): Promise<void> {
   // Initialize webhook system — bridge events to delivery records + start worker
   const { initWebhookBridge } = await import("./events/webhook-bridge.js");
   const { startWebhookWorker } = await import("./events/webhook-delivery.js");
+  const { initWebhookNotificationChannel } = await import("./notifications/webhook-channel.js");
   initWebhookBridge();
+  initWebhookNotificationChannel();
   startWebhookWorker();
 
   // Start cron scheduler (polls every 60s for due schedules)

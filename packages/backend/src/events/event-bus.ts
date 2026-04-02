@@ -6,7 +6,7 @@
  */
 
 import { EventEmitter } from "node:events";
-import type { ExecutionId, WorkItemId, AgentId, ProjectId } from "@agentops/shared";
+import type { ExecutionId, WorkItemId, AgentId, ProjectId, NotificationPriority } from "@agentops/shared";
 import { logger } from "../logger.js";
 
 // ── Event Catalog ───────────────────────────────────────────────
@@ -52,11 +52,51 @@ export interface WorkItemStateChangedEvent {
   timestamp: string;
 }
 
+export interface NotificationAgentCompletedEvent {
+  type: "notification.agent_completed";
+  notificationId: string;
+  executionId: ExecutionId;
+  agentId: AgentId;
+  projectId: ProjectId | null;
+  workItemId: WorkItemId | null;
+  priority: NotificationPriority;
+  title: string;
+  description?: string;
+  timestamp: string;
+}
+
+export interface NotificationAgentErroredEvent {
+  type: "notification.agent_errored";
+  notificationId: string;
+  executionId: ExecutionId;
+  agentId: AgentId;
+  projectId: ProjectId | null;
+  workItemId: WorkItemId | null;
+  priority: NotificationPriority;
+  title: string;
+  description?: string;
+  timestamp: string;
+}
+
+export interface NotificationBudgetThresholdEvent {
+  type: "notification.budget_threshold";
+  notificationId: string;
+  projectId: ProjectId | null;
+  priority: NotificationPriority;
+  title: string;
+  description?: string;
+  metadata?: Record<string, string>;
+  timestamp: string;
+}
+
 export type AppEvent =
   | ExecutionStartedEvent
   | ExecutionCompletedEvent
   | ExecutionFailedEvent
-  | WorkItemStateChangedEvent;
+  | WorkItemStateChangedEvent
+  | NotificationAgentCompletedEvent
+  | NotificationAgentErroredEvent
+  | NotificationBudgetThresholdEvent;
 
 export type AppEventType = AppEvent["type"];
 

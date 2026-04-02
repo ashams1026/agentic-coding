@@ -108,7 +108,7 @@ export function SettingsLayout() {
           ) : activeSection === "agent-config" ? (
             <ApiKeysSection />
           ) : activeSection === "notifications" ? (
-            <NotificationsSection />
+            <NotificationsSection onNavigateToIntegrations={() => setActiveSection("integrations")} />
           ) : activeSection === "costs" ? (
             <CostsSection />
           ) : activeSection === "integrations" ? (

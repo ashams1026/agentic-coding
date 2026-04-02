@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 15:10 PDT — TPL.3, NEC.1, NEC.2, S28.TEST.1: Templates, webhook channel, test plan
+
+**Done:** (1) TPL.3: Template picker dialog with 5 hardcoded templates (Blank, Bug Report, Feature Request, Task, Research Spike). "+ Add" button opens dialog, selecting a template pre-fills work item. New file `template-picker-dialog.tsx`. (2) NEC.1: Created `webhook-channel.ts` mapping notification types to event bus events. Added 3 new event types (`notification.agent_completed/errored/budget_threshold`). `broadcastNotification()` now emits to event bus, webhook bridge delivers. (3) NEC.2: Webhook Channel toggle in Notifications settings with Active/Inactive badge, event type list, "Manage webhooks in Integrations" link. (4) S28.TEST.1: 17-case test plan for scheduling, templates, notification channels.
+**Files:** `features/work-items/template-picker-dialog.tsx` (new), `pages/work-items.tsx`, `backend/src/notifications/webhook-channel.ts` (new), `backend/src/events/event-bus.ts`, `backend/src/ws.ts`, `backend/src/start.ts`, `features/settings/notifications-section.tsx`, `features/settings/settings-layout.tsx`, `tests/e2e/plans/scheduling-templates.md` (new)
+
+---
+
 ## 2026-04-02 15:02 PDT — NAV.23, NAV.25, NAV.TEST.1, NAV.DOC.1: Cleanup, dead code, test plan, docs
 
 **Done:** (1) NAV.23: Removed scope badges from agent-list, active-agent-sidebar, chat-panel, recently-deleted. (2) NAV.25: Deleted 5 dead files (4 dashboard sub-components + use-selected-project.ts), migrated 5 files from useSelectedProject to useProjectFromUrl (use-agents, recently-deleted, security-section, costs-section, command-palette), removed selectedProjectId from ui-store. (3) NAV.TEST.1: 35-case e2e test plan across 8 phases. (4) NAV.DOC.1: Updated frontend.md (routes, sidebar, project context, settings split), architecture.md, api.md, data-model.md, roadmap.md.

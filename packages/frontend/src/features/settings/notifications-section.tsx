@@ -1,6 +1,9 @@
+import { useState } from "react";
+import { Webhook, ArrowRight } from "lucide-react";
 import { useNotificationStore, type NotificationPreferences } from "@/stores/notification-store";
 import type { NotificationEventType } from "@agentops/shared";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 // ── Event type labels ───────────────────────────────────────────
 
@@ -37,8 +40,13 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
 
 // ── Component ───────────────────────────────────────────────────
 
-export function NotificationsSection() {
+interface NotificationsSectionProps {
+  onNavigateToIntegrations?: () => void;
+}
+
+export function NotificationsSection({ onNavigateToIntegrations }: NotificationsSectionProps = {}) {
   const { preferences, updatePreferences } = useNotificationStore();
+  const [webhookChannelEnabled, setWebhookChannelEnabled] = useState(false);
 
   const setEnabled = (type: NotificationEventType, value: boolean) => {
     updatePreferences({
@@ -167,6 +175,60 @@ export function NotificationsSection() {
               <p className="text-xs text-muted-foreground">Only show notifications for the selected project</p>
             </div>
           </label>
+        </div>
+      </section>
+
+      {/* Notification Channels */}
+      <section>
+        <h3 className="text-sm font-semibold mb-1">Notification Channels</h3>
+        <p className="text-xs text-muted-foreground mb-4">
+          Route notifications to external services.
+        </p>
+
+        <div className="rounded-md border border-border">
+          <div className="flex items-start gap-3 p-4">
+            <div className="rounded-md bg-muted p-2 mt-0.5">
+              <Webhook className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Webhook Channel</span>
+                  <Badge variant="secondary" className="text-[9px]">
+                    {webhookChannelEnabled ? "Active" : "Inactive"}
+                  </Badge>
+                </div>
+                <Toggle
+                  checked={webhookChannelEnabled}
+                  onChange={setWebhookChannelEnabled}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Deliver notification events via outbound webhook subscriptions.
+              </p>
+
+              {webhookChannelEnabled && (
+                <div className="mt-3 space-y-3">
+                  <div className="rounded-md bg-muted/50 px-3 py-2.5">
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Notification events (<code className="text-[10px] bg-muted px-1 rounded">agent_completed</code>,{" "}
+                      <code className="text-[10px] bg-muted px-1 rounded">agent_errored</code>,{" "}
+                      <code className="text-[10px] bg-muted px-1 rounded">budget_threshold</code>) will be delivered to
+                      active webhook subscriptions.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={onNavigateToIntegrations}
+                    className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+                  >
+                    Manage webhooks in Integrations
+                    <ArrowRight className="h-3 w-3" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </section>
     </div>

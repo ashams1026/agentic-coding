@@ -3,6 +3,7 @@ import websocket from "@fastify/websocket";
 import type { WebSocket } from "ws";
 import type { WsEvent, Notification, NotificationEventType, NotificationPriority, ProjectId, WorkItemId, ExecutionId } from "@agentops/shared";
 import crypto from "node:crypto";
+import { emitNotificationEvent } from "./notifications/webhook-channel.js";
 
 const clients = new Set<WebSocket>();
 
@@ -51,6 +52,9 @@ export function broadcastNotification(opts: {
     notification,
     timestamp: notification.createdAt,
   });
+
+  // Also emit to the event bus so webhook subscriptions receive notification events
+  emitNotificationEvent(notification, opts);
 }
 
 /**
