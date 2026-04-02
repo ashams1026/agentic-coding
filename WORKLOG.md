@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 20:55 PDT — Review: FND.WIL.1 (approved)
+
+**Reviewed:** Schema additions for work item lifecycle (archived_at, deleted_at).
+- Schema columns in schema.ts:46-47: `integer("archived_at"/"deleted_at", { mode: "timestamp_ms" })` — nullable, correct type ✓
+- Entity type in entities.ts:73-74: `archivedAt/deletedAt: string | null` — matches ✓
+- Migration 0008: two clean ALTER TABLE ADD statements ✓
+- Dashboard.ts:155-156: explicit WorkItem construction includes new fields with toIso() conversion ✓
+- `serializeWorkItem()` uses spread — new columns flow through automatically ✓
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 20:53 PDT — FND.WIL.1: Add archived_at and deleted_at columns to work_items
 
 **Done:** Added `archivedAt` (integer, timestamp_ms) and `deletedAt` (integer, timestamp_ms) nullable columns to `workItems` table in schema.ts. Added matching `archivedAt: string | null` and `deletedAt: string | null` fields to `WorkItem` interface in entities.ts. Generated Drizzle migration `0008_glamorous_young_avengers.sql`. Fixed type error in dashboard.ts where explicit `WorkItem` construction needed the new fields.
