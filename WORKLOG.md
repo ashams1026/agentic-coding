@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-04-02 00:15 PDT — Review: FND.GA.7 (approved)
+
+**Reviewed:** Backend POST /api/executions/run standalone endpoint.
+- Route accepts `{ personaId, prompt, projectId?, budgetUsd? }` with proper validation ✓
+- 400 for missing fields, 404 for invalid persona/project ✓
+- Creates execution with `workItemId: null`, `status: "pending"`, returns 201 ✓
+- Route placement before `:id` routes avoids collision ✓
+- Schema: only executions.workItemId made nullable; comments/proposals/memories remain notNull ✓
+- Migration `0010_puzzling_micromax.sql`: standard table recreation ✓
+- 8 downstream TS fixes: null guards in dashboard, executions, start.ts — all correct ✓
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 00:10 PDT — FND.GA.7: Backend POST /api/executions/run endpoint
 
 **Done:** Added `POST /api/executions/run` route to `executions.ts` accepting `{ personaId, prompt, projectId?, budgetUsd? }`. Validates persona and optional project exist (404 if not). Creates execution with `workItemId = null`, `status: "pending"`, stores prompt in summary. Returns 201 with execution id. Also made `workItemId` nullable in DB schema (removed `.notNull()`) and generated migration `0010_puzzling_micromax.sql`. Fixed 8 downstream TypeScript errors from nullable `workItemId`: dashboard.ts (3 filter guards), executions.ts (filter guard + rewind null check + non-null assertions), start.ts (filter null workItemIds for orphan recovery).
