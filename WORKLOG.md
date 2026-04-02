@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-03 04:35 PDT — Review: IWH.3 (approved)
+
+**Reviewed:** Frontend inbound triggers in integrations section.
+- Trigger list: name, persona, template preview, active badge, delete ✓
+- Add form: name, persona ID, template textarea, secret + URL display ✓
+- Separated from outbound section with divider ✓
+- Build passes ✓
+- **Verdict: approved.** Inbound Webhooks P1 (IWH.1-3) complete.
+
+---
+
 ## 2026-04-03 04:30 PDT — IWH.3: Frontend inbound triggers in integrations section
 
 **Done:** Added `InboundTriggersSection` component to `integrations-section.tsx`. Trigger list with name, persona name, project scope, template preview, active badge, delete button. Add form: name input, persona ID input, prompt template textarea with `{{payload.field}}` hint, secret display (show/hide/copy), trigger URL display + copy. Separated from outbound webhooks with border-top divider. Empty state for no triggers.
