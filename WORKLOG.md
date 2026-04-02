@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-03 13:40 PDT — Review: FX.DOC.1 (approved)
+
+**Reviewed:** Workflow documentation update.
+- "Hardcoded" / "not user-configurable" language replaced with custom workflow engine description ✓
+- Custom Workflows section: Builder, 10 API endpoints, validation rules, 3-table schema ✓
+- Dynamic runtime: 6 key functions documented with descriptions ✓
+- Agent resolution priority chain documented ✓
+- Router, rejection, parent-child, dispatch sections preserved and updated ✓
+- All 9 source files verified to exist ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 13:35 PDT — FX.DOC.1: Update docs/workflow.md for custom workflows
 
 **Done:** Rewrote `docs/workflow.md` to document the Sprint 25 custom workflow engine. Replaced "hardcoded" and "not user-configurable" language. Added: custom workflow creation/editing via Workflow Builder, 10 API endpoints table, validation rules, 3-table schema, dynamic runtime functions table, `resolvePersonaForState()` priority chain, `buildDynamicRouterPrompt()`, updated source files table. Kept existing sections (Router, rejection, parent-child, dispatch) with updated terminology (persona → agent where contextually appropriate) and workflow-aware descriptions.
