@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-03 11:10 PDT — Review: FX.DEAD.3 (approved)
+
+**Reviewed:** Proposal approve/reject wiring in notification cards.
+- `metadata?: Record<string, string>` added to `Notification` interface ✓
+- Backend passes `proposalId` in metadata when broadcasting `proposal_needs_approval` ✓
+- Frontend `handleProposalAction` calls `updateProposal()` via real PATCH API, not stub navigation ✓
+- Loading state (Loader2 spinner), toast feedback, markRead on success, missing-ID guard ✓
+- `updateProposal` in API client sends PATCH `/api/proposals/:id` correctly ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 11:00 PDT — FX.DEAD.3: Wire proposal approve/reject into notification actions
 
 **Done:** Added `metadata` field (optional `Record<string, string>`) to `Notification` interface in `ws-events.ts`. Backend now passes `proposalId` in metadata when broadcasting `proposal_needs_approval` notifications (`proposals.ts` + `ws.ts`). Frontend Approve/Reject buttons now call `updateProposal(proposalId, { status })` via API client instead of navigating to `/items`. Added loading state with Loader2 spinner, toast on success/error, marks notification read on success.
