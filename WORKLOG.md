@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 14:15 PDT — DES.1: Dashboard onboarding checklist
+
+**Done:** Added `GettingStartedChecklist` component to the Dashboard page. Four-step checklist (register project, configure API key, create work item, watch agent run) with live completion detection from existing hooks plus a direct `useQuery` for API key status. Completed steps show green checkmarks with strikethrough; incomplete steps show numbered circles with arrow navigation. Dismiss button persists to localStorage. Auto-hides 4s after all steps complete. Uses shadcn Card, Button, lucide icons, dark mode compatible.
+**Files:** `packages/frontend/src/pages/dashboard.tsx`
+
+---
+
 ## 2026-04-02 13:55 PDT — UXO.26: Move workflow settings into builder
 
 **Done:** Added collapsible AgentAssignmentsSection to workflow builder left panel (between state cards and Validation). Shows intermediate states with agent dropdowns and model badges. Uses useAgentAssignments/useUpdateAgentAssignment for persistence. Removed Workflow tab from settings-layout.tsx (GitBranch import, SECTIONS entry, WorkflowConfigSection import/rendering). Deleted dead workflow-config-section.tsx.
