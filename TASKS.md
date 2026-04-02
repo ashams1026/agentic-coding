@@ -16,15 +16,15 @@
 
 ### Bug Fixes (Sprint 29 Review — remaining)
 
-- [ ] **FX.UXO6** — Warning: "All Projects" scope in `recently-deleted.tsx` passes `projectId="pj-global"` to API. When `isGlobal` is true, should pass `undefined` to return items from ALL projects.
-- [ ] **FX.UXO7** — Warning: Queue endpoint (`routes/executions.ts`) accepts `projectId` param but doesn't filter by it. Either filter or remove the param.
+- [x] **FX.UXO6** — Warning: "All Projects" scope in `recently-deleted.tsx` passes `projectId="pj-global"` to API. When `isGlobal` is true, should pass `undefined` to return items from ALL projects. *(completed 2026-04-02 12:53 PDT)*
+- [x] **FX.UXO7** — Warning: Queue endpoint (`routes/executions.ts`) accepts `projectId` param but doesn't filter by it. Either filter or remove the param. *(completed 2026-04-02 12:53 PDT)*
 - [ ] **FX.UXO8** — Warning: Chat panel overlay (`chat-panel.tsx`) has no agent-based session grouping — only the full `/chat` page got it. Apply same `groupSessionsByAgent` pattern.
 - [ ] **FX.UXO9** — Warning: Chat header Globe icon (`chat.tsx`) checks `projectId === null` but projectId is notNull in schema. Should also check for `"pj-global"`.
-- [ ] **FX.UXO11** — Warning: `isPico` heuristic in `chat.tsx` and `chat-panel.tsx` matches `avatar.icon === "dog"`. Remove icon check, match on name only.
+- [x] **FX.UXO11** — Warning: `isPico` heuristic in `chat.tsx` and `chat-panel.tsx` matches `avatar.icon === "dog"`. Remove icon check, match on name only. *(completed 2026-04-02 12:53 PDT)*
 - [ ] **FX.UXO12** — Warning: `use-pico-chat.ts` stale closure in `deleteSession`. Compute `remaining` before updating sessions array.
 - [ ] **FX.UXO13** — Warning: Chat page shows empty state with no feedback when no project selected. Show "Select a project" message.
 - [ ] **FX.UXO14** — Warning: Chat header context menu (`chat.tsx`) lacks keyboard accessibility. Migrate to `DropdownMenu` component.
-- [ ] **FX.UXO16** — Warning: `agent-list.tsx:handleCreate` creates agents without `scope`/`projectId`. Pass based on `useSelectedProject()`.
+- [x] **FX.UXO16** — Warning: `agent-list.tsx:handleCreate` creates agents without `scope`/`projectId`. Pass based on `useSelectedProject()`. *(completed 2026-04-02 12:53 PDT)*
 - [ ] **FX.UXO17** — Warning: `agent-editor.tsx` is dead code. Delete it.
 - [ ] **FX.UXO20** — Info: Dead `toolCallMap` in `use-pico-chat.ts`. Remove.
 - [ ] **FX.UXO22** — Info: Dead `AgentScope` type in `shared/src/entities.ts`. Remove.

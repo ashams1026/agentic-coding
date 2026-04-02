@@ -26,7 +26,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useAgents, useCreateAgent, useDeleteAgent } from "@/hooks";
+import { useAgents, useCreateAgent, useDeleteAgent, useSelectedProject } from "@/hooks";
 import { cn } from "@/lib/utils";
 import type { Agent, AgentId, AgentModel } from "@agentops/shared";
 
@@ -237,6 +237,7 @@ export function AgentList({ selectedId, onSelect }: AgentListProps) {
   const createMutation = useCreateAgent();
   const deleteMutation = useDeleteAgent();
   const [deleteTarget, setDeleteTarget] = useState<Agent | null>(null);
+  const { project, isGlobal } = useSelectedProject();
 
   const handleCreate = () => {
     createMutation.mutate(
@@ -246,6 +247,8 @@ export function AgentList({ selectedId, onSelect }: AgentListProps) {
         model: "sonnet",
         allowedTools: ["Read", "Glob", "Grep"],
         mcpTools: [],
+        scope: isGlobal ? "global" : "project",
+        projectId: isGlobal ? undefined : (project?.id as string | undefined),
       },
       {
         onSuccess: (p) => {

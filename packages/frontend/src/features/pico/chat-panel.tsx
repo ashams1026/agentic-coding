@@ -102,7 +102,7 @@ export function ChatPanel() {
     if (!selectedAgentId) return null;
     return agents.find((a) => a.id === selectedAgentId) ?? null;
   }, [agents, selectedAgentId]);
-  const isPico = !selectedAgent || selectedAgent.name === "Pico" || selectedAgent.avatar.icon === "dog";
+  const isPico = !selectedAgent || selectedAgent.name === "Pico";
 
   // ── Resize logic ───────────────────────────────────────────────
   const MIN_W = 320;

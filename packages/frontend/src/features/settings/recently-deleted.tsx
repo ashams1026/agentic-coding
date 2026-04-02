@@ -31,14 +31,14 @@ export function RecentlyDeleted() {
   const fetchItems = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getDeletedWorkItems(projectId ?? undefined);
+      const data = await getDeletedWorkItems(isGlobal ? undefined : projectId ?? undefined);
       setItems(data);
     } catch {
       // Error toast handled by API layer
     } finally {
       setLoading(false);
     }
-  }, [projectId]);
+  }, [projectId, isGlobal]);
 
   useEffect(() => {
     fetchItems();

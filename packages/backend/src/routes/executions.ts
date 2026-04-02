@@ -19,7 +19,6 @@ import { auditStateTransition } from "../audit.js";
 import {
   getQueueEntries,
   getActiveCount,
-  getQueueLength,
   getMaxConcurrentForProject,
 } from "../agent/concurrency.js";
 
@@ -60,26 +59,36 @@ export async function executionRoutes(app: FastifyInstance) {
   }>("/api/executions/queue", async (request) => {
     const { projectId } = request.query;
 
-    const entries = getQueueEntries();
+    const allEntries = getQueueEntries();
 
     // Batch-resolve display names from DB
-    const workItemIds = [...new Set(entries.map((e) => e.workItemId))];
+    const allWorkItemIds = [...new Set(allEntries.map((e) => e.workItemId))];
+
+    // Fetch work item rows (used both for filtering and display names)
+    const itemRows = allWorkItemIds.length > 0
+      ? await db
+          .select({ id: workItems.id, title: workItems.title, projectId: workItems.projectId })
+          .from(workItems)
+          .where(inArray(workItems.id, allWorkItemIds))
+      : [];
+
+    // If projectId is provided, filter entries to only those belonging to that project
+    const projectWorkItemIds = projectId
+      ? new Set(itemRows.filter((r) => r.projectId === projectId).map((r) => r.id))
+      : null;
+
+    const entries = projectWorkItemIds
+      ? allEntries.filter((e) => projectWorkItemIds.has(e.workItemId))
+      : allEntries;
+
     const agentIds = [...new Set(entries.map((e) => e.agentId))];
 
-    const [itemRows, agentRows] = await Promise.all([
-      workItemIds.length > 0
-        ? db
-            .select({ id: workItems.id, title: workItems.title })
-            .from(workItems)
-            .where(inArray(workItems.id, workItemIds))
-        : Promise.resolve([]),
-      agentIds.length > 0
-        ? db
-            .select({ id: agents.id, name: agents.name })
-            .from(agents)
-            .where(inArray(agents.id, agentIds))
-        : Promise.resolve([]),
-    ]);
+    const agentRows = agentIds.length > 0
+      ? await db
+          .select({ id: agents.id, name: agents.name })
+          .from(agents)
+          .where(inArray(agents.id, agentIds))
+      : [];
 
     const workItemTitleMap = new Map(itemRows.map((r) => [r.id, r.title]));
     const agentNameMap = new Map(agentRows.map((r) => [r.id, r.name]));
@@ -103,7 +112,7 @@ export async function executionRoutes(app: FastifyInstance) {
         queue: queueData,
         activeCount: getActiveCount(),
         maxConcurrent,
-        queueLength: getQueueLength(),
+        queueLength: entries.length,
       },
     };
   });

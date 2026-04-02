@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 12:53 PDT — FX.UXO6, FX.UXO7, FX.UXO11, FX.UXO16: Bug fix batch
+
+**Done:** (1) FX.UXO6: Recently Deleted now passes `undefined` when `isGlobal` instead of `"pj-global"`, returning all projects' items. (2) FX.UXO7: Queue endpoint filters entries by projectId via work item lookup, queueLength reflects filtered count. (3) FX.UXO11: Removed `avatar.icon === "dog"` from isPico check in chat.tsx and chat-panel.tsx — now name-only match. (4) FX.UXO16: Agent create now passes scope/projectId from useSelectedProject — project-scoped agents when project selected.
+**Files:** `recently-deleted.tsx`, `routes/executions.ts`, `chat.tsx`, `chat-panel.tsx`, `agent-list.tsx`
+
+---
+
 ## 2026-04-02 12:47 PDT — FX.UXO5: Fix global project workflow reference
 
 **Done:** Added `ne(projects.isGlobal, true)` to backfillWorkflowReferences WHERE clause in seed-workflow.ts. Global project now keeps `wf-global` instead of being overwritten with `wf-default` on every startup.
