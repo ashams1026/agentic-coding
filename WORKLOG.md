@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 22:45 PDT — Review: ANL.2 (approved)
+
+**Reviewed:** Token data persistence on execution completion.
+- accumulatedTokens/accumulatedToolUses tracked from ProgressEvents ✓
+- model from persona.model, always set ✓
+- Persisted as null when 0 (no progress data) ✓
+- In same .set() call as costUsd ✓
+- Pico chat deferred (different pipeline) — reasonable ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 22:40 PDT — ANL.2: Persist token data on execution completion
 
 **Done:** Added `accumulatedTokens` and `accumulatedToolUses` tracking variables in `execution-manager.ts`. Progress events update these (latest value, since ProgressEvent reports cumulative totals). On completion, persists `model` (from persona config), `totalTokens`, and `toolUses` in the execution `.set()` call alongside existing fields. Values stored as null when 0 (no data). Pico chat route (`chat.ts`) doesn't have progress events — chat-based token tracking deferred (chat messages use SSE, not the execution pipeline).
