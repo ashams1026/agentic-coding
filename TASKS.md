@@ -15,7 +15,7 @@
 
 ### Testing & Documentation (remaining)
 
-- [review] **S26.TEST.3** — Write e2e test plan for Analytics: `tests/e2e/plans/analytics-phase1.md`. Cover: analytics page tabs, summary cards, cost charts, token usage charts, time range selector, per-persona/model breakdowns.
+- [x] **S26.TEST.3** — Write e2e test plan for Analytics: `tests/e2e/plans/analytics-phase1.md`. Cover: analytics page tabs, summary cards, cost charts, token usage charts, time range selector, per-persona/model breakdowns. *(completed 2026-04-03 00:50 PDT)*
 - [ ] **S26.TEST.4** — Execute Agent Collaboration e2e tests. Run test plan via chrome-devtools MCP. Screenshot each case. Record to `tests/e2e/results/`. File bugs as `FX.*`.
 - [ ] **S26.TEST.5** — Execute Search e2e tests. Run test plan via chrome-devtools MCP. Screenshot each case. Record to `tests/e2e/results/`. File bugs as `FX.*`.
 - [ ] **S26.TEST.6** — Execute Analytics e2e tests. Run test plan via chrome-devtools MCP. Screenshot each case. Record to `tests/e2e/results/`. File bugs as `FX.*`.
