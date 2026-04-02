@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-01 20:26 PDT — Review: FND.ERR.1 (approved)
+
+**Reviewed:** busy_timeout and synchronous PRAGMAs added to SQLite connection.
+- Lines 31-32 in connection.ts: `busy_timeout = 5000` and `synchronous = NORMAL` added after existing WAL/FK pragmas — correct position, correct syntax
+- No extraneous changes; follows existing pragma pattern exactly
+- Build passes cleanly (tsc + vite)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 20:24 PDT — FND.ERR.1: Add busy_timeout and synchronous PRAGMAs
 
 **Done:** Added `busy_timeout = 5000` and `synchronous = NORMAL` PRAGMAs to SQLite connection after existing WAL/FK pragmas. These improve reliability under concurrent access (5s wait before SQLITE_BUSY) and balance durability with performance (NORMAL sync is safe with WAL mode).
