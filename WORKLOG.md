@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-03 10:15 PDT — Review: FX.DEAD.1 (rejected)
+
+**Reviewed:** Prompt template wiring into webhook execution.
+- Prompt parameter added to `runExecution()` ✓
+- Prompt passed from webhook trigger ✓
+- Synthetic task creation at line 372 ✓
+- **Issue:** The synthetic task fallback is unreachable. `runExecution()` throws at line 315 (`"Work item null not found"`) before reaching line 372. The early work item lookup (309-316), project lookup (318-325), execution insert (329-343), broadcast (347-354), and event emit (356-363) all depend on `item` fields. These must be made conditional for standalone (null workItemId + prompt) executions.
+- **Verdict: rejected.** The prompt fallback is dead code — fix the early throw first.
+
+---
+
 ## 2026-04-03 10:10 PDT — FX.DEAD.1: Wire prompt template into webhook execution
 
 **Done:** Added optional `prompt` parameter to `executionManager.runExecution()`. When no work item is found but a prompt is provided, creates a synthetic `AgentTask` with the prompt as title/description (standalone execution). Updated `webhook-triggers.ts` to pass the resolved template prompt to `runExecution()`. Previously the `resolveTemplate()` output was computed but discarded — now it flows through to the execution as the agent's task context.
