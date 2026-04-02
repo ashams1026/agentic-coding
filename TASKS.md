@@ -79,6 +79,6 @@
 
 ### Remaining
 
-- [ ] **RICH.9** — Frontend: Expand/collapse state management. Track which tool cards are expanded/collapsed per session using a `Map<string, boolean>` in component state. Default expand rules: Edit/Write/Bash expanded, Read/Grep/Glob collapsed. "Collapse all tools" / "Expand all tools" toggle at message level.
+- [x] **RICH.9** — Frontend: Expand/collapse state management. Track which tool cards are expanded/collapsed per session using a `Map<string, boolean>` in component state. Default expand rules: Edit/Write/Bash expanded, Read/Grep/Glob collapsed. "Collapse all tools" / "Expand all tools" toggle at message level. *(completed 2026-04-02 15:55 PDT)*
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **RICH.TEST.2** — Execute rich messages e2e tests. Screenshot each case. File bugs as `FX.RICH.*`.
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **RICH.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.

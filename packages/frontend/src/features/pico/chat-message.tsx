@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Dog,
   ChevronDown,
@@ -15,11 +15,13 @@ import {
   FolderSearch,
   PenLine,
   FilePlus2,
+  ChevronsDownUp,
+  ChevronsUpDown,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThinkingBlock as EnhancedThinkingBlock } from "@/features/chat/thinking-block";
-import { ToolCallCard as EnhancedToolCallCard, type ToolUseBlock } from "@/features/chat/tool-call-card";
+import { ToolCallCard as EnhancedToolCallCard, EXPANDED_BY_DEFAULT, type ToolUseBlock } from "@/features/chat/tool-call-card";
 import { FileTreeSummary } from "@/features/chat/file-tree-summary";
 
 // ── Types ─────────────────────────────────────────────────────────
@@ -173,7 +175,7 @@ function ContentBlockRenderer({ block, compact }: { block: ContentBlock; compact
   }
 }
 
-// ── Full-page message body (with FileTreeSummary) ───────────────
+// ── Full-page message body (with FileTreeSummary + expand/collapse) ──
 
 function FullPageMessageBody({ content }: { content: ContentBlock[] }) {
   const toolUseBlocks = content.filter(
@@ -184,14 +186,92 @@ function FullPageMessageBody({ content }: { content: ContentBlock[] }) {
   );
   const showFileTree = editWriteBlocks.length >= 2;
 
+  // Expand/collapse state: Map<toolCallId, expanded>
+  // Empty map = all tools use default rules
+  const [expandOverrides, setExpandOverrides] = useState<Map<string, boolean>>(
+    () => new Map(),
+  );
+
+  const isToolExpanded = useCallback(
+    (block: ContentBlock & { type: "tool_use" }) => {
+      const override = expandOverrides.get(block.toolCallId);
+      if (override !== undefined) return override;
+      return EXPANDED_BY_DEFAULT.has(block.toolName);
+    },
+    [expandOverrides],
+  );
+
+  const handleToolExpandChange = useCallback(
+    (toolCallId: string, expanded: boolean) => {
+      setExpandOverrides((prev) => {
+        const next = new Map(prev);
+        next.set(toolCallId, expanded);
+        return next;
+      });
+    },
+    [],
+  );
+
+  // Toggle all: if any are expanded → collapse all, else expand all
+  const allCollapsed =
+    toolUseBlocks.length > 0 &&
+    toolUseBlocks.every((b) => !isToolExpanded(b));
+
+  const toggleAll = useCallback(() => {
+    const newState = allCollapsed; // if all collapsed, expand all; otherwise collapse all
+    setExpandOverrides(() => {
+      const next = new Map<string, boolean>();
+      for (const block of toolUseBlocks) {
+        next.set(block.toolCallId, newState);
+      }
+      return next;
+    });
+  }, [allCollapsed, toolUseBlocks]);
+
+  const showToggle = toolUseBlocks.length >= 2;
+
   return (
     <div className="space-y-2">
       {showFileTree && (
         <FileTreeSummary toolCalls={toolUseBlocks as ToolUseBlock[]} />
       )}
-      {content.map((block, i) => (
-        <ContentBlockRenderer key={i} block={block} compact={false} />
-      ))}
+      {showToggle && (
+        <button
+          type="button"
+          onClick={toggleAll}
+          className={cn(
+            "flex items-center gap-1 text-[10px] text-muted-foreground",
+            "hover:text-foreground transition-colors rounded px-1.5 py-0.5",
+            "hover:bg-muted/50",
+          )}
+        >
+          {allCollapsed ? (
+            <>
+              <ChevronsUpDown className="h-3 w-3" />
+              Expand all tools
+            </>
+          ) : (
+            <>
+              <ChevronsDownUp className="h-3 w-3" />
+              Collapse all tools
+            </>
+          )}
+        </button>
+      )}
+      {content.map((block, i) =>
+        block.type === "tool_use" ? (
+          <EnhancedToolCallCard
+            key={block.toolCallId}
+            block={block as ToolUseBlock}
+            expanded={isToolExpanded(block)}
+            onExpandedChange={(exp) =>
+              handleToolExpandChange(block.toolCallId, exp)
+            }
+          />
+        ) : (
+          <ContentBlockRenderer key={i} block={block} compact={false} />
+        ),
+      )}
     </div>
   );
 }

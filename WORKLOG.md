@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 15:55 PDT — RICH.9: Expand/collapse state management
+
+**Done:** Added controlled mode to ToolCallCard (`expanded` + `onExpandedChange` props) while preserving uncontrolled mode. FullPageMessageBody now tracks expand/collapse per tool call via `Map<string, boolean>` state. Default rules: Edit/Write/Bash expanded, Read/Grep/Glob collapsed. "Collapse all tools" / "Expand all tools" toggle button appears when 2+ tool calls in a message. Exported `EXPANDED_BY_DEFAULT` set for shared use.
+**Files:** `features/chat/tool-call-card.tsx`, `features/pico/chat-message.tsx`
+
+---
+
 ## 2026-04-02 15:45 PDT — RICH.8, RICH.DOC.1: Integration + docs
 
 **Done:** (1) RICH.8: Updated ContentBlockRenderer in `chat-message.tsx` to dispatch to new enhanced components. Full-page view (compact=false) now uses EnhancedThinkingBlock, EnhancedToolCallCard, and FileTreeSummary. Mini panel (compact=true) keeps compact variants. Added FullPageMessageBody component that renders FileTreeSummary at top when 2+ Edit/Write tool calls. Removed dead inline ThinkingBlock and ToolCallCard. (2) RICH.DOC.1: Updated `docs/frontend.md` with new "Chat — Rich Message Components" section: component hierarchy, ContentBlockRenderer dispatch table, all 5 components + 2 utilities documented, directory structure and source files table updated.

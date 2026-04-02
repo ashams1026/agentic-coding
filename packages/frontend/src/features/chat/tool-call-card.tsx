@@ -32,6 +32,10 @@ export interface ToolUseBlock {
 export interface ToolCallCardProps {
   block: ToolUseBlock;
   defaultExpanded?: boolean;
+  /** Controlled mode: if provided, overrides internal state */
+  expanded?: boolean;
+  /** Controlled mode: called when the user toggles expand/collapse */
+  onExpandedChange?: (expanded: boolean) => void;
 }
 
 // ── Tool icon map ─────────────────────────────────────────────────
@@ -49,7 +53,7 @@ const TOOL_ICON_MAP: Record<string, LucideIcon> = {
 };
 
 // Tools that modify state should be expanded by default
-const EXPANDED_BY_DEFAULT = new Set(["Edit", "Write", "Bash"]);
+export const EXPANDED_BY_DEFAULT = new Set(["Edit", "Write", "Bash"]);
 
 // ── Description helpers ───────────────────────────────────────────
 
@@ -182,10 +186,17 @@ function OutputRenderer({
 
 // ── Main component ────────────────────────────────────────────────
 
-export function ToolCallCard({ block, defaultExpanded }: ToolCallCardProps) {
+export function ToolCallCard({ block, defaultExpanded, expanded: controlledExpanded, onExpandedChange }: ToolCallCardProps) {
   const shouldExpandByDefault =
     defaultExpanded ?? EXPANDED_BY_DEFAULT.has(block.toolName);
-  const [expanded, setExpanded] = useState(shouldExpandByDefault);
+  const [internalExpanded, setInternalExpanded] = useState(shouldExpandByDefault);
+
+  const isControlled = controlledExpanded !== undefined;
+  const expanded = isControlled ? controlledExpanded : internalExpanded;
+  const setExpanded = (next: boolean) => {
+    if (onExpandedChange) onExpandedChange(next);
+    if (!isControlled) setInternalExpanded(next);
+  };
 
   const Icon = TOOL_ICON_MAP[block.toolName] ?? Wrench;
   const description =
@@ -198,7 +209,7 @@ export function ToolCallCard({ block, defaultExpanded }: ToolCallCardProps) {
       {/* Header row — always visible */}
       <button
         type="button"
-        onClick={() => setExpanded((prev) => !prev)}
+        onClick={() => setExpanded(!expanded)}
         className={cn(
           "flex items-center gap-2 w-full px-3 py-2 text-left",
           "hover:bg-muted/40 transition-colors",
