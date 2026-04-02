@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { ChevronRight, Bot, Plus, ListTodo, Archive, ArchiveRestore, Trash2, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useWorkItems, usePersonas, useExecutions, useSelectedProject, useCreateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem, useBulkArchiveWorkItems, useBulkDeleteWorkItems } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { useToastStore } from "@/stores/toast-store";
+import { searchApi } from "@/api/client";
 import { useWorkflowStates } from "@/hooks/use-workflows";
 import type { WorkItem, WorkItemId, Priority, Persona, ProjectId } from "@agentops/shared";
 
@@ -360,6 +361,30 @@ export function ListView() {
   const bulkDelete = useBulkDeleteWorkItems();
   const addToast = useToastStore((s) => s.addToast);
 
+  // Server-backed FTS search for work items (2+ chars triggers API call)
+  const [ftsMatchIds, setFtsMatchIds] = useState<Set<string> | null>(null);
+  const ftsDebounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => {
+    if (ftsDebounceRef.current) clearTimeout(ftsDebounceRef.current);
+    if (!searchQuery || searchQuery.trim().length < 2) {
+      setFtsMatchIds(null);
+      return;
+    }
+    ftsDebounceRef.current = setTimeout(async () => {
+      try {
+        const results = await searchApi(searchQuery.trim(), {
+          type: "work_item",
+          projectId: projectId ?? undefined,
+          limit: 100,
+        });
+        setFtsMatchIds(new Set(results.map((r) => r.id)));
+      } catch {
+        setFtsMatchIds(null);
+      }
+    }, 300);
+    return () => { if (ftsDebounceRef.current) clearTimeout(ftsDebounceRef.current); };
+  }, [searchQuery, projectId]);
+
   // Build state color lookup from dynamic workflow data
   const stateColorMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -470,13 +495,19 @@ export function ListView() {
       items = items.filter((w) => filterLabels.some((label) => w.labels.includes(label)));
     }
     if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      items = items.filter(
-        (w) => w.title.toLowerCase().includes(q) || w.description?.toLowerCase().includes(q),
-      );
+      if (ftsMatchIds) {
+        // Server-backed FTS5 search — filter by matching IDs
+        items = items.filter((w) => ftsMatchIds.has(w.id));
+      } else {
+        // Fallback: client-side text search (for short queries or during debounce)
+        const q = searchQuery.toLowerCase();
+        items = items.filter(
+          (w) => w.title.toLowerCase().includes(q) || w.description?.toLowerCase().includes(q),
+        );
+      }
     }
     return items;
-  }, [allItems, filterState, filterPriority, filterPersonas, filterLabels, searchQuery]);
+  }, [allItems, filterState, filterPriority, filterPersonas, filterLabels, searchQuery, ftsMatchIds]);
 
   // Sort function with direction and secondary sort
   const sortItems = (items: WorkItem[]): WorkItem[] => {
