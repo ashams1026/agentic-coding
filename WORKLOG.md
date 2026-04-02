@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 09:35 PDT — Review: NTF.8 (approved)
+
+**Reviewed:** Notifications tab in Settings.
+- 5 event types with In-App/Sound toggle grid ✓
+- Quiet hours: enable toggle + from/to time pickers, conditionally shown ✓
+- Scope: radio buttons (All projects / Current project only) ✓
+- All saved to notification store preferences (localStorage persistence) ✓
+- Bell icon + entry in settings sidebar nav ✓
+- Build passes ✓
+- **Verdict: approved.** Notifications UX Phase 1 (NTF.1-8) complete.
+
+---
+
 ## 2026-04-02 09:30 PDT — NTF.8: Notifications tab in Settings
 
 **Done:** Created `packages/frontend/src/features/settings/notifications-section.tsx`. Three sections: (1) Event Types — grid with In-App and Sound toggle columns for all 5 notification types, each with label and description. (2) Quiet Hours — enable toggle + time pickers (from/to) for suppressing non-critical during set hours. (3) Scope — radio buttons for "All projects" vs "Current project only". All settings saved to notification store preferences (persisted via localStorage). Added Bell icon + "Notifications" entry to settings sidebar nav and content switch in settings-layout.tsx.
