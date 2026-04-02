@@ -16,7 +16,7 @@
 
 ### Scheduling
 
-- [ ] **SCH.1** — Backend: add `schedules` table to schema (id, name, personaId, projectId, cron expression, promptTemplate, isActive, lastRunAt, nextRunAt, consecutiveFailures, createdAt). Generate migration.
+- [review] **SCH.1** — Backend: add `schedules` table to schema (id, name, personaId, projectId, cron expression, promptTemplate, isActive, lastRunAt, nextRunAt, consecutiveFailures, createdAt). Generate migration.
 - [ ] **SCH.2** — Backend: create `packages/backend/src/scheduling/scheduler.ts`. Implement cron scheduler using `node-cron`. On tick: check for due schedules, spawn execution via `executionManager.runExecution()`, update lastRunAt/nextRunAt. Missed-run catch-up on startup. Auto-disable after 5 consecutive failures.
 - [ ] **SCH.3** — Backend: create `packages/backend/src/routes/schedules.ts`. CRUD endpoints: `GET /api/schedules`, `POST /api/schedules` (create with cron validation), `PATCH /api/schedules/:id`, `DELETE /api/schedules/:id`. `POST /api/schedules/:id/run-now` (manual trigger). Register in server.ts. Start scheduler on startup.
 - [ ] **SCH.4** — Frontend: add Schedules UI in Persona Manager or Settings. Schedule list with name, persona, cron (human-readable), next run, status. Add/edit form with cron preset selector (every 30min, hourly, daily, custom) + live preview of next runs. Active/disabled toggle.

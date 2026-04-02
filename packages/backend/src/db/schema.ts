@@ -452,3 +452,30 @@ export const webhookTriggersRelations = relations(webhookTriggers, ({ one }) => 
     references: [projects.id],
   }),
 }));
+
+// ── Schedules ─────────────────────────────────────────────────────
+
+export const schedules = sqliteTable("schedules", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  personaId: text("persona_id").notNull().references(() => personas.id),
+  projectId: text("project_id").references(() => projects.id),
+  cronExpression: text("cron_expression").notNull(), // e.g. "*/30 * * * *"
+  promptTemplate: text("prompt_template").notNull().default(""),
+  isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
+  lastRunAt: integer("last_run_at", { mode: "timestamp_ms" }),
+  nextRunAt: integer("next_run_at", { mode: "timestamp_ms" }),
+  consecutiveFailures: integer("consecutive_failures").notNull().default(0),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+export const schedulesRelations = relations(schedules, ({ one }) => ({
+  persona: one(personas, {
+    fields: [schedules.personaId],
+    references: [personas.id],
+  }),
+  project: one(projects, {
+    fields: [schedules.projectId],
+    references: [projects.id],
+  }),
+}));
