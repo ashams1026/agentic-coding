@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { useProjects, useUpdateProject, usePersonas, useHealth } from "@/hooks";
+import { useProjects, useUpdateProject, useAgents, useHealth } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { getApiKeyStatus, setApiKey, deleteApiKey, getConcurrencyStats, getExecutorMode, setExecutorMode } from "@/api";
 
@@ -222,55 +222,55 @@ function ConcurrencySection() {
   );
 }
 
-// ── Per-persona limits ─────────────────────────────────────────────
+// ── Per-agent limits ─────────────────────────────────────────────
 
-interface PersonaLimit {
-  personaId: string;
-  personaName: string;
+interface AgentLimit {
+  agentId: string;
+  agentName: string;
   color: string;
   limit: number | null;
 }
 
-function PersonaLimitsSection() {
-  const { data: personas = [] } = usePersonas();
-  const [limits, setLimits] = useState<PersonaLimit[]>([]);
+function AgentLimitsSection() {
+  const { data: agents = [] } = useAgents();
+  const [limits, setLimits] = useState<AgentLimit[]>([]);
 
-  // Initialize limits from personas if not yet set
-  const effectiveLimits: PersonaLimit[] =
+  // Initialize limits from agents if not yet set
+  const effectiveLimits: AgentLimit[] =
     limits.length > 0
       ? limits
-      : personas.map((p) => ({
-          personaId: p.id,
-          personaName: p.name,
+      : agents.map((p) => ({
+          agentId: p.id,
+          agentName: p.name,
           color: p.avatar.color,
           limit: null,
         }));
 
-  const handleLimitChange = (personaId: string, value: string) => {
+  const handleLimitChange = (agentId: string, value: string) => {
     const numValue = value === "" ? null : Math.min(10, Math.max(1, Number(value)));
     const updated = effectiveLimits.map((l) =>
-      l.personaId === personaId ? { ...l, limit: numValue } : l,
+      l.agentId === agentId ? { ...l, limit: numValue } : l,
     );
     setLimits(updated);
   };
 
-  const handleClearLimit = (personaId: string) => {
+  const handleClearLimit = (agentId: string) => {
     const updated = effectiveLimits.map((l) =>
-      l.personaId === personaId ? { ...l, limit: null } : l,
+      l.agentId === agentId ? { ...l, limit: null } : l,
     );
     setLimits(updated);
   };
 
-  if (personas.length === 0) {
+  if (agents.length === 0) {
     return null;
   }
 
   return (
     <div className="space-y-3">
       <div>
-        <p className="text-sm font-medium mb-1">Per-Persona Limits</p>
+        <p className="text-sm font-medium mb-1">Per-Agent Limits</p>
         <p className="text-xs text-muted-foreground mb-3">
-          Optionally limit how many instances of each persona can run concurrently.
+          Optionally limit how many instances of each agent can run concurrently.
         </p>
       </div>
 
@@ -278,14 +278,14 @@ function PersonaLimitsSection() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b text-muted-foreground">
-              <th className="text-left font-medium px-3 py-2">Persona</th>
+              <th className="text-left font-medium px-3 py-2">Agent</th>
               <th className="text-right font-medium px-3 py-2 w-[120px]">Max Concurrent</th>
               <th className="w-[40px]" />
             </tr>
           </thead>
           <tbody>
             {effectiveLimits.map((entry) => (
-              <tr key={entry.personaId} className="border-b last:border-0">
+              <tr key={entry.agentId} className="border-b last:border-0">
                 <td className="px-3 py-2">
                   <span className="flex items-center gap-2">
                     <span
@@ -294,7 +294,7 @@ function PersonaLimitsSection() {
                     >
                       <Bot className="h-3 w-3" style={{ color: entry.color }} />
                     </span>
-                    <span className="truncate">{entry.personaName}</span>
+                    <span className="truncate">{entry.agentName}</span>
                   </span>
                 </td>
                 <td className="px-3 py-2 text-right">
@@ -304,7 +304,7 @@ function PersonaLimitsSection() {
                     max={10}
                     placeholder="—"
                     value={entry.limit ?? ""}
-                    onChange={(e) => handleLimitChange(entry.personaId, e.target.value)}
+                    onChange={(e) => handleLimitChange(entry.agentId, e.target.value)}
                     className="h-7 w-[80px] text-right text-sm ml-auto"
                   />
                 </td>
@@ -314,7 +314,7 @@ function PersonaLimitsSection() {
                       variant="ghost"
                       size="icon"
                       className="h-6 w-6"
-                      onClick={() => handleClearLimit(entry.personaId)}
+                      onClick={() => handleClearLimit(entry.agentId)}
                     >
                       <Trash2 className="h-3 w-3 text-muted-foreground" />
                     </Button>
@@ -433,7 +433,7 @@ export function ApiKeysSection() {
       <Separator />
       <ConcurrencySection />
       <Separator />
-      <PersonaLimitsSection />
+      <AgentLimitsSection />
     </div>
   );
 }

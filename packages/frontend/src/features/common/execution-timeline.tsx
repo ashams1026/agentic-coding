@@ -22,12 +22,12 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useExecutions, usePersonas } from "@/hooks";
+import { useExecutions, useAgents } from "@/hooks";
 import { retryWorkItem } from "@/api";
 import { useToastStore } from "@/stores/toast-store";
 import type {
   Execution,
-  Persona,
+  Agent,
   WorkItemId,
 } from "@agentops/shared";
 
@@ -92,15 +92,15 @@ function OutcomeBadge({ outcome, status }: { outcome: Execution["outcome"]; stat
 
 interface TimelineEntryProps {
   execution: Execution;
-  persona: Persona | undefined;
+  agent: Agent | undefined;
   isLast: boolean;
   onRetry?: () => void;
 }
 
-function TimelineEntry({ execution, persona, isLast, onRetry }: TimelineEntryProps) {
+function TimelineEntry({ execution, agent, isLast, onRetry }: TimelineEntryProps) {
   const [expanded, setExpanded] = useState(false);
-  const avatarColor = persona?.avatar.color ?? "#6b7280";
-  const personaName = persona?.name ?? "Agent";
+  const avatarColor = agent?.avatar.color ?? "#6b7280";
+  const agentName = agent?.name ?? "Agent";
 
   return (
     <div className="flex gap-3">
@@ -117,7 +117,7 @@ function TimelineEntry({ execution, persona, isLast, onRetry }: TimelineEntryPro
             </div>
           </TooltipTrigger>
           <TooltipContent side="left" className="text-xs">
-            {personaName}
+            {agentName}
           </TooltipContent>
         </Tooltip>
         {/* Vertical line connector */}
@@ -140,7 +140,7 @@ function TimelineEntry({ execution, persona, isLast, onRetry }: TimelineEntryPro
           )}
           <div className="flex-1 min-w-0">
             <p className="text-sm">
-              <span className="font-medium">{personaName}</span>
+              <span className="font-medium">{agentName}</span>
               {" ran for "}
               <span className="font-mono text-xs">
                 {formatDuration(execution.durationMs)}
@@ -263,12 +263,12 @@ interface ExecutionTimelineProps {
 
 export function ExecutionTimeline({ workItemId }: ExecutionTimelineProps) {
   const { data: executions = [] } = useExecutions(workItemId);
-  const { data: personas = [] } = usePersonas();
+  const { data: agents = [] } = useAgents();
   const addToast = useToastStore((s) => s.addToast);
 
-  const personaMap = useMemo(
-    () => new Map(personas.map((p) => [p.id as string, p])),
-    [personas],
+  const agentMap = useMemo(
+    () => new Map(agents.map((p) => [p.id as string, p])),
+    [agents],
   );
 
   // Sort by startedAt descending (most recent first)
@@ -303,7 +303,7 @@ export function ExecutionTimeline({ workItemId }: ExecutionTimelineProps) {
           <TimelineEntry
             key={execution.id}
             execution={execution}
-            persona={personaMap.get(execution.personaId as string)}
+            agent={agentMap.get(execution.agentId as string)}
             isLast={i === sorted.length - 1}
             onRetry={execution.outcome === "failure" ? handleRetry : undefined}
           />

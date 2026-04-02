@@ -48,14 +48,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useExecutions, usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
+import { useExecutions, useAgents, useWorkItems, useSelectedProject } from "@/hooks";
 import { rewindExecution } from "@/api";
 import type { RewindResult } from "@/api/client";
 import { useToastStore } from "@/stores/toast-store";
 import { TerminalRenderer } from "./terminal-renderer";
 import { RouterDecisionCard, isRouterDecision } from "./router-decision-card";
 import { SubagentCard } from "./subagent-card";
-import type { Execution, ExecutionId, Persona } from "@agentops/shared";
+import type { Execution, ExecutionId, Agent } from "@agentops/shared";
 
 // ── Helpers ───────────────────────────────────────────────────────
 
@@ -112,14 +112,14 @@ function SortIcon({ field, activeField, dir }: { field: SortField; activeField: 
 // ── Filter types ──────────────────────────────────────────────────
 
 interface Filters {
-  personaId: string; // "all" or PersonaId
+  agentId: string; // "all" or AgentId
   outcome: string; // "all" | "success" | "failure" | "rejected"
   costMin: string; // empty or number string
   costMax: string; // empty or number string
 }
 
 const defaultFilters: Filters = {
-  personaId: "all",
+  agentId: "all",
   outcome: "all",
   costMin: "",
   costMax: "",
@@ -179,26 +179,26 @@ function StatsBar({ executions }: StatsBarProps) {
 interface FilterBarProps {
   filters: Filters;
   onChange: (filters: Filters) => void;
-  personas: { id: string; name: string }[];
+  agents: { id: string; name: string }[];
   hasActiveFilters: boolean;
 }
 
-function FilterBar({ filters, onChange, personas, hasActiveFilters }: FilterBarProps) {
+function FilterBar({ filters, onChange, agents, hasActiveFilters }: FilterBarProps) {
   return (
     <div className="flex items-center gap-2 px-4 py-2 border-b bg-muted/10">
       <Filter className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
 
-      {/* Persona filter */}
+      {/* Agent filter */}
       <Select
-        value={filters.personaId}
-        onValueChange={(v) => onChange({ ...filters, personaId: v })}
+        value={filters.agentId}
+        onValueChange={(v) => onChange({ ...filters, agentId: v })}
       >
         <SelectTrigger className="h-7 w-[140px] text-xs">
           <SelectValue placeholder="All agents" />
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">All agents</SelectItem>
-          {personas.map((p) => (
+          {agents.map((p) => (
             <SelectItem key={p.id} value={p.id}>
               {p.name}
             </SelectItem>
@@ -394,24 +394,24 @@ function RewindButton({ execution }: RewindButtonProps) {
 
 interface HistoryRowProps {
   execution: Execution;
-  personaName: string;
-  personaColor: string;
+  agentName: string;
+  agentColor: string;
   targetName: string;
   isExpanded: boolean;
   onToggle: () => void;
   childExecutions: Execution[];
-  personaMap: Map<string, Persona>;
+  agentMap: Map<string, Agent>;
 }
 
 function HistoryRow({
   execution,
-  personaName,
-  personaColor,
+  agentName,
+  agentColor,
   targetName,
   isExpanded,
   onToggle,
   childExecutions,
-  personaMap,
+  agentMap,
 }: HistoryRowProps) {
   const outcome = execution.outcome
     ? outcomeBadge[execution.outcome]
@@ -424,12 +424,12 @@ function HistoryRow({
           <div className="flex items-center gap-2">
             <div
               className="flex h-6 w-6 items-center justify-center rounded-full shrink-0"
-              style={{ backgroundColor: personaColor + "20" }}
+              style={{ backgroundColor: agentColor + "20" }}
             >
-              <Bot className="h-3.5 w-3.5" style={{ color: personaColor }} />
+              <Bot className="h-3.5 w-3.5" style={{ color: agentColor }} />
             </div>
             <span className="text-sm font-medium truncate max-w-[120px]">
-              {personaName}
+              {agentName}
             </span>
           </div>
         </TableCell>
@@ -492,13 +492,13 @@ function HistoryRow({
                   Subagents ({childExecutions.length})
                 </p>
                 {childExecutions.map((child) => {
-                  const childPersona = personaMap.get(child.personaId as string);
+                  const childAgent = agentMap.get(child.agentId as string);
                   return (
                     <SubagentCard
                       key={child.id}
                       execution={child}
-                      personaName={childPersona?.name ?? "Agent"}
-                      personaColor={childPersona?.avatar.color ?? "#6b7280"}
+                      agentName={childAgent?.name ?? "Agent"}
+                      agentColor={childAgent?.avatar.color ?? "#6b7280"}
                     />
                   );
                 })}
@@ -516,7 +516,7 @@ function HistoryRow({
 export function AgentHistory() {
   const { projectId } = useSelectedProject();
   const { data: executions = [] } = useExecutions(undefined, projectId ?? undefined);
-  const { data: personas = [] } = usePersonas();
+  const { data: agents = [] } = useAgents();
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
 
   const [sortField, setSortField] = useState<SortField>("startedAt");
@@ -532,7 +532,7 @@ export function AgentHistory() {
 
   // Check if any filters are active
   const hasActiveFilters =
-    filters.personaId !== "all" ||
+    filters.agentId !== "all" ||
     filters.outcome !== "all" ||
     filters.costMin !== "" ||
     filters.costMax !== "";
@@ -540,7 +540,7 @@ export function AgentHistory() {
   // Apply filters
   const filtered = useMemo(() => {
     return historyExecutions.filter((e) => {
-      if (filters.personaId !== "all" && e.personaId !== filters.personaId) return false;
+      if (filters.agentId !== "all" && e.agentId !== filters.agentId) return false;
       if (filters.outcome !== "all" && e.outcome !== filters.outcome) return false;
       if (filters.costMin !== "") {
         const min = parseFloat(filters.costMin);
@@ -580,9 +580,9 @@ export function AgentHistory() {
   }, [filtered, sortField, sortDir]);
 
   // Lookup maps
-  const personaMap = useMemo(
-    () => new Map(personas.map((p) => [p.id as string, p])),
-    [personas],
+  const agentMap = useMemo(
+    () => new Map(agents.map((p) => [p.id as string, p])),
+    [agents],
   );
 
   const workItemNameMap = useMemo(() => {
@@ -604,13 +604,13 @@ export function AgentHistory() {
     return map;
   }, [executions]);
 
-  // Unique personas that appear in history (for filter dropdown)
-  const historyPersonas = useMemo(() => {
-    const ids = new Set(historyExecutions.map((e) => e.personaId as string));
-    return personas
+  // Unique agents that appear in history (for filter dropdown)
+  const historyAgents = useMemo(() => {
+    const ids = new Set(historyExecutions.map((e) => e.agentId as string));
+    return agents
       .filter((p) => ids.has(p.id as string))
       .map((p) => ({ id: p.id as string, name: p.name }));
-  }, [historyExecutions, personas]);
+  }, [historyExecutions, agents]);
 
   const toggleSort = (field: SortField) => {
     if (sortField === field) {
@@ -643,7 +643,7 @@ export function AgentHistory() {
       <FilterBar
         filters={filters}
         onChange={setFilters}
-        personas={historyPersonas}
+        agents={historyAgents}
         hasActiveFilters={hasActiveFilters}
       />
 
@@ -696,13 +696,13 @@ export function AgentHistory() {
               </TableRow>
             ) : (
               sorted.map((exec) => {
-                const persona = personaMap.get(exec.personaId as string);
+                const agent = agentMap.get(exec.agentId as string);
                 return (
                   <HistoryRow
                     key={exec.id}
                     execution={exec}
-                    personaName={persona?.name ?? "Agent"}
-                    personaColor={persona?.avatar.color ?? "#6b7280"}
+                    agentName={agent?.name ?? "Agent"}
+                    agentColor={agent?.avatar.color ?? "#6b7280"}
                     targetName={
                       exec.workItemId ? (workItemNameMap.get(exec.workItemId as string) ?? exec.workItemId) : "Standalone"
                     }
@@ -711,7 +711,7 @@ export function AgentHistory() {
                       setExpandedId(expandedId === exec.id ? null : exec.id)
                     }
                     childExecutions={childExecutionMap.get(exec.id as string) ?? []}
-                    personaMap={personaMap}
+                    agentMap={agentMap}
                   />
                 );
               })

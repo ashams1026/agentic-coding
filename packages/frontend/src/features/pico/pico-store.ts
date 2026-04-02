@@ -9,7 +9,7 @@ interface PicoState {
   panelWidth: number;
   panelHeight: number;
   scopeOverride: string | null; // null = follows sidebar, "__global__" = global, projectId = specific project
-  selectedPersonaId: string | null; // null = default Pico
+  selectedAgentId: string | null; // null = default Pico
 
   setOpen: (open: boolean) => void;
   toggleOpen: () => void;
@@ -17,7 +17,7 @@ interface PicoState {
   setCurrentSessionId: (id: ChatSessionId | null) => void;
   setPanelSize: (width: number, height: number) => void;
   setScopeOverride: (scope: string | null) => void;
-  setSelectedPersonaId: (id: string | null) => void;
+  setSelectedAgentId: (id: string | null) => void;
 }
 
 export const usePicoStore = create<PicoState>()(
@@ -29,7 +29,7 @@ export const usePicoStore = create<PicoState>()(
       panelWidth: 400,
       panelHeight: 500,
       scopeOverride: null,
-      selectedPersonaId: null,
+      selectedAgentId: null,
 
       setOpen: (open) => set({ isOpen: open, ...(open ? { hasUnread: false } : {}) }),
       toggleOpen: () =>
@@ -41,7 +41,7 @@ export const usePicoStore = create<PicoState>()(
       setCurrentSessionId: (currentSessionId) => set({ currentSessionId }),
       setPanelSize: (panelWidth, panelHeight) => set({ panelWidth, panelHeight }),
       setScopeOverride: (scopeOverride) => set({ scopeOverride }),
-      setSelectedPersonaId: (selectedPersonaId) => set({ selectedPersonaId }),
+      setSelectedAgentId: (selectedAgentId) => set({ selectedAgentId }),
     }),
     { name: "pico-chat" },
   ),

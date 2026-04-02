@@ -19,7 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
+import { useAgents, useWorkItems, useSelectedProject } from "@/hooks";
 import { useWorkflowStates } from "@/hooks/use-workflows";
 import {
   useWorkItemsStore,
@@ -57,7 +57,7 @@ export function FilterBar() {
     sortDir,
     filterState,
     filterPriority,
-    filterPersonas,
+    filterAgents,
     filterLabels,
     showArchived,
     setSearchQuery,
@@ -66,14 +66,14 @@ export function FilterBar() {
     toggleSortDir,
     setFilterState,
     setFilterPriority,
-    toggleFilterPersona,
+    toggleFilterAgent,
     toggleFilterLabel,
     setShowArchived,
     clearFilters,
   } = useWorkItemsStore();
 
   const { projectId, project } = useSelectedProject();
-  const { data: personas } = usePersonas();
+  const { data: agents } = useAgents();
   const { data: allItems } = useWorkItems(undefined, projectId ?? undefined);
   const { data: workflowStatesData } = useWorkflowStates(project?.workflowId ?? null);
 
@@ -110,7 +110,7 @@ export function FilterBar() {
     searchQuery !== "" ||
     filterState !== null ||
     filterPriority !== null ||
-    filterPersonas.length > 0 ||
+    filterAgents.length > 0 ||
     filterLabels.length > 0 ||
     showArchived;
 
@@ -181,27 +181,27 @@ export function FilterBar() {
         </SelectContent>
       </Select>
 
-      {/* Filter by persona (multi-select) */}
+      {/* Filter by agent (multi-select) */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
             <Bot className="h-3.5 w-3.5" />
-            Persona
-            {filterPersonas.length > 0 && (
+            Agent
+            {filterAgents.length > 0 && (
               <Badge variant="secondary" size="sm" className="ml-0.5">
-                {filterPersonas.length}
+                {filterAgents.length}
               </Badge>
             )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-[180px]">
-          <DropdownMenuLabel className="text-xs">Filter by persona</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-xs">Filter by agent</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {personas?.map((p) => (
+          {agents?.map((p) => (
             <DropdownMenuCheckboxItem
               key={p.id as string}
-              checked={filterPersonas.includes(p.id as string)}
-              onCheckedChange={() => toggleFilterPersona(p.id as string)}
+              checked={filterAgents.includes(p.id as string)}
+              onCheckedChange={() => toggleFilterAgent(p.id as string)}
               className="text-xs"
             >
               <span className="flex items-center gap-2">

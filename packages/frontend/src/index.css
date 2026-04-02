@@ -56,12 +56,12 @@
  * Tailwind v4 CSS-first configuration via @theme
  */
 @theme {
-  /* Persona colors — each agent role gets a distinct color (600-level) */
-  --color-persona-pm: #7c3aed;
-  --color-persona-tech-lead: #2563eb;
-  --color-persona-engineer: #059669;
-  --color-persona-reviewer: #d97706;
-  --color-persona-qa: #dc2626;
+  /* Agent colors — each agent role gets a distinct color (600-level) */
+  --color-agent-pm: #7c3aed;
+  --color-agent-tech-lead: #2563eb;
+  --color-agent-engineer: #059669;
+  --color-agent-reviewer: #d97706;
+  --color-agent-qa: #dc2626;
 
   /* Status colors (600-level for WCAG AA contrast on light backgrounds) */
   --color-status-pending: #94a3b8;

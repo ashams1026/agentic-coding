@@ -8,7 +8,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import type { PersonaModel } from "@agentops/shared";
+import type { AgentModel } from "@agentops/shared";
 
 // ── Mock output chunks ──────────────────────────────────────────
 
@@ -20,11 +20,11 @@ interface OutputLine {
 
 function generateMockOutput(
   prompt: string,
-  personaName: string,
-  model: PersonaModel,
+  agentName: string,
+  model: AgentModel,
 ): OutputLine[] {
   const lines: OutputLine[] = [
-    { id: 1, text: `[${model}] Running as ${personaName}...`, type: "thinking" },
+    { id: 1, text: `[${model}] Running as ${agentName}...`, type: "thinking" },
     { id: 2, text: `Processing prompt: "${prompt.slice(0, 60)}${prompt.length > 60 ? "..." : ""}"`, type: "thinking" },
     { id: 3, text: "", type: "text" },
     { id: 4, text: "Analyzing request and determining approach...", type: "thinking" },
@@ -57,13 +57,13 @@ const lineStyles: Record<OutputLine["type"], string> = {
 // ── Props ───────────────────────────────────────────────────────
 
 interface TestRunPanelProps {
-  personaName: string;
-  model: PersonaModel;
+  agentName: string;
+  model: AgentModel;
 }
 
 // ── Main component ──────────────────────────────────────────────
 
-export function TestRunPanel({ personaName, model }: TestRunPanelProps) {
+export function TestRunPanel({ agentName, model }: TestRunPanelProps) {
   const [open, setOpen] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [running, setRunning] = useState(false);
@@ -88,7 +88,7 @@ export function TestRunPanel({ personaName, model }: TestRunPanelProps) {
   const handleRun = useCallback(() => {
     if (!prompt.trim() || running) return;
 
-    const allLines = generateMockOutput(prompt, personaName, model);
+    const allLines = generateMockOutput(prompt, agentName, model);
     setLines([]);
     setRunning(true);
 
@@ -104,7 +104,7 @@ export function TestRunPanel({ personaName, model }: TestRunPanelProps) {
       }
     };
     streamNext();
-  }, [prompt, running, personaName, model]);
+  }, [prompt, running, agentName, model]);
 
   const handleStop = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);

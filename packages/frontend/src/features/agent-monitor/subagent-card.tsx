@@ -23,11 +23,11 @@ function formatDuration(ms: number): string {
 
 interface SubagentCardProps {
   execution: Execution;
-  personaName: string;
-  personaColor: string;
+  agentName: string;
+  agentColor: string;
 }
 
-export function SubagentCard({ execution, personaName, personaColor }: SubagentCardProps) {
+export function SubagentCard({ execution, agentName, agentColor }: SubagentCardProps) {
   const [expanded, setExpanded] = useState(false);
   const outcome = execution.outcome ? outcomeBadge[execution.outcome] : null;
 
@@ -40,11 +40,11 @@ export function SubagentCard({ execution, personaName, personaColor }: SubagentC
       >
         <div
           className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
-          style={{ backgroundColor: personaColor + "20" }}
+          style={{ backgroundColor: agentColor + "20" }}
         >
-          <Bot className="h-3.5 w-3.5" style={{ color: personaColor }} />
+          <Bot className="h-3.5 w-3.5" style={{ color: agentColor }} />
         </div>
-        <span className="text-sm font-medium truncate">{personaName}</span>
+        <span className="text-sm font-medium truncate">{agentName}</span>
         <span className="text-xs text-muted-foreground">subagent</span>
         {outcome && (
           <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0", outcome.className)}>

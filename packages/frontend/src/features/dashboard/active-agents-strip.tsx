@@ -3,8 +3,8 @@ import { useNavigate } from "react-router";
 import { Bot } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { useExecutions, usePersonas, useSelectedProject } from "@/hooks";
-import type { Execution, Persona } from "@agentops/shared";
+import { useExecutions, useAgents, useSelectedProject } from "@/hooks";
+import type { Execution, Agent } from "@agentops/shared";
 
 function formatElapsed(startedAt: string): string {
   const elapsed = Date.now() - new Date(startedAt).getTime();
@@ -19,11 +19,11 @@ function formatElapsed(startedAt: string): string {
 
 interface AgentCardProps {
   execution: Execution;
-  persona: Persona | undefined;
+  agent: Agent | undefined;
   onClick: () => void;
 }
 
-function AgentCard({ execution, persona, onClick }: AgentCardProps) {
+function AgentCard({ execution, agent, onClick }: AgentCardProps) {
   const [elapsed, setElapsed] = useState(() => formatElapsed(execution.startedAt));
 
   useEffect(() => {
@@ -33,7 +33,7 @@ function AgentCard({ execution, persona, onClick }: AgentCardProps) {
     return () => clearInterval(interval);
   }, [execution.startedAt]);
 
-  const avatarColor = persona?.avatar.color ?? "#6b7280";
+  const avatarColor = agent?.avatar.color ?? "#6b7280";
 
   return (
     <Card
@@ -56,7 +56,7 @@ function AgentCard({ execution, persona, onClick }: AgentCardProps) {
         </div>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">
-            {persona?.name ?? "Agent"}
+            {agent?.name ?? "Agent"}
           </p>
           <p className="truncate text-xs text-muted-foreground">
             {execution.summary || "Working on work item..."}
@@ -74,11 +74,11 @@ export function ActiveAgentsStrip() {
   const navigate = useNavigate();
   const { projectId } = useSelectedProject();
   const { data: executions } = useExecutions(undefined, projectId ?? undefined);
-  const { data: personas } = usePersonas();
+  const { data: agents } = useAgents();
 
   const runningExecutions = executions?.filter((e) => e.status === "running") ?? [];
 
-  const personaMap = new Map(personas?.map((p) => [p.id, p]));
+  const agentMap = new Map(agents?.map((p) => [p.id, p]));
 
   if (runningExecutions.length === 0) {
     return (
@@ -105,7 +105,7 @@ export function ActiveAgentsStrip() {
               <AgentCard
                 key={execution.id}
                 execution={execution}
-                persona={personaMap.get(execution.personaId)}
+                agent={agentMap.get(execution.agentId)}
                 onClick={() => navigate("/agents")}
               />
             ))}

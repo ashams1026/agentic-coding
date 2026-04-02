@@ -4,7 +4,7 @@ import { DashboardPage } from "./pages/dashboard";
 import { WorkItemsPage } from "./pages/work-items";
 import { AgentMonitorPage } from "./pages/agent-monitor";
 import { ActivityFeedPage } from "./pages/activity-feed";
-import { PersonaManagerPage } from "./pages/persona-manager";
+import { AgentBuilderPage } from "./pages/agent-builder";
 import { SettingsPage } from "./pages/settings";
 import { ChatPage } from "./pages/chat";
 import { WorkflowsPage } from "./pages/workflows";
@@ -21,7 +21,7 @@ export const router = createBrowserRouter([
       { path: "activity", element: <PageErrorBoundary><ActivityFeedPage /></PageErrorBoundary> },
       { path: "analytics", element: <PageErrorBoundary><AnalyticsPage /></PageErrorBoundary> },
       { path: "chat", element: <PageErrorBoundary><ChatPage /></PageErrorBoundary> },
-      { path: "personas", element: <PageErrorBoundary><PersonaManagerPage /></PageErrorBoundary> },
+      { path: "agent-builder", element: <PageErrorBoundary><AgentBuilderPage /></PageErrorBoundary> },
       { path: "workflows", element: <PageErrorBoundary><WorkflowsPage /></PageErrorBoundary> },
       { path: "workflows/:id", element: <PageErrorBoundary><WorkflowsPage /></PageErrorBoundary> },
       { path: "settings", element: <PageErrorBoundary><SettingsPage /></PageErrorBoundary> },

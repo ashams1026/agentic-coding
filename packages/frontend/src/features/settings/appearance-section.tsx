@@ -320,7 +320,7 @@ function ServiceStatusSection() {
                 className="flex items-center justify-between rounded-md border px-3 py-2"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium truncate">{agent.personaName}</p>
+                  <p className="text-sm font-medium truncate">{agent.agentName}</p>
                   <p className="text-xs text-muted-foreground truncate">{agent.workItemTitle}</p>
                 </div>
                 <Badge variant="secondary" className="text-xs shrink-0 ml-2">
@@ -363,7 +363,7 @@ function DatabaseInfo() {
     sizeMB: number;
     executionCount: number;
     projectCount: number;
-    personaCount: number;
+    agentCount: number;
   } | null>(null);
 
   useEffect(() => {
@@ -385,7 +385,7 @@ function DatabaseInfo() {
           <p className="text-sm font-medium">agentops.db</p>
           {stats ? (
             <p className="text-xs text-muted-foreground">
-              {stats.sizeMB} MB · {stats.executionCount} executions · {stats.projectCount} projects · {stats.personaCount} personas
+              {stats.sizeMB} MB · {stats.executionCount} executions · {stats.projectCount} projects · {stats.agentCount} agents
             </p>
           ) : (
             <div className="h-3 w-40 bg-muted animate-pulse rounded mt-1" />
@@ -449,7 +449,7 @@ function DataActionsSection() {
       const result = await importSettings(data);
       const counts = result.imported;
       setImportResult(
-        `Imported: ${counts.projects} projects, ${counts.personas} personas, ${counts.personaAssignments} assignments`,
+        `Imported: ${counts.projects} projects, ${counts.agents} agents, ${counts.agentAssignments} assignments`,
       );
       setTimeout(() => setImportResult(null), 5000);
     } catch {

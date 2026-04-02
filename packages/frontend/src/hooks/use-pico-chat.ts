@@ -7,7 +7,7 @@ import {
   deleteChatSession,
   getChatMessages,
   sendChatMessageSSE,
-  type ChatSessionWithPersona,
+  type ChatSessionWithAgent,
 } from "@/api";
 import { usePicoStore } from "@/features/pico/pico-store";
 import { useUIStore } from "@/stores/ui-store";
@@ -167,7 +167,7 @@ export function usePicoChat() {
   const selectedProjectId = useUIStore((s) => s.selectedProjectId);
 
   const [messages, setMessages] = useState<PicoChatMessage[]>([]);
-  const [sessions, setSessions] = useState<ChatSessionWithPersona[]>([]);
+  const [sessions, setSessions] = useState<ChatSessionWithAgent[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -387,9 +387,9 @@ export function usePicoChat() {
     [isStreaming, ensureSession, setHasUnread, refreshSessions],
   );
 
-  // Create a new session (for "new chat" button), optionally with a specific persona
-  const newSession = useCallback(async (personaId?: string) => {
-    const session = await createChatSession(selectedProjectId ?? undefined, personaId);
+  // Create a new session (for "new chat" button), optionally with a specific agent
+  const newSession = useCallback(async (agentId?: string) => {
+    const session = await createChatSession(selectedProjectId ?? undefined, agentId);
     setCurrentSessionId(session.id as ChatSessionId);
     setMessages([]);
     setError(null);

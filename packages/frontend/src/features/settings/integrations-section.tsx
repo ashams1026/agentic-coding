@@ -274,8 +274,8 @@ interface WebhookTrigger {
   id: string;
   name: string;
   secret?: string;
-  personaId: string;
-  personaName: string;
+  agentId: string;
+  agentName: string;
   projectId: string | null;
   promptTemplate: string;
   isActive: boolean;
@@ -288,7 +288,7 @@ function InboundTriggersSection() {
   const [loaded, setLoaded] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [name, setName] = useState("");
-  const [personaId, setPersonaId] = useState("");
+  const [agentId, setAgentId] = useState("");
   const [promptTemplate, setPromptTemplate] = useState("");
   const [newSecret, setNewSecret] = useState<string | null>(null);
   const [showSecret, setShowSecret] = useState(false);
@@ -300,18 +300,18 @@ function InboundTriggersSection() {
   }
 
   const handleCreate = async () => {
-    if (!name.trim() || !personaId) return;
+    if (!name.trim() || !agentId) return;
     try {
       const res = await fetch(`${BASE_URL}/api/webhook-triggers`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), personaId, promptTemplate }),
+        body: JSON.stringify({ name: name.trim(), agentId, promptTemplate }),
       });
       const { data } = await res.json();
       setNewSecret(data.secret ?? null);
       setTriggers((prev) => [data, ...prev]);
       setName("");
-      setPersonaId("");
+      setAgentId("");
       setPromptTemplate("");
       addToast({ type: "success", title: "Trigger created", description: "Copy the secret and trigger URL." });
     } catch {
@@ -340,7 +340,7 @@ function InboundTriggersSection() {
       {showAdd ? (
         <div className="rounded-lg border p-4 space-y-3">
           <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Trigger name (e.g. CI Deploy)" className="h-8 text-xs" />
-          <Input value={personaId} onChange={(e) => setPersonaId(e.target.value)} placeholder="Persona ID (e.g. ps-xxx)" className="h-8 text-xs font-mono" />
+          <Input value={agentId} onChange={(e) => setAgentId(e.target.value)} placeholder="Agent ID (e.g. ps-xxx)" className="h-8 text-xs font-mono" />
           <textarea
             value={promptTemplate}
             onChange={(e) => setPromptTemplate(e.target.value)}
@@ -370,7 +370,7 @@ function InboundTriggersSection() {
             </div>
           )}
           <div className="flex gap-2">
-            <Button size="sm" className="h-7 text-xs" onClick={handleCreate} disabled={!name.trim() || !personaId}>Create</Button>
+            <Button size="sm" className="h-7 text-xs" onClick={handleCreate} disabled={!name.trim() || !agentId}>Create</Button>
             <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => { setShowAdd(false); setNewSecret(null); }}>Cancel</Button>
           </div>
         </div>
@@ -386,7 +386,7 @@ function InboundTriggersSection() {
           <div key={t.id} className="flex items-center gap-3 rounded-lg border bg-card p-3">
             <div className="flex-1 min-w-0">
               <p className="text-xs font-medium">{t.name}</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">{t.personaName} {t.projectId ? `• ${t.projectId}` : "• Global"}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{t.agentName} {t.projectId ? `• ${t.projectId}` : "• Global"}</p>
               {t.promptTemplate && (
                 <p className="text-[10px] font-mono text-muted-foreground mt-1 truncate">{t.promptTemplate.slice(0, 80)}</p>
               )}

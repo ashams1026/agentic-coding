@@ -32,14 +32,14 @@ import {
   useExecutions,
   useWorkItems,
   useProposals,
-  usePersonas,
+  useAgents,
   useRecentComments,
   useSelectedProject,
 } from "@/hooks";
 import { subscribeAll } from "@/api/ws";
 import { useActivityStore } from "@/stores/activity-store";
 import { useWorkItemsStore } from "@/stores/work-items-store";
-import type { Persona, WorkItemId, PersonaId } from "@agentops/shared";
+import type { Agent, WorkItemId, AgentId } from "@agentops/shared";
 import { RouterDecisionCard, isRouterDecision } from "@/features/agent-monitor/router-decision-card";
 import type {
   WsEvent,
@@ -70,7 +70,7 @@ interface ActivityEvent {
   id: string;
   type: ActivityEventType;
   description: string;
-  personaId: string | null;
+  agentId: string | null;
   workItemId: string | null;
   targetLabel: string;
   timestamp: string;
@@ -200,21 +200,21 @@ function useBaseActivityEvents(): ActivityEvent[] {
   const { data: executions } = useExecutions(undefined, projectId ?? undefined);
   const { data: workItems } = useWorkItems(undefined, projectId ?? undefined);
   const { data: proposals } = useProposals(undefined, projectId ?? undefined);
-  const { data: personas } = usePersonas();
+  const { data: agents } = useAgents();
   const { data: comments } = useRecentComments(projectId ?? undefined);
 
   return useMemo(() => {
     const events: ActivityEvent[] = [];
     const itemMap = new Map(workItems?.map((wi) => [wi.id, wi]) ?? []);
-    const personaMap = new Map(personas?.map((p) => [p.id, p]) ?? []);
+    const agentMap = new Map(agents?.map((p) => [p.id, p]) ?? []);
 
     const itemTitle = (id: string) => itemMap.get(id as WorkItemId)?.title ?? "work item";
-    const personaName = (id: string) => personaMap.get(id as PersonaId)?.name ?? "Agent";
+    const agentName = (id: string) => agentMap.get(id as AgentId)?.name ?? "Agent";
 
     // Agent events from executions
     if (executions) {
       for (const exec of executions) {
-        const pName = personaName(exec.personaId as string);
+        const pName = agentName(exec.agentId as string);
         const wiTitle = itemTitle(exec.workItemId as string);
 
         if (exec.status === "running") {
@@ -222,7 +222,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
             id: `started-${exec.id}`,
             type: "agent_started",
             description: `${pName} started work on ${wiTitle}`,
-            personaId: exec.personaId,
+            agentId: exec.agentId,
             workItemId: exec.workItemId,
             targetLabel: wiTitle,
             timestamp: exec.startedAt,
@@ -236,7 +236,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
               id: `router-${exec.id}`,
               type: "router_decision",
               description: `Router: ${so.nextState ?? "unknown"} — ${so.reasoning ?? exec.summary}`,
-              personaId: exec.personaId,
+              agentId: exec.agentId,
               workItemId: exec.workItemId,
               targetLabel: wiTitle,
               timestamp: exec.completedAt ?? exec.startedAt,
@@ -247,7 +247,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
               id: `completed-${exec.id}`,
               type: "agent_completed",
               description: exec.summary || `${pName} completed work on ${wiTitle}`,
-              personaId: exec.personaId,
+              agentId: exec.agentId,
               workItemId: exec.workItemId,
               targetLabel: wiTitle,
               timestamp: exec.completedAt ?? exec.startedAt,
@@ -259,7 +259,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
             id: `failed-${exec.id}`,
             type: "agent_failed",
             description: exec.rejectionPayload?.reason ?? `${pName} work rejected on ${wiTitle}`,
-            personaId: exec.personaId,
+            agentId: exec.agentId,
             workItemId: exec.workItemId,
             targetLabel: wiTitle,
             timestamp: exec.completedAt ?? exec.startedAt,
@@ -278,7 +278,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
             id: `sc-${comment.id}`,
             type: "state_transition",
             description: comment.content,
-            personaId: null,
+            agentId: null,
             workItemId: comment.workItemId,
             targetLabel: wiTitle,
             timestamp: comment.createdAt,
@@ -288,7 +288,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
             id: `cmt-${comment.id}`,
             type: "comment_posted",
             description: `${comment.authorName}: ${comment.content.slice(0, 120)}${comment.content.length > 120 ? "..." : ""}`,
-            personaId: comment.authorType === "agent" ? comment.authorId : null,
+            agentId: comment.authorType === "agent" ? comment.authorId : null,
             workItemId: comment.workItemId,
             targetLabel: wiTitle,
             timestamp: comment.createdAt,
@@ -306,7 +306,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
           id: `prop-created-${proposal.id}`,
           type: "proposal_created",
           description: `New ${proposal.type.replace(/_/g, " ")} proposal for ${wiTitle}`,
-          personaId: null,
+          agentId: null,
           workItemId: proposal.workItemId,
           targetLabel: wiTitle,
           timestamp: proposal.createdAt,
@@ -317,7 +317,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
             id: `prop-approved-${proposal.id}`,
             type: "proposal_approved",
             description: `${proposal.type.replace(/_/g, " ")} proposal approved for ${wiTitle}`,
-            personaId: null,
+            agentId: null,
             workItemId: proposal.workItemId,
             targetLabel: wiTitle,
             timestamp: new Date(
@@ -330,7 +330,7 @@ function useBaseActivityEvents(): ActivityEvent[] {
             id: `prop-rejected-${proposal.id}`,
             type: "proposal_rejected",
             description: `${proposal.type.replace(/_/g, " ")} proposal rejected for ${wiTitle}`,
-            personaId: null,
+            agentId: null,
             workItemId: proposal.workItemId,
             targetLabel: wiTitle,
             timestamp: new Date(
@@ -342,18 +342,18 @@ function useBaseActivityEvents(): ActivityEvent[] {
     }
 
     return events;
-  }, [executions, workItems, personas, proposals, comments]);
+  }, [executions, workItems, agents, proposals, comments]);
 }
 
 // ── Convert WS events to ActivityEvents ─────────────────────────
 
 interface LookupMaps {
-  personaMap: Map<string, Persona>;
+  agentMap: Map<string, Agent>;
   itemTitleMap: Map<string, string>;
 }
 
 function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | null {
-  const pName = (id: string) => maps.personaMap.get(id)?.name ?? "Agent";
+  const pName = (id: string) => maps.agentMap.get(id)?.name ?? "Agent";
   const wiTitle = (id: string) => maps.itemTitleMap.get(id) ?? "work item";
 
   switch (event.type) {
@@ -363,8 +363,8 @@ function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | nu
       return {
         id: `live-started-${e.executionId}-${Date.now()}`,
         type: "agent_started",
-        description: `${pName(e.personaId as string)} started work on ${title}`,
-        personaId: e.personaId,
+        description: `${pName(e.agentId as string)} started work on ${title}`,
+        agentId: e.agentId,
         workItemId: e.workItemId,
         targetLabel: title,
         timestamp: e.timestamp,
@@ -379,9 +379,9 @@ function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | nu
         id: `live-${isFailed ? "failed" : "completed"}-${e.executionId}-${Date.now()}`,
         type: isFailed ? "agent_failed" : "agent_completed",
         description: isFailed
-          ? `${pName(e.personaId as string)} work rejected on ${title}`
-          : `${pName(e.personaId as string)} completed work on ${title} ($${e.costUsd.toFixed(2)})`,
-        personaId: e.personaId,
+          ? `${pName(e.agentId as string)} work rejected on ${title}`
+          : `${pName(e.agentId as string)} completed work on ${title} ($${e.costUsd.toFixed(2)})`,
+        agentId: e.agentId,
         workItemId: e.workItemId,
         targetLabel: title,
         timestamp: e.timestamp,
@@ -395,7 +395,7 @@ function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | nu
         id: `live-state-${e.workItemId}-${Date.now()}`,
         type: "state_transition",
         description: `${title} moved from ${e.fromState} to ${e.toState}`,
-        personaId: typeof e.triggeredBy === "string" && e.triggeredBy.startsWith("ps-") ? e.triggeredBy : null,
+        agentId: typeof e.triggeredBy === "string" && e.triggeredBy.startsWith("ps-") ? e.triggeredBy : null,
         workItemId: e.workItemId,
         targetLabel: title,
         timestamp: e.timestamp,
@@ -408,7 +408,7 @@ function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | nu
         id: `live-comment-${e.commentId}-${Date.now()}`,
         type: "comment_posted",
         description: `${e.authorName}: ${e.contentPreview}`,
-        personaId: null,
+        agentId: null,
         workItemId: e.workItemId,
         targetLabel: wiTitle(e.workItemId as string),
         timestamp: e.timestamp,
@@ -422,7 +422,7 @@ function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | nu
         id: `live-prop-${e.proposalId}-${Date.now()}`,
         type: "proposal_created",
         description: `New ${e.proposalType.replace(/_/g, " ")} proposal for ${title}`,
-        personaId: null,
+        agentId: null,
         workItemId: e.workItemId,
         targetLabel: title,
         timestamp: e.timestamp,
@@ -436,7 +436,7 @@ function wsEventToActivity(event: WsEvent, maps: LookupMaps): ActivityEvent | nu
           id: `live-prop-${e.status}-${e.proposalId}-${Date.now()}`,
           type: e.status === "approved" ? "proposal_approved" : "proposal_rejected",
           description: `Proposal ${e.status}`,
-          personaId: null,
+          agentId: null,
           workItemId: null,
           targetLabel: "proposal",
           timestamp: e.timestamp,
@@ -476,20 +476,20 @@ function useLiveActivityEvents(maps: LookupMaps): ActivityEvent[] {
 
 interface Filters {
   eventTypes: Set<ActivityEventType>;
-  personaId: string | "all";
+  agentId: string | "all";
   datePreset: DatePreset;
 }
 
 const defaultFilters: Filters = {
   eventTypes: new Set(ALL_EVENT_TYPES),
-  personaId: "all",
+  agentId: "all",
   datePreset: "all",
 };
 
 function hasActiveFilters(filters: Filters): boolean {
   return (
     filters.eventTypes.size !== ALL_EVENT_TYPES.length ||
-    filters.personaId !== "all" ||
+    filters.agentId !== "all" ||
     filters.datePreset !== "all"
   );
 }
@@ -499,10 +499,10 @@ function hasActiveFilters(filters: Filters): boolean {
 interface FilterBarProps {
   filters: Filters;
   onFiltersChange: (filters: Filters) => void;
-  personas: Persona[];
+  agents: Agent[];
 }
 
-function FeedFilterBar({ filters, onFiltersChange, personas }: FilterBarProps) {
+function FeedFilterBar({ filters, onFiltersChange, agents }: FilterBarProps) {
   const [showTypes, setShowTypes] = useState(false);
 
   const toggleEventType = (type: ActivityEventType) => {
@@ -543,17 +543,17 @@ function FeedFilterBar({ filters, onFiltersChange, personas }: FilterBarProps) {
           )}
         </Button>
 
-        {/* Persona filter */}
+        {/* Agent filter */}
         <Select
-          value={filters.personaId}
-          onValueChange={(v) => onFiltersChange({ ...filters, personaId: v })}
+          value={filters.agentId}
+          onValueChange={(v) => onFiltersChange({ ...filters, agentId: v })}
         >
           <SelectTrigger className="h-7 w-[140px] text-xs">
-            <SelectValue placeholder="All personas" />
+            <SelectValue placeholder="All agents" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All personas</SelectItem>
-            {personas.map((p) => (
+            <SelectItem value="all">All agents</SelectItem>
+            {agents.map((p) => (
               <SelectItem key={p.id as string} value={p.id as string}>
                 <span className="flex items-center gap-1.5">
                   <span
@@ -638,15 +638,15 @@ function FeedFilterBar({ filters, onFiltersChange, personas }: FilterBarProps) {
 
 interface EventRowProps {
   event: ActivityEvent;
-  personaMap: Map<string, Persona>;
+  agentMap: Map<string, Agent>;
 }
 
-function EventRow({ event, personaMap }: EventRowProps) {
+function EventRow({ event, agentMap }: EventRowProps) {
   const navigate = useNavigate();
   const setSelectedItemId = useWorkItemsStore((s) => s.setSelectedItemId);
   const config = eventConfig[event.type];
-  const persona = event.personaId
-    ? personaMap.get(event.personaId as string)
+  const agent = event.agentId
+    ? agentMap.get(event.agentId as string)
     : null;
 
   const handleClick = () => {
@@ -672,12 +672,12 @@ function EventRow({ event, personaMap }: EventRowProps) {
         {config.icon}
       </div>
 
-      {persona && (
+      {agent && (
         <div
           className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
-          style={{ backgroundColor: persona.avatar.color + "20" }}
+          style={{ backgroundColor: agent.avatar.color + "20" }}
         >
-          <Bot className="h-4 w-4" style={{ color: persona.avatar.color }} />
+          <Bot className="h-4 w-4" style={{ color: agent.avatar.color }} />
         </div>
       )}
 
@@ -715,7 +715,7 @@ function EventRow({ event, personaMap }: EventRowProps) {
 
 export function ActivityFeed() {
   const { projectId } = useSelectedProject();
-  const { data: personas } = usePersonas();
+  const { data: agents } = useAgents();
   const { data: workItems } = useWorkItems(undefined, projectId ?? undefined);
   const resetUnread = useActivityStore((s) => s.reset);
 
@@ -723,9 +723,9 @@ export function ActivityFeed() {
     resetUnread();
   }, [resetUnread]);
 
-  const personaMap = useMemo(
-    () => new Map(personas?.map((p) => [p.id as string, p]) ?? []),
-    [personas],
+  const agentMap = useMemo(
+    () => new Map(agents?.map((p) => [p.id as string, p]) ?? []),
+    [agents],
   );
 
   const itemTitleMap = useMemo(
@@ -734,8 +734,8 @@ export function ActivityFeed() {
   );
 
   const lookupMaps = useMemo<LookupMaps>(
-    () => ({ personaMap, itemTitleMap }),
-    [personaMap, itemTitleMap],
+    () => ({ agentMap, itemTitleMap }),
+    [agentMap, itemTitleMap],
   );
 
   const baseEvents = useBaseActivityEvents();
@@ -757,8 +757,8 @@ export function ActivityFeed() {
 
     return allEvents.filter((event) => {
       if (!filters.eventTypes.has(event.type)) return false;
-      if (filters.personaId !== "all") {
-        if (event.personaId !== filters.personaId) return false;
+      if (filters.agentId !== "all") {
+        if (event.agentId !== filters.agentId) return false;
       }
       if (dateCutoff) {
         if (new Date(event.timestamp) < dateCutoff) return false;
@@ -827,7 +827,7 @@ export function ActivityFeed() {
         <FeedFilterBar
           filters={filters}
           onFiltersChange={setFilters}
-          personas={personas ?? []}
+          agents={agents ?? []}
         />
 
         {isScrolledDown && newEventCount > 0 && (
@@ -863,7 +863,7 @@ export function ActivityFeed() {
                     <EventRow
                       key={event.id}
                       event={event}
-                      personaMap={personaMap}
+                      agentMap={agentMap}
                     />
                   ))}
                 </div>

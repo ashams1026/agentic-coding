@@ -19,7 +19,7 @@ interface WorkItemsState {
   searchQuery: string;
   filterState: string | null;
   filterPriority: string | null;
-  filterPersonas: string[];
+  filterAgents: string[];
   filterLabels: string[];
   filterParent: WorkItemId | null;
   showArchived: boolean;
@@ -35,7 +35,7 @@ interface WorkItemsState {
   setSearchQuery: (query: string) => void;
   setFilterState: (state: string | null) => void;
   setFilterPriority: (priority: string | null) => void;
-  toggleFilterPersona: (personaId: string) => void;
+  toggleFilterAgent: (agentId: string) => void;
   toggleFilterLabel: (label: string) => void;
   setFilterParent: (parentId: WorkItemId | null) => void;
   setShowArchived: (show: boolean) => void;
@@ -57,7 +57,7 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       searchQuery: "",
       filterState: null,
       filterPriority: null,
-      filterPersonas: [],
+      filterAgents: [],
       filterLabels: [],
       filterParent: null,
       showArchived: false,
@@ -75,11 +75,11 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       setSearchQuery: (searchQuery) => set({ searchQuery }),
       setFilterState: (filterState) => set({ filterState }),
       setFilterPriority: (filterPriority) => set({ filterPriority }),
-      toggleFilterPersona: (personaId) =>
+      toggleFilterAgent: (agentId) =>
         set((state) => ({
-          filterPersonas: state.filterPersonas.includes(personaId)
-            ? state.filterPersonas.filter((id) => id !== personaId)
-            : [...state.filterPersonas, personaId],
+          filterAgents: state.filterAgents.includes(agentId)
+            ? state.filterAgents.filter((id) => id !== agentId)
+            : [...state.filterAgents, agentId],
         })),
       toggleFilterLabel: (label) =>
         set((state) => ({
@@ -101,7 +101,7 @@ export const useWorkItemsStore = create<WorkItemsState>()(
           searchQuery: "",
           filterState: null,
           filterPriority: null,
-          filterPersonas: [],
+          filterAgents: [],
           filterLabels: [],
           filterParent: null,
           showArchived: false,

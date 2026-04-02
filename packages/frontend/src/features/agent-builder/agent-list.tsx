@@ -24,9 +24,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { usePersonas, useCreatePersona, useDeletePersona } from "@/hooks";
+import { useAgents, useCreateAgent, useDeleteAgent } from "@/hooks";
 import { cn } from "@/lib/utils";
-import type { Persona, PersonaId, PersonaModel } from "@agentops/shared";
+import type { Agent, AgentId, AgentModel } from "@agentops/shared";
 
 // ── Icon map ────────────────────────────────────────────────────
 
@@ -39,13 +39,13 @@ const ICON_MAP: Record<string, LucideIcon> = {
   bot: Bot,
 };
 
-function getPersonaIcon(iconName: string): LucideIcon {
+function getAgentIcon(iconName: string): LucideIcon {
   return ICON_MAP[iconName] ?? Bot;
 }
 
 // ── Model badge config ──────────────────────────────────────────
 
-const MODEL_CONFIG: Record<PersonaModel, { label: string; className: string }> = {
+const MODEL_CONFIG: Record<AgentModel, { label: string; className: string }> = {
   opus: {
     label: "Opus",
     className: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
@@ -60,7 +60,7 @@ const MODEL_CONFIG: Record<PersonaModel, { label: string; className: string }> =
   },
 };
 
-// ── Built-in persona IDs ────────────────────────────────────────
+// ── Built-in agent IDs ────────────────────────────────────────
 
 export const BUILT_IN_IDS = new Set<string>([
   "ps-pm00001",
@@ -72,15 +72,15 @@ export const BUILT_IN_IDS = new Set<string>([
 
 // ── Props ───────────────────────────────────────────────────────
 
-interface PersonaListProps {
-  selectedId: PersonaId | null;
-  onSelect: (id: PersonaId | null) => void;
+interface AgentListProps {
+  selectedId: AgentId | null;
+  onSelect: (id: AgentId | null) => void;
 }
 
-// ── Persona card ────────────────────────────────────────────────
+// ── Agent card ────────────────────────────────────────────────
 
-interface PersonaCardProps {
-  persona: Persona;
+interface AgentCardProps {
+  agent: Agent;
   isBuiltIn: boolean;
   isAssistant: boolean;
   isSelected: boolean;
@@ -89,10 +89,10 @@ interface PersonaCardProps {
   onDelete: () => void;
 }
 
-function PersonaCard({ persona, isBuiltIn, isAssistant, isSelected, onSelect, onDuplicate, onDelete }: PersonaCardProps) {
-  const Icon = getPersonaIcon(persona.avatar.icon);
-  const model = MODEL_CONFIG[persona.model];
-  const toolCount = persona.allowedTools.length + persona.mcpTools.length;
+function AgentCard({ agent, isBuiltIn, isAssistant, isSelected, onSelect, onDuplicate, onDelete }: AgentCardProps) {
+  const Icon = getAgentIcon(agent.avatar.icon);
+  const model = MODEL_CONFIG[agent.model];
+  const toolCount = agent.allowedTools.length + agent.mcpTools.length;
 
   return (
     <div
@@ -108,7 +108,7 @@ function PersonaCard({ persona, isBuiltIn, isAssistant, isSelected, onSelect, on
       )}
     >
       <div className="p-4">
-        {/* Hover actions — hidden for assistant personas */}
+        {/* Hover actions — hidden for assistant agents */}
         {!isAssistant && (
           <div className="absolute top-2 right-2 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
             <Button
@@ -135,14 +135,14 @@ function PersonaCard({ persona, isBuiltIn, isAssistant, isSelected, onSelect, on
         {/* Avatar */}
         <div
           className="h-10 w-10 rounded-full flex items-center justify-center mb-3"
-          style={{ backgroundColor: persona.avatar.color + "20" }}
+          style={{ backgroundColor: agent.avatar.color + "20" }}
         >
-          <Icon className="h-5 w-5" style={{ color: persona.avatar.color }} />
+          <Icon className="h-5 w-5" style={{ color: agent.avatar.color }} />
         </div>
 
         {/* Name + badges */}
         <div className="flex items-center gap-2 mb-1">
-          <h3 className="text-sm font-semibold truncate">{persona.name}</h3>
+          <h3 className="text-sm font-semibold truncate">{agent.name}</h3>
           {isBuiltIn && (
             <Badge variant="outline" className="text-xs px-1.5 py-0 shrink-0">
               Built-in
@@ -160,7 +160,7 @@ function PersonaCard({ persona, isBuiltIn, isAssistant, isSelected, onSelect, on
 
         {/* Description — 2 lines */}
         <p className="text-xs text-muted-foreground line-clamp-2 min-h-[2rem]">
-          {persona.description}
+          {agent.description}
         </p>
 
         {/* Tool count pill */}
@@ -197,7 +197,7 @@ function CreateCard({ onClick, isPending }: CreateCardProps) {
         <Plus className="h-5 w-5 text-muted-foreground" />
       </div>
       <span className="text-sm font-medium text-muted-foreground">
-        Create new persona
+        Create new agent
       </span>
     </button>
   );
@@ -205,16 +205,16 @@ function CreateCard({ onClick, isPending }: CreateCardProps) {
 
 // ── Main component ──────────────────────────────────────────────
 
-export function PersonaList({ selectedId, onSelect }: PersonaListProps) {
-  const { data: personas } = usePersonas();
-  const createMutation = useCreatePersona();
-  const deleteMutation = useDeletePersona();
-  const [deleteTarget, setDeleteTarget] = useState<Persona | null>(null);
+export function AgentList({ selectedId, onSelect }: AgentListProps) {
+  const { data: agents } = useAgents();
+  const createMutation = useCreateAgent();
+  const deleteMutation = useDeleteAgent();
+  const [deleteTarget, setDeleteTarget] = useState<Agent | null>(null);
 
   const handleCreate = () => {
     createMutation.mutate(
       {
-        name: "New Persona",
+        name: "New Agent",
         systemPrompt: "You are a helpful assistant.",
         model: "sonnet",
         allowedTools: ["Read", "Glob", "Grep"],
@@ -228,17 +228,17 @@ export function PersonaList({ selectedId, onSelect }: PersonaListProps) {
     );
   };
 
-  const handleDuplicate = (persona: Persona) => {
+  const handleDuplicate = (agent: Agent) => {
     createMutation.mutate(
       {
-        name: `${persona.name} (copy)`,
-        description: persona.description,
-        avatar: { ...persona.avatar },
-        systemPrompt: persona.systemPrompt,
-        model: persona.model,
-        allowedTools: [...persona.allowedTools],
-        mcpTools: [...persona.mcpTools],
-        maxBudgetPerRun: persona.maxBudgetPerRun,
+        name: `${agent.name} (copy)`,
+        description: agent.description,
+        avatar: { ...agent.avatar },
+        systemPrompt: agent.systemPrompt,
+        model: agent.model,
+        allowedTools: [...agent.allowedTools],
+        mcpTools: [...agent.mcpTools],
+        maxBudgetPerRun: agent.maxBudgetPerRun,
       },
       {
         onSuccess: (p) => {
@@ -259,28 +259,28 @@ export function PersonaList({ selectedId, onSelect }: PersonaListProps) {
     });
   };
 
-  if (!personas) {
+  if (!agents) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-xs text-muted-foreground">Loading personas...</p>
+        <p className="text-xs text-muted-foreground">Loading agents...</p>
       </div>
     );
   }
 
-  if (personas.length === 0) {
+  if (agents.length === 0) {
     return (
       <div className="flex h-full items-center justify-center">
         <div className="text-center space-y-3">
           <Users className="h-12 w-12 text-muted-foreground/30 mx-auto" />
           <div>
-            <p className="text-sm font-medium">No personas yet</p>
+            <p className="text-sm font-medium">No agents yet</p>
             <p className="text-xs text-muted-foreground mt-1">
               Set up your team of AI agents.
             </p>
           </div>
           <Button variant="outline" size="sm" className="gap-1.5" onClick={handleCreate}>
             <Plus className="h-3.5 w-3.5" />
-            Create your first persona
+            Create your first agent
           </Button>
         </div>
       </div>
@@ -290,10 +290,10 @@ export function PersonaList({ selectedId, onSelect }: PersonaListProps) {
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {personas.map((p) => (
-          <PersonaCard
+        {agents.map((p) => (
+          <AgentCard
             key={p.id as string}
-            persona={p}
+            agent={p}
             isBuiltIn={BUILT_IN_IDS.has(p.id as string)}
             isAssistant={p.settings?.isAssistant === true}
             isSelected={selectedId === p.id}
@@ -314,12 +314,12 @@ export function PersonaList({ selectedId, onSelect }: PersonaListProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete persona</AlertDialogTitle>
+            <AlertDialogTitle>Delete agent</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to delete &quot;{deleteTarget?.name}&quot;? This action cannot be undone.
               {deleteTarget && BUILT_IN_IDS.has(deleteTarget.id as string) && (
                 <span className="block mt-2 text-amber-600 dark:text-amber-400 font-medium">
-                  Warning: This is a built-in persona. You can recreate it from defaults later.
+                  Warning: This is a built-in agent. You can recreate it from defaults later.
                 </span>
               )}
             </AlertDialogDescription>

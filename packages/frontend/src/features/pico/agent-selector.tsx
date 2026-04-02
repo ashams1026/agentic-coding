@@ -19,9 +19,9 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { usePersonas } from "@/hooks/use-personas";
+import { useAgents } from "@/hooks/use-agents";
 
-// ── Icon lookup (matches persona-editor.tsx) ────────────────────
+// ── Icon lookup (matches agent-editor.tsx) ────────────────────
 
 const ICON_MAP: Record<string, LucideIcon> = {
   "clipboard-list": ClipboardList,
@@ -53,17 +53,17 @@ const MODEL_LABELS: Record<string, string> = {
 
 // ── Component ───────────────────────────────────────────────────
 
-interface PersonaSelectorProps {
-  onSelect: (personaId: string) => void;
+interface AgentSelectorProps {
+  onSelect: (agentId: string) => void;
   onClose: () => void;
 }
 
-export function PersonaSelector({ onSelect, onClose }: PersonaSelectorProps) {
-  const { data: personas = [] } = usePersonas();
+export function AgentSelector({ onSelect, onClose }: AgentSelectorProps) {
+  const { data: agents = [] } = useAgents();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   // Sort: Pico (isAssistant) first, then alphabetically
-  const sorted = [...personas].sort((a, b) => {
+  const sorted = [...agents].sort((a, b) => {
     const aIsAssistant = (a.settings as Record<string, unknown>)?.isAssistant === true;
     const bIsAssistant = (b.settings as Record<string, unknown>)?.isAssistant === true;
     if (aIsAssistant && !bIsAssistant) return -1;
@@ -71,7 +71,7 @@ export function PersonaSelector({ onSelect, onClose }: PersonaSelectorProps) {
     return a.name.localeCompare(b.name);
   });
 
-  // Filter out system-only personas (Router)
+  // Filter out system-only agents (Router)
   const visible = sorted.filter((p) => {
     const settings = p.settings as Record<string, unknown> | undefined;
     return !(settings?.isSystem === true && settings?.isAssistant !== true);
@@ -85,7 +85,7 @@ export function PersonaSelector({ onSelect, onClose }: PersonaSelectorProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <h2 className="text-base font-semibold">Choose a persona to chat with</h2>
+          <h2 className="text-base font-semibold">Choose a agent to chat with</h2>
           <button
             type="button"
             onClick={onClose}
@@ -98,24 +98,24 @@ export function PersonaSelector({ onSelect, onClose }: PersonaSelectorProps) {
         {/* Grid */}
         <div className="flex-1 overflow-auto p-4">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {visible.map((persona) => {
-              const avatar = persona.avatar as { color: string; icon: string } | null;
+            {visible.map((agent) => {
+              const avatar = agent.avatar as { color: string; icon: string } | null;
               const color = avatar?.color ?? "#6b7280";
               const Icon = getIcon(avatar?.icon ?? "bot");
-              const isAssistant = (persona.settings as Record<string, unknown>)?.isAssistant === true;
+              const isAssistant = (agent.settings as Record<string, unknown>)?.isAssistant === true;
 
               return (
                 <button
-                  key={persona.id}
+                  key={agent.id}
                   type="button"
-                  onClick={() => onSelect(persona.id)}
-                  onMouseEnter={() => setHoveredId(persona.id)}
+                  onClick={() => onSelect(agent.id)}
+                  onMouseEnter={() => setHoveredId(agent.id)}
                   onMouseLeave={() => setHoveredId(null)}
                   className={cn(
                     "flex flex-col items-center gap-2 rounded-lg border p-4 text-center transition-all",
                     "hover:border-ring hover:shadow-sm",
                     isAssistant && "ring-2 ring-amber-500/30",
-                    hoveredId === persona.id ? "border-ring bg-muted/50" : "border-border",
+                    hoveredId === agent.id ? "border-ring bg-muted/50" : "border-border",
                   )}
                 >
                   {/* Avatar */}
@@ -128,7 +128,7 @@ export function PersonaSelector({ onSelect, onClose }: PersonaSelectorProps) {
 
                   {/* Name */}
                   <span className="text-sm font-medium truncate w-full">
-                    {persona.name}
+                    {agent.name}
                     {isAssistant && (
                       <span className="ml-1 text-[10px] text-amber-500 font-normal">default</span>
                     )}
@@ -136,12 +136,12 @@ export function PersonaSelector({ onSelect, onClose }: PersonaSelectorProps) {
 
                   {/* Description */}
                   <span className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                    {persona.description || "No description"}
+                    {agent.description || "No description"}
                   </span>
 
                   {/* Model badge */}
                   <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
-                    {MODEL_LABELS[persona.model] ?? persona.model}
+                    {MODEL_LABELS[agent.model] ?? agent.model}
                   </span>
                 </button>
               );

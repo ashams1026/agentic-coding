@@ -15,10 +15,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useComments, useCreateComment, usePersonas } from "@/hooks";
+import { useComments, useCreateComment, useAgents } from "@/hooks";
 import type {
   Comment,
-  Persona,
+  Agent,
   WorkItemId,
 } from "@agentops/shared";
 
@@ -43,11 +43,11 @@ function formatTime(dateStr: string): string {
 
 interface AgentCommentProps {
   comment: Comment;
-  persona: Persona | undefined;
+  agent: Agent | undefined;
 }
 
-function AgentComment({ comment, persona }: AgentCommentProps) {
-  const avatarColor = persona?.avatar.color ?? "#6b7280";
+function AgentComment({ comment, agent }: AgentCommentProps) {
+  const avatarColor = agent?.avatar.color ?? "#6b7280";
   const filesChanged = (comment.metadata.filesChanged ?? []) as string[];
   const toolsUsed = (comment.metadata.toolsUsed ?? []) as string[];
 
@@ -206,12 +206,12 @@ interface CommentStreamProps {
 
 export function CommentStream({ workItemId }: CommentStreamProps) {
   const { data: comments = [] } = useComments(workItemId);
-  const { data: personas = [] } = usePersonas();
+  const { data: agents = [] } = useAgents();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const personaMap = useMemo(
-    () => new Map(personas.map((p) => [p.id as string, p])),
-    [personas],
+  const agentMap = useMemo(
+    () => new Map(agents.map((p) => [p.id as string, p])),
+    [agents],
   );
 
   // Sort chronologically
@@ -259,9 +259,9 @@ export function CommentStream({ workItemId }: CommentStreamProps) {
                 <AgentComment
                   key={comment.id}
                   comment={comment}
-                  persona={
+                  agent={
                     comment.authorId
-                      ? personaMap.get(comment.authorId as string)
+                      ? agentMap.get(comment.authorId as string)
                       : undefined
                   }
                 />

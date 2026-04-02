@@ -68,7 +68,7 @@ export function useUpdateWorkItem() {
           ...(req.labels !== undefined && { labels: req.labels }),
           ...(req.currentState !== undefined && { currentState: req.currentState }),
           ...(req.context !== undefined && { context: req.context }),
-          ...(req.assignedPersonaId !== undefined && { assignedPersonaId: req.assignedPersonaId }),
+          ...(req.assignedAgentId !== undefined && { assignedAgentId: req.assignedAgentId }),
         };
         queryClient.setQueryData<WorkItem | null>(queryKeys.workItem(id), updated);
         // Also optimistically update all list queries so the list row reflects changes immediately

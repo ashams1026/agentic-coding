@@ -22,12 +22,12 @@ const VARIABLE_GROUPS: VariableGroup[] = [
     ],
   },
   {
-    namespace: "persona",
-    label: "Persona",
+    namespace: "agent",
+    label: "Agent",
     variables: [
-      { name: "persona.name", description: "Current persona name" },
-      { name: "persona.description", description: "Persona description" },
-      { name: "persona.model", description: "Model (opus/sonnet/haiku)" },
+      { name: "agent.name", description: "Current agent name" },
+      { name: "agent.description", description: "Agent description" },
+      { name: "agent.model", description: "Model (opus/sonnet/haiku)" },
     ],
   },
   {
@@ -190,14 +190,14 @@ function LineNumbers({ count, scrollTop }: { count: number; scrollTop: number })
 interface SystemPromptEditorProps {
   value: string;
   onChange: (value: string) => void;
-  /** Optional context for variable preview — project and persona data */
+  /** Optional context for variable preview — project and agent data */
   previewContext?: {
     projectName?: string;
     projectPath?: string;
     projectDescription?: string;
-    personaName?: string;
-    personaDescription?: string;
-    personaModel?: string;
+    agentName?: string;
+    agentDescription?: string;
+    agentModel?: string;
   };
 }
 
@@ -212,9 +212,9 @@ function buildPreviewContext(ctx?: PreviewCtx): Record<string, string> {
   if (ctx?.projectName) map["project.name"] = ctx.projectName;
   if (ctx?.projectPath) map["project.path"] = ctx.projectPath;
   if (ctx?.projectDescription) map["project.description"] = ctx.projectDescription;
-  if (ctx?.personaName) map["persona.name"] = ctx.personaName;
-  if (ctx?.personaDescription) map["persona.description"] = ctx.personaDescription;
-  if (ctx?.personaModel) map["persona.model"] = ctx.personaModel;
+  if (ctx?.agentName) map["agent.name"] = ctx.agentName;
+  if (ctx?.agentDescription) map["agent.description"] = ctx.agentDescription;
+  if (ctx?.agentModel) map["agent.model"] = ctx.agentModel;
   const now = new Date();
   map["date.now"] = now.toISOString();
   map["date.today"] = now.toISOString().split("T")[0]!;

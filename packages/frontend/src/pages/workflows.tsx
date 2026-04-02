@@ -42,7 +42,7 @@ export function WorkflowsPage() {
         name: s.name,
         type: s.type,
         color: s.color,
-        personaId: s.personaId,
+        agentId: s.agentId,
         sortOrder: s.sortOrder,
       })),
       transitions: allTransitions,
@@ -69,7 +69,7 @@ export function WorkflowsPage() {
         name: s.name,
         type: s.type,
         color: s.color,
-        personaId: s.personaId,
+        agentId: s.agentId,
         sortOrder: s.sortOrder,
       })),
       transitions: allTransitions,
@@ -137,7 +137,7 @@ export function WorkflowsPage() {
     name: s.name,
     type: s.type as "initial" | "intermediate" | "terminal",
     color: s.color,
-    personaId: s.personaId ?? null,
+    agentId: s.agentId ?? null,
     sortOrder: s.sortOrder,
     transitions: workflowData.transitions
       .filter((t) => t.fromStateId === s.id)

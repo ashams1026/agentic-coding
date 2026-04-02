@@ -28,15 +28,15 @@ export {
   getWorkItemEdges,
   createWorkItemEdge,
   deleteWorkItemEdge,
-  // Persona Assignments
-  getPersonaAssignments,
-  updatePersonaAssignment,
-  // Personas
-  getPersonas,
-  getPersona,
-  createPersona,
-  updatePersona,
-  deletePersona,
+  // Agent Assignments
+  getAgentAssignments,
+  updateAgentAssignment,
+  // Agents
+  getAgents,
+  getAgent,
+  createAgent,
+  updateAgent,
+  deleteAgent,
   // Executions
   getExecutions,
   getExecution,
@@ -81,7 +81,7 @@ export {
   // Chat
   getChatSessions,
   createChatSession,
-  type ChatSessionWithPersona,
+  type ChatSessionWithAgent,
   updateChatSessionTitle,
   deleteChatSession,
   getChatMessages,

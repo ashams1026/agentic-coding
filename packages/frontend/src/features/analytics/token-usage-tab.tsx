@@ -151,7 +151,7 @@ export function TokenUsageTab() {
                 <thead>
                   <tr className="border-b text-muted-foreground">
                     <th className="text-left py-2 pr-3 font-medium">Date</th>
-                    <th className="text-left py-2 pr-3 font-medium">Persona</th>
+                    <th className="text-left py-2 pr-3 font-medium">Agent</th>
                     <th className="text-left py-2 pr-3 font-medium">Model</th>
                     <th className="text-right py-2 pr-3 font-medium">Tokens</th>
                     <th className="text-right py-2 pr-3 font-medium">Cost</th>
@@ -164,7 +164,7 @@ export function TokenUsageTab() {
                       <td className="py-2 pr-3 text-muted-foreground">
                         {e.startedAt ? new Date(e.startedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—"}
                       </td>
-                      <td className="py-2 pr-3">{e.personaName}</td>
+                      <td className="py-2 pr-3">{e.agentName}</td>
                       <td className="py-2 pr-3">
                         <span className="inline-flex items-center gap-1">
                           <span className="h-2 w-2 rounded-full" style={{ backgroundColor: getModelColor(e.model) }} />

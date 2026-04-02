@@ -31,13 +31,13 @@ import {
   SheetTitle,
   SheetDescription,
 } from "@/components/ui/sheet";
-import { usePersona, useUpdatePersona } from "@/hooks";
+import { useAgent, useUpdateAgent } from "@/hooks";
 import { useSelectedProject } from "@/hooks/use-selected-project";
 import { cn } from "@/lib/utils";
 import { SystemPromptEditor } from "./system-prompt-editor";
 import { ToolConfiguration } from "./tool-configuration";
 import { TestRunPanel } from "./test-run-panel";
-import type { PersonaId, PersonaModel } from "@agentops/shared";
+import type { AgentId, AgentModel } from "@agentops/shared";
 
 // ── Icon options for avatar picker ──────────────────────────────
 
@@ -76,7 +76,7 @@ function getIcon(name: string): LucideIcon {
 // ── Model config ────────────────────────────────────────────────
 
 interface ModelOption {
-  value: PersonaModel;
+  value: AgentModel;
   label: string;
   description: string;
   costLabel: string;
@@ -109,17 +109,17 @@ const MODEL_OPTIONS: ModelOption[] = [
 
 // ── Props ───────────────────────────────────────────────────────
 
-interface PersonaEditorProps {
-  personaId: PersonaId;
+interface AgentEditorProps {
+  agentId: AgentId;
   open: boolean;
   onClose: () => void;
 }
 
 // ── Main component ──────────────────────────────────────────────
 
-export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) {
-  const { data: persona } = usePersona(personaId);
-  const updateMutation = useUpdatePersona();
+export function AgentEditor({ agentId, open, onClose }: AgentEditorProps) {
+  const { data: agent } = useAgent(agentId);
+  const updateMutation = useUpdateAgent();
   const { project } = useSelectedProject();
 
   // ── Local form state ──────────────────────────────────────────
@@ -127,31 +127,31 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
   const [description, setDescription] = useState("");
   const [avatarColor, setAvatarColor] = useState(COLOR_OPTIONS[0]!);
   const [avatarIcon, setAvatarIcon] = useState("bot");
-  const [model, setModel] = useState<PersonaModel>("sonnet");
+  const [model, setModel] = useState<AgentModel>("sonnet");
   const [systemPrompt, setSystemPrompt] = useState("");
   const [allowedTools, setAllowedTools] = useState<string[]>([]);
   const [mcpTools, setMcpTools] = useState<string[]>([]);
   const [maxBudget, setMaxBudget] = useState("1.00");
 
-  // Sync form state when persona data loads
+  // Sync form state when agent data loads
   useEffect(() => {
-    if (!persona) return;
-    setName(persona.name);
-    setDescription(persona.description);
-    setAvatarColor(persona.avatar.color);
-    setAvatarIcon(persona.avatar.icon);
-    setModel(persona.model);
-    setSystemPrompt(persona.systemPrompt);
-    setAllowedTools([...persona.allowedTools]);
-    setMcpTools([...persona.mcpTools]);
-    setMaxBudget(persona.maxBudgetPerRun.toFixed(2));
-  }, [persona]);
+    if (!agent) return;
+    setName(agent.name);
+    setDescription(agent.description);
+    setAvatarColor(agent.avatar.color);
+    setAvatarIcon(agent.avatar.icon);
+    setModel(agent.model);
+    setSystemPrompt(agent.systemPrompt);
+    setAllowedTools([...agent.allowedTools]);
+    setMcpTools([...agent.mcpTools]);
+    setMaxBudget(agent.maxBudgetPerRun.toFixed(2));
+  }, [agent]);
 
   const handleSave = useCallback(() => {
-    if (!persona) return;
+    if (!agent) return;
     const budget = parseFloat(maxBudget);
     updateMutation.mutate({
-      id: personaId,
+      id: agentId,
       name,
       description,
       avatar: { color: avatarColor, icon: avatarIcon },
@@ -165,11 +165,11 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
         onClose();
       },
     });
-  }, [persona, personaId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, maxBudget, updateMutation, onClose]);
+  }, [agent, agentId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, maxBudget, updateMutation, onClose]);
 
   const AvatarIcon = getIcon(avatarIcon);
 
-  if (!persona) return null;
+  if (!agent) return null;
 
   return (
     <Sheet open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
@@ -189,7 +189,7 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
             </div>
             <div className="min-w-0">
               <SheetTitle className="truncate">{name || "Untitled"}</SheetTitle>
-              <SheetDescription className="truncate">Edit persona configuration</SheetDescription>
+              <SheetDescription className="truncate">Edit agent configuration</SheetDescription>
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -224,7 +224,7 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Persona name"
+                  placeholder="Agent name"
                   className="h-9"
                 />
               </div>
@@ -233,7 +233,7 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
                 <Textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Brief description of this persona's role"
+                  placeholder="Brief description of this agent's role"
                   className="min-h-[60px] resize-none"
                   rows={2}
                 />
@@ -348,9 +348,9 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
                 projectName: project?.name,
                 projectPath: project?.path,
                 projectDescription: (project?.settings as Record<string, unknown>)?.description as string | undefined,
-                personaName: name,
-                personaDescription: description,
-                personaModel: model,
+                agentName: name,
+                agentDescription: description,
+                agentModel: model,
               }}
             />
           </section>
@@ -394,7 +394,7 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
           <Separator />
 
           {/* ── Test Run ─────────────────────────────────────── */}
-          <TestRunPanel personaName={name || "Untitled"} model={model} />
+          <TestRunPanel agentName={name || "Untitled"} model={model} />
         </div>
       </SheetContent>
     </Sheet>

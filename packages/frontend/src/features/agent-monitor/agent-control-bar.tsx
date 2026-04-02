@@ -20,7 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useExecution, usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
+import { useExecution, useAgents, useWorkItems, useSelectedProject } from "@/hooks";
 import type { ExecutionId, WorkItemId } from "@agentops/shared";
 
 // ── Helpers ───────────────────────────────────────────────────────
@@ -52,13 +52,13 @@ interface AgentControlBarProps {
 export function AgentControlBar({ executionId, onWorkItemClick }: AgentControlBarProps) {
   const { projectId } = useSelectedProject();
   const { data: execution } = useExecution(executionId);
-  const { data: personas = [] } = usePersonas();
+  const { data: agents = [] } = useAgents();
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
 
   const [elapsed, setElapsed] = useState("");
 
-  const persona = execution
-    ? personas.find((p) => p.id === execution.personaId)
+  const agent = execution
+    ? agents.find((p) => p.id === execution.agentId)
     : null;
 
   const workItem = execution
@@ -82,21 +82,21 @@ export function AgentControlBar({ executionId, onWorkItemClick }: AgentControlBa
     return () => clearInterval(interval);
   }, [execution?.startedAt]);
 
-  if (!execution || !persona) return null;
+  if (!execution || !agent) return null;
 
-  const model = modelConfig[persona.model] ?? modelConfig.sonnet!;
+  const model = modelConfig[agent.model] ?? modelConfig.sonnet!;
 
   return (
     <div className="flex items-center gap-3 px-4 py-2 border-b bg-muted/30">
-      {/* Persona avatar + name */}
+      {/* Agent avatar + name */}
       <div className="flex items-center gap-2 min-w-0">
         <div
           className="flex h-6 w-6 items-center justify-center rounded-full shrink-0"
-          style={{ backgroundColor: persona.avatar.color + "20" }}
+          style={{ backgroundColor: agent.avatar.color + "20" }}
         >
-          <Bot className="h-3.5 w-3.5" style={{ color: persona.avatar.color }} />
+          <Bot className="h-3.5 w-3.5" style={{ color: agent.avatar.color }} />
         </div>
-        <span className="text-sm font-medium truncate">{persona.name}</span>
+        <span className="text-sm font-medium truncate">{agent.name}</span>
       </div>
 
       {/* Model badge */}
@@ -160,7 +160,7 @@ export function AgentControlBar({ executionId, onWorkItemClick }: AgentControlBa
             <AlertDialogTitle>Stop agent?</AlertDialogTitle>
             <AlertDialogDescription>
               This will gracefully cancel{" "}
-              <span className="font-medium text-foreground">{persona.name}</span>{" "}
+              <span className="font-medium text-foreground">{agent.name}</span>{" "}
               working on{" "}
               <span className="font-medium text-foreground">{targetName}</span>.
               The agent will finish its current operation and stop.
@@ -186,7 +186,7 @@ export function AgentControlBar({ executionId, onWorkItemClick }: AgentControlBa
             <AlertDialogTitle>Force stop agent?</AlertDialogTitle>
             <AlertDialogDescription>
               This will immediately terminate{" "}
-              <span className="font-medium text-foreground">{persona.name}</span>.
+              <span className="font-medium text-foreground">{agent.name}</span>.
               Any in-progress work will be lost. The work item will be marked as failed
               and may need to be re-run.
             </AlertDialogDescription>

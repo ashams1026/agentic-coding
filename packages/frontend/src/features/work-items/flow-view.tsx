@@ -1,10 +1,10 @@
 import { useMemo, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { useWorkItems, usePersonas, useExecutions, useSelectedProject, usePersonaAssignments } from "@/hooks";
+import { useWorkItems, useAgents, useExecutions, useSelectedProject, useAgentAssignments } from "@/hooks";
 import { useWorkflowStates } from "@/hooks/use-workflows";
 import { useWorkItemsStore } from "@/stores/work-items-store";
-import type { WorkItem, Persona, WorkItemId, Priority } from "@agentops/shared";
+import type { WorkItem, Agent, WorkItemId, Priority } from "@agentops/shared";
 
 // ── Priority config ─────────────────────────────────────────────
 
@@ -17,11 +17,11 @@ const priorityConfig: Record<Priority, { label: string; color: string }> = {
 
 // ── Avatar stack ────────────────────────────────────────────────
 
-function AvatarStack({ personas }: { personas: Persona[] }) {
-  if (personas.length === 0) return null;
+function AvatarStack({ agents }: { agents: Agent[] }) {
+  if (agents.length === 0) return null;
   return (
     <div className="flex -space-x-1.5">
-      {personas.slice(0, 3).map((p) => (
+      {agents.slice(0, 3).map((p) => (
         <div
           key={p.id}
           className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium text-white ring-1 ring-background"
@@ -31,9 +31,9 @@ function AvatarStack({ personas }: { personas: Persona[] }) {
           {p.name.charAt(0)}
         </div>
       ))}
-      {personas.length > 3 && (
+      {agents.length > 3 && (
         <div className="flex h-5 w-5 items-center justify-center rounded-full bg-muted text-xs text-muted-foreground ring-1 ring-background">
-          +{personas.length - 3}
+          +{agents.length - 3}
         </div>
       )}
     </div>
@@ -68,9 +68,9 @@ function ProgressBar({ done, total }: { done: number; total: number }) {
 
 interface StateNodeData {
   items: WorkItem[];
-  activeAgents: number;
-  activePersonas: Persona[];
-  assignedPersonas: Persona[];
+  activeAgentCount: number;
+  activeAgentProfiles: Agent[];
+  assignedAgents: Agent[];
   childrenDone: number;
   childrenTotal: number;
 }
@@ -150,21 +150,21 @@ function StateNodeCard({
         {/* Active agents row */}
         <div className="flex items-center justify-between min-h-[20px]">
           <div className="flex items-center gap-1.5">
-            {data.activeAgents > 0 ? (
+            {data.activeAgentCount > 0 ? (
               <>
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
                 </span>
                 <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                  {data.activeAgents} active
+                  {data.activeAgentCount} active
                 </span>
               </>
             ) : (
               <span className="text-xs text-muted-foreground">idle</span>
             )}
           </div>
-          <AvatarStack personas={data.assignedPersonas.length > 0 ? data.assignedPersonas : data.activePersonas} />
+          <AvatarStack agents={data.assignedAgents.length > 0 ? data.assignedAgents : data.activeAgentProfiles} />
         </div>
 
         {/* Progress bar */}
@@ -178,12 +178,12 @@ function StateNodeCard({
 
 function FilteredItemsList({
   items,
-  personaMap,
+  agentMap,
   selectedItemId,
   onSelect,
 }: {
   items: WorkItem[];
-  personaMap: Map<string, Persona>;
+  agentMap: Map<string, Agent>;
   selectedItemId: WorkItemId | null;
   onSelect: (id: WorkItemId) => void;
 }) {
@@ -198,8 +198,8 @@ function FilteredItemsList({
   return (
     <div className="space-y-0.5">
       {items.map((item) => {
-        const persona = item.assignedPersonaId
-          ? personaMap.get(item.assignedPersonaId)
+        const agent = item.assignedAgentId
+          ? agentMap.get(item.assignedAgentId)
           : null;
         const pCfg = priorityConfig[item.priority];
         return (
@@ -215,12 +215,12 @@ function FilteredItemsList({
               {pCfg.label}
             </span>
             <span className="text-sm truncate flex-1">{item.title}</span>
-            {persona && (
+            {agent && (
               <div
                 className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-medium text-white"
-                style={{ backgroundColor: persona.avatar.color }}
+                style={{ backgroundColor: agent.avatar.color }}
               >
-                {persona.name.charAt(0)}
+                {agent.name.charAt(0)}
               </div>
             )}
           </button>
@@ -237,9 +237,9 @@ export function FlowView() {
   const workflowId = project?.workflowId ?? null;
   const { data: workflowStatesData } = useWorkflowStates(workflowId);
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined);
-  const { data: personas } = usePersonas();
+  const { data: agents } = useAgents();
   const { data: executions } = useExecutions(undefined, projectId ?? undefined);
-  const { data: assignments } = usePersonaAssignments(projectId);
+  const { data: assignments } = useAgentAssignments(projectId);
   const { filterState, setFilterState, selectedItemId, setSelectedItemId } =
     useWorkItemsStore();
 
@@ -253,26 +253,26 @@ export function FlowView() {
     return workflowStatesData?.find((s) => s.name.toLowerCase() === "blocked") ?? null;
   }, [workflowStatesData]);
 
-  const personaMap = useMemo(() => {
-    const map = new Map<string, Persona>();
-    personas?.forEach((p) => map.set(p.id, p));
+  const agentMap = useMemo(() => {
+    const map = new Map<string, Agent>();
+    agents?.forEach((p) => map.set(p.id, p));
     return map;
-  }, [personas]);
+  }, [agents]);
 
-  // Map state → assigned personas (from persona assignments)
-  const statePersonaMap = useMemo(() => {
-    const map = new Map<string, Persona[]>();
+  // Map state → assigned agents (from agent assignments)
+  const stateAgentMap = useMemo(() => {
+    const map = new Map<string, Agent[]>();
     if (!assignments) return map;
     for (const a of assignments) {
-      const persona = personaMap.get(a.personaId);
-      if (persona) {
+      const agent = agentMap.get(a.agentId);
+      if (agent) {
         const list = map.get(a.stateName) ?? [];
-        list.push(persona);
+        list.push(agent);
         map.set(a.stateName, list);
       }
     }
     return map;
-  }, [assignments, personaMap]);
+  }, [assignments, agentMap]);
 
   // Compute per-state data
   const stateData = useMemo(() => {
@@ -281,9 +281,9 @@ export function FlowView() {
     for (const state of (workflowStatesData ?? [])) {
       map.set(state.name, {
         items: [],
-        activeAgents: 0,
-        activePersonas: [],
-        assignedPersonas: statePersonaMap.get(state.name) ?? [],
+        activeAgentCount: 0,
+        activeAgentProfiles: [],
+        assignedAgents: stateAgentMap.get(state.name) ?? [],
         childrenDone: 0,
         childrenTotal: 0,
       });
@@ -308,19 +308,19 @@ export function FlowView() {
           const state = exec.workItemId ? itemStateMap.get(exec.workItemId) : undefined;
           if (state) {
             const set = activeByState.get(state) ?? new Set();
-            set.add(exec.personaId);
+            set.add(exec.agentId);
             activeByState.set(state, set);
           }
         }
       }
 
-      for (const [state, personaIds] of activeByState) {
+      for (const [state, agentIds] of activeByState) {
         const data = map.get(state);
         if (data) {
-          data.activeAgents = personaIds.size;
-          data.activePersonas = [...personaIds]
-            .map((pid) => personaMap.get(pid))
-            .filter((p): p is Persona => !!p);
+          data.activeAgentCount = agentIds.size;
+          data.activeAgentProfiles = [...agentIds]
+            .map((pid) => agentMap.get(pid))
+            .filter((p): p is Agent => !!p);
         }
       }
     }
@@ -350,7 +350,7 @@ export function FlowView() {
     }
 
     return map;
-  }, [allItems, executions, personaMap, statePersonaMap, workflowStatesData]);
+  }, [allItems, executions, agentMap, stateAgentMap, workflowStatesData]);
 
   const handleNodeClick = useCallback(
     (stateName: string) => {
@@ -511,7 +511,7 @@ export function FlowView() {
           </div>
           <FilteredItemsList
             items={filteredItems}
-            personaMap={personaMap}
+            agentMap={agentMap}
             selectedItemId={selectedItemId}
             onSelect={setSelectedItemId}
           />

@@ -73,13 +73,13 @@ export function NoActivityEmpty() {
   );
 }
 
-export function NoPersonasEmpty() {
+export function NoAgentDefinitionsEmpty() {
   return (
     <EmptyState
       icon={<Users className="h-7 w-7 text-muted-foreground" />}
       title="Set up your team"
-      description="Personas define the AI agents that work on your stories. Create roles like Tech Lead, Engineer, and Reviewer."
-      action={{ label: "Create Persona", to: "/personas" }}
+      description="Agents define the AI agents that work on your stories. Create roles like Tech Lead, Engineer, and Reviewer."
+      action={{ label: "Create Agent", to: "/agent-builder" }}
     />
   );
 }

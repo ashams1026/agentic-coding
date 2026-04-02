@@ -12,8 +12,8 @@ import type {
   Project,
   WorkItem,
   WorkItemEdge,
-  Persona,
-  PersonaAssignment,
+  Agent,
+  AgentAssignment,
   Execution,
   Comment,
   ProjectMemory,
@@ -23,7 +23,7 @@ import type {
   ProjectId,
   WorkItemId,
   WorkItemEdgeId,
-  PersonaId,
+  AgentId,
   ExecutionId,
   ProposalId,
   ChatSessionId,
@@ -32,9 +32,9 @@ import type {
   CreateWorkItemRequest,
   UpdateWorkItemRequest,
   CreateWorkItemEdgeRequest,
-  UpsertPersonaAssignmentRequest,
-  CreatePersonaRequest,
-  UpdatePersonaRequest,
+  UpsertAgentAssignmentRequest,
+  CreateAgentRequest,
+  UpdateAgentRequest,
   CreateCommentRequest,
   UpdateProposalRequest,
   DashboardStats,
@@ -242,50 +242,50 @@ export async function deleteWorkItemEdge(id: WorkItemEdgeId): Promise<boolean> {
   return del(`/api/work-item-edges/${id}`);
 }
 
-// ── Persona Assignments ──────────────────────────────────────────
+// ── Agent Assignments ──────────────────────────────────────────
 
-export async function getPersonaAssignments(projectId: ProjectId): Promise<PersonaAssignment[]> {
-  const res = await get<{ data: PersonaAssignment[]; total: number }>(`/api/persona-assignments?projectId=${projectId}`);
+export async function getAgentAssignments(projectId: ProjectId): Promise<AgentAssignment[]> {
+  const res = await get<{ data: AgentAssignment[]; total: number }>(`/api/agent-assignments?projectId=${projectId}`);
   return res.data;
 }
 
-export async function updatePersonaAssignment(req: UpsertPersonaAssignmentRequest): Promise<PersonaAssignment> {
-  const res = await put<{ data: PersonaAssignment }>("/api/persona-assignments", req);
+export async function updateAgentAssignment(req: UpsertAgentAssignmentRequest): Promise<AgentAssignment> {
+  const res = await put<{ data: AgentAssignment }>("/api/agent-assignments", req);
   return res.data;
 }
 
-// ── Personas ─────────────────────────────────────────────────────
+// ── Agents ─────────────────────────────────────────────────────
 
-export async function getPersonas(): Promise<Persona[]> {
-  const res = await get<{ data: Persona[]; total: number }>("/api/personas");
+export async function getAgents(): Promise<Agent[]> {
+  const res = await get<{ data: Agent[]; total: number }>("/api/agents");
   return res.data;
 }
 
-export async function getPersona(id: PersonaId): Promise<Persona | null> {
+export async function getAgent(id: AgentId): Promise<Agent | null> {
   try {
-    const res = await get<{ data: Persona }>(`/api/personas/${id}`);
+    const res = await get<{ data: Agent }>(`/api/agents/${id}`);
     return res.data;
   } catch {
     return null;
   }
 }
 
-export async function createPersona(req: CreatePersonaRequest): Promise<Persona> {
-  const res = await post<{ data: Persona }>("/api/personas", req);
+export async function createAgent(req: CreateAgentRequest): Promise<Agent> {
+  const res = await post<{ data: Agent }>("/api/agents", req);
   return res.data;
 }
 
-export async function updatePersona(id: PersonaId, req: UpdatePersonaRequest): Promise<Persona | null> {
+export async function updateAgent(id: AgentId, req: UpdateAgentRequest): Promise<Agent | null> {
   try {
-    const res = await patch<{ data: Persona }>(`/api/personas/${id}`, req);
+    const res = await patch<{ data: Agent }>(`/api/agents/${id}`, req);
     return res.data;
   } catch {
     return null;
   }
 }
 
-export async function deletePersona(id: PersonaId): Promise<boolean> {
-  return del(`/api/personas/${id}`);
+export async function deleteAgent(id: AgentId): Promise<boolean> {
+  return del(`/api/agents/${id}`);
 }
 
 // ── Executions ───────────────────────────────────────────────────
@@ -322,7 +322,7 @@ export async function rewindExecution(id: ExecutionId, dryRun: boolean): Promise
 }
 
 export interface RunExecutionRequest {
-  personaId: string;
+  agentId: string;
   prompt: string;
   projectId?: string;
   budgetUsd?: number;
@@ -499,7 +499,7 @@ export interface DbStats {
   sizeMB: number;
   executionCount: number;
   projectCount: number;
-  personaCount: number;
+  agentCount: number;
 }
 
 export async function getDbStats(): Promise<DbStats> {
@@ -554,7 +554,7 @@ export async function exportSettings(): Promise<Record<string, unknown>> {
 
 export interface ActiveExecutionInfo {
   executionId: string;
-  personaName: string;
+  agentName: string;
   workItemTitle: string;
   elapsedMs: number;
 }
@@ -651,21 +651,21 @@ export async function reloadSdkCapabilities(): Promise<SdkCapabilities> {
 
 // ── Chat Sessions ───────────────────────────────────────────────
 
-export interface ChatSessionWithPersona extends ChatSession {
-  persona: { name: string; avatar: { color: string; icon: string } | null } | null;
+export interface ChatSessionWithAgent extends ChatSession {
+  agent: { name: string; avatar: { color: string; icon: string } | null } | null;
   lastMessagePreview: string | null;
 }
 
-export async function getChatSessions(projectId?: string): Promise<ChatSessionWithPersona[]> {
+export async function getChatSessions(projectId?: string): Promise<ChatSessionWithAgent[]> {
   const q = projectId ? `?projectId=${projectId}` : "";
-  const res = await get<{ data: ChatSessionWithPersona[]; total: number }>(`/api/chat/sessions${q}`);
+  const res = await get<{ data: ChatSessionWithAgent[]; total: number }>(`/api/chat/sessions${q}`);
   return res.data;
 }
 
-export async function createChatSession(projectId?: string, personaId?: string): Promise<ChatSession> {
+export async function createChatSession(projectId?: string, agentId?: string): Promise<ChatSession> {
   const body: Record<string, string> = {};
   if (projectId) body.projectId = projectId;
-  if (personaId) body.personaId = personaId;
+  if (agentId) body.agentId = agentId;
   const res = await post<{ data: ChatSession }>("/api/chat/sessions", body);
   return res.data;
 }
@@ -741,7 +741,7 @@ export async function updateWorkflow(
   data: {
     name?: string;
     description?: string;
-    states?: { id?: string; name: string; type: string; color: string; personaId?: string | null; sortOrder: number }[];
+    states?: { id?: string; name: string; type: string; color: string; agentId?: string | null; sortOrder: number }[];
     transitions?: { id?: string; fromStateId: string; toStateId: string; label: string }[];
   },
 ): Promise<Workflow> {
@@ -766,7 +766,7 @@ export async function deleteWorkflow(id: string): Promise<boolean> {
 // ── Search ──────────────────────────────────────────────────────
 
 export interface SearchResult {
-  type: "work_item" | "persona" | "comment" | "chat_message";
+  type: "work_item" | "agent" | "comment" | "chat_message";
   id: string;
   title: string;
   snippet: string;
@@ -785,9 +785,9 @@ export async function searchApi(q: string, opts?: { type?: string; projectId?: s
 
 // ── Analytics ────────────────────────────────────────────────────
 
-export interface CostByPersona {
-  personaId: string;
-  personaName: string;
+export interface CostByAgent {
+  agentId: string;
+  agentName: string;
   costUsd: number;
   totalTokens: number;
   executionCount: number;
@@ -809,8 +809,8 @@ export interface TokensOverTime {
 
 export interface TopExecution {
   id: string;
-  personaId: string;
-  personaName: string;
+  agentId: string;
+  agentName: string;
   model: string;
   costUsd: number;
   totalTokens: number;
@@ -828,8 +828,8 @@ function analyticsParams(opts?: { projectId?: string; range?: string; limit?: nu
   return qs ? `?${qs}` : "";
 }
 
-export async function getAnalyticsCostByPersona(opts?: { projectId?: string; range?: string }): Promise<CostByPersona[]> {
-  const res = await get<{ data: CostByPersona[] }>(`/api/analytics/cost-by-persona${analyticsParams(opts)}`);
+export async function getAnalyticsCostByAgent(opts?: { projectId?: string; range?: string }): Promise<CostByAgent[]> {
+  const res = await get<{ data: CostByAgent[] }>(`/api/analytics/cost-by-agent${analyticsParams(opts)}`);
   return res.data;
 }
 
@@ -871,15 +871,15 @@ export const apiClient = {
   getWorkItemEdges,
   createWorkItemEdge,
   deleteWorkItemEdge,
-  // Persona Assignments
-  getPersonaAssignments,
-  updatePersonaAssignment,
-  // Personas
-  getPersonas,
-  getPersona,
-  createPersona,
-  updatePersona,
-  deletePersona,
+  // Agent Assignments
+  getAgentAssignments,
+  updateAgentAssignment,
+  // Agents
+  getAgents,
+  getAgent,
+  createAgent,
+  updateAgent,
+  deleteAgent,
   // Executions
   getExecutions,
   getExecution,

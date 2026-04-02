@@ -3,7 +3,7 @@ import { Bot, DollarSign } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { useExecutions, usePersonas, useWorkItems, useSelectedProject, useProjects } from "@/hooks";
+import { useExecutions, useAgents, useWorkItems, useSelectedProject, useProjects } from "@/hooks";
 import type { Execution, ExecutionId } from "@agentops/shared";
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -27,8 +27,8 @@ function formatCost(usd: number): string {
 
 interface AgentEntryProps {
   execution: Execution;
-  personaName: string;
-  personaColor: string;
+  agentName: string;
+  agentColor: string;
   targetName: string;
   scopeLabel: string;
   isGlobal: boolean;
@@ -38,8 +38,8 @@ interface AgentEntryProps {
 
 function AgentEntry({
   execution,
-  personaName,
-  personaColor,
+  agentName,
+  agentColor,
   targetName,
   scopeLabel,
   isGlobal,
@@ -65,13 +65,13 @@ function AgentEntry({
       }`}
     >
       <div className="flex items-start gap-2.5">
-        {/* Persona avatar with status dot */}
+        {/* Agent avatar with status dot */}
         <div className="relative shrink-0 mt-0.5">
           <div
             className="flex h-8 w-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: personaColor + "20" }}
+            style={{ backgroundColor: agentColor + "20" }}
           >
-            <Bot className="h-4 w-4" style={{ color: personaColor }} />
+            <Bot className="h-4 w-4" style={{ color: agentColor }} />
           </div>
           <span className="absolute -right-0.5 -top-0.5 flex h-2.5 w-2.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
@@ -81,7 +81,7 @@ function AgentEntry({
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium truncate">{personaName}</p>
+          <p className="text-sm font-medium truncate">{agentName}</p>
           <p className="text-xs text-muted-foreground truncate">
             {targetName}
           </p>
@@ -119,7 +119,7 @@ interface ActiveAgentSidebarProps {
 export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarProps) {
   const { projectId } = useSelectedProject();
   const { data: executions = [] } = useExecutions(undefined, projectId ?? undefined);
-  const { data: personas = [] } = usePersonas();
+  const { data: agents = [] } = useAgents();
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
   const { data: projectsList = [] } = useProjects();
 
@@ -133,9 +133,9 @@ export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarP
   );
 
   // Lookup maps
-  const personaMap = useMemo(
-    () => new Map(personas.map((p) => [p.id as string, p])),
-    [personas],
+  const agentMap = useMemo(
+    () => new Map(agents.map((p) => [p.id as string, p])),
+    [agents],
   );
 
   const workItemNameMap = useMemo(() => {
@@ -172,7 +172,7 @@ export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarP
       <ScrollArea className="flex-1">
         <div className="p-1.5 space-y-0.5">
           {activeExecutions.map((exec) => {
-            const persona = personaMap.get(exec.personaId as string);
+            const agent = agentMap.get(exec.agentId as string);
             const projId = exec.workItemId ? workItemProjectMap.get(exec.workItemId as string) : null;
             const isGlobal = !exec.workItemId;
             const scopeLabel = isGlobal
@@ -182,8 +182,8 @@ export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarP
               <AgentEntry
                 key={exec.id}
                 execution={exec}
-                personaName={persona?.name ?? "Agent"}
-                personaColor={persona?.avatar.color ?? "#6b7280"}
+                agentName={agent?.name ?? "Agent"}
+                agentColor={agent?.avatar.color ?? "#6b7280"}
                 targetName={exec.workItemId ? (workItemNameMap.get(exec.workItemId as string) ?? exec.workItemId) : "Standalone"}
                 scopeLabel={scopeLabel}
                 isGlobal={isGlobal}

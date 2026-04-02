@@ -30,7 +30,7 @@ import { cn } from "@/lib/utils";
 import { usePicoStore } from "./pico-store";
 import { ChatMessage } from "./chat-message";
 import { usePicoChat } from "@/hooks/use-pico-chat";
-import { usePersonas, useProjects } from "@/hooks";
+import { useAgents, useProjects } from "@/hooks";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -44,10 +44,10 @@ import type { ChatSessionId } from "@agentops/shared";
 // ── Component ─────────────────────────────────────────────────────
 
 export function ChatPanel() {
-  const { isOpen, setOpen, panelWidth, panelHeight, setPanelSize, scopeOverride, setScopeOverride, selectedPersonaId, setSelectedPersonaId } = usePicoStore();
+  const { isOpen, setOpen, panelWidth, panelHeight, setPanelSize, scopeOverride, setScopeOverride, selectedAgentId, setSelectedAgentId } = usePicoStore();
   const navigate = useNavigate();
   const [input, setInput] = useState("");
-  const { data: personas = [] } = usePersonas();
+  const { data: agents = [] } = useAgents();
   const { data: projectsList = [] } = useProjects();
   const {
     messages,
@@ -342,7 +342,7 @@ export function ChatPanel() {
         </Button>
       </div>
 
-      {/* Scope & Persona bar */}
+      {/* Scope & Agent bar */}
       <div className="flex items-center gap-2 border-b border-border px-3 py-1.5 bg-muted/30">
         <Select
           value={scopeOverride ?? "__follow__"}
@@ -364,10 +364,10 @@ export function ChatPanel() {
           </SelectContent>
         </Select>
         <Select
-          value={selectedPersonaId ?? "__pico__"}
+          value={selectedAgentId ?? "__pico__"}
           onValueChange={(v) => {
-            const newPersona = v === "__pico__" ? null : v;
-            setSelectedPersonaId(newPersona);
+            const newAgent = v === "__pico__" ? null : v;
+            setSelectedAgentId(newAgent);
             newSession();
           }}
         >
@@ -376,16 +376,16 @@ export function ChatPanel() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="__pico__">Pico</SelectItem>
-            {personas.filter((p) => p.name !== "Pico").map((p) => (
+            {agents.filter((p) => p.name !== "Pico").map((p) => (
               <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {(scopeOverride || selectedPersonaId) && (
+        {(scopeOverride || selectedAgentId) && (
           <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-normal ml-auto">
             {scopeOverride === "__global__" ? "Global" : scopeOverride ? "Project" : ""}
-            {scopeOverride && selectedPersonaId ? " · " : ""}
-            {selectedPersonaId ? personas.find((p) => p.id === selectedPersonaId)?.name ?? "" : ""}
+            {scopeOverride && selectedAgentId ? " · " : ""}
+            {selectedAgentId ? agents.find((p) => p.id === selectedAgentId)?.name ?? "" : ""}
           </Badge>
         )}
       </div>

@@ -9,9 +9,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { useProjects, useUpdateProject, usePersonas, usePersonaAssignments, useUpdatePersonaAssignment, useSelectedProject } from "@/hooks";
+import { useProjects, useUpdateProject, useAgents, useAgentAssignments, useUpdateAgentAssignment, useSelectedProject } from "@/hooks";
 import { useWorkflowStates, useWorkflows } from "@/hooks/use-workflows";
-import type { PersonaId, Persona } from "@agentops/shared";
+import type { AgentId, Agent } from "@agentops/shared";
 import { cn } from "@/lib/utils";
 
 // ── Auto-routing play/pause ─────────────────────────────────────
@@ -84,38 +84,38 @@ function ModelBadge({ model }: { model: string }) {
   );
 }
 
-// ── Persona-per-state table ─────────────────────────────────────
+// ── Agent-per-state table ─────────────────────────────────────
 
-function PersonaStateTable() {
+function AgentStateTable() {
   const { projectId, project } = useSelectedProject();
-  const { data: personas = [] } = usePersonas();
-  const { data: assignments = [] } = usePersonaAssignments(projectId);
-  const updateAssignment = useUpdatePersonaAssignment();
+  const { data: agents = [] } = useAgents();
+  const { data: assignments = [] } = useAgentAssignments(projectId);
+  const updateAssignment = useUpdateAgentAssignment();
   const { data: workflowStatesData } = useWorkflowStates(project?.workflowId ?? null);
 
   const assignmentMap = useMemo(() => {
-    const map = new Map<string, PersonaId>();
-    assignments.forEach((a) => map.set(a.stateName, a.personaId));
+    const map = new Map<string, AgentId>();
+    assignments.forEach((a) => map.set(a.stateName, a.agentId));
     return map;
   }, [assignments]);
 
-  const personaMap = useMemo(() => {
-    const map = new Map<string, Persona>();
-    personas.forEach((p) => map.set(p.id, p));
+  const agentMap = useMemo(() => {
+    const map = new Map<string, Agent>();
+    agents.forEach((p) => map.set(p.id, p));
     return map;
-  }, [personas]);
+  }, [agents]);
 
-  const handleChange = (stateName: string, personaId: string) => {
-    if (personaId === "none") return;
+  const handleChange = (stateName: string, agentId: string) => {
+    if (agentId === "none") return;
     if (!projectId) return;
     updateAssignment.mutate({
       projectId,
       stateName,
-      personaId: personaId as PersonaId,
+      agentId: agentId as AgentId,
     });
   };
 
-  // States that can have personas (exclude initial and terminal types)
+  // States that can have agents (exclude initial and terminal types)
   const configurableStates = useMemo(() => {
     if (!workflowStatesData) return [];
     return workflowStatesData.filter(
@@ -131,7 +131,7 @@ function PersonaStateTable() {
           State
         </div>
         <div className="px-3 py-2 text-xs font-medium text-muted-foreground border-b bg-muted/30">
-          Persona
+          Agent
         </div>
         <div className="px-3 py-2 text-xs font-medium text-muted-foreground border-b bg-muted/30">
           Model
@@ -139,8 +139,8 @@ function PersonaStateTable() {
 
         {/* Rows */}
         {configurableStates.map((state, i) => {
-          const assignedPersonaId = assignmentMap.get(state.name);
-          const assignedPersona = assignedPersonaId ? personaMap.get(assignedPersonaId) : null;
+          const assignedAgentId = assignmentMap.get(state.name);
+          const assignedAgent = assignedAgentId ? agentMap.get(assignedAgentId) : null;
           const isLast = i === configurableStates.length - 1;
 
           return (
@@ -154,7 +154,7 @@ function PersonaStateTable() {
               </div>
               <div className={`flex items-center px-3 py-2.5 ${!isLast ? "border-b" : ""}`}>
                 <Select
-                  value={assignedPersonaId ?? "none"}
+                  value={assignedAgentId ?? "none"}
                   onValueChange={(v) => handleChange(state.name, v)}
                 >
                   <SelectTrigger className="h-7 text-xs">
@@ -162,7 +162,7 @@ function PersonaStateTable() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Not assigned</SelectItem>
-                    {personas.filter((p) => !p.settings?.isAssistant).map((p) => (
+                    {agents.filter((p) => !p.settings?.isAssistant).map((p) => (
                       <SelectItem key={p.id} value={p.id}>
                         <span className="flex items-center gap-1.5">
                           <span
@@ -177,8 +177,8 @@ function PersonaStateTable() {
                 </Select>
               </div>
               <div className={`flex items-center px-3 py-2.5 ${!isLast ? "border-b" : ""}`}>
-                {assignedPersona ? (
-                  <ModelBadge model={assignedPersona.model} />
+                {assignedAgent ? (
+                  <ModelBadge model={assignedAgent.model} />
                 ) : (
                   <span className="text-xs text-muted-foreground">—</span>
                 )}
@@ -190,7 +190,7 @@ function PersonaStateTable() {
 
       {/* Non-configurable states note */}
       <div className="px-3 py-2 text-xs text-muted-foreground bg-muted/20 border-t">
-        Initial and terminal states have no assigned personas — they are manual or auto-triggered states.
+        Initial and terminal states have no assigned agents — they are manual or auto-triggered states.
       </div>
     </div>
   );
@@ -238,11 +238,11 @@ export function WorkflowConfigSection() {
       <WorkflowSelector />
 
       <div>
-        <h3 className="text-sm font-medium mb-2">Persona Assignments</h3>
+        <h3 className="text-sm font-medium mb-2">Agent Assignments</h3>
         <p className="text-xs text-muted-foreground mb-3">
-          Assign a persona to each workflow state. When a work item enters a state, the assigned persona is triggered automatically.
+          Assign a agent to each workflow state. When a work item enters a state, the assigned agent is triggered automatically.
         </p>
-        <PersonaStateTable />
+        <AgentStateTable />
       </div>
     </div>
   );

@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { PersonaList } from "@/features/persona-manager/persona-list";
-import { PersonaDetailPanel } from "@/features/persona-manager/persona-detail-panel";
+import { AgentList } from "@/features/agent-builder/agent-list";
+import { AgentDetailPanel } from "@/features/agent-builder/agent-detail-panel";
 import { cn } from "@/lib/utils";
-import type { PersonaId } from "@agentops/shared";
+import type { AgentId } from "@agentops/shared";
 
-export function PersonaManagerPage() {
-  const [selectedId, setSelectedId] = useState<PersonaId | null>(null);
+export function AgentBuilderPage() {
+  const [selectedId, setSelectedId] = useState<AgentId | null>(null);
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <div className="px-6 pt-6 pb-4 shrink-0">
-        <h1 className="text-2xl font-bold">Persona Manager</h1>
+        <h1 className="text-2xl font-bold">Agent Builder</h1>
         <p className="text-muted-foreground text-sm mt-1">
           Configure your AI agent team — prompts, tools, and models.
         </p>
@@ -24,7 +24,7 @@ export function PersonaManagerPage() {
             selectedId ? "w-[45%]" : "w-full",
           )}
         >
-          <PersonaList selectedId={selectedId} onSelect={setSelectedId} />
+          <AgentList selectedId={selectedId} onSelect={setSelectedId} />
         </div>
 
         {/* Detail panel */}
@@ -35,8 +35,8 @@ export function PersonaManagerPage() {
           )}
         >
           {selectedId && (
-            <PersonaDetailPanel
-              personaId={selectedId}
+            <AgentDetailPanel
+              agentId={selectedId}
               onClose={() => setSelectedId(null)}
             />
           )}

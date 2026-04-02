@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useExecutions, usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
+import { useExecutions, useAgents, useWorkItems, useSelectedProject } from "@/hooks";
 import { TerminalRenderer } from "./terminal-renderer";
 import type { ExecutionId } from "@agentops/shared";
 
@@ -21,7 +21,7 @@ interface AgentSelectorProps {
 function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
   const { projectId } = useSelectedProject();
   const { data: executions = [] } = useExecutions(undefined, projectId ?? undefined);
-  const { data: personas = [] } = usePersonas();
+  const { data: agents = [] } = useAgents();
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
 
   const activeExecutions = useMemo(
@@ -29,9 +29,9 @@ function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
     [executions],
   );
 
-  const personaMap = useMemo(
-    () => new Map(personas.map((p) => [p.id as string, p])),
-    [personas],
+  const agentMap = useMemo(
+    () => new Map(agents.map((p) => [p.id as string, p])),
+    [agents],
   );
 
   const workItemNameMap = useMemo(() => {
@@ -41,8 +41,8 @@ function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
   }, [allItems]);
 
   const selected = activeExecutions.find((e) => e.id === selectedId);
-  const selectedPersona = selected
-    ? personaMap.get(selected.personaId as string)
+  const selectedAgent = selected
+    ? agentMap.get(selected.agentId as string)
     : null;
   const selectedTarget = selected
     ? workItemNameMap.get(selected.workItemId as string) ?? selected.workItemId
@@ -56,19 +56,19 @@ function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
           size="sm"
           className="h-7 text-xs gap-1.5 max-w-[240px]"
         >
-          {selectedPersona ? (
+          {selectedAgent ? (
             <>
               <div
                 className="flex h-4 w-4 items-center justify-center rounded-full shrink-0"
-                style={{ backgroundColor: selectedPersona.avatar.color + "20" }}
+                style={{ backgroundColor: selectedAgent.avatar.color + "20" }}
               >
                 <Bot
                   className="h-2.5 w-2.5"
-                  style={{ color: selectedPersona.avatar.color }}
+                  style={{ color: selectedAgent.avatar.color }}
                 />
               </div>
               <span className="truncate">
-                {selectedPersona.name}: {selectedTarget}
+                {selectedAgent.name}: {selectedTarget}
               </span>
             </>
           ) : (
@@ -79,7 +79,7 @@ function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-[260px]">
         {activeExecutions.map((exec) => {
-          const persona = personaMap.get(exec.personaId as string);
+          const agent = agentMap.get(exec.agentId as string);
           const target =
             workItemNameMap.get(exec.workItemId as string) ?? exec.workItemId;
           return (
@@ -91,17 +91,17 @@ function AgentSelector({ selectedId, onSelect }: AgentSelectorProps) {
               <div
                 className="flex h-5 w-5 items-center justify-center rounded-full shrink-0"
                 style={{
-                  backgroundColor: (persona?.avatar.color ?? "#6b7280") + "20",
+                  backgroundColor: (agent?.avatar.color ?? "#6b7280") + "20",
                 }}
               >
                 <Bot
                   className="h-3 w-3"
-                  style={{ color: persona?.avatar.color ?? "#6b7280" }}
+                  style={{ color: agent?.avatar.color ?? "#6b7280" }}
                 />
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-medium truncate">
-                  {persona?.name ?? "Agent"}
+                  {agent?.name ?? "Agent"}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
                   {target}

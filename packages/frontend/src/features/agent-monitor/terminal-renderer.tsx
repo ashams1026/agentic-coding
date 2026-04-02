@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { subscribe } from "@/api/ws";
-import { useExecution, usePersona, useWorkItem, useWsStatus } from "@/hooks";
-import type { PersonaId, WorkItemId } from "@agentops/shared";
+import { useExecution, useAgent, useWorkItem, useWsStatus } from "@/hooks";
+import type { AgentId, WorkItemId } from "@agentops/shared";
 import {
   ToolCallSection,
   parseToolJson,
@@ -348,7 +348,7 @@ interface TerminalRendererProps {
 
 export function TerminalRenderer({ executionId }: TerminalRendererProps) {
   const { data: execution } = useExecution(executionId);
-  const { data: persona } = usePersona(execution?.personaId as PersonaId);
+  const { data: agent } = useAgent(execution?.agentId as AgentId);
   const { data: workItem } = useWorkItem(execution?.workItemId as WorkItemId);
   const wsStatus = useWsStatus();
   const [chunks, setChunks] = useState<OutputChunk[]>([]);
@@ -509,23 +509,23 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Persona identity header */}
-      {persona && (
+      {/* Agent identity header */}
+      {agent && (
         <div className="flex items-center gap-3 px-4 py-2.5 border-b bg-muted/50">
           <div
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white text-xs font-bold"
-            style={{ backgroundColor: persona.avatar.color }}
+            style={{ backgroundColor: agent.avatar.color }}
           >
-            {persona.name.charAt(0).toUpperCase()}
+            {agent.name.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <span className="font-semibold text-sm truncate">
-                {persona.name}
+                {agent.name}
               </span>
               <ModelSwitcher
                 executionId={executionId}
-                currentModel={MODEL_LABELS[persona.model] ?? persona.model}
+                currentModel={MODEL_LABELS[agent.model] ?? agent.model}
                 isRunning={execution?.status === "running"}
               />
             </div>

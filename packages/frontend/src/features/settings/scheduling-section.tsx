@@ -33,8 +33,8 @@ import { useToastStore } from "@/stores/toast-store";
 interface Schedule {
   id: string;
   name: string;
-  personaId: string;
-  personaName: string | null;
+  agentId: string;
+  agentName: string | null;
   projectId: string | null;
   cronExpression: string;
   promptTemplate: string;
@@ -45,7 +45,7 @@ interface Schedule {
   createdAt: string;
 }
 
-interface PersonaOption {
+interface AgentOption {
   id: string;
   name: string;
 }
@@ -166,15 +166,15 @@ async function fetchSchedules(): Promise<Schedule[]> {
   return data.data;
 }
 
-async function fetchPersonas(): Promise<PersonaOption[]> {
-  const res = await fetch(`${BASE_URL}/api/personas`);
+async function fetchAgents(): Promise<AgentOption[]> {
+  const res = await fetch(`${BASE_URL}/api/agents`);
   const data = await res.json();
   return data.data.map((p: { id: string; name: string }) => ({ id: p.id, name: p.name }));
 }
 
 async function createSchedule(body: {
   name: string;
-  personaId: string;
+  agentId: string;
   cronExpression: string;
   promptTemplate?: string;
 }): Promise<Schedule> {
@@ -228,7 +228,7 @@ async function runNow(id: string): Promise<{ executionId: string }> {
 
 export function SchedulingSection() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [personas, setPersonas] = useState<PersonaOption[]>([]);
+  const [agents, setAgents] = useState<AgentOption[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -238,16 +238,16 @@ export function SchedulingSection() {
 
   // Form state
   const [formName, setFormName] = useState("");
-  const [formPersonaId, setFormPersonaId] = useState("");
+  const [formAgentId, setFormAgentId] = useState("");
   const [formPreset, setFormPreset] = useState("*/30 * * * *");
   const [formCustomCron, setFormCustomCron] = useState("");
   const [formPrompt, setFormPrompt] = useState("");
 
   const load = useCallback(async () => {
     try {
-      const [s, p] = await Promise.all([fetchSchedules(), fetchPersonas()]);
+      const [s, p] = await Promise.all([fetchSchedules(), fetchAgents()]);
       setSchedules(s);
-      setPersonas(p);
+      setAgents(p);
     } catch {
       addToast({ type: "error", title: "Failed to load schedules" });
     } finally {
@@ -265,7 +265,7 @@ export function SchedulingSection() {
   function openCreateDialog() {
     setEditingId(null);
     setFormName("");
-    setFormPersonaId(personas[0]?.id ?? "");
+    setFormAgentId(agents[0]?.id ?? "");
     setFormPreset("*/30 * * * *");
     setFormCustomCron("");
     setFormPrompt("");
@@ -275,7 +275,7 @@ export function SchedulingSection() {
   function openEditDialog(schedule: Schedule) {
     setEditingId(schedule.id);
     setFormName(schedule.name);
-    setFormPersonaId(schedule.personaId);
+    setFormAgentId(schedule.agentId);
     const matchingPreset = CRON_PRESETS.find((p) => p.value === schedule.cronExpression);
     if (matchingPreset && matchingPreset.value !== "custom") {
       setFormPreset(schedule.cronExpression);
@@ -290,8 +290,8 @@ export function SchedulingSection() {
 
   async function handleSave() {
     const cron = formPreset === "custom" ? formCustomCron.trim() : formPreset;
-    if (!formName.trim() || !formPersonaId || !cron) {
-      addToast({ type: "error", title: "Name, persona, and cron expression are required" });
+    if (!formName.trim() || !formAgentId || !cron) {
+      addToast({ type: "error", title: "Name, agent, and cron expression are required" });
       return;
     }
 
@@ -307,7 +307,7 @@ export function SchedulingSection() {
       } else {
         await createSchedule({
           name: formName.trim(),
-          personaId: formPersonaId,
+          agentId: formAgentId,
           cronExpression: cron,
           promptTemplate: formPrompt.trim() || undefined,
         });
@@ -408,7 +408,7 @@ export function SchedulingSection() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium truncate">{schedule.name}</span>
                   <Badge variant="outline" className="text-xs shrink-0">
-                    {schedule.personaName ?? schedule.personaId}
+                    {schedule.agentName ?? schedule.agentId}
                   </Badge>
                   {schedule.consecutiveFailures > 0 && (
                     <Badge variant="destructive" className="text-xs shrink-0">
@@ -481,16 +481,16 @@ export function SchedulingSection() {
               />
             </div>
 
-            {/* Persona (only on create) */}
+            {/* Agent (only on create) */}
             {!editingId && (
               <div>
-                <label className="text-sm font-medium">Persona</label>
-                <Select value={formPersonaId} onValueChange={setFormPersonaId}>
+                <label className="text-sm font-medium">Agent</label>
+                <Select value={formAgentId} onValueChange={setFormAgentId}>
                   <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select persona" />
+                    <SelectValue placeholder="Select agent" />
                   </SelectTrigger>
                   <SelectContent>
-                    {personas.map((p) => (
+                    {agents.map((p) => (
                       <SelectItem key={p.id} value={p.id}>
                         {p.name}
                       </SelectItem>

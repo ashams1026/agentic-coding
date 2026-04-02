@@ -37,13 +37,13 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
-import { useWorkItem, useWorkItems, useProposals, usePersonas, usePersonaAssignments, useCreateWorkItem, useUpdateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem, useSelectedProject } from "@/hooks";
+import { useWorkItem, useWorkItems, useProposals, useAgents, useAgentAssignments, useCreateWorkItem, useUpdateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem, useSelectedProject } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { useToastStore } from "@/stores/toast-store";
 import { CommentStream } from "@/features/common/comment-stream";
 import { ExecutionTimeline } from "@/features/common/execution-timeline";
 import { useWorkflowStates, useWorkflowTransitions } from "@/hooks/use-workflows";
-import type { WorkItem, WorkItemId, Priority, Persona } from "@agentops/shared";
+import type { WorkItem, WorkItemId, Priority, Agent } from "@agentops/shared";
 
 // ── Editable title ──────────────────────────────────────────────
 
@@ -366,7 +366,7 @@ interface TransitionPromptData {
   itemTitle: string;
   fromState: string;
   toState: string;
-  persona: Persona;
+  agent: Agent;
 }
 
 function TransitionPrompt({
@@ -398,13 +398,13 @@ function TransitionPrompt({
         <div className="flex items-center gap-3 rounded-lg border p-4">
           <div
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-            style={{ backgroundColor: data.persona.avatar.color + "20" }}
+            style={{ backgroundColor: data.agent.avatar.color + "20" }}
           >
-            <Bot className="h-5 w-5" style={{ color: data.persona.avatar.color }} />
+            <Bot className="h-5 w-5" style={{ color: data.agent.avatar.color }} />
           </div>
           <div>
-            <p className="text-sm font-medium">{data.persona.name}</p>
-            <p className="text-xs text-muted-foreground">{data.persona.description}</p>
+            <p className="text-sm font-medium">{data.agent.name}</p>
+            <p className="text-xs text-muted-foreground">{data.agent.description}</p>
           </div>
         </div>
         <DialogFooter className="gap-2 sm:gap-0">
@@ -427,7 +427,7 @@ function StateTransitionControl({
   workflowTransitions,
 }: {
   item: WorkItem;
-  assignmentMap: Map<string, Persona>;
+  assignmentMap: Map<string, Agent>;
   onTransition: (toState: string) => void;
   workflowStates?: Array<{ name: string; color: string }>;
   workflowTransitions?: Array<{ fromStateName: string; toStateName: string }>;
@@ -449,7 +449,7 @@ function StateTransitionControl({
       <SelectContent>
         {validStates.map((state) => {
           const stateColor = stateColorMap.get(state) ?? "#6b7280";
-          const assignedPersona = assignmentMap.get(state);
+          const assignedAgent = assignmentMap.get(state);
           return (
             <SelectItem key={state} value={state}>
               <span className="flex items-center gap-1.5">
@@ -458,9 +458,9 @@ function StateTransitionControl({
                   style={{ backgroundColor: stateColor ?? "#888" }}
                 />
                 {state}
-                {assignedPersona && (
+                {assignedAgent && (
                   <span className="text-muted-foreground ml-1">
-                    → {assignedPersona.name}
+                    → {assignedAgent.name}
                   </span>
                 )}
               </span>
@@ -661,8 +661,8 @@ export function DetailPanel() {
   const { selectedItemId, setSelectedItemId } = useWorkItemsStore();
   const { data: item } = useWorkItem(selectedItemId!);
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
-  const { data: personas = [] } = usePersonas();
-  const { data: assignments = [] } = usePersonaAssignments(projectId);
+  const { data: agents = [] } = useAgents();
+  const { data: assignments = [] } = useAgentAssignments(projectId);
   const { data: workflowStatesData } = useWorkflowStates(project?.workflowId ?? null);
   const { data: workflowTransitionsData } = useWorkflowTransitions(project?.workflowId ?? null);
   const createWorkItem = useCreateWorkItem();
@@ -681,25 +681,25 @@ export function DetailPanel() {
     [allItems, selectedItemId],
   );
 
-  const persona = useMemo(() => {
-    if (!item?.assignedPersonaId) return null;
-    return personas.find((p) => p.id === item.assignedPersonaId) ?? null;
-  }, [item, personas]);
+  const agent = useMemo(() => {
+    if (!item?.assignedAgentId) return null;
+    return agents.find((p) => p.id === item.assignedAgentId) ?? null;
+  }, [item, agents]);
 
-  const personaMap = useMemo(() => {
-    const map = new Map<string, Persona>();
-    personas.forEach((p) => map.set(p.id, p));
+  const agentMap = useMemo(() => {
+    const map = new Map<string, Agent>();
+    agents.forEach((p) => map.set(p.id, p));
     return map;
-  }, [personas]);
+  }, [agents]);
 
   const assignmentMap = useMemo(() => {
-    const map = new Map<string, Persona>();
+    const map = new Map<string, Agent>();
     assignments.forEach((a) => {
-      const p = personaMap.get(a.personaId);
+      const p = agentMap.get(a.agentId);
       if (p) map.set(a.stateName, p);
     });
     return map;
-  }, [assignments, personaMap]);
+  }, [assignments, agentMap]);
 
   if (!selectedItemId) return null;
 
@@ -736,13 +736,13 @@ export function DetailPanel() {
   };
 
   const handleTransition = (toState: string) => {
-    const assignedPersona = assignmentMap.get(toState);
-    if (assignedPersona) {
+    const assignedAgent = assignmentMap.get(toState);
+    if (assignedAgent) {
       setPromptData({
         itemTitle: item.title,
         fromState: item.currentState,
         toState,
-        persona: assignedPersona,
+        agent: assignedAgent,
       });
       setPendingState(toState);
     } else {
@@ -879,15 +879,15 @@ export function DetailPanel() {
             value={item.priority}
             onChange={(p) => updateWorkItem.mutate({ id: item.id, priority: p })}
           />
-          {persona && (
+          {agent && (
             <div className="flex items-center gap-1 ml-auto">
               <div
                 className="h-5 w-5 rounded-full flex items-center justify-center text-xs font-medium text-white"
-                style={{ backgroundColor: persona.avatar.color }}
+                style={{ backgroundColor: agent.avatar.color }}
               >
-                {persona.name.charAt(0)}
+                {agent.name.charAt(0)}
               </div>
-              <span className="text-xs text-muted-foreground">{persona.name}</span>
+              <span className="text-xs text-muted-foreground">{agent.name}</span>
             </div>
           )}
         </div>

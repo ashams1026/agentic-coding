@@ -17,19 +17,19 @@ function WorkItemRow({ item }: WorkItemRowProps) {
       to="/items"
       className="flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-accent/50"
     >
-      {/* Persona avatar or generic icon */}
+      {/* Agent avatar or generic icon */}
       <div
         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
         style={{
-          backgroundColor: item.persona
-            ? item.persona.avatar.color + "20"
+          backgroundColor: item.agent
+            ? item.agent.avatar.color + "20"
             : "hsl(var(--muted))",
         }}
       >
         <Bot
           className="h-3.5 w-3.5"
           style={{
-            color: item.persona?.avatar.color ?? "hsl(var(--muted-foreground))",
+            color: item.agent?.avatar.color ?? "hsl(var(--muted-foreground))",
           }}
         />
       </div>
@@ -44,9 +44,9 @@ function WorkItemRow({ item }: WorkItemRowProps) {
 
       {/* Badges */}
       <div className="flex shrink-0 items-center gap-1.5">
-        {item.persona && (
+        {item.agent && (
           <Badge variant="outline" className="text-xs px-1.5 py-0">
-            {item.persona.name}
+            {item.agent.name}
           </Badge>
         )}
         <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />

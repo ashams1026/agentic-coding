@@ -46,7 +46,7 @@ const navItems = [
   { to: "/activity", icon: Activity, label: "Activity Feed" },
   { to: "/analytics", icon: BarChart3, label: "Analytics" },
   { to: "/chat", icon: MessageSquare, label: "Chat" },
-  { to: "/personas", icon: Users, label: "Personas" },
+  { to: "/agent-builder", icon: Users, label: "Agent Builder" },
   { to: "/workflows", icon: GitBranch, label: "Workflows" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ] as const;

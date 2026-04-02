@@ -19,31 +19,31 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { usePersonas, useProjects } from "@/hooks";
+import { useAgents, useProjects } from "@/hooks";
 import { runExecution } from "@/api";
 import { useToastStore } from "@/stores/toast-store";
 
 export function NewRunModal() {
   const [open, setOpen] = useState(false);
-  const [personaId, setPersonaId] = useState<string>("");
+  const [agentId, setAgentId] = useState<string>("");
   const [scope, setScope] = useState<string>("global");
   const [projectId, setProjectId] = useState<string>("");
   const [prompt, setPrompt] = useState("");
   const [budget, setBudget] = useState("5.00");
   const [submitting, setSubmitting] = useState(false);
 
-  const { data: personas = [] } = usePersonas();
+  const { data: agents = [] } = useAgents();
   const { data: projectsList = [] } = useProjects();
   const addToast = useToastStore((s) => s.addToast);
 
-  const canSubmit = personaId && prompt.trim() && (scope === "global" || projectId);
+  const canSubmit = agentId && prompt.trim() && (scope === "global" || projectId);
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
     try {
       const result = await runExecution({
-        personaId,
+        agentId,
         prompt: prompt.trim(),
         projectId: scope === "project" ? projectId : undefined,
         budgetUsd: parseFloat(budget) || undefined,
@@ -67,7 +67,7 @@ export function NewRunModal() {
   };
 
   const resetForm = () => {
-    setPersonaId("");
+    setAgentId("");
     setScope("global");
     setProjectId("");
     setPrompt("");
@@ -91,15 +91,15 @@ export function NewRunModal() {
         </DialogHeader>
 
         <div className="space-y-4 py-2">
-          {/* Persona picker */}
+          {/* Agent picker */}
           <div className="space-y-1.5">
-            <p className="text-sm font-medium">Persona</p>
-            <Select value={personaId} onValueChange={setPersonaId}>
+            <p className="text-sm font-medium">Agent</p>
+            <Select value={agentId} onValueChange={setAgentId}>
               <SelectTrigger>
-                <SelectValue placeholder="Select a persona..." />
+                <SelectValue placeholder="Select a agent..." />
               </SelectTrigger>
               <SelectContent>
-                {personas.map((p) => (
+                {agents.map((p) => (
                   <SelectItem key={p.id} value={p.id}>
                     {p.name}
                   </SelectItem>

@@ -27,7 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { usePersona, useUpdatePersona } from "@/hooks";
+import { useAgent, useUpdateAgent } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { MarkdownPreview } from "./system-prompt-editor";
 import { SystemPromptEditor } from "./system-prompt-editor";
@@ -35,8 +35,8 @@ import { ToolConfiguration } from "./tool-configuration";
 import { SkillBrowser } from "./skill-browser";
 import { SubagentBrowser } from "./subagent-browser";
 import { TestRunPanel } from "./test-run-panel";
-import { BUILT_IN_IDS } from "./persona-list";
-import type { PersonaId, PersonaModel, EffortLevel, ThinkingMode } from "@agentops/shared";
+import { BUILT_IN_IDS } from "./agent-list";
+import type { AgentId, AgentModel, EffortLevel, ThinkingMode } from "@agentops/shared";
 import {
   Select,
   SelectContent,
@@ -82,7 +82,7 @@ function getIcon(name: string): LucideIcon {
 // ── Model config ────────────────────────────────────────────────
 
 interface ModelOption {
-  value: PersonaModel;
+  value: AgentModel;
   label: string;
   description: string;
   costLabel: string;
@@ -113,7 +113,7 @@ const MODEL_OPTIONS: ModelOption[] = [
   },
 ];
 
-const MODEL_BADGE_CONFIG: Record<PersonaModel, { label: string; className: string }> = {
+const MODEL_BADGE_CONFIG: Record<AgentModel, { label: string; className: string }> = {
   opus: {
     label: "Opus",
     className: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
@@ -130,16 +130,16 @@ const MODEL_BADGE_CONFIG: Record<PersonaModel, { label: string; className: strin
 
 // ── Props ───────────────────────────────────────────────────────
 
-interface PersonaDetailPanelProps {
-  personaId: PersonaId;
+interface AgentDetailPanelProps {
+  agentId: AgentId;
   onClose: () => void;
 }
 
 // ── Main component ──────────────────────────────────────────────
 
-export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelProps) {
-  const { data: persona } = usePersona(personaId);
-  const updateMutation = useUpdatePersona();
+export function AgentDetailPanel({ agentId, onClose }: AgentDetailPanelProps) {
+  const { data: agent } = useAgent(agentId);
+  const updateMutation = useUpdateAgent();
   const [editing, setEditing] = useState(false);
   const [skillBrowserOpen, setSkillBrowserOpen] = useState(false);
   const [subagentBrowserOpen, setSubagentBrowserOpen] = useState(false);
@@ -149,7 +149,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
   const [description, setDescription] = useState("");
   const [avatarColor, setAvatarColor] = useState(COLOR_OPTIONS[0]!);
   const [avatarIcon, setAvatarIcon] = useState("bot");
-  const [model, setModel] = useState<PersonaModel>("sonnet");
+  const [model, setModel] = useState<AgentModel>("sonnet");
   const [systemPrompt, setSystemPrompt] = useState("");
   const [allowedTools, setAllowedTools] = useState<string[]>([]);
   const [mcpTools, setMcpTools] = useState<string[]>([]);
@@ -159,35 +159,35 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
   const [effort, setEffort] = useState<EffortLevel>("high");
   const [thinking, setThinking] = useState<ThinkingMode>("adaptive");
 
-  // Sync form state when persona data loads or personaId changes
+  // Sync form state when agent data loads or agentId changes
   useEffect(() => {
-    if (!persona) return;
-    syncFromPersona();
+    if (!agent) return;
+    syncFromAgent();
     setEditing(false);
-  }, [persona?.id]);
+  }, [agent?.id]);
 
-  function syncFromPersona() {
-    if (!persona) return;
-    setName(persona.name);
-    setDescription(persona.description);
-    setAvatarColor(persona.avatar.color);
-    setAvatarIcon(persona.avatar.icon);
-    setModel(persona.model);
-    setSystemPrompt(persona.systemPrompt);
-    setAllowedTools([...persona.allowedTools]);
-    setMcpTools([...persona.mcpTools]);
-    setSkills([...persona.skills]);
-    setSubagents([...(persona.subagents ?? [])]);
-    setMaxBudget(persona.maxBudgetPerRun.toFixed(2));
-    setEffort((persona.settings?.effort as EffortLevel) ?? "high");
-    setThinking((persona.settings?.thinking as ThinkingMode) ?? "adaptive");
+  function syncFromAgent() {
+    if (!agent) return;
+    setName(agent.name);
+    setDescription(agent.description);
+    setAvatarColor(agent.avatar.color);
+    setAvatarIcon(agent.avatar.icon);
+    setModel(agent.model);
+    setSystemPrompt(agent.systemPrompt);
+    setAllowedTools([...agent.allowedTools]);
+    setMcpTools([...agent.mcpTools]);
+    setSkills([...agent.skills]);
+    setSubagents([...(agent.subagents ?? [])]);
+    setMaxBudget(agent.maxBudgetPerRun.toFixed(2));
+    setEffort((agent.settings?.effort as EffortLevel) ?? "high");
+    setThinking((agent.settings?.thinking as ThinkingMode) ?? "adaptive");
   }
 
   const handleSave = useCallback(() => {
-    if (!persona) return;
+    if (!agent) return;
     const budget = parseFloat(maxBudget);
     updateMutation.mutate({
-      id: personaId,
+      id: agentId,
       name,
       description,
       avatar: { color: avatarColor, icon: avatarIcon },
@@ -202,19 +202,19 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
     }, {
       onSuccess: () => setEditing(false),
     });
-  }, [persona, personaId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, skills, subagents, maxBudget, effort, thinking, updateMutation]);
+  }, [agent, agentId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, skills, subagents, maxBudget, effort, thinking, updateMutation]);
 
   const handleCancel = () => {
-    syncFromPersona();
+    syncFromAgent();
     setEditing(false);
   };
 
-  const AvatarIcon = getIcon(editing ? avatarIcon : (persona?.avatar.icon ?? "bot"));
-  const displayColor = editing ? avatarColor : (persona?.avatar.color ?? "#6b7280");
-  const isBuiltIn = persona ? BUILT_IN_IDS.has(persona.id as string) : false;
-  const isAssistant = persona?.settings?.isAssistant === true;
+  const AvatarIcon = getIcon(editing ? avatarIcon : (agent?.avatar.icon ?? "bot"));
+  const displayColor = editing ? avatarColor : (agent?.avatar.color ?? "#6b7280");
+  const isBuiltIn = agent ? BUILT_IN_IDS.has(agent.id as string) : false;
+  const isAssistant = agent?.settings?.isAssistant === true;
 
-  if (!persona) {
+  if (!agent) {
     return (
       <div className="h-full flex items-center justify-center">
         <p className="text-xs text-muted-foreground">Loading...</p>
@@ -222,7 +222,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
     );
   }
 
-  const modelBadge = MODEL_BADGE_CONFIG[persona.model];
+  const modelBadge = MODEL_BADGE_CONFIG[agent.model];
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
@@ -236,9 +236,9 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
             <AvatarIcon className="h-4.5 w-4.5" style={{ color: displayColor }} />
           </div>
           <div className="min-w-0">
-            <h2 className="text-sm font-semibold truncate">{editing ? (name || "Untitled") : persona.name}</h2>
+            <h2 className="text-sm font-semibold truncate">{editing ? (name || "Untitled") : agent.name}</h2>
             <p className="text-xs text-muted-foreground truncate">
-              {isAssistant ? "Built-in assistant" : isBuiltIn ? "Built-in persona" : "Custom persona"}
+              {isAssistant ? "Built-in assistant" : isBuiltIn ? "Built-in agent" : "Custom agent"}
             </p>
           </div>
           {isAssistant ? (
@@ -287,7 +287,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Persona name"
+                  placeholder="Agent name"
                   className="h-8 text-sm"
                 />
               </div>
@@ -296,7 +296,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
                 <Textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Brief description of this persona's role"
+                  placeholder="Brief description of this agent's role"
                   className="min-h-[50px] resize-none text-sm"
                   rows={2}
                 />
@@ -580,7 +580,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
             <section>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Description</h3>
               <p className="text-sm text-foreground">
-                {persona.description || <span className="italic text-muted-foreground">No description.</span>}
+                {agent.description || <span className="italic text-muted-foreground">No description.</span>}
               </p>
             </section>
 
@@ -596,26 +596,26 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
                 >
                   {modelBadge.label}
                 </Badge>
-                {persona.maxBudgetPerRun > 0 && (
+                {agent.maxBudgetPerRun > 0 && (
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <DollarSign className="h-3 w-3" />
-                    <span>${persona.maxBudgetPerRun.toFixed(2)}/run</span>
+                    <span>${agent.maxBudgetPerRun.toFixed(2)}/run</span>
                   </div>
                 )}
               </div>
             </section>
 
-            {(persona.settings?.effort || persona.settings?.thinking) && (
+            {(agent.settings?.effort || agent.settings?.thinking) && (
               <>
                 <Separator />
                 <section>
                   <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Effort & Thinking</h3>
                   <div className="flex items-center gap-3">
                     <Badge variant="outline" className="text-xs px-2 py-0.5 capitalize">
-                      {persona.settings?.effort ?? "high"} effort
+                      {agent.settings?.effort ?? "high"} effort
                     </Badge>
                     <Badge variant="outline" className="text-xs px-2 py-0.5 capitalize">
-                      {persona.settings?.thinking ?? "adaptive"} thinking
+                      {agent.settings?.thinking ?? "adaptive"} thinking
                     </Badge>
                   </div>
                 </section>
@@ -628,8 +628,8 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
             <section>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">System Prompt</h3>
               <div className="max-h-[400px] overflow-y-auto rounded-md border border-border bg-muted/20 p-3">
-                {persona.systemPrompt.trim() ? (
-                  <MarkdownPreview text={persona.systemPrompt} />
+                {agent.systemPrompt.trim() ? (
+                  <MarkdownPreview text={agent.systemPrompt} />
                 ) : (
                   <p className="text-xs text-muted-foreground italic">No system prompt.</p>
                 )}
@@ -641,11 +641,11 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
             {/* ── Tools ────────────────────────────────────── */}
             <section>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Tools</h3>
-              {persona.mcpTools.length > 0 && (
+              {agent.mcpTools.length > 0 && (
                 <div className="mb-3">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5">MCP Tools</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {persona.mcpTools.map((tool) => (
+                    {agent.mcpTools.map((tool) => (
                       <Badge key={tool} variant="secondary" className="text-xs px-2 py-0.5 font-mono">
                         {tool}
                       </Badge>
@@ -653,11 +653,11 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
                   </div>
                 </div>
               )}
-              {persona.allowedTools.length > 0 && (
+              {agent.allowedTools.length > 0 && (
                 <div className="mb-3">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-wider mb-1.5">SDK Tools</p>
                   <div className="flex flex-wrap gap-1.5">
-                    {persona.allowedTools.map((tool) => (
+                    {agent.allowedTools.map((tool) => (
                       <Badge key={tool} variant="outline" className="text-xs px-2 py-0.5 font-mono">
                         {tool}
                       </Badge>
@@ -665,19 +665,19 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
                   </div>
                 </div>
               )}
-              {persona.mcpTools.length === 0 && persona.allowedTools.length === 0 && (
+              {agent.mcpTools.length === 0 && agent.allowedTools.length === 0 && (
                 <p className="text-xs text-muted-foreground italic">No tools configured.</p>
               )}
             </section>
 
             {/* ── Skills ───────────────────────────────────── */}
-            {persona.skills.length > 0 && (
+            {agent.skills.length > 0 && (
               <>
                 <Separator />
                 <section>
                   <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Skills</h3>
                   <div className="flex flex-wrap gap-1.5">
-                    {persona.skills.map((skill) => {
+                    {agent.skills.map((skill) => {
                       const isSlashCommand = !skill.includes("/") && !skill.includes(".");
                       return (
                         <Badge key={skill} variant="secondary" className="text-xs px-2 py-0.5 font-mono">
@@ -691,13 +691,13 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
             )}
 
             {/* ── Subagents ──────────────────────────────────── */}
-            {(persona.subagents ?? []).length > 0 && (
+            {(agent.subagents ?? []).length > 0 && (
               <>
                 <Separator />
                 <section>
                   <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Subagents</h3>
                   <div className="flex flex-wrap gap-1.5">
-                    {(persona.subagents ?? []).map((agent) => (
+                    {(agent.subagents ?? []).map((agent) => (
                       <Badge key={agent} variant="outline" className="text-xs px-2 py-0.5">
                         {agent}
                       </Badge>
@@ -710,7 +710,7 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
             {/* ── Test Run ──────────────────────────────────── */}
             <Separator />
             <section>
-              <TestRunPanel personaName={persona.name} model={persona.model} />
+              <TestRunPanel agentName={agent.name} model={agent.model} />
             </section>
           </>
         )}

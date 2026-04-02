@@ -9,10 +9,10 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { useExecutions, useProposals, usePersonas, useRecentComments, useSelectedProject } from "@/hooks";
+import { useExecutions, useProposals, useAgents, useRecentComments, useSelectedProject } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { subscribeAll } from "@/api/ws";
-import type { Persona } from "@agentops/shared";
+import type { Agent } from "@agentops/shared";
 import type {
   WsEvent,
   AgentStartedEvent,
@@ -34,7 +34,7 @@ interface ActivityEvent {
   id: string;
   type: ActivityEventType;
   description: string;
-  personaId: string | null;
+  agentId: string | null;
   workItemId: string | null;
   timestamp: string;
   isLive?: boolean;
@@ -97,7 +97,7 @@ function useActivityEvents(): ActivityEvent[] {
             id: `exec-${exec.id}`,
             type: "agent_completed",
             description: exec.summary || "Agent completed work item",
-            personaId: exec.personaId,
+            agentId: exec.agentId,
             workItemId: exec.workItemId,
             timestamp: exec.completedAt ?? exec.startedAt,
           });
@@ -113,7 +113,7 @@ function useActivityEvents(): ActivityEvent[] {
             id: `sc-${comment.id}`,
             type: "state_change",
             description: comment.content,
-            personaId: null,
+            agentId: null,
             workItemId: comment.workItemId,
             timestamp: comment.createdAt,
           });
@@ -122,7 +122,7 @@ function useActivityEvents(): ActivityEvent[] {
             id: `cmt-${comment.id}`,
             type: "comment_posted",
             description: `${comment.authorName}: ${comment.content.slice(0, 80)}${comment.content.length > 80 ? "..." : ""}`,
-            personaId: comment.authorId,
+            agentId: comment.authorId,
             workItemId: comment.workItemId,
             timestamp: comment.createdAt,
           });
@@ -137,7 +137,7 @@ function useActivityEvents(): ActivityEvent[] {
           id: `prop-${proposal.id}`,
           type: "proposal_created",
           description: `New ${proposal.type.replace(/_/g, " ")} proposal`,
-          personaId: null,
+          agentId: null,
           workItemId: proposal.workItemId,
           timestamp: proposal.createdAt,
         });
@@ -163,7 +163,7 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
         id: `live-started-${e.executionId}-${Date.now()}`,
         type: "agent_completed",
         description: `Agent started: ${e.workItemTitle}`,
-        personaId: e.personaId,
+        agentId: e.agentId,
         workItemId: e.workItemId,
         timestamp: e.timestamp,
         isLive: true,
@@ -175,7 +175,7 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
         id: `live-completed-${e.executionId}-${Date.now()}`,
         type: "agent_completed",
         description: `Agent completed work item ($${e.costUsd.toFixed(2)})`,
-        personaId: e.personaId,
+        agentId: e.agentId,
         workItemId: e.workItemId,
         timestamp: e.timestamp,
         isLive: true,
@@ -187,7 +187,7 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
         id: `live-state-${e.workItemId}-${Date.now()}`,
         type: "state_change",
         description: `Work item moved to ${e.toState}`,
-        personaId: null,
+        agentId: null,
         workItemId: e.workItemId,
         timestamp: e.timestamp,
         isLive: true,
@@ -199,7 +199,7 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
         id: `live-comment-${e.commentId}-${Date.now()}`,
         type: "comment_posted",
         description: `${e.authorName}: ${e.contentPreview}`,
-        personaId: null,
+        agentId: null,
         workItemId: e.workItemId,
         timestamp: e.timestamp,
         isLive: true,
@@ -211,7 +211,7 @@ function wsToActivityEvent(event: WsEvent): ActivityEvent | null {
         id: `live-prop-${e.proposalId}-${Date.now()}`,
         type: "proposal_created",
         description: `New ${e.proposalType.replace(/_/g, " ")} proposal`,
-        personaId: null,
+        agentId: null,
         workItemId: e.workItemId,
         timestamp: e.timestamp,
         isLive: true,
@@ -242,14 +242,14 @@ function useLiveActivityEvents(): ActivityEvent[] {
 
 interface ActivityRowProps {
   event: ActivityEvent;
-  personaMap: Map<string, Persona>;
+  agentMap: Map<string, Agent>;
 }
 
-function ActivityRow({ event, personaMap }: ActivityRowProps) {
+function ActivityRow({ event, agentMap }: ActivityRowProps) {
   const navigate = useNavigate();
   const setSelectedItemId = useWorkItemsStore((s) => s.setSelectedItemId);
   const config = eventConfig[event.type];
-  const persona = event.personaId ? personaMap.get(event.personaId) : null;
+  const agent = event.agentId ? agentMap.get(event.agentId) : null;
 
   const handleClick = () => {
     if (event.workItemId) {
@@ -273,12 +273,12 @@ function ActivityRow({ event, personaMap }: ActivityRowProps) {
       >
         {config.icon}
       </div>
-      {persona && (
+      {agent && (
         <div
           className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
-          style={{ backgroundColor: persona.avatar.color + "20" }}
+          style={{ backgroundColor: agent.avatar.color + "20" }}
         >
-          <Bot className="h-3.5 w-3.5" style={{ color: persona.avatar.color }} />
+          <Bot className="h-3.5 w-3.5" style={{ color: agent.avatar.color }} />
         </div>
       )}
       <div className="min-w-0 flex-1">
@@ -299,8 +299,8 @@ function ActivityRow({ event, personaMap }: ActivityRowProps) {
 export function RecentActivity() {
   const baseEvents = useActivityEvents();
   const liveEvents = useLiveActivityEvents();
-  const { data: personas } = usePersonas();
-  const personaMap = new Map(personas?.map((p) => [p.id, p]));
+  const { data: agents } = useAgents();
+  const agentMap = new Map(agents?.map((p) => [p.id, p]));
 
   // Merge live + base, sort descending, take 10
   const events = useMemo(() => {
@@ -335,7 +335,7 @@ export function RecentActivity() {
               <ActivityRow
                 key={event.id}
                 event={event}
-                personaMap={personaMap}
+                agentMap={agentMap}
               />
             ))}
           </div>

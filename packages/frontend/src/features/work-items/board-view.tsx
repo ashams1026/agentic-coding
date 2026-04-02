@@ -25,10 +25,10 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { useWorkItems, usePersonas, useUpdateWorkItem, usePersonaAssignments, useSelectedProject } from "@/hooks";
+import { useWorkItems, useAgents, useUpdateWorkItem, useAgentAssignments, useSelectedProject } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { WORKFLOW } from "@agentops/shared";
-import type { WorkItem, WorkItemId, Priority, Persona } from "@agentops/shared";
+import type { WorkItem, WorkItemId, Priority, Agent } from "@agentops/shared";
 
 // ── Priority config ─────────────────────────────────────────────
 
@@ -50,16 +50,16 @@ function ProgressPill({ done, total }: { done: number; total: number }) {
   );
 }
 
-// ── Persona avatar ──────────────────────────────────────────────
+// ── Agent avatar ──────────────────────────────────────────────
 
-function PersonaAvatar({ persona }: { persona: Persona }) {
+function AgentAvatar({ agent }: { agent: Agent }) {
   return (
     <div
       className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium text-white"
-      style={{ backgroundColor: persona.avatar.color }}
-      title={persona.name}
+      style={{ backgroundColor: agent.avatar.color }}
+      title={agent.name}
     >
-      {persona.name.charAt(0)}
+      {agent.name.charAt(0)}
     </div>
   );
 }
@@ -70,12 +70,12 @@ interface WorkItemCardProps {
   item: WorkItem;
   childrenDone: number;
   childrenTotal: number;
-  persona: Persona | null;
+  agent: Agent | null;
   isSelected: boolean;
   onClick: () => void;
 }
 
-function WorkItemCard({ item, childrenDone, childrenTotal, persona, isSelected, onClick }: WorkItemCardProps) {
+function WorkItemCard({ item, childrenDone, childrenTotal, agent, isSelected, onClick }: WorkItemCardProps) {
   const pCfg = priorityConfig[item.priority];
 
   return (
@@ -96,9 +96,9 @@ function WorkItemCard({ item, childrenDone, childrenTotal, persona, isSelected, 
             {pCfg.label}
           </Badge>
           <ProgressPill done={childrenDone} total={childrenTotal} />
-          {persona && (
+          {agent && (
             <div className="ml-auto">
-              <PersonaAvatar persona={persona} />
+              <AgentAvatar agent={agent} />
             </div>
           )}
         </div>
@@ -134,12 +134,12 @@ interface BoardColumnProps {
   stateColor: string;
   items: WorkItem[];
   childStats: Map<string, { done: number; total: number }>;
-  personaMap: Map<string, Persona>;
+  agentMap: Map<string, Agent>;
   selectedItemId: WorkItemId | null;
   onSelect: (id: WorkItemId) => void;
 }
 
-function BoardColumn({ stateName, stateColor, items, childStats, personaMap, selectedItemId, onSelect }: BoardColumnProps) {
+function BoardColumn({ stateName, stateColor, items, childStats, agentMap, selectedItemId, onSelect }: BoardColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id: stateName });
 
   return (
@@ -164,14 +164,14 @@ function BoardColumn({ stateName, stateColor, items, childStats, personaMap, sel
         <div className="space-y-2 pb-2">
           {items.map((item) => {
             const stats = childStats.get(item.id) ?? { done: 0, total: 0 };
-            const persona = item.assignedPersonaId ? personaMap.get(item.assignedPersonaId) ?? null : null;
+            const agent = item.assignedAgentId ? agentMap.get(item.assignedAgentId) ?? null : null;
             return (
               <DraggableCard
                 key={item.id}
                 item={item}
                 childrenDone={stats.done}
                 childrenTotal={stats.total}
-                persona={persona}
+                agent={agent}
                 isSelected={selectedItemId === item.id}
                 onClick={() => onSelect(item.id)}
               />
@@ -189,7 +189,7 @@ interface TransitionPromptData {
   itemTitle: string;
   fromState: string;
   toState: string;
-  persona: Persona;
+  agent: Agent;
 }
 
 function TransitionPrompt({
@@ -221,13 +221,13 @@ function TransitionPrompt({
         <div className="flex items-center gap-3 rounded-lg border p-4">
           <div
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-            style={{ backgroundColor: data.persona.avatar.color + "20" }}
+            style={{ backgroundColor: data.agent.avatar.color + "20" }}
           >
-            <Bot className="h-5 w-5" style={{ color: data.persona.avatar.color }} />
+            <Bot className="h-5 w-5" style={{ color: data.agent.avatar.color }} />
           </div>
           <div>
-            <p className="text-sm font-medium">{data.persona.name}</p>
-            <p className="text-xs text-muted-foreground">{data.persona.description}</p>
+            <p className="text-sm font-medium">{data.agent.name}</p>
+            <p className="text-xs text-muted-foreground">{data.agent.description}</p>
           </div>
         </div>
         <DialogFooter className="gap-2 sm:gap-0">
@@ -290,8 +290,8 @@ function ScopeSelector({
 export function BoardView() {
   const { projectId } = useSelectedProject();
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined);
-  const { data: personas } = usePersonas();
-  const { data: assignments } = usePersonaAssignments(projectId);
+  const { data: agents } = useAgents();
+  const { data: assignments } = useAgentAssignments(projectId);
   const updateWorkItem = useUpdateWorkItem();
   const { selectedItemId, setSelectedItemId } = useWorkItemsStore();
 
@@ -302,20 +302,20 @@ export function BoardView() {
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
-  const personaMap = useMemo(() => {
-    const map = new Map<string, Persona>();
-    personas?.forEach((p) => map.set(p.id, p));
+  const agentMap = useMemo(() => {
+    const map = new Map<string, Agent>();
+    agents?.forEach((p) => map.set(p.id, p));
     return map;
-  }, [personas]);
+  }, [agents]);
 
   const assignmentMap = useMemo(() => {
-    const map = new Map<string, Persona>();
+    const map = new Map<string, Agent>();
     assignments?.forEach((a) => {
-      const persona = personaMap.get(a.personaId);
-      if (persona) map.set(a.stateName, persona);
+      const agent = agentMap.get(a.agentId);
+      if (agent) map.set(a.stateName, agent);
     });
     return map;
-  }, [assignments, personaMap]);
+  }, [assignments, agentMap]);
 
   // Items scoped to the current parent
   const scopedItems = useMemo(() => {
@@ -366,20 +366,20 @@ export function BoardView() {
       const item = allItems?.find((w) => w.id === itemId);
       if (!item || item.currentState === toState) return;
 
-      // Check if target state has an assigned persona
-      const assignedPersona = assignmentMap.get(toState);
-      if (assignedPersona) {
+      // Check if target state has an assigned agent
+      const assignedAgent = assignmentMap.get(toState);
+      if (assignedAgent) {
         setPromptData({
           itemTitle: item.title,
           fromState: item.currentState,
           toState,
-          persona: assignedPersona,
+          agent: assignedAgent,
         });
         setPendingDrop({ itemId, toState });
         return;
       }
 
-      // No persona — just move
+      // No agent — just move
       updateWorkItem.mutate({ id: itemId, currentState: toState });
     },
     [allItems, assignmentMap, updateWorkItem],
@@ -439,7 +439,7 @@ export function BoardView() {
                 stateColor={state.color}
                 items={columnData.get(state.name) ?? []}
                 childStats={childStats}
-                personaMap={personaMap}
+                agentMap={agentMap}
                 selectedItemId={selectedItemId}
                 onSelect={setSelectedItemId}
               />
@@ -455,7 +455,7 @@ export function BoardView() {
                 item={draggedItem}
                 childrenDone={childStats.get(draggedItem.id)?.done ?? 0}
                 childrenTotal={childStats.get(draggedItem.id)?.total ?? 0}
-                persona={draggedItem.assignedPersonaId ? personaMap.get(draggedItem.assignedPersonaId) ?? null : null}
+                agent={draggedItem.assignedAgentId ? agentMap.get(draggedItem.assignedAgentId) ?? null : null}
                 isSelected={false}
                 onClick={() => {}}
               />

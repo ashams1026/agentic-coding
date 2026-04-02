@@ -19,7 +19,7 @@ const viewOptions: { value: WorkItemView; label: string; icon: typeof List }[] =
 export function WorkItemsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const store = useWorkItemsStore();
-  const { view, setView, searchQuery, setSearchQuery, sortDir, setSortDir, filterPersonas, filterLabels, selectedItemId, detailPanelWidth, setDetailPanelWidth } = store;
+  const { view, setView, searchQuery, setSearchQuery, sortDir, setSortDir, filterAgents, filterLabels, selectedItemId, detailPanelWidth, setDetailPanelWidth } = store;
   const { projectId } = useSelectedProject();
   const createWorkItem = useCreateWorkItem();
   const { data: projectsList } = useProjects();
@@ -36,10 +36,10 @@ export function WorkItemsPage() {
     if (urlQuery) {
       setSearchQuery(urlQuery);
     }
-    const urlPersonas = searchParams.get("personas");
-    if (urlPersonas) {
-      for (const id of urlPersonas.split(",")) {
-        if (id && !store.filterPersonas.includes(id)) store.toggleFilterPersona(id);
+    const urlAgents = searchParams.get("agents");
+    if (urlAgents) {
+      for (const id of urlAgents.split(",")) {
+        if (id && !store.filterAgents.includes(id)) store.toggleFilterAgent(id);
       }
     }
     const urlLabels = searchParams.get("labels");
@@ -59,14 +59,14 @@ export function WorkItemsPage() {
     const next = new URLSearchParams(searchParams);
     // search query
     if (searchQuery) next.set("q", searchQuery); else next.delete("q");
-    // personas
-    if (filterPersonas.length > 0) next.set("personas", filterPersonas.join(",")); else next.delete("personas");
+    // agents
+    if (filterAgents.length > 0) next.set("agents", filterAgents.join(",")); else next.delete("agents");
     // labels
     if (filterLabels.length > 0) next.set("labels", filterLabels.join(",")); else next.delete("labels");
     // sort direction
     if (sortDir !== "asc") next.set("sortDir", sortDir); else next.delete("sortDir");
     setSearchParams(next, { replace: true });
-  }, [searchQuery, filterPersonas, filterLabels, sortDir]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchQuery, filterAgents, filterLabels, sortDir]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync URL params when view changes
   const handleViewChange = (newView: WorkItemView) => {

@@ -37,11 +37,11 @@ import { usePicoStore } from "@/features/pico/pico-store";
 import { ChatMessage } from "@/features/pico/chat-message";
 import { usePicoChat } from "@/hooks/use-pico-chat";
 import { useProjects } from "@/hooks";
-import { PersonaSelector } from "@/features/pico/persona-selector";
+import { AgentSelector } from "@/features/pico/agent-selector";
 import type { ChatSessionId } from "@agentops/shared";
-import type { ChatSessionWithPersona } from "@/api";
+import type { ChatSessionWithAgent } from "@/api";
 
-// ── Icon map (shared with persona-selector) ─────────────────────
+// ── Icon map (shared with agent-selector) ─────────────────────
 
 const ICON_MAP: Record<string, LucideIcon> = {
   "clipboard-list": ClipboardList, "git-branch": GitBranch, code: Code, eye: Eye,
@@ -68,8 +68,8 @@ function getDateGroup(dateStr: string): string {
   return "Older";
 }
 
-function groupSessionsByDate(sessions: ChatSessionWithPersona[]): { label: string; sessions: ChatSessionWithPersona[] }[] {
-  const groups: Record<string, ChatSessionWithPersona[]> = {};
+function groupSessionsByDate(sessions: ChatSessionWithAgent[]): { label: string; sessions: ChatSessionWithAgent[] }[] {
+  const groups: Record<string, ChatSessionWithAgent[]> = {};
   const order = ["Today", "Yesterday", "This Week", "Older"];
 
   for (const s of sessions) {
@@ -102,8 +102,8 @@ export function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Persona selector modal
-  const [showPersonaSelector, setShowPersonaSelector] = useState(false);
+  // Agent selector modal
+  const [showAgentSelector, setShowAgentSelector] = useState(false);
 
   // Project name lookup
   const { data: projects = [] } = useProjects();
@@ -113,27 +113,27 @@ export function ChatPage() {
     return map;
   }, [projects]);
 
-  // Persona filter for sidebar
-  const [personaFilter, setPersonaFilter] = useState<string | null>(null);
-  const [showPersonaFilter, setShowPersonaFilter] = useState(false);
+  // Agent filter for sidebar
+  const [agentFilter, setAgentFilter] = useState<string | null>(null);
+  const [showAgentFilter, setShowAgentFilter] = useState(false);
 
   // Filtered and grouped sessions
   const filteredSessions = useMemo(() => {
-    if (!personaFilter) return sessions;
-    return sessions.filter((s) => s.personaId === personaFilter);
-  }, [sessions, personaFilter]);
+    if (!agentFilter) return sessions;
+    return sessions.filter((s) => s.agentId === agentFilter);
+  }, [sessions, agentFilter]);
 
   const groupedSessions = useMemo(() => groupSessionsByDate(filteredSessions), [filteredSessions]);
 
-  // Unique persona names for the filter dropdown
-  const personaNames = useMemo(() => {
+  // Unique agent names for the filter dropdown
+  const agentNames = useMemo(() => {
     const map = new Map<string, string>();
     for (const s of sessions) {
-      if (s.personaId && s.persona?.name) {
-        map.set(s.personaId, s.persona.name);
+      if (s.agentId && s.agent?.name) {
+        map.set(s.agentId, s.agent.name);
       }
     }
-    return Array.from(map.entries()); // [personaId, name][]
+    return Array.from(map.entries()); // [agentId, name][]
   }, [sessions]);
 
   // Header context menu
@@ -205,8 +205,8 @@ export function ChatPage() {
               variant="ghost"
               size="icon"
               className="h-7 w-7"
-              onClick={() => setShowPersonaSelector(true)}
-              title="New chat with persona"
+              onClick={() => setShowAgentSelector(true)}
+              title="New chat with agent"
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -222,36 +222,36 @@ export function ChatPage() {
           </div>
         </div>
 
-        {/* Persona filter */}
-        {personaNames.length > 1 && (
+        {/* Agent filter */}
+        {agentNames.length > 1 && (
           <div className="px-2 py-1.5 border-b border-border">
             <div className="relative">
               <button
                 type="button"
-                onClick={() => setShowPersonaFilter(!showPersonaFilter)}
+                onClick={() => setShowAgentFilter(!showAgentFilter)}
                 className={cn(
                   "flex items-center gap-1.5 w-full rounded-md px-2 py-1 text-xs transition-colors",
-                  personaFilter ? "text-foreground bg-muted" : "text-muted-foreground hover:bg-muted",
+                  agentFilter ? "text-foreground bg-muted" : "text-muted-foreground hover:bg-muted",
                 )}
               >
                 <Filter className="h-3 w-3" />
-                {personaFilter ? personaNames.find(([id]) => id === personaFilter)?.[1] ?? "Filter" : "All personas"}
+                {agentFilter ? agentNames.find(([id]) => id === agentFilter)?.[1] ?? "Filter" : "All agents"}
               </button>
-              {showPersonaFilter && (
+              {showAgentFilter && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-lg z-10 py-1">
                   <button
                     type="button"
-                    onClick={() => { setPersonaFilter(null); setShowPersonaFilter(false); }}
-                    className={cn("w-full text-left px-3 py-1.5 text-xs hover:bg-muted", !personaFilter && "font-medium")}
+                    onClick={() => { setAgentFilter(null); setShowAgentFilter(false); }}
+                    className={cn("w-full text-left px-3 py-1.5 text-xs hover:bg-muted", !agentFilter && "font-medium")}
                   >
-                    All personas
+                    All agents
                   </button>
-                  {personaNames.map(([id, name]) => (
+                  {agentNames.map(([id, name]) => (
                     <button
                       key={id}
                       type="button"
-                      onClick={() => { setPersonaFilter(id); setShowPersonaFilter(false); }}
-                      className={cn("w-full text-left px-3 py-1.5 text-xs hover:bg-muted", personaFilter === id && "font-medium")}
+                      onClick={() => { setAgentFilter(id); setShowAgentFilter(false); }}
+                      className={cn("w-full text-left px-3 py-1.5 text-xs hover:bg-muted", agentFilter === id && "font-medium")}
                     >
                       {name}
                     </button>
@@ -266,7 +266,7 @@ export function ChatPage() {
           <div className="flex flex-col gap-0.5 p-2">
             {filteredSessions.length === 0 && (
               <p className="px-2 py-4 text-xs text-muted-foreground text-center">
-                {personaFilter ? "No conversations with this persona" : "No conversations yet"}
+                {agentFilter ? "No conversations with this agent" : "No conversations yet"}
               </p>
             )}
             {groupedSessions.map((group) => (
@@ -275,7 +275,7 @@ export function ChatPage() {
                   {group.label}
                 </p>
                 {group.sessions.map((s) => {
-                  const avatar = s.persona?.avatar;
+                  const avatar = s.agent?.avatar;
                   const color = avatar?.color ?? "#6b7280";
                   const Icon = getIcon(avatar?.icon ?? "bot");
 
@@ -297,7 +297,7 @@ export function ChatPage() {
                           : "text-muted-foreground",
                       )}
                     >
-                      {/* Persona avatar */}
+                      {/* Agent avatar */}
                       <div
                         className="h-5 w-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
                         style={{ backgroundColor: color + "20" }}
@@ -358,14 +358,14 @@ export function ChatPage() {
         {/* Chat header bar */}
         {currentSession && (() => {
           const cs = currentSession;
-          const avatar = cs.persona?.avatar;
+          const avatar = cs.agent?.avatar;
           const color = avatar?.color ?? "#6b7280";
           const HeaderIcon = getIcon(avatar?.icon ?? "bot");
           const isEditingHeader = editingSessionId === cs.id;
 
           return (
             <div className="flex items-center gap-3 border-b border-border px-4 py-2.5 bg-card shrink-0">
-              {/* Persona avatar + name */}
+              {/* Agent avatar + name */}
               <div
                 className="h-7 w-7 rounded-full flex items-center justify-center shrink-0"
                 style={{ backgroundColor: color + "20" }}
@@ -373,7 +373,7 @@ export function ChatPage() {
                 <HeaderIcon className="h-4 w-4" style={{ color }} />
               </div>
               <span className="text-sm font-medium text-muted-foreground shrink-0">
-                {cs.persona?.name ?? "Pico"}
+                {cs.agent?.name ?? "Pico"}
               </span>
 
               {/* Divider */}
@@ -632,14 +632,14 @@ export function ChatPage() {
         </div>
       )}
 
-      {/* Persona selector modal */}
-      {showPersonaSelector && (
-        <PersonaSelector
-          onSelect={(personaId) => {
-            setShowPersonaSelector(false);
-            newSession(personaId);
+      {/* Agent selector modal */}
+      {showAgentSelector && (
+        <AgentSelector
+          onSelect={(agentId) => {
+            setShowAgentSelector(false);
+            newSession(agentId);
           }}
-          onClose={() => setShowPersonaSelector(false)}
+          onClose={() => setShowAgentSelector(false)}
         />
       )}
     </div>

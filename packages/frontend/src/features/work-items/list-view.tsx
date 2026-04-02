@@ -22,12 +22,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useWorkItems, usePersonas, useExecutions, useSelectedProject, useCreateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem, useBulkArchiveWorkItems, useBulkDeleteWorkItems } from "@/hooks";
+import { useWorkItems, useAgents, useExecutions, useSelectedProject, useCreateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem, useBulkArchiveWorkItems, useBulkDeleteWorkItems } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { useToastStore } from "@/stores/toast-store";
 import { searchApi } from "@/api/client";
 import { useWorkflowStates } from "@/hooks/use-workflows";
-import type { WorkItem, WorkItemId, Priority, Persona, ProjectId } from "@agentops/shared";
+import type { WorkItem, WorkItemId, Priority, Agent, ProjectId } from "@agentops/shared";
 
 // ── Text highlight ─────────────────────────────────────────────
 
@@ -82,17 +82,17 @@ function MiniProgress({ done, total }: { done: number; total: number }) {
 
 // ── Active agent indicator ──────────────────────────────────────
 
-function ActiveAgentDot({ persona }: { persona: Persona }) {
+function ActiveAgentDot({ agent }: { agent: Agent }) {
   return (
     <div className="flex items-center gap-1">
       <span className="relative flex h-2 w-2">
         <span
           className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"
-          style={{ backgroundColor: persona.avatar.color }}
+          style={{ backgroundColor: agent.avatar.color }}
         />
         <span
           className="relative inline-flex h-2 w-2 rounded-full"
-          style={{ backgroundColor: persona.avatar.color }}
+          style={{ backgroundColor: agent.avatar.color }}
         />
       </span>
       <Bot className="h-3 w-3 text-muted-foreground" />
@@ -100,16 +100,16 @@ function ActiveAgentDot({ persona }: { persona: Persona }) {
   );
 }
 
-// ── Persona avatar ──────────────────────────────────────────────
+// ── Agent avatar ──────────────────────────────────────────────
 
-function PersonaAvatar({ persona }: { persona: Persona }) {
+function AgentAvatar({ agent }: { agent: Agent }) {
   return (
     <div
       className="flex h-5 w-5 items-center justify-center rounded-full text-xs font-medium text-white"
-      style={{ backgroundColor: persona.avatar.color }}
-      title={persona.name}
+      style={{ backgroundColor: agent.avatar.color }}
+      title={agent.name}
     >
-      {persona.name.charAt(0)}
+      {agent.name.charAt(0)}
     </div>
   );
 }
@@ -153,7 +153,7 @@ interface ListRowProps {
   depth: number;
   childrenDone: number;
   childrenTotal: number;
-  persona: Persona | null;
+  agent: Agent | null;
   hasRunningAgent: boolean;
   isExpanded: boolean;
   hasChildren: boolean;
@@ -172,7 +172,7 @@ function ListRow({
   depth,
   childrenDone,
   childrenTotal,
-  persona,
+  agent,
   hasRunningAgent,
   isExpanded,
   hasChildren,
@@ -293,22 +293,22 @@ function ListRow({
         </Tooltip>
       )}
 
-      {/* Persona avatar */}
-      {persona && (
+      {/* Agent avatar */}
+      {agent && (
         <Tooltip>
           <TooltipTrigger asChild>
             <div className="shrink-0">
-              <PersonaAvatar persona={persona} />
+              <AgentAvatar agent={agent} />
             </div>
           </TooltipTrigger>
-          <TooltipContent>{persona.name} ({persona.model})</TooltipContent>
+          <TooltipContent>{agent.name} ({agent.model})</TooltipContent>
         </Tooltip>
       )}
 
       {/* Active agent indicator */}
-      {hasRunningAgent && persona && (
+      {hasRunningAgent && agent && (
         <div className="shrink-0">
-          <ActiveAgentDot persona={persona} />
+          <ActiveAgentDot agent={agent} />
         </div>
       )}
     </button>
@@ -348,10 +348,10 @@ function EmptyWorkItemsState({ projectId }: { projectId: string | null }) {
 
 export function ListView() {
   const { projectId, project } = useSelectedProject();
-  const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterPersonas, filterLabels, showArchived, selectedItemId, setSelectedItemId, selectedIds, toggleSelectId, clearSelection, clearFilters, setFilterState } =
+  const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterAgents, filterLabels, showArchived, selectedItemId, setSelectedItemId, selectedIds, toggleSelectId, clearSelection, clearFilters, setFilterState } =
     useWorkItemsStore();
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined, showArchived || undefined);
-  const { data: personas } = usePersonas();
+  const { data: agents } = useAgents();
   const { data: executions } = useExecutions(undefined, projectId ?? undefined);
   const { data: workflowStatesData } = useWorkflowStates(project?.workflowId ?? null);
   const archiveWorkItem = useArchiveWorkItem();
@@ -470,11 +470,11 @@ export function ListView() {
   }, [bulkDelete, selectedIds, clearSelection]);
 
   // Build lookup maps
-  const personaMap = useMemo(() => {
-    const map = new Map<string, Persona>();
-    personas?.forEach((p) => map.set(p.id, p));
+  const agentMap = useMemo(() => {
+    const map = new Map<string, Agent>();
+    agents?.forEach((p) => map.set(p.id, p));
     return map;
-  }, [personas]);
+  }, [agents]);
 
   const runningItemIds = useMemo(() => {
     const ids = new Set<string>();
@@ -488,8 +488,8 @@ export function ListView() {
     let items = [...allItems];
     if (filterState) items = items.filter((w) => w.currentState === filterState);
     if (filterPriority) items = items.filter((w) => w.priority === filterPriority);
-    if (filterPersonas.length > 0) {
-      items = items.filter((w) => w.assignedPersonaId && filterPersonas.includes(w.assignedPersonaId));
+    if (filterAgents.length > 0) {
+      items = items.filter((w) => w.assignedAgentId && filterAgents.includes(w.assignedAgentId));
     }
     if (filterLabels.length > 0) {
       items = items.filter((w) => filterLabels.some((label) => w.labels.includes(label)));
@@ -507,7 +507,7 @@ export function ListView() {
       }
     }
     return items;
-  }, [allItems, filterState, filterPriority, filterPersonas, filterLabels, searchQuery, ftsMatchIds]);
+  }, [allItems, filterState, filterPriority, filterAgents, filterLabels, searchQuery, ftsMatchIds]);
 
   // Sort function with direction and secondary sort
   const sortItems = (items: WorkItem[]): WorkItem[] => {
@@ -560,7 +560,7 @@ export function ListView() {
     const sorted = sortItems(children);
     return sorted.flatMap((item) => {
       const stats = childStats.get(item.id) ?? { done: 0, total: 0 };
-      const persona = item.assignedPersonaId ? personaMap.get(item.assignedPersonaId) ?? null : null;
+      const agent = item.assignedAgentId ? agentMap.get(item.assignedAgentId) ?? null : null;
       const hasChildren = childrenOf.has(item.id);
       const isExpanded = expandedIds.has(item.id);
 
@@ -574,7 +574,7 @@ export function ListView() {
                 depth={depth}
                 childrenDone={stats.done}
                 childrenTotal={stats.total}
-                persona={persona}
+                agent={agent}
                 hasRunningAgent={runningItemIds.has(item.id)}
                 isExpanded={isExpanded}
                 hasChildren={hasChildren}
@@ -634,7 +634,7 @@ export function ListView() {
 
   // Empty states
   if (filteredItems.length === 0 && !isLoading) {
-    const hasFilters = searchQuery || filterState || filterPriority || filterPersonas.length > 0 || filterLabels.length > 0;
+    const hasFilters = searchQuery || filterState || filterPriority || filterAgents.length > 0 || filterLabels.length > 0;
     if (hasFilters) {
       return (
         <div className="flex flex-col items-center justify-center h-full text-center p-8 gap-3">
@@ -715,7 +715,7 @@ export function ListView() {
     const topLevel = filteredItems.filter((w) => w.parentId === null);
 
     if (topLevel.length === 0) {
-      const hasFilters = searchQuery || filterState || filterPriority || filterPersonas.length > 0 || filterLabels.length > 0;
+      const hasFilters = searchQuery || filterState || filterPriority || filterAgents.length > 0 || filterLabels.length > 0;
       if (hasFilters) {
         return (
           <div className="flex flex-col items-center justify-center h-full text-center p-8 gap-3">
@@ -769,8 +769,8 @@ export function ListView() {
                   <div className="ml-1">
                     {items.map((item) => {
                       const stats = childStats.get(item.id) ?? { done: 0, total: 0 };
-                      const persona = item.assignedPersonaId
-                        ? personaMap.get(item.assignedPersonaId) ?? null
+                      const agent = item.assignedAgentId
+                        ? agentMap.get(item.assignedAgentId) ?? null
                         : null;
                       const hasChildren = childrenOf.has(item.id);
                       const isExpanded = expandedIds.has(item.id);
@@ -785,7 +785,7 @@ export function ListView() {
                                 depth={0}
                                 childrenDone={stats.done}
                                 childrenTotal={stats.total}
-                                persona={persona}
+                                agent={agent}
                                 hasRunningAgent={runningItemIds.has(item.id)}
                                 isExpanded={isExpanded}
                                 hasChildren={hasChildren}

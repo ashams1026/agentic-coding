@@ -1,15 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import {
-  getAnalyticsCostByPersona,
+  getAnalyticsCostByAgent,
   getAnalyticsCostByModel,
   getAnalyticsTokensOverTime,
   getAnalyticsTopExecutions,
 } from "@/api/client";
 
-export function useAnalyticsCostByPersona(projectId?: string, range?: string) {
+export function useAnalyticsCostByAgent(projectId?: string, range?: string) {
   return useQuery({
-    queryKey: ["analytics", "cost-by-persona", projectId ?? "all", range ?? "30d"],
-    queryFn: () => getAnalyticsCostByPersona({ projectId, range }),
+    queryKey: ["analytics", "cost-by-agent", projectId ?? "all", range ?? "30d"],
+    queryFn: () => getAnalyticsCostByAgent({ projectId, range }),
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
 }

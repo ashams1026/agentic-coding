@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-03 17:15 PDT — UXO.7: Frontend persona→agent rename
+
+**Done:** Renamed all persona references → agent across 54 frontend files. Renamed `features/persona-manager/` → `features/agent-builder/` (3 files within: persona-list→agent-list, persona-editor→agent-editor, persona-detail-panel→agent-detail-panel). Renamed hooks: `use-personas.ts`→`use-agents.ts`, `use-persona-assignments.ts`→`use-agent-assignments.ts`. Renamed page `persona-manager.tsx`→`agent-builder.tsx`. Renamed `pico/persona-selector.tsx`→`agent-selector.tsx`. Updated API client: function names (getPersonas→getAgents, etc.), paths (`/api/personas`→`/api/agents`), types. Updated query keys, hooks index, router (path `/personas`→`/agent-builder`), sidebar label "Agent Builder", command palette. Updated all imports and variable names across 54 files. CSS vars `--color-persona-*`→`--color-agent-*`. Frontend builds clean.
+**Files:** 54 frontend files (renamed 8 via git mv, updated contents in all 54)
+**Notes:** Zero remaining persona code references in frontend (grep confirmed). "Personality" strings in prompt content preserved.
+
+---
+
 ## 2026-04-03 16:45 PDT — Review: UXO.6 (approved)
 
 **Reviewed:** Schema + Backend persona→agent rename.

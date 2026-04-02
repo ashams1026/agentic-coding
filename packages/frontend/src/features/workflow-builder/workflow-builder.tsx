@@ -51,7 +51,7 @@ export function WorkflowBuilder({
       name: "",
       type: "intermediate",
       color: DEFAULT_COLORS[colorIndex]!,
-      personaId: null,
+      agentId: null,
       sortOrder: states.length,
       transitions: [],
     };

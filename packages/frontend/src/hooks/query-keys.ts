@@ -1,4 +1,4 @@
-import type { ProjectId, WorkItemId, PersonaId, ExecutionId, ProposalId } from "@agentops/shared";
+import type { ProjectId, WorkItemId, AgentId, ExecutionId, ProposalId } from "@agentops/shared";
 
 export const queryKeys = {
   // Projects
@@ -18,12 +18,12 @@ export const queryKeys = {
     return ["workItemEdges"] as const;
   },
 
-  // Persona Assignments
-  personaAssignments: (projectId: ProjectId) => ["personaAssignments", { projectId }] as const,
+  // Agent Assignments
+  agentAssignments: (projectId: ProjectId) => ["agentAssignments", { projectId }] as const,
 
-  // Personas
-  personas: ["personas"] as const,
-  persona: (id: PersonaId) => ["personas", id] as const,
+  // Agents
+  agents: ["agents"] as const,
+  agent: (id: AgentId) => ["agents", id] as const,
 
   // Executions
   executions: (workItemId?: WorkItemId, projectId?: string) => {

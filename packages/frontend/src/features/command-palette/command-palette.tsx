@@ -70,7 +70,7 @@ const NAV_ITEMS = [
   { label: "Activity Feed", path: "/activity", icon: Activity },
   { label: "Analytics", path: "/analytics", icon: BarChart3 },
   { label: "Chat", path: "/chat", icon: MessageSquare },
-  { label: "Personas", path: "/personas", icon: Users },
+  { label: "Agent Builder", path: "/agent-builder", icon: Users },
   { label: "Workflows", path: "/workflows", icon: GitBranch },
   { label: "Settings", path: "/settings", icon: Settings },
 ];
@@ -86,14 +86,14 @@ const CATEGORY_LABELS: Record<string, string> = {
   navigation: "Navigation",
   actions: "Quick Actions",
   work_item: "Work Items",
-  persona: "Personas",
+  agent: "Agent Builder",
   comment: "Comments",
   chat_message: "Chat Messages",
 };
 
 const TYPE_ICONS: Record<string, React.ReactNode> = {
   work_item: <FileText className="h-4 w-4" />,
-  persona: <User className="h-4 w-4" />,
+  agent: <User className="h-4 w-4" />,
   comment: <MessageSquare className="h-4 w-4" />,
   chat_message: <MessageSquare className="h-4 w-4" />,
 };
@@ -210,8 +210,8 @@ export function CommandPalette() {
         if (r.type === "work_item") {
           setSelectedItemId(r.id as WorkItemId);
           navigate("/items");
-        } else if (r.type === "persona") {
-          navigate("/personas");
+        } else if (r.type === "agent") {
+          navigate("/agent-builder");
         } else if (r.type === "comment") {
           navigate("/items");
         } else if (r.type === "chat_message") {
@@ -226,7 +226,7 @@ export function CommandPalette() {
   const grouped = useMemo(() => {
     const allItems = [...staticItems, ...searchItems];
     const groups: { category: string; items: CommandItem[] }[] = [];
-    const categoryOrder = ["navigation", "actions", "work_item", "persona", "comment", "chat_message"];
+    const categoryOrder = ["navigation", "actions", "work_item", "agent", "comment", "chat_message"];
 
     for (const cat of categoryOrder) {
       const items = allItems.filter((i) => i.category === cat);

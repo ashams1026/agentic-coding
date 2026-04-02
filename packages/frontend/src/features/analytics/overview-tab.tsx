@@ -5,7 +5,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import { useSelectedProject, useExecutionStats, useCostSummary } from "@/hooks";
-import { useAnalyticsCostByPersona, useAnalyticsTokensOverTime } from "@/hooks/use-analytics";
+import { useAnalyticsCostByAgent, useAnalyticsTokensOverTime } from "@/hooks/use-analytics";
 import { cn } from "@/lib/utils";
 
 // ── Summary card ────────────────────────────────────────────────
@@ -39,9 +39,9 @@ const RANGES = [
   { value: "90d", label: "90 days" },
 ];
 
-// ── Persona colors ──────────────────────────────────────────────
+// ── Agent colors ──────────────────────────────────────────────
 
-const PERSONA_COLORS = [
+const AGENT_COLORS = [
   "#7c3aed", "#2563eb", "#16a34a", "#d97706", "#ea580c",
   "#dc2626", "#059669", "#0891b2", "#db2777", "#4f46e5",
 ];
@@ -55,7 +55,7 @@ export function OverviewTab() {
 
   const { data: execStats } = useExecutionStats(effectiveProjectId);
   const { data: costSummary } = useCostSummary(effectiveProjectId);
-  const { data: costByPersona = [] } = useAnalyticsCostByPersona(effectiveProjectId, range);
+  const { data: costByAgent = [] } = useAnalyticsCostByAgent(effectiveProjectId, range);
   const { data: tokensOverTime = [] } = useAnalyticsTokensOverTime(effectiveProjectId, range);
 
   const formatDuration = (ms: number) => {
@@ -144,22 +144,22 @@ export function OverviewTab() {
         )}
       </div>
 
-      {/* Cost by persona horizontal bar chart */}
+      {/* Cost by agent horizontal bar chart */}
       <div className="rounded-lg border bg-card p-4">
-        <h3 className="text-sm font-medium mb-4">Cost by Persona</h3>
-        {costByPersona.length > 0 ? (
-          <ResponsiveContainer width="100%" height={Math.max(200, costByPersona.length * 40)}>
-            <BarChart data={costByPersona} layout="vertical">
+        <h3 className="text-sm font-medium mb-4">Cost by Agent</h3>
+        {costByAgent.length > 0 ? (
+          <ResponsiveContainer width="100%" height={Math.max(200, costByAgent.length * 40)}>
+            <BarChart data={costByAgent} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
               <XAxis type="number" tick={{ fontSize: 11 }} className="text-muted-foreground" tickFormatter={(v) => `$${v}`} />
-              <YAxis type="category" dataKey="personaName" tick={{ fontSize: 11 }} width={100} className="text-muted-foreground" />
+              <YAxis type="category" dataKey="agentName" tick={{ fontSize: 11 }} width={100} className="text-muted-foreground" />
               <Tooltip
                 contentStyle={{ fontSize: 12 }}
                 formatter={(value) => [`$${Number(value).toFixed(2)}`, "Cost"]}
               />
               <Bar dataKey="costUsd" radius={[0, 4, 4, 0]}>
-                {costByPersona.map((_, i) => (
-                  <Cell key={i} fill={PERSONA_COLORS[i % PERSONA_COLORS.length]} />
+                {costByAgent.map((_, i) => (
+                  <Cell key={i} fill={AGENT_COLORS[i % AGENT_COLORS.length]} />
                 ))}
               </Bar>
             </BarChart>
