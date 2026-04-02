@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-03 15:45 PDT — Review: UXO.3 (approved)
+
+**Reviewed:** __all__ sentinel removal and global project integration.
+- `useSelectedProject` returns real `projectId` (never null) + `isGlobal` flag ✓
+- Auto-select defaults to global project via `isGlobal` lookup ✓
+- Sidebar: `"__all__"` SelectItem removed, sorted (global first), violet bold styling ✓
+- `effectiveProjectId` preserves "no filter" for global scope ✓
+- Dashboard and analytics tabs use `isGlobal` from hook ✓
+- Zero `__all__` or `isGlobalScope` references remain (grep confirmed) ✓
+- Build passes (all 4 packages) ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 15:35 PDT — UXO.3: Replace __all__ sentinel with global project
 
 **Done:** Rewrote `useSelectedProject` to return `"pj-global"` as `projectId` (never null) and `isGlobal` flag from project data. Defaults to global project when no project selected. Removed `"__all__"` sentinel from sidebar — global project now comes from API, sorted first with violet bold styling. Replaced all `isGlobalScope === "__all__"` checks with `isGlobal` from hook (sidebar, dashboard, analytics tabs). Zero remaining `__all__` or `isGlobalScope` references.
