@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 15:40 PDT — Review: CWF.13 (approved)
+
+**Reviewed:** list-view, filter-bar, detail-panel dynamic workflow.
+- filter-bar: state dropdown from useWorkflowStates(), no WORKFLOW ✓
+- list-view: stateColorMap + getStateColor, group ordering dynamic, stateColor prop on ListRow ✓
+- detail-panel: "Move to" from useWorkflowTransitions(), ChildrenList stateColorMap ✓
+- No hardcoded WORKFLOW/getStateByName/getValidTransitions in any of the 3 files ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 15:35 PDT — CWF.13: Update list-view, filter-bar, detail-panel for dynamic workflow
 
 **Done:** Updated 3 frontend files. `filter-bar.tsx`: replaced `WORKFLOW.states` import with `useWorkflowStates()` for state filter dropdown options. `list-view.tsx`: replaced `WORKFLOW` and `getStateByName` with `useWorkflowStates()` + `stateColorMap`/`getStateColor` helper. State group ordering uses dynamic `workflowStatesData`. Added `stateColor` prop to `ListRow`. `detail-panel.tsx`: replaced `getStateByName`/`getValidTransitions` with `useWorkflowStates()`/`useWorkflowTransitions()`. `StateTransitionControl` receives workflow data as props for "Move to" dropdown. `ChildrenList` receives `stateColorMap` for child state colors.
