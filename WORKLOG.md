@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 02:30 PDT — Review: FND.TEST.5 (approved)
+
+**Reviewed:** Global Agents Phase 1 e2e test execution results.
+- 7/7 PASS, no bugs filed ✓
+- RESULTS.md with summary table, per-test evidence, API test evidence ✓
+- 3 screenshots saved (persistence, new-run modal, Pico scope) ✓
+- API validation includes 201 success, 404 bad persona, 400 missing prompt ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 02:20 PDT — FND.TEST.5: Execute Global Agents Phase 1 e2e tests
 
 **Done:** Executed all 7 test cases from `global-agents-phase1.md`. Results: **7/7 PASS**, no bugs filed. TC-GA-1: "All Projects" persists across 3 page navigations. TC-GA-2: aggregated dashboard with Global badge + Projects Overview table. TC-GA-3: Work Items disabled. TC-GA-4: scope filter + New Run button. TC-GA-5: New Run modal with all fields. TC-GA-6: Pico scope/persona dropdowns. TC-GA-7: POST /api/executions/run returns 201, validation 404/400 confirmed.
