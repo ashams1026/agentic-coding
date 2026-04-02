@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 20:50 PDT — COL.6: Frontend handoff notes display in execution timeline
+
+**Done:** Added handoff notes card to `execution-timeline.tsx` inside each `TimelineEntry` expanded section (before logs). Shows when `execution.handoffNotes` exists: state transition badge (from → to), summary text, decisions list (Lightbulb icon), files changed as mono badges (FileText icon + count), open questions in amber (HelpCircle icon). All sections conditional — only render when array is non-empty. Uses existing card/badge styling conventions with compact sizing (10px labels, xs text).
+**Files:** `packages/frontend/src/features/common/execution-timeline.tsx`
+**Notes:** Implemented in execution-timeline.tsx (where executions render) rather than detail-panel.tsx directly, since the timeline component owns execution entry rendering.
+
+---
+
 ## 2026-04-02 20:40 PDT — Review: COL.5 (approved)
 
 **Reviewed:** Context windowing for accumulated handoff notes.

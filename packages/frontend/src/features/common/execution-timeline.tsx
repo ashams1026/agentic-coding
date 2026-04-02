@@ -10,6 +10,10 @@ import {
   Clock,
   Loader2,
   RotateCcw,
+  FileText,
+  GitBranch,
+  HelpCircle,
+  Lightbulb,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -180,6 +184,61 @@ function TimelineEntry({ execution, persona, isLast, onRetry }: TimelineEntryPro
               <RotateCcw className="h-3 w-3" />
               Retry
             </Button>
+          </div>
+        )}
+
+        {/* Expanded: handoff notes */}
+        {expanded && execution.handoffNotes && (
+          <div className="mt-3 ml-6 rounded-md border bg-card p-3 space-y-2">
+            <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <GitBranch className="h-3 w-3" />
+              Handoff Notes
+              <span className="text-[10px] font-normal">
+                ({execution.handoffNotes.fromState} → {execution.handoffNotes.targetState})
+              </span>
+            </div>
+            <p className="text-xs text-foreground/80">{execution.handoffNotes.summary}</p>
+            {execution.handoffNotes.decisions.length > 0 && (
+              <div>
+                <div className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground mb-1">
+                  <Lightbulb className="h-2.5 w-2.5" />
+                  Decisions
+                </div>
+                <ul className="text-xs text-foreground/70 space-y-0.5 ml-4 list-disc">
+                  {execution.handoffNotes.decisions.map((d, i) => (
+                    <li key={i}>{d}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {execution.handoffNotes.filesChanged.length > 0 && (
+              <div>
+                <div className="flex items-center gap-1 text-[10px] font-medium text-muted-foreground mb-1">
+                  <FileText className="h-2.5 w-2.5" />
+                  Files Changed ({execution.handoffNotes.filesChanged.length})
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {execution.handoffNotes.filesChanged.map((f, i) => (
+                    <span key={i} className="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded">
+                      {f}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            {execution.handoffNotes.openQuestions.length > 0 && (
+              <div>
+                <div className="flex items-center gap-1 text-[10px] font-medium text-amber-600 dark:text-amber-400 mb-1">
+                  <HelpCircle className="h-2.5 w-2.5" />
+                  Open Questions
+                </div>
+                <ul className="text-xs text-amber-600/80 dark:text-amber-400/80 space-y-0.5 ml-4 list-disc">
+                  {execution.handoffNotes.openQuestions.map((q, i) => (
+                    <li key={i}>{q}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
 
