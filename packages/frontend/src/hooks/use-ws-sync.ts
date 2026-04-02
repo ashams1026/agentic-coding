@@ -18,10 +18,7 @@ export function useWsQuerySync() {
     const unsub = subscribeAll((event: WsEvent) => {
       switch (event.type) {
         case "state_change":
-          // Don't invalidate work items during active mutations — they have optimistic data
-          if (queryClient.isMutating({ mutationKey: ["workItems"] }) === 0) {
-            queryClient.invalidateQueries({ queryKey: ["workItems"] });
-          }
+          queryClient.invalidateQueries({ queryKey: ["workItems"] });
           queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
           break;
 
