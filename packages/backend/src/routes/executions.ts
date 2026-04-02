@@ -41,6 +41,9 @@ function serializeExecution(row: typeof executions.$inferSelect) {
     workflowId: row.workflowId ?? null,
     workflowStateName: row.workflowStateName ?? null,
     handoffNotes: row.handoffNotes ?? null,
+    model: row.model ?? null,
+    totalTokens: row.totalTokens ?? null,
+    toolUses: row.toolUses ?? null,
   };
 }
 

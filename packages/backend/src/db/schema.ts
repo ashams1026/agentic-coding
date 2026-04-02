@@ -165,6 +165,9 @@ export const executions = sqliteTable("executions", {
   workflowId: text("workflow_id"), // nullable — references workflows.id; workflow context for this execution
   workflowStateName: text("workflow_state_name"), // nullable — state name at time of execution
   handoffNotes: text("handoff_notes", { mode: "json" }).$type<{ fromState: string; targetState: string; summary: string; decisions: string[]; filesChanged: string[]; openQuestions: string[] } | null>(),
+  model: text("model"), // nullable — persona model used (opus/sonnet/haiku)
+  totalTokens: integer("total_tokens"), // nullable — cumulative tokens used
+  toolUses: integer("tool_uses"), // nullable — count of tool calls made
 });
 
 export const executionsRelations = relations(executions, ({ one, many }) => ({

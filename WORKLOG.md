@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 22:25 PDT — ANL.1: Analytics columns + migration
+
+**Done:** Added 3 nullable columns to `executions` table in schema.ts: `model` (TEXT — opus/sonnet/haiku), `totalTokens` (INTEGER), `toolUses` (INTEGER). Generated migration `0015_lame_blade.sql` (3 ALTER TABLE ADD). Updated shared `Execution` type with 3 new fields. Updated executions route serializer to include all 3. Added clarifying comment on `costUsd` field (stored as cents in DB).
+**Files:** `packages/backend/src/db/schema.ts`, `packages/backend/drizzle/0015_lame_blade.sql`, `packages/shared/src/entities.ts`, `packages/backend/src/routes/executions.ts`
+
+---
+
 ## 2026-04-02 22:15 PDT — Review: SRC.5 (approved)
 
 **Reviewed:** FTS5 search in work items list view.

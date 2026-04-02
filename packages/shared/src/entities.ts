@@ -147,7 +147,7 @@ export interface Execution {
   status: ExecutionStatus;
   startedAt: string;
   completedAt: string | null;
-  costUsd: number;
+  costUsd: number;              // stored as cents in DB, divided by 100 for display
   durationMs: number;
   summary: string;
   outcome: ExecutionOutcome | null;
@@ -159,6 +159,9 @@ export interface Execution {
   workflowId: string | null;
   workflowStateName: string | null;
   handoffNotes: HandoffNote | null;
+  model: string | null;        // persona model used (opus/sonnet/haiku)
+  totalTokens: number | null;  // cumulative tokens used
+  toolUses: number | null;     // count of tool calls made
 }
 
 export interface HandoffNote {
