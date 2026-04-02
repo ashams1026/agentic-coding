@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 19:45 PDT — COL.2: Persist handoff notes on execution completion
+
+**Done:** Added `buildHandoffNote()` function to `handoff-notes.ts` — extracts structured data from execution context: summary (truncated to 500 chars), file paths from logs (regex for wrote/edited/created patterns), decisions (sentences with "decided"/"chose"/"using"), open questions (sentences with "?"/"TODO"/"unclear"). In `execution-manager.ts`, after non-Router successful completions, builds handoff note with fromState (from execution's workflowStateName) and targetState (from work item's current state post-execution), then persists as part of the execution update `.set()` call.
+**Files:** `packages/backend/src/agent/handoff-notes.ts`, `packages/backend/src/agent/execution-manager.ts`
+
+---
+
 ## 2026-04-02 19:35 PDT — Review: COL.1 (approved)
 
 **Reviewed:** HandoffNote type + handoffNotes column + migration.

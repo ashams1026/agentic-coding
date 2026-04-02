@@ -26,6 +26,7 @@ import { trackExecution, onComplete, getProjectCostSummary } from "./concurrency
 import { broadcastNotification } from "../ws.js";
 import { runRouter } from "./router.js";
 import { dispatchForState } from "./dispatch.js";
+import { buildHandoffNote } from "./handoff-notes.js";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -516,6 +517,29 @@ export class ExecutionManager {
         }
       }
 
+      // Build handoff note for non-Router completions
+      let handoffNotes = null;
+      if (persona.name !== "Router" && finalOutcome === "success" && task.workItemId) {
+        const [currentItem] = await (this.db as any)
+          .select({ currentState: workItems.currentState, workflowStateName: executions.workflowStateName })
+          .from(executions)
+          .where(eq(executions.id, executionId));
+        const fromState = currentItem?.workflowStateName ?? "unknown";
+
+        const [updatedItem] = await (this.db as any)
+          .select({ currentState: workItems.currentState })
+          .from(workItems)
+          .where(eq(workItems.id, task.workItemId));
+        const targetState = updatedItem?.currentState ?? fromState;
+
+        handoffNotes = buildHandoffNote({
+          fromState,
+          targetState,
+          summary: finalSummary,
+          logs,
+        });
+      }
+
       await (this.db as any)
         .update(executions)
         .set({
@@ -528,6 +552,7 @@ export class ExecutionManager {
           logs,
           checkpointMessageId,
           structuredOutput,
+          handoffNotes,
         })
         .where(eq(executions.id, executionId));
 
