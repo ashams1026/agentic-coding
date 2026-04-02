@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-03 14:30 PDT — Review: FX.TYPE.2 (approved)
+
+**Reviewed:** HandoffNote import deduplication.
+- Local `HandoffNote` interface removed, replaced with import from `@agentops/shared` ✓
+- Shared definition identical (6 fields, same types) ✓
+- Re-export preserves module's public API ✓
+- Only consumer (`execution-manager.ts`) imports functions, not the type — unaffected ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 14:25 PDT — FX.TYPE.2: Import HandoffNote from shared
 
 **Done:** Removed the duplicated `HandoffNote` interface from `handoff-notes.ts` and replaced it with `import type { HandoffNote } from "@agentops/shared"`. Added `export type { HandoffNote }` re-export so the module's public API is unchanged. The shared definition in `entities.ts` is identical — no behavioral change.
