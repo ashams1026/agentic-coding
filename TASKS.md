@@ -24,7 +24,7 @@
 ### Templates Phase 1
 
 - [x] **TPL.1** — Backend: add `templates` table to schema (id, name, type work_item/persona, content JSON, isBuiltIn boolean, createdAt). Seed 3 built-in work item templates (Bug Report, Feature Request, Spike). Generate migration. *(completed 2026-04-03 09:00 PDT)*
-- [ ] **TPL.2** — Backend: create `packages/backend/src/routes/templates.ts`. CRUD: `GET /api/templates?type=work_item`, `POST /api/templates`, `PATCH /api/templates/:id`, `DELETE /api/templates/:id` (guard built-in). `POST /api/templates/:id/apply` (create work item from template). Register in server.ts.
+- [review] **TPL.2** — Backend: create `packages/backend/src/routes/templates.ts`. CRUD: `GET /api/templates?type=work_item`, `POST /api/templates`, `PATCH /api/templates/:id`, `DELETE /api/templates/:id` (guard built-in). `POST /api/templates/:id/apply` (create work item from template). Register in server.ts.
 - [ ] **TPL.3** — Frontend: add template selector to work item creation flow. When clicking "+ Add" in work items, show template picker dialog (grid of template cards with name + description). Selecting a template pre-fills title, description, priority, labels.
 
 ### Notification External Channels

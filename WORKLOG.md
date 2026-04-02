@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 09:10 PDT — TPL.2: Templates CRUD route + apply endpoint
+
+**Done:** Created `packages/backend/src/routes/templates.ts` with 5 endpoints: `GET /api/templates?type=` (list with optional type filter), `POST /api/templates` (create custom template with type validation), `PATCH /api/templates/:id` (update, guards built-in), `DELETE /api/templates/:id` (delete, guards built-in), `POST /api/templates/:id/apply` (create work item from template — resolves workflow initial state, supports overrides for title/description/priority/labels). Registered in `server.ts`.
+**Files:** `packages/backend/src/routes/templates.ts` (new), `packages/backend/src/server.ts`
+
+---
+
 ## 2026-04-03 09:00 PDT — Review: TPL.1 (approved)
 
 **Reviewed:** Templates table + seed + migration.

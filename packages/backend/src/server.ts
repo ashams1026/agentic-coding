@@ -19,6 +19,7 @@ import { analyticsRoutes } from "./routes/analytics.js";
 import { webhookRoutes } from "./routes/webhooks.js";
 import { webhookTriggerRoutes } from "./routes/webhook-triggers.js";
 import { scheduleRoutes } from "./routes/schedules.js";
+import { templateRoutes } from "./routes/templates.js";
 import { registerWebSocket } from "./ws.js";
 import { getActiveCount } from "./agent/concurrency.js";
 import { executionManager } from "./agent/setup.js";
@@ -79,6 +80,7 @@ export async function buildServer() {
   await webhookRoutes(server);
   await webhookTriggerRoutes(server);
   await scheduleRoutes(server);
+  await templateRoutes(server);
 
   return server;
 }
