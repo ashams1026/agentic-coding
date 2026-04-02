@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { useAgents, useAgentAssignments, useUpdateAgentAssignment, useSelectedProject } from "@/hooks";
+import { useAgents, useAgentAssignments, useUpdateAgentAssignment, useProjectFromUrl } from "@/hooks";
 import type { AgentId, Agent } from "@agentops/shared";
 import { StateCard } from "./state-card";
 import { WorkflowPreview } from "./workflow-preview";
@@ -57,7 +57,7 @@ function ModelBadge({ model }: { model: string }) {
 
 function AgentAssignmentsSection({ states }: { states: StateCardData[] }) {
   const [collapsed, setCollapsed] = useState(false);
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const { data: agents = [] } = useAgents();
   const { data: assignments = [] } = useAgentAssignments(projectId);
   const updateAssignment = useUpdateAgentAssignment();

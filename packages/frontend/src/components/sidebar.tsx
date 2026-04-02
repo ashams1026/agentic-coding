@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { useEffect, useState, useMemo } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
 import {
   LayoutDashboard,
   ListTodo,
@@ -21,12 +21,23 @@ import {
   ChevronDown,
   ChevronRight,
   ChevronsUpDown,
+  Plus,
+  FolderPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
 import { useActivityStore } from "@/stores/activity-store";
-import { useExecutions, useDashboardStats, useProjects } from "@/hooks";
+import { useExecutions, useDashboardStats, useProjects, useCreateProject } from "@/hooks";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import {
   Tooltip,
   TooltipContent,
@@ -34,7 +45,14 @@ import {
 } from "@/components/ui/tooltip";
 import { NotificationBell } from "@/features/notifications/notification-bell";
 import { Separator } from "@/components/ui/separator";
-import type { Project } from "@agentops/shared";
+import type { Project, ProjectId } from "@agentops/shared";
+
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 const themeOrder = ["system", "light", "dark"] as const;
 const themeIcon = { system: Monitor, light: Sun, dark: Moon } as const;
@@ -50,6 +68,153 @@ const projectChildLinks = [
   { page: "chat", icon: MessageSquare, label: "Chat" },
   { page: "settings", icon: Settings, label: "Project Settings" },
 ] as const;
+
+function NewProjectDialog({
+  open,
+  onOpenChange,
+  onCreated,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onCreated: (projectId: ProjectId) => void;
+}) {
+  const [name, setName] = useState("");
+  const [mode, setMode] = useState<"create" | "existing">("create");
+  const [pathOverride, setPathOverride] = useState("");
+  const [existingPath, setExistingPath] = useState("~/");
+  const createProject = useCreateProject();
+
+  const generatedPath = useMemo(
+    () => (name.trim() ? `~/woof/${slugify(name)}/` : "~/woof/"),
+    [name],
+  );
+
+  const effectivePath =
+    mode === "create"
+      ? pathOverride || generatedPath
+      : existingPath;
+
+  function handleCreate() {
+    const trimmedName = name.trim();
+    if (!trimmedName || !effectivePath.trim()) return;
+
+    createProject.mutate(
+      { name: trimmedName, path: effectivePath.trim() },
+      {
+        onSuccess: (project) => {
+          onOpenChange(false);
+          setName("");
+          setPathOverride("");
+          setExistingPath("~/");
+          setMode("create");
+          onCreated(project.id as ProjectId);
+        },
+      },
+    );
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>New Project</DialogTitle>
+          <DialogDescription>
+            Create a new project for your agents to work in.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="flex flex-col gap-4 py-2">
+          {/* Project name */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-sm font-medium text-foreground">
+              Project Name
+            </label>
+            <Input
+              placeholder="My Project"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleCreate();
+              }}
+            />
+          </div>
+
+          {/* Working directory */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-foreground">
+              Working Directory
+              <span className="ml-1 text-xs font-normal text-muted-foreground">
+                — where agents will operate
+              </span>
+            </label>
+
+            {/* Mode toggle */}
+            <div className="flex gap-4">
+              <label className="flex items-center gap-1.5 text-sm cursor-pointer">
+                <input
+                  type="radio"
+                  name="dir-mode"
+                  checked={mode === "create"}
+                  onChange={() => setMode("create")}
+                  className="accent-primary"
+                />
+                Create new
+              </label>
+              <label className="flex items-center gap-1.5 text-sm cursor-pointer">
+                <input
+                  type="radio"
+                  name="dir-mode"
+                  checked={mode === "existing"}
+                  onChange={() => setMode("existing")}
+                  className="accent-primary"
+                />
+                Choose existing
+              </label>
+            </div>
+
+            {mode === "create" ? (
+              <Input
+                placeholder={generatedPath}
+                value={pathOverride}
+                onChange={(e) => setPathOverride(e.target.value)}
+                className="font-mono text-xs"
+              />
+            ) : (
+              <Input
+                placeholder="~/path/to/project"
+                value={existingPath}
+                onChange={(e) => setExistingPath(e.target.value)}
+                className="font-mono text-xs"
+              />
+            )}
+
+            {mode === "create" && !pathOverride && name.trim() && (
+              <p className="text-xs text-muted-foreground">
+                Will create <span className="font-mono">{generatedPath}</span>
+              </p>
+            )}
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleCreate}
+            disabled={!name.trim() || !effectivePath.trim() || createProject.isPending}
+          >
+            {createProject.isPending ? "Creating..." : "Create Project"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export function Sidebar() {
   const {
@@ -68,6 +233,8 @@ export function Sidebar() {
   const pendingProposalCount = dashboardStats?.pendingProposals ?? 0;
   const unreadActivityCount = useActivityStore((s) => s.unreadCount);
   const location = useLocation();
+  const navigate = useNavigate();
+  const [newProjectOpen, setNewProjectOpen] = useState(false);
 
   // Expand/collapse state for project sections — persisted to localStorage
   const SIDEBAR_EXPANDED_KEY = "agentops-sidebar-expanded";
@@ -313,6 +480,18 @@ export function Sidebar() {
               <TooltipContent side="right">Projects</TooltipContent>
             </Tooltip>
 
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setNewProjectOpen(true)}
+                  className="flex items-center justify-center rounded-md px-2 py-2 text-muted-foreground hover:bg-muted transition-colors duration-150"
+                >
+                  <FolderPlus className="h-5 w-5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="right">New Project</TooltipContent>
+            </Tooltip>
+
             {/* Collapsed badge indicators */}
             {pendingProposalCount > 0 && (
               <Tooltip>
@@ -437,6 +616,20 @@ export function Sidebar() {
 
             {/* Project tree */}
             {sortedProjects.map((project) => renderProjectSection(project))}
+
+            {/* New Project button */}
+            <button
+              onClick={() => setNewProjectOpen(true)}
+              className={cn(
+                "flex w-full items-center rounded-md text-sm transition-colors duration-150",
+                "hover:bg-muted",
+                "gap-2 px-3 py-1.5",
+                "text-muted-foreground font-medium",
+              )}
+            >
+              <Plus className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">New Project</span>
+            </button>
           </div>
         )}
       </nav>
@@ -510,6 +703,15 @@ export function Sidebar() {
       >
         {sidebarContent}
       </div>
+
+      {/* New Project dialog */}
+      <NewProjectDialog
+        open={newProjectOpen}
+        onOpenChange={setNewProjectOpen}
+        onCreated={(projectId) => {
+          navigate(`/p/${projectId}/items`);
+        }}
+      />
     </>
   );
 }

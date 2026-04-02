@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useWorkItems, useAgents, useExecutions, useSelectedProject, useCreateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem, useBulkArchiveWorkItems, useBulkDeleteWorkItems } from "@/hooks";
+import { useWorkItems, useAgents, useExecutions, useProjectFromUrl, useCreateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem, useBulkArchiveWorkItems, useBulkDeleteWorkItems } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { useToastStore } from "@/stores/toast-store";
 import { searchApi } from "@/api/client";
@@ -343,7 +343,7 @@ function EmptyWorkItemsState({ projectId }: { projectId: string | null }) {
 // ── Main list view ──────────────────────────────────────────────
 
 export function ListView() {
-  const { projectId, project } = useSelectedProject();
+  const { projectId, project } = useProjectFromUrl();
   const { searchQuery, groupBy, sortBy, sortDir, filterState, filterPriority, filterAgents, filterLabels, showArchived, selectedItemId, setSelectedItemId, selectedIds, toggleSelectId, clearSelection, clearFilters, setFilterState } =
     useWorkItemsStore();
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined, showArchived || undefined);

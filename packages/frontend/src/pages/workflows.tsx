@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useWorkflow, useWorkflows, useUpdateWorkflow, usePublishWorkflow, useCreateWorkflow } from "@/hooks/use-workflows";
 import { useAgents } from "@/hooks/use-agents";
-import { useSelectedProject } from "@/hooks";
+import { useProjectFromUrl } from "@/hooks";
 import { WorkflowBuilder } from "@/features/workflow-builder/workflow-builder";
 import type { StateCardData } from "@/features/workflow-builder/state-card";
 import { Button } from "@/components/ui/button";
@@ -618,7 +618,7 @@ function ScheduleDialog({ open, onOpenChange, projectId, onSaved, editingSchedul
 
 function AutomationsOverview() {
   const navigate = useNavigate();
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const { data: workflows = [], isLoading: loadingWorkflows } = useWorkflows(projectId ?? undefined);
   const { data: agents = [] } = useAgents();
   const createWorkflow = useCreateWorkflow();
@@ -699,7 +699,7 @@ function AutomationsOverview() {
   function handleCreateWorkflow(name: string) {
     createWorkflow.mutate(
       { name, projectId: projectId ?? undefined },
-      { onSuccess: (wf) => navigate(`/automations/${wf.id}`) },
+      { onSuccess: (wf) => navigate(`/p/${projectId}/automations/${wf.id}`) },
     );
   }
 
@@ -781,7 +781,7 @@ function AutomationsOverview() {
                     <WorkflowCardLoader
                       key={wf.id}
                       workflow={wf}
-                      onEdit={() => navigate(`/automations/${wf.id}`)}
+                      onEdit={() => navigate(`/p/${projectId}/automations/${wf.id}`)}
                       onToggleAutoRouting={handleToggleAutoRouting}
                     />
                   ))}

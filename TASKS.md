@@ -50,15 +50,15 @@
 
 ### Phase 2: Sidebar Redesign (remaining)
 
-- [ ] **NAV.7** — Frontend + Backend: Add "New Project" button at bottom of Projects section. Dialog has: project name input, working directory with two options: (1) "Choose existing directory" with browse starting from `~/` (user's home dir), (2) "Create new" which auto-generates `~/woof/<slugified-name>/` from the project name (user can override). Backend `mkdir -p`'s the directory on project creation if it doesn't exist. Label as "Working Directory — where agents will operate."
+- [x] **NAV.7** — Frontend + Backend: Add "New Project" button at bottom of Projects section. *(completed 2026-04-02 14:38 PDT)* Dialog has: project name input, working directory with two options: (1) "Choose existing directory" with browse starting from `~/` (user's home dir), (2) "Create new" which auto-generates `~/woof/<slugified-name>/` from the project name (user can override). Backend `mkdir -p`'s the directory on project creation if it doesn't exist. Label as "Working Directory — where agents will operate."
 
 ### Phase 3: Migrate Pages to URL-based Project Context
 
 > Each page currently calls `useSelectedProject()` (32 files). Migrate each to `useProjectFromUrl()`. Pages render inside `ProjectLayout` which guarantees `projectId` in URL.
 
-- [ ] **NAV.8** — Frontend: Migrate Work Items page. Replace `useSelectedProject()` with `useProjectFromUrl()`. Update all query keys and API calls. Verify `/p/pj-global/items` and `/p/pj-xyz/items` show different data.
-- [ ] **NAV.9** — Frontend: Migrate Automations page + Workflow Builder. Replace project context. Update `navigate()` calls to include project prefix (`/p/:projectId/automations/:workflowId`).
-- [ ] **NAV.10** — Frontend: Migrate Agents page (rename from Agent Builder). Replace `useSelectedProject()`. Show project-scoped agents + inherited global agents. Rename route from `agent-builder` to `agents`. Update page title.
+- [x] **NAV.8** — Frontend: Migrate Work Items page. Replace `useSelectedProject()` with `useProjectFromUrl()`. Update all query keys and API calls. *(completed 2026-04-02 14:38 PDT)*
+- [x] **NAV.9** — Frontend: Migrate Automations page + Workflow Builder. Replace project context. Update `navigate()` calls to include project prefix. *(completed 2026-04-02 14:38 PDT)*
+- [x] **NAV.10** — Frontend: Migrate Agents page (rename from Agent Builder). Replace `useSelectedProject()`. Page title changed to "Agents". *(completed 2026-04-02 14:38 PDT)*
 - [ ] **NAV.11** — Frontend: Migrate Agent Monitor page. Replace project context. Filter agents/executions by project from URL.
 - [ ] **NAV.12** — Frontend: Migrate Activity Feed page. Replace project context. Filter events by project from URL.
 - [ ] **NAV.13** — Frontend: Migrate Analytics page. Replace project context. Show per-project cost/usage.

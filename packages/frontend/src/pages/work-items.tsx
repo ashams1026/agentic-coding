@@ -8,13 +8,13 @@ import { FilterBar } from "@/features/work-items/filter-bar";
 import { ListView } from "@/features/work-items/list-view";
 import { DetailPanel } from "@/features/work-items/detail-panel";
 import { useWorkItemsStore } from "@/stores/work-items-store";
-import { useCreateWorkItem, useSelectedProject, useProjects } from "@/hooks";
+import { useCreateWorkItem, useProjectFromUrl, useProjects } from "@/hooks";
 
 export function WorkItemsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const store = useWorkItemsStore();
   const { searchQuery, setSearchQuery, sortDir, setSortDir, filterAgents, filterLabels, selectedItemId, detailPanelWidth, setDetailPanelWidth } = store;
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const createWorkItem = useCreateWorkItem();
   const { data: projectsList } = useProjects();
   const projectSettings = projectsList?.[0]?.settings as Record<string, unknown> | undefined;

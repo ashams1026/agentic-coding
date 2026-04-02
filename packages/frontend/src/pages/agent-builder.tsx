@@ -10,7 +10,7 @@ export function AgentBuilderPage() {
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <div className="px-6 pt-6 pb-4 shrink-0">
-        <h1 className="text-2xl font-bold">Agent Builder</h1>
+        <h1 className="text-2xl font-bold">Agents</h1>
         <p className="text-muted-foreground text-sm mt-1">
           Configure your AI agent team — prompts, tools, and models.
         </p>

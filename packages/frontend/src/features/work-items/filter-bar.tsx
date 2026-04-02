@@ -19,7 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { useAgents, useWorkItems, useSelectedProject } from "@/hooks";
+import { useAgents, useWorkItems, useProjectFromUrl } from "@/hooks";
 import { useWorkflowStates } from "@/hooks/use-workflows";
 import {
   useWorkItemsStore,
@@ -72,7 +72,7 @@ export function FilterBar() {
     clearFilters,
   } = useWorkItemsStore();
 
-  const { projectId, project } = useSelectedProject();
+  const { projectId, project } = useProjectFromUrl();
   const { data: agents } = useAgents();
   const { data: allItems } = useWorkItems(undefined, projectId ?? undefined);
   const { data: workflowStatesData } = useWorkflowStates(project?.workflowId ?? null);

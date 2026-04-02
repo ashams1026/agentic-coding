@@ -27,7 +27,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useAgents, useCreateAgent, useDeleteAgent, useSelectedProject } from "@/hooks";
+import { useAgents, useCreateAgent, useDeleteAgent, useProjectFromUrl } from "@/hooks";
 import { cn } from "@/lib/utils";
 import type { Agent, AgentId, AgentModel } from "@agentops/shared";
 
@@ -240,7 +240,7 @@ export function AgentList({ selectedId, onSelect }: AgentListProps) {
   const deleteMutation = useDeleteAgent();
   const [deleteTarget, setDeleteTarget] = useState<Agent | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const { project, isGlobal } = useSelectedProject();
+  const { project, isGlobal } = useProjectFromUrl();
 
   const filteredAgents = useMemo(() => {
     if (!agents || !searchQuery.trim()) return agents;

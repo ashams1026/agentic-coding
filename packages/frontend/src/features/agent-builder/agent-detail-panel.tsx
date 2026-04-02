@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { useAgent, useUpdateAgent, useProjects, useSelectedProject } from "@/hooks";
+import { useAgent, useUpdateAgent, useProjects, useProjectFromUrl } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { MarkdownPreview } from "./system-prompt-editor";
 import { SystemPromptEditor } from "./system-prompt-editor";
@@ -143,7 +143,7 @@ export function AgentDetailPanel({ agentId, onClose }: AgentDetailPanelProps) {
   const { data: agent } = useAgent(agentId);
   const updateMutation = useUpdateAgent();
   const { data: projects } = useProjects();
-  const { projectId: contextProjectId } = useSelectedProject();
+  const { projectId: contextProjectId } = useProjectFromUrl();
   const [editing, setEditing] = useState(false);
   const [skillBrowserOpen, setSkillBrowserOpen] = useState(false);
   const [subagentBrowserOpen, setSubagentBrowserOpen] = useState(false);
@@ -389,7 +389,7 @@ export function AgentDetailPanel({ agentId, onClose }: AgentDetailPanelProps) {
                 <div>
                   <label className="text-xs text-muted-foreground mb-1 block">Project</label>
                   <Select
-                    value={editProjectId ?? contextProjectId}
+                    value={editProjectId ?? contextProjectId ?? undefined}
                     onValueChange={(v) => setEditProjectId(v)}
                   >
                     <SelectTrigger className="h-8 text-sm">

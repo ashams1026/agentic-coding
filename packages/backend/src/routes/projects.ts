@@ -1,6 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import { eq } from "drizzle-orm";
 import { existsSync } from "node:fs";
+import { mkdir } from "node:fs/promises";
+import { homedir } from "node:os";
 import { db } from "../db/connection.js";
 import { projects } from "../db/schema.js";
 import { seedDefaultAgentsForProject } from "../db/default-agents.js";
@@ -10,6 +12,13 @@ import type {
   CreateProjectRequest,
   UpdateProjectRequest,
 } from "@agentops/shared";
+
+function expandTilde(p: string): string {
+  if (p.startsWith("~/") || p === "~") {
+    return p.replace("~", homedir());
+  }
+  return p;
+}
 
 function toIso(d: Date): string {
   return d.toISOString();
@@ -64,9 +73,18 @@ export async function projectRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: { code: "VALIDATION", message: "Project path is required" } });
     }
 
-    // Validate path exists on disk
-    if (!existsSync(path)) {
-      return reply.status(400).send({ error: { code: "VALIDATION", message: `Path does not exist: ${path}` } });
+    const resolvedPath = expandTilde(path.trim());
+
+    // Ensure the directory exists (mkdir -p) — don't fail if it can't be created
+    try {
+      await mkdir(resolvedPath, { recursive: true });
+    } catch (err) {
+      app.log.warn({ err, path: resolvedPath }, "Failed to create project directory");
+    }
+
+    // Validate path exists on disk after mkdir attempt
+    if (!existsSync(resolvedPath)) {
+      return reply.status(400).send({ error: { code: "VALIDATION", message: `Path does not exist and could not be created: ${path}` } });
     }
 
     const id = createId.project();
@@ -77,7 +95,7 @@ export async function projectRoutes(app: FastifyInstance) {
       .values({
         id,
         name: name.trim(),
-        path: path.trim(),
+        path: resolvedPath,
         settings: settings ?? {},
         createdAt: now,
       })
@@ -98,13 +116,16 @@ export async function projectRoutes(app: FastifyInstance) {
     const body = request.body;
 
     // Validate path if being updated
-    if (body.path !== undefined && body.path.trim() && !existsSync(body.path)) {
-      return reply.status(400).send({ error: { code: "VALIDATION", message: `Path does not exist: ${body.path}` } });
+    if (body.path !== undefined && body.path.trim()) {
+      const resolvedUpdatePath = expandTilde(body.path.trim());
+      if (!existsSync(resolvedUpdatePath)) {
+        return reply.status(400).send({ error: { code: "VALIDATION", message: `Path does not exist: ${body.path}` } });
+      }
     }
 
     const updates: Record<string, unknown> = {};
     if (body.name !== undefined) updates["name"] = body.name.trim();
-    if (body.path !== undefined) updates["path"] = body.path.trim();
+    if (body.path !== undefined) updates["path"] = expandTilde(body.path.trim());
     if (body.settings !== undefined) updates["settings"] = body.settings;
 
     if (Object.keys(updates).length === 0) {

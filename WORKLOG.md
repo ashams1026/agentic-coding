@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 14:38 PDT — NAV.7: New Project button + backend mkdir
+
+**Done:** Added "+ New Project" button to sidebar with dialog: project name input, working directory with "Create new" (auto-generates `~/woof/<slug>/`) and "Choose existing" modes. Backend `mkdir -p` on project creation with tilde expansion via `os.homedir()`. Navigates to `/p/:newProjectId/items` on success.
+**Files:** `packages/frontend/src/components/sidebar.tsx`, `packages/backend/src/routes/projects.ts`
+
+---
+
+## 2026-04-02 14:38 PDT — NAV.8, NAV.9, NAV.10: Page migrations to useProjectFromUrl
+
+**Done:** Migrated 3 page groups from `useSelectedProject()` to `useProjectFromUrl()`: (1) Work Items — `work-items.tsx`, `filter-bar.tsx`, `list-view.tsx`, `detail-panel.tsx`. (2) Automations — `workflows.tsx` + `workflow-builder.tsx`, updated `navigate()` to project-scoped `/p/:projectId/automations/:workflowId`. (3) Agents — `agent-builder.tsx`, `agent-list.tsx`, `agent-detail-panel.tsx`, page title changed to "Agents".
+**Files:** `pages/work-items.tsx`, `features/work-items/{filter-bar,list-view,detail-panel}.tsx`, `pages/workflows.tsx`, `features/workflow-builder/workflow-builder.tsx`, `pages/agent-builder.tsx`, `features/agent-builder/{agent-list,agent-detail-panel}.tsx`
+
+---
+
 ## 2026-04-02 14:29 PDT — NAV.5: Sidebar state persistence
 
 **Done:** Added localStorage persistence for sidebar expanded/collapsed state using key `agentops-sidebar-expanded`. Initializer reads from localStorage on mount, falls back to `["pj-global"]`. A `useEffect` writes to localStorage on every state change. Added expand/collapse all toggle button (ChevronsUpDown icon) next to "Projects" separator label — expands all if any collapsed, collapses all if all expanded. All localStorage calls wrapped in try/catch. Auto-expand on URL navigation still works (adds to persisted set).

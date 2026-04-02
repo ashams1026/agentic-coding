@@ -37,7 +37,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
-import { useWorkItem, useWorkItems, useProposals, useAgents, useAgentAssignments, useCreateWorkItem, useUpdateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem, useSelectedProject } from "@/hooks";
+import { useWorkItem, useWorkItems, useProposals, useAgents, useAgentAssignments, useCreateWorkItem, useUpdateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem, useProjectFromUrl } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { useToastStore } from "@/stores/toast-store";
 import { CommentStream } from "@/features/common/comment-stream";
@@ -657,7 +657,7 @@ function MetadataSection({ item }: { item: WorkItem }) {
 // ── Main detail panel ───────────────────────────────────────────
 
 export function DetailPanel() {
-  const { projectId, project } = useSelectedProject();
+  const { projectId, project } = useProjectFromUrl();
   const { selectedItemId, setSelectedItemId } = useWorkItemsStore();
   const { data: item } = useWorkItem(selectedItemId!);
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
