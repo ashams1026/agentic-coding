@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-03 02:35 PDT — Review: OWH.1 (approved)
+
+**Reviewed:** TypedEventBus + event emissions.
+- 4 typed event interfaces + AppEvent union ✓
+- Singleton eventBus with per-type + wildcard listeners ✓
+- 4 emission points: started/completed/failed in execution-manager, state_changed in work-items ✓
+- Debug logging, setMaxListeners(50), off() for cleanup ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 02:30 PDT — OWH.1: TypedEventBus + event emissions
 
 **Done:** Created `packages/backend/src/events/event-bus.ts` with `TypedEventBus` class wrapping Node.js EventEmitter. 4 typed event interfaces: `ExecutionStartedEvent`, `ExecutionCompletedEvent`, `ExecutionFailedEvent`, `WorkItemStateChangedEvent`. Union type `AppEvent` + `AppEventType`. Singleton `eventBus` export. Supports per-type and wildcard (*) listeners. Wired emissions into: execution-manager.ts (started at spawn, completed at success, failed at error handler) and work-items.ts (state_changed on PATCH currentState). Added projectId to existing query in work-items.ts validation block.
