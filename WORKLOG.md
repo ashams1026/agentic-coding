@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-03 09:30 PDT — Review: FX.SEC.1 (approved)
+
+**Reviewed:** Path traversal fix in backup restore.
+- `resolve()` canonicalizes input path, handles `..` and relative paths ✓
+- `startsWith(resolvedBackupDir + "/")` prevents prefix attacks ✓
+- All downstream operations use resolved path ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 09:25 PDT — FX.SEC.1: Fix path traversal in backup restore
 
 **Done:** Added path traversal validation to `restoreBackup()` in `backup.ts`. Now resolves the provided path with `resolve()` and checks it starts with the backups directory path + `/`. Rejects paths containing `..` or pointing outside `~/.agentops/backups/` with a clear error message. All subsequent operations use the resolved path.
