@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 11:00 PDT — CUX.DOC.1: Document Agent Chat and Persona Prompts API changes
+
+**Done:** Updated `docs/api.md` Chat section: renamed "Chat (Pico)" to "Chat (Multi-Persona)". Updated Create Session to show `personaId` and `workItemId` params with full ChatSession response including new fields. Updated List Sessions response to show `ChatSessionWithPersona` with persona join data and `lastMessagePreview`. Updated Get Messages to return `session` object with persona info. Updated Send Message to document persona-specific prompt behavior. Added new "Persona Prompt Template Variables" section documenting all 13 built-in variables across 4 namespaces, resolution rules, and the two resolution paths (executor vs chat).
+**Files:** `docs/api.md`
+
+---
+
 ## 2026-04-02 10:50 PDT — Review: CUX.TEST.4 (approved)
 
 **Reviewed:** Notifications UX e2e test execution results.

@@ -1392,7 +1392,9 @@ Fired when an execution status changes.
 }
 ```
 
-## Chat (Pico)
+## Chat (Multi-Persona)
+
+Chat sessions support any persona, not just Pico. Each session is linked to a persona via `personaId`.
 
 ### Create Chat Session
 
@@ -1404,24 +1406,26 @@ POST /api/chat/sessions
 
 ```typescript
 {
-  projectId?: string;   // optional — null for global sessions (no project context)
-  personaId?: string;   // optional — override default Pico persona
+  projectId?: string;    // optional — null for global sessions
+  personaId?: string;    // optional — persona for this session (null defaults to Pico)
+  workItemId?: string;   // optional — link session to a work item for context
 }
 ```
 
-Body may be empty (`{}`) or omitted entirely to create a global (unscoped) session. If `projectId` is provided, it is validated — 404 if not found.
+Body may be empty (`{}`) or omitted entirely to create a global session with the default Pico persona. Validates `projectId` and `personaId` if provided — 404 if not found.
 
 **Response:** 201 `{ data: ChatSession }`
-
-ChatSession includes `projectId` as `string | null`:
 
 ```typescript
 {
   id: ChatSessionId;
-  projectId: ProjectId | null;  // null for global sessions
+  projectId: ProjectId | null;
+  personaId: PersonaId | null;   // null = default Pico
+  workItemId: WorkItemId | null; // null = no work item context
+  sdkSessionId: string | null;   // reserved for future SDK session tracking
   title: string;
-  createdAt: string;            // ISO 8601
-  updatedAt: string;            // ISO 8601
+  createdAt: string;              // ISO 8601
+  updatedAt: string;              // ISO 8601
 }
 ```
 
@@ -1437,7 +1441,38 @@ GET /api/chat/sessions
 |---|---|---|
 | `projectId` | `string` | Filter by project. Omit to list all sessions (global + project-scoped). |
 
-**Response:** `{ data: ChatSession[], total: number }`
+**Response:** `{ data: ChatSessionWithPersona[], total: number }`
+
+Each session includes joined persona data and last message preview:
+
+```typescript
+{
+  ...ChatSession,
+  persona: { name: string; avatar: { color: string; icon: string } | null } | null;
+  lastMessagePreview: string | null;  // first 60 chars of most recent message
+}
+```
+
+### Get Chat Messages
+
+```
+GET /api/chat/sessions/:id/messages
+```
+
+**Response:**
+
+```typescript
+{
+  data: ChatMessage[];
+  total: number;
+  session: {
+    ...ChatSession;
+    persona: { name: string; avatar: { color: string; icon: string } | null } | null;
+  };
+}
+```
+
+The `session` object includes persona info for the chat header display.
 
 ### Send Chat Message (SSE)
 
@@ -1445,7 +1480,9 @@ GET /api/chat/sessions
 POST /api/chat/sessions/:id/messages
 ```
 
-**Body:** `{ content: string }`
+**Body:** `{ content: string; personaId?: string }`
+
+The persona is loaded from the session's `personaId`. If the persona is not Pico (`settings.isAssistant !== true`), the Pico-specific skill file and personality instructions are not injected — the persona's own `systemPrompt` is used with generic chat instructions.
 
 **Response:** Server-Sent Events stream with event types: `text`, `thinking`, `tool_use`, `tool_result`, `suggestion`, `error`, `done`.
 
@@ -1462,6 +1499,38 @@ PATCH /api/chat/sessions/:id
 ```
 DELETE /api/chat/sessions/:id
 ```
+
+---
+
+## Persona Prompt Template Variables
+
+Persona system prompts support `{{variable.name}}` template variables that are resolved at prompt-build time. Undefined variables are left as literal text.
+
+### Built-in Variables
+
+| Variable | Available in | Description |
+|----------|-------------|-------------|
+| `{{project.name}}` | Executor + Chat | Project display name |
+| `{{project.path}}` | Executor + Chat | Project working directory |
+| `{{project.description}}` | Executor + Chat | Project description from settings |
+| `{{persona.name}}` | Executor + Chat | Current persona name |
+| `{{persona.description}}` | Executor + Chat | Persona description |
+| `{{persona.model}}` | Executor + Chat | Model (opus/sonnet/haiku) |
+| `{{date.now}}` | Executor + Chat | Current ISO 8601 timestamp |
+| `{{date.today}}` | Executor + Chat | Today's date (YYYY-MM-DD) |
+| `{{date.dayOfWeek}}` | Executor + Chat | Day name (e.g., Monday) |
+| `{{workItem.id}}` | Executor only | Work item ID |
+| `{{workItem.title}}` | Executor only | Work item title |
+| `{{workItem.state}}` | Executor only | Current workflow state |
+| `{{workItem.description}}` | Executor only | Work item description |
+
+### Resolution
+
+Variables are resolved via `resolveVariables()` in `packages/backend/src/agent/prompt-variables.ts`. The regex `{{variable.name}}` matches Mustache-style placeholders with optional whitespace. Escaped `\{{` is not matched.
+
+Resolution happens in two paths:
+- **Executor path** (`buildSystemPrompt()` in `claude-executor.ts`): all 13 variables available
+- **Chat path** (`chat.ts`): project + persona + date variables only (no workItem in chat context)
 
 ## SDK Capabilities
 
