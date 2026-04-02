@@ -164,6 +164,7 @@ export const executions = sqliteTable("executions", {
   error: text("error", { mode: "json" }).$type<{ category: string; message: string; details?: Record<string, unknown> } | null>(),
   workflowId: text("workflow_id"), // nullable — references workflows.id; workflow context for this execution
   workflowStateName: text("workflow_state_name"), // nullable — state name at time of execution
+  handoffNotes: text("handoff_notes", { mode: "json" }).$type<{ fromState: string; targetState: string; summary: string; decisions: string[]; filesChanged: string[]; openQuestions: string[] } | null>(),
 });
 
 export const executionsRelations = relations(executions, ({ one, many }) => ({

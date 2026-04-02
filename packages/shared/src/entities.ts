@@ -158,6 +158,16 @@ export interface Execution {
   parentExecutionId: string | null;
   workflowId: string | null;
   workflowStateName: string | null;
+  handoffNotes: HandoffNote | null;
+}
+
+export interface HandoffNote {
+  fromState: string;
+  targetState: string;
+  summary: string;
+  decisions: string[];
+  filesChanged: string[];
+  openQuestions: string[];
 }
 
 export interface Comment {

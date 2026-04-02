@@ -40,6 +40,7 @@ function serializeExecution(row: typeof executions.$inferSelect) {
     parentExecutionId: row.parentExecutionId ?? null,
     workflowId: row.workflowId ?? null,
     workflowStateName: row.workflowStateName ?? null,
+    handoffNotes: row.handoffNotes ?? null,
   };
 }
 
