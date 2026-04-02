@@ -3,7 +3,7 @@ import { X, CheckCheck, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotificationStore } from "@/stores/notification-store";
-import { cn } from "@/lib/utils";
+import { NotificationCard } from "./notification-card";
 import type { Notification } from "@agentops/shared";
 
 // ── Date grouping ───────────────────────────────────────────────
@@ -33,32 +33,10 @@ function groupByDate(notifications: Notification[]): { label: string; items: Not
   return order.filter((label) => groups[label]?.length).map((label) => ({ label, items: groups[label]! }));
 }
 
-// ── Relative time ───────────────────────────────────────────────
-
-function relativeTime(dateStr: string): string {
-  const diff = Date.now() - new Date(dateStr).getTime();
-  const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
-}
-
-// ── Priority colors ─────────────────────────────────────────────
-
-const PRIORITY_DOT: Record<string, string> = {
-  critical: "bg-red-500",
-  high: "bg-amber-500",
-  low: "bg-emerald-500",
-  info: "bg-sky-500",
-};
-
 // ── Component ───────────────────────────────────────────────────
 
 export function NotificationDrawer() {
-  const { notifications, drawerOpen, setDrawerOpen, markRead, markAllRead } = useNotificationStore();
+  const { notifications, drawerOpen, setDrawerOpen, markAllRead } = useNotificationStore();
   const drawerRef = useRef<HTMLDivElement>(null);
 
   // Close on click outside
@@ -134,33 +112,7 @@ export function NotificationDrawer() {
                     {group.label}
                   </p>
                   {group.items.map((n) => (
-                    <button
-                      key={n.id}
-                      type="button"
-                      onClick={() => markRead(n.id)}
-                      className={cn(
-                        "flex items-start gap-3 w-full text-left px-4 py-2.5 hover:bg-muted/50 transition-colors",
-                        !n.read && "bg-muted/30",
-                      )}
-                    >
-                      {/* Priority dot */}
-                      <div className={cn("h-2 w-2 rounded-full mt-1.5 shrink-0", PRIORITY_DOT[n.priority] ?? "bg-gray-400")} />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-baseline gap-2">
-                          <span className={cn("text-xs truncate", !n.read ? "font-medium text-foreground" : "text-muted-foreground")}>
-                            {n.title}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground/60 shrink-0 ml-auto">
-                            {relativeTime(n.createdAt)}
-                          </span>
-                        </div>
-                        {n.description && (
-                          <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5">
-                            {n.description}
-                          </p>
-                        )}
-                      </div>
-                    </button>
+                    <NotificationCard key={n.id} notification={n} />
                   ))}
                 </div>
               ))}
