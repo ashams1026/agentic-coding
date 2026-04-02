@@ -68,9 +68,7 @@
 
 ---
 
-**Research: Design Proposals (RES.CHAT/LIFECYCLE/NOTIFY/COLLAB/SCHED — 10 tasks, archived 2026-04-02):** Agent chat UX/data model/rich messages, work item lifecycle UX/data model, notifications UX/integrations, agent collaboration context/coordination, scheduling UX. All in `docs/proposals/`.
-
-**Research batch 3 (RES.SCHED.INFRA–RES.SWAP.API — 10 tasks, archived 2026-04-01):** Scheduling infra, rollback UX, templates, analytics metrics/UX, inbound/outbound webhooks, frontend/backend swappability (arch/hosted/API). All in `docs/proposals/`.
+**Research Proposals (20 tasks, archived 2026-04-01 to 2026-04-02):** Chat UX/data model/rich messages, lifecycle UX/data model, notifications UX/integrations, collaboration context/coordination, scheduling UX/infra, rollback, templates, analytics, webhooks, frontend/backend swappability. All in `docs/proposals/`.
 
 **Sprint 23: Foundations (FND.ERR.1-7, FND.WIL.1-8, archived 2026-04-01):** Error Recovery — 7 tasks (PRAGMAs, WS backoff, error boundaries, status indicator, structured errors, orphan recovery, backup). Work Item Lifecycle — 8 tasks (archived_at/deleted_at, soft delete, 409 guard, archive/unarchive/restore, bulk ops, "Show archived", context menus, "Recently deleted").
 - [x] **FND.WIL.7** — Frontend: bulk action bar for multi-select. *(completed 2026-04-01 22:08 PDT)*
@@ -174,6 +172,25 @@
 ### Dead Code & Unimplemented Stubs
 
 - [x] **FX.DEAD.1** — Wire prompt template into inbound webhook execution. *(completed 2026-04-03 10:30 PDT)*
+- [x] **FX.DEAD.2** — Implement or remove `execution_stuck` notification type. Backend never emits `execution_stuck` — the type is defined in `packages/shared/src/ws-events.ts`, UI handles it in notification cards, and Settings has a toggle for it, but no backend code ever fires it. Either implement a periodic check for stalled executions (e.g., no progress events for >10min) or remove the type, UI, and settings toggle entirely. *(completed 2026-04-03 10:50 PDT)*
+- [x] **FX.DEAD.3** — Replace stub navigation on proposal notification actions. `packages/frontend/src/features/notifications/notification-card.tsx:107-108` — Approve/Reject buttons just navigate to `/items` without passing proposal ID. Wire them to actually call `PATCH /api/proposals/:id` with the approve/reject action, then mark notification as read. *(completed 2026-04-03 11:10 PDT)*
+
+### HMAC & Webhook Integrity
+
+- [x] **FX.WHK.1** — Fix HMAC verification to use raw request bytes. `packages/backend/src/routes/webhook-triggers.ts:70` uses `JSON.stringify(request.body)` for HMAC verification instead of raw request body bytes. Re-serialized JSON may differ from the original payload (key ordering, whitespace), causing all HMAC checks to fail. Use Fastify's `rawBody` or `request.rawBody` instead. *(completed 2026-04-03 11:25 PDT)*
+
+### Logic Bugs
+
+- [x] **FX.NTF.1** — Fix toast overflow count decrement. `packages/frontend/src/stores/toast-store.ts:55` — the `overflowCount` decrement condition is inverted. When a visible toast is auto-dismissed, the overflow count doesn't decrement correctly, leaving stale "+N more" badges. *(completed 2026-04-03 11:35 PDT)*
+- [x] **FX.NTF.2** — Fix notification batching double-count. `packages/frontend/src/stores/notification-store.ts:117-128` — first `agent_completed` notification is added immediately, then the batch summary also counts it, so users see both the individual notification AND a summary that includes it. Either suppress the first individual notification or exclude it from the batch count. *(completed 2026-04-03 11:45 PDT)*
+- [x] **FX.WF.1** — Fix race condition in workflow publish. `packages/frontend/src/pages/workflows.tsx:51-56` — save and publish fire concurrently. Publish must wait for save to complete. Make them sequential (await save, then publish). *(completed 2026-04-03 11:55 PDT)*
+- [x] **FX.WF.2** — Wrap workflow CRUD mutations in DB transactions. `packages/backend/src/routes/workflows.ts:209-244` — PATCH and DELETE handlers do delete-then-insert for states/transitions without a transaction. Server crash between delete and insert loses data. Wrap in `db.transaction()`. *(completed 2026-04-03 12:05 PDT)*
+- [x] **FX.WF.3** — Add input validation to workflow CRUD. `packages/backend/src/routes/workflows.ts` POST/PATCH handlers accept empty names, invalid state types, garbage data. Add validation: require non-empty name, valid state type enum, at least one state, valid transition references. *(completed 2026-04-03 12:15 PDT)*
+
+### Missing Data & Stale UI
+
+- [x] **FX.CHAT.1** — Show project name instead of raw ID in chat header. `packages/frontend/src/pages/chat.tsx:374-379` — the project badge shows the raw `projectId` string (e.g., `pj-x7k2m`) instead of the project's display name. Fetch and display the project name. *(completed 2026-04-03 12:40 PDT)*
+- [x] **FX.NAV.1** — Update command palette navigation items. `packages/frontend/src/features/command-palette/command-palette.tsx:39-46` — NAV_ITEMS is stale, missing Analytics, Chat, and Workflows pages. Add all current sidebar pages. *(completed 2026-04-03 12:55 PDT)*
 
 ---
 

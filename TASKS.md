@@ -13,27 +13,8 @@
 
 > Critical bugs, dead code, and unimplemented stubs found during deep review of autonomous agent work. Prioritized by severity. **Fix these before continuing Sprint 28 feature work.**
 
-### Critical — Dead Code & Unimplemented Stubs
-
-- [x] **FX.DEAD.2** — Implement or remove `execution_stuck` notification type. Backend never emits `execution_stuck` — the type is defined in `packages/shared/src/ws-events.ts`, UI handles it in notification cards, and Settings has a toggle for it, but no backend code ever fires it. Either implement a periodic check for stalled executions (e.g., no progress events for >10min) or remove the type, UI, and settings toggle entirely. *(completed 2026-04-03 10:50 PDT)*
-- [x] **FX.DEAD.3** — Replace stub navigation on proposal notification actions. `packages/frontend/src/features/notifications/notification-card.tsx:107-108` — Approve/Reject buttons just navigate to `/items` without passing proposal ID. Wire them to actually call `PATCH /api/proposals/:id` with the approve/reject action, then mark notification as read. *(completed 2026-04-03 11:10 PDT)*
-
-### Critical — HMAC & Webhook Integrity
-
-- [x] **FX.WHK.1** — Fix HMAC verification to use raw request bytes. `packages/backend/src/routes/webhook-triggers.ts:70` uses `JSON.stringify(request.body)` for HMAC verification instead of raw request body bytes. Re-serialized JSON may differ from the original payload (key ordering, whitespace), causing all HMAC checks to fail. Use Fastify's `rawBody` or `request.rawBody` instead. *(completed 2026-04-03 11:25 PDT)*
-
-### Warning — Logic Bugs
-
-- [x] **FX.NTF.1** — Fix toast overflow count decrement. `packages/frontend/src/stores/toast-store.ts:55` — the `overflowCount` decrement condition is inverted. When a visible toast is auto-dismissed, the overflow count doesn't decrement correctly, leaving stale "+N more" badges. *(completed 2026-04-03 11:35 PDT)*
-- [x] **FX.NTF.2** — Fix notification batching double-count. `packages/frontend/src/stores/notification-store.ts:117-128` — first `agent_completed` notification is added immediately, then the batch summary also counts it, so users see both the individual notification AND a summary that includes it. Either suppress the first individual notification or exclude it from the batch count. *(completed 2026-04-03 11:45 PDT)*
-- [x] **FX.WF.1** — Fix race condition in workflow publish. `packages/frontend/src/pages/workflows.tsx:51-56` — save and publish fire concurrently. Publish must wait for save to complete. Make them sequential (await save, then publish). *(completed 2026-04-03 11:55 PDT)*
-- [x] **FX.WF.2** — Wrap workflow CRUD mutations in DB transactions. `packages/backend/src/routes/workflows.ts:209-244` — PATCH and DELETE handlers do delete-then-insert for states/transitions without a transaction. Server crash between delete and insert loses data. Wrap in `db.transaction()`. *(completed 2026-04-03 12:05 PDT)*
-- [x] **FX.WF.3** — Add input validation to workflow CRUD. `packages/backend/src/routes/workflows.ts` POST/PATCH handlers accept empty names, invalid state types, garbage data. Add validation: require non-empty name, valid state type enum, at least one state, valid transition references. *(completed 2026-04-03 12:15 PDT)*
-
 ### Warning — Missing Data & Stale UI
 
-- [x] **FX.CHAT.1** — Show project name instead of raw ID in chat header. `packages/frontend/src/pages/chat.tsx:374-379` — the project badge shows the raw `projectId` string (e.g., `pj-x7k2m`) instead of the project's display name. Fetch and display the project name.
-- [x] **FX.NAV.1** — Update command palette navigation items. `packages/frontend/src/features/command-palette/command-palette.tsx:39-46` — NAV_ITEMS is stale, missing Analytics, Chat, and Workflows pages. Add all current sidebar pages.
 - [ ] **FX.WF.4** — Include transition sortOrder in workflow save payload. `packages/frontend/src/pages/workflows.tsx:28-35` — `sortOrder` is omitted from transitions when saving, so all transitions get `sortOrder: 0`. Preserve the correct order.
 - [ ] **FX.DOC.1** — Update `docs/workflow.md` to reflect custom workflows. Still says "hardcoded" and "not user-configurable" — needs to document the Sprint 25 workflow engine.
 
@@ -45,7 +26,58 @@
 
 ---
 
-## Sprint 28: Scheduling, Templates & Notification Channels
+## Sprint 29: UX Overhaul (Priority)
+
+> Major UX rework based on user feedback. **Prioritized ahead of remaining Sprint 28 and future roadmap work.** Themes: global-as-project foundation, persona→agent rename, chat UX fixes, workflow rework with label triggers, scope clarity.
+
+### Phase 1: Global as Project
+
+- [ ] **UXO.1** — Schema: Add `isGlobal` boolean (default false) to `projects` table. Generate migration. Update seed to create a permanent global project (`id: "pj-global"`, `name: "All Projects"`, `isGlobal: true`, no path). Add delete guard to `DELETE /api/projects/:id` — reject with 409 if `isGlobal`.
+- [ ] **UXO.2** — Backend: Migrate all nullable `projectId` references to use `pj-global`. Backfill `chat_sessions`, `executions`, `global_memories` where `projectId IS NULL` → set to `pj-global`. Make `projectId` NOT NULL on all tables. Update API endpoints to stop treating null as "global" — filter by projectId like normal. Dashboard: when `project.isGlobal`, aggregate stats across all projects.
+- [ ] **UXO.3** — Frontend: Replace `"__all__"` sentinel with global project ID. Update `useSelectedProject()` to return `"pj-global"` instead of null. Remove `isGlobalScope === "__all__"` checks — use `project.isGlobal` instead. Update sidebar selector to always show global project first with distinct styling.
+- [ ] **UXO.4** — Frontend: Add persistent scope breadcrumb. Create `scope-indicator.tsx` below the sidebar header showing current project name with colored dot (violet for global, project color otherwise). Always visible even when sidebar is collapsed (colored accent strip on left edge). Mount in root layout.
+
+### Phase 2: Agent Rename (Persona → Agent)
+
+- [ ] **UXO.5** — Shared types: Rename `Persona` → `Agent`, `PersonaId` → `AgentId`, `PersonaSettings` → `AgentSettings` across `packages/shared/src/entities.ts`, `ws-events.ts`, and all shared exports. Rename `PersonaAssignment` → `AgentAssignment`.
+- [ ] **UXO.6** — Schema + Backend: Rename `personas` table → `agents`, all `personaId` columns → `agentId` (chat_sessions, executions, workflow_states, persona_assignments → agent_assignments, schedules, etc.). Generate migration. Rename `routes/personas.ts` → `routes/agents.ts`, API paths `/api/personas` → `/api/agents`. Update all backend imports and queries.
+- [ ] **UXO.7** — Frontend: Rename all persona references → agent. Rename `features/persona-manager/` → `features/agent-builder/`. Update sidebar label to "Agent Builder". Rename hooks (`usePersonas` → `useAgents`), API client functions, stores, route paths. Update all imports.
+- [ ] **UXO.8** — Add project scope to agents. Add `scope` field (global/project) and nullable `projectId` FK to agents schema. Generate migration. Project-scoped agents only appear in that project's agent lists, chat selectors, workflow assignments. Global agents (default) available everywhere. Add scope badge on agent cards in Agent Builder. Update agent creation form with scope dropdown.
+
+### Phase 3: Chat UX Fixes
+
+- [ ] **UXO.9** — Fix: Chat session list doesn't load on `/chat` page mount. `use-pico-chat.ts:215` gates session loading on `isOpen` (panel state), which is `false` on the full page. Add a separate `useEffect` that calls `refreshSessions()` on page mount independent of panel state.
+- [ ] **UXO.10** — Fix: Chat panel minimizes on dropdown interaction and outside clicks. `chat-panel.tsx:131-146` click-outside handler only excludes `dropdown-menu-content` but misses `select-content`. Remove the click-outside-to-close behavior entirely — panel should ONLY close via the minimize button.
+- [ ] **UXO.11** — Fix: Empty chat state always shows "Woof I'm Pico". Update empty state in `chat.tsx` and `chat-panel.tsx` to dynamically show the selected agent's name, avatar, and description. Pico greeting only when Pico is selected. Other agents show their own description.
+- [ ] **UXO.12** — Frontend: Group chat sessions by agent name. Replace date-based grouping in session sidebar with agent-based collapsible groups. Each group header: agent avatar + name + session count + expand/collapse caret. Sessions within each group sorted by recency. Default all expanded.
+- [ ] **UXO.13** — Frontend: Improve chat header. Show agent avatar + name prominently (larger, left-aligned). Show resolved project name. Editable session title. Context menu (rename, delete). Clear visual identity of which agent you're talking to.
+
+### Phase 4: Workflow Rework
+
+- [ ] **UXO.14** — Schema: Add `autoRouting` boolean (default false) to `workflows` table. Add `agentOverrides` JSON column to `workflow_states`: `[{ labelMatch: string, agentId: string }]` for label-based agent selection. Generate migration. Remove `autoRouting` from project `settings` JSON.
+- [ ] **UXO.15** — Backend: Per-workflow auto-routing. Update `runRouter()` to read `workflow.autoRouting` instead of `project.settings.autoRouting`. Build Router system prompt from the specific workflow's state machine via `workflowId`.
+- [ ] **UXO.16** — Backend: Label-based agent resolution. Update `resolveAgentForState()` to check work item labels against `workflowStates.agentOverrides`. Priority: label match override → state default agent → null.
+- [ ] **UXO.17** — Backend: Enforce Backlog/Done as immutable built-in states. Every workflow must have exactly one initial state ("Backlog") and at least one terminal state ("Done"). These names cannot be changed or deleted. Auto-create them on `POST /api/workflows`.
+- [ ] **UXO.18** — Frontend: Remove flow view from work items page. Delete `flow-view.tsx` and the list/flow view toggle. Work items page is list-only.
+- [ ] **UXO.19** — Frontend: Move Workflows below Work Items in sidebar nav order.
+- [ ] **UXO.20** — Frontend: Redesign workflows page as live overview. Full-width workflow cards showing: name, auto-routing play/pause toggle, live state pipeline with item counts per state and active agents (extract metrics logic from deleted flow-view), edit button. One card per workflow in current scope.
+- [ ] **UXO.21** — Frontend: Update workflow builder for label-based agent overrides. In state card, add collapsible "Agent Overrides" section below default agent selector. Each row: label match input + agent dropdown. "Add override" button. Show overrides as chips on the state card.
+- [ ] **UXO.22** — Frontend: Per-workflow auto-routing toggle on overview page and in builder header. Calls `PATCH /api/workflows/:id { autoRouting }`. Label: "Auto-routing OFF" / "Auto-routing ON".
+
+### Phase 5: Global Work Items
+
+- [ ] **UXO.23** — Enable work items for global scope. Remove sidebar nav dimming when global project selected. Seed a simple 3-state workflow for the global project: Backlog → In Progress → Done (autoRouting: false, no agents assigned).
+
+### Testing & Documentation
+
+- [ ] **UXO.TEST.1** — Write e2e test plan: `tests/e2e/plans/ux-overhaul.md`. Cover: global project, scope breadcrumb, agent rename in UI, chat fixes, agent-grouped sessions, workflow live overview, per-workflow auto-routing, label overrides, global work items.
+- [ ] **UXO.TEST.2** — Execute UX Overhaul e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
+- [ ] **UXO.DOC.1** — Update all docs for UX Overhaul. Rename persona → agent throughout `docs/`. Document: global project model, agent scope, `agentOverrides`, per-workflow `autoRouting`, flow view removal. Update `docs/api.md` with renamed endpoints.
+- [ ] **UXO.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
+
+---
+
+## Sprint 28: Scheduling, Templates & Notification Channels (Deprioritized)
 
 > Tier 3 features: Scheduling (cron agent runs), Templates P1 (work item templates), Notification External Channels (webhook channel wrapping outbound infra).
 > Proposal docs: `docs/proposals/scheduling/ux-design.md`, `docs/proposals/scheduling/infrastructure.md`, `docs/proposals/templates/design.md`, `docs/proposals/notifications/integrations.md`

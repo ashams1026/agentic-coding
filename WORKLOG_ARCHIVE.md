@@ -185,3 +185,15 @@
 **Data Management P1 (DM.2-5, all approved):** Pre-migration backup hook via centralized createBackup(). 4 API endpoints (backup, backups list, restore, truncate-logs). Storage stats + cascade fix for execution delete. Data management UI (backup list, truncation controls, storage table). Sprint 27 testing: 2 test plans (outbound webhooks, inbound+data mgmt), 2 test executions (14/17 + 15/20 pass), API docs, regression checkpoint (44 suites, 0 regressions). Sprint 27 complete.
 
 **Sprint 28 decomposition:** 14 tasks across Scheduling (SCH.1-4), Templates P1 (TPL.1-3), Notification External Channels (NEC.1-2), Testing/Docs (S28.TEST.1-3, S28.DOC.1). SCH.1 (schedules table + migration 0018) completed and approved.
+
+---
+
+### Sprint 28 continued + Bug fixes early — 2026-04-03 07:50–10:30 PDT
+
+**Scheduling (SCH.2-4, all approved):** Cron scheduler with built-in matcher, polling, catch-up, auto-disable after 5 failures. CRUD API (5 endpoints) with cron validation, persona check, nextRunAt recompute. Frontend Schedules UI in Settings (list, add/edit dialog with 8 presets + custom cron, live next-runs preview, toggle, Run Now).
+
+**Templates (TPL.1-2, all approved):** Templates table (7 columns, migration 0019), 3 built-in seed templates (Bug Report, Feature Request, Spike). CRUD route + apply endpoint (5 endpoints, built-in guard, type validation, workflow initial state resolution).
+
+**Security fixes (FX.SEC.1-3, all approved):** Path traversal fix in backup restore (resolve + startsWith guard). FTS5 MATCH crash fix (sanitizeFts5Query + try-catch on all 4 MATCH blocks). FTS snippet XSS sanitization (placeholder-based sanitizer preserving only `<b>` tags).
+
+**Dead code fix (FX.DEAD.1, rejected then reworked and approved):** Wired prompt template into webhook execution via standalone execution support in runExecution(). Initial implementation rejected because synthetic task fallback was unreachable (early throw on null workItemId). Rework made all lookups conditional for standalone path.
