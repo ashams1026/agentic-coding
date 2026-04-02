@@ -16,7 +16,7 @@
 
 ### Search Phase 1 (remaining)
 
-- [review] **SRC.5** — Frontend: add full-text search to work items filter bar in `packages/frontend/src/features/work-items/filter-bar.tsx`. Add a search input that calls `GET /api/search?q=...&type=work_item&projectId=...`. Filter the list view to show matching items. Highlight matched terms if feasible.
+- [x] **SRC.5** — Frontend: add full-text search to work items filter bar in `packages/frontend/src/features/work-items/filter-bar.tsx`. Add a search input that calls `GET /api/search?q=...&type=work_item&projectId=...`. Filter the list view to show matching items. Highlight matched terms if feasible. *(completed 2026-04-02 22:15 PDT)*
 
 ### Analytics + Token Usage Phase 1
 

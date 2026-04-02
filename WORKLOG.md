@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 22:15 PDT — Review: SRC.5 (approved)
+
+**Reviewed:** FTS5 search in work items list view.
+- 300ms debounced searchApi with type=work_item + projectId ✓
+- ftsMatchIds Set for O(1) ID-based filtering ✓
+- Client-side fallback for <2 char queries ✓
+- Cleanup on unmount, proper deps ✓
+- Build passes ✓
+- **Verdict: approved.** Search Phase 1 (SRC.1-5) complete.
+
+---
+
 ## 2026-04-02 22:10 PDT — SRC.5: FTS5 search in work items list view
 
 **Done:** Added server-backed FTS5 search to work items list view in `list-view.tsx`. When search query is 2+ chars, debounces 300ms then calls `searchApi(query, { type: "work_item", projectId, limit: 100 })`. Stores matched IDs in `ftsMatchIds` Set. Filter logic: if `ftsMatchIds` is available, filters by ID membership; otherwise falls back to client-side text search (for short queries or during debounce). Existing search input in filter-bar.tsx unchanged — it already debounces to the Zustand store. Added `searchApi` import.
