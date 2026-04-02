@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-01 20:41 PDT — FND.ERR.5: Structured error JSON column on executions
+
+**Done:** Added `error` JSON column to `executions` table in schema.ts (type: `{ category: string; message: string; details?: Record<string, unknown> } | null`). Generated Drizzle migration `0007_purple_songbird.sql`. Updated catch block in execution-manager.ts to classify errors into `sdk_error`, `configuration_error`, or `unknown` and set the `error` column. Also updated the "work item not found" failure path to use `configuration_error` category.
+**Files:** `packages/backend/src/db/schema.ts`, `packages/backend/drizzle/0007_purple_songbird.sql` (new), `packages/backend/drizzle/meta/*`, `packages/backend/src/agent/execution-manager.ts`
+**Notes:** Migration also reconciles a chat_sessions FK drift (onDelete cascade) — safe, data-preserving recreation.
+
+---
+
 ## 2026-04-01 20:38 PDT — Review: FND.ERR.4 (approved)
 
 **Reviewed:** WS connection state indicator in status bar and Agent Monitor.

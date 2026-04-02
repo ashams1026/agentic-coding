@@ -358,7 +358,7 @@ export class ExecutionManager {
     if (!task) {
       await (this.db as any)
         .update(executions)
-        .set({ status: "failed", summary: "Work item not found", completedAt: new Date() })
+        .set({ status: "failed", summary: "Work item not found", completedAt: new Date(), error: { category: "configuration_error", message: "Work item not found" } })
         .where(eq(executions.id, executionId));
       return executionId as ExecutionId;
     }
@@ -679,6 +679,12 @@ export class ExecutionManager {
       const errorMsg = err instanceof Error ? err.message : String(err);
       logs += `\nFATAL: ${errorMsg}\n`;
 
+      const errorCategory = err instanceof Error && err.message.includes("API")
+        ? "sdk_error"
+        : err instanceof Error && (err.message.includes("persona") || err.message.includes("config") || err.message.includes("not found"))
+          ? "configuration_error"
+          : "unknown";
+
       await (this.db as any)
         .update(executions)
         .set({
@@ -687,6 +693,7 @@ export class ExecutionManager {
           summary: `Execution failed: ${errorMsg}`,
           outcome: "failure",
           logs,
+          error: { category: errorCategory, message: errorMsg },
         })
         .where(eq(executions.id, executionId));
 
