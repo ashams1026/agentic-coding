@@ -26,7 +26,7 @@
 - [x] **ANL.4** — Frontend: create `packages/frontend/src/pages/analytics.tsx` page. Add `/analytics` route in router.tsx. Add "Analytics" link with BarChart3 icon in sidebar between Activity Feed and Chat. Page has two tabs: "Overview" and "Token Usage". *(completed 2026-04-02 23:15 PDT)*
 - [ ] **ANL.5** — Frontend: create `packages/frontend/src/features/analytics/overview-tab.tsx`. Render 4 summary cards (total cost, total executions, success rate, avg duration — reuse existing dashboard stats hook). Add cost trend line chart (7d/30d toggle) using Recharts `LineChart`. Add execution outcomes stacked bar chart using `BarChart`. Add cost-by-persona horizontal bar chart.
 - [ ] **ANL.6** — Frontend: create `packages/frontend/src/features/analytics/token-usage-tab.tsx`. Render token usage over time (dual-axis: tokens + cost) using Recharts `ComposedChart`. Add breakdown by model pie chart using `PieChart`. Add top N expensive executions table with columns: date, persona, model, tokens, cost, duration.
-- [ ] **ANL.7** — Frontend: create React Query hooks in `packages/frontend/src/hooks/use-analytics.ts`. Add `useAnalyticsCostByPersona(projectId, range)`, `useAnalyticsCostByModel(projectId, range)`, `useAnalyticsTokensOverTime(projectId, range)`, `useAnalyticsTopExecutions(projectId, limit)`. Add API client functions in `client.ts`.
+- [review] **ANL.7** — Frontend: create React Query hooks in `packages/frontend/src/hooks/use-analytics.ts`. Add `useAnalyticsCostByPersona(projectId, range)`, `useAnalyticsCostByModel(projectId, range)`, `useAnalyticsTokensOverTime(projectId, range)`, `useAnalyticsTopExecutions(projectId, limit)`. Add API client functions in `client.ts`.
 
 ### Testing & Documentation
 

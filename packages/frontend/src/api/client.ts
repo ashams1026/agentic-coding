@@ -783,6 +783,71 @@ export async function searchApi(q: string, opts?: { type?: string; projectId?: s
   return res.data;
 }
 
+// ── Analytics ────────────────────────────────────────────────────
+
+export interface CostByPersona {
+  personaId: string;
+  personaName: string;
+  costUsd: number;
+  totalTokens: number;
+  executionCount: number;
+}
+
+export interface CostByModel {
+  model: string;
+  costUsd: number;
+  totalTokens: number;
+  executionCount: number;
+}
+
+export interface TokensOverTime {
+  date: string;
+  totalTokens: number;
+  costUsd: number;
+  executionCount: number;
+}
+
+export interface TopExecution {
+  id: string;
+  personaId: string;
+  personaName: string;
+  model: string;
+  costUsd: number;
+  totalTokens: number;
+  toolUses: number;
+  durationMs: number;
+  startedAt: string | null;
+}
+
+function analyticsParams(opts?: { projectId?: string; range?: string; limit?: number }): string {
+  const params = new URLSearchParams();
+  if (opts?.projectId) params.set("projectId", opts.projectId);
+  if (opts?.range) params.set("range", opts.range);
+  if (opts?.limit) params.set("limit", String(opts.limit));
+  const qs = params.toString();
+  return qs ? `?${qs}` : "";
+}
+
+export async function getAnalyticsCostByPersona(opts?: { projectId?: string; range?: string }): Promise<CostByPersona[]> {
+  const res = await get<{ data: CostByPersona[] }>(`/api/analytics/cost-by-persona${analyticsParams(opts)}`);
+  return res.data;
+}
+
+export async function getAnalyticsCostByModel(opts?: { projectId?: string; range?: string }): Promise<CostByModel[]> {
+  const res = await get<{ data: CostByModel[] }>(`/api/analytics/cost-by-model${analyticsParams(opts)}`);
+  return res.data;
+}
+
+export async function getAnalyticsTokensOverTime(opts?: { projectId?: string; range?: string }): Promise<TokensOverTime[]> {
+  const res = await get<{ data: TokensOverTime[] }>(`/api/analytics/tokens-over-time${analyticsParams(opts)}`);
+  return res.data;
+}
+
+export async function getAnalyticsTopExecutions(opts?: { projectId?: string; range?: string; limit?: number }): Promise<TopExecution[]> {
+  const res = await get<{ data: TopExecution[] }>(`/api/analytics/top-executions${analyticsParams(opts)}`);
+  return res.data;
+}
+
 // ── Bundled API (mirrors mockApi shape) ──────────────────────────
 
 export const apiClient = {
