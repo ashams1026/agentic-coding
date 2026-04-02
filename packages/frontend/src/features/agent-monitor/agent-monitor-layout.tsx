@@ -3,7 +3,14 @@ import { Link } from "react-router";
 import { Monitor, ArrowRight, Columns2, Square, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useExecutions, useSelectedProject } from "@/hooks";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useExecutions, useSelectedProject, useProjects, useWorkItems } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { ActiveAgentSidebar } from "./active-agent-sidebar";
 import { AgentControlBar } from "./agent-control-bar";
@@ -129,27 +136,49 @@ function LiveView({
 export function AgentMonitorLayout() {
   const { projectId } = useSelectedProject();
   const { data: executions = [] } = useExecutions(undefined, projectId ?? undefined);
+  const { data: projectsList = [] } = useProjects();
+  const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
   const { setSelectedItemId } = useWorkItemsStore();
 
   const [selectedId, setSelectedId] = useState<ExecutionId | null>(null);
   const [splitMode, setSplitMode] = useState(false);
   const [tab, setTab] = useState<"live" | "history">("live");
   const [showDetailPanel, setShowDetailPanel] = useState(false);
+  const [scopeFilter, setScopeFilter] = useState<string>("all");
 
   const handleWorkItemClick = useCallback((id: WorkItemId) => {
     setSelectedItemId(id);
     setShowDetailPanel(true);
   }, [setSelectedItemId]);
 
-  // Active (running) executions
-  const activeExecutions = useMemo(
-    () => executions.filter((e) => e.status === "running"),
-    [executions],
-  );
+  // Map workItemId → projectId for scope filtering
+  const workItemProjectMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const item of allItems) map.set(item.id as string, item.projectId as string);
+    return map;
+  }, [allItems]);
+
+  // Active (running) executions, filtered by scope
+  const activeExecutions = useMemo(() => {
+    const running = executions.filter((e) => e.status === "running");
+    if (scopeFilter === "all") return running;
+    if (scopeFilter === "__global__") return running.filter((e) => !e.workItemId);
+    // Filter by specific project
+    return running.filter((e) => {
+      if (!e.workItemId) return false;
+      return workItemProjectMap.get(e.workItemId as string) === scopeFilter;
+    });
+  }, [executions, scopeFilter, workItemProjectMap]);
 
   const activeExecutionIds = useMemo(
     () => activeExecutions.map((e) => e.id),
     [activeExecutions],
+  );
+
+  // Total running count (unfiltered) for the badge
+  const totalRunning = useMemo(
+    () => executions.filter((e) => e.status === "running").length,
+    [executions],
   );
 
   // Auto-select first agent if none selected or selection no longer valid
@@ -163,14 +192,14 @@ export function AgentMonitorLayout() {
   return (
     <div className="flex flex-col h-full relative">
       {/* Tab bar */}
-      <div className="flex items-center px-4 py-2 border-b">
+      <div className="flex items-center justify-between px-4 py-2 border-b">
         <Tabs value={tab} onValueChange={(v) => setTab(v as "live" | "history")}>
           <TabsList className="h-8">
             <TabsTrigger value="live" className="text-xs px-3 h-6">
               Live
-              {activeExecutions.length > 0 && (
+              {totalRunning > 0 && (
                 <span className="ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-500 px-1 text-xs font-bold text-white">
-                  {activeExecutions.length}
+                  {totalRunning}
                 </span>
               )}
             </TabsTrigger>
@@ -179,6 +208,22 @@ export function AgentMonitorLayout() {
             </TabsTrigger>
           </TabsList>
         </Tabs>
+
+        {/* Scope filter */}
+        {tab === "live" && (
+          <Select value={scopeFilter} onValueChange={setScopeFilter}>
+            <SelectTrigger className="h-7 w-[160px] text-xs">
+              <SelectValue placeholder="All scopes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="__global__">Global Only</SelectItem>
+              {projectsList.map((p) => (
+                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       {/* Tab content */}

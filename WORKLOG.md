@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 23:35 PDT — FND.GA.5: Agent Monitor scope badges and filter
+
+**Done:** Added scope badge to each execution row in `active-agent-sidebar.tsx` — shows project name (secondary badge) or "Global" (violet badge) based on whether execution has a workItemId. Added scope filter dropdown in `agent-monitor-layout.tsx` tab bar (right side, Live tab only) with options: All / Global Only / per-project. Filter narrows active executions list. Uses workItemId → projectId lookup via work items for scope determination. Badge and filter hidden on History tab.
+**Files:** `packages/frontend/src/features/agent-monitor/active-agent-sidebar.tsx`, `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`
+
+---
+
 ## 2026-04-01 23:25 PDT — Review: FND.GA.4 (approved)
 
 **Reviewed:** Dashboard scope-awareness with global aggregated view.

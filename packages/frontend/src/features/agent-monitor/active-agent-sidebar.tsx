@@ -2,7 +2,8 @@ import { useEffect, useState, useMemo } from "react";
 import { Bot, DollarSign } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { useExecutions, usePersonas, useWorkItems, useSelectedProject } from "@/hooks";
+import { Badge } from "@/components/ui/badge";
+import { useExecutions, usePersonas, useWorkItems, useSelectedProject, useProjects } from "@/hooks";
 import type { Execution, ExecutionId } from "@agentops/shared";
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -29,6 +30,8 @@ interface AgentEntryProps {
   personaName: string;
   personaColor: string;
   targetName: string;
+  scopeLabel: string;
+  isGlobal: boolean;
   isSelected: boolean;
   onSelect: () => void;
 }
@@ -38,6 +41,8 @@ function AgentEntry({
   personaName,
   personaColor,
   targetName,
+  scopeLabel,
+  isGlobal,
   isSelected,
   onSelect,
 }: AgentEntryProps) {
@@ -80,8 +85,16 @@ function AgentEntry({
           <p className="text-xs text-muted-foreground truncate">
             {targetName}
           </p>
-          {/* Live counters */}
-          <div className="flex items-center gap-2.5 mt-1">
+          {/* Scope badge + live counters */}
+          <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+            <Badge
+              variant={isGlobal ? "default" : "secondary"}
+              className={`text-[10px] px-1.5 py-0 h-4 font-normal ${
+                isGlobal ? "bg-violet-600 hover:bg-violet-600 text-white" : ""
+              }`}
+            >
+              {scopeLabel}
+            </Badge>
             <span className="text-xs text-muted-foreground tabular-nums">
               {elapsed}
             </span>
@@ -108,6 +121,7 @@ export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarP
   const { data: executions = [] } = useExecutions(undefined, projectId ?? undefined);
   const { data: personas = [] } = usePersonas();
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
+  const { data: projectsList = [] } = useProjects();
 
   // Active (running) executions, sorted by start time
   const activeExecutions = useMemo(
@@ -130,6 +144,20 @@ export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarP
     return map;
   }, [allItems]);
 
+  // Map workItemId → projectId via work items
+  const workItemProjectMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const item of allItems) map.set(item.id as string, item.projectId as string);
+    return map;
+  }, [allItems]);
+
+  // Map projectId → projectName
+  const projectNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of projectsList) map.set(p.id as string, p.name);
+    return map;
+  }, [projectsList]);
+
   return (
     <div className="w-[250px] shrink-0 border-r flex flex-col">
       <div className="px-3 py-3">
@@ -145,6 +173,11 @@ export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarP
         <div className="p-1.5 space-y-0.5">
           {activeExecutions.map((exec) => {
             const persona = personaMap.get(exec.personaId as string);
+            const projId = exec.workItemId ? workItemProjectMap.get(exec.workItemId as string) : null;
+            const isGlobal = !exec.workItemId;
+            const scopeLabel = isGlobal
+              ? "Global"
+              : (projId ? projectNameMap.get(projId) ?? "Project" : "Project");
             return (
               <AgentEntry
                 key={exec.id}
@@ -152,6 +185,8 @@ export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarP
                 personaName={persona?.name ?? "Agent"}
                 personaColor={persona?.avatar.color ?? "#6b7280"}
                 targetName={exec.workItemId ? (workItemNameMap.get(exec.workItemId as string) ?? exec.workItemId) : "Standalone"}
+                scopeLabel={scopeLabel}
+                isGlobal={isGlobal}
                 isSelected={exec.id === selectedId}
                 onSelect={() => onSelect(exec.id)}
               />
