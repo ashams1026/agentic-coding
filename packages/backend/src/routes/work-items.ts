@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { eq, and, inArray, isNull } from "drizzle-orm";
+import { eq, and, inArray, isNull, isNotNull } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { workItems, workItemEdges, comments, proposals, projectMemories, executions } from "../db/schema.js";
 import { createId } from "@agentops/shared";
@@ -36,14 +36,24 @@ function serializeWorkItem(row: typeof workItems.$inferSelect) {
 export async function workItemRoutes(app: FastifyInstance) {
   // GET /api/work-items — list with optional filters
   app.get<{
-    Querystring: { parentId?: string; projectId?: string };
+    Querystring: { parentId?: string; projectId?: string; includeArchived?: string; deleted?: string };
   }>("/api/work-items", async (request) => {
-    const { parentId, projectId } = request.query;
+    const { parentId, projectId, includeArchived, deleted } = request.query;
 
-    const conditions = [
-      isNull(workItems.deletedAt),
-      isNull(workItems.archivedAt),
-    ];
+    const conditions = [];
+
+    if (deleted === "true") {
+      // Show only soft-deleted items (for "Recently deleted" view)
+      conditions.push(isNotNull(workItems.deletedAt));
+    } else {
+      // Default: exclude deleted items
+      conditions.push(isNull(workItems.deletedAt));
+      // Exclude archived unless explicitly requested
+      if (includeArchived !== "true") {
+        conditions.push(isNull(workItems.archivedAt));
+      }
+    }
+
     if (projectId) conditions.push(eq(workItems.projectId, projectId));
     if (parentId) {
       conditions.push(eq(workItems.parentId, parentId));
@@ -212,6 +222,102 @@ export async function workItemRoutes(app: FastifyInstance) {
     });
 
     return { data: { workItemId: id, state: item.currentState, dispatched: true } };
+  });
+
+  // POST /api/work-items/:id/archive — archive item (and optionally descendants)
+  app.post<{
+    Params: { id: string };
+    Body: { cascade?: boolean };
+  }>("/api/work-items/:id/archive", async (request, reply) => {
+    const { id } = request.params;
+    const cascade = request.body?.cascade ?? false;
+    const now = new Date();
+
+    // Verify item exists
+    const [item] = await db
+      .select({ id: workItems.id })
+      .from(workItems)
+      .where(eq(workItems.id, id));
+
+    if (!item) {
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Work item ${id} not found` } });
+    }
+
+    const idsToArchive: string[] = [id];
+
+    if (cascade) {
+      // BFS to collect all descendants
+      let frontier = [id];
+      while (frontier.length > 0) {
+        const children = await db
+          .select({ id: workItems.id })
+          .from(workItems)
+          .where(inArray(workItems.parentId, frontier));
+        const childIds = children.map((c) => c.id);
+        idsToArchive.push(...childIds);
+        frontier = childIds;
+      }
+    }
+
+    await db
+      .update(workItems)
+      .set({ archivedAt: now })
+      .where(inArray(workItems.id, idsToArchive));
+
+    return { data: { archivedCount: idsToArchive.length } };
+  });
+
+  // POST /api/work-items/:id/unarchive — clear archived_at
+  app.post<{
+    Params: { id: string };
+  }>("/api/work-items/:id/unarchive", async (request, reply) => {
+    const { id } = request.params;
+
+    const [row] = await db
+      .update(workItems)
+      .set({ archivedAt: null })
+      .where(eq(workItems.id, id))
+      .returning();
+
+    if (!row) {
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Work item ${id} not found` } });
+    }
+
+    return { data: serializeWorkItem(row) };
+  });
+
+  // POST /api/work-items/:id/restore — restore soft-deleted item within 30-day grace
+  app.post<{
+    Params: { id: string };
+  }>("/api/work-items/:id/restore", async (request, reply) => {
+    const { id } = request.params;
+
+    const [item] = await db
+      .select({ id: workItems.id, deletedAt: workItems.deletedAt })
+      .from(workItems)
+      .where(eq(workItems.id, id));
+
+    if (!item) {
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Work item ${id} not found` } });
+    }
+
+    if (!item.deletedAt) {
+      return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "Work item is not deleted" } });
+    }
+
+    // Check 30-day grace period
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+    if (Date.now() - item.deletedAt.getTime() > THIRTY_DAYS_MS) {
+      return reply.status(410).send({ error: { code: "GONE", message: "Restore period expired (30 days)" } });
+    }
+
+    const [row] = await db
+      .update(workItems)
+      .set({ deletedAt: null })
+      .where(eq(workItems.id, id))
+      .returning();
+
+    return { data: serializeWorkItem(row!) };
   });
 
   // DELETE /api/work-items/:id (soft delete — sets deleted_at, cascades related data)

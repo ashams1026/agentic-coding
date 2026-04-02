@@ -86,6 +86,19 @@ export interface UpdateWorkItemRequest {
 export type WorkItemResponse = ApiResponse<WorkItem>;
 export type WorkItemListResponse = ApiListResponse<WorkItem>;
 
+// ── WorkItem lifecycle endpoints ───────────────────────────────────
+
+export interface ArchiveWorkItemRequest {
+  cascade?: boolean;
+}
+
+export interface WorkItemListQuery {
+  parentId?: string;
+  projectId?: string;
+  includeArchived?: string; // "true" to include archived items
+  deleted?: string;         // "true" to show only soft-deleted items
+}
+
 // ── WorkItemEdge endpoints ─────────────────────────────────────────
 
 export interface CreateWorkItemEdgeRequest {

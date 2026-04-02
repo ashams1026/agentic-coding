@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 21:01 PDT — FND.WIL.3: Archive/unarchive/restore API endpoints
+
+**Done:** Added three new endpoints to work-items.ts: `POST /archive` (BFS cascade when `cascade=true`, sets `archived_at`), `POST /unarchive` (clears `archived_at`), `POST /restore` (clears `deleted_at` with 30-day grace period, 410 if expired). Updated GET endpoint with `includeArchived` and `deleted` query params — `deleted=true` shows only soft-deleted items, `includeArchived=true` includes archived. Added `ArchiveWorkItemRequest` and `WorkItemListQuery` types to shared/api.ts.
+**Files:** `packages/backend/src/routes/work-items.ts`, `packages/shared/src/api.ts`
+
+---
+
 ## 2026-04-01 20:58 PDT — Review: FND.WIL.2 (approved)
 
 **Reviewed:** Soft delete and 409 guard for work items.
