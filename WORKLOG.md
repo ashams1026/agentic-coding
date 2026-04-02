@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-04-03 15:25 PDT — Review: UXO.2 (approved)
+
+**Reviewed:** Nullable projectId migration to pj-global.
+- Schema: all 5 previously-nullable projectId columns now `.notNull()` ✓
+- Migration 0021: backfill UPDATEs before table recreation — correct ordering ✓
+- Workflow routes: `isNull` → `eq(..., "pj-global")`, POST defaults to `"pj-global"` ✓
+- Dashboard: `isGlobalProject()` helper, `shouldFilter` logic on all 4 endpoints ✓
+- All route handlers use `?? "pj-global"` instead of `?? null` ✓
+- Seed/test files: `projectId` added to all execution inserts ✓
+- Core interface updated ✓
+- Build passes (all 4 packages) ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 15:15 PDT — UXO.2: Migrate nullable projectId to pj-global
 
 **Done:** Made `projectId` NOT NULL on 5 tables: `executions`, `chat_sessions`, `workflows`, `webhook_triggers`, `schedules`. Migration `0021` backfills NULL → `pj-global` before table recreation. Updated all route handlers to use `?? "pj-global"` instead of `?? null`. Replaced `isNull(workflows.projectId)` with `eq(workflows.projectId, "pj-global")` in workflow list query. Updated dashboard to skip filtering when global project selected (`isGlobalProject()` helper). Fixed all seed/test files to include `projectId` in execution inserts. Updated `ExecutionRepository.create` interface in core package. `global_memories` table has no `projectId` column — skipped (already implicitly global).
