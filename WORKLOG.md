@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 11:40 PDT — FX.NTF.2: Fix notification batching double-count
+
+**Done:** Fixed `flushBatch()` in `notification-store.ts` to exclude the first `agent_completed` notification from the batch summary count. The first notification is added immediately (with its specific details), so the batch should only summarize additional ones. Changed count to `batchState.count - 1`, early-returns if 0 additional. Batch title now says "N more agent(s) completed" instead of double-counting. Example: 3 completions → user sees individual first + "2 more agents completed" summary.
+**Files:** `packages/frontend/src/stores/notification-store.ts`
+
+---
+
 ## 2026-04-03 11:35 PDT — Review: FX.NTF.1 (approved)
 
 **Reviewed:** Toast overflow count decrement fix.

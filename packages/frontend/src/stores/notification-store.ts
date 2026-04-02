@@ -58,18 +58,19 @@ interface NotificationState {
 const batchState: BatchState = { count: 0, timer: null, firstAt: 0 };
 
 function flushBatch(set: (fn: (state: NotificationState) => Partial<NotificationState>) => void) {
-  if (batchState.count <= 1) {
-    batchState.count = 0;
-    batchState.timer = null;
-    return;
-  }
+  // First notification was already added individually, so only summarize the rest
+  const additional = batchState.count - 1;
+  batchState.count = 0;
+  batchState.timer = null;
+
+  if (additional <= 0) return;
 
   const batchedNotification: Notification = {
     id: `ntf-batch-${Date.now()}`,
     type: "agent_completed",
     priority: "low",
-    title: `${batchState.count} agents completed`,
-    description: `${batchState.count} agents completed in the last minute`,
+    title: `${additional} more agent${additional > 1 ? "s" : ""} completed`,
+    description: `${additional} more agent${additional > 1 ? "s" : ""} completed in the last minute`,
     read: false,
     createdAt: new Date().toISOString(),
   };
@@ -77,9 +78,6 @@ function flushBatch(set: (fn: (state: NotificationState) => Partial<Notification
   set((state) => ({
     notifications: [batchedNotification, ...state.notifications],
   }));
-
-  batchState.count = 0;
-  batchState.timer = null;
 }
 
 // ── Store ───────────────────────────────────────────────────────
