@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 20:35 PDT — COL.5: Context windowing for handoff notes
+
+**Done:** Added `buildAccumulatedContext(workItemId, maxChars=8000)` to `handoff-notes.ts`. Queries all completed executions' handoff notes ordered by completedAt desc. Most recent note gets full formatting via `formatHandoffForPrompt()`. Older notes compressed to one-line summaries: `[fromState → targetState] summary (120 chars)`. Stops adding older notes when character budget exceeded (~2000 tokens). Updated `execution-manager.ts` to use `buildAccumulatedContext()` instead of `getLastHandoffNote()` + `formatHandoffForPrompt()` — now injects the full accumulated context window.
+**Files:** `packages/backend/src/agent/handoff-notes.ts`, `packages/backend/src/agent/execution-manager.ts`
+
+---
+
 ## 2026-04-02 20:25 PDT — Review: COL.4 (approved)
 
 **Reviewed:** Dependency enforcement in dispatch.ts.

@@ -26,7 +26,7 @@ import { trackExecution, onComplete, getProjectCostSummary } from "./concurrency
 import { broadcastNotification } from "../ws.js";
 import { runRouter } from "./router.js";
 import { dispatchForState } from "./dispatch.js";
-import { buildHandoffNote, getLastHandoffNote, formatHandoffForPrompt } from "./handoff-notes.js";
+import { buildHandoffNote, buildAccumulatedContext } from "./handoff-notes.js";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -437,12 +437,12 @@ export class ExecutionManager {
     let structuredOutput: Record<string, unknown> | null = null;
 
     try {
-      // Query previous agent's handoff notes for context injection
+      // Query accumulated handoff context from previous agents (with windowing)
       let handoffContext: string | undefined;
       if (task.workItemId) {
-        const lastNote = await getLastHandoffNote(task.workItemId);
-        if (lastNote) {
-          handoffContext = formatHandoffForPrompt(lastNote);
+        const accumulated = await buildAccumulatedContext(task.workItemId);
+        if (accumulated) {
+          handoffContext = accumulated;
         }
       }
 

@@ -105,3 +105,60 @@ export function formatHandoffForPrompt(note: HandoffNote): string {
 
   return lines.join("\n");
 }
+
+/**
+ * Build accumulated context from all handoff notes for a work item.
+ * Implements context windowing: most recent note is full, older notes
+ * are compressed to one-line summaries to fit within a token budget.
+ *
+ * @param workItemId - The work item to collect context for
+ * @param maxChars - Approximate character budget (~4 chars per token, default 8000 ≈ 2000 tokens)
+ * @returns Formatted context string, or null if no handoff notes exist
+ */
+export async function buildAccumulatedContext(
+  workItemId: string,
+  maxChars = 8000,
+): Promise<string | null> {
+  const rows = await db
+    .select({ handoffNotes: executions.handoffNotes, completedAt: executions.completedAt })
+    .from(executions)
+    .where(
+      and(
+        eq(executions.workItemId, workItemId),
+        eq(executions.status, "completed"),
+      ),
+    )
+    .orderBy(desc(executions.completedAt));
+
+  const notes = rows
+    .map((r) => r.handoffNotes as HandoffNote | null)
+    .filter((n): n is HandoffNote => n !== null);
+
+  if (notes.length === 0) return null;
+
+  const sections: string[] = [];
+  let charCount = 0;
+
+  // Most recent note gets full formatting
+  const latest = notes[0]!;
+  const fullSection = formatHandoffForPrompt(latest);
+  sections.push(fullSection);
+  charCount += fullSection.length;
+
+  // Older notes get compressed to one-line summaries
+  if (notes.length > 1) {
+    const olderLines: string[] = ["### Earlier Context (summarized)"];
+    for (let i = 1; i < notes.length; i++) {
+      const note = notes[i]!;
+      const line = `- [${note.fromState} → ${note.targetState}] ${note.summary.slice(0, 120)}`;
+      if (charCount + line.length + 2 > maxChars) break; // Stop if budget exceeded
+      olderLines.push(line);
+      charCount += line.length + 1;
+    }
+    if (olderLines.length > 1) {
+      sections.push(olderLines.join("\n"));
+    }
+  }
+
+  return sections.join("\n\n");
+}
