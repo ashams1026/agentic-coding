@@ -12,6 +12,7 @@ import { useToastEvents } from "@/features/toasts/use-toast-events";
 import { useWsQuerySync } from "@/hooks/use-ws-sync";
 import { ChatBubble } from "@/features/pico/chat-bubble";
 import { ChatPanel } from "@/features/pico/chat-panel";
+import { NotificationDrawer } from "@/features/notifications/notification-drawer";
 
 export function RootLayout() {
   useThemeSync();
@@ -46,6 +47,7 @@ export function RootLayout() {
       </div>
       <CommandPalette />
       <ToastRenderer />
+      <NotificationDrawer />
       {!isOnChatPage && <ChatPanel />}
       {!isOnChatPage && <ChatBubble />}
     </TooltipProvider>
