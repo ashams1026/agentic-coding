@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-03 12:40 PDT — Review: FX.CHAT.1 (approved)
+
+**Reviewed:** Project name display in chat header badge.
+- `useProjects()` fetches project list, `useMemo` builds name lookup map ✓
+- `projectNameMap.get(cs.projectId) ?? cs.projectId` — graceful fallback to raw ID ✓
+- Only one display location updated, no missed references ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 12:35 PDT — FX.CHAT.1: Show project name in chat header
 
 **Done:** Replaced raw `projectId` display in chat header badge with resolved project name. Added `useProjects()` hook call and a `useMemo`-based name lookup map (`projectNameMap`). Falls back to raw ID if project not yet loaded.
