@@ -17,7 +17,7 @@ const activeExecutions = new Set<string>(); // executionId set
 
 // ── Priority queue ───────────────────────────────────────────────
 
-interface QueueEntry {
+export interface QueueEntry {
   workItemId: string;
   agentId: string;
   priority: string; // p0 > p1 > p2 > p3
@@ -119,6 +119,14 @@ export function getQueueLength(): number {
 }
 
 /**
+ * Get a shallow copy of the in-memory queue entries.
+ * Each entry includes workItemId, agentId, priority, and enqueuedAt.
+ */
+export function getQueueEntries(): QueueEntry[] {
+  return [...queue];
+}
+
+/**
  * Get the set of active execution IDs (shallow copy).
  */
 export function getActiveExecutionIds(): string[] {
@@ -132,6 +140,14 @@ export function getActiveExecutionIds(): string[] {
 export function clearAll(): void {
   activeExecutions.clear();
   queue.length = 0;
+}
+
+/**
+ * Get the maxConcurrent setting for a project.
+ * Public wrapper around the private getMaxConcurrent helper.
+ */
+export async function getMaxConcurrentForProject(projectId: string): Promise<number> {
+  return getMaxConcurrent(projectId);
 }
 
 // ── Cost tracking ────────────────────────────────────────────────

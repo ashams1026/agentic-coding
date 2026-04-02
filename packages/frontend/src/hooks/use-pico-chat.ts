@@ -211,6 +211,23 @@ export function usePicoChat() {
     return list;
   }, [selectedProjectId]);
 
+  // Load sessions on mount (for full-page /chat route)
+  useEffect(() => {
+    if (!selectedProjectId) return;
+
+    let cancelled = false;
+    refreshSessions().then((list) => {
+      if (cancelled || !list) return;
+      if (!currentSessionId && list.length > 0) {
+        setCurrentSessionId(list[0]!.id as ChatSessionId);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedProjectId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Auto-create or restore session when panel opens
   useEffect(() => {
     if (!isOpen || !selectedProjectId) return;

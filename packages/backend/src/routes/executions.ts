@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import type { RewindFilesResult } from "@anthropic-ai/claude-agent-sdk";
 import { db } from "../db/connection.js";
@@ -16,6 +16,12 @@ import type {
 import { loadConfig } from "../config.js";
 import { logger } from "../logger.js";
 import { auditStateTransition } from "../audit.js";
+import {
+  getQueueEntries,
+  getActiveCount,
+  getQueueLength,
+  getMaxConcurrentForProject,
+} from "../agent/concurrency.js";
 
 function toIso(d: Date): string {
   return d.toISOString();
@@ -48,6 +54,60 @@ function serializeExecution(row: typeof executions.$inferSelect) {
 }
 
 export async function executionRoutes(app: FastifyInstance) {
+  // GET /api/executions/queue — expose the in-memory concurrency queue
+  app.get<{
+    Querystring: { projectId?: string };
+  }>("/api/executions/queue", async (request) => {
+    const { projectId } = request.query;
+
+    const entries = getQueueEntries();
+
+    // Batch-resolve display names from DB
+    const workItemIds = [...new Set(entries.map((e) => e.workItemId))];
+    const agentIds = [...new Set(entries.map((e) => e.agentId))];
+
+    const [itemRows, agentRows] = await Promise.all([
+      workItemIds.length > 0
+        ? db
+            .select({ id: workItems.id, title: workItems.title })
+            .from(workItems)
+            .where(inArray(workItems.id, workItemIds))
+        : Promise.resolve([]),
+      agentIds.length > 0
+        ? db
+            .select({ id: agents.id, name: agents.name })
+            .from(agents)
+            .where(inArray(agents.id, agentIds))
+        : Promise.resolve([]),
+    ]);
+
+    const workItemTitleMap = new Map(itemRows.map((r) => [r.id, r.title]));
+    const agentNameMap = new Map(agentRows.map((r) => [r.id, r.name]));
+
+    const queueData = entries.map((entry, idx) => ({
+      workItemId: entry.workItemId,
+      workItemTitle: workItemTitleMap.get(entry.workItemId) ?? "Unknown",
+      agentId: entry.agentId,
+      agentName: agentNameMap.get(entry.agentId) ?? "Unknown",
+      priority: entry.priority,
+      enqueuedAt: entry.enqueuedAt,
+      position: idx + 1,
+    }));
+
+    const maxConcurrent = projectId
+      ? await getMaxConcurrentForProject(projectId)
+      : 3;
+
+    return {
+      data: {
+        queue: queueData,
+        activeCount: getActiveCount(),
+        maxConcurrent,
+        queueLength: getQueueLength(),
+      },
+    };
+  });
+
   // GET /api/executions — list with optional workItemId or projectId filter
   app.get<{
     Querystring: { workItemId?: string; projectId?: string };
@@ -66,8 +126,8 @@ export async function executionRoutes(app: FastifyInstance) {
 
     if (projectId && !workItemId) {
       const projectWorkItems = await db.select().from(workItems).where(eq(workItems.projectId, projectId));
-      const workItemIds = new Set(projectWorkItems.map((w) => w.id));
-      rows = rows.filter((r) => r.workItemId && workItemIds.has(r.workItemId));
+      const workItemIdSet = new Set(projectWorkItems.map((w) => w.id));
+      rows = rows.filter((r) => r.workItemId && workItemIdSet.has(r.workItemId));
     }
 
     return { data: rows.map(serializeExecution), total: rows.length };

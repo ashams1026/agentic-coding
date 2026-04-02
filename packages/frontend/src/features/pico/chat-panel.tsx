@@ -128,23 +128,6 @@ export function ChatPanel() {
     }
   }, [isOpen]);
 
-  // Click outside to dismiss
-  useEffect(() => {
-    if (!isOpen) return;
-    const handler = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      // Don't close if clicking the chat bubble (it has its own toggle)
-      if (target.closest("[aria-label*='Pico']")) return;
-      // Don't close if clicking a dropdown menu
-      if (target.closest("[data-slot='dropdown-menu-content']")) return;
-      if (panelRef.current && !panelRef.current.contains(target)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [isOpen, setOpen]);
-
   // Focus title input when editing starts
   useEffect(() => {
     if (isEditingTitle) {

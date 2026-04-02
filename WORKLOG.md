@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-04-02 11:13 PDT — UXO.9: Fix chat session loading on /chat page
+
+**Done:** Added a mount-time `useEffect` in `use-pico-chat.ts` that calls `refreshSessions()` independent of `isOpen` panel state. Sessions now load on the full `/chat` page, not just when the sidebar panel opens.
+**Files:** `packages/frontend/src/hooks/use-pico-chat.ts`
+
+---
+
+## 2026-04-02 11:13 PDT — UXO.10: Remove click-outside-to-close from chat panel
+
+**Done:** Deleted the click-outside `useEffect` handler (lines 131-146) from `chat-panel.tsx`. Panel now only closes via the minimize button — no more accidental dismissals from dropdown interactions or outside clicks.
+**Files:** `packages/frontend/src/features/pico/chat-panel.tsx`
+
+---
+
+## 2026-04-02 11:13 PDT — UXO.18: Remove flow view from work items
+
+**Done:** Deleted `flow-view.tsx` component. Removed List/Flow view toggle, `viewOptions` array, `handleViewChange`, and URL param sync for view from `work-items.tsx`. Work items page is now list-only. Updated `WorkItemView` type to just `"list"` in the store.
+**Files:** `packages/frontend/src/features/work-items/flow-view.tsx` (deleted), `packages/frontend/src/pages/work-items.tsx`, `packages/frontend/src/stores/work-items-store.ts`
+
+---
+
+## 2026-04-02 11:13 PDT — UXO.24: Add queue endpoint
+
+**Done:** Added `GET /api/executions/queue` endpoint. Exported `getQueueEntries()` and `getMaxConcurrentForProject()` from `concurrency.ts`. Route batch-resolves workItemTitle and agentName via DB joins. Returns queue entries with 1-indexed positions plus `activeCount`, `maxConcurrent`, `queueLength` metadata.
+**Files:** `packages/backend/src/agent/concurrency.ts`, `packages/backend/src/routes/executions.ts`
+
+---
+
 ## 2026-04-02 11:07 PDT — UXO.8: Add project scope to agents
 
 **Done:** Added `scope` ('global'|'project') and `projectId` (nullable FK) to agents across the full stack. Shared types: added fields to Agent interface, CreateAgentRequest, UpdateAgentRequest. Schema: two new columns on agents table with project relation. Migration 0023. Backend routes: GET filters by projectId (global + matching project), POST validates projectId required for project scope, PATCH handles scope↔projectId transitions correctly. Core: updated AgentRow interface and toAgentRow mapper. Frontend: scope badge (Globe/purple for global, FolderOpen/emerald for project) on agent cards, scope Select dropdown in agent editor auto-sets projectId. Updated useAgents hook and query keys to pass projectId filter.

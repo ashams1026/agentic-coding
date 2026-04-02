@@ -1,25 +1,19 @@
 import { useEffect, useCallback, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
-import { List, GitBranch, Plus, Play, Pause } from "lucide-react";
+import { Plus, Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { FilterBar } from "@/features/work-items/filter-bar";
 import { ListView } from "@/features/work-items/list-view";
-import { FlowView } from "@/features/work-items/flow-view";
 import { DetailPanel } from "@/features/work-items/detail-panel";
-import { useWorkItemsStore, type WorkItemView } from "@/stores/work-items-store";
+import { useWorkItemsStore } from "@/stores/work-items-store";
 import { useCreateWorkItem, useSelectedProject, useProjects } from "@/hooks";
-
-const viewOptions: { value: WorkItemView; label: string; icon: typeof List }[] = [
-  { value: "list", label: "List", icon: List },
-  { value: "flow", label: "Flow", icon: GitBranch },
-];
 
 export function WorkItemsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const store = useWorkItemsStore();
-  const { view, setView, searchQuery, setSearchQuery, sortDir, setSortDir, filterAgents, filterLabels, selectedItemId, detailPanelWidth, setDetailPanelWidth } = store;
+  const { searchQuery, setSearchQuery, sortDir, setSortDir, filterAgents, filterLabels, selectedItemId, detailPanelWidth, setDetailPanelWidth } = store;
   const { projectId } = useSelectedProject();
   const createWorkItem = useCreateWorkItem();
   const { data: projectsList } = useProjects();
@@ -28,10 +22,6 @@ export function WorkItemsPage() {
 
   // Sync URL params → store on mount
   useEffect(() => {
-    const urlView = searchParams.get("view");
-    if (urlView && (urlView === "list" || urlView === "flow")) {
-      setView(urlView);
-    }
     const urlQuery = searchParams.get("q");
     if (urlQuery) {
       setSearchQuery(urlQuery);
@@ -67,14 +57,6 @@ export function WorkItemsPage() {
     if (sortDir !== "asc") next.set("sortDir", sortDir); else next.delete("sortDir");
     setSearchParams(next, { replace: true });
   }, [searchQuery, filterAgents, filterLabels, sortDir]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Sync URL params when view changes
-  const handleViewChange = (newView: WorkItemView) => {
-    setView(newView);
-    const next = new URLSearchParams(searchParams);
-    next.set("view", newView);
-    setSearchParams(next, { replace: true });
-  };
 
   // Resize handle logic
   const containerRef = useRef<HTMLDivElement>(null);
@@ -152,30 +134,6 @@ export function WorkItemsPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* View toggle */}
-            <div className="flex rounded-lg border bg-muted p-0.5">
-              {viewOptions.map(({ value, label, icon: Icon }) => (
-                <Tooltip key={value}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={cn(
-                        "h-7 px-3 text-xs gap-1.5 rounded-md",
-                        view === value && "bg-background shadow-sm text-foreground",
-                        view !== value && "text-muted-foreground hover:text-foreground",
-                      )}
-                      onClick={() => handleViewChange(value)}
-                    >
-                      <Icon className="h-3.5 w-3.5" />
-                      {label}
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>{label} view</TooltipContent>
-                </Tooltip>
-              ))}
-            </div>
-
             {/* Quick add */}
             <Tooltip>
               <TooltipTrigger asChild>
@@ -193,7 +151,7 @@ export function WorkItemsPage() {
         <FilterBar />
       </div>
 
-      {/* Content: view + detail panel */}
+      {/* Content: list + detail panel */}
       <div ref={containerRef} className="flex flex-1 overflow-hidden">
         <div
           className={cn(
@@ -202,8 +160,7 @@ export function WorkItemsPage() {
           )}
           style={{ width: selectedItemId ? `${100 - detailPanelWidth}%` : "100%" }}
         >
-          {view === "list" && <ListView />}
-          {view === "flow" && <FlowView />}
+          <ListView />
         </div>
 
         {/* Resize handle — always rendered when panel is open */}

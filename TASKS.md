@@ -23,8 +23,8 @@
 
 ### Phase 3: Chat UX Fixes
 
-- [ ] **UXO.9** — Fix: Chat session list doesn't load on `/chat` page mount. `use-pico-chat.ts:215` gates session loading on `isOpen` (panel state), which is `false` on the full page. Add a separate `useEffect` that calls `refreshSessions()` on page mount independent of panel state.
-- [ ] **UXO.10** — Fix: Chat panel minimizes on dropdown interaction and outside clicks. `chat-panel.tsx:131-146` click-outside handler only excludes `dropdown-menu-content` but misses `select-content`. Remove the click-outside-to-close behavior entirely — panel should ONLY close via the minimize button.
+- [x] **UXO.9** — Fix: Chat session list doesn't load on `/chat` page mount. `use-pico-chat.ts:215` gates session loading on `isOpen` (panel state), which is `false` on the full page. Add a separate `useEffect` that calls `refreshSessions()` on page mount independent of panel state. *(completed 2026-04-02 11:13 PDT)*
+- [x] **UXO.10** — Fix: Chat panel minimizes on dropdown interaction and outside clicks. `chat-panel.tsx:131-146` click-outside handler only excludes `dropdown-menu-content` but misses `select-content`. Remove the click-outside-to-close behavior entirely — panel should ONLY close via the minimize button. *(completed 2026-04-02 11:13 PDT)*
 - [ ] **UXO.11** — Fix: Empty chat state always shows "Woof I'm Pico". Update empty state in `chat.tsx` and `chat-panel.tsx` to dynamically show the selected agent's name, avatar, and description. Pico greeting only when Pico is selected. Other agents show their own description.
 - [ ] **UXO.12** — Frontend: Group chat sessions by agent name. Replace date-based grouping in session sidebar with agent-based collapsible groups. Each group header: agent avatar + name + session count + expand/collapse caret. Sessions within each group sorted by recency. Default all expanded.
 - [ ] **UXO.13** — Frontend: Improve chat header. Show agent avatar + name prominently (larger, left-aligned). Show resolved project name. Editable session title. Context menu (rename, delete). Clear visual identity of which agent you're talking to.
@@ -35,7 +35,7 @@
 - [ ] **UXO.15** — Backend: Per-workflow auto-routing. Update `runRouter()` to read `workflow.autoRouting` instead of `project.settings.autoRouting`. Build Router system prompt from the specific workflow's state machine via `workflowId`.
 - [ ] **UXO.16** — Backend: Label-based agent resolution. Update `resolveAgentForState()` to check work item labels against `workflowStates.agentOverrides`. Priority: label match override → state default agent → null.
 - [ ] **UXO.17** — Backend: Enforce Backlog/Done as immutable built-in states. Every workflow must have exactly one initial state ("Backlog") and at least one terminal state ("Done"). These names cannot be changed or deleted. Auto-create them on `POST /api/workflows`.
-- [ ] **UXO.18** — Frontend: Remove flow view from work items page. Delete `flow-view.tsx` and the list/flow view toggle. Work items page is list-only.
+- [x] **UXO.18** — Frontend: Remove flow view from work items page. Delete `flow-view.tsx` and the list/flow view toggle. Work items page is list-only. *(completed 2026-04-02 11:13 PDT)*
 - [ ] **UXO.19** — Frontend: Rename Workflows → Automations. Update sidebar nav label to "Automations", move it below Work Items. Update route path `/workflows` → `/automations` (keep `/workflows/:id` for the builder). Update all navigation references.
 - [ ] **UXO.20** — Frontend: Redesign Automations page as unified live overview. Two card types side by side: **Workflow cards** (name, auto-routing play/pause, live state pipeline with item counts per state and active agents, edit button) and **Schedule cards** (name, agent avatar+name, cron expression in human-readable form, next run time, active play/pause toggle, last run status). "New Automation" button offers choice: Workflow or Schedule. Extract flow-view metrics logic for workflow cards.
 - [ ] **UXO.27** — Frontend: Move Schedules out of Settings onto Automations page. Remove the schedules section from Settings. Schedule cards on the Automations page link to an edit view (inline dialog or dedicated page) for cron expression, agent selection, prompt template, and project scope. Active/disabled toggle directly on the card.
@@ -45,7 +45,7 @@
 
 ### Phase 5: Agent Monitor Queue
 
-- [ ] **UXO.24** — Backend: Add `GET /api/executions/queue` endpoint. Expose the in-memory concurrency queue from `concurrency.ts`. Return array of `{ workItemId, workItemTitle, agentId, agentName, priority, enqueuedAt, position }`. Resolve workItemId and personaId (→ agentId) to display names via DB joins. Also return `{ activeCount, maxConcurrent, queueLength }` metadata.
+- [x] **UXO.24** — Backend: Add `GET /api/executions/queue` endpoint. Expose the in-memory concurrency queue from `concurrency.ts`. Return array of `{ workItemId, workItemTitle, agentId, agentName, priority, enqueuedAt, position }`. Resolve workItemId and personaId (→ agentId) to display names via DB joins. Also return `{ activeCount, maxConcurrent, queueLength }` metadata. *(completed 2026-04-02 11:13 PDT)*
 - [ ] **UXO.25** — Frontend: Add "Queue" tab to Agent Monitor alongside Live and History. Show queued executions as a list: position number, agent avatar + name, work item title, priority badge (p0=red, p1=orange, p2=blue, p3=gray), time waiting (relative). Show empty state "No queued agents" when queue is empty. Show active/max count in tab badge: "Queue (3)". Auto-refresh via polling or WS event when queue changes.
 
 ### Phase 6: Global Work Items
