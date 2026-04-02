@@ -9,6 +9,49 @@
 
 ---
 
+## Bug Fixes: Post-Sprint Review (Sprints 24-27)
+
+> Critical bugs, dead code, and unimplemented stubs found during deep review of autonomous agent work. Prioritized by severity. **Fix these before continuing Sprint 28 feature work.**
+
+### Critical — Security & Data Loss
+
+- [review] **FX.SEC.1** — Fix path traversal in backup restore. `packages/backend/src/db/backup.ts:95-111` accepts any file path from the API — attacker can overwrite DB with arbitrary file. Validate that the provided path resolves within the backups directory. Reject paths with `..` or absolute paths outside the backup root.
+- [ ] **FX.SEC.2** — Fix FTS5 MATCH crash on special characters. `packages/backend/src/routes/search.ts:36,57` passes user input directly to FTS5 MATCH — characters like `AND NOT`, `NEAR(`, unbalanced quotes crash the endpoint with unhandled 500. Wrap queries in try-catch and sanitize/escape FTS5 special syntax before querying.
+- [ ] **FX.SEC.3** — Sanitize FTS snippets before rendering. `packages/frontend/src/features/command-palette/command-palette.tsx:311` uses `dangerouslySetInnerHTML` with unsanitized FTS snippet content. Sanitize HTML or use a safe rendering approach to prevent XSS.
+
+### Critical — Dead Code & Unimplemented Stubs
+
+- [ ] **FX.DEAD.1** — Wire prompt template into inbound webhook execution. `packages/backend/src/routes/webhook-triggers.ts:76-83` — `resolveTemplate()` output is computed but never passed to `runExecution()`. Pass the resolved prompt to the execution so inbound webhook templates actually work end-to-end.
+- [ ] **FX.DEAD.2** — Implement or remove `execution_stuck` notification type. Backend never emits `execution_stuck` — the type is defined in `packages/shared/src/ws-events.ts`, UI handles it in notification cards, and Settings has a toggle for it, but no backend code ever fires it. Either implement a periodic check for stalled executions (e.g., no progress events for >10min) or remove the type, UI, and settings toggle entirely.
+- [ ] **FX.DEAD.3** — Replace stub navigation on proposal notification actions. `packages/frontend/src/features/notifications/notification-card.tsx:107-108` — Approve/Reject buttons just navigate to `/items` without passing proposal ID. Wire them to actually call `PATCH /api/proposals/:id` with the approve/reject action, then mark notification as read.
+
+### Critical — HMAC & Webhook Integrity
+
+- [ ] **FX.WHK.1** — Fix HMAC verification to use raw request bytes. `packages/backend/src/routes/webhook-triggers.ts:70` uses `JSON.stringify(request.body)` for HMAC verification instead of raw request body bytes. Re-serialized JSON may differ from the original payload (key ordering, whitespace), causing all HMAC checks to fail. Use Fastify's `rawBody` or `request.rawBody` instead.
+
+### Warning — Logic Bugs
+
+- [ ] **FX.NTF.1** — Fix toast overflow count decrement. `packages/frontend/src/stores/toast-store.ts:55` — the `overflowCount` decrement condition is inverted. When a visible toast is auto-dismissed, the overflow count doesn't decrement correctly, leaving stale "+N more" badges.
+- [ ] **FX.NTF.2** — Fix notification batching double-count. `packages/frontend/src/stores/notification-store.ts:117-128` — first `agent_completed` notification is added immediately, then the batch summary also counts it, so users see both the individual notification AND a summary that includes it. Either suppress the first individual notification or exclude it from the batch count.
+- [ ] **FX.WF.1** — Fix race condition in workflow publish. `packages/frontend/src/pages/workflows.tsx:51-56` — save and publish fire concurrently. Publish must wait for save to complete. Make them sequential (await save, then publish).
+- [ ] **FX.WF.2** — Wrap workflow CRUD mutations in DB transactions. `packages/backend/src/routes/workflows.ts:209-244` — PATCH and DELETE handlers do delete-then-insert for states/transitions without a transaction. Server crash between delete and insert loses data. Wrap in `db.transaction()`.
+- [ ] **FX.WF.3** — Add input validation to workflow CRUD. `packages/backend/src/routes/workflows.ts` POST/PATCH handlers accept empty names, invalid state types, garbage data. Add validation: require non-empty name, valid state type enum, at least one state, valid transition references.
+
+### Warning — Missing Data & Stale UI
+
+- [ ] **FX.CHAT.1** — Show project name instead of raw ID in chat header. `packages/frontend/src/pages/chat.tsx:374-379` — the project badge shows the raw `projectId` string (e.g., `pj-x7k2m`) instead of the project's display name. Fetch and display the project name.
+- [ ] **FX.NAV.1** — Update command palette navigation items. `packages/frontend/src/features/command-palette/command-palette.tsx:39-46` — NAV_ITEMS is stale, missing Analytics, Chat, and Workflows pages. Add all current sidebar pages.
+- [ ] **FX.WF.4** — Include transition sortOrder in workflow save payload. `packages/frontend/src/pages/workflows.tsx:28-35` — `sortOrder` is omitted from transitions when saving, so all transitions get `sortOrder: 0`. Preserve the correct order.
+- [ ] **FX.DOC.1** — Update `docs/workflow.md` to reflect custom workflows. Still says "hardcoded" and "not user-configurable" — needs to document the Sprint 25 workflow engine.
+
+### Warning — Code Quality
+
+- [ ] **FX.TYPE.1** — Fix unsafe double type casts in chat routes. `packages/backend/src/routes/chat.ts:367-369` — `project as unknown as Project` and `chatAgent as unknown as Persona` are fragile double casts. Create proper mapping functions or use the correct types directly.
+- [ ] **FX.TYPE.2** — Import HandoffNote from shared instead of duplicating. `packages/backend/src/agent/handoff-notes.ts:11` — `HandoffNote` type is duplicated instead of imported from `@agentops/shared`. Remove the local definition and import from shared.
+- [ ] **FX.PERF.1** — Fix N+1 query in dependency check. `packages/backend/src/agent/dispatch.ts:56-63` — dependency check runs one query per upstream dependency. Batch into a single query with `IN (...)` clause.
+
+---
+
 ## Sprint 28: Scheduling, Templates & Notification Channels
 
 > Tier 3 features: Scheduling (cron agent runs), Templates P1 (work item templates), Notification External Channels (webhook channel wrapping outbound infra).

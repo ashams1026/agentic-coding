@@ -6,7 +6,7 @@
  */
 
 import { existsSync, mkdirSync, readdirSync, statSync, unlinkSync, copyFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { homedir } from "node:os";
 import { sqlite, DB_PATH } from "./connection.js";
 import { logger } from "../logger.js";
@@ -93,8 +93,15 @@ export function listBackups(): BackupInfo[] {
  * @param backupPath Path to the backup file to restore
  */
 export function restoreBackup(backupPath: string): void {
-  if (!existsSync(backupPath)) {
-    throw new Error(`Backup file not found: ${backupPath}`);
+  // Validate that the backup path resolves within the backups directory
+  const resolvedPath = resolve(backupPath);
+  const resolvedBackupDir = resolve(BACKUP_DIR);
+  if (!resolvedPath.startsWith(resolvedBackupDir + "/")) {
+    throw new Error("Invalid backup path: must be within the backups directory");
+  }
+
+  if (!existsSync(resolvedPath)) {
+    throw new Error(`Backup file not found: ${resolvedPath}`);
   }
 
   // Create a safety backup of the current DB before overwriting
@@ -107,8 +114,8 @@ export function restoreBackup(backupPath: string): void {
   }
 
   // Copy backup over current database
-  copyFileSync(backupPath, DB_PATH);
-  logger.info({ backupPath, dbPath: DB_PATH }, "Database restored from backup");
+  copyFileSync(resolvedPath, DB_PATH);
+  logger.info({ backupPath: resolvedPath, dbPath: DB_PATH }, "Database restored from backup");
 }
 
 // ── Retention cleanup ───────────────────────────────────────────

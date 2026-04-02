@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 09:25 PDT — FX.SEC.1: Fix path traversal in backup restore
+
+**Done:** Added path traversal validation to `restoreBackup()` in `backup.ts`. Now resolves the provided path with `resolve()` and checks it starts with the backups directory path + `/`. Rejects paths containing `..` or pointing outside `~/.agentops/backups/` with a clear error message. All subsequent operations use the resolved path.
+**Files:** `packages/backend/src/db/backup.ts`
+
+---
+
 ## 2026-04-03 09:15 PDT — Review: TPL.2 (approved)
 
 **Reviewed:** Templates CRUD route + apply endpoint.
