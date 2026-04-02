@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 08:25 PDT — NTF.4: NotificationBell component in sidebar
+
+**Done:** Created `packages/frontend/src/features/notifications/notification-bell.tsx` — Bell icon button with red unread count badge (shows "9+" for >9). Wired to notification store's `selectUnreadCount` selector. Click toggles `drawerOpen` in store. Active state highlights with `bg-muted`. Tooltip shows unread count or "Notifications". Placed in sidebar footer between theme toggle and collapse toggle via import in `sidebar.tsx`.
+**Files:** `packages/frontend/src/features/notifications/notification-bell.tsx` (new), `packages/frontend/src/components/sidebar.tsx`
+
+---
+
 ## 2026-04-02 08:15 PDT — Review: NTF.3 (approved)
 
 **Reviewed:** Zustand notification store in notification-store.ts.

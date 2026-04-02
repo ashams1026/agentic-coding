@@ -26,6 +26,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { NotificationBell } from "@/features/notifications/notification-bell";
 import {
   Select,
   SelectContent,
@@ -256,6 +257,7 @@ export function Sidebar() {
             Theme: {themeLabel[theme]}
           </TooltipContent>
         </Tooltip>
+        <NotificationBell />
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
