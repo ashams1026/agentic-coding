@@ -1,1 +1,0 @@
-ALTER TABLE `executions` ADD `checkpoint_message_id` text;

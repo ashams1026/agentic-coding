@@ -1,1 +1,0 @@
-ALTER TABLE `executions` ADD `handoff_notes` text;

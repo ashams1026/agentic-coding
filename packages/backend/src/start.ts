@@ -228,6 +228,10 @@ export async function startServer(options: StartOptions = {}): Promise<void> {
 
   await runMigrations();
 
+  // Ensure global project exists (must be first — other seeds reference it)
+  const { ensureGlobalProject } = await import("./db/ensure-global-project.js");
+  await ensureGlobalProject();
+
   // Ensure built-in agents exist (idempotent)
   await ensureBuiltInAgents();
 

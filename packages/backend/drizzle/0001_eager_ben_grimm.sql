@@ -1,1 +1,0 @@
-ALTER TABLE `personas` ADD `skills` text DEFAULT '[]' NOT NULL;

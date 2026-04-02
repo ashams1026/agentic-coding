@@ -1,1 +1,0 @@
-ALTER TABLE `executions` ADD `structured_output` text;

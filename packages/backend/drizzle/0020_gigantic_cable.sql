@@ -1,1 +1,0 @@
-ALTER TABLE `projects` ADD `is_global` integer DEFAULT false NOT NULL;
