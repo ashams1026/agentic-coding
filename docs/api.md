@@ -1874,6 +1874,117 @@ All backend modules (`dispatch.ts`, `execution-manager.ts`, `mcp-server.ts`, `ro
 
 ---
 
+## Agent Collaboration
+
+### Handoff Notes
+
+Structured context passed between agents as a work item moves through workflow states.
+
+```typescript
+interface HandoffNote {
+  fromState: string;
+  targetState: string;
+  summary: string;        // max 500 chars
+  decisions: string[];    // max 10
+  filesChanged: string[]; // max 20
+  openQuestions: string[]; // max 5
+}
+```
+
+Stored as `handoffNotes` JSON column on `executions` table (nullable). Built automatically on non-Router successful completions by `buildHandoffNote()` which extracts decisions (keyword regex), files (write/edit patterns), and open questions from execution summary and logs.
+
+### Context Injection
+
+Before spawning an execution, `buildAccumulatedContext(workItemId)` queries all prior handoff notes with token-budget windowing (~2000 tokens / 8000 chars). Most recent note is fully formatted; older notes are compressed to one-line summaries. Injected as "Previous Agent Context" section (6) in `buildSystemPrompt()` via `SpawnOptions.handoffContext`.
+
+### Dependency Enforcement
+
+Before dispatching, `dispatchForState()` queries `work_item_edges` where `type = 'depends_on'` and `toId = currentItemId`. Each upstream item's `currentState` is checked against terminal workflow states. If any dependency is incomplete, dispatch is blocked with a system comment listing pending dependencies and a WebSocket broadcast.
+
+---
+
+## Search
+
+### Full-Text Search
+
+```
+GET /api/search?q={query}&type={type}&projectId={id}&limit={n}
+```
+
+FTS5-backed search across 4 entity types using BM25 ranking.
+
+**Query params:**
+- `q` (required): search query, min 1 char
+- `type` (optional): comma-separated filter — `work_item`, `persona`, `comment`, `chat_message`
+- `projectId` (optional): scope to project
+- `limit` (optional): max results, default 50, max 200
+
+**Response:** `{ data: SearchResult[], total: number }`
+
+```typescript
+interface SearchResult {
+  type: "work_item" | "persona" | "comment" | "chat_message";
+  id: string;
+  title: string;
+  snippet: string;  // FTS5 snippet() with <b> highlights
+  score: number;    // BM25 score (lower = better match)
+  projectId: string | null;
+}
+```
+
+**Implementation:** FTS5 virtual tables (`work_items_fts`, `personas_fts`, `comments_fts`, `chat_messages_fts`) with integer-rowid bridging tables. Sync triggers (INSERT/UPDATE/DELETE) keep FTS in sync. Backfill on first startup. Respects `archived_at`/`deleted_at` filters on work items.
+
+---
+
+## Analytics
+
+### Cost by Persona
+
+```
+GET /api/analytics/cost-by-persona?projectId={id}&range={24h|7d|30d|90d}
+```
+
+**Response:** `{ data: [{ personaId, personaName, costUsd, totalTokens, executionCount }] }`
+
+### Cost by Model
+
+```
+GET /api/analytics/cost-by-model?projectId={id}&range={24h|7d|30d|90d}
+```
+
+**Response:** `{ data: [{ model, costUsd, totalTokens, executionCount }] }`
+
+### Tokens Over Time
+
+```
+GET /api/analytics/tokens-over-time?projectId={id}&range={24h|7d|30d|90d}
+```
+
+**Response:** `{ data: [{ date, totalTokens, costUsd, executionCount }] }`
+
+Daily aggregates using `DATE(startedAt/1000, 'unixepoch')`.
+
+### Top Executions
+
+```
+GET /api/analytics/top-executions?projectId={id}&limit={n}&range={24h|7d|30d|90d}
+```
+
+**Response:** `{ data: [{ id, personaId, personaName, model, costUsd, totalTokens, toolUses, durationMs, startedAt }] }`
+
+Sorted by `costUsd` descending. Limit default 10, max 50.
+
+### Token Tracking Schema
+
+Three columns added to `executions` table (migration 0015):
+- `model` (TEXT nullable) — persona model used (opus/sonnet/haiku)
+- `total_tokens` (INTEGER nullable) — cumulative tokens from ProgressEvents
+- `tool_uses` (INTEGER nullable) — tool call count from ProgressEvents
+
+Persisted on execution completion alongside `costUsd`. `costUsd` is stored as **cents** (integer) in the DB, divided by 100 for USD display.
+
+---
+
 ## Source Files
 
 | File | Purpose |
@@ -1894,6 +2005,10 @@ All backend modules (`dispatch.ts`, `execution-manager.ts`, `mcp-server.ts`, `ro
 | `packages/backend/src/routes/workflows.ts` | Workflow CRUD + publish + clone + validate |
 | `packages/backend/src/agent/workflow-runtime.ts` | Dynamic workflow query functions with hardcoded fallback |
 | `packages/backend/src/db/seed-workflow.ts` | Default workflow seeding + backfill |
+| `packages/backend/src/routes/search.ts` | FTS5 full-text search endpoint |
+| `packages/backend/src/routes/analytics.ts` | Analytics aggregate endpoints (4 routes) |
+| `packages/backend/src/db/fts5-setup.ts` | FTS5 virtual tables, triggers, backfill |
+| `packages/backend/src/agent/handoff-notes.ts` | Handoff note building, querying, context windowing |
 | `packages/shared/src/api.ts` | Request/response TypeScript types |
 | `packages/shared/src/entities.ts` | Entity types including AgentScope |
 | `packages/shared/src/ws-events.ts` | WebSocket event type definitions |

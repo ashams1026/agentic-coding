@@ -564,6 +564,23 @@ The backend broadcasts `WsEvent` messages to all connected clients. The frontend
 
 ## Evaluated SDK Capabilities
 
+## Context Windowing (Agent Collaboration)
+
+When agents hand off work through workflow state transitions, accumulated context can grow unbounded. The context windowing system manages this:
+
+1. **Handoff Notes** — Each completed execution produces a `HandoffNote` with structured fields (summary, decisions, files changed, open questions). Stored as JSON on the `executions` table.
+
+2. **Accumulation** — `buildAccumulatedContext(workItemId)` queries all prior handoff notes ordered by recency:
+   - Most recent note: full formatted text (state transition, summary, all sections)
+   - Older notes: compressed to one-line summaries `[fromState → targetState] summary(120 chars)`
+   - Budget: ~8000 characters (~2000 tokens). Stops adding older notes when exceeded.
+
+3. **Injection** — The accumulated context is injected as section (6) "Previous Agent Context" in `buildSystemPrompt()`, passed through `SpawnOptions.handoffContext`. This gives each agent awareness of what previous agents did without overwhelming the context window.
+
+4. **Dependency Enforcement** — `dispatchForState()` checks `depends_on` edges before spawning. Upstream items must be in terminal workflow states. Blocked dispatches create system comments visible in the UI.
+
+---
+
 The following SDK features have been evaluated via spike documents. They are not yet implemented in AgentOps but are available in the Claude Agent SDK for future use.
 
 | Feature | SDK Mechanism | Spike | Status |

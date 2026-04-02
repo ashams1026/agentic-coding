@@ -19,7 +19,7 @@
 - [x] **S26.TEST.4** — Execute Agent Collaboration e2e tests. Run test plan via chrome-devtools MCP. Screenshot each case. Record to `tests/e2e/results/`. File bugs as `FX.*`. *(completed 2026-04-03 01:05 PDT)*
 - [x] **S26.TEST.5** — Execute Search e2e tests. Run test plan via chrome-devtools MCP. Screenshot each case. Record to `tests/e2e/results/`. File bugs as `FX.*`. *(completed 2026-04-03 01:20 PDT)*
 - [x] **S26.TEST.6** — Execute Analytics e2e tests. Run test plan via chrome-devtools MCP. Screenshot each case. Record to `tests/e2e/results/`. File bugs as `FX.*`. *(completed 2026-04-03 01:35 PDT)*
-- [ ] **S26.DOC.1** — Document Sprint 26 APIs. Update `docs/api.md` with: handoff notes schema + injection, dependency enforcement behavior, search endpoint + FTS5, analytics endpoints + token tracking. Update `docs/architecture.md` with context windowing design.
+- [review] **S26.DOC.1** — Document Sprint 26 APIs. Update `docs/api.md` with: handoff notes schema + injection, dependency enforcement behavior, search endpoint + FTS5, analytics endpoints + token tracking. Update `docs/architecture.md` with context windowing design.
 - [ ] **S26.TEST.7** — Regression checkpoint: re-run ALL existing e2e test plans against current build. Compare against Sprint 25 baseline (37 suites, 0 regressions). File bugs as `FX.REG.*`.
 
 ---
