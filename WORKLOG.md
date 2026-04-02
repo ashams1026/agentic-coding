@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 00:30 PDT — Review: FND.GA.8 (approved)
+
+**Reviewed:** Pico scope toggle and persona picker in chat panel header.
+- `scopeOverride` and `selectedPersonaId` in pico-store with proper types and persistence ✓
+- Scope dropdown: Follows sidebar / Global / per-project with `__follow__` ↔ null mapping ✓
+- Persona dropdown: Pico (default) / other personas with `__pico__` ↔ null mapping ✓
+- Both call `newSession()` on change ✓
+- Active scope badge when non-default values selected ✓
+- Compact 11px styling fits the small panel ✓
+- Build passes; visual check confirmed
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 00:25 PDT — FND.GA.8: Pico scope toggle and persona picker
 
 **Done:** Added `scopeOverride` (null = follows sidebar, `"__global__"` = global, or projectId) and `selectedPersonaId` (null = Pico default) to `pico-store.ts`, persisted via zustand. In `chat-panel.tsx` added a compact bar below the header with two Select dropdowns: scope (Follows sidebar / Global / per-project) and persona (Pico / other personas). When either changes, `newSession()` is called to create a fresh session. Active scope badge shown when non-default values are selected. Both dropdowns use 11px text and borderless style to stay compact in the small panel.
