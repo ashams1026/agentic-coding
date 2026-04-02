@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 15:55 PDT — Review: CWF.14 (approved)
+
+**Reviewed:** workflow-config-section dynamic workflow.
+- No WORKFLOW import, useWorkflowStates() for dynamic states ✓
+- configurableStates filters by type=intermediate ✓
+- WorkflowSelector shown when 2+ workflows ✓
+- Build passes ✓
+- **Verdict: approved.** Frontend Dynamic Views phase (CWF.11-14) complete.
+
+---
+
 ## 2026-04-02 15:50 PDT — CWF.14: Update workflow-config-section for dynamic workflow
 
 **Done:** Updated `packages/frontend/src/features/settings/workflow-config-section.tsx`. Replaced `WORKFLOW.states` import with `useWorkflowStates(project.workflowId)`. `configurableStates` now filters by `type === "intermediate"` instead of hardcoded names. Added `WorkflowSelector` component — dropdown shown when 2+ workflows exist, allows changing project's active workflow. Updated note text to reference initial/terminal states generically. Imported `useWorkflowStates` + `useWorkflows` from hooks.
