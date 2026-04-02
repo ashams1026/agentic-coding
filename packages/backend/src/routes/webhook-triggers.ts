@@ -1,10 +1,17 @@
 import type { FastifyInstance } from "fastify";
 import { eq, desc } from "drizzle-orm";
 import { randomBytes, createHmac, timingSafeEqual } from "node:crypto";
+import { Readable } from "node:stream";
 import { db } from "../db/connection.js";
 import { webhookTriggers, personas } from "../db/schema.js";
 import { executionManager } from "../agent/setup.js";
 import { logger } from "../logger.js";
+
+declare module "fastify" {
+  interface FastifyRequest {
+    rawBody?: string;
+  }
+}
 
 // ── Helpers ─────────────────────────────────────────────────────
 
@@ -49,7 +56,17 @@ export async function webhookTriggerRoutes(app: FastifyInstance) {
   app.post<{
     Params: { triggerId: string };
     Body: Record<string, unknown>;
-  }>("/api/webhooks/trigger/:triggerId", async (request, reply) => {
+  }>("/api/webhooks/trigger/:triggerId", {
+    preParsing: async (request, _reply, payload) => {
+      const chunks: Buffer[] = [];
+      for await (const chunk of payload) {
+        chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk as Buffer);
+      }
+      const rawBuffer = Buffer.concat(chunks);
+      request.rawBody = rawBuffer.toString("utf8");
+      return Readable.from(rawBuffer);
+    },
+  }, async (request, reply) => {
     const { triggerId } = request.params;
 
     const [trigger] = await db
@@ -67,8 +84,7 @@ export async function webhookTriggerRoutes(app: FastifyInstance) {
       return reply.status(401).send({ error: { code: "UNAUTHORIZED", message: "Missing X-Webhook-Signature header" } });
     }
 
-    const rawBody = JSON.stringify(request.body);
-    if (!verifyHmac(rawBody, trigger.secret, signature)) {
+    if (!verifyHmac(request.rawBody!, trigger.secret, signature)) {
       return reply.status(403).send({ error: { code: "FORBIDDEN", message: "Invalid signature" } });
     }
 
