@@ -9,6 +9,7 @@ export interface Toast {
   type: ToastType;
   title: string;
   description?: string;
+  critical?: boolean;
   action?: {
     label: string;
     onClick: () => void;
@@ -17,6 +18,7 @@ export interface Toast {
 
 interface ToastState {
   toasts: Toast[];
+  overflowCount: number;
   addToast: (toast: Omit<Toast, "id">) => void;
   removeToast: (id: string) => void;
 }
@@ -25,24 +27,35 @@ interface ToastState {
 
 let nextId = 0;
 
-const MAX_TOASTS = 3;
+const MAX_VISIBLE = 3;
 const AUTO_DISMISS_MS = 5000;
 
 export const useToastStore = create<ToastState>((set) => ({
   toasts: [],
+  overflowCount: 0,
 
   addToast: (toast) => {
     const id = `toast-${++nextId}`;
-    set((state) => ({
-      toasts: [...state.toasts.slice(-(MAX_TOASTS - 1)), { ...toast, id }],
-    }));
+    const newToast = { ...toast, id };
 
-    // Auto-dismiss
-    setTimeout(() => {
-      set((state) => ({
-        toasts: state.toasts.filter((t) => t.id !== id),
-      }));
-    }, AUTO_DISMISS_MS);
+    set((state) => {
+      const updated = [...state.toasts, newToast];
+      const overflow = Math.max(0, updated.length - MAX_VISIBLE);
+      return {
+        toasts: updated.slice(-MAX_VISIBLE),
+        overflowCount: overflow,
+      };
+    });
+
+    // Auto-dismiss — skip for critical toasts
+    if (!toast.critical) {
+      setTimeout(() => {
+        set((state) => ({
+          toasts: state.toasts.filter((t) => t.id !== id),
+          overflowCount: Math.max(0, state.overflowCount - (state.toasts.some((t) => t.id === id) ? 0 : 1)),
+        }));
+      }, AUTO_DISMISS_MS);
+    }
   },
 
   removeToast: (id) =>
