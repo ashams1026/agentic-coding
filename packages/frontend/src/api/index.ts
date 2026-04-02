@@ -86,4 +86,9 @@ export {
   deleteChatSession,
   getChatMessages,
   sendChatMessageSSE,
+  // Workflows
+  getWorkflows,
+  getWorkflow,
+  getWorkflowStates,
+  getWorkflowTransitions,
 } from "@/api/client";

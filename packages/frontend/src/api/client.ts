@@ -702,6 +702,35 @@ export function sendChatMessageSSE(
   return { response, abort: () => controller.abort() };
 }
 
+// ── Workflows ───────────────────────────────────────────────────
+
+import type { Workflow, WorkflowStateEntity, WorkflowTransitionEntity } from "@agentops/shared";
+
+export async function getWorkflows(projectId?: string): Promise<Workflow[]> {
+  const q = projectId ? `?projectId=${projectId}` : "";
+  const res = await get<{ data: Workflow[]; total: number }>(`/api/workflows${q}`);
+  return res.data;
+}
+
+export async function getWorkflow(id: string): Promise<{ workflow: Workflow; states: WorkflowStateEntity[]; transitions: WorkflowTransitionEntity[] } | null> {
+  try {
+    const res = await get<{ data: Workflow & { states: WorkflowStateEntity[]; transitions: WorkflowTransitionEntity[] } }>(`/api/workflows/${id}`);
+    return { workflow: res.data, states: res.data.states, transitions: res.data.transitions };
+  } catch {
+    return null;
+  }
+}
+
+export async function getWorkflowStates(workflowId: string): Promise<WorkflowStateEntity[]> {
+  const res = await get<{ data: WorkflowStateEntity[]; total: number }>(`/api/workflows/${workflowId}/states`);
+  return res.data;
+}
+
+export async function getWorkflowTransitions(workflowId: string): Promise<WorkflowTransitionEntity[]> {
+  const res = await get<{ data: WorkflowTransitionEntity[]; total: number }>(`/api/workflows/${workflowId}/transitions`);
+  return res.data;
+}
+
 // ── Bundled API (mirrors mockApi shape) ──────────────────────────
 
 export const apiClient = {

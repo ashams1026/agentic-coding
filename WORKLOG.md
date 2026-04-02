@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 14:55 PDT — CWF.11: Frontend workflow hooks and API client
+
+**Done:** Created `packages/frontend/src/hooks/use-workflows.ts` with 4 React Query hooks: `useWorkflows(projectId?)`, `useWorkflow(id)`, `useWorkflowStates(workflowId)`, `useWorkflowTransitions(workflowId)`. All with 5-minute staleTime. Added 4 API client functions in `client.ts`: `getWorkflows()`, `getWorkflow()` (returns workflow + states + transitions), `getWorkflowStates()`, `getWorkflowTransitions()`. Exported from api/index.ts. Imported shared types (`Workflow`, `WorkflowStateEntity`, `WorkflowTransitionEntity`).
+**Files:** `packages/frontend/src/hooks/use-workflows.ts` (new), `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`
+
+---
+
 ## 2026-04-02 14:40 PDT — Review: CWF.10 (approved)
 
 **Reviewed:** Builder CRUD endpoints in workflows.ts.
