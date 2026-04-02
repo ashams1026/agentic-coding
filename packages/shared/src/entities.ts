@@ -195,6 +195,9 @@ export type ChatMessageRole = "user" | "assistant";
 export interface ChatSession {
   id: ChatSessionId;
   projectId: ProjectId | null;
+  personaId: PersonaId | null;
+  workItemId: WorkItemId | null;
+  sdkSessionId: string | null;
   title: string;
   createdAt: string;
   updatedAt: string;

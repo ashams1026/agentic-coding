@@ -10,6 +10,8 @@ import type {
   ChatSessionId,
   ChatMessageId,
   ProjectId,
+  PersonaId,
+  WorkItemId,
 } from "@agentops/shared";
 import { readFileSync } from "node:fs";
 import { loadConfig } from "../config.js";
@@ -32,6 +34,9 @@ function serializeSession(row: typeof chatSessions.$inferSelect) {
   return {
     id: row.id as ChatSessionId,
     projectId: (row.projectId as ProjectId) ?? null,
+    personaId: (row.personaId as PersonaId) ?? null,
+    workItemId: (row.workItemId as WorkItemId) ?? null,
+    sdkSessionId: row.sdkSessionId ?? null,
     title: row.title,
     createdAt: toIso(row.createdAt),
     updatedAt: toIso(row.updatedAt),

@@ -246,6 +246,9 @@ export const projectMemoriesRelations = relations(projectMemories, ({ one }) => 
 export const chatSessions = sqliteTable("chat_sessions", {
   id: text("id").primaryKey(), // ChatSessionId
   projectId: text("project_id").references(() => projects.id), // nullable for global sessions
+  personaId: text("persona_id").references(() => personas.id), // nullable — null means default Pico
+  workItemId: text("work_item_id").references(() => workItems.id), // nullable — for chat-in-context
+  sdkSessionId: text("sdk_session_id"), // nullable — for future SDK session tracking
   title: text("title").notNull().default("New chat"),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
@@ -255,6 +258,14 @@ export const chatSessionsRelations = relations(chatSessions, ({ one, many }) => 
   project: one(projects, {
     fields: [chatSessions.projectId],
     references: [projects.id],
+  }),
+  persona: one(personas, {
+    fields: [chatSessions.personaId],
+    references: [personas.id],
+  }),
+  workItem: one(workItems, {
+    fields: [chatSessions.workItemId],
+    references: [workItems.id],
   }),
   messages: many(chatMessages),
 }));

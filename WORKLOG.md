@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 04:00 PDT — ACH.1: Schema migration for chat_sessions
+
+**Done:** Added `persona_id` (TEXT FK nullable → personas), `work_item_id` (TEXT FK nullable → work_items), `sdk_session_id` (TEXT nullable) columns to `chat_sessions` table. Updated shared `ChatSession` interface to include new fields. Updated `serializeSession()` in chat routes to serialize new fields. Added Drizzle relations for persona and workItem on chatSessions. Generated migration `0011_tricky_blacklash.sql` with ALTER TABLE statements + backfill UPDATE that sets `persona_id` to the Pico persona for existing sessions.
+**Files:** `packages/backend/src/db/schema.ts`, `packages/shared/src/entities.ts`, `packages/backend/src/routes/chat.ts`, `packages/backend/drizzle/0011_tricky_blacklash.sql`, `packages/backend/drizzle/meta/0011_snapshot.json`, `packages/backend/drizzle/meta/_journal.json`
+
+---
+
 ## 2026-04-02 03:50 PDT — DECOMPOSE: Sprint 24 — Core UX
 
 **Done:** Decomposed Sprint 24 into 26 tasks across 4 sections: Agent Chat Phase 1 (ACH.1-7), Persona Prompts Phase 1 (PPR.1-4), Notifications UX Phase 1 (NTF.1-8), Testing & Documentation (CUX.TEST.1-5, CUX.DOC.1-2). Read all 6 proposal docs and explored current codebase state (chat, persona editor, notifications, sidebar, WS client, schema). Key findings: chat_sessions lacks persona_id column (API accepts it but doesn't persist), no resolveVariables() exists, no notification bell/drawer exists, toast system exists but is basic. Tasks ordered by dependency: schema first, backend API, then frontend. Rich messages deferred to Phase 2 per roadmap.
