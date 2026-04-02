@@ -28,7 +28,7 @@
 - [x] **FX.NTF.2** — Fix notification batching double-count. `packages/frontend/src/stores/notification-store.ts:117-128` — first `agent_completed` notification is added immediately, then the batch summary also counts it, so users see both the individual notification AND a summary that includes it. Either suppress the first individual notification or exclude it from the batch count. *(completed 2026-04-03 11:45 PDT)*
 - [x] **FX.WF.1** — Fix race condition in workflow publish. `packages/frontend/src/pages/workflows.tsx:51-56` — save and publish fire concurrently. Publish must wait for save to complete. Make them sequential (await save, then publish). *(completed 2026-04-03 11:55 PDT)*
 - [x] **FX.WF.2** — Wrap workflow CRUD mutations in DB transactions. `packages/backend/src/routes/workflows.ts:209-244` — PATCH and DELETE handlers do delete-then-insert for states/transitions without a transaction. Server crash between delete and insert loses data. Wrap in `db.transaction()`. *(completed 2026-04-03 12:05 PDT)*
-- [ ] **FX.WF.3** — Add input validation to workflow CRUD. `packages/backend/src/routes/workflows.ts` POST/PATCH handlers accept empty names, invalid state types, garbage data. Add validation: require non-empty name, valid state type enum, at least one state, valid transition references.
+- [review] **FX.WF.3** — Add input validation to workflow CRUD. `packages/backend/src/routes/workflows.ts` POST/PATCH handlers accept empty names, invalid state types, garbage data. Add validation: require non-empty name, valid state type enum, at least one state, valid transition references.
 
 ### Warning — Missing Data & Stale UI
 

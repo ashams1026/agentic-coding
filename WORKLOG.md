@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 12:10 PDT — FX.WF.3: Add input validation to workflow CRUD
+
+**Done:** Added input validation to POST and PATCH workflow handlers in `workflows.ts`. POST: validates non-empty name after trim, validates scope enum (global/project). PATCH: validates non-empty name if provided, validates states array non-empty if provided, validates each state has non-empty name and valid type enum (initial/intermediate/terminal), validates transition fromStateId/toStateId reference existing states when both states and transitions are provided. All validation returns 400 with specific error messages.
+**Files:** `packages/backend/src/routes/workflows.ts`
+
+---
+
 ## 2026-04-03 12:05 PDT — Review: FX.WF.2 (approved)
 
 **Reviewed:** Workflow CRUD transaction wrapping.

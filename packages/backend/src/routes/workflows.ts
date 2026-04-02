@@ -48,6 +48,10 @@ function serializeTransition(row: typeof workflowTransitions.$inferSelect) {
   };
 }
 
+// ── Validation ─────────────────────────────────────────────────
+
+const VALID_STATE_TYPES = new Set(["initial", "intermediate", "terminal"]);
+
 // ── Routes ──────────────────────────────────────────────────────
 
 export async function workflowRoutes(app: FastifyInstance) {
@@ -159,6 +163,14 @@ export async function workflowRoutes(app: FastifyInstance) {
     Body: { name: string; description?: string; scope?: string; projectId?: string };
   }>("/api/workflows", async (request, reply) => {
     const { name, description, scope, projectId } = request.body;
+
+    if (!name || !name.trim()) {
+      return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "Workflow name is required" } });
+    }
+    if (scope && scope !== "global" && scope !== "project") {
+      return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "Scope must be 'global' or 'project'" } });
+    }
+
     const now = new Date();
     const id = createId.workflow();
 
@@ -193,6 +205,39 @@ export async function workflowRoutes(app: FastifyInstance) {
     const [existing] = await db.select().from(workflows).where(eq(workflows.id, id));
     if (!existing) {
       return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Workflow ${id} not found` } });
+    }
+
+    // Validate name if provided
+    if (body.name !== undefined && !body.name.trim()) {
+      return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "Workflow name cannot be empty" } });
+    }
+
+    // Validate states if provided
+    if (body.states) {
+      if (body.states.length === 0) {
+        return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "At least one state is required" } });
+      }
+      for (const s of body.states) {
+        if (!s.name || !s.name.trim()) {
+          return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "All states must have a non-empty name" } });
+        }
+        if (!VALID_STATE_TYPES.has(s.type)) {
+          return reply.status(400).send({ error: { code: "BAD_REQUEST", message: `Invalid state type "${s.type}". Must be initial, intermediate, or terminal` } });
+        }
+      }
+    }
+
+    // Validate transition references if both states and transitions provided
+    if (body.transitions && body.states) {
+      const stateIds = new Set(body.states.map((s) => s.id).filter(Boolean));
+      for (const t of body.transitions) {
+        if (!stateIds.has(t.fromStateId)) {
+          return reply.status(400).send({ error: { code: "BAD_REQUEST", message: `Transition references unknown fromStateId "${t.fromStateId}"` } });
+        }
+        if (!stateIds.has(t.toStateId)) {
+          return reply.status(400).send({ error: { code: "BAD_REQUEST", message: `Transition references unknown toStateId "${t.toStateId}"` } });
+        }
+      }
     }
 
     const now = new Date();
