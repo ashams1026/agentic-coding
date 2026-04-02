@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-03 11:25 PDT — Review: FX.WHK.1 (approved)
+
+**Reviewed:** HMAC verification raw body fix in webhook triggers.
+- Route-level `preParsing` hook buffers raw payload, stores as `request.rawBody` ✓
+- Hook scoped to trigger POST endpoint only (not global) ✓
+- `Readable.from(rawBuffer)` preserves Fastify JSON parsing ✓
+- Non-null assertion on `request.rawBody!` safe (preParsing guarantees lifecycle) ✓
+- `timingSafeEqual` for constant-time HMAC comparison unchanged ✓
+- No new dependencies — uses built-in `node:stream` ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 11:20 PDT — FX.WHK.1: Fix HMAC verification to use raw request bytes
 
 **Done:** Replaced `JSON.stringify(request.body)` with actual raw request bytes for HMAC verification. Added a route-level `preParsing` hook to the webhook trigger POST endpoint that buffers the raw payload stream, stores it as `request.rawBody`, and returns a new `Readable` stream so Fastify can still parse JSON normally. Added Fastify module augmentation for the `rawBody` property. No new dependencies — uses `node:stream` Readable. Previously, re-serialized JSON could differ from the sender's original payload (key ordering, whitespace), causing all HMAC checks to silently fail.
