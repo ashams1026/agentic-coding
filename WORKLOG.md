@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 19:35 PDT — Review: COL.1 (approved)
+
+**Reviewed:** HandoffNote type + handoffNotes column + migration.
+- HandoffNote interface: 6 fields (fromState, targetState, summary, decisions, filesChanged, openQuestions) ✓
+- Schema column: nullable JSON text on executions ✓
+- Migration 0014: single ALTER TABLE ADD (additive, safe) ✓
+- Shared types updated, serializer includes new field ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 19:30 PDT — COL.1: HandoffNote type + schema column + migration
 
 **Done:** Created `packages/backend/src/agent/handoff-notes.ts` with `HandoffNote` interface (fromState, targetState, summary, decisions[], filesChanged[], openQuestions[]). Added `handoffNotes` JSON column (nullable) to `executions` table in schema.ts. Generated migration `0014_uneven_hawkeye.sql` (ALTER TABLE ADD). Added `HandoffNote` interface + `handoffNotes` field to shared `Execution` type in entities.ts. Updated executions route serializer to include `handoffNotes`.
