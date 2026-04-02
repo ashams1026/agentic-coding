@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo } from "react";
 import {
   Dog,
   Plus,
@@ -9,7 +9,23 @@ import {
   MessageSquare,
   Trash2,
   Minimize2,
+  Bot,
+  ClipboardList,
+  GitBranch,
+  Code,
+  Eye,
+  TestTube,
+  Shield,
+  Zap,
+  Sparkles,
+  Heart,
+  Star,
+  Flame,
+  Target,
+  Lightbulb,
+  Filter,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -19,6 +35,46 @@ import { ChatMessage } from "@/features/pico/chat-message";
 import { usePicoChat } from "@/hooks/use-pico-chat";
 import { PersonaSelector } from "@/features/pico/persona-selector";
 import type { ChatSessionId } from "@agentops/shared";
+import type { ChatSessionWithPersona } from "@/api";
+
+// ── Icon map (shared with persona-selector) ─────────────────────
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  "clipboard-list": ClipboardList, "git-branch": GitBranch, code: Code, eye: Eye,
+  "test-tube": TestTube, bot: Bot, shield: Shield, zap: Zap, sparkles: Sparkles,
+  heart: Heart, star: Star, flame: Flame, target: Target, lightbulb: Lightbulb, dog: Dog,
+};
+
+function getIcon(name: string): LucideIcon {
+  return ICON_MAP[name] ?? Bot;
+}
+
+// ── Date grouping ───────────────────────────────────────────────
+
+function getDateGroup(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today.getTime() - 86400000);
+  const weekAgo = new Date(today.getTime() - 7 * 86400000);
+
+  if (date >= today) return "Today";
+  if (date >= yesterday) return "Yesterday";
+  if (date >= weekAgo) return "This Week";
+  return "Older";
+}
+
+function groupSessionsByDate(sessions: ChatSessionWithPersona[]): { label: string; sessions: ChatSessionWithPersona[] }[] {
+  const groups: Record<string, ChatSessionWithPersona[]> = {};
+  const order = ["Today", "Yesterday", "This Week", "Older"];
+
+  for (const s of sessions) {
+    const group = getDateGroup(s.updatedAt);
+    (groups[group] ??= []).push(s);
+  }
+
+  return order.filter((label) => groups[label]?.length).map((label) => ({ label, sessions: groups[label]! }));
+}
 
 export function ChatPage() {
   const navigate = useNavigate();
@@ -43,6 +99,29 @@ export function ChatPage() {
 
   // Persona selector modal
   const [showPersonaSelector, setShowPersonaSelector] = useState(false);
+
+  // Persona filter for sidebar
+  const [personaFilter, setPersonaFilter] = useState<string | null>(null);
+  const [showPersonaFilter, setShowPersonaFilter] = useState(false);
+
+  // Filtered and grouped sessions
+  const filteredSessions = useMemo(() => {
+    if (!personaFilter) return sessions;
+    return sessions.filter((s) => s.personaId === personaFilter);
+  }, [sessions, personaFilter]);
+
+  const groupedSessions = useMemo(() => groupSessionsByDate(filteredSessions), [filteredSessions]);
+
+  // Unique persona names for the filter dropdown
+  const personaNames = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const s of sessions) {
+      if (s.personaId && s.persona?.name) {
+        map.set(s.personaId, s.persona.name);
+      }
+    }
+    return Array.from(map.entries()); // [personaId, name][]
+  }, [sessions]);
 
   // Editable title
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
@@ -96,13 +175,8 @@ export function ChatPage() {
       <div className="w-64 border-r border-border flex flex-col bg-card shrink-0">
         <div className="flex items-center justify-between border-b border-border px-3 py-3">
           <div className="flex items-center gap-2">
-            <div
-              className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full"
-              style={{ backgroundColor: "#f59e0b" }}
-            >
-              <Dog className="h-3.5 w-3.5 text-white" />
-            </div>
-            <span className="text-sm font-semibold">Pico Chat</span>
+            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-semibold">Chat</span>
           </div>
           <div className="flex items-center gap-1">
             <Button
@@ -126,45 +200,110 @@ export function ChatPage() {
           </div>
         </div>
 
-        <ScrollArea className="flex-1">
-          <div className="flex flex-col gap-0.5 p-2">
-            {sessions.length === 0 && (
-              <p className="px-2 py-4 text-xs text-muted-foreground text-center">
-                No conversations yet
-              </p>
-            )}
-            {sessions.map((s) => (
+        {/* Persona filter */}
+        {personaNames.length > 1 && (
+          <div className="px-2 py-1.5 border-b border-border">
+            <div className="relative">
               <button
-                key={s.id}
                 type="button"
-                onClick={() => switchSession(s.id as ChatSessionId)}
-                onDoubleClick={() => startRename(s.id, s.title)}
+                onClick={() => setShowPersonaFilter(!showPersonaFilter)}
                 className={cn(
-                  "flex items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors w-full",
-                  "hover:bg-muted",
-                  s.id === currentSession?.id
-                    ? "bg-muted text-foreground font-medium"
-                    : "text-muted-foreground",
+                  "flex items-center gap-1.5 w-full rounded-md px-2 py-1 text-xs transition-colors",
+                  personaFilter ? "text-foreground bg-muted" : "text-muted-foreground hover:bg-muted",
                 )}
               >
-                <MessageSquare className="h-3.5 w-3.5 shrink-0" />
-                {editingSessionId === s.id ? (
-                  <input
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    onBlur={saveRename}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") { e.preventDefault(); saveRename(); }
-                      if (e.key === "Escape") setEditingSessionId(null);
-                    }}
-                    autoFocus
-                    className="flex-1 min-w-0 rounded border border-input bg-transparent px-1 py-0.5 text-xs outline-none focus-visible:border-ring"
-                    maxLength={100}
-                  />
-                ) : (
-                  <span className="flex-1 truncate text-xs">{s.title}</span>
-                )}
+                <Filter className="h-3 w-3" />
+                {personaFilter ? personaNames.find(([id]) => id === personaFilter)?.[1] ?? "Filter" : "All personas"}
               </button>
+              {showPersonaFilter && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-lg z-10 py-1">
+                  <button
+                    type="button"
+                    onClick={() => { setPersonaFilter(null); setShowPersonaFilter(false); }}
+                    className={cn("w-full text-left px-3 py-1.5 text-xs hover:bg-muted", !personaFilter && "font-medium")}
+                  >
+                    All personas
+                  </button>
+                  {personaNames.map(([id, name]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => { setPersonaFilter(id); setShowPersonaFilter(false); }}
+                      className={cn("w-full text-left px-3 py-1.5 text-xs hover:bg-muted", personaFilter === id && "font-medium")}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <ScrollArea className="flex-1">
+          <div className="flex flex-col gap-0.5 p-2">
+            {filteredSessions.length === 0 && (
+              <p className="px-2 py-4 text-xs text-muted-foreground text-center">
+                {personaFilter ? "No conversations with this persona" : "No conversations yet"}
+              </p>
+            )}
+            {groupedSessions.map((group) => (
+              <div key={group.label}>
+                <p className="px-2 pt-2 pb-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                  {group.label}
+                </p>
+                {group.sessions.map((s) => {
+                  const avatar = s.persona?.avatar;
+                  const color = avatar?.color ?? "#6b7280";
+                  const Icon = getIcon(avatar?.icon ?? "bot");
+
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => switchSession(s.id as ChatSessionId)}
+                      onDoubleClick={() => startRename(s.id, s.title)}
+                      className={cn(
+                        "flex items-start gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors w-full",
+                        "hover:bg-muted",
+                        s.id === currentSession?.id
+                          ? "bg-muted text-foreground"
+                          : "text-muted-foreground",
+                      )}
+                    >
+                      {/* Persona avatar */}
+                      <div
+                        className="h-5 w-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
+                        style={{ backgroundColor: color + "20" }}
+                      >
+                        <Icon className="h-3 w-3" style={{ color }} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        {editingSessionId === s.id ? (
+                          <input
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            onBlur={saveRename}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") { e.preventDefault(); saveRename(); }
+                              if (e.key === "Escape") setEditingSessionId(null);
+                            }}
+                            autoFocus
+                            className="w-full rounded border border-input bg-transparent px-1 py-0.5 text-xs outline-none focus-visible:border-ring"
+                            maxLength={100}
+                          />
+                        ) : (
+                          <>
+                            <span className={cn("block truncate text-xs", s.id === currentSession?.id && "font-medium")}>
+                              {s.title}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             ))}
           </div>
         </ScrollArea>

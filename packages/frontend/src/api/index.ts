@@ -81,6 +81,7 @@ export {
   // Chat
   getChatSessions,
   createChatSession,
+  type ChatSessionWithPersona,
   updateChatSessionTitle,
   deleteChatSession,
   getChatMessages,

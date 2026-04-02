@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react";
-import type { ChatSessionId, ChatSession } from "@agentops/shared";
+import type { ChatSessionId } from "@agentops/shared";
 import {
   getChatSessions,
   createChatSession,
@@ -7,6 +7,7 @@ import {
   deleteChatSession,
   getChatMessages,
   sendChatMessageSSE,
+  type ChatSessionWithPersona,
 } from "@/api";
 import { usePicoStore } from "@/features/pico/pico-store";
 import { useUIStore } from "@/stores/ui-store";
@@ -166,7 +167,7 @@ export function usePicoChat() {
   const selectedProjectId = useUIStore((s) => s.selectedProjectId);
 
   const [messages, setMessages] = useState<PicoChatMessage[]>([]);
-  const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [sessions, setSessions] = useState<ChatSessionWithPersona[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);

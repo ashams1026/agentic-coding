@@ -651,9 +651,13 @@ export async function reloadSdkCapabilities(): Promise<SdkCapabilities> {
 
 // ── Chat Sessions ───────────────────────────────────────────────
 
-export async function getChatSessions(projectId?: string): Promise<ChatSession[]> {
+export interface ChatSessionWithPersona extends ChatSession {
+  persona: { name: string; avatar: { color: string; icon: string } | null } | null;
+}
+
+export async function getChatSessions(projectId?: string): Promise<ChatSessionWithPersona[]> {
   const q = projectId ? `?projectId=${projectId}` : "";
-  const res = await get<{ data: ChatSession[]; total: number }>(`/api/chat/sessions${q}`);
+  const res = await get<{ data: ChatSessionWithPersona[]; total: number }>(`/api/chat/sessions${q}`);
   return res.data;
 }
 
