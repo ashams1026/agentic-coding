@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 18:00 PDT — Review: CWF.TEST.2 (approved)
+
+**Reviewed:** Custom Workflows e2e test execution results.
+- 33/36 pass, 1 fail (PATCH 206), 2 justified skips ✓
+- 16 screenshots in `tests/e2e/results/custom-workflows/` ✓
+- Results file with per-part breakdown, bug report, visual quality ✓
+- FX.CWF.1 bug filed in TASKS.md with clear repro steps ✓
+- All 10 test plan parts exercised ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 17:55 PDT — CWF.TEST.2: Execute Custom Workflows e2e tests
 
 **Done:** Executed 36-step e2e test plan via chrome-devtools MCP. 33 pass, 1 fail, 2 skipped. All 10 parts tested: default workflow seeding, dynamic flow view columns, state filters, move-to transitions, workflow builder (create/add states/transitions/validation/save/publish), settings workflow selector. Filed bug FX.CWF.1 — PATCH API returns 206 when saving workflow with new states (temporary IDs). 16 screenshots saved.
