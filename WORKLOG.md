@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 04:45 PDT — DM.1: SQLite backup with retention
+
+**Done:** Created `packages/backend/src/db/backup.ts`. `createBackup()`: uses `sqlite.backup()` API (safe for WAL mode), stores in `~/.agentops/backups/` with `woof-backup-YYYY-MM-DDTHH-MM-SS.db` filenames. `listBackups()`: reads backup dir, returns sorted list with filename/path/sizeBytes/createdAt. `restoreBackup(path)`: creates safety backup first, then copies backup over DB_PATH. Retention `cleanupOldBackups()`: categorizes by age (daily <7d, weekly <28d, older), keeps MAX_DAILY=7 + MAX_WEEKLY=4, deletes rest. Runs after each successful backup.
+**Files:** `packages/backend/src/db/backup.ts` (new)
+
+---
+
 ## 2026-04-03 04:35 PDT — Review: IWH.3 (approved)
 
 **Reviewed:** Frontend inbound triggers in integrations section.

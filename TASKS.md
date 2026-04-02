@@ -31,7 +31,7 @@
 
 ### Data Management Phase 1
 
-- [ ] **DM.1** — Backend: create `packages/backend/src/db/backup.ts`. Implement `createBackup()` using SQLite `backup()` API (safe for WAL mode). Store in `~/.agentops/backups/` with timestamped filenames. Implement retention: keep 7 daily + 4 weekly, delete older. Add `restoreBackup(path)` function (stop server, copy file, restart).
+- [review] **DM.1** — Backend: create `packages/backend/src/db/backup.ts`. Implement `createBackup()` using SQLite `backup()` API (safe for WAL mode). Store in `~/.agentops/backups/` with timestamped filenames. Implement retention: keep 7 daily + 4 weekly, delete older. Add `restoreBackup(path)` function (stop server, copy file, restart).
 - [ ] **DM.2** — Backend: add pre-migration backup hook. In `packages/backend/src/db/migrate.ts`, call `createBackup()` before `runMigrations()`. Log backup path. Skip if no migrations pending.
 - [ ] **DM.3** — Backend: add backup/restore API endpoints in `packages/backend/src/routes/settings.ts`. `POST /api/settings/backup` (trigger manual backup, return path), `GET /api/settings/backups` (list available backups with date/size), `POST /api/settings/restore` (restore from backup path). Add log truncation endpoint: `POST /api/settings/truncate-logs?olderThanDays=30` (UPDATE executions SET logs='' WHERE completedAt < threshold).
 - [ ] **DM.4** — Backend: add per-table storage stats using `dbstat` virtual table. `GET /api/settings/storage-stats` returns `{ tables: [{ name, rowCount, sizeBytes }], totalSizeBytes }`. Fix existing cascade bug: `DELETE /api/settings/executions` should cascade to proposals/comments.
