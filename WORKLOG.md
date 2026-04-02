@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-04-02 12:42 PDT — FX.UXO1: Fix router paths to /automations
+
+**Done:** Changed workflow builder route from `workflows/:id` to `automations/:id` in router.tsx. Updated two navigate() calls in workflows.tsx from `/workflows/` to `/automations/`. Sidebar and command palette were already correct.
+**Files:** `packages/frontend/src/router.tsx`, `packages/frontend/src/pages/workflows.tsx`
+
+---
+
+## 2026-04-02 12:42 PDT — FX.UXO3: Fix auto-routing toggle to use workflow
+
+**Done:** Rewrote AutoRoutingToggle in workflow-config-section.tsx to read `workflow.autoRouting` and write via `PATCH /api/workflows/:id { autoRouting }` instead of dead `project.settings.autoRouting`. Uses useWorkflows + useUpdateWorkflow hooks. Added `autoRouting` to updateWorkflow API client type.
+**Files:** `packages/frontend/src/features/settings/workflow-config-section.tsx`, `packages/frontend/src/api/client.ts`
+
+---
+
+## 2026-04-02 12:42 PDT — FX.UXO4: Lock built-in Backlog/Done states
+
+**Done:** Added BUILT_IN_STATE_NAMES set and isBuiltIn check to state-card.tsx. Disables name input, type dropdown, and delete button for Backlog/Done. Shows "Built-in" badge with Lock icon. Color, agent, overrides, and transitions remain editable.
+**Files:** `packages/frontend/src/features/workflow-builder/state-card.tsx`
+
+---
+
+## 2026-04-02 12:42 PDT — FX.UXO15: Add scope UI to agent detail panel
+
+**Done:** Added scope display and editing to agent-detail-panel.tsx. Read mode shows Globe/violet badge for global, FolderOpen/emerald badge with project name for project scope. Edit mode has scope Select (Global/Project) and conditional project dropdown. Save includes scope and projectId in update payload.
+**Files:** `packages/frontend/src/features/agent-builder/agent-detail-panel.tsx`
+
+---
+
 ## 2026-04-02 12:28 PDT — UXO.20: Redesign Automations page
 
 **Done:** Replaced old workflow list with unified Automations overview. Workflow cards show name, autoRouting status (play/pause), published/draft badge, state pipeline colored pills, and edit button. Schedule cards show name, active toggle, agent avatar, human-readable cron, next run time, last run status. "New Automation" dropdown with workflow/schedule creation dialogs. Empty states for both sections.

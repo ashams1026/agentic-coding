@@ -20,6 +20,8 @@ import {
   Pencil,
   Slash,
   Users,
+  Globe,
+  FolderOpen,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -27,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { useAgent, useUpdateAgent } from "@/hooks";
+import { useAgent, useUpdateAgent, useProjects, useSelectedProject } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { MarkdownPreview } from "./system-prompt-editor";
 import { SystemPromptEditor } from "./system-prompt-editor";
@@ -140,6 +142,8 @@ interface AgentDetailPanelProps {
 export function AgentDetailPanel({ agentId, onClose }: AgentDetailPanelProps) {
   const { data: agent } = useAgent(agentId);
   const updateMutation = useUpdateAgent();
+  const { data: projects } = useProjects();
+  const { projectId: contextProjectId } = useSelectedProject();
   const [editing, setEditing] = useState(false);
   const [skillBrowserOpen, setSkillBrowserOpen] = useState(false);
   const [subagentBrowserOpen, setSubagentBrowserOpen] = useState(false);
@@ -158,6 +162,8 @@ export function AgentDetailPanel({ agentId, onClose }: AgentDetailPanelProps) {
   const [maxBudget, setMaxBudget] = useState("1.00");
   const [effort, setEffort] = useState<EffortLevel>("high");
   const [thinking, setThinking] = useState<ThinkingMode>("adaptive");
+  const [editScope, setEditScope] = useState<"global" | "project">("global");
+  const [editProjectId, setEditProjectId] = useState<string | null>(null);
 
   // Sync form state when agent data loads or agentId changes
   useEffect(() => {
@@ -181,6 +187,8 @@ export function AgentDetailPanel({ agentId, onClose }: AgentDetailPanelProps) {
     setMaxBudget(agent.maxBudgetPerRun.toFixed(2));
     setEffort((agent.settings?.effort as EffortLevel) ?? "high");
     setThinking((agent.settings?.thinking as ThinkingMode) ?? "adaptive");
+    setEditScope(agent.scope ?? "global");
+    setEditProjectId(agent.projectId ?? null);
   }
 
   const handleSave = useCallback(() => {
@@ -199,10 +207,12 @@ export function AgentDetailPanel({ agentId, onClose }: AgentDetailPanelProps) {
       subagents,
       maxBudgetPerRun: isNaN(budget) ? 1.0 : budget,
       settings: { effort, thinking },
+      scope: editScope,
+      projectId: editScope === "project" ? (editProjectId ?? contextProjectId) : null,
     }, {
       onSuccess: () => setEditing(false),
     });
-  }, [agent, agentId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, skills, subagents, maxBudget, effort, thinking, updateMutation]);
+  }, [agent, agentId, name, description, avatarColor, avatarIcon, model, systemPrompt, allowedTools, mcpTools, skills, subagents, maxBudget, effort, thinking, editScope, editProjectId, contextProjectId, updateMutation]);
 
   const handleCancel = () => {
     syncFromAgent();
@@ -356,6 +366,47 @@ export function AgentDetailPanel({ agentId, onClose }: AgentDetailPanelProps) {
                   </div>
                 </div>
               </div>
+            </section>
+
+            <Separator />
+
+            {/* ── Scope ────────────────────────────────────────── */}
+            <section className="space-y-3">
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Scope</h3>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Availability</label>
+                <Select value={editScope} onValueChange={(v) => setEditScope(v as "global" | "project")}>
+                  <SelectTrigger className="h-8 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="global">Global — available in all projects</SelectItem>
+                    <SelectItem value="project">Project — scoped to one project</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {editScope === "project" && (
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Project</label>
+                  <Select
+                    value={editProjectId ?? contextProjectId}
+                    onValueChange={(v) => setEditProjectId(v)}
+                  >
+                    <SelectTrigger className="h-8 text-sm">
+                      <SelectValue placeholder="Select a project" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(projects ?? [])
+                        .filter((p) => !p.isGlobal)
+                        .map((p) => (
+                          <SelectItem key={p.id} value={p.id}>
+                            {p.name}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </section>
 
             <Separator />
@@ -582,6 +633,30 @@ export function AgentDetailPanel({ agentId, onClose }: AgentDetailPanelProps) {
               <p className="text-sm text-foreground">
                 {agent.description || <span className="italic text-muted-foreground">No description.</span>}
               </p>
+            </section>
+
+            <Separator />
+
+            {/* ── Scope ────────────────────────────────────── */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Scope</h3>
+              {agent.scope === "project" ? (
+                <Badge
+                  variant="outline"
+                  className="text-xs px-2 py-0.5 border-0 gap-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                >
+                  <FolderOpen className="h-3 w-3" />
+                  {(projects ?? []).find((p) => p.id === agent.projectId)?.name ?? "Project"}
+                </Badge>
+              ) : (
+                <Badge
+                  variant="outline"
+                  className="text-xs px-2 py-0.5 border-0 gap-1 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+                >
+                  <Globe className="h-3 w-3" />
+                  Global
+                </Badge>
+              )}
             </section>
 
             <Separator />

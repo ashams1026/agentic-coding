@@ -549,7 +549,7 @@ function AutomationsOverview() {
   function handleCreateWorkflow(name: string) {
     createWorkflow.mutate(
       { name, projectId: projectId ?? undefined },
-      { onSuccess: (wf) => navigate(`/workflows/${wf.id}`) },
+      { onSuccess: (wf) => navigate(`/automations/${wf.id}`) },
     );
   }
 
@@ -628,7 +628,7 @@ function AutomationsOverview() {
                     <WorkflowCardLoader
                       key={wf.id}
                       workflow={wf}
-                      onEdit={() => navigate(`/workflows/${wf.id}`)}
+                      onEdit={() => navigate(`/automations/${wf.id}`)}
                     />
                   ))}
                 </div>

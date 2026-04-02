@@ -9,27 +9,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { useProjects, useUpdateProject, useAgents, useAgentAssignments, useUpdateAgentAssignment, useSelectedProject } from "@/hooks";
-import { useWorkflowStates, useWorkflows } from "@/hooks/use-workflows";
+import { useAgents, useAgentAssignments, useUpdateAgentAssignment, useUpdateProject, useSelectedProject } from "@/hooks";
+import { useWorkflowStates, useWorkflows, useUpdateWorkflow } from "@/hooks/use-workflows";
 import type { AgentId, Agent } from "@agentops/shared";
 import { cn } from "@/lib/utils";
 
 // ── Auto-routing play/pause ─────────────────────────────────────
 
 function AutoRoutingToggle() {
-  const { data: projectsList } = useProjects();
-  const updateProject = useUpdateProject();
+  const { projectId, project } = useSelectedProject();
+  const { data: workflows = [] } = useWorkflows(projectId ?? undefined);
+  const updateWorkflow = useUpdateWorkflow();
 
-  const project = projectsList?.[0];
-  const settings = project?.settings as Record<string, unknown> | undefined;
-  const autoRouting = settings?.autoRouting !== false; // default ON
+  // Find the active workflow for this project
+  const activeWorkflow = workflows.find((w) => w.id === project?.workflowId) ?? workflows[0];
+  const autoRouting = activeWorkflow?.autoRouting ?? false;
 
   const handleToggle = () => {
-    if (!project) return;
-    updateProject.mutate({
-      id: project.id,
-      settings: { ...project.settings, autoRouting: !autoRouting },
-    });
+    if (!activeWorkflow) return;
+    updateWorkflow.mutate({ id: activeWorkflow.id, autoRouting: !autoRouting });
   };
 
   return (
@@ -38,7 +36,7 @@ function AutoRoutingToggle() {
         <TooltipTrigger asChild>
           <button
             onClick={handleToggle}
-            disabled={!project}
+            disabled={!activeWorkflow}
             className={cn(
               "flex h-12 w-12 items-center justify-center rounded-full transition-colors disabled:opacity-50",
               autoRouting

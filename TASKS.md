@@ -16,10 +16,10 @@
 
 ### Bug Fixes (Sprint 29 Review)
 
-- [ ] **FX.UXO1** — Critical: Router path `workflows/:id` not renamed to `automations/:id` in `router.tsx:26`. Internal navigation in `workflows.tsx:552,631` still uses `/workflows/` paths. Both must use `/automations/`.
+- [x] **FX.UXO1** — Critical: Router path `workflows/:id` not renamed to `automations/:id` in `router.tsx:26`. Internal navigation in `workflows.tsx:552,631` still uses `/workflows/` paths. Both must use `/automations/`. *(completed 2026-04-02 12:42 PDT)*
 - [ ] **FX.UXO2** — Critical: Board view (`board-view.tsx`) hardcoded to 8-state `WORKFLOW` constant from shared. Must fetch workflow states dynamically from backend based on selected project's workflowId. Global project has 3 states but board renders 8 columns.
-- [ ] **FX.UXO3** — Critical: Frontend auto-routing toggle in `workflow-config-section.tsx` reads/writes `project.settings.autoRouting` but backend now reads `workflow.autoRouting`. Toggle has zero effect. Must read/write via `PATCH /api/workflows/:id { autoRouting }`.
-- [ ] **FX.UXO4** — Critical: Workflow builder `state-card.tsx` allows renaming/deleting Backlog/Done states. Backend rejects with 400, but frontend has no guards. Disable name input, type dropdown, and delete button for built-in states. Show lock icon or "Built-in" badge.
+- [x] **FX.UXO3** — Critical: Frontend auto-routing toggle in `workflow-config-section.tsx` reads/writes `project.settings.autoRouting` but backend now reads `workflow.autoRouting`. Toggle has zero effect. Must read/write via `PATCH /api/workflows/:id { autoRouting }`. *(completed 2026-04-02 12:42 PDT)*
+- [x] **FX.UXO4** — Critical: Workflow builder `state-card.tsx` allows renaming/deleting Backlog/Done states. Backend rejects with 400, but frontend has no guards. Disable name input, type dropdown, and delete button for built-in states. Show lock icon or "Built-in" badge. *(completed 2026-04-02 12:42 PDT)*
 - [ ] **FX.UXO5** — Warning: Global project gets wrong workflow. `seed-workflow.ts:backfillWorkflowReferences` overwrites `pj-global.workflowId` with `wf-default` instead of `wf-global`. Fix: skip global project in backfill, or set workflowId explicitly in `ensure-global-project.ts`.
 - [ ] **FX.UXO6** — Warning: "All Projects" scope in `recently-deleted.tsx` passes `projectId="pj-global"` to API, which filters to only global-project items. When `isGlobal` is true, should pass `undefined` to return items from ALL projects.
 - [ ] **FX.UXO7** — Warning: Queue endpoint (`routes/executions.ts`) accepts `projectId` param but doesn't filter queue entries by it. Returns all projects' data. Either filter by project or remove the misleading param.
@@ -30,8 +30,16 @@
 - [ ] **FX.UXO12** — Warning: `use-pico-chat.ts:440-455` stale closure in `deleteSession` — `remaining` computed from pre-update sessions array. Compute `remaining` first, pass to `setSessions`, then use for `setCurrentSessionId`.
 - [ ] **FX.UXO13** — Warning: Chat page shows empty state with no feedback when no project is selected (`use-pico-chat.ts:167`). Should show "Select a project to start chatting" message.
 - [ ] **FX.UXO14** — Warning: Chat header context menu (`chat.tsx:449`) lacks keyboard accessibility — no Escape to close. Migrate to proper `DropdownMenu` component.
-- [ ] **FX.UXO15** — Info: Dead code — `toolCallMap` in `use-pico-chat.ts:304` is populated but never read. `lastToolCallIndex` is the actual pairing mechanism. Remove.
-- [ ] **FX.UXO16** — Info: Dead code — `board-view.tsx` exists but is unreachable (flow view removed). Vestigial `view` state, `setView`, and `WorkItemView` type in `work-items-store.ts`. Remove all.
+- [x] **FX.UXO15** — Critical: `agent-detail-panel.tsx` (the primary agent editor) has NO scope display or editing UI. The scope feature from UXO.8 is invisible to users. Add scope state, display in read mode, scope/projectId selector in edit mode, and include in save payload. *(completed 2026-04-02 12:42 PDT)*
+- [ ] **FX.UXO16** — Warning: `agent-list.tsx:handleCreate` creates agents without `scope` or `projectId`. New agents always default to global regardless of selected project context. Pass `scope`/`projectId` based on `useSelectedProject()`.
+- [ ] **FX.UXO17** — Warning: `agent-editor.tsx` is dead code — exported but never imported or rendered. It has scope editing that the active `agent-detail-panel.tsx` lacks. Delete it and port scope UI to the active panel.
+- [ ] **FX.UXO18** — Warning: Backend `routes/agents.ts:135-144` PATCH allows changing scope to `"project"` without providing `projectId`, creating inconsistent state. Add validation: if `scope === "project"` and no projectId provided (in body or existing record), return 400.
+- [ ] **FX.UXO19** — Warning: Backend `routes/agents.ts:83` agent creation with invalid `projectId` gives unhelpful 500 (FK constraint). Add project existence check or catch FK error and return 400.
+- [ ] **FX.UXO20** — Info: Dead code — `toolCallMap` in `use-pico-chat.ts:304` is populated but never read. `lastToolCallIndex` is the actual pairing mechanism. Remove.
+- [ ] **FX.UXO21** — Info: Dead code — `board-view.tsx` exists but is unreachable (flow view removed). Vestigial `view` state, `setView`, and `WorkItemView` type in `work-items-store.ts`. Remove all.
+- [ ] **FX.UXO22** — Info: Dead `AgentScope` type in `shared/src/entities.ts:34-36` — discriminated union that doesn't match actual `scope` field. Remove to avoid confusion.
+- [ ] **FX.UXO23** — Info: `BUILT_IN_IDS` in `agent-list.tsx:82-88` contains `"ps-qa00001"` which doesn't exist in seed data. Seed has `"ps-rt00001"` (Router). Router agent shows delete button incorrectly. Fix IDs or use `agent.settings.isSystem` flag instead.
+- [ ] **FX.UXO24** — Info: `AgentId` type in `shared/src/ids.ts:6` still uses `ps-` prefix. `createId.agent()` generates `ps-` IDs. Semantically wrong post-rename. Track as tech debt — requires migration + seed updates to change.
 
 ### Phase 4: Workflow Rework (remaining)
 

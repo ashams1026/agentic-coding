@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trash2, ChevronDown, ChevronRight, Plus, X, Tag } from "lucide-react";
+import { Trash2, ChevronDown, ChevronRight, Plus, X, Tag, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -48,7 +48,12 @@ interface StateCardProps {
 
 // ── Component ───────────────────────────────────────────────────
 
+// Built-in states enforced by the backend — cannot be renamed or deleted
+const BUILT_IN_STATE_NAMES = new Set(["Backlog", "Done"]);
+
 export function StateCard({ state, allStates, onChange, onDelete }: StateCardProps) {
+  const isBuiltIn = BUILT_IN_STATE_NAMES.has(state.name);
+
   const { data: agents = [] } = useAgents();
   const nonAssistantAgents = agents.filter(
     (p) => !(p.settings as Record<string, unknown>)?.isAssistant,
@@ -127,7 +132,23 @@ export function StateCard({ state, allStates, onChange, onDelete }: StateCardPro
           style={{ backgroundColor: state.color }}
         />
         <span className="text-xs font-semibold flex-1 truncate">{state.name || "Untitled"}</span>
-        <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={onDelete}>
+        {isBuiltIn && (
+          <span
+            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium bg-muted text-muted-foreground border shrink-0"
+            title="This is a built-in state and cannot be renamed or deleted"
+          >
+            <Lock className="h-2.5 w-2.5" />
+            Built-in
+          </span>
+        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className={cn("h-6 w-6 shrink-0", isBuiltIn && "opacity-30 pointer-events-none")}
+          onClick={onDelete}
+          disabled={isBuiltIn}
+          title={isBuiltIn ? "Built-in states cannot be deleted" : undefined}
+        >
           <Trash2 className="h-3 w-3 text-red-400" />
         </Button>
       </div>
@@ -138,13 +159,19 @@ export function StateCard({ state, allStates, onChange, onDelete }: StateCardPro
           value={state.name}
           onChange={(e) => updateField("name", e.target.value)}
           placeholder="State name"
-          className="h-7 text-xs"
+          className={cn("h-7 text-xs", isBuiltIn && "opacity-50 cursor-not-allowed")}
+          disabled={isBuiltIn}
+          title={isBuiltIn ? "Built-in states cannot be renamed" : undefined}
         />
 
         {/* Type */}
-        <div className="flex items-center gap-2">
+        <div className={cn("flex items-center gap-2", isBuiltIn && "opacity-50 pointer-events-none")}>
           <span className="text-xs text-muted-foreground w-10 shrink-0">Type</span>
-          <Select value={state.type} onValueChange={(v) => updateField("type", v as StateCardData["type"])}>
+          <Select
+            value={state.type}
+            onValueChange={(v) => updateField("type", v as StateCardData["type"])}
+            disabled={isBuiltIn}
+          >
             <SelectTrigger className="h-7 text-xs flex-1">
               <SelectValue />
             </SelectTrigger>

@@ -767,6 +767,7 @@ export async function updateWorkflow(
   data: {
     name?: string;
     description?: string;
+    autoRouting?: boolean;
     states?: { id?: string; name: string; type: string; color: string; agentId?: string | null; sortOrder: number }[];
     transitions?: { id?: string; fromStateId: string; toStateId: string; label: string }[];
   },
