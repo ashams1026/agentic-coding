@@ -115,7 +115,7 @@
 
 ### Phase 1: Schema + Error Classification
 
-- [ ] **ER.1** — Shared: Add `ErrorCategory` type and `ExecutionError` interface to `packages/shared/src/entities.ts`. Categories: `timeout`, `rate_limit`, `sdk_error`, `permission_denied`, `budget_exceeded`, `configuration_error`, `rejection_limit`, `loop_detected`, `interrupted`, `unknown`. Add `RetryPolicy` interface: `{ maxRetries: number, retryableErrors: ErrorCategory[], backoffMs: number, notifyOnRetry: boolean }`.
+- [x] **ER.1** — Shared: Add `ErrorCategory` type and `ExecutionError` interface to `packages/shared/src/entities.ts`. Categories: `timeout`, `rate_limit`, `sdk_error`, `permission_denied`, `budget_exceeded`, `configuration_error`, `rejection_limit`, `loop_detected`, `interrupted`, `unknown`. Add `RetryPolicy` interface: `{ maxRetries: number, retryableErrors: ErrorCategory[], backoffMs: number, notifyOnRetry: boolean }`.
 - [ ] **ER.2** — Backend: Schema migration adding `error` (TEXT/JSON) and `retryCount` (INTEGER default 0) columns to executions table. Update Drizzle schema in `packages/backend/src/db/schema.ts`. Add `error` and `retryCount` fields to the shared `Execution` entity type.
 - [ ] **ER.3** — Backend: Classify errors in `ExecutionManager` catch block (`execution-manager.ts`). Parse SDK errors into `ErrorCategory`. Populate the `error` column with structured `ExecutionError` JSON on failure. Distinguish timeout vs process crash vs permission denied vs configuration error.
 
@@ -137,7 +137,7 @@
 
 ### Testing & Documentation
 
-- [ ] **ER.TEST.1** — Write e2e test plan: `tests/e2e/plans/error-recovery-p2.md`. Cover: error category badges, retry button, stuck execution warning, retry policy configuration, orphan recovery notifications.
+- [x] **ER.TEST.1** — Write e2e test plan: `tests/e2e/plans/error-recovery-p2.md`. Cover: error category badges, retry button, stuck execution warning, retry policy configuration, orphan recovery notifications.
 - [ ] **ER.DOC.1** — Update `docs/api.md` with error/retryCount fields, retry policy schema. Update `docs/architecture.md` with retry flow and watchdog. Update `docs/frontend.md` with error display components.
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **ER.TEST.2** — Execute error recovery e2e tests. Screenshot each case. File bugs as `FX.ER.*`.
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **ER.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.

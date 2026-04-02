@@ -29,6 +29,44 @@ export type ProposalStatus = "pending" | "approved" | "rejected" | "expired";
 
 export type WorkItemEdgeType = "blocks" | "depends_on" | "related_to";
 
+// ── Error Recovery ────────────────────────────────────────────────
+
+/** Classifies the root cause of an execution failure. */
+export type ErrorCategory =
+  | "timeout"              // execution exceeded time/budget limit
+  | "rate_limit"           // API rate limit (survived SDK retries)
+  | "sdk_error"            // SDK process crash or unexpected error
+  | "permission_denied"    // sandbox blocked a required operation
+  | "budget_exceeded"      // per-execution or monthly budget hit
+  | "configuration_error"  // invalid prompt, missing API key, unknown tool
+  | "rejection_limit"      // MAX_REJECTIONS reached
+  | "loop_detected"        // repeated state transitions detected
+  | "interrupted"          // server shutdown during execution
+  | "process_crash"        // SDK child process died unexpectedly
+  | "transient_error"      // 5xx that survived SDK retries
+  | "unknown";             // catch-all
+
+/** Structured error attached to a failed or interrupted execution. */
+export interface ExecutionError {
+  category: ErrorCategory;
+  message: string;
+  details?: {
+    sdkError?: string;
+    toolName?: string;
+    httpStatus?: number;
+    retryAttempt?: number;
+    filesModified?: string[];
+  };
+}
+
+/** Controls automatic retry behavior for recoverable errors. */
+export interface RetryPolicy {
+  maxRetries: number;
+  retryableErrors: ErrorCategory[];
+  backoffMs: number;
+  notifyOnRetry: boolean;
+}
+
 // ── Entities ───────────────────────────────────────────────────────
 
 export interface SandboxConfig {

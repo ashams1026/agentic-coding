@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 16:55 PDT — ER.1, ER.TEST.1: Error recovery types + test plan
+
+**Done:** (1) ER.1: Added ErrorCategory (12 members), ExecutionError, RetryPolicy types to shared entities.ts. (2) ER.TEST.1: 20-case e2e test plan across 7 parts covering error classification, retry logic, watchdog, retry policy editor, dark mode, edge cases.
+**Files:** `packages/shared/src/entities.ts`, `tests/e2e/plans/error-recovery-p2.md` (new)
+
+---
+
 ## 2026-04-02 16:45 PDT — Plan: Decompose Sprint 33 — Error Recovery Phase 2
 
 **Done:** Planned Sprint 33 from `docs/proposals/error-recovery/agent-recovery.md`. 14 tasks across 4 phases + testing/docs: (1) Schema + Error Classification — ErrorCategory/ExecutionError types, error+retryCount migration, classify errors in ExecutionManager catch block. (2) Retry — retryPolicy on agents, retry logic in onComplete() with backoff, enhanced orphan recovery with auto-retry. (3) Watchdog — stuck execution detection with 60s interval + 5min threshold, amber warning banner with force-stop. (4) Error UX — category badges in history, retry button, retry policy editor in agent settings.
