@@ -1,11 +1,29 @@
-import { useState, useMemo } from "react";
-import { ChevronRight, Bot, Plus, ListTodo, Archive } from "lucide-react";
+import { useState, useMemo, useCallback } from "react";
+import { ChevronRight, Bot, Plus, ListTodo, Archive, ArchiveRestore, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
-import { useWorkItems, usePersonas, useExecutions, useSelectedProject, useCreateWorkItem } from "@/hooks";
+import { useWorkItems, usePersonas, useExecutions, useSelectedProject, useCreateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
+import { useToastStore } from "@/stores/toast-store";
 import { WORKFLOW, getStateByName } from "@agentops/shared";
 import type { WorkItem, WorkItemId, Priority, Persona, ProjectId } from "@agentops/shared";
 
@@ -318,11 +336,16 @@ export function ListView() {
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined, showArchived || undefined);
   const { data: personas } = usePersonas();
   const { data: executions } = useExecutions(undefined, projectId ?? undefined);
+  const archiveWorkItem = useArchiveWorkItem();
+  const unarchiveWorkItem = useUnarchiveWorkItem();
+  const deleteWorkItem = useDeleteWorkItem();
+  const addToast = useToastStore((s) => s.addToast);
 
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
     new Set(["Done"]),
   );
+  const [deleteTarget, setDeleteTarget] = useState<WorkItem | null>(null);
 
   const toggleExpand = (id: WorkItemId) => {
     setExpandedIds((prev) => {
@@ -341,6 +364,35 @@ export function ListView() {
       return next;
     });
   };
+
+  const handleArchive = useCallback((item: WorkItem) => {
+    archiveWorkItem.mutate({ id: item.id }, {
+      onSuccess: () => {
+        addToast({
+          type: "success",
+          title: `"${item.title}" archived`,
+          action: {
+            label: "Undo",
+            onClick: () => unarchiveWorkItem.mutate(item.id),
+          },
+        });
+      },
+    });
+  }, [archiveWorkItem, unarchiveWorkItem, addToast]);
+
+  const handleUnarchive = useCallback((item: WorkItem) => {
+    unarchiveWorkItem.mutate(item.id);
+  }, [unarchiveWorkItem]);
+
+  const handleDeleteConfirm = useCallback(() => {
+    if (!deleteTarget) return;
+    deleteWorkItem.mutate(deleteTarget.id, {
+      onSuccess: () => {
+        if (selectedItemId === deleteTarget.id) setSelectedItemId(null);
+        setDeleteTarget(null);
+      },
+    });
+  }, [deleteTarget, deleteWorkItem, selectedItemId, setSelectedItemId]);
 
   // Build lookup maps
   const personaMap = useMemo(() => {
@@ -431,23 +483,47 @@ export function ListView() {
       const hasChildren = childrenOf.has(item.id);
       const isExpanded = expandedIds.has(item.id);
 
+      const isArchived = item.archivedAt !== null;
       const row = (
-        <ListRow
-          key={item.id}
-          item={item}
-          depth={depth}
-          childrenDone={stats.done}
-          childrenTotal={stats.total}
-          persona={persona}
-          hasRunningAgent={runningItemIds.has(item.id)}
-          isExpanded={isExpanded}
-          hasChildren={hasChildren}
-          isSelected={selectedItemId === item.id}
-          isArchived={item.archivedAt !== null}
-          searchQuery={searchQuery}
-          onToggleExpand={() => toggleExpand(item.id)}
-          onSelect={() => setSelectedItemId(item.id)}
-        />
+        <ContextMenu key={item.id}>
+          <ContextMenuTrigger asChild>
+            <div>
+              <ListRow
+                item={item}
+                depth={depth}
+                childrenDone={stats.done}
+                childrenTotal={stats.total}
+                persona={persona}
+                hasRunningAgent={runningItemIds.has(item.id)}
+                isExpanded={isExpanded}
+                hasChildren={hasChildren}
+                isSelected={selectedItemId === item.id}
+                isArchived={isArchived}
+                searchQuery={searchQuery}
+                onToggleExpand={() => toggleExpand(item.id)}
+                onSelect={() => setSelectedItemId(item.id)}
+              />
+            </div>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            {isArchived ? (
+              <ContextMenuItem onClick={() => handleUnarchive(item)}>
+                <ArchiveRestore className="h-4 w-4 mr-2" />
+                Unarchive
+              </ContextMenuItem>
+            ) : (
+              <ContextMenuItem onClick={() => handleArchive(item)}>
+                <Archive className="h-4 w-4 mr-2" />
+                Archive
+              </ContextMenuItem>
+            )}
+            <ContextMenuSeparator />
+            <ContextMenuItem className="text-destructive" onClick={() => setDeleteTarget(item)}>
+              <Trash2 className="h-4 w-4 mr-2" />
+              Delete
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
       );
 
       if (hasChildren && isExpanded) {
@@ -490,6 +566,26 @@ export function ListView() {
     );
   }
 
+  // Delete confirmation dialog (rendered once, shared by all rows)
+  const deleteDialog = (
+    <AlertDialog open={deleteTarget !== null} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete work item?</AlertDialogTitle>
+          <AlertDialogDescription>
+            &ldquo;{deleteTarget?.title}&rdquo; and all its related data will be soft-deleted. You can restore it within 30 days from Settings.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+
   // Grouped rendering
   if (groupBy !== "none") {
     const groups = new Map<string, WorkItem[]>();
@@ -530,65 +626,94 @@ export function ListView() {
     }
 
     return (
-      <div className="space-y-1 overflow-y-auto h-full">
-        {orderedKeys.map((key) => {
-          const items = groups.get(key)!;
-          const isCollapsed = collapsedGroups.has(key);
-          const stateInfo = groupBy === "state" ? getStateByName(key) : undefined;
+      <>
+        <div className="space-y-1 overflow-y-auto h-full">
+          {orderedKeys.map((key) => {
+            const items = groups.get(key)!;
+            const isCollapsed = collapsedGroups.has(key);
+            const stateInfo = groupBy === "state" ? getStateByName(key) : undefined;
 
-          return (
-            <div key={key}>
-              <GroupHeader
-                label={key}
-                count={items.length}
-                color={stateInfo?.color}
-                collapsed={isCollapsed}
-                onToggle={() => toggleGroup(key)}
-              />
-              {!isCollapsed && (
-                <div className="ml-1">
-                  {items.map((item) => {
-                    const stats = childStats.get(item.id) ?? { done: 0, total: 0 };
-                    const persona = item.assignedPersonaId
-                      ? personaMap.get(item.assignedPersonaId) ?? null
-                      : null;
-                    const hasChildren = childrenOf.has(item.id);
-                    const isExpanded = expandedIds.has(item.id);
+            return (
+              <div key={key}>
+                <GroupHeader
+                  label={key}
+                  count={items.length}
+                  color={stateInfo?.color}
+                  collapsed={isCollapsed}
+                  onToggle={() => toggleGroup(key)}
+                />
+                {!isCollapsed && (
+                  <div className="ml-1">
+                    {items.map((item) => {
+                      const stats = childStats.get(item.id) ?? { done: 0, total: 0 };
+                      const persona = item.assignedPersonaId
+                        ? personaMap.get(item.assignedPersonaId) ?? null
+                        : null;
+                      const hasChildren = childrenOf.has(item.id);
+                      const isExpanded = expandedIds.has(item.id);
 
-                    return (
-                      <div key={item.id}>
-                        <ListRow
-                          item={item}
-                          depth={0}
-                          childrenDone={stats.done}
-                          childrenTotal={stats.total}
-                          persona={persona}
-                          hasRunningAgent={runningItemIds.has(item.id)}
-                          isExpanded={isExpanded}
-                          hasChildren={hasChildren}
-                          isSelected={selectedItemId === item.id}
-                          isArchived={item.archivedAt !== null}
-                          searchQuery={searchQuery}
-                          onToggleExpand={() => toggleExpand(item.id)}
-                          onSelect={() => setSelectedItemId(item.id)}
-                        />
-                        {hasChildren && isExpanded && renderTree(item.id, 1)}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+                      const isItemArchived = item.archivedAt !== null;
+                      return (
+                        <ContextMenu key={item.id}>
+                          <ContextMenuTrigger asChild>
+                            <div>
+                              <ListRow
+                                item={item}
+                                depth={0}
+                                childrenDone={stats.done}
+                                childrenTotal={stats.total}
+                                persona={persona}
+                                hasRunningAgent={runningItemIds.has(item.id)}
+                                isExpanded={isExpanded}
+                                hasChildren={hasChildren}
+                                isSelected={selectedItemId === item.id}
+                                isArchived={isItemArchived}
+                                searchQuery={searchQuery}
+                                onToggleExpand={() => toggleExpand(item.id)}
+                                onSelect={() => setSelectedItemId(item.id)}
+                              />
+                              {hasChildren && isExpanded && renderTree(item.id, 1)}
+                            </div>
+                          </ContextMenuTrigger>
+                          <ContextMenuContent>
+                            {isItemArchived ? (
+                              <ContextMenuItem onClick={() => handleUnarchive(item)}>
+                                <ArchiveRestore className="h-4 w-4 mr-2" />
+                                Unarchive
+                              </ContextMenuItem>
+                            ) : (
+                              <ContextMenuItem onClick={() => handleArchive(item)}>
+                                <Archive className="h-4 w-4 mr-2" />
+                                Archive
+                              </ContextMenuItem>
+                            )}
+                            <ContextMenuSeparator />
+                            <ContextMenuItem className="text-destructive" onClick={() => setDeleteTarget(item)}>
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </ContextMenuItem>
+                          </ContextMenuContent>
+                        </ContextMenu>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {deleteDialog}
+      </>
     );
   }
 
   // Flat tree rendering (no grouping)
   return (
-    <div className="space-y-0.5 overflow-y-auto h-full">
-      {renderTree(null, 0)}
-    </div>
+    <>
+      <div className="space-y-0.5 overflow-y-auto h-full">
+        {renderTree(null, 0)}
+      </div>
+      {deleteDialog}
+    </>
   );
 }

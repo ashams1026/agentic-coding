@@ -17,6 +17,8 @@ export {
   createWorkItem,
   updateWorkItem,
   deleteWorkItem,
+  archiveWorkItem,
+  unarchiveWorkItem,
   retryWorkItem,
   // Work Item Edges
   getWorkItemEdges,

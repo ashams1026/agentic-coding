@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 21:38 PDT — FND.WIL.6: Archive/delete actions in context menus and detail panel
+
+**Done:** Added shadcn context-menu component. Created `archiveWorkItem`/`unarchiveWorkItem` API functions in client.ts and exported from index.ts. Created `useArchiveWorkItem`/`useUnarchiveWorkItem` hooks in use-work-items.ts. In list-view.tsx: wrapped all `ListRow` renders (both tree and grouped paths) with `ContextMenu` — shows Archive/Unarchive (based on archived state) and Delete. Delete triggers `AlertDialog` confirmation. Archive shows success toast with [Undo] action. In detail-panel.tsx: added Archive/Unarchive icon button and overflow menu with Delete in the header. Delete opens confirmation dialog. Both use the shared toast store for undo. Visual check confirmed: overflow menu shows Delete in red; detail panel buttons render correctly.
+**Files:** `packages/frontend/src/components/ui/context-menu.tsx` (new), `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`, `packages/frontend/src/hooks/use-work-items.ts`, `packages/frontend/src/hooks/index.ts`, `packages/frontend/src/features/work-items/list-view.tsx`, `packages/frontend/src/features/work-items/detail-panel.tsx`
+
+---
+
 ## 2026-04-01 21:28 PDT — Review: FND.WIL.5 (approved)
 
 **Reviewed:** "Show archived" toggle and archived item styling.

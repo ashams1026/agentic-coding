@@ -1,5 +1,5 @@
 import { useMemo, useState, useRef, useEffect, useCallback } from "react";
-import { X, ChevronRight, Plus, GitBranch, Bot } from "lucide-react";
+import { X, ChevronRight, Plus, GitBranch, Bot, Archive, ArchiveRestore, Trash2, MoreHorizontal } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
@@ -20,9 +20,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
-import { useWorkItem, useWorkItems, useProposals, usePersonas, usePersonaAssignments, useCreateWorkItem, useUpdateWorkItem, useSelectedProject } from "@/hooks";
+import { useWorkItem, useWorkItems, useProposals, usePersonas, usePersonaAssignments, useCreateWorkItem, useUpdateWorkItem, useArchiveWorkItem, useUnarchiveWorkItem, useDeleteWorkItem, useSelectedProject } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
+import { useToastStore } from "@/stores/toast-store";
 import { CommentStream } from "@/features/common/comment-stream";
 import { ExecutionTimeline } from "@/features/common/execution-timeline";
 import { getStateByName, getValidTransitions } from "@agentops/shared";
@@ -636,9 +653,14 @@ export function DetailPanel() {
   const { data: assignments = [] } = usePersonaAssignments(projectId);
   const createWorkItem = useCreateWorkItem();
   const updateWorkItem = useUpdateWorkItem();
+  const archiveWorkItem = useArchiveWorkItem();
+  const unarchiveWorkItem = useUnarchiveWorkItem();
+  const deleteWorkItem = useDeleteWorkItem();
+  const addToast = useToastStore((s) => s.addToast);
 
   const [promptData, setPromptData] = useState<TransitionPromptData | null>(null);
   const [pendingState, setPendingState] = useState<string | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const children = useMemo(
     () => allItems.filter((w) => w.parentId === selectedItemId),
@@ -744,14 +766,73 @@ export function DetailPanel() {
               onSave={(newTitle) => updateWorkItem.mutate({ id: item.id, title: newTitle })}
             />
           </div>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon-sm" className="shrink-0" onClick={handleClose}>
-                <X className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>Close panel</TooltipContent>
-          </Tooltip>
+          <div className="flex items-center gap-1 shrink-0">
+            {/* Archive / Unarchive button */}
+            {item.archivedAt ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => unarchiveWorkItem.mutate(item.id)}
+                  >
+                    <ArchiveRestore className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Unarchive</TooltipContent>
+              </Tooltip>
+            ) : (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => {
+                      archiveWorkItem.mutate({ id: item.id }, {
+                        onSuccess: () => {
+                          addToast({
+                            type: "success",
+                            title: `"${item.title}" archived`,
+                            action: {
+                              label: "Undo",
+                              onClick: () => unarchiveWorkItem.mutate(item.id),
+                            },
+                          });
+                        },
+                      });
+                    }}
+                  >
+                    <Archive className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Archive</TooltipContent>
+              </Tooltip>
+            )}
+
+            {/* Overflow menu with Delete */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon-sm">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem className="text-destructive" onClick={() => setShowDeleteDialog(true)}>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon-sm" onClick={handleClose}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Close panel</TooltipContent>
+            </Tooltip>
+          </div>
         </div>
 
         {/* Badges row */}
@@ -867,6 +948,33 @@ export function DetailPanel() {
         onSkip={handlePromptSkip}
         onCancel={handlePromptCancel}
       />
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete work item?</AlertDialogTitle>
+            <AlertDialogDescription>
+              &ldquo;{item.title}&rdquo; and all its related data will be soft-deleted. You can restore it within 30 days from Settings.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                deleteWorkItem.mutate(item.id, {
+                  onSuccess: () => {
+                    setSelectedItemId(null);
+                    setShowDeleteDialog(false);
+                  },
+                });
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

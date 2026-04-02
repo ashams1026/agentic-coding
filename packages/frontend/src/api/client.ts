@@ -187,6 +187,16 @@ export async function retryWorkItem(id: WorkItemId): Promise<void> {
   await post(`/api/work-items/${id}/retry`, {});
 }
 
+export async function archiveWorkItem(id: WorkItemId, cascade?: boolean): Promise<{ archivedCount: number }> {
+  const res = await post<{ data: { archivedCount: number } }>(`/api/work-items/${id}/archive`, { cascade });
+  return res.data;
+}
+
+export async function unarchiveWorkItem(id: WorkItemId): Promise<WorkItem> {
+  const res = await post<{ data: WorkItem }>(`/api/work-items/${id}/unarchive`, {});
+  return res.data;
+}
+
 // ── Work Item Edges ──────────────────────────────────────────────
 
 export async function getWorkItemEdges(workItemId?: WorkItemId): Promise<WorkItemEdge[]> {
@@ -660,6 +670,8 @@ export const apiClient = {
   createWorkItem,
   updateWorkItem,
   deleteWorkItem,
+  archiveWorkItem,
+  unarchiveWorkItem,
   // Work Item Edges
   getWorkItemEdges,
   createWorkItemEdge,
