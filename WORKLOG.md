@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-03 13:20 PDT — Review: FX.WF.4 (approved)
+
+**Reviewed:** Transition sortOrder in workflow save payload.
+- `sortOrder: i` added to both `handleSave` and `handlePublish` transition mappings ✓
+- Index `i` gives per-state ordering (0, 1, 2...) matching backend `sortOrder` convention ✓
+- Backend expects `sortOrder: number` on transitions, previously defaulted to `?? 0` ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 13:15 PDT — FX.WF.4: Include transition sortOrder in workflow save payload
 
 **Done:** Added `sortOrder: i` (array index) to the transition mapping in both `handleSave` and `handlePublish` in `workflows.tsx`. Previously all transitions were saved with `sortOrder: 0` (backend default). Now preserves transition ordering within each state.
