@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 16:20 PDT — RB.3, RB.7: Conflict warning banner + git commit creation
+
+**Done:** (1) RB.3: Added conflict warning banner to rewind dialog — amber box listing files modified since execution, AlertTriangle icons on conflicted files in file list, "Reverting will overwrite these changes" message. Updated RewindResult type with `conflicts?: ConflictInfo[]`. (2) RB.7: Added optional git commit creation after rewind. Backend accepts `createCommit?: boolean`, uses `execFileSync` (safe argument arrays, no shell injection), creates revert commit with agent name, returns `commitSha`. Static import, graceful failure logging.
+**Files:** `features/agent-monitor/agent-history.tsx`, `api/client.ts`, `backend/src/routes/executions.ts`
+**Notes:** User simplified Sprint 32 — removed conflict detection, git integration, and enhanced preview from task list. Code is implemented but tasks not tracked.
+
+---
+
 ## 2026-04-02 16:10 PDT — RB.1, RB.2, RB.TEST.1: Time elapsed, conflict detection, test plan
 
 **Done:** (1) RB.1: Added `formatTimeAgo()` helper and time-elapsed indicator (Clock icon + relative time) to rewind confirmation dialog in agent-history.tsx. Shows "completed X minutes/hours/days ago" or fallback for null completedAt. (2) RB.2: Added `ConflictInfo` type to shared entities. Backend rewind dry-run now compares file mtime against execution.completedAt, queries recent executions for modifiedBy attribution, returns `conflicts: ConflictInfo[]` in response. Only runs during dry-run. (3) RB.TEST.1: 44-step e2e test plan across 8 parts covering all 4 phases + edge cases + dark/light mode.

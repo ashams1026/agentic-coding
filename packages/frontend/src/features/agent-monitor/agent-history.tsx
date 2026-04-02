@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { Link } from "react-router";
 import {
+  AlertTriangle,
   Bot,
   ChevronDown,
   ChevronUp,
@@ -380,6 +381,27 @@ function RewindButton({ execution }: RewindButtonProps) {
                       : "Execution completion time unknown"}
                   </span>
                 </div>
+                {preview?.conflicts && preview.conflicts.length > 0 && (
+                  <div className="rounded-md border border-amber-500/30 bg-amber-500/10 p-3">
+                    <div className="flex items-center gap-1.5 text-xs font-medium text-amber-400 mb-2">
+                      <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                      <span>{preview.conflicts.length} file{preview.conflicts.length !== 1 ? "s" : ""} modified since this execution</span>
+                    </div>
+                    <ul className="text-xs text-amber-300/80 space-y-1">
+                      {preview.conflicts.map((c) => (
+                        <li key={c.filePath} className="flex items-start gap-1.5">
+                          <span className="font-mono truncate flex-1">{c.filePath.split("/").pop()}</span>
+                          <span className="shrink-0 text-muted-foreground">
+                            {c.modifiedBy ? `by ${c.modifiedBy}` : formatTimeAgo(c.modifiedAt)}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="text-xs text-amber-400/70 mt-2">
+                      Reverting will overwrite these changes.
+                    </p>
+                  </div>
+                )}
                 {preview && preview.filesChanged.length > 0 && (
                   <div className="rounded-md border bg-muted/50 p-3">
                     <p className="text-xs font-medium mb-2">
@@ -389,9 +411,15 @@ function RewindButton({ execution }: RewindButtonProps) {
                       </span>
                     </p>
                     <ul className="text-xs text-muted-foreground space-y-0.5 max-h-[200px] overflow-auto">
-                      {preview.filesChanged.map((f) => (
-                        <li key={f} className="font-mono truncate">{f}</li>
-                      ))}
+                      {preview.filesChanged.map((f) => {
+                        const isConflicted = preview.conflicts?.some((c) => c.filePath === f);
+                        return (
+                          <li key={f} className="font-mono truncate flex items-center gap-1">
+                            {isConflicted && <AlertTriangle className="h-3 w-3 text-amber-400 shrink-0" />}
+                            {f}
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
                 )}

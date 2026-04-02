@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { eq, inArray, and, gt } from "drizzle-orm";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import type { RewindFilesResult } from "@anthropic-ai/claude-agent-sdk";
@@ -305,7 +306,7 @@ export async function executionRoutes(app: FastifyInstance) {
   // POST /api/executions/:id/rewind — rewind file changes to pre-execution state
   app.post<{
     Params: { id: string };
-    Body: { dryRun?: boolean };
+    Body: { dryRun?: boolean; createCommit?: boolean };
   }>("/api/executions/:id/rewind", async (request, reply) => {
     const { id } = request.params;
     const dryRun = request.body?.dryRun ?? false;
@@ -520,6 +521,58 @@ export async function executionRoutes(app: FastifyInstance) {
       );
     }
 
+    // Git commit creation (optional)
+    let commitSha: string | undefined;
+    if (!dryRun && request.body?.createCommit) {
+      try {
+        const cwd = project.path;
+
+        // Check if this is a git repo
+        let isGitRepo = false;
+        try {
+          execFileSync("git", ["rev-parse", "--is-inside-work-tree"], { cwd, stdio: "pipe" });
+          isGitRepo = true;
+        } catch {
+          logger.info({ executionId: id }, "Skipping git commit — not a git repo");
+        }
+
+        if (isGitRepo) {
+          const filesToStage = result.filesChanged ?? [];
+          if (filesToStage.length > 0) {
+            // Stage all reverted files (safe argument array — no shell injection)
+            execFileSync("git", ["add", "--", ...filesToStage], { cwd, stdio: "pipe" });
+
+            // Look up agent name for the commit message
+            const agentName = execution.agentId
+              ? (
+                  await db
+                    .select({ name: agents.name })
+                    .from(agents)
+                    .where(eq(agents.id, execution.agentId))
+                )?.[0]?.name
+              : "unknown agent";
+
+            const message = `revert: undo execution ${id} (${agentName ?? "unknown agent"})\n\nReverted ${filesToStage.length} files to pre-execution state.`;
+            execFileSync("git", ["commit", "-m", message], { cwd, stdio: "pipe" });
+
+            // Get the commit SHA
+            const sha = execFileSync("git", ["rev-parse", "HEAD"], { cwd, stdio: "pipe" })
+              .toString()
+              .trim();
+            commitSha = sha;
+
+            logger.info({ executionId: id, commitSha }, "Created revert commit");
+          }
+        }
+      } catch (err) {
+        // Git commit failed — log but don't fail the rewind
+        logger.warn(
+          { err: err instanceof Error ? err.message : String(err), executionId: id },
+          "Git commit creation failed",
+        );
+      }
+    }
+
     return {
       data: {
         canRewind: result.canRewind,
@@ -528,6 +581,7 @@ export async function executionRoutes(app: FastifyInstance) {
         deletions: result.deletions ?? 0,
         dryRun,
         conflicts,
+        commitSha,
       },
     };
   });

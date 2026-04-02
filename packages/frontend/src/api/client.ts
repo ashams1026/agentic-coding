@@ -41,6 +41,7 @@ import type {
   CostSummary,
   ExecutionStats,
   ReadyWorkItem,
+  ConflictInfo,
 } from "@agentops/shared";
 
 // ── Configuration ────────────────────────────────────────────────
@@ -317,6 +318,7 @@ export interface RewindResult {
   insertions: number;
   deletions: number;
   dryRun: boolean;
+  conflicts?: ConflictInfo[];  // Populated on dry-run only
 }
 
 export async function rewindExecution(id: ExecutionId, dryRun: boolean): Promise<RewindResult> {
