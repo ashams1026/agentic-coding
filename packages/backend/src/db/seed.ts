@@ -86,7 +86,7 @@ export async function seed() {
   await db.insert(projects).values([
     {
       id: PROJECT_GLOBAL,
-      name: "All Projects",
+      name: "Global Workspace",
       path: "",
       isGlobal: true,
       settings: {},

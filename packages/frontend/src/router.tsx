@@ -7,6 +7,7 @@ import { AgentMonitorPage } from "./pages/agent-monitor";
 import { ActivityFeedPage } from "./pages/activity-feed";
 import { AgentBuilderPage } from "./pages/agent-builder";
 import { SettingsPage } from "./pages/settings";
+import { AppSettingsPage } from "./pages/app-settings";
 import { ChatPage } from "./pages/chat";
 import { WorkflowsPage } from "./pages/workflows";
 import { AnalyticsPage } from "./pages/analytics";
@@ -18,7 +19,7 @@ export const router = createBrowserRouter([
     children: [
       // Top-level (no project context)
       { index: true, element: <PageErrorBoundary><DashboardPage /></PageErrorBoundary> },
-      { path: "app-settings", element: <PageErrorBoundary><SettingsPage /></PageErrorBoundary> },
+      { path: "app-settings", element: <PageErrorBoundary><AppSettingsPage /></PageErrorBoundary> },
 
       // Project-scoped routes
       {

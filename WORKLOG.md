@@ -5,6 +5,35 @@
 
 ---
 
+## 2026-04-02 14:48 PDT — NAV.19: Redesign Dashboard as cross-project overview
+
+**Done:** Rewrote `dashboard.tsx` from a project-specific dashboard to a cross-project overview. Removed old `StatCard`, `AllProjectsSummary`, and imports of `ActiveAgentsStrip`, `RecentActivity`, `UpcomingWork`, `CostSummary`, `useSelectedProject`, `Badge`, `Table*`. Added `ProjectCard` component showing: project name with globe/folder icon, work item count, active agents count (via `useDashboardStats`), last activity (relative time from work item updates), and quick-link buttons to Work Items / Agents / Chat. Global Workspace pinned first with violet accent border. Responsive grid (1/2/3 cols). Updated `GettingStartedChecklist` routes to project-scoped URLs (`/app-settings`, `/p/pj-global/items`). Loading skeleton and empty state preserved.
+**Files:** `packages/frontend/src/pages/dashboard.tsx`
+**Notes:** Old dashboard sub-components (`active-agents-strip.tsx`, `recent-activity.tsx`, `upcoming-work.tsx`, `cost-summary.tsx`) are now dead code — no remaining imports. Can be deleted in NAV.25 cleanup.
+
+---
+
+## 2026-04-02 14:45 PDT — NAV.20: Rename global project to "Global Workspace"
+
+**Done:** Renamed the global project from "All Projects" to "Global Workspace" across 6 files: backend `ensure-global-project.ts`, `seed.ts`, SQL migration `0001_seed_global_workflow.sql`, and frontend `dashboard.tsx`, `agent-monitor-layout.tsx`, `recently-deleted.tsx`. ID (`pj-global`) unchanged.
+**Files:** `packages/backend/src/db/ensure-global-project.ts`, `packages/backend/src/db/seed.ts`, `packages/backend/drizzle/0001_seed_global_workflow.sql`, `packages/frontend/src/pages/dashboard.tsx`, `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`, `packages/frontend/src/features/settings/recently-deleted.tsx`
+
+---
+
+## 2026-04-02 15:00 PDT — NAV.15: Migrate Pico chat panel to URL-based project context
+
+**Done:** Replaced `useUIStore(selectedProjectId)` in `use-pico-chat.ts` and `useSelectedProject()` in `chat-panel.tsx` with `useProjectFromUrl()`. Both now fall back to `"pj-global"` on non-project pages (Dashboard, App Settings). `chat-bubble.tsx` and `pico-store.ts` needed no changes (no project context usage).
+**Files:** `packages/frontend/src/hooks/use-pico-chat.ts`, `packages/frontend/src/features/pico/chat-panel.tsx`
+
+---
+
+## 2026-04-02 15:01 PDT — NAV.16: App Settings page
+
+**Done:** Created new `AppSettingsPage` at `/app-settings` with 4 sections: API Keys & Executor Mode, Appearance, Service, Data Management. Uses the same sidebar+content layout pattern as `SettingsLayout` but scoped to app-level settings only. Updated router to use `AppSettingsPage` instead of `SettingsPage` for the `/app-settings` route. Old `SettingsLayout` left intact for project settings (NAV.17).
+**Files:** `packages/frontend/src/pages/app-settings.tsx` (new), `packages/frontend/src/router.tsx`
+
+---
+
 ## 2026-04-02 14:42 PDT — NAV.11-14: Page migrations (Agent Monitor, Activity Feed, Analytics, Chat)
 
 **Done:** Migrated 4 more page groups from `useSelectedProject()` to `useProjectFromUrl()`: (1) Agent Monitor — 6 feature files, Links updated to `/p/:projectId/items`. (2) Activity Feed — activity-feed.tsx, EventRow navigates to project-scoped route. (3) Analytics — overview-tab.tsx, token-usage-tab.tsx. (4) Chat — replaced `useUIStore` selectedProjectId with URL-based projectId, updated guard and navigate to `/app-settings`.

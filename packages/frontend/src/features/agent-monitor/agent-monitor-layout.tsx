@@ -235,7 +235,7 @@ export function AgentMonitorLayout() {
                 <SelectValue placeholder="All scopes" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Projects</SelectItem>
+                <SelectItem value="all">Global Workspace</SelectItem>
                 <SelectItem value="__global__">Global Only</SelectItem>
                 {projectsList.map((p) => (
                   <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>

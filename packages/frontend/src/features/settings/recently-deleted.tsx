@@ -61,7 +61,7 @@ export function RecentlyDeleted() {
     }
   };
 
-  const scopeLabel = isGlobal ? "All Projects" : (project?.name ?? "Current Project");
+  const scopeLabel = isGlobal ? "Global Workspace" : (project?.name ?? "Current Project");
 
   return (
     <div className="space-y-3">

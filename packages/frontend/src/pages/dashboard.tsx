@@ -3,129 +3,38 @@ import { useNavigate, Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   Bot,
-  FileCheck,
-  AlertTriangle,
-  DollarSign,
-  Layers,
-  CheckCircle2,
   ArrowRight,
   Rocket,
   X,
   PartyPopper,
+  CheckCircle2,
+  Globe,
+  FolderOpen,
+  ClipboardList,
+  MessageSquare,
+  Activity,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useDashboardStats, useSelectedProject, useProjects, useWorkItems, useExecutions } from "@/hooks";
+import { useProjects, useWorkItems, useExecutions, useDashboardStats } from "@/hooks";
 import { getApiKeyStatus } from "@/api/client";
-import { ActiveAgentsStrip } from "@/features/dashboard/active-agents-strip";
-import { RecentActivity } from "@/features/dashboard/recent-activity";
-import { UpcomingWork } from "@/features/dashboard/upcoming-work";
-import { CostSummary } from "@/features/dashboard/cost-summary";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import type { Project } from "@agentops/shared";
 
+// ── Relative time formatting ───────────────────────────────────
 
-interface StatCardProps {
-  title: string;
-  value: string;
-  icon: React.ReactNode;
-  iconBgClass: string;
-  onClick: () => void;
-}
+function formatRelativeTime(iso: string): string {
+  const now = Date.now();
+  const target = new Date(iso).getTime();
+  const diffMs = now - target;
 
-function StatCard({ title, value, icon, iconBgClass, onClick }: StatCardProps) {
-  return (
-    <Card
-      role="button"
-      tabIndex={0}
-      className="cursor-pointer transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      onClick={onClick}
-      onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClick(); } }}
-    >
-      <CardContent className="flex items-center gap-4">
-        <div
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${iconBgClass}`}
-        >
-          {icon}
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm text-muted-foreground">{title}</p>
-          {value === "—" ? (
-            <div className="h-8 w-12 rounded bg-muted animate-pulse" />
-          ) : (
-            <p className="text-2xl font-bold tracking-tight">{value}</p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function AllProjectsSummary() {
-  const { data: projectsList } = useProjects();
-
-  if (!projectsList || projectsList.length === 0) {
-    return (
-      <Card>
-        <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-          <Layers className="h-10 w-10 text-muted-foreground/40 mb-3" />
-          <p className="text-sm font-medium text-muted-foreground">No projects yet</p>
-          <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
-            Create a project in Settings to start orchestrating your AI agents.
-          </p>
-          <Button variant="outline" size="sm" className="mt-4 gap-1.5" asChild>
-            <Link to="/settings">
-              <ArrowRight className="h-3.5 w-3.5" />
-              Go to Settings
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold flex items-center gap-2">
-          <Layers className="h-4 w-4" />
-          Projects Overview
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Project</TableHead>
-              <TableHead className="text-right">Path</TableHead>
-              <TableHead className="text-right">Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {projectsList.map((p) => (
-              <TableRow key={p.id}>
-                <TableCell className="font-medium">{p.name}</TableCell>
-                <TableCell className="text-right text-muted-foreground text-xs font-mono truncate max-w-[200px]">
-                  {p.path}
-                </TableCell>
-                <TableCell className="text-right text-muted-foreground text-sm">
-                  {new Date(p.createdAt).toLocaleDateString()}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </CardContent>
-    </Card>
-  );
+  if (diffMs < 60000) return "just now";
+  const minutes = Math.floor(diffMs / 60000);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(diffMs / 3600000);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(diffMs / 86400000);
+  return `${days}d ago`;
 }
 
 // ── Onboarding Checklist ────────────────────────────────────────
@@ -172,28 +81,28 @@ function GettingStartedChecklist() {
       id: "project",
       title: "Register a project",
       description: "Create your first project in Settings \u2192 Projects",
-      route: "/settings",
+      route: "/app-settings",
       done: hasProject,
     },
     {
       id: "apikey",
       title: "Configure API key",
       description: "Add your Claude API key in Settings \u2192 Agent Configuration",
-      route: "/settings",
+      route: "/app-settings",
       done: hasApiKey,
     },
     {
       id: "workitem",
       title: "Create a work item",
       description: "Add a work item to start tracking work",
-      route: "/items",
+      route: "/p/pj-global/items",
       done: hasWorkItem,
     },
     {
       id: "execution",
       title: "Watch an agent run",
       description: "Trigger an agent execution and watch it in Agent Monitor",
-      route: "/agents",
+      route: "/p/pj-global/monitor",
       done: hasExecution,
     },
   ];
@@ -293,82 +202,164 @@ function GettingStartedChecklist() {
   );
 }
 
-export function DashboardPage() {
-  const navigate = useNavigate();
-  const { projectId, isGlobal } = useSelectedProject();
-  const { data: stats, isLoading } = useDashboardStats(projectId ?? undefined);
+// ── Project Card ────────────────────────────────────────────────
+
+interface ProjectCardProps {
+  project: Project;
+}
+
+function ProjectCard({ project }: ProjectCardProps) {
+  const { data: stats, isLoading: statsLoading } = useDashboardStats(project.id);
+  const { data: workItems } = useWorkItems(undefined, project.id);
 
   const activeAgents = stats?.activeAgents ?? 0;
-  const pendingProposals = stats?.pendingProposals ?? 0;
-  const needsAttention = stats?.needsAttention ?? 0;
-  const todayCost = stats?.todayCostUsd ?? 0;
+  const workItemCount = workItems?.length ?? 0;
+
+  // Compute last activity from the most recent work item update
+  const lastActivity = workItems?.reduce<string | null>((latest, item) => {
+    if (!latest || item.updatedAt > latest) return item.updatedAt;
+    return latest;
+  }, null);
+
+  return (
+    <Card
+      className={cn(
+        "flex flex-col transition-colors hover:bg-accent/30",
+        project.isGlobal && "border-violet-400/40 dark:border-violet-500/30",
+      )}
+    >
+      <CardHeader className="pb-3">
+        <div className="flex items-center gap-2">
+          {project.isGlobal ? (
+            <Globe className="h-5 w-5 text-violet-500 dark:text-violet-400 shrink-0" />
+          ) : (
+            <FolderOpen className="h-5 w-5 text-muted-foreground shrink-0" />
+          )}
+          <CardTitle className="text-base font-semibold truncate">
+            {project.name}
+          </CardTitle>
+        </div>
+      </CardHeader>
+
+      <CardContent className="flex-1 space-y-3 pt-0">
+        {/* Stats row */}
+        <div className="flex items-center gap-4 text-sm">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <ClipboardList className="h-3.5 w-3.5" />
+            <span>
+              {statsLoading ? (
+                <span className="inline-block h-4 w-6 rounded bg-muted animate-pulse align-middle" />
+              ) : (
+                <span className="font-medium text-foreground">{workItemCount}</span>
+              )}
+              {" "}items
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Bot className="h-3.5 w-3.5" />
+            <span>
+              {statsLoading ? (
+                <span className="inline-block h-4 w-6 rounded bg-muted animate-pulse align-middle" />
+              ) : (
+                <span className={cn("font-medium", activeAgents > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-foreground")}>
+                  {activeAgents}
+                </span>
+              )}
+              {" "}active
+            </span>
+          </div>
+        </div>
+
+        {/* Last activity */}
+        <div className="text-xs text-muted-foreground">
+          {lastActivity ? (
+            <>Last activity: {formatRelativeTime(lastActivity)}</>
+          ) : (
+            "No activity yet"
+          )}
+        </div>
+
+        {/* Quick links */}
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          <Button variant="outline" size="sm" className="h-7 text-xs gap-1" asChild>
+            <Link to={`/p/${project.id}/items`}>
+              <ClipboardList className="h-3 w-3" />
+              Work Items
+            </Link>
+          </Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs gap-1" asChild>
+            <Link to={`/p/${project.id}/monitor`}>
+              <Activity className="h-3 w-3" />
+              Agents
+            </Link>
+          </Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs gap-1" asChild>
+            <Link to={`/p/${project.id}/chat`}>
+              <MessageSquare className="h-3 w-3" />
+              Chat
+            </Link>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Dashboard Page ──────────────────────────────────────────────
+
+export function DashboardPage() {
+  const { data: projects, isLoading: projectsLoading } = useProjects();
+
+  // Sort: Global Workspace first, then alphabetically
+  const sortedProjects = [...(projects ?? [])].sort((a, b) => {
+    if (a.isGlobal && !b.isGlobal) return -1;
+    if (!a.isGlobal && b.isGlobal) return 1;
+    return a.name.localeCompare(b.name);
+  });
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            {isGlobal ? (
-              <>
-                All Projects
-                <Badge variant="secondary" className="text-xs font-normal">Global</Badge>
-              </>
-            ) : (
-              "Dashboard"
-            )}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            {isGlobal
-              ? "Aggregated status across all projects."
-              : "At-a-glance status for your project."}
-          </p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <p className="text-muted-foreground mt-1">
+          Overview of all projects
+        </p>
       </div>
 
       <GettingStartedChecklist />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          title="Active Agents"
-          value={isLoading ? "—" : String(activeAgents)}
-          icon={<Bot className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
-          iconBgClass="bg-emerald-100 dark:bg-emerald-900/30"
-          onClick={() => navigate("/agents")}
-        />
-        <StatCard
-          title="Pending Proposals"
-          value={isLoading ? "—" : String(pendingProposals)}
-          icon={<FileCheck className="h-6 w-6 text-amber-600 dark:text-amber-400" />}
-          iconBgClass="bg-amber-100 dark:bg-amber-900/30"
-          onClick={() => navigate("/items")}
-        />
-        <StatCard
-          title="Needs Attention"
-          value={isLoading ? "—" : String(needsAttention)}
-          icon={<AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />}
-          iconBgClass="bg-red-100 dark:bg-red-900/30"
-          onClick={() => navigate("/activity")}
-        />
-        <StatCard
-          title="Today's Cost"
-          value={isLoading ? "—" : `$${todayCost.toFixed(2)}`}
-          icon={<DollarSign className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
-          iconBgClass="bg-blue-100 dark:bg-blue-900/30"
-          onClick={() => navigate("/settings")}
-        />
-      </div>
-
-      {isGlobal ? (
-        <AllProjectsSummary />
+      {projectsLoading ? (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="h-48 animate-pulse">
+              <CardContent className="flex items-center justify-center h-full">
+                <div className="h-6 w-32 rounded bg-muted" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : sortedProjects.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+            <FolderOpen className="h-10 w-10 text-muted-foreground/40 mb-3" />
+            <p className="text-sm font-medium text-muted-foreground">No projects yet</p>
+            <p className="text-xs text-muted-foreground/60 mt-1 max-w-xs">
+              Create a project in Settings to start orchestrating your AI agents.
+            </p>
+            <Button variant="outline" size="sm" className="mt-4 gap-1.5" asChild>
+              <Link to="/app-settings">
+                <ArrowRight className="h-3.5 w-3.5" />
+                Go to Settings
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
       ) : (
-        <>
-          <ActiveAgentsStrip />
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <RecentActivity />
-            <UpcomingWork />
-            <CostSummary />
-          </div>
-        </>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {sortedProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
       )}
     </div>
   );

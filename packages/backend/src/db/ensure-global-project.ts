@@ -18,7 +18,7 @@ export async function ensureGlobalProject(): Promise<void> {
 
   await db.insert(projects).values({
     id: GLOBAL_PROJECT_ID,
-    name: "All Projects",
+    name: "Global Workspace",
     path: "",
     isGlobal: true,
     settings: {},

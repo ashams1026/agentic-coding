@@ -46,7 +46,7 @@ import { cn } from "@/lib/utils";
 import { usePicoStore } from "./pico-store";
 import { ChatMessage } from "./chat-message";
 import { usePicoChat } from "@/hooks/use-pico-chat";
-import { useAgents, useProjects, useSelectedProject } from "@/hooks";
+import { useAgents, useProjects, useProjectFromUrl } from "@/hooks";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -116,7 +116,9 @@ export function ChatPanel() {
   const [input, setInput] = useState("");
   const { data: agents = [] } = useAgents();
   const { data: projectsList = [] } = useProjects();
-  const { project: selectedProject } = useSelectedProject();
+  const { projectId: urlProjectId, project: urlProject } = useProjectFromUrl();
+  const selectedProjectId = urlProjectId ?? "pj-global";
+  const selectedProject = urlProject ?? projectsList.find((p) => p.id === selectedProjectId) ?? null;
   const {
     messages,
     sessions,

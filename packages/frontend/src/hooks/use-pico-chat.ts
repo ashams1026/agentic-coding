@@ -10,7 +10,7 @@ import {
   type ChatSessionWithAgent,
 } from "@/api";
 import { usePicoStore } from "@/features/pico/pico-store";
-import { useUIStore } from "@/stores/ui-store";
+import { useProjectFromUrl } from "./use-project-from-url";
 import type { PicoChatMessage, ContentBlock } from "@/features/pico/chat-message";
 
 // ── SSE event types (mirrors backend sendSSE calls) ──────────────
@@ -164,7 +164,8 @@ function summarizeTool(name: string, input: Record<string, unknown>): string {
 export function usePicoChat() {
   const { currentSessionId, setCurrentSessionId, isOpen, setHasUnread } =
     usePicoStore();
-  const selectedProjectId = useUIStore((s) => s.selectedProjectId);
+  const { projectId: urlProjectId } = useProjectFromUrl();
+  const selectedProjectId = urlProjectId ?? "pj-global"; // fallback for non-project pages
 
   const [messages, setMessages] = useState<PicoChatMessage[]>([]);
   const [sessions, setSessions] = useState<ChatSessionWithAgent[]>([]);

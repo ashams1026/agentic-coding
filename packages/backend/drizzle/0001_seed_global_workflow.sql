@@ -1,7 +1,7 @@
 -- Ensure the global project exists before seeding the global workflow.
 -- Uses INSERT OR IGNORE so re-running on an existing DB (where ensureGlobalProject already ran) is safe.
 INSERT OR IGNORE INTO `projects` (`id`, `name`, `path`, `is_global`, `settings`, `created_at`)
-VALUES ('pj-global', 'All Projects', '', 1, '{}', 1743552000000);
+VALUES ('pj-global', 'Global Workspace', '', 1, '{}', 1743552000000);
 --> statement-breakpoint
 -- Seed a simple 3-state workflow for the global project (pj-global).
 -- autoRouting is not a schema column; workflow is manual (no agents assigned).
