@@ -184,3 +184,13 @@
 **Design Polish (DES.1, DES.3, DES.7, DES.14, DES.17):** 5 tasks. Dashboard onboarding checklist (DES.1), chat auto-generate session names — already implemented (DES.3), workflow card min-height + Configure States CTA (DES.7), Per-Agent Limits table collapsed when empty (DES.14), activity feed filter bar — already implemented (DES.17).
 
 **Bug Fixes Continued (FX.UXO6-24, DES.5):** 13 tasks. All Projects scope fix in recently-deleted (FX.UXO6), queue endpoint projectId filter (FX.UXO7), chat panel agent grouping (FX.UXO8), Globe icon pj-global check (FX.UXO9), isPico name-only match (FX.UXO11), stale closure in deleteSession (FX.UXO12), chat header DropdownMenu a11y (FX.UXO14), agent create scope/projectId (FX.UXO16), dead agent-editor.tsx deleted (FX.UXO17), dead AgentScope type removed (FX.UXO22), BUILT_IN_IDS wrong ID fixed (FX.UXO23), ps- prefix tech debt tracked (FX.UXO24). Design: "stories"→"work items" in agent monitor (DES.5).
+
+**Remaining Sprint 29 (DES.13, DES.19, FX.UXO24, DX.1):** 4 tasks. DES.13 N/A (target file deleted). Empty states audit across 14 files (DES.19). AgentId ps-prefix tracked (FX.UXO24). Split dev scripts: pnpm dev:frontend with mock API, pnpm dev:backend (DX.1).
+
+---
+
+## Sprint 30: Project-Scoped Navigation — archived 2026-04-02
+
+**Phase 1 (NAV.1-3):** 3 tasks. `useProjectFromUrl()` hook reading projectId from URL params (NAV.1). Router refactored with project-scoped routes under `/p/:projectId`, legacy redirects, App Settings at `/app-settings` (NAV.2). ProjectLayout wrapper with loading/404/Outlet (NAV.3).
+
+**Phase 2 (NAV.4-6):** 3 tasks. Full sidebar redesign as collapsible project tree with globe/folder icons, child links to `/p/:projectId/:page`, badge counters, collapsed mode (NAV.4). localStorage persistence for expand state, expand/collapse all toggle (NAV.5). Deleted orphaned scope-indicator.tsx (NAV.6).

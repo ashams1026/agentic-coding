@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-27 complete and archived. Sprint 29 Bug Fixes/Phase 4/Design Polish archived. Blocked tasks in `BLOCKED_TASKS.md`. Roadmap in `docs/roadmap.md`.
+> Sprints 1-27 complete and archived. Sprint 29 fully archived. Sprint 30 Phases 1-2 archived. Blocked tasks in `BLOCKED_TASKS.md`. Roadmap in `docs/roadmap.md`.
 
 ---
 
@@ -14,14 +14,8 @@
 > Major UX rework based on user feedback. **Prioritized ahead of remaining Sprint 28 and future roadmap work.** Themes: global-as-project foundation, persona→agent rename, chat UX fixes, workflow rework with label triggers, scope clarity.
 > Bug Fixes (Sprints 24-27), Phases 1-6, 9 complete and archived. Phases 4, 8 partially complete.
 
-### Remaining Sprint 29 (not superseded by Sprint 30)
+### Remaining Sprint 29
 
-> These tasks are independent of the navigation rewrite. UXO.28-29, GW.*, DES.2, DES.15 are superseded by Sprint 30.
-
-- [x] **DES.13** — Settings: Fix grammar in terminal states note. N/A — target file `workflow-config-section.tsx` was deleted in UXO.26. *(completed 2026-04-02 13:50 PDT)*
-- [x] **DES.19** — Empty states: Audit all pages for consistent empty states (icon + heading + description + CTA). *(completed 2026-04-02 13:55 PDT)*
-- [x] **FX.UXO24** — Info: `AgentId` type uses `ps-` prefix. Tech debt — track-only, requires future migration. *(completed 2026-04-02 13:50 PDT)*
-- [x] **DX.1** — Add split dev scripts. `pnpm dev:frontend` runs only Vite dev server (no backend). `pnpm dev:backend` runs only backend with mock executor. Keep `pnpm dev` as full-stack. No mock API layer needed — frontend just fails gracefully on API errors when backend isn't running. Update root `package.json` scripts. *(completed 2026-04-02 14:10 PDT)*
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **UXO.TEST.2** — Execute UX Overhaul e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **UXO.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
 
@@ -54,17 +48,8 @@
 > ▶ another-project     📁  ← collapsed
 > ```
 
-### Phase 1: Router + Project Context
+### Phase 2: Sidebar Redesign (remaining)
 
-- [x] **NAV.1** — Frontend: Create `useProjectFromUrl()` hook. Reads `projectId` from URL params via React Router `useParams()`. Returns `{ projectId, project, isGlobal }` by looking up the project. Replaces `useSelectedProject()`. File: `packages/frontend/src/hooks/use-project-from-url.ts`. *(completed 2026-04-02 14:20 PDT)*
-- [x] **NAV.2** — Frontend: Refactor router for project-scoped routes. New structure: `{ path: "p/:projectId", element: <ProjectLayout />, children: [ { path: "items" }, { path: "automations" }, { path: "automations/:workflowId" }, { path: "agents" }, { path: "monitor" }, { path: "activity" }, { path: "analytics" }, { path: "chat" }, { path: "settings" } ] }`. Keep top-level: Dashboard (`/`) and App Settings (`/app-settings`). Update `router.tsx`. *(completed 2026-04-02 14:21 PDT)*
-- [x] **NAV.3** — Frontend: Create `ProjectLayout` wrapper component at `layouts/project-layout.tsx`. Reads `projectId` from URL, validates project exists (404 if not), provides project context to children via `<Outlet />`. *(completed 2026-04-02 14:18 PDT)*
-
-### Phase 2: Sidebar Redesign
-
-- [x] **NAV.4** — Frontend: Redesign sidebar as project tree. *(completed 2026-04-02 14:26 PDT)* Replace flat nav + project dropdown with: (1) Global section at top: Dashboard + App Settings, (2) "Projects" separator, (3) Collapsible project sections — each with globe/folder icon, project name, nested child links (Work Items, Automations, Agents, Agent Monitor, Activity Feed, Analytics, Chat, Project Settings). Global Workspace pinned at top with globe icon + violet accent. Child links navigate to `/p/:projectId/:page`.
-- [x] **NAV.5** — Frontend: Sidebar state persistence. Store expanded/collapsed per project in localStorage. Auto-expand the project matching current URL. Highlight active child link. Add expand/collapse all toggle. *(completed 2026-04-02 14:29 PDT)*
-- [x] **NAV.6** — Frontend: Remove old project selector dropdown, scope breadcrumb (`scope-indicator.tsx`), and `selectedProjectId` from `useUIStore`. All replaced by sidebar tree + URL params. *(completed 2026-04-02 14:29 PDT)*
 - [ ] **NAV.7** — Frontend + Backend: Add "New Project" button at bottom of Projects section. Dialog has: project name input, working directory with two options: (1) "Choose existing directory" with browse starting from `~/` (user's home dir), (2) "Create new" which auto-generates `~/woof/<slugified-name>/` from the project name (user can override). Backend `mkdir -p`'s the directory on project creation if it doesn't exist. Label as "Working Directory — where agents will operate."
 
 ### Phase 3: Migrate Pages to URL-based Project Context

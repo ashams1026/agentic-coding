@@ -177,3 +177,9 @@
 **Phase 4 Completion (UXO.20-21, UXO.31):** Automations page redesign with workflow + schedule cards, agent overrides in workflow builder (collapsible chips), status bar automations indicator replacing old toggle.
 
 **Phase 8-9 + Docs (UXO.13, UXO.15-16, UXO.DOC.1):** Improved chat header (avatar ring, editable title, context menu), per-workflow router system prompt (3-section structured), label-based agent resolution (3-tier priority), full documentation update (persona→agent across 10 doc files).
+
+### Sprint 29 Design Polish + Bug Fixes Continued — 2026-04-02 13:14–13:42 PDT
+
+**Design (DES.4-6, DES.12, DES.18):** Chat sidebar width reduced to 240px (DES.4), Agent Monitor "Scope:" label + "All Projects" text (DES.6), settings header Title Case (DES.12), status bar height 36px (DES.18).
+
+**Bug Fixes (FX.UXO12-14, FX.UXO20-23, UXO.22):** Stale closure in deleteSession (FX.UXO12), chat header DropdownMenu accessibility (FX.UXO14), chat empty state for no project (FX.UXO13), dead toolCallMap removed (FX.UXO20), BUILT_IN_IDS wrong agent ID fixed (FX.UXO23), per-workflow auto-routing toggle (UXO.22). "Stories"→"work items" terminology (DES.5).
