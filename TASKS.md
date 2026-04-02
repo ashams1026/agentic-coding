@@ -29,13 +29,13 @@
 
 > These tasks are independent of the navigation rewrite. UXO.28-29, GW.*, DES.2, DES.15 are superseded by Sprint 30.
 
-- [in-progress: 2026-04-02 13:32 PDT] **FX.WI1** — Critical: Work item edit revert bug. Edits snap back immediately. Root cause: `onSettled` in `use-work-items.ts:89-92` always invalidates queries, and `use-ws-sync.ts:20-22` WebSocket `state_change` broadly invalidates `["workItems"]`. Both refetch stale data over optimistic updates. Fix: use `onSuccess` to set response data directly; guard WS invalidation during active mutations.
+- [x] **FX.WI1** — Critical: Work item edit revert bug. Edits snap back immediately. Root cause: `onSettled` in `use-work-items.ts:89-92` always invalidates queries, and `use-ws-sync.ts:20-22` WebSocket `state_change` broadly invalidates `["workItems"]`. Both refetch stale data over optimistic updates. Fix: use `onSuccess` to set response data directly; guard WS invalidation during active mutations. *(completed 2026-04-02 13:41 PDT)*
 - [x] **DES.1** — Dashboard: Add onboarding/getting-started section for fresh installs. Guided checklist: register project, configure API key, create work item, watch agent run. *(completed 2026-04-02 14:15 PDT)*
-- [ ] **DES.3** — Chat: Auto-generate session names from first user message (first 40 chars). "New chat" repeated 15+ times is unusable.
-- [in-progress: 2026-04-02 13:32 PDT] **DES.7** — Automations: Normalize workflow card heights with min-height. Cards with no states show "Configure states" CTA.
+- [x] **DES.3** — Chat: Auto-generate session names from first user message (first 40 chars). Already implemented in backend (chat.ts:297-309) and frontend refreshes sessions after SSE stream. *(completed 2026-04-02 13:41 PDT)*
+- [x] **DES.7** — Automations: Normalize workflow card heights with min-height. Cards with no states show "Configure states" CTA. *(completed 2026-04-02 13:41 PDT)*
 - [ ] **DES.13** — Settings: Fix grammar in terminal states note. Rewrite to "Terminal states (like Done) don't need assigned agents."
-- [in-progress: 2026-04-02 13:32 PDT] **DES.14** — Settings: Fix Per-Agent Limits table — empty columns. Hide when no limits configured.
-- [ ] **DES.17** — Activity Feed: Add filter bar with time range selector and event type filter.
+- [x] **DES.14** — Settings: Fix Per-Agent Limits table — empty columns. Hide when no limits configured. *(completed 2026-04-02 13:41 PDT)*
+- [x] **DES.17** — Activity Feed: Add filter bar with time range selector and event type filter. Already implemented: FeedFilterBar with event type checkboxes, agent dropdown, date range selector. *(completed 2026-04-02 13:41 PDT)*
 - [ ] **DES.19** — Empty states: Audit all pages for consistent empty states (icon + heading + description + CTA).
 - [ ] **FX.UXO24** — Info: `AgentId` type uses `ps-` prefix. Tech debt — requires migration.
 - [ ] **UXO.TEST.2** — Execute UX Overhaul e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
@@ -81,7 +81,7 @@
 - [ ] **NAV.4** — Frontend: Redesign sidebar as project tree. Replace flat nav + project dropdown with: (1) Global section at top: Dashboard + App Settings, (2) "Projects" separator, (3) Collapsible project sections — each with globe/folder icon, project name, nested child links (Work Items, Automations, Agents, Agent Monitor, Activity Feed, Analytics, Chat, Project Settings). Global Workspace pinned at top with globe icon + violet accent. Child links navigate to `/p/:projectId/:page`.
 - [ ] **NAV.5** — Frontend: Sidebar state persistence. Store expanded/collapsed per project in localStorage. Auto-expand the project matching current URL. Highlight active child link. Add expand/collapse all toggle.
 - [ ] **NAV.6** — Frontend: Remove old project selector dropdown, scope breadcrumb (`scope-indicator.tsx`), and `selectedProjectId` from `useUIStore`. All replaced by sidebar tree + URL params.
-- [ ] **NAV.7** — Frontend + Backend: Add "New Project" button at bottom of Projects section. Dialog has: project name input, working directory with two options: (1) "Choose existing directory" with text input, (2) "Create new" which auto-generates `~/woof/<slugified-name>/` from the project name (user can override). Backend `mkdir -p`'s the directory on project creation if it doesn't exist. Label as "Working Directory — where agents will operate."
+- [ ] **NAV.7** — Frontend + Backend: Add "New Project" button at bottom of Projects section. Dialog has: project name input, working directory with two options: (1) "Choose existing directory" with browse starting from `~/` (user's home dir), (2) "Create new" which auto-generates `~/woof/<slugified-name>/` from the project name (user can override). Backend `mkdir -p`'s the directory on project creation if it doesn't exist. Label as "Working Directory — where agents will operate."
 
 ### Phase 3: Migrate Pages to URL-based Project Context
 

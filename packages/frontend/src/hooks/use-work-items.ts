@@ -53,6 +53,7 @@ export function useCreateWorkItem() {
 export function useUpdateWorkItem() {
   const queryClient = useQueryClient();
   return useMutation({
+    mutationKey: ["workItems"],
     mutationFn: ({ id, ...req }: UpdateWorkItemRequest & { id: WorkItemId }) =>
       updateWorkItem(id, req),
     onMutate: async ({ id, ...req }) => {
@@ -79,16 +80,23 @@ export function useUpdateWorkItem() {
       }
       return { previous };
     },
+    onSuccess: (data, variables) => {
+      // Set the server response directly into the cache — no refetch needed.
+      // This avoids the stale-data race that invalidateQueries would cause.
+      if (data) {
+        queryClient.setQueryData(queryKeys.workItem(variables.id), data);
+        queryClient.setQueriesData<WorkItem[]>(
+          { queryKey: ["workItems"] },
+          (old) => old?.map((item) => (item.id === variables.id ? data : item)),
+        );
+      }
+    },
     onError: (_err, variables, context) => {
       if (context?.previous) {
         queryClient.setQueryData(queryKeys.workItem(variables.id), context.previous);
         // Revert list queries on error
         queryClient.invalidateQueries({ queryKey: ["workItems"] });
       }
-    },
-    onSettled: (_data, _err, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["workItems"] });
-      queryClient.invalidateQueries({ queryKey: queryKeys.workItem(variables.id) });
     },
   });
 }

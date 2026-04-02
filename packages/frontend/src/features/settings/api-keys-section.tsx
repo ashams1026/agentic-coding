@@ -234,6 +234,7 @@ interface AgentLimit {
 function AgentLimitsSection() {
   const { data: agents = [] } = useAgents();
   const [limits, setLimits] = useState<AgentLimit[]>([]);
+  const [expanded, setExpanded] = useState(false);
 
   // Initialize limits from agents if not yet set
   const effectiveLimits: AgentLimit[] =
@@ -245,6 +246,8 @@ function AgentLimitsSection() {
           color: p.avatar.color,
           limit: null,
         }));
+
+  const hasAnyLimits = effectiveLimits.some((l) => l.limit !== null);
 
   const handleLimitChange = (agentId: string, value: string) => {
     const numValue = value === "" ? null : Math.min(10, Math.max(1, Number(value)));
@@ -265,13 +268,41 @@ function AgentLimitsSection() {
     return null;
   }
 
+  if (!hasAnyLimits && !expanded) {
+    return (
+      <div className="space-y-3">
+        <div>
+          <p className="text-sm font-medium mb-1">Per-Agent Limits</p>
+          <p className="text-xs text-muted-foreground mb-3">
+            Optionally limit how many instances of each agent can run concurrently.
+          </p>
+        </div>
+        <Button variant="outline" size="sm" className="text-xs" onClick={() => setExpanded(true)}>
+          Configure limits
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
-      <div>
-        <p className="text-sm font-medium mb-1">Per-Agent Limits</p>
-        <p className="text-xs text-muted-foreground mb-3">
-          Optionally limit how many instances of each agent can run concurrently.
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm font-medium mb-1">Per-Agent Limits</p>
+          <p className="text-xs text-muted-foreground mb-3">
+            Optionally limit how many instances of each agent can run concurrently.
+          </p>
+        </div>
+        {!hasAnyLimits && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-xs text-muted-foreground"
+            onClick={() => setExpanded(false)}
+          >
+            Collapse
+          </Button>
+        )}
       </div>
 
       <div className="rounded-lg border">

@@ -5,6 +5,41 @@
 
 ---
 
+## 2026-04-02 13:41 PDT — FX.WI1: Fix work item edit revert bug
+
+**Done:** Removed `onSettled` from `useUpdateWorkItem` that was always invalidating queries (overwriting optimistic updates). Replaced with `onSuccess` that sets server response directly into query cache. Added `mutationKey: ["workItems"]` and guarded WebSocket `state_change` handler with `isMutating` check to prevent stale refetches during active mutations.
+**Files:** `packages/frontend/src/hooks/use-work-items.ts`, `packages/frontend/src/hooks/use-ws-sync.ts`
+
+---
+
+## 2026-04-02 13:41 PDT — DES.1: Dashboard onboarding checklist
+
+**Done:** Added `GettingStartedChecklist` component to Dashboard with 4 steps: register project, configure API key, create work item, watch agent run. Steps auto-detect completion from real data. Dismissible via localStorage. Auto-hides with celebration when all steps complete.
+**Files:** `packages/frontend/src/pages/dashboard.tsx`
+
+---
+
+## 2026-04-02 13:41 PDT — DES.7: Normalize workflow card heights
+
+**Done:** Added `min-h-[180px]` to WorkflowCard for uniform card heights. Replaced "No states defined" italic text with centered "Configure States" CTA button that opens the workflow builder.
+**Files:** `packages/frontend/src/pages/workflows.tsx`
+
+---
+
+## 2026-04-02 13:41 PDT — DES.14: Fix Per-Agent Limits table
+
+**Done:** Added collapsed state to `AgentLimitsSection` when no limits configured. Shows compact CTA ("Configure limits") instead of full empty table. Expands to show table on click. Collapse button available when no limits set.
+**Files:** `packages/frontend/src/features/settings/api-keys-section.tsx`
+
+---
+
+## 2026-04-02 13:41 PDT — DES.3, DES.17: Already implemented (no code change)
+
+**Done:** DES.3 (auto-generate chat session names) already implemented in backend `chat.ts:297-309` — title generated from first message. DES.17 (activity feed filter bar) already implemented as `FeedFilterBar` component with event type checkboxes, agent dropdown, and date range selector.
+**Files:** (none — already in codebase)
+
+---
+
 ## 2026-04-02 14:15 PDT — DES.1: Dashboard onboarding checklist
 
 **Done:** Added `GettingStartedChecklist` component to the Dashboard page. Four-step checklist (register project, configure API key, create work item, watch agent run) with live completion detection from existing hooks plus a direct `useQuery` for API key status. Completed steps show green checkmarks with strikethrough; incomplete steps show numbered circles with arrow navigation. Dismiss button persists to localStorage. Auto-hides 4s after all steps complete. Uses shadcn Card, Button, lucide icons, dark mode compatible.

@@ -205,7 +205,7 @@ function WorkflowCard({ workflow, states, onEdit, onToggleAutoRouting }: Workflo
   const sortedStates = [...states].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col min-h-[180px]">
       <CardHeader className="pb-2">
         <div className="flex items-start justify-between gap-2">
           <CardTitle className="text-base font-semibold leading-tight">
@@ -245,7 +245,13 @@ function WorkflowCard({ workflow, states, onEdit, onToggleAutoRouting }: Workflo
 
       <CardContent className="flex-1">
         {sortedStates.length === 0 ? (
-          <p className="text-xs text-muted-foreground italic">No states defined</p>
+          <div className="flex flex-col items-center justify-center flex-1 gap-2 py-4">
+            <p className="text-xs text-muted-foreground">No states configured</p>
+            <Button variant="outline" size="sm" className="h-7 text-xs gap-1" onClick={onEdit}>
+              <Plus className="h-3 w-3" />
+              Configure States
+            </Button>
+          </div>
         ) : (
           <div className="flex flex-wrap items-center gap-1">
             {sortedStates.map((state, idx) => (
