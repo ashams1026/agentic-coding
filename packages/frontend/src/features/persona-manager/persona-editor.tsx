@@ -32,6 +32,7 @@ import {
   SheetDescription,
 } from "@/components/ui/sheet";
 import { usePersona, useUpdatePersona } from "@/hooks";
+import { useSelectedProject } from "@/hooks/use-selected-project";
 import { cn } from "@/lib/utils";
 import { SystemPromptEditor } from "./system-prompt-editor";
 import { ToolConfiguration } from "./tool-configuration";
@@ -119,6 +120,7 @@ interface PersonaEditorProps {
 export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) {
   const { data: persona } = usePersona(personaId);
   const updateMutation = useUpdatePersona();
+  const { project } = useSelectedProject();
 
   // ── Local form state ──────────────────────────────────────────
   const [name, setName] = useState("");
@@ -339,7 +341,18 @@ export function PersonaEditor({ personaId, open, onClose }: PersonaEditorProps) 
           {/* ── System Prompt ────────────────────────────────── */}
           <section>
             <h3 className="text-sm font-semibold mb-3">System Prompt</h3>
-            <SystemPromptEditor value={systemPrompt} onChange={setSystemPrompt} />
+            <SystemPromptEditor
+              value={systemPrompt}
+              onChange={setSystemPrompt}
+              previewContext={{
+                projectName: project?.name,
+                projectPath: project?.path,
+                projectDescription: (project?.settings as Record<string, unknown>)?.description as string | undefined,
+                personaName: name,
+                personaDescription: description,
+                personaModel: model,
+              }}
+            />
           </section>
 
           <Separator />

@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Eye, Pencil } from "lucide-react";
+import { Eye, Pencil, ChevronDown, ChevronRight, Variable } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -190,13 +190,81 @@ function LineNumbers({ count, scrollTop }: { count: number; scrollTop: number })
 interface SystemPromptEditorProps {
   value: string;
   onChange: (value: string) => void;
+  /** Optional context for variable preview — project and persona data */
+  previewContext?: {
+    projectName?: string;
+    projectPath?: string;
+    projectDescription?: string;
+    personaName?: string;
+    personaDescription?: string;
+    personaModel?: string;
+  };
 }
 
 // ── Main component ──────────────────────────────────────────────
 
-export function SystemPromptEditor({ value, onChange }: SystemPromptEditorProps) {
+// ── Frontend-side variable resolution for preview ──────────────
+
+type PreviewCtx = SystemPromptEditorProps["previewContext"];
+
+function buildPreviewContext(ctx?: PreviewCtx): Record<string, string> {
+  const map: Record<string, string> = {};
+  if (ctx?.projectName) map["project.name"] = ctx.projectName;
+  if (ctx?.projectPath) map["project.path"] = ctx.projectPath;
+  if (ctx?.projectDescription) map["project.description"] = ctx.projectDescription;
+  if (ctx?.personaName) map["persona.name"] = ctx.personaName;
+  if (ctx?.personaDescription) map["persona.description"] = ctx.personaDescription;
+  if (ctx?.personaModel) map["persona.model"] = ctx.personaModel;
+  const now = new Date();
+  map["date.now"] = now.toISOString();
+  map["date.today"] = now.toISOString().split("T")[0]!;
+  map["date.dayOfWeek"] = now.toLocaleDateString("en-US", { weekday: "long" });
+  // workItem.* not available in editor preview
+  return map;
+}
+
+function getPreviewValue(varName: string, ctx?: PreviewCtx): string | null {
+  const map = buildPreviewContext(ctx);
+  return map[varName] ?? null;
+}
+
+function ResolvedPreview({ text, context }: { text: string; context?: PreviewCtx }) {
+  const ctx = buildPreviewContext(context);
+
+  // Split text on variable patterns, rendering resolved values with highlight
+  const parts = text.split(/((?<!\\)\{\{\s*[a-zA-Z_][a-zA-Z0-9_.]*\s*\}\})/g);
+
+  return (
+    <div className="font-mono text-xs leading-[1.65rem] whitespace-pre-wrap break-words">
+      {parts.map((part, i) => {
+        const varMatch = part.match(/^\{\{\s*([a-zA-Z_][a-zA-Z0-9_.]*)\s*\}\}$/);
+        if (varMatch) {
+          const varName = varMatch[1]!;
+          const resolved = ctx[varName];
+          if (resolved) {
+            return (
+              <span key={i} className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 rounded px-0.5" title={`{{${varName}}}`}>
+                {resolved}
+              </span>
+            );
+          }
+          // Unresolved — show as-is with warning color
+          return (
+            <span key={i} className="bg-amber-500/15 text-amber-600 dark:text-amber-400 rounded px-0.5" title="Unresolved variable">
+              {part}
+            </span>
+          );
+        }
+        return <span key={i}>{part}</span>;
+      })}
+    </div>
+  );
+}
+
+export function SystemPromptEditor({ value, onChange, previewContext }: SystemPromptEditorProps) {
   const [mode, setMode] = useState<"edit" | "preview">("edit");
   const [scrollTop, setScrollTop] = useState(0);
+  const [showVarPanel, setShowVarPanel] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
 
@@ -438,7 +506,7 @@ export function SystemPromptEditor({ value, onChange }: SystemPromptEditorProps)
         ) : (
           <div className="min-h-[200px] max-h-[400px] overflow-y-auto p-3">
             {value.trim() ? (
-              <MarkdownPreview text={value} />
+              <ResolvedPreview text={value} context={previewContext} />
             ) : (
               <p className="text-xs text-muted-foreground/50 italic">
                 No system prompt content to preview.
@@ -455,6 +523,48 @@ export function SystemPromptEditor({ value, onChange }: SystemPromptEditorProps)
         <span>~{tokenEstimate.toLocaleString()} tokens</span>
         <span className="text-muted-foreground/30">|</span>
         <span>{lineCount} line{lineCount !== 1 ? "s" : ""}</span>
+      </div>
+
+      {/* Collapsible Variables reference panel */}
+      <div className="border border-border rounded-md overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setShowVarPanel(!showVarPanel)}
+          className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
+        >
+          {showVarPanel ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+          <Variable className="h-3 w-3" />
+          Available Variables
+          <span className="ml-auto text-[10px] text-muted-foreground/60">{ALL_VARIABLES.length} variables</span>
+        </button>
+        {showVarPanel && (
+          <div className="border-t border-border px-3 py-2 space-y-3 bg-muted/20">
+            {VARIABLE_GROUPS.map((group) => (
+              <div key={group.namespace}>
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                  {group.label}
+                </p>
+                <div className="space-y-0.5">
+                  {group.variables.map((v) => {
+                    const currentValue = getPreviewValue(v.name, previewContext);
+                    return (
+                      <div key={v.name} className="flex items-baseline gap-2 text-xs">
+                        <code className="font-mono text-foreground shrink-0">{`{{${v.name}}}`}</code>
+                        <span className="text-muted-foreground/60">—</span>
+                        <span className="text-muted-foreground truncate">{v.description}</span>
+                        {currentValue && (
+                          <span className="ml-auto text-[10px] font-mono text-emerald-500 shrink-0 max-w-[120px] truncate" title={currentValue}>
+                            = {currentValue}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 07:20 PDT — PPR.4: Variables reference panel and resolved preview
+
+**Done:** Added collapsible "Available Variables" reference panel below the system prompt editor. Shows all 13 variables grouped by namespace with descriptions and current values (green `= value` indicators from project/persona context). Added `ResolvedPreview` component that replaces the plain MarkdownPreview in preview mode — resolves `{{variables}}` with context data, highlights resolved values in green and unresolved in amber. Added `previewContext` prop to `SystemPromptEditor` with project + persona data. Updated persona editor to pass `useSelectedProject()` data and current persona form state as preview context.
+**Files:** `packages/frontend/src/features/persona-manager/system-prompt-editor.tsx`, `packages/frontend/src/features/persona-manager/persona-editor.tsx`
+
+---
+
 ## 2026-04-02 07:05 PDT — Review: PPR.3 (approved)
 
 **Reviewed:** Autocomplete popup in system-prompt-editor.tsx.
