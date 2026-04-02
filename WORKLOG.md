@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 20:42 PDT — Review: FND.ERR.5 (approved)
+
+**Reviewed:** Structured error JSON column on executions.
+- Schema column at schema.ts:159: `text("error", { mode: "json" }).$type<{ category, message, details? } | null>()` — matches spec, nullable for existing rows ✓
+- Migration `0007_purple_songbird.sql`: `ALTER TABLE executions ADD error text` + chat_sessions FK drift fix (data-preserving) ✓
+- Catch block at execution-manager.ts:682-696: classifies `sdk_error`/`configuration_error`/`unknown`, sets `error: { category, message }` ✓
+- Work item not found path at :361 also sets structured error — both failure paths covered ✓
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 20:41 PDT — FND.ERR.5: Structured error JSON column on executions
 
 **Done:** Added `error` JSON column to `executions` table in schema.ts (type: `{ category: string; message: string; details?: Record<string, unknown> } | null`). Generated Drizzle migration `0007_purple_songbird.sql`. Updated catch block in execution-manager.ts to classify errors into `sdk_error`, `configuration_error`, or `unknown` and set the `error` column. Also updated the "work item not found" failure path to use `configuration_error` category.
