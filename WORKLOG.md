@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-03 04:05 PDT — Review: IWH.1 (approved)
+
+**Reviewed:** Webhook triggers schema + execution columns.
+- webhook_triggers: 8 columns with persona FK (NOT NULL) + project FK (nullable) ✓
+- triggerType + triggerId on executions (both nullable) ✓
+- Migration 0017: CREATE TABLE + 2 ALTER TABLE ADD ✓
+- Relations defined ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 04:00 PDT — IWH.1: Webhook triggers schema + execution columns
 
 **Done:** Added `webhook_triggers` table to schema.ts: id, name, secret, personaId (FK), projectId (FK nullable), promptTemplate, isActive, createdAt. Added relations to persona + project. Added `triggerType` (TEXT nullable — manual/webhook/schedule) and `triggerId` (TEXT nullable) columns to executions table. Generated migration `0017_mute_tenebrous.sql` (CREATE TABLE + 2 ALTER TABLE ADD).
