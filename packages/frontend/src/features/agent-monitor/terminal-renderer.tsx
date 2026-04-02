@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { subscribe } from "@/api/ws";
-import { useExecution, usePersona, useWorkItem } from "@/hooks";
+import { useExecution, usePersona, useWorkItem, useWsStatus } from "@/hooks";
 import type { PersonaId, WorkItemId } from "@agentops/shared";
 import {
   ToolCallSection,
@@ -350,6 +350,7 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
   const { data: execution } = useExecution(executionId);
   const { data: persona } = usePersona(execution?.personaId as PersonaId);
   const { data: workItem } = useWorkItem(execution?.workItemId as WorkItemId);
+  const wsStatus = useWsStatus();
   const [chunks, setChunks] = useState<OutputChunk[]>([]);
   const [scrollLocked, setScrollLocked] = useState(false);
   const [hasNewOutput, setHasNewOutput] = useState(false);
@@ -601,6 +602,16 @@ export function TerminalRenderer({ executionId }: TerminalRendererProps) {
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
           <span className="text-emerald-700 dark:text-emerald-400 truncate">
             {progressSummary}
+          </span>
+        </div>
+      )}
+
+      {/* Connection lost banner */}
+      {wsStatus !== "connected" && (
+        <div className="flex items-center gap-2 px-4 py-1.5 border-b bg-amber-500/10 text-xs">
+          <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
+          <span className="text-amber-700 dark:text-amber-400">
+            Connection lost — reconnecting
           </span>
         </div>
       )}

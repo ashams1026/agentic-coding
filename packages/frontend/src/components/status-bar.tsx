@@ -1,7 +1,7 @@
 import { Play, Pause, Bot, Circle } from "lucide-react";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { useDashboardStats, useSelectedProject, useProjects, useUpdateProject, useHealth } from "@/hooks";
+import { useDashboardStats, useSelectedProject, useProjects, useUpdateProject, useHealth, useWsStatus } from "@/hooks";
 
 export function StatusBar() {
   const { projectId } = useSelectedProject();
@@ -14,10 +14,10 @@ export function StatusBar() {
   const autoRouting = settings?.autoRouting !== false;
 
   const { data: health } = useHealth();
+  const wsStatus = useWsStatus();
 
   const activeAgents = stats?.activeAgents ?? 0;
   const todayCost = stats?.todayCostUsd ?? 0;
-  const isHealthy = health?.status === "ok";
   const executorMode = health?.executor;
 
   const handleToggleRouting = () => {
@@ -74,15 +74,22 @@ export function StatusBar() {
           </span>
         )}
         <span className="flex items-center gap-1.5">
-          <Circle
-            className={cn(
-              "h-2 w-2",
-              isHealthy
-                ? "fill-status-success text-status-success"
-                : "fill-status-error text-status-error",
+          <span className="relative flex h-2 w-2">
+            {wsStatus === "reconnecting" && (
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
             )}
-          />
-          {isHealthy ? "Healthy" : "Unhealthy"}
+            <Circle
+              className={cn(
+                "relative h-2 w-2",
+                wsStatus === "connected" && "fill-status-success text-status-success",
+                wsStatus === "reconnecting" && "fill-amber-500 text-amber-500",
+                wsStatus === "disconnected" && "fill-status-error text-status-error",
+              )}
+            />
+          </span>
+          {wsStatus === "connected" && "Connected"}
+          {wsStatus === "reconnecting" && "Reconnecting"}
+          {wsStatus === "disconnected" && "Disconnected"}
         </span>
       </div>
     </footer>

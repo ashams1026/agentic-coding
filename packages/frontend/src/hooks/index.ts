@@ -11,3 +11,4 @@ export { useProposals, useProposal, useUpdateProposal } from "./use-proposals";
 export { useDashboardStats, useCostSummary, useExecutionStats, useReadyWork, useProjectMemories } from "./use-dashboard";
 export { useHealth } from "./use-health";
 export { usePicoChat } from "./use-pico-chat";
+export { useWsStatus } from "./use-ws-status";

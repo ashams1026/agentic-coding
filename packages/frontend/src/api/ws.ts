@@ -4,6 +4,7 @@
 
 import type { WsEvent, WsEventType, WsEventMap, WsEventHandler } from "@agentops/shared";
 import { realWs } from "@/api/ws-client";
+import type { WsConnectionStatus } from "@/api/ws-client";
 
 type Unsubscribe = () => void;
 
@@ -25,6 +26,16 @@ export function onReconnect(callback: () => void): Unsubscribe {
   return realWs.onReconnect(callback);
 }
 
+/** Get the current WS connection status. */
+export function getWsStatus(): WsConnectionStatus {
+  return realWs.getStatus();
+}
+
+/** Subscribe to WS connection status changes. */
+export function onWsStatusChange(callback: (status: WsConnectionStatus) => void): Unsubscribe {
+  return realWs.onStatusChange(callback);
+}
+
 /**
  * Initialize the WS connection.
  * Call this once at app startup.
@@ -32,3 +43,5 @@ export function onReconnect(callback: () => void): Unsubscribe {
 export function initWsConnection(): void {
   realWs.connect();
 }
+
+export type { WsConnectionStatus };

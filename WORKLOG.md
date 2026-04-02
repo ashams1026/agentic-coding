@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 20:36 PDT — FND.ERR.4: WS connection state indicator
+
+**Done:** Added tri-state WS connection indicator. Added `_status`/`statusListeners`/`setStatus()` to `RealWsClient` — tracks `connected`/`reconnecting`/`disconnected` via `onopen`/`onclose`/`disconnect()`. Exposed via `ws.ts` facade (`getWsStatus`, `onWsStatusChange`). Created `useWsStatus()` hook using `useSyncExternalStore`. Updated status bar: replaced static Healthy/Unhealthy with green dot (connected), amber pulsing dot (reconnecting), red dot (disconnected). Added amber "Connection lost — reconnecting" banner in `TerminalRenderer` when WS is not connected. Visual check: status bar shows "Disconnected" correctly; Agent Monitor layout clean.
+**Files:** `packages/frontend/src/api/ws-client.ts`, `packages/frontend/src/api/ws.ts`, `packages/frontend/src/hooks/use-ws-status.ts` (new), `packages/frontend/src/hooks/index.ts`, `packages/frontend/src/components/status-bar.tsx`, `packages/frontend/src/features/agent-monitor/terminal-renderer.tsx`
+
+---
+
 ## 2026-04-01 20:33 PDT — Review: FND.ERR.3 (approved)
 
 **Reviewed:** React error boundaries at app and page level.

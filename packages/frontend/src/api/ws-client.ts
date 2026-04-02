@@ -12,6 +12,8 @@ import type {
 } from "@agentops/shared";
 import { API_BASE_URL } from "./client";
 
+export type WsConnectionStatus = "connected" | "reconnecting" | "disconnected";
+
 type Unsubscribe = () => void;
 
 type Listeners = {
@@ -44,6 +46,8 @@ class RealWsClient {
   private shouldReconnect = true;
   private reconnectAttempt = 0;
   private reconnectCallbacks = new Set<() => void>();
+  private _status: WsConnectionStatus = "disconnected";
+  private statusListeners = new Set<(status: WsConnectionStatus) => void>();
 
   /** Connect to the backend WebSocket server. */
   connect(): void {
@@ -59,6 +63,7 @@ class RealWsClient {
 
     this.ws.onopen = () => {
       this.reconnectAttempt = 0;
+      this.setStatus("connected");
       if (isReconnect) {
         this.reconnectCallbacks.forEach((cb) => cb());
       }
@@ -79,7 +84,10 @@ class RealWsClient {
     this.ws.onclose = () => {
       this.ws = null;
       if (this.shouldReconnect) {
+        this.setStatus("reconnecting");
         this.scheduleReconnect();
+      } else {
+        this.setStatus("disconnected");
       }
     };
 
@@ -99,6 +107,24 @@ class RealWsClient {
       this.ws.close();
       this.ws = null;
     }
+    this.setStatus("disconnected");
+  }
+
+  /** Get current connection status. */
+  getStatus(): WsConnectionStatus {
+    return this._status;
+  }
+
+  /** Subscribe to connection status changes. */
+  onStatusChange(callback: (status: WsConnectionStatus) => void): Unsubscribe {
+    this.statusListeners.add(callback);
+    return () => { this.statusListeners.delete(callback); };
+  }
+
+  private setStatus(status: WsConnectionStatus): void {
+    if (this._status === status) return;
+    this._status = status;
+    this.statusListeners.forEach((cb) => cb(status));
   }
 
   /** Subscribe to a specific event type. Returns an unsubscribe function. */
