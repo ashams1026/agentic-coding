@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 14:26 PDT — NAV.4: Redesign sidebar as project tree
+
+**Done:** Full rewrite of sidebar. Replaced flat nav + project dropdown with: (1) Global section — Dashboard + App Settings top-level links, (2) "Projects" separator, (3) Collapsible project tree — each project expandable with chevron, child links to `/p/:projectId/:page` for all 8 pages. Global Workspace pinned first with violet accent, expanded by default. Auto-expands project on URL navigation. Badge counters on Work Items/Agent Monitor/Activity Feed. Collapsed sidebar mode with icon tooltips and badge indicators. Removed project dropdown and ScopeIndicator. Preserved theme toggle, notification bell, collapse button, mobile overlay.
+**Files:** `packages/frontend/src/components/sidebar.tsx`
+
+---
+
 ## 2026-04-02 14:21 PDT — NAV.2: Refactor router for project-scoped routes
 
 **Done:** Rewrote `router.tsx` with 3 route groups: top-level (Dashboard `/`, App Settings `/app-settings`), project-scoped under `/p/:projectId` (9 pages wrapped in ProjectLayout), and legacy redirects from old flat routes to `/p/pj-global/...`. Updated `useParams` in workflows.tsx from `:id` to `:workflowId` with destructuring alias for backward compatibility.
