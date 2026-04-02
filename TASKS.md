@@ -105,3 +105,39 @@
 - [x] **RB.DOC.1** — Update `docs/api.md` with rewind endpoint changes, update `docs/frontend.md` with shared RewindButton component. *(completed 2026-04-02 16:40 PDT)*
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **RB.TEST.2** — Execute rollback enhancement e2e tests. Screenshot each case. File bugs as `FX.RB.*`.
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **RB.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
+
+---
+
+## Sprint 33: Error Recovery Phase 2
+
+> Retry policies, stuck execution watchdog, structured error classification, and improved error UX. Based on `docs/proposals/error-recovery/agent-recovery.md` Phases 1-2.
+> Phase 1 (Sprint 23) built: busy_timeout, error boundaries, WS backoff, orphan recovery, structured error categories. This sprint adds application-level retry and watchdog on top.
+
+### Phase 1: Schema + Error Classification
+
+- [ ] **ER.1** — Shared: Add `ErrorCategory` type and `ExecutionError` interface to `packages/shared/src/entities.ts`. Categories: `timeout`, `rate_limit`, `sdk_error`, `permission_denied`, `budget_exceeded`, `configuration_error`, `rejection_limit`, `loop_detected`, `interrupted`, `unknown`. Add `RetryPolicy` interface: `{ maxRetries: number, retryableErrors: ErrorCategory[], backoffMs: number, notifyOnRetry: boolean }`.
+- [ ] **ER.2** — Backend: Schema migration adding `error` (TEXT/JSON) and `retryCount` (INTEGER default 0) columns to executions table. Update Drizzle schema in `packages/backend/src/db/schema.ts`. Add `error` and `retryCount` fields to the shared `Execution` entity type.
+- [ ] **ER.3** — Backend: Classify errors in `ExecutionManager` catch block (`execution-manager.ts`). Parse SDK errors into `ErrorCategory`. Populate the `error` column with structured `ExecutionError` JSON on failure. Distinguish timeout vs process crash vs permission denied vs configuration error.
+
+### Phase 2: Retry Logic
+
+- [ ] **ER.4** — Backend: Add `retryPolicy` JSON field to agents table (schema migration). Default: `{ maxRetries: 1, retryableErrors: ["timeout", "process_crash", "transient_error"], backoffMs: 5000, notifyOnRetry: true }`. Add to shared `Agent` entity type.
+- [ ] **ER.5** — Backend: Implement retry logic in `ExecutionManager.onComplete()`. After a failed execution: check error category against agent's retryPolicy, check retryCount < maxRetries, schedule retry after backoffMs delay using `setTimeout`. Increment retryCount. Link retry execution to original via `parentExecutionId`. Broadcast `execution_retry` WS event.
+- [ ] **ER.6** — Backend: Enhance `recoverOrphanedState()` in `start.ts`. Distinguish `interrupted` (clean shutdown) vs `failed` (crash) based on whether the execution had recent activity. Create system notification for recovered orphans. Auto-schedule retry for interrupted executions whose agent has retry enabled.
+
+### Phase 3: Watchdog
+
+- [ ] **ER.7** — Backend: Implement stuck execution watchdog in `ExecutionManager`. `setInterval` (60s) checks all running executions. If no WS events for > 5 minutes (default threshold), broadcast `execution_stuck` WS event with execution ID. Add `lastActivityAt` tracking — update on every WS event broadcast. Per-agent threshold stored in retryPolicy.
+- [ ] **ER.8** — Frontend: Stuck execution warning banner in Agent Monitor terminal renderer. When `execution_stuck` WS event received, show an amber banner: "No activity for X minutes. [Force stop] [Keep waiting]". Force stop calls existing execution cancel endpoint.
+
+### Phase 4: Error UX
+
+- [ ] **ER.9** — Frontend: Error category badge + details in execution history (`agent-history.tsx`). Parse `execution.error` JSON. Show color-coded category badge (red for terminal, amber for retryable). Expandable error details section with message, SDK error, tool name. "Retry" button for retryable errors (calls existing retry endpoint or triggers new execution).
+- [ ] **ER.10** — Frontend: Retry policy configuration in agent editor (`features/agent-manager/`). Add collapsible "Error Recovery" section: max retries slider (0-3), retryable error checkboxes, backoff delay input, notify on retry toggle. Saves to agent's `retryPolicy` field.
+
+### Testing & Documentation
+
+- [ ] **ER.TEST.1** — Write e2e test plan: `tests/e2e/plans/error-recovery-p2.md`. Cover: error category badges, retry button, stuck execution warning, retry policy configuration, orphan recovery notifications.
+- [ ] **ER.DOC.1** — Update `docs/api.md` with error/retryCount fields, retry policy schema. Update `docs/architecture.md` with retry flow and watchdog. Update `docs/frontend.md` with error display components.
+- [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **ER.TEST.2** — Execute error recovery e2e tests. Screenshot each case. File bugs as `FX.ER.*`.
+- [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **ER.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
