@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 01:10 PDT — FND.TEST.1: E2E test plan for Error Recovery Phase 1
+
+**Done:** Wrote `tests/e2e/plans/error-recovery-phase1.md` with 8 test cases: TC-ERR-1 (busy_timeout PRAGMA active), TC-ERR-2 (WS exponential backoff with jitter), TC-ERR-3 (page-level error boundary fallbacks), TC-ERR-4 (status bar tri-state WS indicator), TC-ERR-5 (Agent Monitor "Connection lost" banner), TC-ERR-6 (structured error JSON on failed executions), TC-ERR-7 (orphaned executions → "interrupted" status on restart), TC-ERR-8 (pre-migration SQLite backup with 3-file pruning). Mix of code inspection (backend features hard to trigger in browser) and visual verification steps.
+**Files:** `tests/e2e/plans/error-recovery-phase1.md` (new)
+
+---
+
 ## 2026-04-02 01:00 PDT — Review: FND.GA.10 (approved)
 
 **Reviewed:** E2E test plan for Global Agents Phase 1.
