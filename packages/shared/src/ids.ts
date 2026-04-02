@@ -40,4 +40,7 @@ export const createId = {
   proposal: () => makeId<ProposalId>("pp"),
   chatSession: () => makeId<ChatSessionId>("cs"),
   chatMessage: () => makeId<ChatMessageId>("msg"),
+  workflow: () => makeId<string>("wf"),
+  workflowState: () => makeId<string>("ws"),
+  workflowTransition: () => makeId<string>("wt"),
 };

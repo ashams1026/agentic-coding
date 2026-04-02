@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 14:35 PDT — CWF.10: Builder CRUD endpoints for workflows
+
+**Done:** Added 6 builder endpoints to `packages/backend/src/routes/workflows.ts`. `POST /api/workflows` — create draft with name/description/scope. `PATCH /api/workflows/:id` — bulk replace states + transitions (delete all, re-insert). `POST /api/workflows/:id/publish` — set isPublished=true. `DELETE /api/workflows/:id` — delete with 409 guard if work items use it, cascades states+transitions. `POST /api/workflows/:id/clone` — deep copy with state ID remapping for transitions. `POST /api/workflows/:id/validate` — static analysis for missing initial/terminal, unreachable states, dead-end states. Added `createId.workflow/workflowState/workflowTransition` to shared ids.ts.
+**Files:** `packages/backend/src/routes/workflows.ts`, `packages/shared/src/ids.ts`
+**Notes:** API Routes phase (CWF.9-10) complete. 10 total workflow endpoints.
+
+---
+
 ## 2026-04-02 14:25 PDT — Review: CWF.9 (approved)
 
 **Reviewed:** Read-only workflow API endpoints.

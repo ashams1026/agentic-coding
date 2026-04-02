@@ -31,7 +31,7 @@
 ### API Routes
 
 - [x] **CWF.9** — Backend: create `packages/backend/src/routes/workflows.ts` with read-only endpoints: `GET /api/workflows` (list, filter by projectId/scope), `GET /api/workflows/:id` (full workflow with states + transitions), `GET /api/workflows/:id/states`, `GET /api/workflows/:id/transitions`. Register in server. Add shared types (`Workflow`, `WorkflowState`, `WorkflowTransition`) to `packages/shared/src/entities.ts`. *(completed 2026-04-02 14:25 PDT)*
-- [ ] **CWF.10** — Backend: add builder CRUD endpoints to `workflows.ts`: `POST /api/workflows` (create draft), `PATCH /api/workflows/:id` (update states/transitions), `POST /api/workflows/:id/publish` (mark published, create version snapshot), `DELETE /api/workflows/:id` (archive — only if no work items use it), `POST /api/workflows/:id/clone` (deep copy). Add `POST /api/workflows/:id/validate` (check for unreachable states, missing initial/terminal, dead-end transitions).
+- [review] **CWF.10** — Backend: add builder CRUD endpoints to `workflows.ts`: `POST /api/workflows` (create draft), `PATCH /api/workflows/:id` (update states/transitions), `POST /api/workflows/:id/publish` (mark published, create version snapshot), `DELETE /api/workflows/:id` (archive — only if no work items use it), `POST /api/workflows/:id/clone` (deep copy). Add `POST /api/workflows/:id/validate` (check for unreachable states, missing initial/terminal, dead-end transitions).
 
 ### Frontend: Dynamic Views
 
