@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-04-03 14:55 PDT — Review: UXO.1 (approved)
+
+**Reviewed:** isGlobal column addition to projects.
+- Schema uses `integer("is_global", { mode: "boolean" })` — matches existing boolean pattern ✓
+- Migration `0020` correct DDL ✓
+- Shared `Project` type includes `isGlobal: boolean` ✓
+- `serializeProject` includes `isGlobal` ✓
+- Seed creates `pj-global` with `isGlobal: true`, empty path ✓
+- Delete guard: 404 not found, 409 if global, then delete — correct ✓
+- `execution-manager.ts` both branches include `isGlobal` ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 14:45 PDT — UXO.1: Add isGlobal to projects schema
 
 **Done:** Added `isGlobal` boolean column (default false) to `projects` table in schema. Added `isGlobal` to shared `Project` interface. Generated migration `0020_gigantic_cable.sql`. Updated seed to create permanent global project (`id: "pj-global"`, `name: "All Projects"`, `isGlobal: true`, empty path). Added delete guard in `DELETE /api/projects/:id` — returns 409 if `isGlobal`. Updated `serializeProject` to include `isGlobal`. Fixed `execution-manager.ts` project entity construction to include `isGlobal`.
