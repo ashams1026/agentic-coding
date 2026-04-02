@@ -142,7 +142,7 @@ WorkItem objects include `archivedAt` and `deletedAt` fields (ISO 8601 string or
   currentState: string;
   priority: string;
   labels: string[];
-  assignedPersonaId: PersonaId | null;
+  assignedAgentId: AgentId | null;
   context: Record<string, unknown>;
   executionContext: unknown[];
   createdAt: string;       // ISO 8601
@@ -217,14 +217,14 @@ PATCH /api/work-items/:id
   labels?: string[];
   currentState?: string;              // must be a valid transition
   context?: Record<string, unknown>;
-  assignedPersonaId?: PersonaId | null;
+  assignedAgentId?: AgentId | null;
 }
 ```
 
 If `currentState` is provided, the transition is validated server-side via `isValidTransition()`. Invalid transitions return 400 with code `INVALID_TRANSITION`. A valid state change triggers:
 - `state_change` WebSocket broadcast
 - Audit trail entry
-- `dispatchForState()` — persona execution
+- `dispatchForState()` — agent execution
 - `checkParentCoordination()` — parent auto-advance
 - `checkMemoryGeneration()` — project memory
 
@@ -242,7 +242,7 @@ curl -X PATCH http://localhost:3001/api/work-items/wi-xxxx \
 POST /api/work-items/:id/retry
 ```
 
-Re-dispatches the persona assigned to the work item's current state. Fire-and-forget.
+Re-dispatches the agent assigned to the work item's current state. Fire-and-forget.
 
 **Response:** `{ data: { workItemId, state, dispatched: true } }` | 404
 
@@ -444,7 +444,7 @@ deleted_at   INTEGER  -- timestamp_ms, NULL = not deleted
 
 ## Global Agents Data Model
 
-Global Agents allow personas to operate across all projects or without any project context. This section documents the data model changes that support this capability.
+Global Agents allow agents to operate across all projects or without any project context. This section documents the data model changes that support this capability.
 
 ### `AgentScope` Type
 
@@ -476,12 +476,12 @@ project_id  TEXT  REFERENCES projects(id)  -- NULL for global sessions
 
 ### `global_memories` Table
 
-Cross-project memory for personas operating in global scope:
+Cross-project memory for agents operating in global scope:
 
 ```sql
 CREATE TABLE global_memories (
   id                TEXT PRIMARY KEY,       -- GlobalMemoryId
-  persona_id        TEXT NOT NULL REFERENCES personas(id),
+  agent_id          TEXT NOT NULL REFERENCES agents(id),
   summary           TEXT NOT NULL DEFAULT '',
   key_decisions     TEXT NOT NULL DEFAULT '[]',  -- JSON array of strings
   created_at        INTEGER NOT NULL,       -- timestamp_ms
@@ -492,7 +492,7 @@ CREATE TABLE global_memories (
 | Column | Type | Description |
 |--------|------|-------------|
 | `id` | `text` | Primary key (GlobalMemoryId) |
-| `persona_id` | `text` | Persona that generated this memory |
+| `agent_id` | `text` | Agent that generated this memory |
 | `summary` | `text` | Free-text summary of cross-project observations |
 | `key_decisions` | `json (string[])` | List of notable decisions or patterns |
 | `created_at` | `integer` | Creation timestamp (ms since epoch) |
@@ -507,7 +507,7 @@ CREATE TABLE global_memories (
 **Agent Monitor:**
 - Project scope: shows executions filtered to the selected project's work items.
 - Global scope: shows all executions across all projects. Scope badges indicate origin.
-- "New Run" button opens a dialog with Persona, Scope (project or global), Prompt, and Budget fields.
+- "New Run" button opens a dialog with Agent, Scope (project or global), Prompt, and Budget fields.
 
 **Work Items:**
 - Disabled in global scope (`aria-disabled` on the sidebar link). Work items always belong to a single project.
@@ -571,64 +571,93 @@ DELETE /api/work-item-edges/:id
 
 ---
 
-## Personas
+## Agents
 
-### List Personas
-
-```
-GET /api/personas
-```
-
-**Response:** `{ data: Persona[], total: number }`
-
-### Get Persona
+### List Agents
 
 ```
-GET /api/personas/:id
+GET /api/agents
 ```
 
-**Response:** `{ data: Persona }` | 404
+**Query parameters:**
 
-### Create Persona
+| Param | Type | Description |
+|---|---|---|
+| `projectId` | `string` | Filter: returns global agents + project-scoped agents for this project |
+
+**Response:** `{ data: Agent[], total: number }`
+
+```bash
+# All agents
+curl http://localhost:3001/api/agents
+
+# Agents visible in a specific project (global + project-scoped)
+curl "http://localhost:3001/api/agents?projectId=pj-xxxx"
+```
+
+### Get Agent
 
 ```
-POST /api/personas
+GET /api/agents/:id
 ```
 
-**Request body** (`CreatePersonaRequest`):
+**Response:** `{ data: Agent }` | 404
+
+### Create Agent
+
+```
+POST /api/agents
+```
+
+**Request body** (`CreateAgentRequest`):
 
 ```typescript
 {
-  name: string;                          // required
-  description?: string;                  // defaults to ""
-  avatar?: { color: string; icon: string }; // defaults to gray user icon
-  systemPrompt: string;                  // required
-  model: "opus" | "sonnet" | "haiku";    // required
-  allowedTools?: string[];               // defaults to []
-  mcpTools?: string[];                   // defaults to []
-  maxBudgetPerRun?: number;              // defaults to 0 (unlimited)
+  name: string;                              // required
+  description?: string;                      // defaults to ""
+  avatar?: { color: string; icon: string };  // defaults to gray user icon
+  systemPrompt: string;                      // required
+  model: "opus" | "sonnet" | "haiku";        // required
+  allowedTools?: string[];                   // defaults to []
+  mcpTools?: string[];                       // defaults to []
+  maxBudgetPerRun?: number;                  // defaults to 0 (unlimited)
+  scope?: "global" | "project";             // defaults to "global"
+  projectId?: string;                        // required when scope === "project"
 }
 ```
 
-**Response:** 201 `{ data: Persona }`
+**Response:** 201 `{ data: Agent }`
 
 ```bash
-curl -X POST http://localhost:3001/api/personas \
+# Global agent
+curl -X POST http://localhost:3001/api/agents \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Security Auditor",
     "systemPrompt": "You are a security auditor...",
-    "model": "sonnet"
+    "model": "sonnet",
+    "scope": "global"
+  }'
+
+# Project-scoped agent
+curl -X POST http://localhost:3001/api/agents \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Mobile Engineer",
+    "systemPrompt": "You specialize in mobile...",
+    "model": "sonnet",
+    "scope": "project",
+    "projectId": "pj-xxxx"
   }'
 ```
 
-### Update Persona
+### Update Agent
 
 ```
-PATCH /api/personas/:id
+PATCH /api/agents/:id
 ```
 
-**Request body** (`UpdatePersonaRequest`):
+**Request body** (`UpdateAgentRequest`):
 
 ```typescript
 {
@@ -640,27 +669,29 @@ PATCH /api/personas/:id
   allowedTools?: string[];
   mcpTools?: string[];
   maxBudgetPerRun?: number;
+  scope?: "global" | "project";
+  projectId?: string;
 }
 ```
 
-**Response:** `{ data: Persona }` | 400 | 404
+**Response:** `{ data: Agent }` | 400 | 404
 
-### Delete Persona
+### Delete Agent
 
 ```
-DELETE /api/personas/:id
+DELETE /api/agents/:id
 ```
 
 **Response:** 204 | 404
 
 ---
 
-## Persona Assignments
+## Agent Assignments
 
 ### List Assignments
 
 ```
-GET /api/persona-assignments
+GET /api/agent-assignments
 ```
 
 **Query parameters:**
@@ -669,36 +700,36 @@ GET /api/persona-assignments
 |---|---|---|
 | `projectId` | `string` | Filter by project |
 
-**Response:** `{ data: PersonaAssignment[], total: number }`
+**Response:** `{ data: AgentAssignment[], total: number }`
 
 ```bash
-curl "http://localhost:3001/api/persona-assignments?projectId=pj-xxxx"
+curl "http://localhost:3001/api/agent-assignments?projectId=pj-xxxx"
 ```
 
 ### Upsert Assignment
 
 ```
-PUT /api/persona-assignments
+PUT /api/agent-assignments
 ```
 
-Creates or updates a persona assignment. Uses composite key `(projectId, stateName)` — if an assignment already exists for that project+state, the persona is replaced.
+Creates or updates an agent assignment. Uses composite key `(projectId, stateName)` — if an assignment already exists for that project+state, the agent is replaced.
 
-**Request body** (`UpsertPersonaAssignmentRequest`):
+**Request body** (`UpsertAgentAssignmentRequest`):
 
 ```typescript
 {
   projectId: ProjectId;
   stateName: string;    // workflow state name (e.g., "Planning")
-  personaId: PersonaId;
+  agentId: AgentId;
 }
 ```
 
-**Response:** `{ data: PersonaAssignment }`
+**Response:** `{ data: AgentAssignment }`
 
 ```bash
-curl -X PUT http://localhost:3001/api/persona-assignments \
+curl -X PUT http://localhost:3001/api/agent-assignments \
   -H "Content-Type: application/json" \
-  -d '{ "projectId": "pj-xxxx", "stateName": "In Progress", "personaId": "ps-xxxx" }'
+  -d '{ "projectId": "pj-xxxx", "stateName": "In Progress", "agentId": "ag-xxxx" }'
 ```
 
 ---
@@ -743,7 +774,7 @@ POST /api/comments
 {
   workItemId: WorkItemId;
   authorType: "agent" | "user" | "system";
-  authorId?: PersonaId;                // persona ID if agent-authored
+  authorId?: AgentId;                  // agent ID if agent-authored
   authorName: string;
   content: string;
   metadata?: Record<string, unknown>;
@@ -804,7 +835,7 @@ POST /api/executions
 ```typescript
 {
   workItemId: WorkItemId;
-  personaId: PersonaId;
+  agentId: AgentId;
 }
 ```
 
@@ -855,7 +886,7 @@ Creates a standalone execution not tied to any work item. Used for ad-hoc agent 
 
 ```typescript
 {
-  personaId: string;    // required — persona to execute with
+  agentId: string;      // required — agent to execute with
   prompt: string;       // required — instruction for the agent
   projectId?: string;   // optional — scope to a project (null for global)
   budgetUsd?: number;   // optional — max budget in USD
@@ -863,8 +894,8 @@ Creates a standalone execution not tied to any work item. Used for ad-hoc agent 
 ```
 
 **Validation:**
-- `personaId` and `prompt` are both required — 400 if missing
-- `personaId` must reference an existing persona — 404 if not found
+- `agentId` and `prompt` are both required — 400 if missing
+- `agentId` must reference an existing agent — 404 if not found
 - `projectId` (if provided) must reference an existing project — 404 if not found
 
 **Response:** 201 `{ id: ExecutionId }`
@@ -875,12 +906,12 @@ The created execution has `workItemId: null`, `status: "pending"`, and `summary`
 # Global standalone execution
 curl -X POST http://localhost:3001/api/executions/run \
   -H "Content-Type: application/json" \
-  -d '{"personaId": "ps-pico", "prompt": "Analyze cross-project patterns"}'
+  -d '{"agentId": "ag-pico", "prompt": "Analyze cross-project patterns"}'
 
 # Project-scoped standalone execution
 curl -X POST http://localhost:3001/api/executions/run \
   -H "Content-Type: application/json" \
-  -d '{"personaId": "ps-xxxx", "prompt": "Run security audit", "projectId": "pj-xxxx", "budgetUsd": 5.00}'
+  -d '{"agentId": "ag-xxxx", "prompt": "Run security audit", "projectId": "pj-xxxx", "budgetUsd": 5.00}'
 ```
 
 ### Rewind Execution Files
@@ -1084,13 +1115,13 @@ Returns aggregate execution metrics.
 GET /api/dashboard/ready-work
 ```
 
-Returns up to 5 work items in "Ready" state with their assigned personas.
+Returns up to 5 work items in "Ready" state with their assigned agents.
 
 **Response** (`ReadyWorkResponse`):
 
 ```typescript
 {
-  data: { workItem: WorkItem; persona: Persona | null }[];
+  data: { workItem: WorkItem; agent: Agent | null }[];
   total: number;
 }
 ```
@@ -1163,7 +1194,7 @@ GET /api/settings/db-stats
   sizeMB: number;
   executionCount: number;
   projectCount: number;
-  personaCount: number;
+  agentCount: number;
 }
 ```
 
@@ -1183,7 +1214,7 @@ Deletes execution records older than 30 days.
 GET /api/settings/export
 ```
 
-Returns a JSON dump of projects, personas, and persona assignments for backup.
+Returns a JSON dump of projects, agents, and agent assignments for backup.
 
 **Response:**
 
@@ -1191,8 +1222,8 @@ Returns a JSON dump of projects, personas, and persona assignments for backup.
 {
   exportedAt: string;
   projects: Project[];
-  personas: Persona[];
-  personaAssignments: PersonaAssignment[];
+  agents: Agent[];
+  agentAssignments: AgentAssignment[];
 }
 ```
 
@@ -1202,19 +1233,19 @@ Returns a JSON dump of projects, personas, and persona assignments for backup.
 POST /api/settings/import
 ```
 
-Imports projects, personas, and persona assignments. Uses `onConflictDoNothing()` for safe re-imports.
+Imports projects, agents, and agent assignments. Uses `onConflictDoNothing()` for safe re-imports.
 
 **Request body:**
 
 ```typescript
 {
   projects?: Project[];
-  personas?: Persona[];
-  personaAssignments?: PersonaAssignment[];
+  agents?: Agent[];
+  agentAssignments?: AgentAssignment[];
 }
 ```
 
-**Response:** `{ imported: { projects: number, personas: number, personaAssignments: number } }` | 400
+**Response:** `{ imported: { projects: number, agents: number, agentAssignments: number } }` | 400
 
 ---
 
@@ -1271,7 +1302,7 @@ Fired when a work item transitions between workflow states.
   workItemId: WorkItemId;
   fromState: string;
   toState: string;
-  triggeredBy: PersonaId | "user" | "system";
+  triggeredBy: AgentId | "user" | "system";
   timestamp: string;
 }
 ```
@@ -1299,7 +1330,7 @@ Fired when an agent execution begins.
 {
   type: "agent_started";
   executionId: ExecutionId;
-  personaId: PersonaId;
+  agentId: AgentId;
   workItemId: WorkItemId;
   workItemTitle: string;
   timestamp: string;
@@ -1314,7 +1345,7 @@ Fired when an agent execution finishes.
 {
   type: "agent_completed";
   executionId: ExecutionId;
-  personaId: PersonaId;
+  agentId: AgentId;
   workItemId: WorkItemId;
   outcome: "success" | "failure" | "rejected";
   durationMs: number;
@@ -1331,7 +1362,7 @@ Streamed during agent execution — real-time output for the agent monitor.
 {
   type: "agent_output_chunk";
   executionId: ExecutionId;
-  personaId: PersonaId;
+  agentId: AgentId;
   chunk: string;
   chunkType: "text" | "code" | "thinking" | "tool_call" | "tool_result";
   timestamp: string;
@@ -1475,9 +1506,9 @@ interface NotificationPreferences {
 
 **Batching:** Multiple `agent_completed` notifications within a 60-second window are batched into a single "N agents completed" summary notification.
 
-## Chat (Multi-Persona)
+## Chat (Multi-Agent)
 
-Chat sessions support any persona, not just Pico. Each session is linked to a persona via `personaId`.
+Chat sessions support any agent, not just Pico. Each session is linked to an agent via `agentId`.
 
 ### Create Chat Session
 
@@ -1490,12 +1521,12 @@ POST /api/chat/sessions
 ```typescript
 {
   projectId?: string;    // optional — null for global sessions
-  personaId?: string;    // optional — persona for this session (null defaults to Pico)
+  agentId?: string;      // optional — agent for this session (null defaults to Pico)
   workItemId?: string;   // optional — link session to a work item for context
 }
 ```
 
-Body may be empty (`{}`) or omitted entirely to create a global session with the default Pico persona. Validates `projectId` and `personaId` if provided — 404 if not found.
+Body may be empty (`{}`) or omitted entirely to create a global session with the default Pico agent. Validates `projectId` and `agentId` if provided — 404 if not found.
 
 **Response:** 201 `{ data: ChatSession }`
 
@@ -1503,7 +1534,7 @@ Body may be empty (`{}`) or omitted entirely to create a global session with the
 {
   id: ChatSessionId;
   projectId: ProjectId | null;
-  personaId: PersonaId | null;   // null = default Pico
+  agentId: AgentId | null;       // null = default Pico
   workItemId: WorkItemId | null; // null = no work item context
   sdkSessionId: string | null;   // reserved for future SDK session tracking
   title: string;
@@ -1524,14 +1555,14 @@ GET /api/chat/sessions
 |---|---|---|
 | `projectId` | `string` | Filter by project. Omit to list all sessions (global + project-scoped). |
 
-**Response:** `{ data: ChatSessionWithPersona[], total: number }`
+**Response:** `{ data: ChatSessionWithAgent[], total: number }`
 
-Each session includes joined persona data and last message preview:
+Each session includes joined agent data and last message preview:
 
 ```typescript
 {
   ...ChatSession,
-  persona: { name: string; avatar: { color: string; icon: string } | null } | null;
+  agent: { name: string; avatar: { color: string; icon: string } | null } | null;
   lastMessagePreview: string | null;  // first 60 chars of most recent message
 }
 ```
@@ -1550,12 +1581,12 @@ GET /api/chat/sessions/:id/messages
   total: number;
   session: {
     ...ChatSession;
-    persona: { name: string; avatar: { color: string; icon: string } | null } | null;
+    agent: { name: string; avatar: { color: string; icon: string } | null } | null;
   };
 }
 ```
 
-The `session` object includes persona info for the chat header display.
+The `session` object includes agent info for the chat header display.
 
 ### Send Chat Message (SSE)
 
@@ -1563,9 +1594,9 @@ The `session` object includes persona info for the chat header display.
 POST /api/chat/sessions/:id/messages
 ```
 
-**Body:** `{ content: string; personaId?: string }`
+**Body:** `{ content: string; agentId?: string }`
 
-The persona is loaded from the session's `personaId`. If the persona is not Pico (`settings.isAssistant !== true`), the Pico-specific skill file and personality instructions are not injected — the persona's own `systemPrompt` is used with generic chat instructions.
+The agent is loaded from the session's `agentId`. If the agent is not Pico (`settings.isAssistant !== true`), the Pico-specific skill file and personality instructions are not injected — the agent's own `systemPrompt` is used with generic chat instructions.
 
 **Response:** Server-Sent Events stream with event types: `text`, `thinking`, `tool_use`, `tool_result`, `suggestion`, `error`, `done`.
 
@@ -1585,9 +1616,9 @@ DELETE /api/chat/sessions/:id
 
 ---
 
-## Persona Prompt Template Variables
+## Agent Prompt Template Variables
 
-Persona system prompts support `{{variable.name}}` template variables that are resolved at prompt-build time. Undefined variables are left as literal text.
+Agent system prompts support `{{variable.name}}` template variables that are resolved at prompt-build time. Undefined variables are left as literal text.
 
 ### Built-in Variables
 
@@ -1596,9 +1627,9 @@ Persona system prompts support `{{variable.name}}` template variables that are r
 | `{{project.name}}` | Executor + Chat | Project display name |
 | `{{project.path}}` | Executor + Chat | Project working directory |
 | `{{project.description}}` | Executor + Chat | Project description from settings |
-| `{{persona.name}}` | Executor + Chat | Current persona name |
-| `{{persona.description}}` | Executor + Chat | Persona description |
-| `{{persona.model}}` | Executor + Chat | Model (opus/sonnet/haiku) |
+| `{{agent.name}}` | Executor + Chat | Current agent name |
+| `{{agent.description}}` | Executor + Chat | Agent description |
+| `{{agent.model}}` | Executor + Chat | Model (opus/sonnet/haiku) |
 | `{{date.now}}` | Executor + Chat | Current ISO 8601 timestamp |
 | `{{date.today}}` | Executor + Chat | Today's date (YYYY-MM-DD) |
 | `{{date.dayOfWeek}}` | Executor + Chat | Day name (e.g., Monday) |
@@ -1613,7 +1644,7 @@ Variables are resolved via `resolveVariables()` in `packages/backend/src/agent/p
 
 Resolution happens in two paths:
 - **Executor path** (`buildSystemPrompt()` in `claude-executor.ts`): all 13 variables available
-- **Chat path** (`chat.ts`): project + persona + date variables only (no workItem in chat context)
+- **Chat path** (`chat.ts`): project + agent + date variables only (no workItem in chat context)
 
 ## SDK Capabilities
 
@@ -1694,6 +1725,7 @@ interface Workflow {
   projectId: string | null;      // null = global
   version: number;
   isPublished: boolean;
+  autoRouting: boolean;          // whether Router fires after each agent completion
   createdAt: string;             // ISO 8601
   updatedAt: string;
 }
@@ -1704,7 +1736,11 @@ interface WorkflowState {
   name: string;
   type: "initial" | "intermediate" | "terminal";
   color: string;                 // hex, e.g. "#7c3aed"
-  personaId: string | null;      // default persona for this state
+  agentId: string | null;        // default agent for this state
+  agentOverrides: Array<{        // label-based agent overrides (checked before agentId)
+    labelMatch: string;          // matched against work item labels (case-sensitive)
+    agentId: string;             // agent to use when this label is present
+  }>;
   sortOrder: number;
 }
 
@@ -1717,6 +1753,10 @@ interface WorkflowTransition {
   sortOrder: number;
 }
 ```
+
+**`autoRouting`:** When `true`, the Router agent is automatically dispatched after each agent completes execution on a work item in this workflow. When `false`, items remain in their current state until manually transitioned. This is a per-workflow setting — different workflows can have different auto-routing behavior independently.
+
+**`agentOverrides`:** Label-based overrides on each state allow routing different work items to different agents within the same state. The first matching override takes priority over `agentId`. Example: an "In Progress" state can route items labelled `"frontend"` to a Frontend Engineer and items labelled `"backend"` to a Backend Engineer.
 
 ### List Workflows
 
@@ -1760,10 +1800,10 @@ POST /api/workflows
 **Body:**
 
 ```json
-{ "name": "Bug Triage", "description": "...", "scope": "project", "projectId": "proj-xxx" }
+{ "name": "Bug Triage", "description": "...", "scope": "project", "projectId": "proj-xxx", "autoRouting": true }
 ```
 
-Creates a draft workflow (`isPublished: false`). `scope` defaults to `"global"`.
+Creates a draft workflow (`isPublished: false`). `scope` defaults to `"global"`. `autoRouting` defaults to `false`.
 
 **Response:** `201 { data: Workflow }`
 
@@ -1914,7 +1954,7 @@ FTS5-backed search across 4 entity types using BM25 ranking.
 
 **Query params:**
 - `q` (required): search query, min 1 char
-- `type` (optional): comma-separated filter — `work_item`, `persona`, `comment`, `chat_message`
+- `type` (optional): comma-separated filter — `work_item`, `agent`, `comment`, `chat_message`
 - `projectId` (optional): scope to project
 - `limit` (optional): max results, default 50, max 200
 
@@ -1922,7 +1962,7 @@ FTS5-backed search across 4 entity types using BM25 ranking.
 
 ```typescript
 interface SearchResult {
-  type: "work_item" | "persona" | "comment" | "chat_message";
+  type: "work_item" | "agent" | "comment" | "chat_message";
   id: string;
   title: string;
   snippet: string;  // FTS5 snippet() with <b> highlights
@@ -1931,19 +1971,19 @@ interface SearchResult {
 }
 ```
 
-**Implementation:** FTS5 virtual tables (`work_items_fts`, `personas_fts`, `comments_fts`, `chat_messages_fts`) with integer-rowid bridging tables. Sync triggers (INSERT/UPDATE/DELETE) keep FTS in sync. Backfill on first startup. Respects `archived_at`/`deleted_at` filters on work items.
+**Implementation:** FTS5 virtual tables (`work_items_fts`, `agents_fts`, `comments_fts`, `chat_messages_fts`) with integer-rowid bridging tables. Sync triggers (INSERT/UPDATE/DELETE) keep FTS in sync. Backfill on first startup. Respects `archived_at`/`deleted_at` filters on work items.
 
 ---
 
 ## Analytics
 
-### Cost by Persona
+### Cost by Agent
 
 ```
-GET /api/analytics/cost-by-persona?projectId={id}&range={24h|7d|30d|90d}
+GET /api/analytics/cost-by-agent?projectId={id}&range={24h|7d|30d|90d}
 ```
 
-**Response:** `{ data: [{ personaId, personaName, costUsd, totalTokens, executionCount }] }`
+**Response:** `{ data: [{ agentId, agentName, costUsd, totalTokens, executionCount }] }`
 
 ### Cost by Model
 
@@ -1969,14 +2009,14 @@ Daily aggregates using `DATE(startedAt/1000, 'unixepoch')`.
 GET /api/analytics/top-executions?projectId={id}&limit={n}&range={24h|7d|30d|90d}
 ```
 
-**Response:** `{ data: [{ id, personaId, personaName, model, costUsd, totalTokens, toolUses, durationMs, startedAt }] }`
+**Response:** `{ data: [{ id, agentId, agentName, model, costUsd, totalTokens, toolUses, durationMs, startedAt }] }`
 
 Sorted by `costUsd` descending. Limit default 10, max 50.
 
 ### Token Tracking Schema
 
 Three columns added to `executions` table (migration 0015):
-- `model` (TEXT nullable) — persona model used (opus/sonnet/haiku)
+- `model` (TEXT nullable) — agent model used (opus/sonnet/haiku)
 - `total_tokens` (INTEGER nullable) — cumulative tokens from ProgressEvents
 - `tool_uses` (INTEGER nullable) — tool call count from ProgressEvents
 
@@ -2027,7 +2067,7 @@ PATCH /api/webhook-triggers/:id        — update
 DELETE /api/webhook-triggers/:id       — delete
 ```
 
-**Create body:** `{ "name": "CI Deploy", "personaId": "ps-xxx", "promptTemplate": "Deploy: {{payload.repo}}" }`
+**Create body:** `{ "name": "CI Deploy", "agentId": "ag-xxx", "promptTemplate": "Deploy: {{payload.repo}}" }`
 
 **Receiver:** Validates `X-Webhook-Signature` via `timingSafeEqual`, resolves `{{payload.field}}` template (nested dot-path), spawns execution. Returns 401 (missing sig), 403 (invalid sig), 404 (inactive/missing trigger).
 
@@ -2082,8 +2122,8 @@ Deletes executions older than 30 days. Now cascades: deletes linked proposals be
 | `packages/backend/src/routes/projects.ts` | Project CRUD routes |
 | `packages/backend/src/routes/work-items.ts` | Work item CRUD + retry + archive/unarchive/restore + bulk ops + soft delete |
 | `packages/backend/src/routes/work-item-edges.ts` | Dependency edge routes |
-| `packages/backend/src/routes/personas.ts` | Persona CRUD routes |
-| `packages/backend/src/routes/persona-assignments.ts` | Persona assignment upsert |
+| `packages/backend/src/routes/agents.ts` | Agent CRUD routes |
+| `packages/backend/src/routes/agent-assignments.ts` | Agent assignment upsert |
 | `packages/backend/src/routes/comments.ts` | Comment CRUD routes |
 | `packages/backend/src/routes/executions.ts` | Execution CRUD + standalone run + rewind |
 | `packages/backend/src/routes/proposals.ts` | Proposal CRUD routes |

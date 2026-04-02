@@ -32,7 +32,7 @@ Notifications UX ──→ Outbound Webhooks (shared event bus) ──→ Notifi
                               │
 Agent Collaboration ──────────┘ (human-in-the-loop needs notifications)
 
-Persona Prompts P1 ──→ (standalone, no hard dependencies)
+Agent Prompts P1 ──→ (standalone, no hard dependencies)
 ```
 
 ---
@@ -47,7 +47,7 @@ Persona Prompts P1 ──→ (standalone, no hard dependencies)
 
 **What to build:**
 - Add `busy_timeout = 5000` PRAGMA to `connection.ts` — prevents `SQLITE_BUSY` crashes under concurrent agent load. One line, highest-ROI fix in the entire roadmap.
-- Add React error boundaries per feature area (Agent Monitor, Work Items, Dashboard, Pico, Persona Manager) — currently zero exist. A crash in one feature shouldn't take down the whole app.
+- Add React error boundaries per feature area (Agent Monitor, Work Items, Dashboard, Pico, Agent Manager) — currently zero exist. A crash in one feature shouldn't take down the whole app.
 - WS reconnection with exponential backoff + jitter — replace the fixed 3-second reconnect in `ws-client.ts` with proper backoff. Add connection state indicator in the UI.
 - Structured error categories on executions — replace generic "failed" status with specific categories (timeout, rate_limit, sdk_error, permission_denied, budget_exceeded). Update execution manager and frontend error display.
 - Orphan execution detection on startup — detect executions stuck in "running" state when the backend starts, mark them as "interrupted".
@@ -71,7 +71,7 @@ Persona Prompts P1 ──→ (standalone, no hard dependencies)
 - Archive/unarchive API endpoints: `POST /api/work-items/:id/archive`, `POST /api/work-items/:id/unarchive`
 - Soft delete with 30-day grace period: DELETE sets `deleted_at`, background job hard-deletes after 30 days
 - Bulk operations API: bulk archive/delete for multi-select
-- Frontend: action bar on multi-select, "Show archived" toggle in list/flow views, archive/delete in context menus and detail panel
+- Frontend: action bar on multi-select, "Show archived" toggle in list view, archive/delete in context menus and detail panel
 - Settings > Data Management: "Recently deleted" recovery view
 
 **Key decisions from proposals:**
@@ -93,7 +93,7 @@ Persona Prompts P1 ──→ (standalone, no hard dependencies)
 - Schema migration: make `chat_sessions.projectId` nullable, add optional `projectId` to executions, create `global_memories` table
 - Navigation: add "All Projects" option to the existing project selector (Option A from proposal — minimal change, no URL restructure). Dashboard and Agent Monitor become scope-aware.
 - Pico scope toggle: in the Pico chat panel, toggle between project-scoped and global context. When global, no project context is injected into the system prompt.
-- Agent Monitor "New Run" button: launch a standalone execution with persona + prompt, no work item required. Uses `POST /api/executions/run` endpoint.
+- Agent Monitor "New Run" button: launch a standalone execution with agent + prompt, no work item required. Uses `POST /api/executions/run` endpoint.
 - Scope badges and filter pills: visual indicators showing whether an execution/chat is project-scoped or global
 - `AgentScope` discriminated union type in shared package
 
@@ -119,15 +119,15 @@ Persona Prompts P1 ──→ (standalone, no hard dependencies)
 **Proposal docs:** `docs/proposals/agent-chat/ux-design.md`, `docs/proposals/agent-chat/rich-messages.md`, `docs/proposals/agent-chat/data-model.md`
 
 **What to build:**
-- Schema changes: add `personaId`, `workItemId`, `sdkSessionId` columns to `chat_sessions`. Formalize `contentBlocks` array in message metadata.
-- Persona picker: select which persona to chat with when starting a new session (global or project-scoped based on Global Agents work)
-- Session sidebar: conversation list with search, persona avatar, last message preview
-- Project scoping rules: project-scoped personas inherit project context, global personas don't (unless user provides it)
+- Schema changes: add `agentId`, `workItemId`, `sdkSessionId` columns to `chat_sessions`. Formalize `contentBlocks` array in message metadata.
+- Agent picker: select which agent to chat with when starting a new session (global or project-scoped based on Global Agents work)
+- Session sidebar: conversation list with search, agent avatar, last message preview
+- Project scoping rules: project-scoped agents inherit project context, global agents don't (unless user provides it)
 - Page layout: sidebar + main chat area, separate from the existing Pico mini-panel
 - Conversation rendering: extends current Pico chat rendering with session management
 
 **Key decisions from proposals:**
-- Pico remains the quick-access panel for the default assistant. Agent Chat is the full-page experience for any persona.
+- Pico remains the quick-access panel for the default assistant. Agent Chat is the full-page experience for any agent.
 - Rich message rendering (DiffBlock, TerminalBlock, FileTreeSummary, ProposalCard) is Phase 2 — don't build in this sprint
 - ProposalCard (approve/reject mid-stream) requires backend design work not covered in these proposals — defer
 - WebSocket for bidirectional communication is Phase 2 — SSE is sufficient for Phase 1
@@ -137,15 +137,15 @@ Persona Prompts P1 ──→ (standalone, no hard dependencies)
 
 ---
 
-### Persona Prompts Phase 1
+### Agent Prompts Phase 1
 
 **Proposal docs:** `docs/proposals/persona-prompts/current-architecture.md`, `docs/proposals/persona-prompts/template-variables.md`
 
 **What to build:**
 - `resolveVariables()` function: Mustache-style `{{variable.name}}` substitution, injected into `buildSystemPrompt()` before SDK delivery
-- Built-in variable namespaces: `project.*` (name, path, description), `persona.*` (name, model), `date.*` (today, now, dayOfWeek)
+- Built-in variable namespaces: `project.*` (name, path, description), `agent.*` (name, model), `date.*` (today, now, dayOfWeek)
 - Integration into both `buildSystemPrompt()` in `claude-executor.ts` and the Pico chat route in `chat.ts`
-- Basic autocomplete UI in persona editor: trigger on `{{`, show available variables
+- Basic autocomplete UI in agent editor: trigger on `{{`, show available variables
 - Preview mode: show the fully-hydrated prompt with variables resolved
 
 **Key decisions from proposals:**
@@ -154,7 +154,7 @@ Persona Prompts P1 ──→ (standalone, no hard dependencies)
 - User-defined variables (`project_variables` table, `vars.*` namespace) are Phase 2 — don't build yet
 - Subagent prompts: clarify whether `resolveVariables()` applies to subagent prompts too (proposal doesn't specify)
 
-**Why this sprint:** Cheap (2/5 complexity), makes the persona editor meaningfully more powerful, and benefits Agent Chat (personas need good system prompts to be useful in chat).
+**Why this sprint:** Cheap (2/5 complexity), makes the agent editor meaningfully more powerful, and benefits Agent Chat (agents need good system prompts to be useful in chat).
 
 ---
 
@@ -227,7 +227,7 @@ Persona Prompts P1 ──→ (standalone, no hard dependencies)
 
 **What to defer:**
 - Per-work-item scratchpad (Phase 2)
-- Agent-to-agent tagging `@persona` (Phase 2)
+- Agent-to-agent tagging `@agent` (Phase 2)
 - Human-in-the-loop via `create_proposal` MCP tool (Phase 2 — needs Notifications to be more mature)
 - Fan-out/fan-in completion gating (Phase 2 — race condition concerns in SQLite)
 - Escalation with retry chains (Phase 2 — overlaps with Error Recovery Phase 2)
@@ -245,7 +245,7 @@ Persona Prompts P1 ──→ (standalone, no hard dependencies)
 **Proposal docs:** `docs/proposals/search/design.md`
 
 **What to build:**
-- FTS5 virtual tables with triggers for automatic sync: work items (title, description), personas (name, system prompt), comments, chat messages
+- FTS5 virtual tables with triggers for automatic sync: work items (title, description), agents (name, system prompt), comments, chat messages
 - Server-backed Command Palette: upgrade the existing Cmd+K from client-side filtering to server-backed FTS5 search via `GET /api/search`
 - Work Items filter bar enhancement: full-text search within the existing filter bar
 - Unified search API: `GET /api/search?q=...&type=...&projectId=...` with BM25 ranking and snippet extraction
@@ -273,8 +273,8 @@ Persona Prompts P1 ──→ (standalone, no hard dependencies)
 - Schema: add `model`, `total_tokens`, `tool_uses` columns to executions table. Fix cents/USD unit inconsistency between executions and chat messages.
 - Persist token data: capture token counts and model from SDK `result` messages in execution manager and Pico chat route — currently broadcast over WS but never stored.
 - Analytics page (`/analytics`): new sidebar nav item between Activity Feed and Chat
-- Charts (using existing Recharts): cost trend line, execution outcomes stacked bar, cost-by-persona horizontal bar, persona leaderboard table, summary cards with deltas
-- Token Usage tab within Analytics page: usage over time (dual-axis), breakdown by model (pie), by persona, top N expensive executions table
+- Charts (using existing Recharts): cost trend line, execution outcomes stacked bar, cost-by-agent horizontal bar, agent leaderboard table, summary cards with deltas
+- Token Usage tab within Analytics page: usage over time (dual-axis), breakdown by model (pie), by agent, top N expensive executions table
 - Time range selector: presets (24h, 7d, 30d) with URL query params for shareability
 
 **What to defer:**
@@ -381,12 +381,12 @@ Persona Prompts P1 ──→ (standalone, no hard dependencies)
 
 ### Scheduling
 **Docs:** `docs/proposals/scheduling/ux-design.md`, `docs/proposals/scheduling/infrastructure.md`
-**Summary:** Cron-like recurring agent runs using `node-cron` with SQLite persistence. Schedules tab in Persona Manager, missed-run catch-up, auto-disable on failures. Low complexity (2/5). Depends on Global Agents (done by Sprint 23).
+**Summary:** Cron-like recurring agent runs using `node-cron` with SQLite persistence. Schedules tab in Agent Manager, missed-run catch-up, auto-disable on failures. Low complexity (2/5). Depends on Global Agents (done by Sprint 23).
 **Suggested first pick for Tier 3** — low complexity, high user interest.
 
 ### Templates Phase 1
 **Docs:** `docs/proposals/templates/design.md`
-**Summary:** Work item templates (bug report, feature request, spike) and expanded persona presets. One new `templates` table. Phase 2 (workflow + project templates) blocked on Custom Workflows.
+**Summary:** Work item templates (bug report, feature request, spike) and expanded agent presets. One new `templates` table. Phase 2 (workflow + project templates) blocked on Custom Workflows.
 **Build after:** Custom Workflows (Sprint 25).
 
 ### Agent Chat Phase 2 — Rich Messages
@@ -405,7 +405,7 @@ Persona Prompts P1 ──→ (standalone, no hard dependencies)
 
 ### Error Recovery Phase 2
 **Docs:** `docs/proposals/error-recovery/agent-recovery.md`
-**Summary:** Configurable retry policies per persona, watchdog for stuck execution detection, event replay for WS reconnection. Builds on Phase 1's structured error categories.
+**Summary:** Configurable retry policies per agent, watchdog for stuck execution detection, event replay for WS reconnection. Builds on Phase 1's structured error categories.
 
 ### Analytics Phase 2
 **Docs:** `docs/proposals/analytics/ux-design.md`

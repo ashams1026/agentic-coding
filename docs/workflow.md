@@ -2,6 +2,8 @@
 
 AgentOps uses a **custom workflow engine** to manage work items. Each project can have one or more workflows — user-defined state machines with custom states, transitions, colors, and per-state agent assignments. A visual **Workflow Builder** lets you design workflows in the browser. A default 8-state workflow is seeded on first run.
 
+> **Work Items view:** The flow/kanban board view for work items has been removed. The Work Items page now shows list view only.
+
 ## Custom Workflows
 
 ### Creating and Editing
@@ -9,7 +11,7 @@ AgentOps uses a **custom workflow engine** to manage work items. Each project ca
 Workflows are managed from the **Workflows** page (`/workflows`). Each workflow has:
 
 - **Name** and optional description
-- **States** — named nodes with a type (`initial`, `intermediate`, or `terminal`), color, optional default agent, and sort order
+- **States** — named nodes with a type (`initial`, `intermediate`, or `terminal`), color, optional default agent, `agentOverrides`, and sort order
 - **Transitions** — directed edges between states with optional labels and sort order
 - **Published** flag — draft workflows are editable; published workflows are active
 
@@ -17,7 +19,7 @@ The **Workflow Builder** provides:
 - A state card list where you add/remove/reorder states
 - Per-state agent assignment (dropdown)
 - Transition editing per state (target state + label)
-- A live SVG preview graph showing the state machine visually
+- A live SVG preview graph showing the state machine visually (read-only graph — work item kanban/flow view has been removed)
 - A validation panel (checks for unreachable states, dead-ends, missing initial/terminal)
 - Clone and delete operations
 
@@ -49,9 +51,24 @@ The `POST /api/workflows/:id/validate` endpoint checks:
 
 Three tables store workflow data:
 
-- **`workflows`** — `id`, `name`, `description`, `projectId`, `scope`, `isPublished`, `createdAt`, `updatedAt`
-- **`workflow_states`** — `id`, `workflowId`, `name`, `type`, `color`, `personaId`, `sortOrder`
+- **`workflows`** — `id`, `name`, `description`, `projectId`, `scope`, `isPublished`, `autoRouting`, `createdAt`, `updatedAt`
+- **`workflow_states`** — `id`, `workflowId`, `name`, `type`, `color`, `agentId`, `agentOverrides`, `sortOrder`
 - **`workflow_transitions`** — `id`, `workflowId`, `fromStateId`, `toStateId`, `label`, `sortOrder`
+
+#### `workflows.autoRouting`
+
+Each workflow has its own `autoRouting: boolean` flag (default `false`). This replaces the old project-level `autoRouting` setting. The router reads `workflow.autoRouting` to decide whether to fire after each agent completes. Different workflows within the same project can have independent auto-routing behavior.
+
+#### `workflow_states.agentOverrides`
+
+Each state has an `agentOverrides: Array<{ labelMatch: string; agentId: string }>` field. When resolving which agent handles a work item in a given state, the system checks overrides before falling back to the state's default agent.
+
+**Resolution priority:**
+1. First `agentOverrides` entry whose `labelMatch` matches any of the work item's labels
+2. State's default `agentId`
+3. `null` — no agent, manual state
+
+This allows label-based routing within a single state: for example, routing items labelled `"frontend"` to a Frontend Engineer agent and items labelled `"backend"` to a Backend Engineer agent, all within the same "In Progress" state.
 
 Work items and executions reference `workflowId` to track which workflow governs them.
 
@@ -84,7 +101,7 @@ Key runtime functions:
 | `getWorkflowTransitions(workflowId)` | Returns transitions with resolved state names |
 | `isValidTransitionDynamic(workflowId, from, to)` | Validates a transition against the workflow |
 | `getWorkflowInitialState(workflowId)` | Returns the initial state name |
-| `resolvePersonaForState(projectId, workflowId, state)` | Resolves agent: workflow state default → persona_assignments fallback |
+| `resolveAgentForState(projectId, workflowId, state, labels)` | Resolves agent: agentOverrides (label match) → state default → agent_assignments fallback |
 | `buildDynamicRouterPrompt(workflowId, currentState)` | Builds Router prompt with valid target states |
 
 ## How Items Move Between States
@@ -104,11 +121,13 @@ PATCH /api/work-items/:id
 
 When an agent completes execution on a work item, the **Router agent** is dispatched to decide the next state. This creates a fully automated pipeline.
 
+Auto-routing is controlled per workflow via `workflow.autoRouting` (boolean, default `false`). Each workflow independently controls whether the router fires. The router reads `workflow.autoRouting`, not the project settings.
+
 The cycle:
 1. Work item enters a state (e.g., "Planning")
-2. `dispatchForState()` resolves the agent for this state via `resolvePersonaForState()` — checks the workflow state's default agent first, then falls back to the `persona_assignments` table
+2. `dispatchForState()` resolves the agent for this state via `resolveAgentForState()` — checks `agentOverrides` first (label match), then the workflow state's default agent, then falls back to the `agent_assignments` table
 3. The assigned agent executes (e.g., Product Manager plans the item)
-4. On completion, `runRouter()` is called
+4. On completion, `runRouter()` is called if `workflow.autoRouting === true`
 5. The Router agent evaluates the work and calls `route_to_state` MCP tool
 6. The Router's system prompt is dynamically built from the workflow's transition map via `buildDynamicRouterPrompt()`
 7. The item transitions to the next state
@@ -117,18 +136,19 @@ The cycle:
 
 ## Agent-Per-State Assignments
 
-Each workflow state can have a default agent assigned directly in the workflow builder. Additionally, the `persona_assignments` table provides per-project overrides with composite key `(projectId, stateName)`.
+Each workflow state can have a default agent assigned directly in the workflow builder, plus label-based `agentOverrides`. Additionally, the `agent_assignments` table provides per-project fallback overrides with composite key `(projectId, stateName)`.
 
-Resolution priority:
-1. Workflow state's `personaId` (set in workflow builder)
-2. `persona_assignments` table entry for this project + state name
-3. `null` (no agent — manual state)
+Full resolution priority:
+1. First matching entry in the workflow state's `agentOverrides` array (label match against work item labels)
+2. Workflow state's `agentId` (set in workflow builder)
+3. `agent_assignments` table entry for this project + state name
+4. `null` (no agent — manual state)
 
-Configure assignments in the **Workflow Builder** (per-state dropdown) or **Settings > Workflow > Persona Assignments** (per-project overrides).
+Configure assignments in the **Workflow Builder** (per-state dropdown and overrides panel) or **Settings > Workflow > Agent Assignments** (per-project fallback overrides).
 
 ## The Router Agent
 
-The Router is a special system agent that decides state transitions after each agent completes work.
+The Router is a special system agent that decides state transitions after each agent completes work. It only runs when the workflow's `autoRouting` flag is `true`.
 
 ### How It Works
 
@@ -141,7 +161,7 @@ The Router is a special system agent that decides state transitions after each a
 
 ### Structured Output
 
-The Router uses the SDK's `outputFormat` option to return machine-readable decisions. When `persona.settings.isRouter` is true, the executor passes a JSON schema to `query()`:
+The Router uses the SDK's `outputFormat` option to return machine-readable decisions. When `agent.settings.isRouter` is true, the executor passes a JSON schema to `query()`:
 
 ```json
 {
@@ -171,12 +191,12 @@ Three layers prevent routing loops:
 
 ### Auto-Routing Toggle
 
-Auto-routing is controlled by the `autoRouting` setting in project settings:
+Auto-routing is controlled per workflow by the `autoRouting` boolean field on the `workflows` table (default `false`). This replaces the old project-level `autoRouting` setting in project settings.
 
-- **ON** (default): Router fires after every agent completion
-- **OFF**: Router is skipped; items stay in their current state until manually transitioned
+- **ON** (`autoRouting: true`): Router fires after every agent completion for work items in this workflow
+- **OFF** (`autoRouting: false`): Router is skipped; items stay in their current state until manually transitioned
 
-Toggle via the **play/pause button** in the status bar, Settings > Workflow, or the Work Items header.
+Different workflows can have different auto-routing settings. Toggle via the **Workflow Builder** settings panel or `PATCH /api/workflows/:id`.
 
 ### Rate Limiting
 
@@ -224,7 +244,7 @@ interface RejectionPayload {
 
 Before dispatching an agent, `dispatchForState()` checks:
 
-1. **Agent assigned?** — Is there an agent for this state? (via `resolvePersonaForState()`)
+1. **Agent assigned?** — Is there an agent for this state? (via `resolveAgentForState()`)
 2. **Concurrency limit?** — Is `canSpawn()` true?
 3. **Monthly cost cap?** — Is current month's spend under `monthCap`?
 4. **Dependencies met?** — Are all upstream dependencies in a terminal state?
@@ -233,7 +253,7 @@ Before dispatching an agent, `dispatchForState()` checks:
 
 | File | Purpose |
 |---|---|
-| `packages/backend/src/agent/workflow-runtime.ts` | Dynamic workflow queries — states, transitions, validation, persona resolution |
+| `packages/backend/src/agent/workflow-runtime.ts` | Dynamic workflow queries — states, transitions, validation, agent resolution |
 | `packages/backend/src/routes/workflows.ts` | Workflow CRUD API (10 endpoints) |
 | `packages/shared/src/workflow.ts` | `WORKFLOW` constant (hardcoded fallback), transition helpers |
 | `packages/backend/src/agent/dispatch.ts` | `dispatchForState()` — triggers agent execution on state entry |
@@ -242,3 +262,4 @@ Before dispatching an agent, `dispatchForState()` checks:
 | `packages/backend/src/agent/execution-manager.ts` | `handleRejection()` — rejection counting and escalation |
 | `packages/frontend/src/features/workflow-builder/` | Workflow Builder UI (state cards, preview, validation) |
 | `packages/frontend/src/pages/workflows.tsx` | Workflows page (list + builder routing) |
+| `packages/frontend/src/pages/work-items.tsx` | Work Items page (list view only — flow view removed) |

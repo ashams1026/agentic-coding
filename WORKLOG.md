@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-04-02 12:17 PDT — UXO.13: Improved chat header
+
+**Done:** Enlarged agent avatar (h-10 w-10 with colored ring halo), promoted agent name to text-base font-semibold, added resolved project name below agent name, made session title editable (single-click with pencil icon), added context menu (rename, delete), tinted header border with agent color. Applied to both chat.tsx and chat-panel.tsx with consistent styling.
+**Files:** `packages/frontend/src/pages/chat.tsx`, `packages/frontend/src/features/pico/chat-panel.tsx`
+
+---
+
+## 2026-04-02 12:17 PDT — UXO.15: Per-workflow router system prompt
+
+**Done:** Rewrote `buildDynamicRouterPrompt()` in workflow-runtime.ts to generate a structured 3-section system prompt: (1) all workflow states with types and assigned agent names, (2) complete transition map with labels, (3) current state context with valid next states. Agent names resolved via deduplicated parallel queries. Terminal state guard prevents routing further.
+**Files:** `packages/backend/src/agent/workflow-runtime.ts`
+
+---
+
+## 2026-04-02 12:17 PDT — UXO.16: Label-based agent resolution
+
+**Done:** Updated `resolveAgentForState()` with new `workItemLabels` parameter implementing 3-tier priority: (1) first matching agentOverrides entry via case-insensitive label match, (2) state default agentId, (3) agent_assignments fallback. Updated `dispatchForState()` in dispatch.ts to fetch and pass work item labels.
+**Files:** `packages/backend/src/agent/workflow-runtime.ts`, `packages/backend/src/agent/dispatch.ts`
+
+---
+
+## 2026-04-02 12:17 PDT — UXO.DOC.1: UX Overhaul documentation update
+
+**Done:** Renamed persona → agent across 10 doc files. Created docs/agents.md (replacing personas.md). Documented global project model, agent scope, agentOverrides with label-match priority, per-workflow autoRouting, flow view removal. Updated docs/api.md with /api/agents endpoints and new workflow/state fields. Fixed CSS token names and stale references.
+**Files:** `docs/agents.md` (new), `docs/api.md`, `docs/data-model.md`, `docs/workflow.md`, `docs/architecture.md`, `docs/mcp-tools.md`, `docs/getting-started.md`, `docs/frontend.md`, `docs/deployment.md`, `docs/roadmap.md`, `docs/personas.md`
+
+---
+
 ## 2026-04-02 11:56 PDT — UXO.14: Schema autoRouting + agentOverrides migration
 
 **Done:** Added `autoRouting` boolean (default false) to workflows table, `agentOverrides` JSON column to workflow_states. Created migration 0002. Updated shared types: moved autoRouting from ProjectSettings to Workflow, added agentOverrides to WorkflowStateEntity. Updated workflow routes (serialize, POST/PATCH), router.ts (reads workflow.autoRouting instead of project.settings), and seed files. Fixed router regression: work items without workflowId now default to no-routing.

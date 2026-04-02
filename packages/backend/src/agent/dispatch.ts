@@ -25,16 +25,16 @@ export async function dispatchForState(
   workItemId: string,
   stateName: string,
 ): Promise<void> {
-  // Look up the work item's project and workflow
+  // Look up the work item's project, workflow, and labels
   const [item] = await db
-    .select({ projectId: workItems.projectId, workflowId: workItems.workflowId })
+    .select({ projectId: workItems.projectId, workflowId: workItems.workflowId, labels: workItems.labels })
     .from(workItems)
     .where(eq(workItems.id, workItemId));
 
   if (!item) return;
 
-  // Resolve agent for this state via workflow runtime (with agent_assignments fallback)
-  const agentId = await resolveAgentForState(item.projectId, item.workflowId ?? null, stateName);
+  // Resolve agent for this state via workflow runtime (with label override and agent_assignments fallback)
+  const agentId = await resolveAgentForState(item.projectId, item.workflowId ?? null, stateName, item.labels ?? []);
 
   if (!agentId) return; // No agent assigned to this state
 

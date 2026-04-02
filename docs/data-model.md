@@ -10,14 +10,14 @@ AgentOps stores all data in SQLite (11 tables, WAL mode). Types are defined in `
 │          │       │           │       │                  │
 │ id (pj-) │       │ id (wi-)  │       │ id (ex-)         │
 │ name     │       │ parentId ─┐       │ workItemId       │
-│ path     │       │ projectId │       │ personaId        │
-│ settings │       │ title     │       │ status           │
-│ createdAt│       │ desc      │       │ costUsd          │
-└──────────┘       │ context   │       │ outcome          │
-     │             │ state     │       │ rejectionPayload │
+│ path     │       │ projectId │       │ agentId          │
+│ isGlobal │       │ title     │       │ status           │
+│ settings │       │ desc      │       │ costUsd          │
+│ createdAt│       │ context   │       │ outcome          │
+└──────────┘       │ state     │       │ rejectionPayload │
      │             │ priority  │       └──────────────────┘
      │             │ labels    │              │
-     │             │ personaId │              │ 1:N
+     │             │ agentId   │              │ 1:N
      │             │ execCtx[] │              ▼
      │             │ createdAt │       ┌──────────────────┐
      │             │ updatedAt │       │    Proposal      │
@@ -38,26 +38,28 @@ AgentOps stores all data in SQLite (11 tables, WAL mode). Types are defined in `
      │                        │ keyDecisions  │         │
      │                        └───────────────┘         │
      │                                                   │
-     │  1:N    ┌───────────────────┐                     │
-     ├────────│ PersonaAssignment │                     │
-     │        │                   │                     │
-     │        │ projectId (PK)   │                     │
-     │        │ stateName (PK)   │                     │
-     │        │ personaId        │                     │
-     │        └───────────────────┘                     │
+     │  1:N    ┌──────────────────┐                      │
+     ├────────│ AgentAssignment  │                      │
+     │        │                  │                      │
+     │        │ projectId (PK)   │                      │
+     │        │ stateName (PK)   │                      │
+     │        │ agentId          │                      │
+     │        └──────────────────┘                      │
      │                 │                                 │
      │                 │ N:1                              │
      │                 ▼                                 │
      │         ┌──────────────┐                          │
-     └────────│   Persona    │◄─────────────────────────┘
+     └────────│    Agent     │◄─────────────────────────┘
               │              │         (via Execution)
-              │ id (ps-)     │
+              │ id (ag-)     │
               │ name         │
               │ systemPrompt │
               │ model        │
               │ allowedTools │
               │ mcpTools     │
               │ maxBudget    │
+              │ scope        │
+              │ projectId    │
               └──────────────┘
 ```
 
@@ -72,10 +74,14 @@ The top-level container. Each project maps to a directory on disk.
 | `id` | `ProjectId` (`pj-xxxx`) | Unique identifier |
 | `name` | `string` | Display name |
 | `path` | `string` | Absolute path to project directory (validated on create) |
-| `settings` | `ProjectSettings` | Typed settings: `maxConcurrent`, `monthCap`, `autoRouting`, `description`, `patterns`, `sandbox` (see `SandboxConfig`) |
+| `isGlobal` | `boolean` | If `true`, this is the "All Projects" sentinel project (`pj-global`) |
+| `settings` | `ProjectSettings` | Typed settings: `maxConcurrent`, `monthCap`, `description`, `patterns`, `sandbox` (see `SandboxConfig`) |
+| `workflowId` | `string \| null` | Default workflow for this project |
 | `createdAt` | `string` (ISO 8601) | Creation timestamp |
 
-**Relationships:** has many WorkItems, PersonaAssignments, ProjectMemories.
+**Global project model:** The project with `id === "pj-global"` serves as the "All Projects" scope sentinel. All nullable `projectId` columns that previously accepted `null` now use `"pj-global"` as a stable foreign key. The helper `isGlobalProject(id)` checks `id === "pj-global"`. The `isGlobal` boolean flag identifies this sentinel project in the UI.
+
+**Relationships:** has many WorkItems, AgentAssignments, ProjectMemories.
 
 ### WorkItem
 
@@ -92,7 +98,7 @@ The core entity. Represents any unit of work — from high-level features to ind
 | `currentState` | `string` | Current workflow state (e.g., "Planning", "In Progress") |
 | `priority` | `Priority` | `"p0"` (critical) through `"p3"` (low) |
 | `labels` | `string[]` | Free-form tags |
-| `assignedPersonaId` | `PersonaId \| null` | Currently assigned persona |
+| `assignedAgentId` | `AgentId \| null` | Currently assigned agent |
 | `executionContext` | `ExecutionContextEntry[]` | History of agent executions on this item |
 | `createdAt` | `string` (ISO 8601) | Creation timestamp |
 | `updatedAt` | `string` (ISO 8601) | Last modification timestamp |
@@ -149,48 +155,52 @@ Directed edges forming a dependency graph between work items.
 - `depends_on` — fromId depends on toId
 - `related_to` — informational link, no enforcement
 
-### PersonaAssignment
+### AgentAssignment
 
-Maps a persona to a workflow state within a project. Composite primary key.
+Maps an agent to a workflow state within a project. Composite primary key.
 
 | Field | Type | Description |
 |---|---|---|
 | `projectId` | `ProjectId` | Project this assignment belongs to |
 | `stateName` | `string` | Workflow state name (e.g., "Planning", "In Progress") |
-| `personaId` | `PersonaId` | Persona to dispatch when items enter this state |
+| `agentId` | `AgentId` | Agent to dispatch when items enter this state |
 
-**Primary key:** `(projectId, stateName)` — one persona per state per project.
+**Primary key:** `(projectId, stateName)` — one agent per state per project.
 
-### Persona
+### Agent
 
-An AI agent configuration. Defines the system prompt, model, and available tools.
+An AI agent configuration. Defines the system prompt, model, available tools, and scope.
 
 | Field | Type | Description |
 |---|---|---|
-| `id` | `PersonaId` (`ps-xxxx`) | Unique identifier |
+| `id` | `AgentId` (`ag-xxxx`) | Unique identifier |
 | `name` | `string` | Display name (e.g., "Engineer", "Router") |
-| `description` | `string` | What this persona does |
+| `description` | `string` | What this agent does |
 | `avatar` | `{ color: string, icon: string }` | UI display: hex color + icon name |
-| `systemPrompt` | `string` | Base system prompt for this persona |
-| `model` | `PersonaModel` | `"opus"`, `"sonnet"`, or `"haiku"` |
+| `systemPrompt` | `string` | Base system prompt for this agent |
+| `model` | `AgentModel` | `"opus"`, `"sonnet"`, or `"haiku"` |
 | `allowedTools` | `string[]` | SDK built-in tool names (e.g., "Read", "Bash") |
 | `mcpTools` | `string[]` | AgentOps MCP tool names (e.g., "post_comment") |
 | `skills` | `string[]` | SDK skill names (e.g., "commit", "review-pr") |
-| `subagents` | `string[]` | Preferred subagent persona IDs |
+| `subagents` | `string[]` | Preferred subagent agent IDs |
 | `maxBudgetPerRun` | `number` | Max cost per execution (0 = unlimited) |
-| `settings` | `PersonaSettings` | `isSystem?`, `isAssistant?`, `isRouter?`, `effort?`, `thinking?`, `thinkingBudgetTokens?` |
+| `settings` | `AgentSettings` | `isSystem?`, `isAssistant?`, `isRouter?`, `effort?`, `thinking?`, `thinkingBudgetTokens?` |
+| `scope` | `"global" \| "project"` | Whether this agent is available globally or only within its project |
+| `projectId` | `string \| null` | Owning project for project-scoped agents; `null` for global agents |
 
-**Relationships:** has many Executions, has many PersonaAssignments.
+**Agent scope:** Global agents (`scope: "global"`) are visible across all projects. Project-scoped agents (`scope: "project"`) are only visible in the project identified by `projectId`. When filtering agents by project, the API returns global agents plus any project-scoped agents belonging to that project.
+
+**Relationships:** has many Executions, has many AgentAssignments.
 
 ### Execution
 
-A single agent run — one persona executing against one work item.
+A single agent run — one agent executing against one work item.
 
 | Field | Type | Description |
 |---|---|---|
 | `id` | `ExecutionId` (`ex-xxxx`) | Unique identifier |
 | `workItemId` | `WorkItemId` | Work item being executed on |
-| `personaId` | `PersonaId` | Persona that ran |
+| `agentId` | `AgentId` | Agent that ran |
 | `status` | `ExecutionStatus` | `"pending"`, `"running"`, `"completed"`, `"failed"`, `"cancelled"` |
 | `startedAt` | `string` (ISO 8601) | When execution started |
 | `completedAt` | `string \| null` | When execution ended (null if still running) |
@@ -204,7 +214,7 @@ A single agent run — one persona executing against one work item.
 | `structuredOutput` | `Record<string, unknown> \| null` | Structured JSON output (Router decisions) |
 | `parentExecutionId` | `string \| null` | Parent execution ID (for subagent tracking) |
 
-**Relationships:** belongs to WorkItem and Persona, has many Proposals. May have parent Execution (subagent).
+**Relationships:** belongs to WorkItem and Agent, has many Proposals. May have parent Execution (subagent).
 
 #### RejectionPayload
 
@@ -228,7 +238,7 @@ Comments on work items — from agents, users, or the system.
 | `id` | `CommentId` (`cm-xxxx`) | Unique identifier |
 | `workItemId` | `WorkItemId` | Parent work item |
 | `authorType` | `CommentAuthorType` | `"agent"`, `"user"`, or `"system"` |
-| `authorId` | `PersonaId \| null` | Persona ID if agent-authored |
+| `authorId` | `AgentId \| null` | Agent ID if agent-authored |
 | `authorName` | `string` | Display name of the author |
 | `content` | `string` | Comment text (markdown) |
 | `metadata` | `Record<string, unknown>` | Additional context (e.g., state transition info) |
@@ -298,7 +308,7 @@ All entity IDs use nanoid-based short hashes with a type prefix:
 | Project | `pj-` | `pj-x7k2m` |
 | WorkItem | `wi-` | `wi-p9f3n` |
 | WorkItemEdge | `we-` | `we-a2b4c` |
-| Persona | `ps-` | `ps-r8d2j` |
+| Agent | `ag-` | `ag-r8d2j` |
 | Execution | `ex-` | `ex-m4n7q` |
 | Comment | `cm-` | `cm-h5j9k` |
 | Proposal | `pr-` | `pr-t6w3x` |

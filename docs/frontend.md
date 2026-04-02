@@ -19,7 +19,7 @@ packages/frontend/src/
     work-items/         # List view, flow view + detail panel + filter bar
     dashboard/          # Stats cards, cost chart, activity feed, upcoming work
     agent-monitor/      # Terminal renderer, split view, history, file changes, MCP status, model switcher
-    persona-manager/    # Persona cards, editor, prompt preview, skill/subagent browser
+    agent-manager/      # Agent cards, editor, prompt preview, skill/subagent browser
     settings/           # Agent config, security, costs, workflow, appearance, data management
     activity-feed/      # Chronological event stream with Router decision cards
     pico/               # Floating chat bubble, chat panel, message components
@@ -32,7 +32,7 @@ packages/frontend/src/
     work-items.tsx      # Work items page (/items) — view switcher + detail panel
     agent-monitor.tsx   # Agent monitor page (/agents)
     activity-feed.tsx   # Activity feed page (/activity)
-    persona-manager.tsx # Persona manager page (/personas)
+    agent-manager.tsx   # Agent manager page (/agents)
     settings.tsx        # Settings page (/settings)
   components/           # Shared UI components
     sidebar.tsx         # App sidebar with navigation and project switcher
@@ -43,8 +43,8 @@ packages/frontend/src/
     query-keys.ts       # Query key factory
     use-projects.ts     # Project CRUD hooks
     use-work-items.ts   # Work item + edge CRUD hooks
-    use-personas.ts     # Persona CRUD hooks
-    use-persona-assignments.ts  # Assignment hooks
+    use-agents.ts       # Agent CRUD hooks
+    use-agent-assignments.ts    # Assignment hooks
     use-comments.ts     # Comment hooks
     use-executions.ts   # Execution hooks
     use-proposals.ts    # Proposal hooks
@@ -71,7 +71,7 @@ packages/frontend/src/
 | `/items` | Work Items | Board/list/flow views with detail panel |
 | `/agents` | Agent Monitor | Live terminal output, split view, execution history |
 | `/activity` | Activity Feed | Chronological event stream |
-| `/personas` | Persona Manager | Persona cards, editor, tool config |
+| `/agents` | Agent Manager | Agent cards, editor, tool config |
 | `/settings` | Settings | API keys, costs, workflow, appearance, data |
 
 All routes are wrapped in `RootLayout` which provides the sidebar, mobile navigation, and status bar.
@@ -86,7 +86,7 @@ features/work-items/
   list-view.tsx       # Tabular list with sorting and inline editing
   flow-view.tsx       # Dependency graph visualization
   detail-panel.tsx    # Side panel showing full work item details
-  filter-bar.tsx      # Search, persona filter, label filter, sort controls
+  filter-bar.tsx      # Search, agent filter, label filter, sort controls
 ```
 
 ```
@@ -106,13 +106,13 @@ This pattern keeps imports short and features self-contained. Pages are thin wra
 
 ### Work Items Page
 
-The work items page (`/items`) offers two view modes, toggled via buttons in the header:
+The work items page (`/items`) shows a single list view:
 
-**List View** — Tabular layout with sortable columns (title, state, priority, persona, updated). Supports inline state transitions, search filtering, persona/label filtering, and click-to-select for the detail panel.
+**List View** — Tabular layout with sortable columns (title, state, priority, agent, updated). Supports inline state transitions, search filtering, agent/label filtering, and click-to-select for the detail panel.
 
-**Flow View** — Dependency graph visualization showing work items as nodes connected by edges (`blocks`, `depends_on`, `related_to`). Interactive — click nodes to open the detail panel.
+> **Note:** The flow/kanban board view for work items has been removed. The Work Items page now shows list view only.
 
-Both views share the same filter bar and detail panel. The selected view is persisted in the `work-items-store` Zustand store and synced to URL search params (`?view=list` or `?view=flow`).
+The filter bar and detail panel are shared across all views. The selected item is persisted in the `work-items-store` Zustand store.
 
 ### Detail Panel
 
@@ -161,7 +161,7 @@ The `usePicoChat` hook collects up to 3 suggestions in state (`setSuggestions`),
 
 ### Agent Monitor — Model Switching
 
-The `ModelSwitcher` component in the agent monitor persona header provides runtime model switching for long-running executions:
+The `ModelSwitcher` component in the agent monitor header provides runtime model switching for long-running executions:
 
 - **Running executions:** Shows a compact Select dropdown with available models from `GET /api/executions/:id/models`
 - **Completed executions:** Falls back to a static Badge with the model name
@@ -221,7 +221,7 @@ Client-only UI state is managed by Zustand stores, persisted to localStorage:
 
 Persisted fields: `sidebarCollapsed`, `selectedProjectId`, `theme`, `apiMode`, `density`.
 
-**`work-items-store.ts`:** View mode (`list`/`flow`), search query, sort direction, filter personas, filter labels, selected item ID, detail panel width.
+**`work-items-store.ts`:** Search query, sort direction, filter agents, filter labels, selected item ID, detail panel width.
 
 **`toast-store.ts`:** Toast notification queue with auto-dismiss.
 
@@ -233,15 +233,15 @@ Persisted fields: `sidebarCollapsed`, `selectedProjectId`, `theme`, `apiMode`, `
 
 Defined in `index.css` via Tailwind v4 `@theme` blocks:
 
-**Persona colors** (used for avatar backgrounds and badges):
+**Agent colors** (used for avatar backgrounds and badges):
 
-| Token | Color | Persona |
+| Token | Color | Agent |
 |---|---|---|
-| `--color-persona-pm` | `#7c3aed` (purple) | Product Manager |
-| `--color-persona-tech-lead` | `#2563eb` (blue) | Tech Lead |
-| `--color-persona-engineer` | `#059669` (green) | Engineer |
-| `--color-persona-reviewer` | `#d97706` (amber) | Code Reviewer |
-| `--color-persona-qa` | `#dc2626` (red) | QA |
+| `--color-agent-pm` | `#7c3aed` (purple) | Product Manager |
+| `--color-agent-tech-lead` | `#2563eb` (blue) | Tech Lead |
+| `--color-agent-engineer` | `#059669` (green) | Engineer |
+| `--color-agent-reviewer` | `#d97706` (amber) | Code Reviewer |
+| `--color-agent-qa` | `#dc2626` (red) | QA |
 
 **Status colors:**
 

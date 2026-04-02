@@ -372,33 +372,41 @@ export function ChatPage() {
           const color = avatar?.color ?? "#6b7280";
           const HeaderIcon = getIcon(avatar?.icon ?? "bot");
           const isEditingHeader = editingSessionId === cs.id;
+          const agentName = cs.agent?.name ?? "Pico";
+          const projectName = cs.projectId
+            ? (projectNameMap.get(cs.projectId) ?? cs.projectId)
+            : "Global";
 
           return (
-            <div className="flex items-center gap-3 border-b border-border px-4 py-2.5 bg-card shrink-0">
-              {/* Agent avatar + name */}
-              <div
-                className="h-7 w-7 rounded-full flex items-center justify-center shrink-0"
-                style={{ backgroundColor: color + "20" }}
-              >
-                <HeaderIcon className="h-4 w-4" style={{ color }} />
+            <div
+              className="flex items-center gap-3 border-b border-border px-4 py-3 bg-card shrink-0"
+              style={{ borderBottomColor: color + "40" }}
+            >
+              {/* Agent identity block — dominant left element */}
+              <div className="flex items-center gap-3 shrink-0">
+                {/* Avatar — larger, colored background */}
+                <div
+                  className="h-10 w-10 rounded-full flex items-center justify-center shrink-0 shadow-sm"
+                  style={{ backgroundColor: color + "22", boxShadow: `0 0 0 2px ${color}33` }}
+                >
+                  <HeaderIcon className="h-5 w-5" style={{ color }} />
+                </div>
+                {/* Agent name + project */}
+                <div className="flex flex-col min-w-0">
+                  <span className="text-base font-semibold leading-tight text-foreground">
+                    {agentName}
+                  </span>
+                  <span className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                    {cs.projectId ? null : <Globe className="h-3 w-3 shrink-0" />}
+                    {projectName}
+                  </span>
+                </div>
               </div>
-              <span className="text-sm font-medium text-muted-foreground shrink-0">
-                {cs.agent?.name ?? "Pico"}
-              </span>
 
               {/* Divider */}
-              <div className="h-4 w-px bg-border shrink-0" />
+              <div className="h-8 w-px bg-border shrink-0" />
 
-              {/* Project badge */}
-              <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0 flex items-center gap-1">
-                {cs.projectId ? (
-                  <>{projectNameMap.get(cs.projectId) ?? cs.projectId}</>
-                ) : (
-                  <><Globe className="h-3 w-3" /> Global</>
-                )}
-              </span>
-
-              {/* Editable session title */}
+              {/* Editable session title — center region */}
               <div className="flex-1 min-w-0">
                 {isEditingHeader ? (
                   <input
@@ -410,17 +418,21 @@ export function ChatPage() {
                       if (e.key === "Escape") setEditingSessionId(null);
                     }}
                     autoFocus
-                    className="w-full rounded border border-input bg-transparent px-2 py-0.5 text-sm outline-none focus-visible:border-ring"
+                    className="w-full rounded border border-input bg-transparent px-2 py-1 text-sm outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring"
                     maxLength={100}
                   />
                 ) : (
-                  <span
-                    className="block truncate text-sm cursor-pointer hover:text-foreground text-muted-foreground"
-                    onDoubleClick={() => startRename(cs.id, cs.title)}
-                    title="Double-click to rename"
+                  <button
+                    type="button"
+                    onClick={() => startRename(cs.id, cs.title)}
+                    className="flex items-center gap-1.5 group text-left w-full min-w-0"
+                    title="Click to rename"
                   >
-                    {cs.title}
-                  </span>
+                    <span className="block truncate text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                      {cs.title}
+                    </span>
+                    <Pencil className="h-3 w-3 text-muted-foreground/0 group-hover:text-muted-foreground/60 transition-colors shrink-0" />
+                  </button>
                 )}
               </div>
 
@@ -429,36 +441,44 @@ export function ChatPage() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-7 w-7"
+                  className="h-8 w-8"
                   onClick={() => setShowHeaderMenu(!showHeaderMenu)}
                 >
                   <MoreVertical className="h-4 w-4" />
                 </Button>
                 {showHeaderMenu && (
-                  <div className="absolute right-0 top-full mt-1 bg-popover border border-border rounded-md shadow-lg z-10 py-1 w-36">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowHeaderMenu(false);
-                        startRename(cs.id, cs.title);
-                      }}
-                      className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-muted"
-                    >
-                      <Pencil className="h-3 w-3" />
-                      Rename
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowHeaderMenu(false);
-                        deleteSession(cs.id as ChatSessionId);
-                      }}
-                      className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs text-red-400 hover:bg-red-500/10"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                      Delete session
-                    </button>
-                  </div>
+                  <>
+                    {/* Backdrop to close menu */}
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setShowHeaderMenu(false)}
+                    />
+                    <div className="absolute right-0 top-full mt-1 bg-popover border border-border rounded-md shadow-lg z-20 py-1 w-40">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowHeaderMenu(false);
+                          startRename(cs.id, cs.title);
+                        }}
+                        className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors"
+                      >
+                        <Pencil className="h-3 w-3" />
+                        Rename session
+                      </button>
+                      <div className="h-px bg-border mx-1 my-1" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowHeaderMenu(false);
+                          setDeleteConfirmId(cs.id);
+                        }}
+                        className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs text-red-400 hover:bg-red-500/10 transition-colors"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        Delete session
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
             </div>

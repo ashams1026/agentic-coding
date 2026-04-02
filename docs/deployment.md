@@ -263,7 +263,7 @@ Override via env: `AGENTOPS_DB_PATH=/path/to/agentops.db`
 - **Engine**: SQLite with WAL (Write-Ahead Logging) mode and foreign keys enabled
 - **Driver**: better-sqlite3
 - **ORM**: Drizzle ORM with type-safe schema
-- **Tables**: 9 (projects, work_items, work_item_edges, personas, persona_assignments, executions, comments, proposals, project_memories)
+- **Tables**: 9 (projects, work_items, work_item_edges, agents, agent_assignments, executions, comments, proposals, project_memories)
 - **Migrations**: run automatically on startup via `runMigrations()`
 
 ### Backup Strategy
@@ -278,7 +278,7 @@ cp ~/.agentops/data/agentops.db ~/.agentops/data/agentops.db.bak
 curl http://localhost:3001/api/settings/export > agentops-settings.json
 ```
 
-The export endpoint (`GET /api/settings/export`) dumps projects, personas, and persona assignments as JSON. Import with `POST /api/settings/import`.
+The export endpoint (`GET /api/settings/export`) dumps projects, agents, and agent assignments as JSON. Import with `POST /api/settings/import`.
 
 ### Cleanup
 
@@ -309,7 +309,7 @@ Or via the UI: **Settings > Data > Clear Execution History**.
 # Start both frontend and backend (uses scripts/dev.sh with port-check)
 pnpm dev
 
-# Seed demo data (3 projects, 14 work items, personas, executions)
+# Seed demo data (3 projects, 14 work items, agents, executions)
 pnpm db:seed-demo
 
 # Reset development database

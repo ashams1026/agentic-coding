@@ -1,43 +1,55 @@
-# Agent Personas (Deprecated)
+# Agents
 
-> **This document has been superseded by [agents.md](agents.md).** The "persona" concept has been renamed to "agent" throughout the codebase and documentation. See [agents.md](agents.md) for current documentation.
+Agents are the AI agent configurations in AgentOps. Each agent defines a system prompt, model, tool access, budget, and scope — shaping an agent's behavior for a specific role in the workflow.
 
----
+## What Is an Agent?
 
-Personas are the AI agent configurations in AgentOps. Each persona defines a system prompt, model, tool access, and budget — shaping an agent's behavior for a specific role in the workflow.
-
-## What Is a Persona?
-
-A persona is a reusable agent configuration stored in the database. When a work item enters a workflow state, the persona assigned to that state is dispatched to work on it.
+An agent is a reusable agent configuration stored in the database. When a work item enters a workflow state, the agent assigned to that state is dispatched to work on it.
 
 ```typescript
-interface Persona {
-  id: PersonaId;           // "ps-xxxx" prefixed ID
-  name: string;            // Display name (e.g., "Engineer")
-  description: string;     // What this persona does
+interface Agent {
+  id: AgentId;            // "ag-xxxx" prefixed ID
+  name: string;           // Display name (e.g., "Engineer")
+  description: string;    // What this agent does
   avatar: {
-    color: string;         // Hex color for UI display
-    icon: string;          // Lucide icon name
+    color: string;        // Hex color for UI display
+    icon: string;         // Lucide icon name
   };
-  systemPrompt: string;    // Base system prompt
-  model: PersonaModel;     // "opus", "sonnet", or "haiku"
-  allowedTools: string[];  // Claude Code tools this persona can use
-  mcpTools: string[];      // AgentOps MCP tools (post_comment, etc.)
+  systemPrompt: string;   // Base system prompt
+  model: AgentModel;      // "opus", "sonnet", or "haiku"
+  allowedTools: string[]; // Claude Code tools this agent can use
+  mcpTools: string[];     // AgentOps MCP tools (post_comment, etc.)
   maxBudgetPerRun: number; // Max API cost per execution in USD (0 = unlimited)
-  settings: Record<string, unknown>; // Freeform settings
+  settings: AgentSettings; // isSystem?, isAssistant?, isRouter?, effort?, thinking?
+  scope: "global" | "project"; // Visibility scope
+  projectId: string | null; // Non-null only when scope === "project"
 }
 ```
 
-## Built-In Personas
+## Agent Scope
 
-AgentOps ships with 5 built-in personas, seeded on first run. Each is optimized for a specific workflow stage.
+Agents have a `scope` field that controls their visibility:
+
+| Scope | Description | `projectId` |
+|---|---|---|
+| `"global"` | Visible across all projects | `null` |
+| `"project"` | Only visible within the specified project | Set to owning project ID |
+
+When filtering agents for a project, the API returns all global agents **plus** any project-scoped agents that belong to that project. Use `GET /api/agents?projectId=pj-xxxx` to retrieve this merged list.
+
+Built-in agents (Product Manager, Tech Lead, Engineer, Code Reviewer, Router, Pico) are always global.
+
+## Built-In Agents
+
+AgentOps ships with 5 built-in agents, seeded on first run. Each is optimized for a specific workflow stage.
 
 ### Product Manager
 
 | Field | Value |
 |---|---|
-| **ID** | `ps-pm00001` |
+| **ID** | `ag-pm00001` |
 | **Model** | Sonnet |
+| **Scope** | Global |
 | **Avatar** | Purple (`#7c3aed`), `clipboard-list` icon |
 | **Budget** | $50/run |
 | **Workflow State** | Planning |
@@ -56,8 +68,9 @@ AgentOps ships with 5 built-in personas, seeded on first run. Each is optimized 
 
 | Field | Value |
 |---|---|
-| **ID** | `ps-tl00001` |
+| **ID** | `ag-tl00001` |
 | **Model** | Opus |
+| **Scope** | Global |
 | **Avatar** | Blue (`#2563eb`), `git-branch` icon |
 | **Budget** | $100/run |
 | **Workflow State** | Decomposition |
@@ -77,8 +90,9 @@ AgentOps ships with 5 built-in personas, seeded on first run. Each is optimized 
 
 | Field | Value |
 |---|---|
-| **ID** | `ps-en00001` |
+| **ID** | `ag-en00001` |
 | **Model** | Sonnet |
+| **Scope** | Global |
 | **Avatar** | Green (`#059669`), `code` icon |
 | **Budget** | $200/run |
 | **Workflow State** | In Progress |
@@ -99,8 +113,9 @@ AgentOps ships with 5 built-in personas, seeded on first run. Each is optimized 
 
 | Field | Value |
 |---|---|
-| **ID** | `ps-rv00001` |
+| **ID** | `ag-rv00001` |
 | **Model** | Sonnet |
+| **Scope** | Global |
 | **Avatar** | Amber (`#d97706`), `eye` icon |
 | **Budget** | $50/run |
 | **Workflow State** | In Review |
@@ -124,15 +139,16 @@ If issues are found: rejects with specific, actionable feedback (file names, lin
 
 | Field | Value |
 |---|---|
-| **ID** | `ps-rt00001` |
+| **ID** | `ag-rt00001` |
 | **Model** | Haiku |
+| **Scope** | Global |
 | **Avatar** | Indigo (`#6366f1`), `route` icon |
 | **Budget** | $10/run |
-| **Workflow State** | *(automatic — fires after every persona completion)* |
+| **Workflow State** | *(automatic — fires after every agent completion when `workflow.autoRouting === true`)* |
 | **Claude Tools** | *(none)* |
 | **MCP Tools** | `list_items`, `get_context`, `route_to_state` |
 
-**Role:** A special system persona that decides the next workflow state after any other persona completes execution. Uses read-only tools to understand context, then transitions the work item.
+**Role:** A special system agent that decides the next workflow state after any other agent completes execution. Uses read-only tools to understand context, then transitions the work item.
 
 **Routing guidelines:**
 - After Planning → "Decomposition" or "Ready" (if no decomposition needed)
@@ -143,42 +159,44 @@ If issues are found: rejects with specific, actionable feedback (file names, lin
 - All children Done → route parent to "In Review"
 - Unresolvable issues → "Blocked"
 
-The Router is a **system persona** (`settings: { isSystem: true, isRouter: true }`). The `isRouter` flag enables structured output — the SDK returns a JSON object with `{ nextState, reasoning, confidence }` instead of free-text. This is stored in the `structuredOutput` column and rendered as a Router Decision Card in the UI (color-coded state badge, confidence dot, reasoning text). The Router is created lazily on first use by `getOrCreateRouterPersona()` in `router.ts`, or seeded with the other built-in personas. It uses the Haiku model for cost efficiency since routing decisions are lightweight.
+The Router is a **system agent** (`settings: { isSystem: true, isRouter: true }`). The `isRouter` flag enables structured output — the SDK returns a JSON object with `{ nextState, reasoning, confidence }` instead of free-text. This is stored in the `structuredOutput` column and rendered as a Router Decision Card in the UI (color-coded state badge, confidence dot, reasoning text). The Router is created lazily on first use by `getOrCreateRouterAgent()` in `router.ts`, or seeded with the other built-in agents. It uses the Haiku model for cost efficiency since routing decisions are lightweight.
 
 ### Pico (Project Assistant)
 
 | Field | Value |
 |---|---|
-| **ID** | `ps-pico` |
+| **ID** | `ag-pico` |
 | **Model** | Sonnet |
+| **Scope** | Global |
 | **Avatar** | Amber (`#f59e0b`), `dog` icon |
 | **Budget** | $5/run |
 | **Workflow State** | *(none — chat assistant, not workflow)* |
 | **Claude Tools** | *(none)* |
 | **MCP Tools** | `list_items`, `get_context`, `post_comment` |
 
-**Role:** A conversational project assistant accessible via the floating chat bubble (bottom-right). Answers questions about the project, codebase, workflow, and personas. Has access to project knowledge via a custom skill (`pico-skill.md`).
+**Role:** A conversational project assistant accessible via the floating chat bubble (bottom-right). Answers questions about the project, codebase, workflow, and agents. Has access to project knowledge via a custom skill (`pico-skill.md`).
 
-Pico is a **system persona** (`settings: { isSystem: true, isAssistant: true }`). It is non-editable and non-deletable in the persona manager UI. Chat sessions are stored in `chat_sessions`/`chat_messages` tables.
+Pico is a **system agent** (`settings: { isSystem: true, isAssistant: true }`). It is non-editable and non-deletable in the Agent Manager UI. Chat sessions are stored in `chat_sessions`/`chat_messages` tables.
 
-## Creating and Editing Custom Personas
+## Creating and Editing Custom Agents
 
-Custom personas are managed through the **Persona Manager** UI or the REST API.
+Custom agents are managed through the **Agent Manager** UI or the REST API.
 
 ### Via the UI
 
-Navigate to **Personas** in the sidebar. From there you can:
+Navigate to **Agents** in the sidebar. From there you can:
 
-1. **Create** — Click "New Persona", fill in name, description, model, system prompt, and tool selections
-2. **Edit** — Click any persona card to open the editor
+1. **Create** — Click "New Agent", fill in name, description, model, system prompt, and tool selections
+2. **Edit** — Click any agent card to open the editor
 3. **Configure tools** — Select which Claude Code tools and MCP tools are available
 4. **Set budget** — Define max cost per execution run
+5. **Set scope** — Choose global or project-scoped visibility
 
 ### Via the API
 
 ```bash
-# Create a persona
-curl -X POST http://localhost:3001/api/personas \
+# Create a global agent
+curl -X POST http://localhost:3001/api/agents \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Security Auditor",
@@ -188,39 +206,53 @@ curl -X POST http://localhost:3001/api/personas \
     "model": "sonnet",
     "allowedTools": ["Read", "Glob", "Grep", "Bash"],
     "mcpTools": ["post_comment", "flag_blocked"],
-    "maxBudgetPerRun": 50
+    "maxBudgetPerRun": 50,
+    "scope": "global"
   }'
 
-# Update a persona
-curl -X PATCH http://localhost:3001/api/personas/ps-xxxx \
+# Create a project-scoped agent
+curl -X POST http://localhost:3001/api/agents \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Mobile Engineer",
+    "systemPrompt": "You are a mobile engineer...",
+    "model": "sonnet",
+    "scope": "project",
+    "projectId": "pj-xxxx"
+  }'
+
+# Update an agent
+curl -X PATCH http://localhost:3001/api/agents/ag-xxxx \
   -H "Content-Type: application/json" \
   -d '{ "systemPrompt": "Updated prompt..." }'
 ```
 
 ### Assigning to Workflow States
 
-After creating a persona, assign it to a workflow state for a project in **Settings > Workflow > Persona Assignments**:
+After creating an agent, assign it to a workflow state for a project in **Settings > Workflow > Agent Assignments**:
 
 ```bash
-curl -X PUT http://localhost:3001/api/persona-assignments \
+curl -X PUT http://localhost:3001/api/agent-assignments \
   -H "Content-Type: application/json" \
   -d '{
     "projectId": "pj-xxxx",
     "stateName": "In Progress",
-    "personaId": "ps-xxxx"
+    "agentId": "ag-xxxx"
   }'
 ```
 
-Each state can have **one persona per project**. The assignment is stored as a composite key `(projectId, stateName)`.
+Each state can have **one agent per project**. The assignment is stored as a composite key `(projectId, stateName)`.
+
+For label-based routing within a state, configure `agentOverrides` directly in the **Workflow Builder** — these take priority over both the state default and assignment table.
 
 ## System Prompt Layering
 
-When a persona is dispatched, the Claude Agent SDK receives a 4-layer system prompt assembled by `buildSystemPrompt()` in `claude-executor.ts`:
+When an agent is dispatched, the Claude Agent SDK receives a 4-layer system prompt assembled by `buildSystemPrompt()` in `claude-executor.ts`:
 
 ```
 ┌─────────────────────────────────────────┐
-│ (1) Persona Identity                    │
-│     The persona's systemPrompt field    │
+│ (1) Agent Identity                      │
+│     The agent's systemPrompt field      │
 │     — role, responsibilities, tools     │
 ├─────────────────────────────────────────┤
 │ (2) Project Context                     │
@@ -242,7 +274,7 @@ When a persona is dispatched, the Claude Agent SDK receives a 4-layer system pro
 
 ### Layer Details
 
-**Layer 1 — Persona Identity:** The raw `systemPrompt` from the persona record. Defines the agent's role, responsibilities, and behavioral guidelines.
+**Layer 1 — Agent Identity:** The raw `systemPrompt` from the agent record. Defines the agent's role, responsibilities, and behavioral guidelines.
 
 **Layer 2 — Project Context:** Injected automatically from the project record:
 - `Project: {name}` and `Working directory: {path}`
@@ -259,9 +291,9 @@ When a persona is dispatched, the Claude Agent SDK receives a 4-layer system pro
 
 This layering ensures every agent has full context without requiring manual briefing.
 
-## Per-Persona MCP Tool Allowlists
+## Per-Agent MCP Tool Allowlists
 
-Each persona has two tool lists that control what it can do:
+Each agent has two tool lists that control what it can do:
 
 ### `allowedTools` — Claude Code Tools
 
@@ -269,18 +301,18 @@ These are the standard Claude Code tools the agent can use during execution:
 
 | Tool | Description | Typical Users |
 |---|---|---|
-| `Read` | Read files from the filesystem | All personas |
+| `Read` | Read files from the filesystem | All agents |
 | `Edit` | Edit existing files | Engineer |
 | `Write` | Create new files | Engineer |
-| `Glob` | Find files by pattern | All personas |
-| `Grep` | Search file contents | All personas |
+| `Glob` | Find files by pattern | All agents |
+| `Grep` | Search file contents | All agents |
 | `Bash` | Run shell commands | Tech Lead, Engineer, Code Reviewer |
 | `WebSearch` | Search the web | Product Manager, Tech Lead |
 | `WebFetch` | Fetch web pages | Engineer |
 
 ### `mcpTools` — AgentOps MCP Tools
 
-These are the 7 tools provided by the AgentOps MCP server (see [MCP Tools](mcp-tools.md)):
+These are the tools provided by the AgentOps MCP server (see [MCP Tools](mcp-tools.md)):
 
 | Tool | Description | Used By |
 |---|---|---|
@@ -292,23 +324,23 @@ These are the 7 tools provided by the AgentOps MCP server (see [MCP Tools](mcp-t
 | `flag_blocked` | Mark a work item as Blocked | Engineer |
 | `request_review` | Flag a work item for human review | Tech Lead, Reviewer |
 
-**Enforcement:** Tool access is controlled by passing the `ALLOWED_TOOLS` environment variable to the MCP server process. The persona's `allowedTools` array is joined with commas and passed via `SpawnOptions.tools`. An empty list means all tools are available.
+**Enforcement:** Tool access is controlled by passing the `ALLOWED_TOOLS` environment variable to the MCP server process. The agent's `allowedTools` array is joined with commas and passed via `SpawnOptions.tools`. An empty list means all tools are available.
 
-## Personas as Subagents
+## Agents as Subagents
 
-All project personas are registered as SDK subagents in every execution. This means any persona can invoke another persona as a subagent using the SDK's `Agent` tool.
+All project agents are registered as SDK subagents in every execution. This means any agent can invoke another agent as a subagent using the SDK's `Agent` tool.
 
 ### How It Works
 
-When an execution starts, `ClaudeExecutor.spawn()` maps all personas to `AgentDefinition` entries and passes them via the `agents` option in `query()`. The primary persona runs the execution (30 max turns, full system prompt with work item context). All other personas are available as subagents (15 max turns, their own system prompt).
+When an execution starts, `ClaudeExecutor.spawn()` maps all agents to `AgentDefinition` entries and passes them via the `agents` option in `query()`. The primary agent runs the execution (30 max turns, full system prompt with work item context). All other agents are available as subagents (15 max turns, their own system prompt).
 
 ### Example
 
-The Engineer persona, while implementing a feature, can spawn the Code Reviewer as a subagent for a quick pre-commit review:
+The Engineer agent, while implementing a feature, can spawn the Code Reviewer as a subagent for a quick pre-commit review:
 
 ```
 Engineer: "Let me get a quick review before committing..."
-→ Agent tool invokes Code Reviewer (persona ID)
+→ Agent tool invokes Code Reviewer (agent ID)
 → Code Reviewer runs with its own tools, model, and review prompt
 → Returns feedback to Engineer
 → Engineer incorporates feedback and continues
@@ -316,7 +348,7 @@ Engineer: "Let me get a quick review before committing..."
 
 ### Configuration
 
-The `subagents` field on the Persona entity stores preferred subagent persona IDs. However, all personas are available regardless — the `subagents` field is informational, not restrictive.
+The `subagents` field on the Agent entity stores preferred subagent agent IDs. However, all agents are available regardless — the `subagents` field is informational, not restrictive.
 
 ### Tracking
 
@@ -326,7 +358,7 @@ The `subagents` field on the Persona entity stores preferred subagent persona ID
 
 ## Effort & Thinking Configuration
 
-Each persona can be configured with an **effort level** and **thinking mode** that control how much reasoning Claude applies during execution. These are set in `persona.settings` and passed to the SDK's `query()` options.
+Each agent can be configured with an **effort level** and **thinking mode** that control how much reasoning Claude applies during execution. These are set in `agent.settings` and passed to the SDK's `query()` options.
 
 ### Effort Levels
 
@@ -347,7 +379,7 @@ Each persona can be configured with an **effort level** and **thinking mode** th
 
 ### Recommended Defaults
 
-| Persona | Effort | Thinking | Rationale |
+| Agent | Effort | Thinking | Rationale |
 |---|---|---|---|
 | Product Manager | `medium` | `adaptive` | AC writing doesn't need deep reasoning |
 | Tech Lead | `high` | `adaptive` | Decomposition benefits from thorough analysis |
@@ -358,19 +390,19 @@ Each persona can be configured with an **effort level** and **thinking mode** th
 
 ### Configuring in the UI
 
-In the **Persona Manager**, click a persona and select **Edit**. The "Effort & Thinking" section appears below Budget with two dropdowns:
+In the **Agent Manager**, click an agent and select **Edit**. The "Effort & Thinking" section appears below Budget with two dropdowns:
 - **Effort Level** — low/medium/high/max with descriptions
 - **Thinking Mode** — adaptive/enabled/disabled with descriptions
 
-Values are saved to `persona.settings` and merged with existing settings (system flags like `isSystem` and `isRouter` are preserved).
+Values are saved to `agent.settings` and merged with existing settings (system flags like `isSystem` and `isRouter` are preserved).
 
-## The Router as a Special Persona
+## The Router as a Special Agent
 
-The Router differs from other personas in several ways:
+The Router differs from other agents in several ways:
 
-| Aspect | Regular Personas | Router |
+| Aspect | Regular Agents | Router |
 |---|---|---|
-| **Trigger** | Dispatched when a work item enters their assigned state | Automatically called after any persona completes |
+| **Trigger** | Dispatched when a work item enters their assigned state | Automatically called after any agent completes (when `workflow.autoRouting === true`) |
 | **Model** | Sonnet or Opus | Haiku (cost-efficient) |
 | **Claude tools** | Read, Edit, Write, etc. | None |
 | **MCP tools** | Various | Only `list_items`, `get_context`, `route_to_state` |
@@ -378,15 +410,15 @@ The Router differs from other personas in several ways:
 | **Settings** | `{}` | `{ isSystem: true, isRouter: true }` |
 | **Output format** | Free text | Structured JSON: `{ nextState, reasoning, confidence }` |
 | **Creation** | Manual or seeded | Lazy-created on first auto-routing use |
-| **Visible in UI** | Yes, in Persona Manager | Yes, but marked as system persona |
+| **Visible in UI** | Yes, in Agent Manager | Yes, but marked as system agent |
 
-The Router is auto-created by `getOrCreateRouterPersona()` in `router.ts` if it doesn't exist. It can also be pre-seeded. Auto-routing can be toggled on/off per project in Settings.
+The Router is auto-created by `getOrCreateRouterAgent()` in `router.ts` if it doesn't exist. It can also be pre-seeded. Auto-routing is controlled per-workflow via `workflow.autoRouting` (not per-project settings).
 
 ## Evaluated Future Capabilities
 
 ### Plugin-Based Skills
 
-The SDK supports a plugin system for extending persona capabilities with custom commands, agents, MCP servers, and hooks. Local plugins work now:
+The SDK supports a plugin system for extending agent capabilities with custom commands, agents, MCP servers, and hooks. Local plugins work now:
 
 ```typescript
 query({ prompt, options: {
@@ -394,19 +426,19 @@ query({ prompt, options: {
 }});
 ```
 
-Marketplace plugins are settings-based via `enabledPlugins` and `extraKnownMarketplaces`. This enables community-built persona skills installable from registries. See [plugin system spike](spikes/plugin-system.md).
+Marketplace plugins are settings-based via `enabledPlugins` and `extraKnownMarketplaces`. This enables community-built agent skills installable from registries. See [plugin system spike](spikes/plugin-system.md).
 
-### Worktree Isolation for Concurrent Personas
+### Worktree Isolation for Concurrent Agents
 
-When multiple personas run concurrently (e.g., two Engineers on sibling tasks), the SDK's `isolation: "worktree"` parameter on Agent spawning gives each persona an independent git worktree. The SDK manages creation and cleanup automatically. Not needed yet — AgentOps currently runs personas sequentially. See [worktree isolation spike](spikes/worktree-isolation.md).
+When multiple agents run concurrently (e.g., two Engineers on sibling tasks), the SDK's `isolation: "worktree"` parameter on Agent spawning gives each agent an independent git worktree. The SDK manages creation and cleanup automatically. Not needed yet — AgentOps currently runs agents sequentially. See [worktree isolation spike](spikes/worktree-isolation.md).
 
 ## Source Files
 
 | File | Purpose |
 |---|---|
-| `packages/shared/src/entities.ts` | `Persona` interface, `PersonaModel` type |
-| `packages/backend/src/db/seed.ts` | 5 built-in persona definitions with system prompts |
+| `packages/shared/src/entities.ts` | `Agent` interface, `AgentModel` type |
+| `packages/backend/src/db/seed.ts` | 5 built-in agent definitions with system prompts |
 | `packages/backend/src/agent/claude-executor.ts` | `buildSystemPrompt()` — 4-layer prompt assembly |
-| `packages/backend/src/agent/router.ts` | Router persona creation, routing logic |
-| `packages/backend/src/agent/mcp-server.ts` | MCP server with 7 tools, per-persona tool filtering |
-| `packages/backend/src/db/schema.ts` | Drizzle schema for `personas` table |
+| `packages/backend/src/agent/router.ts` | Router agent creation, routing logic |
+| `packages/backend/src/agent/mcp-server.ts` | MCP server with 7 tools, per-agent tool filtering |
+| `packages/backend/src/db/schema.ts` | Drizzle schema for `agents` table |

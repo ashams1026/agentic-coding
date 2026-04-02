@@ -1,6 +1,6 @@
 # MCP Tools
 
-AgentOps provides an MCP (Model Context Protocol) server that gives AI agent personas tools to interact with the system — posting comments, creating child work items, transitioning states, querying data, and flagging issues.
+AgentOps provides an MCP (Model Context Protocol) server that gives AI agents tools to interact with the system — posting comments, creating child work items, transitioning states, querying data, and flagging issues.
 
 ## Overview
 
@@ -19,7 +19,7 @@ The MCP server is defined in `packages/backend/src/agent/mcp-server.ts` and regi
 
 ## How the MCP Server Attaches to Agent Sessions
 
-When a persona is dispatched via `ClaudeExecutor.spawn()`, the MCP server is launched as a child process and connected to the Claude Agent SDK session:
+When an agent is dispatched via `ClaudeExecutor.spawn()`, the MCP server is launched as a child process and connected to the Claude Agent SDK session:
 
 ```typescript
 mcpServers: {
@@ -27,8 +27,8 @@ mcpServers: {
     command: "node",
     args: ["--import", "tsx", "mcp-server.ts"],
     env: {
-      PERSONA_NAME: persona.name,
-      PERSONA_ID: persona.id,
+      AGENT_NAME: agent.name,
+      AGENT_ID: agent.id,
       PROJECT_ID: project.id,
       ALLOWED_TOOLS: options.tools.join(","),
     },
@@ -40,10 +40,10 @@ mcpServers: {
 
 | Variable | Purpose |
 |---|---|
-| `PERSONA_NAME` | Used as the comment author name |
-| `PERSONA_ID` | Identifies the persona in DB records |
+| `AGENT_NAME` | Used as the comment author name |
+| `AGENT_ID` | Identifies the agent in DB records |
 | `PROJECT_ID` | Scopes `list_items` queries to the project |
-| `ALLOWED_TOOLS` | Comma-separated tool names this persona can use (empty = all) |
+| `ALLOWED_TOOLS` | Comma-separated tool names this agent can use (empty = all) |
 
 The MCP server runs as a standalone process using **stdio transport** (`StdioServerTransport`). It connects directly to the database and broadcasts WebSocket events for real-time UI updates.
 
@@ -51,8 +51,8 @@ The MCP server runs as a standalone process using **stdio transport** (`StdioSer
 
 ```typescript
 interface McpContext {
-  personaName: string;    // comment author
-  personaId: string;      // persona ID for DB records
+  agentName: string;      // comment author
+  agentId: string;        // agent ID for DB records
   projectId: string;      // scopes queries
   allowedTools: string[]; // tool access control (empty = all)
 }
@@ -84,7 +84,7 @@ z.object({
 - Inserts a comment record with `authorType: "agent"`
 - Broadcasts `comment_created` WebSocket event
 
-**Persona access:** Product Manager, Tech Lead, Engineer, Code Reviewer
+**Agent access:** Product Manager, Tech Lead, Engineer, Code Reviewer
 
 **Example usage:**
 ```
@@ -129,7 +129,7 @@ z.object({
 - Broadcasts `state_change` event for each new child
 - Looks up parent's `projectId` to assign to children
 
-**Persona access:** Tech Lead
+**Agent access:** Tech Lead
 
 **Example usage:**
 ```
@@ -180,7 +180,7 @@ z.object({
 - Work item not found → error response
 - Invalid transition → error response with message `"Invalid transition from X to Y"`
 
-**Persona access:** Router
+**Agent access:** Router
 
 **Example usage:**
 ```
@@ -229,7 +229,7 @@ z.object({
 
 **Side effects:** None (read-only).
 
-**Persona access:** Router
+**Agent access:** Router
 
 **Example usage:**
 ```
@@ -272,7 +272,7 @@ z.object({
 
 **Side effects:** None (read-only). When `includeMemory` is true, calls `getRecentMemories()` with a 1000-token budget.
 
-**Persona access:** Router
+**Agent access:** Router
 
 **Example usage:**
 ```
@@ -310,7 +310,7 @@ z.object({
 - Logs audit trail entry
 - Triggers `checkParentCoordination()` — posts a notification comment on the parent
 
-**Persona access:** Engineer
+**Agent access:** Engineer
 
 **Example usage:**
 ```
@@ -344,7 +344,7 @@ z.object({
 - Posts a system comment: `"Review requested: {message}"`
 - Broadcasts `comment_created` WebSocket event
 
-**Persona access:** Tech Lead, Code Reviewer
+**Agent access:** Tech Lead, Code Reviewer
 
 **Example usage:**
 ```
@@ -382,7 +382,7 @@ Reverts all file changes from a specific execution back to their pre-execution s
 5. Router sends item back to In Progress
 ```
 
-## Tool Access by Persona
+## Tool Access by Agent
 
 | Tool | Product Manager | Tech Lead | Engineer | Code Reviewer | Router |
 |---|---|---|---|---|---|
@@ -465,4 +465,4 @@ Active query references are stored in a module-level `runningQueries` Map in `cl
 | `packages/backend/src/agent/coordination.ts` | `checkParentCoordination()` called by `route_to_state` and `flag_blocked` |
 | `packages/backend/src/agent/memory.ts` | `getRecentMemories()` called by `get_context`, `checkMemoryGeneration()` called by `route_to_state` |
 | `packages/backend/src/agent/execution-manager.ts` | `handleRejection()` called by `route_to_state` for rejection detection |
-| `packages/backend/src/db/seed.ts` | Built-in persona MCP tool assignments |
+| `packages/backend/src/db/seed.ts` | Built-in agent MCP tool assignments |

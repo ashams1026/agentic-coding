@@ -59,11 +59,11 @@ Shared TypeScript types and constants imported by both frontend and backend.
 
 | File | Contents |
 |---|---|
-| `entities.ts` | Entity interfaces: `WorkItem`, `Persona`, `Execution`, `Comment`, `Proposal`, `ProjectMemory`, `WorkItemEdge`, `Project` |
+| `entities.ts` | Entity interfaces: `WorkItem`, `Agent`, `Execution`, `Comment`, `Proposal`, `ProjectMemory`, `WorkItemEdge`, `Project` |
 | `api.ts` | API response types: `DashboardStats`, `CostSummary`, `ExecutionStats`, `ReadyWorkItem` |
 | `workflow.ts` | `WORKFLOW` constant — 8 states with colors and transition map, validation helpers |
 | `ws-events.ts` | `WsEvent` union type — 9 event types for real-time updates |
-| `ids.ts` | `createId` factory — nanoid-based with type prefixes (`pj-`, `wi-`, `ps-`, `ex-`, etc.) |
+| `ids.ts` | `createId` factory — nanoid-based with type prefixes (`pj-`, `wi-`, `ag-`, `ex-`, etc.) |
 
 ### `packages/frontend`
 
@@ -103,7 +103,7 @@ Fastify HTTP server with SQLite storage and agent execution engine.
 | `logger.ts` | Structured logging — pino with dev pretty-print, prod file rotation |
 | `audit.ts` | Audit trail — state transitions, dispatches, completions, costs, tool use, session lifecycle |
 | `ws.ts` | WebSocket — `broadcast()` to all connected clients |
-| `routes/` | REST API routes — projects, work-items, personas, executions, comments, proposals, dashboard, settings, audit, chat, sdk |
+| `routes/` | REST API routes — projects, work-items, agents, executions, comments, proposals, dashboard, settings, audit, chat, sdk |
 | `db/` | Database — Drizzle schema (9 tables), connection (better-sqlite3), seed script, migrations |
 | `agent/` | Agent execution engine (see below) |
 
@@ -127,8 +127,8 @@ The agent subsystem lives in `packages/backend/src/agent/`:
 | `mock-executor.ts` | Simulated executor for testing — realistic events without API calls |
 | `execution-manager.ts` | `ExecutionManager` class — orchestrates execution lifecycle with injected `ExecutorRegistry` |
 | `setup.ts` | **Composition root** — sole file importing concrete executors, creates default `ExecutionManager` singleton |
-| `dispatch.ts` | Triggers persona execution when work items enter a state |
-| `router.ts` | Router agent — haiku model, decides next state after persona completes |
+| `dispatch.ts` | Triggers agent execution when work items enter a state |
+| `router.ts` | Router agent — haiku model, decides next state after agent completes |
 | `coordination.ts` | Parent-child coordination — auto-advances parent when all children complete |
 | `concurrency.ts` | Concurrency limiter — in-memory tracking, priority FIFO queue |
 | `memory.ts` | Project memory — haiku summary on completion, token-budgeted retrieval |
@@ -176,7 +176,7 @@ Every executor implements `AgentExecutor` from `@agentops/core`:
 interface AgentExecutor {
   spawn(
     task: AgentTask,
-    persona: Persona,
+    agent: Agent,
     project: Project,
     options: SpawnOptions,
   ): AsyncIterable<AgentEvent>;
@@ -254,7 +254,7 @@ Every agent execution registers SDK hooks via the `hooks` option in `query()`. T
 | `PreToolUse` | (all) | **Audit timing** — records `Date.now()` keyed by `tool_use_id` for duration calculation | N/A (new) |
 | `PostToolUse` | (all) | **Audit logging** — logs `{ executionId, toolName, durationMs, success: true }` to audit trail. For Bash tools, also logs the sanitized command string | N/A (new) |
 | `PostToolUseFailure` | (all) | **Failure audit** — same as PostToolUse but with `success: false` | N/A (new) |
-| `SessionStart` | (all) | **Lifecycle audit** — logs `{ executionId, personaName, model, workItemId }` to audit trail + broadcasts `execution_update` WS event (status: "running") | Manual `agent_started` broadcast timing (still preserved for different payload) |
+| `SessionStart` | (all) | **Lifecycle audit** — logs `{ executionId, agentName, model, workItemId }` to audit trail + broadcasts `execution_update` WS event (status: "running") | Manual `agent_started` broadcast timing (still preserved for different payload) |
 | `SessionEnd` | (all) | **Lifecycle audit** — logs `{ executionId, reason, durationMs }` to audit trail. Duration computed from SessionStart timestamp | Manual `agent_completed` broadcast timing (still preserved for cost/outcome payload) |
 | `FileChanged` | (all) | **Live file tracking** — broadcasts `file_changed` WS event with `{ executionId, filePath, changeType }`. Maps SDK events (`add`/`change`/`unlink`) to `created`/`modified`/`deleted` | N/A (new) |
 
@@ -290,35 +290,35 @@ Tool-level and session-level audit events are written to `~/.agentops/logs/audit
 | Function | Action | Fields |
 |---|---|---|
 | `auditToolUse()` | `tool_use` | executionId, toolName, durationMs, success, command? |
-| `auditSessionStart()` | `session_start` | executionId, personaName, model, workItemId |
+| `auditSessionStart()` | `session_start` | executionId, agentName, model, workItemId |
 | `auditSessionEnd()` | `session_end` | executionId, reason, durationMs |
 
 Bash commands are sanitized before logging — secrets matching `ANTHROPIC_API_KEY`, `API_KEY`, `SECRET`, `TOKEN`, or `PASSWORD` patterns have their values replaced with `***`.
 
 ## Subagent System
 
-Every agent execution registers all project personas as SDK subagents via the `agents` option in `query()`. This allows any persona to invoke another persona as a subagent using the SDK's `Agent` tool.
+Every agent execution registers all project agents as SDK subagents via the `agents` option in `query()`. This allows any agent to invoke another agent as a subagent using the SDK's `Agent` tool.
 
-### How Personas Map to AgentDefinitions
+### How Agents Map to AgentDefinitions
 
-When `ClaudeExecutor.spawn()` runs, it builds a map of `AgentDefinition` entries from all personas:
+When `ClaudeExecutor.spawn()` runs, it builds a map of `AgentDefinition` entries from all agents:
 
-| Field | Primary Persona | Subagent Personas |
+| Field | Primary Agent | Subagent Agents |
 |---|---|---|
-| `prompt` | Full system prompt via `buildSystemPrompt()` (persona identity + project context + work item + sandbox + execution history) | Persona's own `systemPrompt` |
-| `model` | Persona's configured model | Each persona's own model |
-| `tools` | Persona's `allowedTools` | Each persona's own `allowedTools` |
-| `skills` | Persona's `skills` | Each persona's own `skills` |
+| `prompt` | Full system prompt via `buildSystemPrompt()` (agent identity + project context + work item + sandbox + execution history) | Agent's own `systemPrompt` |
+| `model` | Agent's configured model | Each agent's own model |
+| `tools` | Agent's `allowedTools` | Each agent's own `allowedTools` |
+| `skills` | Agent's `skills` | Each agent's own `skills` |
 | `maxTurns` | 30 | 15 (reduced for subagent scope) |
 
-The primary persona is set as the `agent` option; all others are available as subagents keyed by persona ID.
+The primary agent is set as the `agent` option; all others are available as subagents keyed by agent ID.
 
 ### Subagent Invocation Flow
 
 ```
 Primary Agent (e.g., Engineer)
     │
-    ├── Uses Agent tool to invoke Code Reviewer (persona ID)
+    ├── Uses Agent tool to invoke Code Reviewer (agent ID)
     │     │
     │     ├── SubagentStart hook fires → broadcasts subagent_started WS event
     │     ├── Subagent runs with its own tools, model, and prompt
@@ -339,7 +339,7 @@ Primary Agent (e.g., Engineer)
 | Approach | Use When | Example |
 |---|---|---|
 | **Subagent** | Quick, focused task within the current execution; result feeds back to the caller | Engineer asks Code Reviewer for a quick review before committing |
-| **State transition** | Work item moves to a new workflow phase; different persona takes over fully | Router moves item from "In Progress" to "In Review" after Engineer completes |
+| **State transition** | Work item moves to a new workflow phase; different agent takes over fully | Router moves item from "In Progress" to "In Review" after Engineer completes |
 
 Subagents are lightweight (15 turns, no separate execution record in the workflow) while state transitions are the primary orchestration mechanism for the workflow pipeline.
 
@@ -381,7 +381,7 @@ User clicks Rewind → Frontend calls POST /api/executions/:id/rewind
 
 ### MCP tool: `rewind_execution`
 
-The Code Reviewer persona has access to `rewind_execution` via the agentops MCP server. This tool calls the rewind API endpoint internally (`http://localhost:PORT/api/executions/:id/rewind`). The reviewer's system prompt includes guidance on when to use it: only for fundamentally wrong implementations that need a complete redo, not for minor issues.
+The Code Reviewer agent has access to `rewind_execution` via the agentops MCP server. This tool calls the rewind API endpoint internally (`http://localhost:PORT/api/executions/:id/rewind`). The reviewer's system prompt includes guidance on when to use it: only for fundamentally wrong implementations that need a complete redo, not for minor issues.
 
 ## SDK V2 Session Architecture
 
@@ -501,7 +501,7 @@ State Change (PATCH /api/work-items/:id)
     ▼
 dispatchForState()
     │
-    ├── Check: persona assigned to this state?
+    ├── Check: agent assigned to this state?
     ├── Check: concurrency limit (canSpawn)?
     ├── Check: monthly cost cap?
     │
@@ -514,7 +514,7 @@ runExecution()
     ▼
 ClaudeExecutor.spawn()
     │
-    ├── Build 4-layer system prompt
+    ├── Build 4-layer system prompt (agent identity + project context + work item + execution history)
     ├── Attach MCP server (7 tools)
     ├── Stream agent events
     │     ├── agent_output_chunk → broadcast to UI
@@ -529,13 +529,13 @@ On Completion:
     ├── Audit log entry
     │
     ▼
-runRouter() (if autoRouting ON)
+runRouter() (if workflow.autoRouting === true)
     │
     ├── Router agent decides next state
     ├── route_to_state MCP tool → state change
     │
     ▼
-dispatchForState() (next persona)
+dispatchForState() (next agent)
     │
     └── Cycle continues...
 ```

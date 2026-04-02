@@ -46,7 +46,7 @@ packages/frontend dev$ vite
 
 Open **http://localhost:5173** in your browser. You'll see the AgentOps dashboard.
 
-> **Tip:** To populate the UI with demo data (projects, work items, personas, executions), run `pnpm db:seed-demo` in a separate terminal. This seeds 3 projects with 14 work items across all workflow states.
+> **Tip:** To populate the UI with demo data (projects, work items, agents, executions), run `pnpm db:seed-demo` in a separate terminal. This seeds 3 projects with 14 work items across all workflow states.
 
 ## Configure Your API Key
 
@@ -110,7 +110,7 @@ Your new work item appears in the **Backlog** column.
 
 ## Walk a Work Item Through States Manually
 
-With auto-routing OFF (the default when no personas are assigned), you move items manually:
+With auto-routing OFF (the default when no agents are assigned), you move items manually:
 
 1. Click on your work item to open the detail panel
 2. In the detail panel header, find the **state transition** dropdown
@@ -130,37 +130,37 @@ Continue advancing your work item through each state to see how the workflow fee
 
 ## Enable Auto-Routing
 
-When auto-routing is ON, the Router agent automatically decides the next state after each persona completes work.
+When auto-routing is ON, the Router agent automatically decides the next state after each agent completes work.
 
-1. Go to **Settings > Workflow**
-2. Toggle **Auto-routing** to ON
+1. Go to **Workflows** and edit your workflow
+2. Toggle **Auto-routing** to ON in the workflow settings
 3. You'll see: *"Auto-routing: ON — Router agent will automatically transition work items"*
 
-### Assign Personas to States
+### Assign Agents to States
 
-For auto-routing to do anything, you need personas assigned to workflow states:
+For auto-routing to do anything, you need agents assigned to workflow states:
 
-1. In **Settings > Workflow**, scroll to the **Persona Assignments** table
-2. For each state (Planning, Decomposition, Ready, In Progress, In Review), select a persona from the dropdown
-3. When a work item enters a state, the assigned persona is automatically dispatched
+1. In **Settings > Workflow**, scroll to the **Agent Assignments** table
+2. For each state (Planning, Decomposition, Ready, In Progress, In Review), select an agent from the dropdown
+3. When a work item enters a state, the assigned agent is automatically dispatched
 
-The seed data includes 6 built-in personas:
+The seed data includes 6 built-in agents:
 - **Product Manager** — Planning and requirements
 - **Tech Lead** — Decomposition and architecture
 - **Engineer** — Implementation (In Progress)
 - **Code Reviewer** — Review (In Review)
-- **Router** — Automatic state transitions (system persona)
+- **Router** — Automatic state transitions (system agent)
 - **Pico** — Project assistant chatbot (click the chat bubble in the bottom-right corner)
 
 ### Watch the Pipeline
 
-With personas assigned and auto-routing ON:
+With agents assigned and auto-routing ON:
 
 1. Create a new work item in Backlog
-2. Manually move it to **Planning** (the first persona-assigned state)
-3. The Product Manager persona is dispatched automatically
+2. Manually move it to **Planning** (the first agent-assigned state)
+3. The Product Manager agent is dispatched automatically
 4. When it completes, the Router decides the next state
-5. The next persona is dispatched, and so on
+5. The next agent is dispatched, and so on
 
 Watch the **Agent Monitor** page for live terminal output, and the **Activity Feed** for a chronological event stream.
 
@@ -175,7 +175,7 @@ Watch the **Agent Monitor** page for live terminal output, and the **Activity Fe
 
 - [Architecture](architecture.md) — understand how the system is built
 - [Workflow](workflow.md) — deep dive into the state machine and routing
-- [Personas](personas.md) — create custom personas with your own prompts
+- [Agents](agents.md) — create custom agents with your own prompts
 - [MCP Tools](mcp-tools.md) — tools available to AI agents
 - [API Reference](api.md) — integrate with the REST API and WebSocket
 - [Deployment](deployment.md) — run AgentOps as a production service
@@ -184,7 +184,7 @@ Watch the **Agent Monitor** page for live terminal output, and the **Activity Fe
 
 These SDK capabilities have been evaluated and documented for future use:
 
-- **[Plugins](spikes/plugin-system.md)** — extend personas with custom skills from local directories or marketplace registries
+- **[Plugins](spikes/plugin-system.md)** — extend agents with custom skills from local directories or marketplace registries
 - **[HTTP Hooks](spikes/http-hooks.md)** — send webhook notifications to Slack, PagerDuty, etc. on agent events (zero code — settings only)
 - **[Worktree Isolation](spikes/worktree-isolation.md)** — isolate concurrent agent executions in separate git worktrees
 - **[Remote Execution](spikes/bridge-api-remote.md)** — run agent processes on remote hosts via SSH, Docker, or cloud

@@ -28,6 +28,7 @@ import {
   Flame,
   Target,
   Lightbulb,
+  Globe,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -44,7 +45,7 @@ import { cn } from "@/lib/utils";
 import { usePicoStore } from "./pico-store";
 import { ChatMessage } from "./chat-message";
 import { usePicoChat } from "@/hooks/use-pico-chat";
-import { useAgents, useProjects } from "@/hooks";
+import { useAgents, useProjects, useSelectedProject } from "@/hooks";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -75,6 +76,7 @@ export function ChatPanel() {
   const [input, setInput] = useState("");
   const { data: agents = [] } = useAgents();
   const { data: projectsList = [] } = useProjects();
+  const { project: selectedProject } = useSelectedProject();
   const {
     messages,
     sessions,
@@ -87,6 +89,7 @@ export function ChatPanel() {
     newSession,
     switchSession,
     renameSession,
+    deleteSession,
     clearAllSessions,
     retry,
   } = usePicoChat();
@@ -249,47 +252,108 @@ export function ChatPanel() {
         onMouseDown={handleResizeStart("top-left")}
       />
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-        <div
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
-          style={{ backgroundColor: "#f59e0b" }}
-        >
-          <Dog className="h-4 w-4 text-white" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <span className="text-sm font-semibold">Pico</span>
-          {isEditingTitle ? (
-            <span className="ml-2 inline-flex items-center gap-1">
-              <input
-                ref={titleInputRef}
-                value={editTitle}
-                onChange={(e) => setEditTitle(e.target.value)}
-                onKeyDown={handleTitleKeyDown}
-                onBlur={handleTitleSave}
-                className="w-32 rounded border border-input bg-transparent px-1 py-0.5 text-xs outline-none focus-visible:border-ring"
-                maxLength={100}
-              />
-              <button
-                type="button"
-                onClick={handleTitleSave}
-                className="rounded p-0.5 hover:bg-muted"
-              >
-                <Check className="h-3 w-3 text-muted-foreground" />
-              </button>
-            </span>
-          ) : (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+      {(() => {
+        const agentAvatar = selectedAgent?.avatar ?? null;
+        const agentColor = agentAvatar?.color ?? "#f59e0b";
+        const PanelIcon = agentAvatar?.icon ? getIcon(agentAvatar.icon) : Dog;
+        const agentName = selectedAgent?.name ?? "Pico";
+
+        // Resolve the project name shown in the header based on scopeOverride
+        const resolvedProjectName = (() => {
+          if (scopeOverride === "__global__") return "Global";
+          if (scopeOverride && scopeOverride !== "__follow__") {
+            return projectsList.find((p) => p.id === scopeOverride)?.name ?? scopeOverride;
+          }
+          // Follows sidebar
+          return selectedProject?.name ?? null;
+        })();
+        const isGlobalScope = scopeOverride === "__global__" || (!scopeOverride && selectedProject?.isGlobal);
+
+        return (
+          <div
+            className="flex items-center gap-2 border-b border-border px-3 py-2.5 shrink-0"
+            style={{ borderBottomColor: agentColor + "40" }}
+          >
+            {/* Agent avatar — reflects actual selected agent */}
+            <div
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
+              style={{
+                backgroundColor: agentColor + "22",
+                boxShadow: `0 0 0 2px ${agentColor}33`,
+              }}
+            >
+              <PanelIcon className="h-4 w-4" style={{ color: agentColor }} />
+            </div>
+
+            {/* Agent name + project name + editable session title */}
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-semibold leading-tight text-foreground truncate">
+                {agentName}
+              </div>
+              {resolvedProjectName && (
+                <div className="flex items-center gap-1 text-xs text-muted-foreground leading-tight mt-0.5">
+                  {isGlobalScope && <Globe className="h-2.5 w-2.5 shrink-0" />}
+                  <span className="truncate">{resolvedProjectName}</span>
+                </div>
+              )}
+              {isEditingTitle ? (
+                <span className="inline-flex items-center gap-1 mt-0.5">
+                  <input
+                    ref={titleInputRef}
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    onKeyDown={handleTitleKeyDown}
+                    onBlur={handleTitleSave}
+                    className="w-28 rounded border border-input bg-transparent px-1 py-0 text-[11px] outline-none focus-visible:border-ring"
+                    maxLength={100}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleTitleSave}
+                    className="rounded p-0.5 hover:bg-muted"
+                  >
+                    <Check className="h-3 w-3 text-muted-foreground" />
+                  </button>
+                </span>
+              ) : (
                 <button
                   type="button"
-                  className="ml-2 inline-flex items-center gap-0.5 text-xs text-muted-foreground hover:text-foreground transition-colors max-w-[180px]"
+                  onClick={handleTitleClick}
+                  disabled={!currentSession}
+                  className="group flex items-center gap-1 mt-0.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors disabled:pointer-events-none max-w-full"
+                  title="Click to rename"
                 >
-                  <span className="truncate">{sessionTitle}</span>
-                  <ChevronDown className="h-3 w-3 shrink-0" />
+                  <span className="truncate max-w-[140px]">{sessionTitle}</span>
+                  <PenLine className="h-2.5 w-2.5 shrink-0 text-muted-foreground/0 group-hover:text-muted-foreground/60 transition-colors" />
                 </button>
+              )}
+            </div>
+
+            {/* Actions */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 shrink-0"
+              onClick={() => newSession()}
+              title="New session"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+
+            {/* Session dropdown — history + manage */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 shrink-0"
+                  title="Session history"
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                align="start"
+                align="end"
                 className="w-64"
                 onCloseAutoFocus={(e) => e.preventDefault()}
               >
@@ -325,6 +389,15 @@ export function ChatPanel() {
                       Rename current chat
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                      onClick={() => currentSession && deleteSession(currentSession.id as ChatSessionId)}
+                      className="text-xs text-red-400 focus:text-red-400"
+                      disabled={!currentSession}
+                    >
+                      <Trash2 className="h-3 w-3 mr-1" />
+                      Delete session
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
                       onClick={clearAllSessions}
                       className="text-xs text-red-400 focus:text-red-400"
                     >
@@ -335,36 +408,28 @@ export function ChatPanel() {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 shrink-0"
-          onClick={() => newSession()}
-          title="New session"
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 shrink-0"
-          onClick={() => { setOpen(false); navigate("/chat"); }}
-          title="Expand to full page"
-        >
-          <Maximize2 className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-7 w-7 shrink-0"
-          onClick={() => setOpen(false)}
-          title="Minimize"
-        >
-          <ChevronDown className="h-4 w-4" />
-        </Button>
-      </div>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 shrink-0"
+              onClick={() => { setOpen(false); navigate("/chat"); }}
+              title="Expand to full page"
+            >
+              <Maximize2 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 shrink-0"
+              onClick={() => setOpen(false)}
+              title="Minimize"
+            >
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+          </div>
+        );
+      })()}
 
       {/* Scope & Agent bar */}
       <div className="flex items-center gap-2 border-b border-border px-3 py-1.5 bg-muted/30">
