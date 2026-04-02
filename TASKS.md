@@ -16,13 +16,13 @@
 
 ### Bug Fixes (Sprint 29 Review — remaining)
 
-- [ ] **FX.UXO13** — Warning: Chat page shows empty state with no feedback when no project selected. Show "Select a project" message.
-- [ ] **FX.UXO20** — Info: Dead `toolCallMap` in `use-pico-chat.ts`. Remove.
+- [x] **FX.UXO13** — Warning: Chat page shows empty state with no feedback when no project selected. Show "Select a project" message. *(completed 2026-04-02 13:28 PDT)*
+- [x] **FX.UXO20** — Info: Dead `toolCallMap` in `use-pico-chat.ts`. Remove. *(completed 2026-04-02 13:28 PDT)*
 
 ### Phase 4: Workflow Rework (remaining)
 
 - [ ] **UXO.27** — Frontend: Move Schedules out of Settings onto Automations page. Remove the schedules section from Settings. Schedule cards on the Automations page link to an edit view (inline dialog or dedicated page) for cron expression, agent selection, prompt template, and project scope. Active/disabled toggle directly on the card.
-- [ ] **UXO.22** — Frontend: Per-workflow auto-routing toggle on overview page and in builder header. Calls `PATCH /api/workflows/:id { autoRouting }`. Label: "Auto-routing OFF" / "Auto-routing ON".
+- [x] **UXO.22** — Frontend: Per-workflow auto-routing toggle on overview page and in builder header. Calls `PATCH /api/workflows/:id { autoRouting }`. Label: "Auto-routing OFF" / "Auto-routing ON". *(completed 2026-04-02 13:28 PDT)*
 - [ ] **UXO.26** — Frontend: Move workflow settings from Settings page into workflow builder. Remove `workflow-config-section.tsx` from Settings. Move the agent-state assignment table (PersonaStateTable → AgentStateTable) into the workflow builder as a "State Agents" tab or section alongside the state cards. The auto-routing toggle is already on the workflow (UXO.22). The workflow selector dropdown in Settings is no longer needed since each workflow is managed from its own builder page. Clean up any orphaned Settings references.
 
 ### Phase 8: Settings Reorganization
@@ -44,7 +44,7 @@
 - [ ] **DES.9** — Agent Builder: Add search/filter input above agent card grid. As agent count grows, users need to find agents by name or scope. Simple text filter is sufficient for v1.
 - [ ] **DES.10** — Agent Builder: Truncate long agent descriptions to 2 lines with ellipsis on cards. Some cards have long descriptions that push card heights inconsistent.
 - [ ] **DES.11** — Agent Builder: Rewrite "Router" agent description from developer jargon ("Routes work items between workflow states based on execution outcomes") to user-friendly language ("Automatically moves work items to the next step when an agent finishes").
-- [ ] **DES.12** — Settings: Change "SETTINGS" header from ALL CAPS to Title Case. Consistent with the rest of the app's heading style.
+- [x] **DES.12** — Settings: Change "SETTINGS" header from ALL CAPS to Title Case. Consistent with the rest of the app's heading style. *(completed 2026-04-02 13:28 PDT)*
 - [ ] **DES.13** — Settings > Workflow: Fix grammar in note below agent assignments table. "Ended at terminal states have no assignable agents" is confusing — rewrite to "Terminal states (like Done) don't need assigned agents."
 - [ ] **DES.14** — Settings > Agent Configuration: Fix Per-Agent Limits table — "Max Concurrent" column is empty for all agents. Either populate with default values from project settings, or hide the table when no per-agent limits are configured, showing "Per-agent limits not configured" with an enable button.
 - [ ] **DES.15** — Settings > Projects: Add useful columns to projects table — work item count, active agents, workflow name, path. Currently just name + date.

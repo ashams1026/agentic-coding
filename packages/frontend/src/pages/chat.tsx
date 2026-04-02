@@ -28,6 +28,7 @@ import {
   Pencil,
   ChevronDown,
   ChevronRight,
+  FolderOpen,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -45,6 +46,7 @@ import { usePicoStore } from "@/features/pico/pico-store";
 import { ChatMessage } from "@/features/pico/chat-message";
 import { usePicoChat } from "@/hooks/use-pico-chat";
 import { useAgents, useProjects } from "@/hooks";
+import { useUIStore } from "@/stores/ui-store";
 import { AgentSelector } from "@/features/pico/agent-selector";
 import type { ChatSessionId } from "@agentops/shared";
 import type { ChatSessionWithAgent } from "@/api";
@@ -103,6 +105,7 @@ function groupSessionsByAgent(sessions: ChatSessionWithAgent[]): AgentGroup[] {
 
 export function ChatPage() {
   const navigate = useNavigate();
+  const selectedProjectId = useUIStore((s) => s.selectedProjectId);
   const { setOpen, selectedAgentId } = usePicoStore();
   const [input, setInput] = useState("");
   const {
@@ -216,6 +219,23 @@ export function ChatPage() {
   const emptyStateDesc = isPico
     ? "Your project assistant. I know everything about this project \u2014 the architecture, the workflow, all the agents. Ask me anything, or I can help you manage work items."
     : selectedAgent!.description;
+
+  // Guard: no project selected yet
+  if (!selectedProjectId) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="flex flex-col items-center text-center px-4">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted mb-4">
+            <FolderOpen className="h-7 w-7 text-muted-foreground" />
+          </div>
+          <h3 className="text-lg font-semibold mb-1">No project selected</h3>
+          <p className="text-sm text-muted-foreground max-w-sm">
+            Select a project from the sidebar to start chatting.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full">

@@ -174,9 +174,10 @@ interface WorkflowCardProps {
   workflow: Workflow;
   states: WorkflowStateEntity[];
   onEdit: () => void;
+  onToggleAutoRouting?: (id: string, autoRouting: boolean) => void;
 }
 
-function WorkflowCard({ workflow, states, onEdit }: WorkflowCardProps) {
+function WorkflowCard({ workflow, states, onEdit, onToggleAutoRouting }: WorkflowCardProps) {
   const sortedStates = [...states].sort((a, b) => a.sortOrder - b.sortOrder);
 
   return (
@@ -187,23 +188,23 @@ function WorkflowCard({ workflow, states, onEdit }: WorkflowCardProps) {
             {workflow.name}
           </CardTitle>
           <div className="flex items-center gap-1.5 shrink-0">
-            {workflow.autoRouting ? (
-              <span
-                className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400"
-                title="Auto-routing enabled"
-              >
-                <Play className="h-3.5 w-3.5 fill-current" />
-                <span className="hidden sm:inline">Auto</span>
-              </span>
-            ) : (
-              <span
-                className="flex items-center gap-1 text-xs text-muted-foreground"
-                title="Auto-routing disabled"
-              >
-                <Pause className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Paused</span>
-              </span>
-            )}
+            <button
+              onClick={() => onToggleAutoRouting?.(workflow.id, !workflow.autoRouting)}
+              title={workflow.autoRouting ? "Auto-routing ON — click to disable" : "Auto-routing OFF — click to enable"}
+              className={cn(
+                "shrink-0 flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium border transition-colors",
+                workflow.autoRouting
+                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/25"
+                  : "bg-muted text-muted-foreground border-border hover:bg-muted/80",
+              )}
+            >
+              {workflow.autoRouting ? (
+                <Play className="h-3 w-3 fill-current" />
+              ) : (
+                <Pause className="h-3 w-3" />
+              )}
+              <span className="hidden sm:inline">{workflow.autoRouting ? "Auto" : "Paused"}</span>
+            </button>
             <span
               className={cn(
                 "text-[10px] px-1.5 py-0.5 rounded-full border",
@@ -514,12 +515,24 @@ function AutomationsOverview() {
   const { data: workflows = [], isLoading: loadingWorkflows } = useWorkflows(projectId ?? undefined);
   const { data: agents = [] } = useAgents();
   const createWorkflow = useCreateWorkflow();
+  const updateWorkflow = useUpdateWorkflow();
 
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loadingSchedules, setLoadingSchedules] = useState(true);
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
   const [createWorkflowOpen, setCreateWorkflowOpen] = useState(false);
   const addToast = useToastStore((s) => s.addToast);
+
+  function handleToggleAutoRouting(id: string, autoRouting: boolean) {
+    updateWorkflow.mutate(
+      { id, autoRouting },
+      {
+        onError: () => {
+          addToast({ type: "error", title: "Failed to toggle auto-routing" });
+        },
+      },
+    );
+  }
 
   const loadSchedules = useCallback(async () => {
     try {
@@ -629,6 +642,7 @@ function AutomationsOverview() {
                       key={wf.id}
                       workflow={wf}
                       onEdit={() => navigate(`/automations/${wf.id}`)}
+                      onToggleAutoRouting={handleToggleAutoRouting}
                     />
                   ))}
                 </div>
@@ -698,12 +712,12 @@ function AutomationsOverview() {
 
 // ── Workflow card with lazy state loading ────────────────────────
 
-function WorkflowCardLoader({ workflow, onEdit }: { workflow: Workflow; onEdit: () => void }) {
+function WorkflowCardLoader({ workflow, onEdit, onToggleAutoRouting }: { workflow: Workflow; onEdit: () => void; onToggleAutoRouting?: (id: string, autoRouting: boolean) => void }) {
   const { data: workflowDetail } = useWorkflow(workflow.id);
 
   const states: WorkflowStateEntity[] = workflowDetail?.states ?? [];
 
-  return <WorkflowCard workflow={workflow} states={states} onEdit={onEdit} />;
+  return <WorkflowCard workflow={workflow} states={states} onEdit={onEdit} onToggleAutoRouting={onToggleAutoRouting} />;
 }
 
 // ── Controlled wrapper for CreateWorkflowDialog ──────────────────
@@ -844,14 +858,21 @@ export function WorkflowsPage() {
       .map((t) => ({ id: t.id, toStateId: t.toStateId, label: t.label })),
   }));
 
+  const handleToggleAutoRouting = () => {
+    if (!id) return;
+    updateWorkflow.mutate({ id, autoRouting: !workflowData.workflow.autoRouting });
+  };
+
   return (
     <WorkflowBuilder
       workflowId={id}
       workflowName={workflowData.workflow.name}
       isPublished={workflowData.workflow.isPublished}
+      autoRouting={workflowData.workflow.autoRouting}
       initialStates={initialStates}
       onSave={handleSave}
       onPublish={handlePublish}
+      onToggleAutoRouting={handleToggleAutoRouting}
     />
   );
 }

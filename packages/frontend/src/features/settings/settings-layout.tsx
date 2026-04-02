@@ -73,7 +73,7 @@ export function SettingsLayout() {
     <div className="flex h-full">
       {/* Sidebar nav */}
       <nav className="w-[200px] shrink-0 border-r border-border bg-card p-3 space-y-0.5">
-        <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 pb-2">
+        <h2 className="text-xs font-semibold text-muted-foreground px-2 pb-2">
           Settings
         </h2>
         {SECTIONS.map((section) => {

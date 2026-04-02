@@ -1,8 +1,9 @@
 import { useState, useCallback } from "react";
-import { Save, Upload, Plus, GripVertical } from "lucide-react";
+import { Save, Upload, Plus, GripVertical, Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { StateCard } from "./state-card";
 import { WorkflowPreview } from "./workflow-preview";
 import { ValidationPanel, validateWorkflow } from "./validation-panel";
@@ -14,9 +15,11 @@ interface WorkflowBuilderProps {
   workflowId: string | null;
   workflowName: string;
   isPublished: boolean;
+  autoRouting: boolean;
   initialStates: StateCardData[];
   onSave?: (name: string, states: StateCardData[]) => void;
   onPublish?: (name: string, states: StateCardData[]) => void;
+  onToggleAutoRouting?: () => void;
 }
 
 // ── Color palette for new states ────────────────────────────────
@@ -31,9 +34,11 @@ const DEFAULT_COLORS = [
 export function WorkflowBuilder({
   workflowName: initialName,
   isPublished,
+  autoRouting,
   initialStates,
   onSave,
   onPublish,
+  onToggleAutoRouting,
 }: WorkflowBuilderProps) {
   const [name, setName] = useState(initialName);
   const [states, setStates] = useState<StateCardData[]>(initialStates);
@@ -103,6 +108,23 @@ export function WorkflowBuilder({
         <Badge variant={isPublished ? "default" : "secondary"} className="text-xs">
           {isPublished ? "Published" : "Draft"}
         </Badge>
+        <button
+          onClick={onToggleAutoRouting}
+          title={autoRouting ? "Auto-routing ON — click to disable" : "Auto-routing OFF — click to enable"}
+          className={cn(
+            "shrink-0 flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium border transition-colors",
+            autoRouting
+              ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/25"
+              : "bg-muted text-muted-foreground border-border hover:bg-muted/80",
+          )}
+        >
+          {autoRouting ? (
+            <Play className="h-3 w-3 fill-current" />
+          ) : (
+            <Pause className="h-3 w-3" />
+          )}
+          {autoRouting ? "Auto-routing ON" : "Auto-routing OFF"}
+        </button>
         <div className="flex-1" />
         <Button variant="outline" size="sm" className="gap-1.5" onClick={handleSave}>
           <Save className="h-3.5 w-3.5" />

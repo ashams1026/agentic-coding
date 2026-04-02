@@ -300,8 +300,6 @@ export function usePicoChat() {
         const reader = res.body.getReader();
         let textAccum = "";
         let currentBlocks: ContentBlock[] = [];
-        // Track which tool calls we've seen by ID for result pairing
-        const toolCallMap = new Map<string, number>(); // toolCallId → block index
         let lastToolCallIndex = -1;
 
         for await (const event of parseSSE(reader)) {
@@ -331,7 +329,6 @@ export function usePicoChat() {
                 input: Record<string, unknown>;
               };
               const blockIndex = currentBlocks.length;
-              toolCallMap.set(tc.id, blockIndex);
               lastToolCallIndex = blockIndex;
               currentBlocks.push({
                 type: "tool_use",

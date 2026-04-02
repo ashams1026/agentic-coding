@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-04-02 13:28 PDT — FX.UXO13: Chat empty state for no project
+
+**Done:** Added early-return guard in ChatPage when `selectedProjectId` is null. Renders centered empty state with FolderOpen icon, "No project selected" heading, and "Select a project from the sidebar" description. Guard placed after all hooks to respect rules of hooks.
+**Files:** `packages/frontend/src/pages/chat.tsx`
+
+---
+
+## 2026-04-02 13:28 PDT — FX.UXO20: Remove dead toolCallMap
+
+**Done:** Removed unused `toolCallMap` Map declaration and its `.set()` call from `sendMessage` in use-pico-chat.ts. The active `lastToolCallIndex` code path for tool result pairing is preserved.
+**Files:** `packages/frontend/src/hooks/use-pico-chat.ts`
+
+---
+
+## 2026-04-02 13:28 PDT — UXO.22: Per-workflow auto-routing toggle
+
+**Done:** Converted read-only auto-routing indicator in WorkflowCard to a clickable toggle button that PATCHes `{ autoRouting }` via useUpdateWorkflow. Added matching toggle button in workflow builder header (between badge and Save/Publish buttons). WorkflowsPage passes autoRouting state and handler to builder. Emerald green for ON, muted for OFF, with Play/Pause icons.
+**Files:** `packages/frontend/src/pages/workflows.tsx`, `packages/frontend/src/features/workflow-builder/workflow-builder.tsx`
+
+---
+
+## 2026-04-02 13:28 PDT — DES.12: Settings header Title Case
+
+**Done:** Removed `uppercase` and `tracking-wider` CSS classes from Settings sidebar h2 header. "Settings" now renders in natural Title Case instead of "SETTINGS".
+**Files:** `packages/frontend/src/features/settings/settings-layout.tsx`
+
 ## 2026-04-02 13:14 PDT — FX.UXO12: Fix stale closure in deleteSession
 
 **Done:** Computed `remaining` from `sessions.filter()` before calling `setSessions(remaining)`, eliminating the stale closure where `sessions` was read after the state update. Same `remaining` array now used for both state update and fallback session selection.
