@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 17:35 PDT — Review: CWF.TEST.1 (approved)
+
+**Reviewed:** Custom Workflows e2e test plan.
+- 36 steps across 10 parts covering all CWF.11-18 features ✓
+- Follows template format: objective, prerequisites, steps with screenshot checkpoints ✓
+- Covers: seeding, dynamic views, filters, transitions, builder CRUD, validation, publish, settings ✓
+- Expected results, visual quality, and failure criteria sections complete ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 17:30 PDT — CWF.TEST.1: Custom Workflows e2e test plan
 
 **Done:** Wrote comprehensive e2e test plan at `tests/e2e/plans/custom-workflows.md`. 36 steps across 10 parts: default workflow seeding, dynamic flow view columns, dynamic state filters, dynamic move-to transitions, workflow builder create/edit/delete states and transitions, validation panel (missing initial/terminal, unreachable, dead-ends), save/publish flow, and Settings workflow selector + persona assignments. Follows template format with screenshot checkpoints and visual/functional failure criteria.

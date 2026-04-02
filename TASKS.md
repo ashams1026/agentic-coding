@@ -30,7 +30,7 @@
 
 ### Testing & Documentation
 
-- [review] **CWF.TEST.1** — Write e2e test plan for Custom Workflows: `tests/e2e/plans/custom-workflows.md`. Cover: default workflow seeded on startup, dynamic flow view columns, dynamic state filters, dynamic move-to transitions, workflow builder (create/edit states/transitions), publish workflow, validation errors.
+- [x] **CWF.TEST.1** — Write e2e test plan for Custom Workflows: `tests/e2e/plans/custom-workflows.md`. Cover: default workflow seeded on startup, dynamic flow view columns, dynamic state filters, dynamic move-to transitions, workflow builder (create/edit states/transitions), publish workflow, validation errors. *(completed 2026-04-02 17:35 PDT)*
 - [ ] **CWF.TEST.2** — Execute Custom Workflows e2e tests. Run the test plan via chrome-devtools MCP. Screenshot each test case. Record results to `tests/e2e/results/`. File bugs as `FX.*` tasks for any failures.
 - [ ] **CWF.DOC.1** — Document Custom Workflows API. Update `docs/api.md` with: workflow CRUD endpoints, state/transition schemas, validation endpoint, dynamic state resolution in work items. Document migration from hardcoded to dynamic workflows.
 - [ ] **CWF.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans in `tests/e2e/plans/` against the current build. This is critical — workflow changes touch 15+ backend files and 8+ frontend views. Compare against Sprint 24 regression baseline. File bugs as `FX.REG.*` for any new failures.
