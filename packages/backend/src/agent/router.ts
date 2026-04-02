@@ -12,6 +12,7 @@ import { workItems, projects, comments } from "../db/schema.js";
 import { executionManager } from "./setup.js";
 import { createId } from "@agentops/shared";
 import { personas } from "../db/schema.js";
+import { buildDynamicRouterPrompt } from "./workflow-runtime.js";
 
 /** MCP tools the router can use */
 const ROUTER_MCP_TOOLS = [
@@ -25,18 +26,14 @@ const ROUTER_BASE_PROMPT = `You are a routing agent for the AgentOps workflow sy
 
 Your job is to decide the next workflow state for a work item after a persona has completed work on it.
 
-Available states: Backlog, Planning, Decomposition, Ready, In Progress, In Review, Done, Blocked.
-
 Use the get_context tool to understand the work item's current state and execution history.
 Use the list_items tool to check the status of child work items if relevant.
 Then use route_to_state to transition the work item to the appropriate next state.
 
 Guidelines:
-- After "In Progress" work completes, typically route to "In Review"
-- After successful review, route to "Done"
-- If review finds issues, route back to "In Progress" (rejection)
-- If a work item is stuck or has unresolvable issues, route to "Blocked"
-- Consider the execution outcome and summary when making your decision`;
+- Consider the execution outcome and summary when making your decision
+- If a work item is stuck or has unresolvable issues, route to a blocked/terminal state
+- Do not route to a state this item was just in unless there's a clear reason`;
 
 // ── Transition history helpers ──────────────────────────────────
 
@@ -80,10 +77,18 @@ async function getRecentTransitions(
 }
 
 /**
- * Build a Router system prompt with transition history context.
+ * Build a Router system prompt with dynamic workflow context and transition history.
  */
-function buildRouterSystemPrompt(transitions: TransitionRecord[]): string {
+async function buildRouterSystemPrompt(
+  workflowId: string | null,
+  currentState: string,
+  transitions: TransitionRecord[],
+): Promise<string> {
   const parts = [ROUTER_BASE_PROMPT];
+
+  // Add dynamic workflow context (valid target states from current state)
+  const workflowContext = await buildDynamicRouterPrompt(workflowId, currentState);
+  parts.push(`## Workflow Context\n\n${workflowContext}`);
 
   if (transitions.length > 0) {
     const lines = transitions.map((t) => `- ${t.from} → ${t.to}`);
@@ -108,9 +113,9 @@ function buildRouterSystemPrompt(transitions: TransitionRecord[]): string {
  * Returns true if routing was performed, false if skipped.
  */
 export async function runRouter(workItemId: string): Promise<boolean> {
-  // Look up work item to get projectId
+  // Look up work item to get projectId, workflowId, and currentState
   const [item] = await db
-    .select({ projectId: workItems.projectId })
+    .select({ projectId: workItems.projectId, workflowId: workItems.workflowId, currentState: workItems.currentState })
     .from(workItems)
     .where(eq(workItems.id, workItemId));
 
@@ -130,9 +135,9 @@ export async function runRouter(workItemId: string): Promise<boolean> {
   // Find or create a router persona for this project
   const routerPersonaId = await getOrCreateRouterPersona();
 
-  // Query recent transitions and build dynamic system prompt
+  // Query recent transitions and build dynamic system prompt with workflow context
   const transitions = await getRecentTransitions(workItemId);
-  const dynamicPrompt = buildRouterSystemPrompt(transitions);
+  const dynamicPrompt = await buildRouterSystemPrompt(item.workflowId ?? null, item.currentState, transitions);
 
   // Update the Router persona's systemPrompt with transition context
   await db
@@ -166,7 +171,7 @@ async function getOrCreateRouterPersona(): Promise<string> {
     name: "Router",
     description: "Built-in routing agent that decides workflow state transitions",
     avatar: { color: "#6366f1", icon: "route" },
-    systemPrompt: buildRouterSystemPrompt([]),
+    systemPrompt: ROUTER_BASE_PROMPT,
     model: "haiku",
     allowedTools: [],
     mcpTools: ROUTER_MCP_TOOLS,

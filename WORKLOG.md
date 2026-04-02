@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 14:05 PDT — CWF.8: Dynamic router prompt from workflow
+
+**Done:** Updated `packages/backend/src/agent/router.ts`. Replaced hardcoded state list in `ROUTER_BASE_PROMPT` with generic guidelines. `buildRouterSystemPrompt()` now async — calls `buildDynamicRouterPrompt(workflowId, currentState)` to inject "Workflow Context" section with valid target states from the work item's workflow. `runRouter()` now selects `workflowId` + `currentState` from work item and passes to prompt builder. Router persona creation uses base prompt (dynamic context added per-run).
+**Files:** `packages/backend/src/agent/router.ts`
+**Notes:** Backend Runtime phase (CWF.4-8) complete. All 5 backend files now use dynamic workflow functions.
+
+---
+
 ## 2026-04-02 13:55 PDT — Review: CWF.7 (approved)
 
 **Reviewed:** MCP server tools dynamic workflow integration.
