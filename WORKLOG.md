@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 12:40 PDT — Review: CWF.2 (approved)
+
+**Reviewed:** workflowId columns + migration + shared types + serialization.
+- workflowId on projects/work_items/executions, workflowStateName on executions ✓
+- Migration 0013: 4 ALTER TABLE ADD ✓
+- Shared types: all 3 entities + Execution extra field ✓
+- Serialization: projects, executions updated; work_items uses spread ✓
+- 2 downstream TS fixes (execution-manager, dashboard) ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 12:35 PDT — CWF.2: Add workflowId columns to projects, work_items, executions
 
 **Done:** Added `workflowId` (TEXT nullable) to projects, work_items, and executions tables in schema.ts. Added `workflowStateName` (TEXT nullable) to executions. Generated migration `0013_classy_giant_man.sql` (4 ALTER TABLE ADD). Updated shared entity types: Project, WorkItem, Execution all include workflowId. Updated serialization: projects route adds workflowId, executions route adds workflowId + workflowStateName, work_items already uses spread. Fixed 2 downstream TS errors: execution-manager.ts projectEntity + dashboard.ts WorkItem literal.

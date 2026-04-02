@@ -17,7 +17,7 @@
 ### Schema & Data Model
 
 - [x] **CWF.1** — Schema: create `workflows`, `workflow_states`, `workflow_transitions` tables in `packages/backend/src/db/schema.ts`. Workflows have id, name, description, scope (global/project), projectId (nullable FK), version, isPublished, timestamps. States have workflowId FK, name, type (initial/intermediate/terminal), color, personaId (nullable FK), sortOrder. Transitions have workflowId FK, fromStateId FK, toStateId FK, label, sortOrder. Generate Drizzle migration. *(completed 2026-04-02 12:20 PDT)*
-- [review] **CWF.2** — Schema: add `workflowId` (TEXT FK nullable) column to `projects`, `work_items`, and `executions` tables. Add `workflowStateName` (TEXT nullable) to executions. Generate migration. Update serialization functions in routes to include new fields. Update shared entity types.
+- [x] **CWF.2** — Schema: add `workflowId` (TEXT FK nullable) column to `projects`, `work_items`, and `executions` tables. Add `workflowStateName` (TEXT nullable) to executions. Generate migration. Update serialization functions in routes to include new fields. Update shared entity types. *(completed 2026-04-02 12:40 PDT)*
 - [ ] **CWF.3** — Seed: create `seedDefaultWorkflow()` function in `packages/backend/src/db/seed.ts` (or new file). Insert a "Default" workflow with the 6 states from the hardcoded `WORKFLOW_STATES` constant and all valid transitions. Set `projects.workflowId` to the default workflow ID. Run on startup after migrations (idempotent). Backfill existing `work_items.workflowId` to the default workflow.
 
 ### Backend Runtime
