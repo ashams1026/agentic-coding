@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 14:10 PDT — DX.1: Frontend-only dev mode with mock API
+
+**Done:** Added `pnpm dev:frontend` (frontend-only with mock API), `pnpm dev:backend` (backend-only), kept `pnpm dev` as full-stack. Created lightweight fetch interceptor at `packages/frontend/src/api/mock-api.ts` with in-memory data for all API endpoints (projects, work items, agents, executions, comments, proposals, workflows, dashboard stats, settings, chat, analytics, search). WebSocket connection is skipped in mock mode. Mock layer is tree-shaken from production builds.
+**Files:** `package.json`, `packages/frontend/package.json`, `packages/frontend/src/api/mock-api.ts`, `packages/frontend/src/api/ws.ts`, `packages/frontend/src/main.tsx`, `packages/frontend/src/env.d.ts`
+
+---
+
 ## 2026-04-02 13:55 PDT — DES.19: Empty states audit
 
 **Done:** Audited all pages and sub-components for consistent empty states. Added missing icons, descriptions, and CTA buttons across 15 empty states. Normalized styling to use consistent pattern: muted icon (h-10 w-10), font-medium heading, muted/60 description, outline CTA button.

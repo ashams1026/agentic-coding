@@ -21,6 +21,7 @@
 - [x] **DES.13** — Settings: Fix grammar in terminal states note. N/A — target file `workflow-config-section.tsx` was deleted in UXO.26. *(completed 2026-04-02 13:50 PDT)*
 - [x] **DES.19** — Empty states: Audit all pages for consistent empty states (icon + heading + description + CTA). *(completed 2026-04-02 13:55 PDT)*
 - [x] **FX.UXO24** — Info: `AgentId` type uses `ps-` prefix. Tech debt — track-only, requires future migration. *(completed 2026-04-02 13:50 PDT)*
+- [x] **DX.1** — Add split dev scripts. `pnpm dev:frontend` runs only Vite dev server (no backend). `pnpm dev:backend` runs only backend with mock executor. Keep `pnpm dev` as full-stack. No mock API layer needed — frontend just fails gracefully on API errors when backend isn't running. Update root `package.json` scripts. *(completed 2026-04-02 14:10 PDT)*
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **UXO.TEST.2** — Execute UX Overhaul e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **UXO.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
 

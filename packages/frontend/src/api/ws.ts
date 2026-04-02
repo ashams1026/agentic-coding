@@ -39,8 +39,13 @@ export function onWsStatusChange(callback: (status: WsConnectionStatus) => void)
 /**
  * Initialize the WS connection.
  * Call this once at app startup.
+ * Skipped in mock mode (VITE_MOCK_API=true) since there's no backend.
  */
 export function initWsConnection(): void {
+  if (import.meta.env.VITE_MOCK_API === "true") {
+    console.log("[ws] Mock mode — WebSocket connection skipped");
+    return;
+  }
   realWs.connect();
 }
 

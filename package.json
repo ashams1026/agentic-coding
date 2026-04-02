@@ -11,6 +11,8 @@
   },
   "scripts": {
     "dev": "./scripts/dev.sh",
+    "dev:frontend": "pnpm --filter @agentops/frontend dev:standalone",
+    "dev:backend": "pnpm --filter @agentops/backend dev",
     "dev:force": "pnpm --parallel -r dev",
     "build": "pnpm -r build",
     "lint": "eslint packages/*/src/",
