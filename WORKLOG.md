@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 13:05 PDT — CWF.4: workflow-runtime.ts with dynamic query functions
+
+**Done:** Created `packages/backend/src/agent/workflow-runtime.ts` with 6 exported functions. `getWorkflowStates(workflowId)`: queries DB, returns typed states with fallback to WORKFLOW constant. `getWorkflowTransitions(workflowId)`: queries transitions + resolves state names. `isValidTransitionDynamic(workflowId, from, to)`: async validation. `getWorkflowInitialState(workflowId)`: finds "initial" type state. `resolvePersonaForState(projectId, workflowId, stateName)`: priority chain — workflow state persona → persona_assignments fallback. `buildDynamicRouterPrompt(workflowId, currentState)`: lists valid target states from transitions. All functions fall back to hardcoded WORKFLOW when workflowId is null.
+**Files:** `packages/backend/src/agent/workflow-runtime.ts` (new)
+
+---
+
 ## 2026-04-02 12:55 PDT — Review: CWF.3 (approved)
 
 **Reviewed:** Default workflow seed in seed-workflow.ts + startup wiring.
