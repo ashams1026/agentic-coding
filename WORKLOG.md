@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-03 05:15 PDT — Review: DM.3 (approved)
+
+**Reviewed:** Backup/restore API + log truncation endpoints.
+- POST backup, GET backups (with sizeMb), POST restore, POST truncate-logs ✓
+- Restore: error handling + restart instruction ✓
+- Truncation: completed_at guard, logs != '' guard, returns count ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 05:10 PDT — DM.3: Backup/restore API + log truncation endpoints
 
 **Done:** Added 4 endpoints to `settings.ts`: `POST /api/settings/backup` (triggers `createBackup()`, returns path), `GET /api/settings/backups` (lists with filename/path/sizeBytes/sizeMb/createdAt), `POST /api/settings/restore` (calls `restoreBackup(path)` with error handling), `POST /api/settings/truncate-logs?olderThanDays=30` (UPDATE executions SET logs='' WHERE completed_at < threshold, returns truncated count). Log truncation uses raw `sqlite.prepare()` for direct UPDATE (preserves all metadata, only clears logs text).
