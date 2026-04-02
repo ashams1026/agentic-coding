@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 16:40 PDT — RB.5, RB.6, RB.DOC.1: Multi-surface rewind + docs
+
+**Done:** (1) RB.5: Added RewindButton to execution timeline entries in `execution-timeline.tsx`. Shows inline in badges row for completed executions with checkpointMessageId. (2) RB.6: Added RewindButton to Agent Monitor control bar in `agent-control-bar.tsx`. Shows in toolbar actions area for completed executions with checkpoint. (3) RB.DOC.1: Updated `docs/api.md` with rewind endpoint changes (createCommit, conflicts, commitSha, ConflictInfo type, curl examples). Updated `docs/frontend.md` with shared RewindButton component (directory structure, description, source files table).
+**Files:** `features/common/execution-timeline.tsx`, `features/agent-monitor/agent-control-bar.tsx`, `docs/api.md`, `docs/frontend.md`
+
+---
+
 ## 2026-04-02 16:30 PDT — RB.4: Extract shared RewindButton
 
 **Done:** Extracted RewindButton (~160 lines) + formatTimeAgo helper from agent-history.tsx into `features/common/rewind-button.tsx`. Clean props: `{ execution: Execution }`. Both functions exported as named exports. Removed 15 now-unused imports from agent-history.tsx (AlertDialog*, Tooltip*, rewindExecution, etc.). Component behavior identical.

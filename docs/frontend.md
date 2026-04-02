@@ -29,7 +29,8 @@ packages/frontend/src/
       terminal-block.tsx   # Terminal output with ANSI color support
       diff-block.tsx       # Side-by-side diff viewer
       file-tree-summary.tsx # Changed-files tree summary
-    common/             # Shared feature components (detail panels, etc.)
+    common/             # Shared feature components (detail panels, rewind button, etc.)
+      rewind-button.tsx   # Shared rewind button with dry-run preview + confirmation dialog
     command-palette/    # Global command palette (Cmd+K)
     toasts/             # Toast notification system
     demo/               # Demo mode controls
@@ -292,6 +293,22 @@ The `ModelSwitcher` component in the agent monitor header provides runtime model
 - **Confirmation dialog:** AlertDialog asks "Switch from X to Y? This may increase costs." before calling `POST /api/executions/:id/model`
 - **Badge updates** immediately after successful switch
 
+### Rewind Button
+
+The `RewindButton` component (`features/common/rewind-button.tsx`) is a shared component used across three surfaces: agent-history, execution-timeline, and agent-control-bar. It provides a complete rewind UX including dry-run preview and confirmation.
+
+**Props:**
+
+| Prop | Type | Description |
+|---|---|---|
+| `execution` | `Execution` | The execution to rewind. Returns `null` for running executions. |
+
+**Behavior:**
+- Renders a tooltip-wrapped undo icon button for completed executions (returns `null` if execution is running)
+- On click, triggers a dry-run preview (`POST /api/executions/:id/rewind` with `dryRun: true`)
+- Opens a confirmation dialog showing: time elapsed since execution, list of files to revert, and conflict warnings (files modified since the execution)
+- On confirm, executes the actual rewind and displays a toast with the result
+
 ### In-Process MCP Server
 
 The agentops MCP server can run in-process using the SDK's `createSdkMcpServer()` function, eliminating child process overhead:
@@ -460,6 +477,7 @@ Two density modes controlled by `data-density` attribute on `<html>`:
 | `packages/frontend/src/stores/work-items-store.ts` | Work items view state (filters, sort, selection) |
 | `packages/frontend/src/hooks/index.ts` | TanStack Query hook barrel export |
 | `packages/frontend/src/hooks/use-ws-sync.ts` | WebSocket → query cache invalidation |
+| `packages/frontend/src/features/common/rewind-button.tsx` | Shared rewind button — dry-run preview, confirmation dialog, conflict warnings |
 | `packages/frontend/src/features/chat/thinking-block.tsx` | Collapsible thinking block with markdown rendering |
 | `packages/frontend/src/features/chat/tool-call-card.tsx` | Tool call card with icon, status badge, collapsible I/O |
 | `packages/frontend/src/features/chat/terminal-block.tsx` | Terminal output renderer with ANSI color support |

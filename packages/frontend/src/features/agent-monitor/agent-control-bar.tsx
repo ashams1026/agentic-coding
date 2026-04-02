@@ -21,6 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useExecution, useAgents, useWorkItems, useProjectFromUrl } from "@/hooks";
+import { RewindButton } from "@/features/common/rewind-button";
 import type { ExecutionId, WorkItemId } from "@agentops/shared";
 
 // ── Helpers ───────────────────────────────────────────────────────
@@ -145,6 +146,11 @@ export function AgentControlBar({ executionId, onWorkItemClick }: AgentControlBa
             </button>
           )}
         </div>
+      )}
+
+      {/* Rewind button — for completed executions with checkpoint */}
+      {execution.status !== "running" && execution.checkpointMessageId && (
+        <RewindButton execution={execution} />
       )}
 
       {/* Stop button — graceful cancel */}

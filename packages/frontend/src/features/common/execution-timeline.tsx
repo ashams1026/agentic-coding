@@ -25,6 +25,7 @@ import {
 import { useExecutions, useAgents } from "@/hooks";
 import { retryWorkItem } from "@/api";
 import { useToastStore } from "@/stores/toast-store";
+import { RewindButton } from "./rewind-button";
 import type {
   Execution,
   Agent,
@@ -170,6 +171,9 @@ function TimelineEntry({ execution, agent, isLast, onRetry }: TimelineEntryProps
               minute: "2-digit",
             })}
           </span>
+          {execution.status !== "running" && execution.checkpointMessageId && (
+            <RewindButton execution={execution} />
+          )}
         </div>
 
         {/* Retry button for failed executions */}

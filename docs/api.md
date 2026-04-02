@@ -927,7 +927,8 @@ Reverts all file changes made by an execution back to their pre-execution state 
 
 ```typescript
 {
-  dryRun?: boolean;  // default: false — if true, returns preview without reverting
+  dryRun?: boolean;       // default: false — if true, returns preview without reverting
+  createCommit?: boolean; // default: false — if true, creates a git revert commit after rewind
 }
 ```
 
@@ -936,18 +937,33 @@ Reverts all file changes made by an execution back to their pre-execution state 
 ```typescript
 {
   canRewind: true;
-  filesChanged: string[];   // list of file paths that were/would be reverted
-  insertions: number;       // total lines added
-  deletions: number;        // total lines removed
+  filesChanged: string[];        // list of file paths that were/would be reverted
+  insertions: number;            // total lines added
+  deletions: number;             // total lines removed
   dryRun: boolean;
+  conflicts: ConflictInfo[];     // files modified since execution (dry-run only, empty otherwise)
+  commitSha?: string;            // git commit SHA of the revert commit (non-dry-run with createCommit only)
 }
 ```
+
+**ConflictInfo:**
+
+| Field | Type | Description |
+|---|---|---|
+| `filePath` | `string` | Relative path of the conflicting file |
+| `modifiedAt` | `string` | ISO timestamp of the file's last modification |
+| `modifiedBy` | `string?` | Best-effort attribution, e.g. `"execution ex-abc (Engineer)"` or `"unknown"` |
+
+**Conflict detection:** On dry-run, each file in `filesChanged` is stat-checked against `execution.completedAt`. Files modified after the execution completed are flagged as conflicts. Attribution is best-effort — recent executions in the same project are checked for references to the file path or basename.
+
+**Git integration:** When `createCommit=true` (non-dry-run), the endpoint stages all `filesChanged` and creates a revert commit with message `revert: undo execution <id> (<agent name>)`. Skipped silently if the project path is not a git repo. Git failures are logged but do not block the rewind response.
 
 **Error codes:**
 
 | Status | Code | When |
 |---|---|---|
 | 400 | `NO_CHECKPOINT` | Execution has no `checkpointMessageId` (legacy or checkpointing not enabled) |
+| 400 | `NO_WORK_ITEM` | Cannot rewind a standalone execution (no work item) |
 | 400 | `CANNOT_REWIND` | SDK reports files cannot be rewound |
 | 404 | `NOT_FOUND` | Execution, work item, or project not found |
 | 409 | `EXECUTION_RUNNING` | Cannot rewind a currently running execution |
@@ -957,9 +973,10 @@ Reverts all file changes made by an execution back to their pre-execution state 
 **Side effects (non-dry-run only):**
 - System comment posted on the work item with file change summary
 - Audit trail entry logged (`fromState: "rewind"`, `toState: "reverted"`)
+- Git revert commit created (if `createCommit: true` and project is a git repo)
 
 ```bash
-# Dry run — preview files that would be reverted
+# Dry run — preview files and conflicts
 curl -X POST http://localhost:3001/api/executions/ex-xxxx/rewind \
   -H "Content-Type: application/json" \
   -d '{"dryRun": true}'
@@ -968,6 +985,11 @@ curl -X POST http://localhost:3001/api/executions/ex-xxxx/rewind \
 curl -X POST http://localhost:3001/api/executions/ex-xxxx/rewind \
   -H "Content-Type: application/json" \
   -d '{"dryRun": false}'
+
+# Rewind with git commit
+curl -X POST http://localhost:3001/api/executions/ex-xxxx/rewind \
+  -H "Content-Type: application/json" \
+  -d '{"dryRun": false, "createCommit": true}'
 ```
 
 ---

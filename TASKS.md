@@ -96,12 +96,12 @@
 ### Phase 2: Multi-Surface Rollback
 
 - [x] **RB.4** — Frontend: Extract `RewindButton` + rewind dialog into a shared component at `features/common/rewind-button.tsx`. Currently embedded in `agent-history.tsx`. Extract with clean props: `{ execution: Execution }`. Import back into agent-history.tsx. This enables reuse in execution-timeline and other surfaces. *(completed 2026-04-02 16:30 PDT)*
-- [ ] **RB.5** — Frontend: Add "Revert Changes" button to execution timeline entries in `features/common/execution-timeline.tsx`. For completed executions with a `checkpointMessageId`, show the shared RewindButton component.
-- [ ] **RB.6** — Frontend: Add rewind action to Agent Monitor split-view execution detail. Add a "Revert Changes" button in the execution header/toolbar area. Uses the shared RewindButton.
+- [x] **RB.5** — Frontend: Add "Revert Changes" button to execution timeline entries in `features/common/execution-timeline.tsx`. For completed executions with a `checkpointMessageId`, show the shared RewindButton component. *(completed 2026-04-02 16:40 PDT)*
+- [x] **RB.6** — Frontend: Add rewind action to Agent Monitor split-view execution detail. Add a "Revert Changes" button in the execution header/toolbar area. Uses the shared RewindButton. *(completed 2026-04-02 16:40 PDT)*
 
 ### Testing & Documentation
 
 - [x] **RB.TEST.1** — Write e2e test plan: `tests/e2e/plans/rollback-enhancements.md`. *(completed 2026-04-02 16:10 PDT)*
-- [ ] **RB.DOC.1** — Update `docs/api.md` with rewind endpoint changes, update `docs/frontend.md` with shared RewindButton component.
+- [x] **RB.DOC.1** — Update `docs/api.md` with rewind endpoint changes, update `docs/frontend.md` with shared RewindButton component. *(completed 2026-04-02 16:40 PDT)*
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **RB.TEST.2** — Execute rollback enhancement e2e tests. Screenshot each case. File bugs as `FX.RB.*`.
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **RB.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
