@@ -70,33 +70,7 @@
 
 **Research Proposals (20 tasks, archived 2026-04-01 to 2026-04-02):** Chat UX/data model/rich messages, lifecycle UX/data model, notifications UX/integrations, collaboration context/coordination, scheduling UX/infra, rollback, templates, analytics, webhooks, frontend/backend swappability. All in `docs/proposals/`.
 
-**Sprint 23: Foundations (FND.ERR.1-7, FND.WIL.1-8, archived 2026-04-01):** Error Recovery — 7 tasks (PRAGMAs, WS backoff, error boundaries, status indicator, structured errors, orphan recovery, backup). Work Item Lifecycle — 8 tasks (archived_at/deleted_at, soft delete, 409 guard, archive/unarchive/restore, bulk ops, "Show archived", context menus, "Recently deleted").
-- [x] **FND.WIL.7** — Frontend: bulk action bar for multi-select. *(completed 2026-04-01 22:08 PDT)*
-- [x] **FND.WIL.8** — Settings: "Recently deleted" recovery view. *(completed 2026-04-01 22:24 PDT)*
-
-### Global Agents Phase 1
-
-- [x] **FND.GA.1** — Schema migration: make chatSessions.projectId nullable, add projectId to executions, create global_memories table. *(completed 2026-04-01 22:36 PDT)*
-- [x] **FND.GA.2** — Add AgentScope type and update entity types in shared package. *(completed 2026-04-01 22:46 PDT)*
-- [x] **FND.GA.3** — Navigation: add "All Projects" option to sidebar project selector. *(completed 2026-04-01 23:10 PDT)*
-- [x] **FND.GA.4** — Dashboard scope-awareness: aggregated stats when no project selected. *(completed 2026-04-01 23:25 PDT)*
-- [x] **FND.GA.5** — Agent Monitor scope-awareness: scope badges and filter. *(completed 2026-04-01 23:40 PDT)*
-- [x] **FND.GA.6** — Agent Monitor "New Run" modal. *(completed 2026-04-02 00:00 PDT)*
-- [x] **FND.GA.7** — Backend: POST /api/executions/run standalone execution endpoint. *(completed 2026-04-02 00:15 PDT)*
-- [x] **FND.GA.8** — Pico scope toggle and persona picker in chat panel header. *(completed 2026-04-02 00:30 PDT)*
-- [x] **FND.GA.9** — Backend: support nullable projectId in chat sessions and persona override. *(completed 2026-04-02 00:45 PDT)*
-- [x] **FND.GA.10** — E2E test plan for Global Agents Phase 1. *(completed 2026-04-02 01:00 PDT)*
-
-### Testing & Documentation (partial)
-
-- [x] **FND.TEST.1** — E2E test plan for Error Recovery Phase 1. *(completed 2026-04-02 01:15 PDT)*
-- [x] **FND.TEST.2** — E2E test plan for Work Item Lifecycle. *(completed 2026-04-02 01:30 PDT)*
-- [x] **FND.TEST.3** — Execute Error Recovery e2e tests — 8/8 pass. *(completed 2026-04-02 01:45 PDT)*
-- [x] **FND.TEST.4** — Execute Work Item Lifecycle e2e tests — 9/10 pass, 1 skip. *(completed 2026-04-02 02:05 PDT)*
-- [x] **FND.TEST.5** — Execute Global Agents Phase 1 e2e tests — 7/7 pass. *(completed 2026-04-02 02:30 PDT)*
-- [x] **FND.TEST.6** — Regression checkpoint post-Sprint 23 — 34 suites, 0 regressions. *(completed 2026-04-02 02:55 PDT)*
-- [x] **FND.DOC.1** — Document Work Item Lifecycle API endpoints in docs/api.md. *(completed 2026-04-02 03:25 PDT)*
-- [x] **FND.DOC.2** — Document Global Agents data model and API changes in docs/api.md. *(completed 2026-04-02 03:40 PDT)*
+**Sprint 23 (FND.ERR.1-7, FND.WIL.1-8, FND.GA.1-10, FND.TEST.1-6, FND.DOC.1-2):** 28 tasks. Error Recovery (PRAGMAs, WS backoff, error boundaries, structured errors, orphan recovery, backup). Work Item Lifecycle (soft delete, archive/restore, bulk ops, context menus, "Recently deleted"). Global Agents P1 (nullable projectId, AgentScope type, "All Projects" selector, dashboard/monitor scope-awareness, New Run modal, standalone execution endpoint, Pico scope toggle). Testing (3 test plans, 3 executions, regression 34 suites 0 regressions). 2 doc updates.
 
 ---
 
@@ -207,3 +181,21 @@
 
 - [x] **TPL.1** — Templates table + seed 3 built-in templates + migration. *(completed 2026-04-03 09:00 PDT)*
 - [x] **TPL.2** — Templates CRUD API + apply endpoint. *(completed 2026-04-03 09:15 PDT)*
+
+### Bug Fixes Continued (Sprints 24-27)
+
+- [x] **FX.WF.4** — Include transition sortOrder in workflow save payload. *(completed 2026-04-03 13:20 PDT)*
+- [x] **FX.DOC.1** — Update docs/workflow.md to reflect custom workflows. *(completed 2026-04-03 13:40 PDT)*
+- [x] **FX.HIST.1** — Fix Agent Monitor history table row width misalignment (Collapsible → conditional rendering). *(completed 2026-04-03 14:00 PDT)*
+- [x] **FX.TYPE.1** — Fix unsafe double type casts in chat routes. *(completed 2026-04-03 14:15 PDT)*
+- [x] **FX.TYPE.2** — Import HandoffNote from shared instead of duplicating. *(completed 2026-04-03 14:30 PDT)*
+- [x] **FX.PERF.1** — Fix N+1 query in dependency check (batched with inArray). *(completed 2026-04-03 14:40 PDT)*
+
+---
+
+## Sprint 29: UX Overhaul Phase 1 (Global as Project) — archived 2026-04-03
+
+- [x] **UXO.1** — Schema: Add isGlobal boolean to projects table + seed pj-global + delete guard. *(completed 2026-04-03 14:55 PDT)*
+- [x] **UXO.2** — Backend: Migrate nullable projectId → pj-global, NOT NULL on 5 tables, dashboard aggregation. *(completed 2026-04-03 15:25 PDT)*
+- [x] **UXO.3** — Frontend: Replace __all__ sentinel with global project from API, isGlobal flag. *(completed 2026-04-03 15:45 PDT)*
+- [x] **UXO.4** — Frontend: Add scope breadcrumb indicator (colored dot + accent strip). *(completed 2026-04-03 15:55 PDT)*

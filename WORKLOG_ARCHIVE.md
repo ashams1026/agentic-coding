@@ -196,4 +196,12 @@
 
 **Security fixes (FX.SEC.1-3, all approved):** Path traversal fix in backup restore (resolve + startsWith guard). FTS5 MATCH crash fix (sanitizeFts5Query + try-catch on all 4 MATCH blocks). FTS snippet XSS sanitization (placeholder-based sanitizer preserving only `<b>` tags).
 
+---
+
+### Bug fixes batch 2 + Sprint 29 Phase 1 — 2026-04-03 10:45–15:55 PDT
+
+**Bug fixes (FX.DEAD.2-3, FX.WHK.1, FX.NTF.1-2, FX.WF.1-3, FX.CHAT.1, FX.NAV.1, all approved):** Removed dead `execution_stuck` notification type. Wired proposal approve/reject into notification card actions (PATCH API + loading state). Fixed HMAC verification to use raw request bytes via preParsing hook. Fixed toast overflow count decrement (inverted ternary). Fixed notification batching double-count (excluded first individual from batch). Fixed workflow publish race condition (await mutateAsync). Wrapped workflow CRUD in DB transactions. Added workflow input validation (name, state types, transition refs). Resolved project names in chat header. Updated command palette nav items to match sidebar.
+
+**Sprint 29 Phase 1 — Global as Project (UXO.1-4, all approved):** Added `isGlobal` boolean to projects schema + `pj-global` seed + 409 delete guard (migration 0020). Made projectId NOT NULL on 5 tables with backfill migration 0021, updated all route handlers and dashboard aggregation. Replaced `"__all__"` frontend sentinel with real global project from API, `useSelectedProject` returns `isGlobal` flag. Added scope breadcrumb indicator (colored dot + accent strip in sidebar).
+
 **Dead code fix (FX.DEAD.1, rejected then reworked and approved):** Wired prompt template into webhook execution via standalone execution support in runExecution(). Initial implementation rejected because synthetic task fallback was unreachable (early throw on null workItemId). Rework made all lookups conditional for standalone path.

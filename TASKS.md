@@ -9,37 +9,10 @@
 
 ---
 
-## Bug Fixes: Post-Sprint Review (Sprints 24-27)
-
-> Critical bugs, dead code, and unimplemented stubs found during deep review of autonomous agent work. Prioritized by severity. **Fix these before continuing Sprint 28 feature work.**
-
-### Warning — Missing Data & Stale UI
-
-- [x] **FX.WF.4** — Include transition sortOrder in workflow save payload. `packages/frontend/src/pages/workflows.tsx:28-35` — `sortOrder` is omitted from transitions when saving, so all transitions get `sortOrder: 0`. Preserve the correct order. *(completed 2026-04-03 13:20 PDT)*
-- [x] **FX.DOC.1** — Update `docs/workflow.md` to reflect custom workflows. Still says "hardcoded" and "not user-configurable" — needs to document the Sprint 25 workflow engine. *(completed 2026-04-03 13:40 PDT)*
-
-### Warning — Layout Bugs
-
-- [x] **FX.HIST.1** — Fix Agent Monitor history table row width misalignment. `packages/frontend/src/features/agent-monitor/agent-history.tsx:424-517` — `HistoryRow` wraps content in a Radix `<Collapsible>` which renders a `<div>` inside `<tbody>`, breaking table layout (invalid HTML). Rows don't respect header column widths. Fix: replace `<Collapsible>` with conditional rendering using the `isExpanded` prop directly, keeping `<TableRow>` elements as direct children of `<TableBody>`. Also replace the raw `<tr>` on line 485 with `<TableRow>`.
-
-### Warning — Code Quality
-
-- [x] **FX.TYPE.1** — Fix unsafe double type casts in chat routes. `packages/backend/src/routes/chat.ts:367-369` — `project as unknown as Project` and `chatAgent as unknown as Persona` are fragile double casts. Create proper mapping functions or use the correct types directly. *(completed 2026-04-03 14:15 PDT)*
-- [x] **FX.TYPE.2** — Import HandoffNote from shared instead of duplicating. `packages/backend/src/agent/handoff-notes.ts:11` — `HandoffNote` type is duplicated instead of imported from `@agentops/shared`. Remove the local definition and import from shared.
-- [x] **FX.PERF.1** — Fix N+1 query in dependency check. `packages/backend/src/agent/dispatch.ts:56-63` — dependency check runs one query per upstream dependency. Batch into a single query with `IN (...)` clause.
-
----
-
 ## Sprint 29: UX Overhaul (Priority)
 
 > Major UX rework based on user feedback. **Prioritized ahead of remaining Sprint 28 and future roadmap work.** Themes: global-as-project foundation, persona→agent rename, chat UX fixes, workflow rework with label triggers, scope clarity.
-
-### Phase 1: Global as Project
-
-- [x] **UXO.1** — Schema: Add `isGlobal` boolean (default false) to `projects` table. Generate migration. Update seed to create a permanent global project (`id: "pj-global"`, `name: "All Projects"`, `isGlobal: true`, no path). Add delete guard to `DELETE /api/projects/:id` — reject with 409 if `isGlobal`.
-- [x] **UXO.2** — Backend: Migrate all nullable `projectId` references to use `pj-global`. Backfill `chat_sessions`, `executions`, `global_memories` where `projectId IS NULL` → set to `pj-global`. Make `projectId` NOT NULL on all tables. Update API endpoints to stop treating null as "global" — filter by projectId like normal. Dashboard: when `project.isGlobal`, aggregate stats across all projects.
-- [x] **UXO.3** — Frontend: Replace `"__all__"` sentinel with global project ID. Update `useSelectedProject()` to return `"pj-global"` instead of null. Remove `isGlobalScope === "__all__"` checks — use `project.isGlobal` instead. Update sidebar selector to always show global project first with distinct styling.
-- [x] **UXO.4** — Frontend: Add persistent scope breadcrumb. Create `scope-indicator.tsx` below the sidebar header showing current project name with colored dot (violet for global, project color otherwise). Always visible even when sidebar is collapsed (colored accent strip on left edge). Mount in root layout.
+> Bug Fixes (Sprints 24-27) and Phase 1 (Global as Project) complete and archived.
 
 ### Phase 2: Agent Rename (Persona → Agent)
 
