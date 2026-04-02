@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { eq, desc, and } from "drizzle-orm";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import type { AgentDefinition } from "@anthropic-ai/claude-agent-sdk";
-import { db } from "../db/connection.js";
+import { db, sqlite } from "../db/connection.js";
 import { chatSessions, chatMessages, personas, projects } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import { getClaudeCodeExecutablePath } from "../config.js";
@@ -130,9 +130,31 @@ export async function chatRoutes(app: FastifyInstance) {
           .leftJoin(personas, eq(chatSessions.personaId, personas.id))
           .orderBy(desc(chatSessions.updatedAt));
 
+    // Fetch last message preview per session in one query using raw SQLite
+    const sessionIds = rows.map((r) => r.session.id);
+    const lastMessages: Map<string, string> = new Map();
+
+    if (sessionIds.length > 0) {
+      const placeholders = sessionIds.map(() => "?").join(", ");
+      const msgRows = sqlite.prepare(
+        `SELECT m.session_id, m.content FROM chat_messages m
+         INNER JOIN (
+           SELECT session_id, MAX(created_at) as max_ts
+           FROM chat_messages
+           WHERE session_id IN (${placeholders})
+           GROUP BY session_id
+         ) latest ON m.session_id = latest.session_id AND m.created_at = latest.max_ts`,
+      ).all(...sessionIds) as { session_id: string; content: string }[];
+      for (const row of msgRows) {
+        const preview = row.content.length > 60 ? row.content.slice(0, 60) + "..." : row.content;
+        lastMessages.set(row.session_id, preview);
+      }
+    }
+
     const data = rows.map((r) => ({
       ...serializeSession(r.session),
       persona: r.personaName ? { name: r.personaName, avatar: r.personaAvatar } : null,
+      lastMessagePreview: lastMessages.get(r.session.id) ?? null,
     }));
 
     return { data, total: data.length };

@@ -297,6 +297,11 @@ export function ChatPage() {
                             <span className={cn("block truncate text-xs", s.id === currentSession?.id && "font-medium")}>
                               {s.title}
                             </span>
+                            {s.lastMessagePreview && (
+                              <span className="block truncate text-[10px] text-muted-foreground mt-0.5">
+                                {s.lastMessagePreview}
+                              </span>
+                            )}
                           </>
                         )}
                       </div>

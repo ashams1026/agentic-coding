@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 05:30 PDT — ACH.5 (rework): Add last message preview to session sidebar
+
+**Done:** Addressed review feedback — added `lastMessagePreview` to session list response. Backend: raw SQLite query fetches last message per session in a single batched query (correlated subquery with MAX(created_at)), truncates to 60 chars + "...". Added `sqlite` import from connection.ts. Frontend: added `lastMessagePreview: string | null` to `ChatSessionWithPersona` type. Display preview as second line under session title in sidebar (text-[10px], muted color). Removed unused `inArray` import.
+**Files:** `packages/backend/src/routes/chat.ts`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/pages/chat.tsx`
+
+---
+
 ## 2026-04-02 05:20 PDT — Review: ACH.5 (rejected)
 
 **Reviewed:** Session sidebar enhancements in `packages/frontend/src/pages/chat.tsx`.

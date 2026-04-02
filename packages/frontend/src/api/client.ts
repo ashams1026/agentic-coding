@@ -653,6 +653,7 @@ export async function reloadSdkCapabilities(): Promise<SdkCapabilities> {
 
 export interface ChatSessionWithPersona extends ChatSession {
   persona: { name: string; avatar: { color: string; icon: string } | null } | null;
+  lastMessagePreview: string | null;
 }
 
 export async function getChatSessions(projectId?: string): Promise<ChatSessionWithPersona[]> {
