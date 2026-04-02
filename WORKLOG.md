@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 14:25 PDT — Review: CWF.9 (approved)
+
+**Reviewed:** Read-only workflow API endpoints.
+- GET /api/workflows: list with projectId/scope filters ✓
+- GET /api/workflows/:id: full workflow with nested states + transitions ✓
+- GET /api/workflows/:id/states + /transitions: ordered lists with 404 checks ✓
+- Serializers for all 3 entity types ✓
+- Shared types: Workflow, WorkflowStateEntity, WorkflowTransitionEntity ✓
+- Registered in server.ts ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 14:20 PDT — CWF.9: Read-only workflow API endpoints
 
 **Done:** Created `packages/backend/src/routes/workflows.ts` with 4 read-only endpoints. `GET /api/workflows` — list with optional projectId/scope filters (returns global + project-scoped). `GET /api/workflows/:id` — full workflow with nested states + transitions arrays. `GET /api/workflows/:id/states` — list states ordered by sortOrder. `GET /api/workflows/:id/transitions` — list transitions. Added serialization functions for workflow, state, transition. Registered in server.ts. Added shared types: `Workflow`, `WorkflowStateEntity`, `WorkflowTransitionEntity` to entities.ts.
