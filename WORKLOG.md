@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 06:15 PDT — Review: ACH.7 (approved)
+
+**Reviewed:** Session management context menu in `packages/frontend/src/pages/chat.tsx`.
+- Right-click context menu with Rename + Delete on sidebar session items ✓
+- Context menu positioned at cursor, dismisses on click/right-click outside ✓
+- Delete opens confirmation dialog with warning text ✓
+- Confirm delete calls deleteSession() which handles API + auto-session-switching ✓
+- Build passes ✓
+- **Verdict: approved.** Agent Chat Phase 1 (ACH.1-7) complete.
+
+---
+
 ## 2026-04-02 06:10 PDT — ACH.7: Session management context menu and delete confirmation
 
 **Done:** Added right-click context menu to sidebar session items with Rename and Delete options. Rename triggers the existing inline edit flow. Delete opens a confirmation dialog with "Delete session?" title, warning text, Cancel/Delete buttons. Delete wired to `deleteSession()` which calls API, removes from local state, and auto-selects most recent remaining session (or shows empty state). Context menu positioned at cursor coordinates, dismisses on click outside.

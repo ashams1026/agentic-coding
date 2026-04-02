@@ -16,7 +16,7 @@
 
 ### Agent Chat Phase 1
 
-- [review] **ACH.7** — Frontend: add session management actions. Right-click context menu on session sidebar items: Rename, Delete (with confirmation dialog). Wire Delete to `DELETE /api/chat/sessions/:id` and refresh session list. When the active session is deleted, auto-select the most recent remaining session or show empty state.
+- [x] **ACH.7** — Frontend: add session management actions. Right-click context menu on session sidebar items: Rename, Delete (with confirmation dialog). Wire Delete to `DELETE /api/chat/sessions/:id` and refresh session list. When the active session is deleted, auto-select the most recent remaining session or show empty state. *(completed 2026-04-02 06:15 PDT)*
 
 ### Persona Prompts Phase 1
 
