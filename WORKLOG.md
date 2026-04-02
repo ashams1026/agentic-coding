@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 20:49 PDT — FND.ERR.7: Pre-migration SQLite backup
+
+**Done:** Made `runMigrations()` async and added a pre-migration backup step using `sqlite.backup()`. Creates `${DB_PATH}.pre-migration-${timestamp}.bak` before running Drizzle migrations. After migration succeeds, prunes old backups keeping only the 3 most recent. Skips backup on first startup (DB doesn't exist yet). Updated `start.ts` to `await runMigrations()`.
+**Files:** `packages/backend/src/db/migrate.ts`, `packages/backend/src/start.ts`
+
+---
+
 ## 2026-04-01 20:44 PDT — Review: FND.ERR.6 (approved)
 
 **Reviewed:** Interrupted execution status for orphan recovery.

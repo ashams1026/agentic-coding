@@ -214,7 +214,7 @@ export async function startServer(options: StartOptions = {}): Promise<void> {
 
   logger.info({ dbPath: DB_PATH, nodeEnv: process.env["NODE_ENV"] ?? "development" }, "Database path resolved");
 
-  runMigrations();
+  await runMigrations();
 
   // Ensure built-in personas exist (idempotent)
   await ensureBuiltInPersonas();
