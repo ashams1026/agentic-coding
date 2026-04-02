@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 03:45 PDT — OWH.6: Wire event bus → webhook delivery + startup
+
+**Done:** Created `packages/backend/src/events/webhook-bridge.ts` with `initWebhookBridge()`. Subscribes to all events via `eventBus.onAny()`. On each event, queries active webhook subscriptions, filters by matching event type in events JSON array, creates delivery records (status=pending, attempt=0) for each match. Wired into `start.ts`: `initWebhookBridge()` + `startWebhookWorker()` after lifecycle cleanup. Added `stopWebhookWorker()` to graceful shutdown before DB close. Outbound Webhooks P1 (OWH.1-6) complete.
+**Files:** `packages/backend/src/events/webhook-bridge.ts` (new), `packages/backend/src/start.ts`
+
+---
+
 ## 2026-04-03 03:35 PDT — Review: OWH.5 (approved)
 
 **Reviewed:** Frontend integrations section.

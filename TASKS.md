@@ -21,7 +21,7 @@
 - [x] **OWH.3** — Backend: create `packages/backend/src/events/webhook-delivery.ts`. Implement delivery worker: 2-second polling loop, fetch pending deliveries, HTTP POST with JSON payload + `X-Webhook-Signature` (HMAC-SHA256), exponential backoff retry (5 attempts, 30s→30min), 10s timeout, auto-disable subscription after 10 consecutive failures. Log status/latency/attempt to deliveries table. *(completed 2026-04-03 03:05 PDT)*
 - [x] **OWH.4** — Backend: create `packages/backend/src/routes/webhooks.ts`. CRUD endpoints: `GET /api/webhooks` (list subscriptions), `POST /api/webhooks` (create), `PATCH /api/webhooks/:id` (update url/events/active), `DELETE /api/webhooks/:id`. `GET /api/webhooks/:id/deliveries` (delivery log with status/latency). Register in server.ts. *(completed 2026-04-03 03:20 PDT)*
 - [x] **OWH.5** — Frontend: create `packages/frontend/src/features/settings/integrations-section.tsx`. Add "Integrations" tab in Settings. Outbound webhooks list with add/edit/delete. Subscription form: URL input, event checkboxes, secret display. Delivery log table (date, event, status, latency, retry count). Active/disabled toggle. *(completed 2026-04-03 03:35 PDT)*
-- [ ] **OWH.6** — Backend: wire event bus → webhook delivery. When EventBus emits, query matching active subscriptions, create delivery records, trigger worker. Start delivery worker on server startup.
+- [review] **OWH.6** — Backend: wire event bus → webhook delivery. When EventBus emits, query matching active subscriptions, create delivery records, trigger worker. Start delivery worker on server startup.
 
 ### Inbound Webhooks Phase 1
 

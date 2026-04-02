@@ -185,6 +185,10 @@ async function gracefulShutdown(
   // Stop lifecycle cleanup interval
   stopLifecycleCleanup();
 
+  // Stop webhook delivery worker
+  const { stopWebhookWorker } = await import("./events/webhook-delivery.js");
+  stopWebhookWorker();
+
   // Close persistent SDK session
   closeSdkSession();
 
@@ -248,6 +252,12 @@ export async function startServer(options: StartOptions = {}): Promise<void> {
 
   // Start background lifecycle cleanup (expired soft-deleted items)
   startLifecycleCleanup();
+
+  // Initialize webhook system — bridge events to delivery records + start worker
+  const { initWebhookBridge } = await import("./events/webhook-bridge.js");
+  const { startWebhookWorker } = await import("./events/webhook-delivery.js");
+  initWebhookBridge();
+  startWebhookWorker();
 
   const server = await buildServer();
 
