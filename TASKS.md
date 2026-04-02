@@ -13,15 +13,8 @@
 
 > Critical bugs, dead code, and unimplemented stubs found during deep review of autonomous agent work. Prioritized by severity. **Fix these before continuing Sprint 28 feature work.**
 
-### Critical — Security & Data Loss
-
-- [x] **FX.SEC.1** — Fix path traversal in backup restore. `packages/backend/src/db/backup.ts:95-111` accepts any file path from the API — attacker can overwrite DB with arbitrary file. Validate that the provided path resolves within the backups directory. Reject paths with `..` or absolute paths outside the backup root. *(completed 2026-04-03 09:30 PDT)*
-- [x] **FX.SEC.2** — Fix FTS5 MATCH crash on special characters. `packages/backend/src/routes/search.ts:36,57` passes user input directly to FTS5 MATCH — characters like `AND NOT`, `NEAR(`, unbalanced quotes crash the endpoint with unhandled 500. Wrap queries in try-catch and sanitize/escape FTS5 special syntax before querying. *(completed 2026-04-03 09:45 PDT)*
-- [x] **FX.SEC.3** — Sanitize FTS snippets before rendering. `packages/frontend/src/features/command-palette/command-palette.tsx:311` uses `dangerouslySetInnerHTML` with unsanitized FTS snippet content. Sanitize HTML or use a safe rendering approach to prevent XSS. *(completed 2026-04-03 10:00 PDT)*
-
 ### Critical — Dead Code & Unimplemented Stubs
 
-- [x] **FX.DEAD.1** — Wire prompt template into inbound webhook execution. `packages/backend/src/routes/webhook-triggers.ts:76-83` — `resolveTemplate()` output is computed but never passed to `runExecution()`. Pass the resolved prompt to the execution so inbound webhook templates actually work end-to-end. *(completed 2026-04-03 10:30 PDT)*
 - [ ] **FX.DEAD.2** — Implement or remove `execution_stuck` notification type. Backend never emits `execution_stuck` — the type is defined in `packages/shared/src/ws-events.ts`, UI handles it in notification cards, and Settings has a toggle for it, but no backend code ever fires it. Either implement a periodic check for stalled executions (e.g., no progress events for >10min) or remove the type, UI, and settings toggle entirely.
 - [ ] **FX.DEAD.3** — Replace stub navigation on proposal notification actions. `packages/frontend/src/features/notifications/notification-card.tsx:107-108` — Approve/Reject buttons just navigate to `/items` without passing proposal ID. Wire them to actually call `PATCH /api/proposals/:id` with the approve/reject action, then mark notification as read.
 
@@ -57,17 +50,8 @@
 > Tier 3 features: Scheduling (cron agent runs), Templates P1 (work item templates), Notification External Channels (webhook channel wrapping outbound infra).
 > Proposal docs: `docs/proposals/scheduling/ux-design.md`, `docs/proposals/scheduling/infrastructure.md`, `docs/proposals/templates/design.md`, `docs/proposals/notifications/integrations.md`
 
-### Scheduling
-
-- [x] **SCH.1** — Backend: add `schedules` table to schema (id, name, personaId, projectId, cron expression, promptTemplate, isActive, lastRunAt, nextRunAt, consecutiveFailures, createdAt). Generate migration. *(completed 2026-04-03 07:40 PDT)*
-- [x] **SCH.2** — Backend: create `packages/backend/src/scheduling/scheduler.ts`. Implement cron scheduler using `node-cron`. On tick: check for due schedules, spawn execution via `executionManager.runExecution()`, update lastRunAt/nextRunAt. Missed-run catch-up on startup. Auto-disable after 5 consecutive failures. *(completed 2026-04-03 08:00 PDT)*
-- [x] **SCH.3** — Backend: create `packages/backend/src/routes/schedules.ts`. CRUD endpoints: `GET /api/schedules`, `POST /api/schedules` (create with cron validation), `PATCH /api/schedules/:id`, `DELETE /api/schedules/:id`. `POST /api/schedules/:id/run-now` (manual trigger). Register in server.ts. Start scheduler on startup. *(completed 2026-04-03 08:20 PDT)*
-- [x] **SCH.4** — Frontend: add Schedules UI in Persona Manager or Settings. Schedule list with name, persona, cron (human-readable), next run, status. Add/edit form with cron preset selector (every 30min, hourly, daily, custom) + live preview of next runs. Active/disabled toggle. *(completed 2026-04-03 08:45 PDT)*
-
 ### Templates Phase 1
 
-- [x] **TPL.1** — Backend: add `templates` table to schema (id, name, type work_item/persona, content JSON, isBuiltIn boolean, createdAt). Seed 3 built-in work item templates (Bug Report, Feature Request, Spike). Generate migration. *(completed 2026-04-03 09:00 PDT)*
-- [x] **TPL.2** — Backend: create `packages/backend/src/routes/templates.ts`. CRUD: `GET /api/templates?type=work_item`, `POST /api/templates`, `PATCH /api/templates/:id`, `DELETE /api/templates/:id` (guard built-in). `POST /api/templates/:id/apply` (create work item from template). Register in server.ts. *(completed 2026-04-03 09:15 PDT)*
 - [ ] **TPL.3** — Frontend: add template selector to work item creation flow. When clicking "+ Add" in work items, show template picker dialog (grid of template cards with name + description). Selecting a template pre-fills title, description, priority, labels.
 
 ### Notification External Channels

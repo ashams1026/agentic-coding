@@ -30,51 +30,9 @@
 
 ---
 
-## Sprint 19 (File Checkpointing) + Sprint 17 (Bug Fixes, Testing, License) — 2026-03-31
+## Sprint 19 (consolidated) — 2026-03-31 to 2026-04-01
 
-**SDK.V2.4:** Updated `docs/architecture.md` with V2 session architecture — singleton lifecycle, discovery, Pico integration, relationship to per-execution `query()` calls.
-
-**SDK.FC.1:** Enabled file checkpointing in executor — `enableFileCheckpointing: true` in `query()` options, `CheckpointEvent` type in AgentEvent union (internal, not broadcast), `checkpointMessageId` column on executions table (nullable), populated from first `SDKAssistantMessage`.
-
-**SDK.FC.2:** Rewind API endpoint — `POST /api/executions/:id/rewind` with dry-run support. Creates temporary `query()` session at project cwd, calls `rewindFiles(messageId, { dryRun })`, interrupt+drain. Posts system comment and audit trail on non-dry-run. Validates: execution exists, has checkpoint, not running.
-
-**SDK.FC.3:** Rewind button in agent monitor — `RewindButton` component (~120 lines) in `agent-history.tsx`. Undo2 icon, disabled for legacy executions (no checkpoint), hidden for running. Click: dry-run preview → AlertDialog modal showing file list (scrollable, mono font, insertions/deletions) → confirm → success toast.
-
-**FX.PICO1:** Verified "Pico persona not found" error already fixed — seed.ts creates Pico with `isAssistant: true`, chat.ts looks up by that flag. Issue was stale dev DB.
-
-**FX.PICO4:** Fixed CORS headers on Pico SSE endpoint — replaced `reply.raw.writeHead(200, { SSE headers })` with `reply.header()` + `reply.raw.writeHead(200, reply.getHeaders())`. This preserves CORS headers from `@fastify/cors` plugin without duplicating config.
-
-**FX.LIC1:** Added Apache 2.0 LICENSE file (191 lines) and `"license": "Apache-2.0"` to all 4 package.json files.
-
-**FX.PICO2:** Wrote Pico e2e test plan — 38 steps across 11 parts in `tests/e2e/plans/pico-chat.md`. Covers bubble visibility, panel open/close, quick actions, manual input, markdown rendering, session management, title editing, persistence, mobile viewport, error state, clear sessions.
-
-**FX.PICO3:** Executed Pico e2e test — 30/38 PASS, 4 FAIL, 4 SKIP. All failures from CORS bug on SSE endpoint. 8 screenshots captured. Bug filed as FX.PICO4 (HIGH severity).
-
-**FX.SDK6:** Exposed available subagents in persona config via SDK `supportedAgents()` — agents array from capabilities endpoint, multi-select in persona editor.
-
----
-
-## Sprint 19 (Hooks + File Checkpointing Docs) + Sprint 17 (FX.PICO5) — 2026-03-31
-
-**FX.PICO5:** Fixed Pico chat scroll overflow — `min-h-0 overflow-hidden` on ScrollArea in chat-panel.tsx.
-
-**SDK.FC.4-FC.7:** MCP rewind tool for Code Reviewer (HTTP delegation), e2e test plan (17 steps), test execution (7/17 PASS, 10 SKIP), documentation updates across architecture/API/MCP docs.
-
-**SDK.HK.1-HK.5:** Replaced manual sandbox with PreToolUse hook, added PostToolUse audit logging (timing + sanitized commands), SessionStart/SessionEnd lifecycle hooks (audit + WS), FileChanged hook (file_changed WS events), file changes panel UI (collapsible, real-time, deduplication).
-
----
-
-## Sprint 19 (Hooks docs, Structured Output, Subagents, Effort) — 2026-03-31 to 2026-04-01
-
-**SDK.HK.6-HK.8:** File tracking e2e test plan + execution (4/16 PASS, 12 SKIP — no live agents), hooks architecture documentation (7 hooks table, diagram, audit trail).
-
-**FX.PROJ1:** Fixed stale project ID fallback — `retry: false` on useProject, auto-select first available project.
-
-**SDK.SO.1-SO.5:** Structured output for Router (isRouter flag, JSON schema), RouterDecisionCard UI (full + compact variants), structuredOutput column + migration, e2e test (5/13 PASS), docs updated.
-
-**SDK.SA.1-SA.6:** All personas as SDK subagents (AgentDefinition mapping), SubagentStart/SubagentStop hooks + WS events, parentExecutionId column, nested SubagentCard UI, e2e test (1/12 PASS — empty DB), docs updated.
-
-**SDK.ET.1-ET.5:** Effort/thinking on PersonaSettings, passed to query() options, per-persona defaults (Router=low/disabled, Engineer=max/enabled), persona editor dropdowns, e2e test (11/13 PASS — full save-persist), docs updated.
+**File Checkpointing (SDK.FC.1-7):** Checkpoint in executor, rewind API + dry-run, RewindButton UI, MCP rewind tool, e2e tests (7/17 PASS). **Hooks (SDK.HK.1-8):** PreToolUse sandbox, PostToolUse audit, SessionStart/End lifecycle, FileChanged events + UI panel, e2e test plan + execution, docs. **Structured Output (SDK.SO.1-5):** Router JSON schema, RouterDecisionCard UI, column + migration, e2e test (5/13 PASS). **Subagents (SDK.SA.1-6):** AgentDefinition mapping, hooks + WS events, parentExecutionId, nested UI, e2e test (1/12 PASS). **Effort (SDK.ET.1-5):** PersonaSettings effort/thinking, per-persona defaults, editor dropdowns, e2e test (11/13 PASS). **Bug Fixes:** Pico CORS (FX.PICO4), scroll overflow (FX.PICO5), stale project (FX.PROJ1), Pico e2e (30/38 PASS), Apache 2.0 license, subagents in persona config (FX.SDK6).
 
 ---
 
@@ -221,3 +179,9 @@
 **Sprint 26 remaining (SRC.5, ANL.1-7, S26.TEST.1-7, S26.DOC.1, all approved):** FTS5 search in filter bar. Analytics schema (model/totalTokens/toolUses migration 0015), token persistence from ProgressEvents, 4 aggregate endpoints (cost-by-persona/model, tokens-over-time, top-executions). Analytics page with Overview (4 stat cards, cost trend LineChart, persona BarChart) + Token Usage (ComposedChart dual-axis, model PieChart, top executions table) tabs. 4 React Query hooks + API client. 3 test plans + 3 test executions + API docs + regression checkpoint (40 suites, 0 regressions). Sprint 26 complete.
 
 **Sprint 27 decomposition:** 20 tasks across Outbound Webhooks P1 (OWH.1-6), Inbound Webhooks P1 (IWH.1-3), Data Management P1 (DM.1-5), Testing/Docs (S27.TEST.1-5, S27.DOC.1).
+
+### Sprint 27 completion + Sprint 28 early — 2026-04-03 04:58–07:50 PDT
+
+**Data Management P1 (DM.2-5, all approved):** Pre-migration backup hook via centralized createBackup(). 4 API endpoints (backup, backups list, restore, truncate-logs). Storage stats + cascade fix for execution delete. Data management UI (backup list, truncation controls, storage table). Sprint 27 testing: 2 test plans (outbound webhooks, inbound+data mgmt), 2 test executions (14/17 + 15/20 pass), API docs, regression checkpoint (44 suites, 0 regressions). Sprint 27 complete.
+
+**Sprint 28 decomposition:** 14 tasks across Scheduling (SCH.1-4), Templates P1 (TPL.1-3), Notification External Channels (NEC.1-2), Testing/Docs (S28.TEST.1-3, S28.DOC.1). SCH.1 (schedules table + migration 0018) completed and approved.

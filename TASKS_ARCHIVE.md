@@ -159,29 +159,34 @@
 
 ## Sprint 27: Integration & Maintenance — archived 2026-04-03
 
-### Outbound Webhooks P1
+**Outbound Webhooks P1 (OWH.1-6):** TypedEventBus, webhook schema (migration 0016), HMAC delivery worker with retry/auto-disable, CRUD + delivery log, Settings UI, bridge. **Inbound Webhooks P1 (IWH.1-3):** Triggers schema (migration 0017), generic receiver with HMAC + template, UI. **Data Management P1 (DM.1-5):** SQLite backup API + retention, pre-migration hook, backup/restore/truncate endpoints, storage stats + cascade fix, data management UI. **Testing (S27.TEST.1-5, S27.DOC.1):** 2 test plans, 2 executions, API docs, regression (44 suites, 0 regressions).
 
-- [x] **OWH.1** — TypedEventBus with 4 event types + emissions. *(completed 2026-04-03 02:35 PDT)*
-- [x] **OWH.2** — webhook_subscriptions + webhook_deliveries schema + migration 0016. *(completed 2026-04-03 02:50 PDT)*
-- [x] **OWH.3** — Delivery worker: HMAC, 5-retry backoff, auto-disable. *(completed 2026-04-03 03:05 PDT)*
-- [x] **OWH.4** — Webhook CRUD + delivery log endpoints. *(completed 2026-04-03 03:20 PDT)*
-- [x] **OWH.5** — Settings Integrations UI (outbound webhooks). *(completed 2026-04-03 03:35 PDT)*
-- [x] **OWH.6** — Event bus → delivery bridge + startup wiring. *(completed 2026-04-03 03:50 PDT)*
+---
 
-### Inbound Webhooks P1
+## Bug Fixes: Post-Sprint Review (Sprints 24-27) — archived 2026-04-03
 
-- [x] **IWH.1** — webhook_triggers schema + triggerType/triggerId on executions + migration 0017. *(completed 2026-04-03 04:05 PDT)*
-- [x] **IWH.2** — Generic receiver with HMAC + template resolver + CRUD. *(completed 2026-04-03 04:20 PDT)*
-- [x] **IWH.3** — Inbound triggers UI in Settings Integrations. *(completed 2026-04-03 04:35 PDT)*
+### Security & Data Loss
 
-### Data Management P1
+- [x] **FX.SEC.1** — Fix path traversal in backup restore. *(completed 2026-04-03 09:30 PDT)*
+- [x] **FX.SEC.2** — Fix FTS5 MATCH crash on special characters. *(completed 2026-04-03 09:45 PDT)*
+- [x] **FX.SEC.3** — Sanitize FTS snippets before rendering. *(completed 2026-04-03 10:00 PDT)*
 
-- [x] **DM.1** — SQLite backup() API + retention (7d+4w) + restore. *(completed 2026-04-03 04:50 PDT)*
-- [x] **DM.2** — Pre-migration backup hook via createBackup(). *(completed 2026-04-03 05:00 PDT)*
-- [x] **DM.3** — Backup/restore/truncate-logs API endpoints. *(completed 2026-04-03 05:15 PDT)*
-- [x] **DM.4** — Storage stats + execution delete cascade fix. *(completed 2026-04-03 05:30 PDT)*
-- [x] **DM.5** — Data management UI (backup list, truncation, storage table). *(completed 2026-04-03 05:45 PDT)*
+### Dead Code & Unimplemented Stubs
 
-### Testing & Docs
+- [x] **FX.DEAD.1** — Wire prompt template into inbound webhook execution. *(completed 2026-04-03 10:30 PDT)*
 
-- [x] **S27.TEST.1-5, S27.DOC.1** — 2 test plans, 2 test executions, API docs, regression (44 suites, 0 regressions). *(completed 2026-04-03 06:00–07:15 PDT)*
+---
+
+## Sprint 28: Scheduling, Templates & Notification Channels — archived 2026-04-03
+
+### Scheduling
+
+- [x] **SCH.1** — Schedules table + migration. *(completed 2026-04-03 07:40 PDT)*
+- [x] **SCH.2** — Cron scheduler with polling + catch-up. *(completed 2026-04-03 08:00 PDT)*
+- [x] **SCH.3** — Schedules CRUD API + startup integration. *(completed 2026-04-03 08:20 PDT)*
+- [x] **SCH.4** — Frontend Schedules UI in Settings. *(completed 2026-04-03 08:45 PDT)*
+
+### Templates Phase 1
+
+- [x] **TPL.1** — Templates table + seed 3 built-in templates + migration. *(completed 2026-04-03 09:00 PDT)*
+- [x] **TPL.2** — Templates CRUD API + apply endpoint. *(completed 2026-04-03 09:15 PDT)*
