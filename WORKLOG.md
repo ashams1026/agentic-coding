@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 12:55 PDT — Review: CWF.3 (approved)
+
+**Reviewed:** Default workflow seed in seed-workflow.ts + startup wiring.
+- Idempotent: checks for existing wf-default before inserting ✓
+- 8 states from WORKFLOW constant with type classification ✓
+- All valid transitions created from WORKFLOW.transitions ✓
+- Deterministic IDs (wf-default, ws-default-*, wt-default-*) ✓
+- Backfills projects.workflowId + work_items.workflowId where null ✓
+- Startup: runs after migrations + personas ✓
+- Build passes ✓
+- **Verdict: approved.** Schema & Data Model phase (CWF.1-3) complete.
+
+---
+
 ## 2026-04-02 12:50 PDT — CWF.3: Seed default workflow
 
 **Done:** Created `packages/backend/src/db/seed-workflow.ts` with `seedDefaultWorkflow()`. Uses fixed ID `wf-default` for idempotency. Inserts default workflow (8 states from WORKFLOW constant with type classification: Backlog=initial, Done=terminal, rest=intermediate). Creates all valid transitions from WORKFLOW.transitions. Deterministic state IDs (`ws-default-backlog`, etc.) and transition IDs. Backfills `projects.workflowId` and `work_items.workflowId` where null. Wired into startup in `start.ts` after migrations + personas via dynamic import.
