@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-03 11:35 PDT — Review: FX.NTF.1 (approved)
+
+**Reviewed:** Toast overflow count decrement fix.
+- Inverted ternary `? 0 : 1` → `? 1 : 0` correctly fixes the decrement logic ✓
+- Visible toast removed → overflow decrements by 1; already-gone toast → no change ✓
+- `Math.max(0, ...)` prevents negative overflow ✓
+- Minimal single-character fix, no side effects ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 11:30 PDT — FX.NTF.1: Fix toast overflow count decrement
 
 **Done:** Fixed inverted ternary condition in `toast-store.ts:55`. The `overflowCount` decrement used `? 0 : 1` — subtracting 0 when the toast was visible (found in array) and 1 when not visible. Flipped to `? 1 : 0` so removing a visible toast correctly decrements the overflow count, clearing stale "+N more" badges.
