@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-03 05:30 PDT — Review: DM.4 (approved)
+
+**Reviewed:** Storage stats + cascade fix.
+- GET /api/settings/storage-stats: per-table row counts + total DB size ✓
+- Cascade fix: proposals deleted before executions via inArray ✓
+- Filters out internal/FTS tables ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 05:25 PDT — DM.4: Storage stats + cascade fix
 
 **Done:** Added `GET /api/settings/storage-stats` to `settings.ts`. Queries `sqlite_master` for table names (excluding internal/FTS tables), counts rows per table, calculates total DB size via `page_size * page_count`. Returns `{ tables: [{ name, rowCount }], totalSizeBytes, totalSizeMb }`. Fixed cascade bug: `DELETE /api/settings/executions` now queries execution IDs first, deletes linked proposals via `inArray`, then deletes executions. Added proposals import.
