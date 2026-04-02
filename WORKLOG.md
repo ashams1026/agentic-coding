@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 08:00 PDT — Review: NTF.2 (approved)
+
+**Reviewed:** Backend notification emission across 3 files.
+- broadcastNotification() helper: crypto ID, Notification wrapping, broadcast() delegation ✓
+- Agent completed (low): persona name + summary, 4 call sites total ✓
+- Agent errored (critical): persona name + error message ✓
+- Proposal review_request (critical): work item reference ✓
+- Budget 80% threshold (high): dollar amounts + percentage ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 07:55 PDT — NTF.2: Backend notification emission
 
 **Done:** Added `broadcastNotification()` helper to `ws.ts` — creates a `Notification` object with crypto-generated ID and broadcasts as `NotificationEvent`. Added 4 emission points: (1) execution-manager agent completed (low priority, persona name + summary), (2) execution-manager agent error (critical, persona name + error message), (3) proposals route on `review_request` creation (critical), (4) execution-manager cost summary at 80% monthly budget threshold (high, dollar amounts). Imported `broadcastNotification` in execution-manager.ts and proposals.ts.
