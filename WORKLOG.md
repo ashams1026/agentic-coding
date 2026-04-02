@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 16:15 PDT — CWF.15: Workflow builder state-card and transition-row
+
+**Done:** Created `state-card.tsx` with editable StateCard component (name input, type selector, 12-color picker, persona selector via usePersonas(), transitions list with add/remove) and `transition-row.tsx` with target state dropdown + label input + delete button. Both components use shadcn/ui primitives and match compact sizing conventions.
+**Files:** `packages/frontend/src/features/workflow-builder/state-card.tsx`, `packages/frontend/src/features/workflow-builder/transition-row.tsx`
+
+---
+
 ## 2026-04-02 15:55 PDT — Review: CWF.14 (approved)
 
 **Reviewed:** workflow-config-section dynamic workflow.
