@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-03 10:30 PDT — Review: FX.DEAD.1 (approved, rework)
+
+**Reviewed:** Standalone execution support in runExecution.
+- `isStandalone` flag correctly detects null workItemId ✓
+- Work item + project lookups conditional — skipped for standalone ✓
+- Execution insert, broadcast, event emit, audit all null-safe ✓
+- Synthetic AgentTask from prompt — no longer unreachable ✓
+- projectEntity falls back to minimal stub ✓
+- Prompt flows end-to-end: resolveTemplate → runExecution → AgentTask ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 10:25 PDT — FX.DEAD.1 (rework): Wire prompt template into webhook execution
 
 **Done:** Reworked `runExecution()` to support standalone executions. Added `isStandalone` flag (`!workItemId || workItemId === "null"`). Made work item lookup + project lookup conditional — skipped for standalone. Execution insert uses `null` for workItemId, `null` for workflowId/state. Broadcast uses prompt snippet for title. Event emit uses empty string for workItemId. Audit uses empty string. Synthetic `AgentTask` created from prompt for standalone path. `projectEntity` falls back to a minimal standalone stub. All feedback points addressed — the early throw is now conditional.
