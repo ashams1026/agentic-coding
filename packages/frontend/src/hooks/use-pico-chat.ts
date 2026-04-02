@@ -419,6 +419,24 @@ export function usePicoChat() {
     [],
   );
 
+  // Delete a single session
+  const deleteSession = useCallback(
+    async (sessionId: ChatSessionId) => {
+      await deleteChatSession(sessionId);
+      setSessions((prev) => prev.filter((s) => (s.id as ChatSessionId) !== sessionId));
+      if (currentSessionId === sessionId) {
+        // Switch to the most recent remaining session
+        const remaining = sessions.filter((s) => (s.id as ChatSessionId) !== sessionId);
+        setCurrentSessionId(remaining.length > 0 ? remaining[0]!.id as ChatSessionId : null);
+        if (remaining.length === 0) {
+          setMessages([]);
+          setError(null);
+        }
+      }
+    },
+    [currentSessionId, sessions, setCurrentSessionId],
+  );
+
   // Delete all sessions
   const clearAllSessions = useCallback(async () => {
     for (const s of sessions) {
@@ -474,6 +492,7 @@ export function usePicoChat() {
     newSession,
     switchSession,
     renameSession,
+    deleteSession,
     clearAllSessions,
     retry,
   };

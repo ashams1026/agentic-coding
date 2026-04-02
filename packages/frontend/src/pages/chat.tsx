@@ -24,6 +24,9 @@ import {
   Target,
   Lightbulb,
   Filter,
+  MoreVertical,
+  Globe,
+  Pencil,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -91,6 +94,7 @@ export function ChatPage() {
     newSession,
     switchSession,
     renameSession,
+    deleteSession,
     clearAllSessions,
     retry,
   } = usePicoChat();
@@ -123,7 +127,10 @@ export function ChatPage() {
     return Array.from(map.entries()); // [personaId, name][]
   }, [sessions]);
 
-  // Editable title
+  // Header context menu
+  const [showHeaderMenu, setShowHeaderMenu] = useState(false);
+
+  // Editable title (used in both sidebar and header)
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
 
@@ -329,6 +336,106 @@ export function ChatPage() {
 
       {/* Chat area */}
       <div className="flex-1 flex flex-col min-w-0">
+        {/* Chat header bar */}
+        {currentSession && (() => {
+          const cs = currentSession;
+          const avatar = cs.persona?.avatar;
+          const color = avatar?.color ?? "#6b7280";
+          const HeaderIcon = getIcon(avatar?.icon ?? "bot");
+          const isEditingHeader = editingSessionId === cs.id;
+
+          return (
+            <div className="flex items-center gap-3 border-b border-border px-4 py-2.5 bg-card shrink-0">
+              {/* Persona avatar + name */}
+              <div
+                className="h-7 w-7 rounded-full flex items-center justify-center shrink-0"
+                style={{ backgroundColor: color + "20" }}
+              >
+                <HeaderIcon className="h-4 w-4" style={{ color }} />
+              </div>
+              <span className="text-sm font-medium text-muted-foreground shrink-0">
+                {cs.persona?.name ?? "Pico"}
+              </span>
+
+              {/* Divider */}
+              <div className="h-4 w-px bg-border shrink-0" />
+
+              {/* Project badge */}
+              <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0 flex items-center gap-1">
+                {cs.projectId ? (
+                  <>{cs.projectId}</>
+                ) : (
+                  <><Globe className="h-3 w-3" /> Global</>
+                )}
+              </span>
+
+              {/* Editable session title */}
+              <div className="flex-1 min-w-0">
+                {isEditingHeader ? (
+                  <input
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    onBlur={saveRename}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") { e.preventDefault(); saveRename(); }
+                      if (e.key === "Escape") setEditingSessionId(null);
+                    }}
+                    autoFocus
+                    className="w-full rounded border border-input bg-transparent px-2 py-0.5 text-sm outline-none focus-visible:border-ring"
+                    maxLength={100}
+                  />
+                ) : (
+                  <span
+                    className="block truncate text-sm cursor-pointer hover:text-foreground text-muted-foreground"
+                    onDoubleClick={() => startRename(cs.id, cs.title)}
+                    title="Double-click to rename"
+                  >
+                    {cs.title}
+                  </span>
+                )}
+              </div>
+
+              {/* Context menu */}
+              <div className="relative shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => setShowHeaderMenu(!showHeaderMenu)}
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+                {showHeaderMenu && (
+                  <div className="absolute right-0 top-full mt-1 bg-popover border border-border rounded-md shadow-lg z-10 py-1 w-36">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowHeaderMenu(false);
+                        startRename(cs.id, cs.title);
+                      }}
+                      className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-muted"
+                    >
+                      <Pencil className="h-3 w-3" />
+                      Rename
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowHeaderMenu(false);
+                        deleteSession(cs.id as ChatSessionId);
+                      }}
+                      className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs text-red-400 hover:bg-red-500/10"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Delete session
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Messages */}
         <ScrollArea className="flex-1 min-h-0">
           <div className="max-w-3xl mx-auto px-6 py-4">
