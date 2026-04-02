@@ -36,7 +36,7 @@ function EmptyState() {
         <div>
           <p className="text-sm font-medium">No agents running</p>
           <p className="text-xs text-muted-foreground mt-1">
-            Agents start when stories move through workflow states.
+            Agents start when work items move through workflow states.
           </p>
         </div>
         <Button variant="outline" size="sm" asChild>

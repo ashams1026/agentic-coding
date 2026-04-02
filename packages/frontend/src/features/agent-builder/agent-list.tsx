@@ -84,7 +84,8 @@ export const BUILT_IN_IDS = new Set<string>([
   "ps-tl00001",
   "ps-en00001",
   "ps-rv00001",
-  "ps-qa00001",
+  "ps-rt00001",
+  "ps-pico",
 ]);
 
 // ── Props ───────────────────────────────────────────────────────

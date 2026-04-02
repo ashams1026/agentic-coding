@@ -5,6 +5,39 @@
 
 ---
 
+## 2026-04-02 13:14 PDT — FX.UXO12: Fix stale closure in deleteSession
+
+**Done:** Computed `remaining` from `sessions.filter()` before calling `setSessions(remaining)`, eliminating the stale closure where `sessions` was read after the state update. Same `remaining` array now used for both state update and fallback session selection.
+**Files:** `packages/frontend/src/hooks/use-pico-chat.ts`
+
+---
+
+## 2026-04-02 13:14 PDT — FX.UXO14: Chat header context menu → DropdownMenu
+
+**Done:** Migrated the chat header's manual div-based context menu to shadcn/ui `DropdownMenu` for keyboard accessibility (arrow keys, Escape, Enter/Space). Removed `showHeaderMenu` state. Added `DropdownMenuTrigger`, `DropdownMenuContent`, `DropdownMenuItem`, `DropdownMenuSeparator`. Sidebar right-click menu left untouched.
+**Files:** `packages/frontend/src/pages/chat.tsx`
+
+---
+
+## 2026-04-02 13:14 PDT — FX.UXO23: Fix BUILT_IN_IDS wrong agent ID
+
+**Done:** Replaced `"ps-qa00001"` (nonexistent) with `"ps-rt00001"` (Router agent) in `BUILT_IN_IDS` set. Added `"ps-pico"` (Pico assistant). Set now has 6 entries matching all seed agent IDs.
+**Files:** `packages/frontend/src/features/agent-builder/agent-list.tsx`
+
+---
+
+## 2026-04-02 13:14 PDT — DES.5: Fix "stories" terminology in Agent Monitor
+
+**Done:** Changed "Agents start when stories move through workflow states" to "Agents start when work items move through workflow states" in the Live tab empty state.
+**Files:** `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`
+
+---
+
+## 2026-04-02 13:14 PDT — FX.UXO24: Track AgentId ps- prefix tech debt
+
+**Done:** Marked as completed — track-only task, no code change needed. The `ps-` prefix on AgentId is legacy tech debt to address in a future cleanup sprint.
+**Files:** (none)
+
 ## 2026-04-02 12:58 PDT — FX.UXO8, FX.UXO9, FX.UXO17, FX.UXO22: Bug fix + dead code batch
 
 **Done:** (1) FX.UXO8: Added agent-based session grouping to chat-panel.tsx dropdown (compact headers with avatars, collapsible groups). (2) FX.UXO9: Globe icon now shows for `pj-global` projectId, not just null. (3) FX.UXO17: Deleted dead `agent-editor.tsx`. (4) FX.UXO22: Removed dead `AgentScope` discriminated union from shared entities.

@@ -21,15 +21,15 @@
 - [x] **FX.UXO8** — Warning: Chat panel overlay (`chat-panel.tsx`) has no agent-based session grouping — only the full `/chat` page got it. Apply same `groupSessionsByAgent` pattern. *(completed 2026-04-02 12:58 PDT)*
 - [x] **FX.UXO9** — Warning: Chat header Globe icon (`chat.tsx`) checks `projectId === null` but projectId is notNull in schema. Should also check for `"pj-global"`. *(completed 2026-04-02 12:58 PDT)*
 - [x] **FX.UXO11** — Warning: `isPico` heuristic in `chat.tsx` and `chat-panel.tsx` matches `avatar.icon === "dog"`. Remove icon check, match on name only. *(completed 2026-04-02 12:53 PDT)*
-- [ ] **FX.UXO12** — Warning: `use-pico-chat.ts` stale closure in `deleteSession`. Compute `remaining` before updating sessions array.
+- [x] **FX.UXO12** — Warning: `use-pico-chat.ts` stale closure in `deleteSession`. Compute `remaining` before updating sessions array. *(completed 2026-04-02 13:14 PDT)*
 - [ ] **FX.UXO13** — Warning: Chat page shows empty state with no feedback when no project selected. Show "Select a project" message.
-- [ ] **FX.UXO14** — Warning: Chat header context menu (`chat.tsx`) lacks keyboard accessibility. Migrate to `DropdownMenu` component.
+- [x] **FX.UXO14** — Warning: Chat header context menu (`chat.tsx`) lacks keyboard accessibility. Migrate to `DropdownMenu` component. *(completed 2026-04-02 13:14 PDT)*
 - [x] **FX.UXO16** — Warning: `agent-list.tsx:handleCreate` creates agents without `scope`/`projectId`. Pass based on `useSelectedProject()`. *(completed 2026-04-02 12:53 PDT)*
 - [x] **FX.UXO17** — Warning: `agent-editor.tsx` is dead code. Delete it. *(completed 2026-04-02 12:58 PDT)*
 - [ ] **FX.UXO20** — Info: Dead `toolCallMap` in `use-pico-chat.ts`. Remove.
 - [x] **FX.UXO22** — Info: Dead `AgentScope` type in `shared/src/entities.ts`. Remove. *(completed 2026-04-02 12:58 PDT)*
-- [ ] **FX.UXO23** — Info: `BUILT_IN_IDS` in `agent-list.tsx` has wrong ID `"ps-qa00001"`. Fix to match seed data.
-- [ ] **FX.UXO24** — Info: `AgentId` type uses `ps-` prefix. Tech debt — track only.
+- [x] **FX.UXO23** — Info: `BUILT_IN_IDS` in `agent-list.tsx` has wrong ID `"ps-qa00001"`. Fix to match seed data. *(completed 2026-04-02 13:14 PDT)*
+- [x] **FX.UXO24** — Info: `AgentId` type uses `ps-` prefix. Tech debt — track only. *(completed 2026-04-02 13:10 PDT)*
 
 ### Phase 4: Workflow Rework (remaining)
 
@@ -50,7 +50,7 @@
 - [ ] **DES.2** — Dashboard: Improve Projects Overview table. Add columns: work item count, active agents, workflow name, last activity. Currently just shows name + date — not useful.
 - [ ] **DES.3** — Chat: Auto-generate session names from first user message (first 40 chars). "New chat" repeated 15+ times makes the session sidebar unusable. Fall back to timestamp if no message yet.
 - [ ] **DES.4** — Chat: Reduce session sidebar width. Currently takes disproportionate horizontal space. Cap at ~240px and truncate long session names with ellipsis.
-- [ ] **DES.5** — Agent Monitor: Fix "stories" terminology in Live empty state. "Agents start when stories move through workflow states" should say "work items" not "stories".
+- [x] **DES.5** — Agent Monitor: Fix "stories" terminology in Live empty state. "Agents start when stories move through workflow states" should say "work items" not "stories". *(completed 2026-04-02 13:14 PDT)*
 - [ ] **DES.6** — Agent Monitor: Add label to the filter dropdown next to the tabs. Currently just shows "All" with no context of what it filters (agents? projects?).
 - [ ] **DES.7** — Automations: Normalize workflow card heights. Default card (with state chips) is taller than cards with no states. Add min-height so cards align in a grid. Cards with no states should show a "Configure states" CTA instead of just "No states defined".
 - [ ] **DES.8** — Automations: Change ALL CAPS section headers ("WORKFLOWS", "SCHEDULES") to Title Case ("Workflows", "Schedules"). Reduce visual heaviness. Apply consistent icon sizing on section headers.

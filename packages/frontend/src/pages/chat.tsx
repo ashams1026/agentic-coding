@@ -33,6 +33,13 @@ import type { LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { usePicoStore } from "@/features/pico/pico-store";
 import { ChatMessage } from "@/features/pico/chat-message";
@@ -149,9 +156,6 @@ export function ChatPage() {
       return next;
     });
   };
-
-  // Header context menu
-  const [showHeaderMenu, setShowHeaderMenu] = useState(false);
 
   // Sidebar right-click context menu
   const [contextMenu, setContextMenu] = useState<{ sessionId: string; title: string; x: number; y: number } | null>(null);
@@ -437,49 +441,35 @@ export function ChatPage() {
               </div>
 
               {/* Context menu */}
-              <div className="relative shrink-0">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => setShowHeaderMenu(!showHeaderMenu)}
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-                {showHeaderMenu && (
-                  <>
-                    {/* Backdrop to close menu */}
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setShowHeaderMenu(false)}
-                    />
-                    <div className="absolute right-0 top-full mt-1 bg-popover border border-border rounded-md shadow-lg z-20 py-1 w-40">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowHeaderMenu(false);
-                          startRename(cs.id, cs.title);
-                        }}
-                        className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-muted transition-colors"
-                      >
-                        <Pencil className="h-3 w-3" />
-                        Rename session
-                      </button>
-                      <div className="h-px bg-border mx-1 my-1" />
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setShowHeaderMenu(false);
-                          setDeleteConfirmId(cs.id);
-                        }}
-                        className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs text-red-400 hover:bg-red-500/10 transition-colors"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                        Delete session
-                      </button>
-                    </div>
-                  </>
-                )}
+              <div className="shrink-0">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-40">
+                    <DropdownMenuItem
+                      onClick={() => startRename(cs.id, cs.title)}
+                      className="text-xs gap-2"
+                    >
+                      <Pencil className="h-3 w-3" />
+                      Rename session
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => setDeleteConfirmId(cs.id)}
+                      className="text-xs gap-2 text-red-400 focus:text-red-400"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Delete session
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           );
