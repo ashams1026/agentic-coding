@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 00:45 PDT — Review: FND.GA.9 (approved)
+
+**Reviewed:** Backend nullable projectId in chat sessions + persona override.
+- `POST /api/chat/sessions`: both `projectId` and `personaId` optional, empty body → 201 ✓
+- Validates project/persona when provided (404) ✓
+- `projectId: null` stored for global scope ✓
+- `POST /api/chat/sessions/:id/messages`: optional `personaId` overrides default Pico ✓
+- Falls back to `isAssistant === true` persona when no override ✓
+- `serializeSession` handles nullable projectId ✓
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 00:40 PDT — FND.GA.9: Backend nullable projectId in chat sessions + persona override
 
 **Done:** Updated `POST /api/chat/sessions` to accept optional `projectId` and `personaId`. Removed 400 guard for missing projectId — now creates session with `projectId: null` for global scope. Validates project/persona exist when provided (404). Returns 201 instead of 200. Updated `POST /api/chat/sessions/:id/messages` to accept optional `personaId` in body — when provided, loads that persona instead of default Pico for the chat response. Fixed `serializeSession` to handle nullable `projectId` with null coalescing.
