@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 12:00 PDT — DECOMPOSE: Sprint 25 — Workflow Engine
+
+**Done:** Decomposed Sprint 25 into 22 tasks across 6 sections: Schema & Data Model (CWF.1-3), Backend Runtime (CWF.4-8), API Routes (CWF.9-10), Frontend Dynamic Views (CWF.11-14), Frontend Workflow Builder (CWF.15-18), Testing & Docs (CWF.TEST.1-3, CWF.DOC.1). Read all 4 proposal docs + explored current codebase (26 files import WORKFLOW, isValidTransition used in 2 backend files). Key decisions: 3 new tables (workflows/states/transitions), seed default from hardcoded constant, dual-read fallback during migration, Phase 1 form-list builder (no graph editor), regression checkpoint critical after runtime replacement.
+**Files:** `TASKS.md`
+
+---
+
 ## 2026-04-02 11:45 PDT — Review: CUX.TEST.5 (approved)
 
 **Reviewed:** Post-Sprint 24 regression checkpoint results.

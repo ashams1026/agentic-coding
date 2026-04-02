@@ -191,3 +191,4 @@ Scheduling infrastructure, rollback UX, templates, analytics metrics/UX, inbound
 - [x] **CUX.TEST.4** — Execute Notifications UX e2e tests — 7/7 PASS, 6 screenshots. *(completed 2026-04-02 10:50 PDT)*
 - [x] **CUX.DOC.1** — Document Agent Chat multi-persona API + template variables in docs/api.md. *(completed 2026-04-02 11:05 PDT)*
 - [x] **CUX.DOC.2** — Document Notifications system — WS event, types, preferences in docs/api.md. *(completed 2026-04-02 11:20 PDT)*
+- [x] **CUX.TEST.5** — Regression checkpoint post-Sprint 24 — 36 suites, 0 regressions. *(completed 2026-04-02 11:45 PDT)*
