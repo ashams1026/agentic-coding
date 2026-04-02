@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-04-02 00:00 PDT — Review: FND.GA.6 (approved)
+
+**Reviewed:** Agent Monitor "New Run" modal.
+- Persona picker from `usePersonas()` with real personas list ✓
+- Scope selector: Global / Project with conditional project picker ✓
+- Prompt textarea + budget input with validation ✓
+- `canSubmit` guards: personaId + prompt + valid scope ✓
+- Submit calls `runExecution()` via centralized `post()` helper ✓
+- Success/error toasts via `useToastStore` ✓
+- Form resets on close; `submitting` state prevents double-submit ✓
+- Button in tab bar next to scope filter, Live tab only ✓
+- Build passes; visual check confirmed modal with all fields + real persona data
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 23:55 PDT — FND.GA.6: Agent Monitor "New Run" modal
 
 **Done:** Created `new-run-modal.tsx` with Dialog containing: persona picker (populated from `usePersonas()`), scope selector (Global / Project with conditional project picker), prompt textarea, budget input. "Start Run" disabled until persona + prompt + valid scope filled. On submit calls `POST /api/executions/run` via new `runExecution()` API function. Shows success/error toast via `useToastStore`. Added `runExecution` + `RunExecutionRequest` type to API client + exports. Wired "+ New Run" button into `agent-monitor-layout.tsx` tab bar next to scope filter (Live tab only).
