@@ -145,6 +145,7 @@ export const executions = sqliteTable("executions", {
   id: text("id").primaryKey(), // ExecutionId
   workItemId: text("work_item_id").notNull().references(() => workItems.id),
   personaId: text("persona_id").notNull().references(() => personas.id),
+  projectId: text("project_id").references(() => projects.id), // nullable — for standalone/global executions
   status: text("status").notNull().default("pending"), // ExecutionStatus
   startedAt: integer("started_at", { mode: "timestamp_ms" }).notNull(),
   completedAt: integer("completed_at", { mode: "timestamp_ms" }),
@@ -244,7 +245,7 @@ export const projectMemoriesRelations = relations(projectMemories, ({ one }) => 
 
 export const chatSessions = sqliteTable("chat_sessions", {
   id: text("id").primaryKey(), // ChatSessionId
-  projectId: text("project_id").notNull().references(() => projects.id, { onDelete: "cascade" }),
+  projectId: text("project_id").references(() => projects.id), // nullable for global sessions
   title: text("title").notNull().default("New chat"),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
@@ -273,5 +274,23 @@ export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
   session: one(chatSessions, {
     fields: [chatMessages.sessionId],
     references: [chatSessions.id],
+  }),
+}));
+
+// ── Global Memories ──────────────────────────────────────────────
+
+export const globalMemories = sqliteTable("global_memories", {
+  id: text("id").primaryKey(), // GlobalMemoryId
+  personaId: text("persona_id").notNull().references(() => personas.id),
+  summary: text("summary").notNull().default(""),
+  keyDecisions: text("key_decisions", { mode: "json" }).notNull().$type<string[]>().default([]),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+  consolidatedInto: text("consolidated_into"), // self-referencing FK (GlobalMemoryId | null)
+});
+
+export const globalMemoriesRelations = relations(globalMemories, ({ one }) => ({
+  persona: one(personas, {
+    fields: [globalMemories.personaId],
+    references: [personas.id],
   }),
 }));

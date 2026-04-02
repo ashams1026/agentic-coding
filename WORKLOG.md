@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 22:32 PDT — FND.GA.1: Schema migration for Global Agents
+
+**Done:** Made `chatSessions.projectId` nullable (removed `.notNull()` and `onDelete: "cascade"`). Added nullable `projectId` column to `executions` with FK to `projects.id`. Created `global_memories` table with `id`, `personaId` (NOT NULL), `summary`, `keyDecisions` (JSON), `createdAt`, `consolidatedInto`. Generated Drizzle migration `0009_sudden_mathemanic.sql`. Fixed two TypeScript errors in `chat.ts` where code assumed `session.projectId` was non-null (project lookup + MCP env var). Backend starts without errors; all three schema changes verified via sqlite3.
+**Files:** `packages/backend/src/db/schema.ts`, `packages/backend/src/routes/chat.ts`, `packages/backend/drizzle/0009_sudden_mathemanic.sql` (new), `packages/backend/drizzle/meta/_journal.json`
+
+---
+
 ## 2026-04-01 22:24 PDT — Review: FND.WIL.8 (approved)
 
 **Reviewed:** "Recently deleted" recovery view in Settings > Data.

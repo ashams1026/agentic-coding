@@ -251,11 +251,10 @@ export async function chatRoutes(app: FastifyInstance) {
       return reply.status(503).send({ error: "Pico persona not found" });
     }
 
-    // Load project for context
-    const [project] = await db
-      .select()
-      .from(projects)
-      .where(eq(projects.id, session.projectId));
+    // Load project for context (may be null for global sessions)
+    const project = session.projectId
+      ? (await db.select().from(projects).where(eq(projects.id, session.projectId)))[0]
+      : undefined;
 
     // Load full conversation history
     const history = await db
@@ -371,7 +370,7 @@ export async function chatRoutes(app: FastifyInstance) {
               env: {
                 PERSONA_NAME: pico.name,
                 PERSONA_ID: pico.id,
-                PROJECT_ID: session.projectId,
+                ...(session.projectId ? { PROJECT_ID: session.projectId } : {}),
                 ALLOWED_TOOLS: (pico.mcpTools as string[]).join(","),
               },
             },
