@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 22:46 PDT — Review: FND.GA.2 (approved)
+
+**Reviewed:** AgentScope type and nullable entity fields in shared package.
+- `AgentScope` discriminated union with project/global variants ✓
+- `Execution.workItemId` → `WorkItemId | null` ✓
+- `ChatSession.projectId` → `ProjectId | null` ✓
+- 4 downstream TS fixes: null-safe patterns in agent-monitor + work-items ✓
+- Other interfaces unchanged (WorkItem, Comment, etc. remain non-null) ✓
+- Full build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 22:42 PDT — FND.GA.2: Add AgentScope type and update entity types
 
 **Done:** Added `AgentScope` discriminated union type to `entities.ts`. Made `Execution.workItemId` nullable (`WorkItemId | null`) and `ChatSession.projectId` nullable (`ProjectId | null`). Fixed 4 downstream TypeScript errors: `active-agent-sidebar.tsx` and `agent-history.tsx` (show "Standalone" for null workItemId), `flow-view.tsx` (null-guard on map lookup), `list-view.tsx` (null-guard on Set.add). All packages build.
