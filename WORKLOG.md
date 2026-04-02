@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 16:10 PDT — RB.1, RB.2, RB.TEST.1: Time elapsed, conflict detection, test plan
+
+**Done:** (1) RB.1: Added `formatTimeAgo()` helper and time-elapsed indicator (Clock icon + relative time) to rewind confirmation dialog in agent-history.tsx. Shows "completed X minutes/hours/days ago" or fallback for null completedAt. (2) RB.2: Added `ConflictInfo` type to shared entities. Backend rewind dry-run now compares file mtime against execution.completedAt, queries recent executions for modifiedBy attribution, returns `conflicts: ConflictInfo[]` in response. Only runs during dry-run. (3) RB.TEST.1: 44-step e2e test plan across 8 parts covering all 4 phases + edge cases + dark/light mode.
+**Files:** `features/agent-monitor/agent-history.tsx`, `packages/shared/src/entities.ts`, `packages/backend/src/routes/executions.ts`, `tests/e2e/plans/rollback-enhancements.md` (new)
+
+---
+
 ## 2026-04-02 16:00 PDT — Plan: Decompose Sprint 32 — Rollback Enhancements
 
 **Done:** Planned Sprint 32 from `docs/proposals/rollback/design.md`. 14 tasks across 4 phases + testing/docs: (1) Improve Current Rewind — time elapsed indicator, backend conflict detection (mtime + execution history), frontend conflict warning banner. (2) Multi-Surface — extract shared RewindButton, add to execution-timeline, add to agent monitor detail. (3) Git Integration — backend git commit creation after rewind, frontend checkbox toggle. (4) Enhanced Preview — backend per-file diff in dry-run, frontend expandable diff display reusing DiffBlock.

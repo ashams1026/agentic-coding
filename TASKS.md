@@ -91,8 +91,8 @@
 
 ### Phase 1: Improve Current Rewind
 
-- [ ] **RB.1** — Frontend: Add time-elapsed indicator to rewind confirmation dialog in `features/agent-monitor/agent-history.tsx`. Show "This execution ran X minutes/hours/days ago" in the AlertDialog body, computed from `execution.completedAt`. Use relative time formatting (e.g., "2 hours ago", "3 days ago"). Helps users gauge risk of rewinding old executions.
-- [ ] **RB.2** — Backend: Add file conflict detection to `POST /api/executions/:id/rewind` dry-run response. For each file in `filesChanged`, compare file mtime against `execution.completedAt`. Return a `conflicts` array: `{ filePath: string, modifiedAt: string, modifiedBy?: string }[]`. Query recent executions that also modified overlapping files for the `modifiedBy` field. Add `ConflictInfo` type to shared package.
+- [x] **RB.1** — Frontend: Add time-elapsed indicator to rewind confirmation dialog in `features/agent-monitor/agent-history.tsx`. Show "This execution ran X minutes/hours/days ago" in the AlertDialog body, computed from `execution.completedAt`. Use relative time formatting (e.g., "2 hours ago", "3 days ago"). Helps users gauge risk of rewinding old executions. *(completed 2026-04-02 16:10 PDT)*
+- [x] **RB.2** — Backend: Add file conflict detection to `POST /api/executions/:id/rewind` dry-run response. For each file in `filesChanged`, compare file mtime against `execution.completedAt`. Return a `conflicts` array: `{ filePath: string, modifiedAt: string, modifiedBy?: string }[]`. Query recent executions that also modified overlapping files for the `modifiedBy` field. Add `ConflictInfo` type to shared package. *(completed 2026-04-02 16:10 PDT)*
 - [ ] **RB.3** — Frontend: Show conflict warning banner in rewind confirmation dialog. When `conflicts` array is non-empty, render a yellow warning box listing conflicted files with when/by whom they were modified. "Reverting will overwrite these changes." Mark conflicted files with a warning icon in the file list. Keep "Rewind Files" button enabled (warning only, never block).
 
 ### Phase 2: Multi-Surface Rollback
@@ -113,7 +113,7 @@
 
 ### Testing & Documentation
 
-- [ ] **RB.TEST.1** — Write e2e test plan: `tests/e2e/plans/rollback-enhancements.md`. Cover: time elapsed indicator, conflict warning with post-execution modified files, rewind from execution timeline, rewind from agent monitor detail, git commit creation toggle + SHA display, per-file diff preview, expand/collapse diffs.
+- [x] **RB.TEST.1** — Write e2e test plan: `tests/e2e/plans/rollback-enhancements.md`. Cover: time elapsed indicator, conflict warning with post-execution modified files, rewind from execution timeline, rewind from agent monitor detail, git commit creation toggle + SHA display, per-file diff preview, expand/collapse diffs. *(completed 2026-04-02 16:10 PDT)*
 - [ ] **RB.DOC.1** — Update `docs/api.md` with enhanced rewind endpoint (conflict detection fields, createCommit option, fileDiffs response), update `docs/frontend.md` with shared RewindButton component.
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **RB.TEST.2** — Execute rollback enhancement e2e tests. Screenshot each case. File bugs as `FX.RB.*`.
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **RB.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.

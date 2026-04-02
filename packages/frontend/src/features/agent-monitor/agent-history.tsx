@@ -81,6 +81,22 @@ function formatDuration(ms: number): string {
   return `${hours}h ${minutes % 60}m`;
 }
 
+function formatTimeAgo(date: Date | string): string {
+  const then = typeof date === "string" ? new Date(date) : date;
+  const now = new Date();
+  const diffMs = now.getTime() - then.getTime();
+  const diffSeconds = Math.floor(diffMs / 1000);
+  if (diffSeconds < 60) return "just now";
+  const diffMinutes = Math.floor(diffSeconds / 60);
+  if (diffMinutes < 60) return `${diffMinutes} minute${diffMinutes !== 1 ? "s" : ""} ago`;
+  const diffHours = Math.floor(diffMinutes / 60);
+  if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? "s" : ""} ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? "s" : ""} ago`;
+  const diffWeeks = Math.floor(diffDays / 7);
+  return `${diffWeeks} week${diffWeeks !== 1 ? "s" : ""} ago`;
+}
+
 const outcomeBadge: Record<string, { label: string; className: string }> = {
   success: {
     label: "Success",
@@ -356,6 +372,14 @@ function RewindButton({ execution }: RewindButtonProps) {
                   This will revert all file changes made by this agent execution
                   to their pre-execution state.
                 </p>
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Clock className="h-3 w-3 shrink-0" />
+                  <span>
+                    {execution.completedAt
+                      ? `This execution completed ${formatTimeAgo(execution.completedAt)}`
+                      : "Execution completion time unknown"}
+                  </span>
+                </div>
                 {preview && preview.filesChanged.length > 0 && (
                   <div className="rounded-md border bg-muted/50 p-3">
                     <p className="text-xs font-medium mb-2">

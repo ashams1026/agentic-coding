@@ -225,6 +225,14 @@ export interface ChatMessage {
   createdAt: string;
 }
 
+// ── Rewind / conflict detection ────────────────────────────────
+
+export interface ConflictInfo {
+  filePath: string;
+  modifiedAt: string;  // ISO timestamp of file modification
+  modifiedBy?: string; // e.g., "execution ex-abc (Engineer)" or "unknown"
+}
+
 // ── Workflows ───────────────────────────────────────────────────
 
 export interface Workflow {

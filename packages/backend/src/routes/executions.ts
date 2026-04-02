@@ -1,5 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import { eq, inArray } from "drizzle-orm";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { eq, inArray, and, gt } from "drizzle-orm";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import type { RewindFilesResult } from "@anthropic-ai/claude-agent-sdk";
 import { db } from "../db/connection.js";
@@ -12,6 +14,7 @@ import type {
   AgentId,
   CreateExecutionRequest,
   UpdateExecutionRequest,
+  ConflictInfo,
 } from "@agentops/shared";
 import { loadConfig } from "../config.js";
 import { logger } from "../logger.js";
@@ -421,6 +424,71 @@ export async function executionRoutes(app: FastifyInstance) {
       });
     }
 
+    // Detect file conflicts on dry-run only
+    let conflicts: ConflictInfo[] = [];
+    if (dryRun && execution.completedAt && result.filesChanged?.length) {
+      const completedAtMs = execution.completedAt.getTime();
+
+      // Query recent executions in the same project that completed after this one
+      const laterExecutions = await db
+        .select({
+          id: executions.id,
+          agentId: executions.agentId,
+          summary: executions.summary,
+          logs: executions.logs,
+        })
+        .from(executions)
+        .where(
+          and(
+            eq(executions.projectId, workItem.projectId),
+            gt(executions.completedAt, execution.completedAt),
+            eq(executions.status, "completed"),
+          ),
+        )
+        .limit(5);
+
+      // Pre-fetch agent names for attribution
+      const agentIds = [...new Set(laterExecutions.map((e) => e.agentId))];
+      const agentRows = agentIds.length
+        ? await db
+            .select({ id: agents.id, name: agents.name })
+            .from(agents)
+            .where(inArray(agents.id, agentIds))
+        : [];
+      const agentNameMap = new Map(agentRows.map((a) => [a.id, a.name]));
+
+      for (const relPath of result.filesChanged) {
+        const absPath = path.resolve(project.path, relPath);
+        try {
+          const stat = await fs.stat(absPath);
+          const mtimeMs = stat.mtimeMs;
+          if (mtimeMs > completedAtMs) {
+            // File was modified after this execution completed — potential conflict
+            const basename = path.basename(relPath);
+            let modifiedBy = "unknown";
+
+            // Best-effort attribution: check if any later execution mentions this file
+            for (const ex of laterExecutions) {
+              const haystack = `${ex.summary ?? ""} ${ex.logs ?? ""}`;
+              if (haystack.includes(basename) || haystack.includes(relPath)) {
+                const agentName = agentNameMap.get(ex.agentId) ?? "unknown";
+                modifiedBy = `execution ${ex.id} (${agentName})`;
+                break;
+              }
+            }
+
+            conflicts.push({
+              filePath: relPath,
+              modifiedAt: new Date(mtimeMs).toISOString(),
+              modifiedBy,
+            });
+          }
+        } catch {
+          // File does not exist (deleted) — not a conflict
+        }
+      }
+    }
+
     // If not a dry run, post a system comment and audit
     if (!dryRun) {
       const now = new Date();
@@ -459,6 +527,7 @@ export async function executionRoutes(app: FastifyInstance) {
         insertions: result.insertions ?? 0,
         deletions: result.deletions ?? 0,
         dryRun,
+        conflicts,
       },
     };
   });
