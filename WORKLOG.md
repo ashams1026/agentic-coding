@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 20:38 PDT — Review: FND.ERR.4 (approved)
+
+**Reviewed:** WS connection state indicator in status bar and Agent Monitor.
+- `ws-client.ts`: `_status`/`statusListeners`/`setStatus()` with deduplication (:124-128); status set in `onopen` (:66), `onclose` (:87/:90), `disconnect()` (:110) — all transitions correct
+- `use-ws-status.ts`: `useSyncExternalStore(onWsStatusChange, getWsStatus)` — correct React external store pattern, stable subscribe reference
+- `status-bar.tsx`: tri-state dot (green/amber-pulse/red) at :77-93; removed unused `isHealthy`, kept `useHealth` for `executorMode` ✓
+- `terminal-renderer.tsx`: amber banner at :609-617 when `wsStatus !== "connected"` — matches existing progress bar styling
+- No memory leaks: unsubscribe returned from `onStatusChange`, `useSyncExternalStore` handles cleanup
+- Build passes; visual check confirmed by worker
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 20:36 PDT — FND.ERR.4: WS connection state indicator
 
 **Done:** Added tri-state WS connection indicator. Added `_status`/`statusListeners`/`setStatus()` to `RealWsClient` — tracks `connected`/`reconnecting`/`disconnected` via `onopen`/`onclose`/`disconnect()`. Exposed via `ws.ts` facade (`getWsStatus`, `onWsStatusChange`). Created `useWsStatus()` hook using `useSyncExternalStore`. Updated status bar: replaced static Healthy/Unhealthy with green dot (connected), amber pulsing dot (reconnecting), red dot (disconnected). Added amber "Connection lost — reconnecting" banner in `TerminalRenderer` when WS is not connected. Visual check: status bar shows "Disconnected" correctly; Agent Monitor layout clean.
