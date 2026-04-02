@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-03 05:45 PDT — Review: DM.5 (approved)
+
+**Reviewed:** Frontend data management section.
+- Backup: create + list + restore with confirm dialogs ✓
+- Log truncation: day selector dropdown + confirm + count toast ✓
+- Storage stats: total badge + per-table table ✓
+- Wired into DataSection ✓
+- Build passes ✓
+- **Verdict: approved.** Data Management P1 (DM.1-5) complete.
+
+---
+
 ## 2026-04-03 05:40 PDT — DM.5: Frontend data management section
 
 **Done:** Created `packages/frontend/src/features/settings/data-management-section.tsx`. Three sections: (1) Database Backups — "Create Backup" button with spinner, backup list (filename, date, size MB, restore button with confirm dialog). (2) Log Truncation — day selector dropdown (7/14/30/60/90), "Truncate Old Logs" button with confirm dialog + truncated count toast. (3) Storage — HardDrive icon, total size badge, per-table row count table with mono font. Wired into existing DataSection in appearance-section.tsx above RecentlyDeleted.
