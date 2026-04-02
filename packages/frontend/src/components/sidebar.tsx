@@ -51,8 +51,10 @@ const themeLabel = { system: "System", light: "Light", dark: "Dark" } as const;
 
 export function Sidebar() {
   const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, setMobileSidebarOpen, theme, setTheme, selectedProjectId, setSelectedProjectId } = useUIStore();
-  const { data: executions } = useExecutions(undefined, selectedProjectId ?? undefined);
-  const { data: dashboardStats } = useDashboardStats(selectedProjectId ?? undefined);
+  const isGlobalScope = selectedProjectId === "__all__";
+  const effectiveProjectId = isGlobalScope ? undefined : (selectedProjectId ?? undefined);
+  const { data: executions } = useExecutions(undefined, effectiveProjectId);
+  const { data: dashboardStats } = useDashboardStats(effectiveProjectId);
   const { data: projectsList } = useProjects();
   const activeAgentCount = executions?.filter((e) => e.status === "running").length ?? 0;
   const pendingProposalCount = dashboardStats?.pendingProposals ?? 0;
@@ -60,14 +62,16 @@ export function Sidebar() {
   const location = useLocation();
 
   // Auto-select the first project if none is selected or selected project no longer exists
+  // Skip when user has explicitly chosen "All Projects" (global scope)
   useEffect(() => {
+    if (isGlobalScope) return;
     if (projectsList && projectsList.length > 0) {
       const selectedExists = selectedProjectId && projectsList.some((p) => p.id === selectedProjectId);
       if (!selectedExists) {
         setSelectedProjectId(projectsList[0]!.id);
       }
     }
-  }, [selectedProjectId, projectsList, setSelectedProjectId]);
+  }, [isGlobalScope, selectedProjectId, projectsList, setSelectedProjectId]);
 
   // Close mobile sidebar on navigation
   useEffect(() => {
@@ -107,7 +111,7 @@ export function Sidebar() {
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">
-              {projectsList?.find((p) => p.id === selectedProjectId)?.name ?? "No project"}
+              {isGlobalScope ? "All Projects" : (projectsList?.find((p) => p.id === selectedProjectId)?.name ?? "No project")}
             </TooltipContent>
           </Tooltip>
         ) : (
@@ -119,6 +123,7 @@ export function Sidebar() {
               <SelectValue placeholder="No projects" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="__all__">All Projects</SelectItem>
               {projectsList && projectsList.length > 0 ? (
                 projectsList.map((p) => (
                   <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>

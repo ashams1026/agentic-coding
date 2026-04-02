@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-01 23:05 PDT — FND.GA.3: Add "All Projects" option to sidebar project selector
+
+**Done:** Added "All Projects" `SelectItem` with value `"__all__"` at the top of the sidebar project dropdown. When selected, `selectedProjectId` stores `"__all__"` (not null) to distinguish from uninitialized state. Updated auto-select `useEffect` in both `sidebar.tsx` and `use-selected-project.ts` to skip when `"__all__"` is set. API calls in sidebar use `effectiveProjectId` that maps `"__all__"` to `undefined`. `useSelectedProject` hook returns `projectId: null` when global scope is active. Collapsed sidebar tooltip shows "All Projects" correctly.
+**Files:** `packages/frontend/src/components/sidebar.tsx`, `packages/frontend/src/hooks/use-selected-project.ts`
+**Notes:** Used `"__all__"` sentinel string in store (persisted via zustand) rather than null — this avoids ambiguity with initial null state that triggers auto-select.
+
+---
+
 ## 2026-04-01 22:46 PDT — Review: FND.GA.2 (approved)
 
 **Reviewed:** AgentScope type and nullable entity fields in shared package.
