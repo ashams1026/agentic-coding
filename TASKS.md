@@ -27,7 +27,7 @@
 - [x] **S27.TEST.3** — Execute Outbound Webhooks e2e tests. Screenshot each case. Record results. File bugs as `FX.*`. *(completed 2026-04-03 06:30 PDT)*
 - [x] **S27.TEST.4** — Execute Inbound Webhooks + Data Management e2e tests. Screenshot each case. Record results. File bugs as `FX.*`. *(completed 2026-04-03 06:45 PDT)*
 - [x] **S27.DOC.1** — Document Sprint 27 APIs. Update `docs/api.md` with: webhook subscription CRUD, delivery log, event catalog, inbound trigger endpoints, backup/restore, storage stats, log truncation. *(completed 2026-04-03 07:00 PDT)*
-- [review] **S27.TEST.5** — Regression checkpoint: re-run ALL existing e2e test plans against current build. Compare against Sprint 26 baseline (40 suites, 0 regressions). File bugs as `FX.REG.*`.
+- [x] **S27.TEST.5** — Regression checkpoint: re-run ALL existing e2e test plans against current build. Compare against Sprint 26 baseline (40 suites, 0 regressions). File bugs as `FX.REG.*`. *(completed 2026-04-03 07:15 PDT)*
 
 ---
 
