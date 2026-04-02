@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 12:50 PDT — FX.NAV.1: Update command palette navigation items
+
+**Done:** Added Analytics, Chat, and Workflows to NAV_ITEMS in command-palette.tsx. Now matches sidebar exactly (9 items). Added `BarChart3` and `GitBranch` icon imports. Also renamed "Persona Manager" to "Personas" for consistency with sidebar label.
+**Files:** `packages/frontend/src/features/command-palette/command-palette.tsx`
+
+---
+
 ## 2026-04-03 12:40 PDT — Review: FX.CHAT.1 (approved)
 
 **Reviewed:** Project name display in chat header badge.
