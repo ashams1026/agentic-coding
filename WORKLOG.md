@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 16:00 PDT — Plan: Decompose Sprint 32 — Rollback Enhancements
+
+**Done:** Planned Sprint 32 from `docs/proposals/rollback/design.md`. 14 tasks across 4 phases + testing/docs: (1) Improve Current Rewind — time elapsed indicator, backend conflict detection (mtime + execution history), frontend conflict warning banner. (2) Multi-Surface — extract shared RewindButton, add to execution-timeline, add to agent monitor detail. (3) Git Integration — backend git commit creation after rewind, frontend checkbox toggle. (4) Enhanced Preview — backend per-file diff in dry-run, frontend expandable diff display reusing DiffBlock.
+**Files:** `TASKS.md`
+
+---
+
 ## 2026-04-02 15:55 PDT — RICH.9: Expand/collapse state management
 
 **Done:** Added controlled mode to ToolCallCard (`expanded` + `onExpandedChange` props) while preserving uncontrolled mode. FullPageMessageBody now tracks expand/collapse per tool call via `Map<string, boolean>` state. Default rules: Edit/Write/Bash expanded, Read/Grep/Glob collapsed. "Collapse all tools" / "Expand all tools" toggle button appears when 2+ tool calls in a message. Exported `EXPANDED_BY_DEFAULT` set for shared use.
