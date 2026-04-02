@@ -11,6 +11,7 @@ export type ProposalId = `pp-${string}`;
 export type ChatSessionId = `cs-${string}`;
 export type ChatMessageId = `msg-${string}`;
 export type ScheduleId = `sch-${string}`;
+export type TemplateId = `tpl-${string}`;
 
 export type EntityId =
   | ProjectId
@@ -23,7 +24,8 @@ export type EntityId =
   | ProposalId
   | ChatSessionId
   | ChatMessageId
-  | ScheduleId;
+  | ScheduleId
+  | TemplateId;
 
 const ID_LENGTH = 7;
 
@@ -43,6 +45,7 @@ export const createId = {
   chatSession: () => makeId<ChatSessionId>("cs"),
   chatMessage: () => makeId<ChatMessageId>("msg"),
   schedule: () => makeId<ScheduleId>("sch"),
+  template: () => makeId<TemplateId>("tpl"),
   workflow: () => makeId<string>("wf"),
   workflowState: () => makeId<string>("ws"),
   workflowTransition: () => makeId<string>("wt"),

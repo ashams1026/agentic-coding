@@ -479,3 +479,15 @@ export const schedulesRelations = relations(schedules, ({ one }) => ({
     references: [projects.id],
   }),
 }));
+
+// ── Templates ────────────────────────────────────────────────────
+
+export const templates = sqliteTable("templates", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  type: text("type").notNull(), // "work_item" | "persona"
+  description: text("description").notNull().default(""),
+  content: text("content", { mode: "json" }).notNull(), // JSON content blob
+  isBuiltIn: integer("is_built_in", { mode: "boolean" }).notNull().default(false),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+});
