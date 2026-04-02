@@ -304,7 +304,7 @@ export class ExecutionManager {
     }
 
     const [item] = await (this.db as any)
-      .select({ projectId: workItems.projectId, title: workItems.title })
+      .select({ projectId: workItems.projectId, title: workItems.title, workflowId: workItems.workflowId, currentState: workItems.currentState })
       .from(workItems)
       .where(eq(workItems.id, workItemId));
 
@@ -335,6 +335,8 @@ export class ExecutionManager {
       outcome: null,
       rejectionPayload: null,
       logs: "",
+      workflowId: item.workflowId ?? null,
+      workflowStateName: item.currentState ?? null,
     });
 
     trackExecution(executionId);

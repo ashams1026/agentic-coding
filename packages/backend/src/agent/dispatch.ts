@@ -5,9 +5,10 @@
  * Respects concurrency limits: if at capacity, the task is enqueued.
  */
 
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { personaAssignments, workItems, comments } from "../db/schema.js";
+import { workItems, comments } from "../db/schema.js";
+import { resolvePersonaForState } from "./workflow-runtime.js";
 import { executionManager } from "./setup.js";
 import { canSpawn, enqueue, checkMonthlyCost } from "./concurrency.js";
 import { createId } from "@agentops/shared";
@@ -24,26 +25,20 @@ export async function dispatchForState(
   workItemId: string,
   stateName: string,
 ): Promise<void> {
-  // Look up the work item's project
+  // Look up the work item's project and workflow
   const [item] = await db
-    .select({ projectId: workItems.projectId })
+    .select({ projectId: workItems.projectId, workflowId: workItems.workflowId })
     .from(workItems)
     .where(eq(workItems.id, workItemId));
 
   if (!item) return;
 
-  // Look up persona assignment for this project + state
-  const [assignment] = await db
-    .select({ personaId: personaAssignments.personaId })
-    .from(personaAssignments)
-    .where(
-      and(
-        eq(personaAssignments.projectId, item.projectId),
-        eq(personaAssignments.stateName, stateName),
-      ),
-    );
+  // Resolve persona for this state via workflow runtime (with persona_assignments fallback)
+  const personaId = await resolvePersonaForState(item.projectId, item.workflowId ?? null, stateName);
 
-  if (!assignment) return; // No persona assigned to this state
+  if (!personaId) return; // No persona assigned to this state
+
+  const assignment = { personaId };
 
   // Check monthly cost cap before spawning
   const costCheck = await checkMonthlyCost(item.projectId);
