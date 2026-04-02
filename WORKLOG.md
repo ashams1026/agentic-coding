@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 13:50 PDT — CWF.7: Update MCP server tools for dynamic workflow
+
+**Done:** Updated 3 MCP tools in `packages/backend/src/agent/mcp-server.ts`. `route_to_state`: selects workflowId, validates via `isValidTransitionDynamic()` instead of sync `isValidTransition()`. `create_children`: selects parent's workflowId, resolves initial state via `getWorkflowInitialState()`, inherits `workflowId` on child items. `flag_blocked`: queries workflow states via `getWorkflowStates()` to find "Blocked" state by name (case-insensitive), uses dynamic name in update and broadcast. Replaced `WORKFLOW` and `isValidTransition` imports with workflow-runtime functions.
+**Files:** `packages/backend/src/agent/mcp-server.ts`
+
+---
+
 ## 2026-04-02 13:40 PDT — Review: CWF.6 (approved)
 
 **Reviewed:** dispatch.ts + execution-manager.ts workflow integration.

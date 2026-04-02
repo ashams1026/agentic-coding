@@ -14,7 +14,8 @@ import { z } from "zod";
 import { eq, and } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { comments, workItems, workItemEdges } from "../db/schema.js";
-import { createId, WORKFLOW, isValidTransition } from "@agentops/shared";
+import { createId } from "@agentops/shared";
+import { isValidTransitionDynamic, getWorkflowInitialState, getWorkflowStates } from "./workflow-runtime.js";
 import type { CommentId, WorkItemId, PersonaId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 import { checkParentCoordination } from "./coordination.js";
@@ -157,9 +158,9 @@ export function createMcpServer(context: McpContext): McpServer {
     },
     async ({ parentId, children }) => {
       try {
-        // Look up parent to get projectId
+        // Look up parent to get projectId and workflowId
         const [parent] = await db
-          .select({ projectId: workItems.projectId })
+          .select({ projectId: workItems.projectId, workflowId: workItems.workflowId })
           .from(workItems)
           .where(eq(workItems.id, parentId));
 
@@ -172,6 +173,7 @@ export function createMcpServer(context: McpContext): McpServer {
 
         const now = new Date();
         const createdIds: string[] = [];
+        const initialState = await getWorkflowInitialState(parent.workflowId ?? null);
 
         // Create each child work item
         for (const child of children) {
@@ -185,7 +187,8 @@ export function createMcpServer(context: McpContext): McpServer {
             title: child.title,
             description: child.description ?? "",
             context: {},
-            currentState: WORKFLOW.initialState,
+            currentState: initialState,
+            workflowId: parent.workflowId ?? null,
             priority: "p2",
             labels: [],
             assignedPersonaId: null,
@@ -198,7 +201,7 @@ export function createMcpServer(context: McpContext): McpServer {
             type: "state_change",
             workItemId: id as WorkItemId,
             fromState: "",
-            toState: WORKFLOW.initialState,
+            toState: initialState,
             triggeredBy: (context.personaId as PersonaId) || "system",
             timestamp: now.toISOString(),
           });
@@ -258,9 +261,9 @@ export function createMcpServer(context: McpContext): McpServer {
     },
     async ({ workItemId, targetState, reasoning }) => {
       try {
-        // Look up current state
+        // Look up current state and workflow
         const [item] = await db
-          .select({ currentState: workItems.currentState })
+          .select({ currentState: workItems.currentState, workflowId: workItems.workflowId })
           .from(workItems)
           .where(eq(workItems.id, workItemId));
 
@@ -280,7 +283,8 @@ export function createMcpServer(context: McpContext): McpServer {
         }
 
         // Validate transition
-        if (!isValidTransition(item.currentState, targetState)) {
+        const validTransition = await isValidTransitionDynamic(item.workflowId ?? null, item.currentState, targetState);
+        if (!validTransition) {
           return {
             content: [{ type: "text" as const, text: JSON.stringify({ error: `Invalid transition from "${item.currentState}" to "${targetState}"` }) }],
             isError: true,
@@ -504,9 +508,9 @@ export function createMcpServer(context: McpContext): McpServer {
     },
     async ({ workItemId, reason }) => {
       try {
-        // Get current state for the broadcast
+        // Get current state and workflow for the broadcast
         const [item] = await db
-          .select({ currentState: workItems.currentState })
+          .select({ currentState: workItems.currentState, workflowId: workItems.workflowId })
           .from(workItems)
           .where(eq(workItems.id, workItemId));
 
@@ -517,13 +521,18 @@ export function createMcpServer(context: McpContext): McpServer {
           };
         }
 
+        // Look up "Blocked" state name from the workflow (may be named differently)
+        const states = await getWorkflowStates(item.workflowId ?? null);
+        const blockedState = states.find((s) => s.name.toLowerCase() === "blocked");
+        const blockedStateName = blockedState?.name ?? "Blocked";
+
         const now = new Date();
         const fromState = item.currentState;
 
         // Update state to Blocked
         await db
           .update(workItems)
-          .set({ currentState: "Blocked", updatedAt: now })
+          .set({ currentState: blockedStateName, updatedAt: now })
           .where(eq(workItems.id, workItemId));
 
         // Post reason as system comment
@@ -544,7 +553,7 @@ export function createMcpServer(context: McpContext): McpServer {
           type: "state_change",
           workItemId: workItemId as WorkItemId,
           fromState,
-          toState: "Blocked",
+          toState: blockedStateName,
           triggeredBy: (context.personaId as PersonaId) || "system",
           timestamp: now.toISOString(),
         });
