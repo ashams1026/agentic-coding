@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 07:35 PDT — NTF.1: Shared notification types
+
+**Done:** Added `NotificationEventType` (5 types: proposal_needs_approval, agent_errored, budget_threshold, execution_stuck, agent_completed), `NotificationPriority` (critical/high/low/info), and `Notification` interface to `packages/shared/src/ws-events.ts`. Added `NotificationEvent` WS event with `notification` payload + timestamp. Added `"notification"` to `WsEventType` union, `NotificationEvent` to `WsEvent` union and `WsEventMap`. Fixed downstream: added `notification: new Set()` to frontend WS client listener map.
+**Files:** `packages/shared/src/ws-events.ts`, `packages/frontend/src/api/ws-client.ts`
+
+---
+
 ## 2026-04-02 07:25 PDT — Review: PPR.4 (approved)
 
 **Reviewed:** Variables reference panel and resolved preview in system-prompt-editor.tsx.

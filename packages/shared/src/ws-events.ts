@@ -4,12 +4,37 @@ import type {
   ExecutionId,
   CommentId,
   ProposalId,
+  ProjectId,
 } from "./ids.js";
 import type {
   ExecutionOutcome,
   ProposalStatus,
   ProposalType,
 } from "./entities.js";
+
+// ── Notification types ────────────────────────────────────────────
+
+export type NotificationEventType =
+  | "proposal_needs_approval"
+  | "agent_errored"
+  | "budget_threshold"
+  | "execution_stuck"
+  | "agent_completed";
+
+export type NotificationPriority = "critical" | "high" | "low" | "info";
+
+export interface Notification {
+  id: string;
+  type: NotificationEventType;
+  priority: NotificationPriority;
+  title: string;
+  description?: string;
+  projectId?: ProjectId;
+  workItemId?: WorkItemId;
+  executionId?: ExecutionId;
+  read: boolean;
+  createdAt: string; // ISO 8601
+}
 
 // ── Event types ────────────────────────────────────────────────────
 
@@ -27,7 +52,8 @@ export type WsEventType =
   | "subagent_started"
   | "subagent_completed"
   | "agent_progress"
-  | "context_usage";
+  | "context_usage"
+  | "notification";
 
 // ── Event payloads ─────────────────────────────────────────────────
 
@@ -155,6 +181,12 @@ export interface ContextUsageEvent {
   timestamp: string;
 }
 
+export interface NotificationEvent {
+  type: "notification";
+  notification: Notification;
+  timestamp: string;
+}
+
 // ── Union type ─────────────────────────────────────────────────────
 
 export type WsEvent =
@@ -171,7 +203,8 @@ export type WsEvent =
   | SubagentStartedEvent
   | SubagentCompletedEvent
   | AgentProgressEvent
-  | ContextUsageEvent;
+  | ContextUsageEvent
+  | NotificationEvent;
 
 // ── Subscriber API ─────────────────────────────────────────────────
 
@@ -192,4 +225,5 @@ export type WsEventMap = {
   subagent_completed: SubagentCompletedEvent;
   agent_progress: AgentProgressEvent;
   context_usage: ContextUsageEvent;
+  notification: NotificationEvent;
 };
