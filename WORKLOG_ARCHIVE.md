@@ -183,3 +183,9 @@
 **Design (DES.4-6, DES.12, DES.18):** Chat sidebar width reduced to 240px (DES.4), Agent Monitor "Scope:" label + "All Projects" text (DES.6), settings header Title Case (DES.12), status bar height 36px (DES.18).
 
 **Bug Fixes (FX.UXO12-14, FX.UXO20-23, UXO.22):** Stale closure in deleteSession (FX.UXO12), chat header DropdownMenu accessibility (FX.UXO14), chat empty state for no project (FX.UXO13), dead toolCallMap removed (FX.UXO20), BUILT_IN_IDS wrong agent ID fixed (FX.UXO23), per-workflow auto-routing toggle (UXO.22). "Stories"→"work items" terminology (DES.5).
+
+### Sprint 29 Remaining + Sprint 30 Early — 2026-04-02 13:41–13:55 PDT
+
+**Design/DX (DES.1, DES.3, DES.7-9, DES.11, DES.14, DES.17, DX.1):** Dashboard onboarding checklist (DES.1), chat auto-titles already done (DES.3), workflow card min-height + CTA (DES.7), section title case + agent search + router description (DES.8/9/11), Per-Agent Limits collapsed when empty (DES.14), activity feed filter bar already done (DES.17). Split dev scripts with mock API (DX.1).
+
+**Sprint 29 Completion (UXO.26-27):** Workflow settings moved into builder with AgentAssignmentsSection (UXO.26). Schedules moved to Automations page with edit/delete/run-now (UXO.27).

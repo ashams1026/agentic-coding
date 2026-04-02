@@ -46,35 +46,11 @@
 
 ---
 
-**Sprint 16 (AI.1-AI.31):** 42 tasks. AI-based E2E testing — 17 test plans + visual inspection protocol, executed all suites (263 steps, 256 PASS, 3 FAIL, 4 N/A = 97.3%).
+**Sprints 16-22 (consolidated):** 201 tasks. AI E2E testing 97.3% pass (Sprint 16). Agent pipeline/mock/Pico/SDK (Sprint 17-18). V2 sessions/file checkpointing/structured output (Sprint 19). Streaming/sandbox/MCP/model switching (Sprint 20). Docs refresh (Sprint 21). Pluggable executor/UI audits/bug fixes (Sprint 22). Research proposals (20), UX polish (20), backlog spikes (6).
 
-**Sprint 17 (FX.*/PICO.*/FX.SDK*):** 48 tasks. Agent pipeline fixes, mock removal, persona overhauls, skills system, Pico assistant, SDK discovery.
+**Sprint 23 (28 tasks):** Error Recovery, Work Item Lifecycle (soft delete/archive/bulk ops), Global Agents P1, 3 test plans + executions, 34 suites 0 regressions.
 
-**Sprint 18 (PICO.1-10):** 10 tasks. Pico project assistant (chat API, SSE streaming, knowledge skill, frontend panel).
-
-**Sprint 19 (V2/FC/SDK.FC-ET):** 36 tasks. V2 sessions, file checkpointing, SDK hooks, structured output, subagent definitions, effort & thinking.
-
-**Sprint 20 (SDK.ST/SB/MCP/UX/REG):** 30 tasks. Streaming, sandbox, dynamic MCP management, Pico suggestions, model switching, 6 e2e suites. REG.1+REG.2 PASS.
-
-**Sprint 21 (DOC.1-9):** 9 tasks. Full refresh of all 9 doc files.
-
-**Backlog Spikes (SDK.FUT.1-6):** 6 tasks. Browser SDK, Bridge API, plugin system, HTTP hooks, worktree isolation, doc updates.
-
-**Pluggable Executor + Backlog + Sprint 22 (consolidated):** PLUG.1-10 (executor refactor, core package, registry, e2e 12/14 PASS). AW.1-2 (visual check in WORK/REVIEW). Sprint 22: 35 tasks — 14 UI audits, 10 bug fixes, breadcrumb, test restructure, 2 SDK spikes.
-
----
-
-**Bug Fixes, Research & UX (FX.WORK.EDIT, FX.PERSONA.SEED, FX.PICO.OVERFLOW/EMPTY.BUBBLE, RES.PLUG.CORE, RES.GLOBAL.DATA/NAV/UX, RES.WORKFLOW.DATA/BUILDER/RUNTIME/EDGE, RES.PROMPTS.DOC/VARS, UX.PICO.MINI.CONTENT/RESIZE/STATUSBAR/FULLPAGE/COLLAPSE, UX.BRAND.WOOF):** 20 tasks. Bug fixes (work item persistence, persona seed, Pico overflow/empty bubble). Research proposals (pluggable core extraction, global agents data/nav/UX, custom workflow data model/builder/runtime/edge cases, persona prompt pipeline/template variables). UX polish (Pico compact content, resize, status line, full-page chat, collapse chevron, Woof rebrand).
-
----
-
-**Research Proposals (20 tasks, archived 2026-04-01 to 2026-04-02):** Chat UX/data model/rich messages, lifecycle UX/data model, notifications UX/integrations, collaboration context/coordination, scheduling UX/infra, rollback, templates, analytics, webhooks, frontend/backend swappability. All in `docs/proposals/`.
-
-**Sprint 23 (FND.ERR.1-7, FND.WIL.1-8, FND.GA.1-10, FND.TEST.1-6, FND.DOC.1-2):** 28 tasks. Error Recovery (PRAGMAs, WS backoff, error boundaries, structured errors, orphan recovery, backup). Work Item Lifecycle (soft delete, archive/restore, bulk ops, context menus, "Recently deleted"). Global Agents P1 (nullable projectId, AgentScope type, "All Projects" selector, dashboard/monitor scope-awareness, New Run modal, standalone execution endpoint, Pico scope toggle). Testing (3 test plans, 3 executions, regression 34 suites 0 regressions). 2 doc updates.
-
----
-
-**Sprint 24 (ACH.1-7, PPR.1-4, NTF.1-8, CUX.TEST.1-5, CUX.DOC.1-2):** 26 tasks. Agent Chat P1 (schema migration + multi-persona sessions + selector grid + sidebar + header + context menu). Persona Prompts P1 (resolveVariables + buildSystemPrompt + autocomplete + preview). Notifications UX P1 (shared types + broadcastNotification + Zustand store + bell + drawer + card + toasts + Settings tab). Testing: 4 e2e suites (14/14 pass), 2 doc updates, regression 36 suites 0 regressions.
+**Sprint 24 (26 tasks):** Agent Chat P1, Persona Prompts P1, Notifications UX P1, 4 e2e suites 14/14 pass, 36 suites 0 regressions.
 
 ---
 
@@ -193,4 +169,10 @@
 
 **Phase 1 (NAV.1-3):** 3 tasks. `useProjectFromUrl()` hook reading projectId from URL params (NAV.1). Router refactored with project-scoped routes under `/p/:projectId`, legacy redirects, App Settings at `/app-settings` (NAV.2). ProjectLayout wrapper with loading/404/Outlet (NAV.3).
 
-**Phase 2 (NAV.4-6):** 3 tasks. Full sidebar redesign as collapsible project tree with globe/folder icons, child links to `/p/:projectId/:page`, badge counters, collapsed mode (NAV.4). localStorage persistence for expand state, expand/collapse all toggle (NAV.5). Deleted orphaned scope-indicator.tsx (NAV.6).
+**Phase 2 (NAV.4-7):** 4 tasks. Full sidebar redesign as collapsible project tree (NAV.4). localStorage persistence + expand/collapse all (NAV.5). Deleted orphaned scope-indicator.tsx (NAV.6). New Project button + dialog with working directory + backend mkdir (NAV.7).
+
+**Phase 3 (NAV.8-15):** 8 tasks. Migrated all pages from `useSelectedProject()` to `useProjectFromUrl()`: Work Items (NAV.8), Automations + navigate() updates (NAV.9), Agents page title rename (NAV.10), Agent Monitor 6 files + Links (NAV.11), Activity Feed + EventRow route (NAV.12), Analytics (NAV.13), Chat page from UIStore (NAV.14), Pico chat panel with pj-global fallback (NAV.15).
+
+**Phase 4 partial (NAV.16):** 1 task. AppSettingsPage at /app-settings with 4 sections (API Keys, Appearance, Service, Data).
+
+**Phase 5 (NAV.19-20):** 2 tasks. Dashboard redesigned as cross-project overview with project cards (NAV.19). Global project renamed "All Projects" → "Global Workspace" across 6 files (NAV.20).

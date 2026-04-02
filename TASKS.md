@@ -5,7 +5,7 @@
 
 ---
 
-> Sprints 1-27 complete and archived. Sprint 29 fully archived. Sprint 30 Phases 1-2 archived. Blocked tasks in `BLOCKED_TASKS.md`. Roadmap in `docs/roadmap.md`.
+> Sprints 1-27 complete and archived. Sprint 29 fully archived. Sprint 30 Phases 1-5 archived (NAV.1-16, NAV.19-20). Blocked tasks in `BLOCKED_TASKS.md`. Roadmap in `docs/roadmap.md`.
 
 ---
 
@@ -48,33 +48,10 @@
 > ▶ another-project     📁  ← collapsed
 > ```
 
-### Phase 2: Sidebar Redesign (remaining)
+### Phase 4: Settings Split (remaining)
 
-- [x] **NAV.7** — Frontend + Backend: Add "New Project" button at bottom of Projects section. *(completed 2026-04-02 14:38 PDT)* Dialog has: project name input, working directory with two options: (1) "Choose existing directory" with browse starting from `~/` (user's home dir), (2) "Create new" which auto-generates `~/woof/<slugified-name>/` from the project name (user can override). Backend `mkdir -p`'s the directory on project creation if it doesn't exist. Label as "Working Directory — where agents will operate."
-
-### Phase 3: Migrate Pages to URL-based Project Context
-
-> Each page currently calls `useSelectedProject()` (32 files). Migrate each to `useProjectFromUrl()`. Pages render inside `ProjectLayout` which guarantees `projectId` in URL.
-
-- [x] **NAV.8** — Frontend: Migrate Work Items page. Replace `useSelectedProject()` with `useProjectFromUrl()`. Update all query keys and API calls. *(completed 2026-04-02 14:38 PDT)*
-- [x] **NAV.9** — Frontend: Migrate Automations page + Workflow Builder. Replace project context. Update `navigate()` calls to include project prefix. *(completed 2026-04-02 14:38 PDT)*
-- [x] **NAV.10** — Frontend: Migrate Agents page (rename from Agent Builder). Replace `useSelectedProject()`. Page title changed to "Agents". *(completed 2026-04-02 14:38 PDT)*
-- [x] **NAV.11** — Frontend: Migrate Agent Monitor page. Replaced useSelectedProject in 6 agent-monitor feature files, updated Links to project-scoped routes. *(completed 2026-04-02 14:42 PDT)*
-- [x] **NAV.12** — Frontend: Migrate Activity Feed page. Replaced in activity-feed.tsx, updated navigate and Link to project-scoped routes. *(completed 2026-04-02 14:42 PDT)*
-- [x] **NAV.13** — Frontend: Migrate Analytics page. Replaced in overview-tab.tsx and token-usage-tab.tsx. *(completed 2026-04-02 14:42 PDT)*
-- [x] **NAV.14** — Frontend: Migrate Chat page. Replaced useUIStore selectedProjectId with useProjectFromUrl, updated guard and navigate. *(completed 2026-04-02 14:42 PDT)*
-- [x] **NAV.15** — Frontend: Migrate Pico chat panel (overlay). Use current project from URL context. Default to Global Workspace when on Dashboard/App Settings (no project in URL). *(completed 2026-04-02 15:00 PDT)*
-
-### Phase 4: Settings Split
-
-- [x] **NAV.16** — Frontend: Create App Settings page at `/app-settings`. Move from current Settings: API Keys & Executor Mode, Appearance, Service, Data Management. Simple sidebar with 4 sections. No project context. *(completed 2026-04-02 15:01 PDT)*
 - [ ] **NAV.17** — Frontend: Create Project Settings page at `/p/:projectId/settings`. Move from current Settings: Security, Costs & Limits (include max concurrent agents), Notifications, Integrations. Read projectId from URL. Break up "Agent Configuration" — API key → App Settings, concurrency → Costs & Limits, drop Per-Agent Limits table.
 - [ ] **NAV.18** — Frontend: Move workflow settings into workflow builder. Remove `workflow-config-section.tsx`. Move agent-state assignment table into builder as "State Agents" tab. Workflow/Scheduling tabs gone from settings.
-
-### Phase 5: Dashboard + Global
-
-- [x] **NAV.19** — Frontend: Redesign Dashboard as cross-project overview. Project cards showing: name, work item counts by state, active agents, last activity, quick-links into `/p/:projectId/items`. Global Workspace card pinned at top. *(completed 2026-04-02 14:48 PDT)*
-- [x] **NAV.20** — Backend + Seed: Rename global project from "All Projects" to "Global Workspace" in `ensure-global-project.ts` and seed data. *(completed 2026-04-02 14:45 PDT)*
 
 ### Phase 6: Cleanup + Polish
 
