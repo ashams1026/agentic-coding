@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 05:55 PDT — S27.TEST.1: Outbound Webhooks e2e test plan
+
+**Done:** Wrote test plan at `tests/e2e/plans/outbound-webhooks.md`. 17 steps across 3 parts: API CRUD (7 steps — create/list/update/toggle/deliveries/delete with response validation), Settings UI (6 steps — add form, list, toggle, log, delete), event bus + delivery code review (3 steps — emissions, bridge, worker with HMAC/retry/auto-disable).
+**Files:** `tests/e2e/plans/outbound-webhooks.md`
+
+---
+
 ## 2026-04-03 05:45 PDT — Review: DM.5 (approved)
 
 **Reviewed:** Frontend data management section.
