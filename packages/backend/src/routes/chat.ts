@@ -291,15 +291,18 @@ export async function chatRoutes(app: FastifyInstance) {
         .where(eq(chatSessions.id, id));
     }
 
-    // Load chat persona (override or default Pico)
+    // Load chat persona: override > session's persona > default Pico
     let chatPersona;
-    if (overridePersonaId) {
-      const [persona] = await db.select().from(personas).where(eq(personas.id, overridePersonaId));
+    const personaIdToLoad = overridePersonaId || session.personaId;
+
+    if (personaIdToLoad) {
+      const [persona] = await db.select().from(personas).where(eq(personas.id, personaIdToLoad));
       if (!persona) {
-        return reply.status(404).send({ error: `Persona ${overridePersonaId} not found` });
+        return reply.status(404).send({ error: `Persona ${personaIdToLoad} not found` });
       }
       chatPersona = persona;
     } else {
+      // Fallback to default Pico assistant
       const allPersonas = await db.select().from(personas);
       chatPersona = allPersonas.find(
         (p) => (p.settings as Record<string, unknown>)?.isAssistant === true,
@@ -307,10 +310,11 @@ export async function chatRoutes(app: FastifyInstance) {
     }
 
     if (!chatPersona) {
-      return reply.status(503).send({ error: "Pico persona not found" });
+      return reply.status(503).send({ error: "No chat persona found" });
     }
 
-    const pico = chatPersona;
+    const chatAgent = chatPersona;
+    const isPico = (chatAgent.settings as Record<string, unknown>)?.isAssistant === true;
 
     // Load project for context (may be null for global sessions)
     const project = session.projectId
@@ -326,20 +330,20 @@ export async function chatRoutes(app: FastifyInstance) {
 
     // Build the conversation prompt from history
     const conversationLines = history.map(
-      (msg) => `${msg.role === "user" ? "User" : "Pico"}: ${msg.content}`,
+      (msg) => `${msg.role === "user" ? "User" : chatAgent.name}: ${msg.content}`,
     );
 
     const prompt = conversationLines.join("\n\n");
 
-    // Build Pico's system prompt with project context
+    // Build system prompt with project context
     const systemSections: string[] = [];
 
-    if (pico.systemPrompt) {
-      systemSections.push(pico.systemPrompt);
+    if (chatAgent.systemPrompt) {
+      systemSections.push(chatAgent.systemPrompt);
     }
 
-    // Inject project knowledge skill
-    if (picoSkillContent) {
+    // Inject Pico-specific project knowledge skill (only for Pico)
+    if (isPico && picoSkillContent) {
       systemSections.push(picoSkillContent);
     }
 
@@ -358,19 +362,31 @@ export async function chatRoutes(app: FastifyInstance) {
       );
     }
 
-    systemSections.push(
-      [
-        `## Chat Instructions`,
-        `You are Pico, the user's friendly project assistant. You are chatting in a conversational interface.`,
-        ``,
-        `**Personality:**`,
-        `- Enthusiastic but not annoying. Warm and approachable.`,
-        `- Technically accurate — back up your answers with real data from the project.`,
-        `- Occasionally use dog puns and metaphors: "let me dig into that", "I'll fetch that for you", "sniffing through the codebase", "good boy status: all tests passing". Don't overdo it — once or twice per response at most.`,
-        `- Keep responses concise. Use markdown formatting for code, lists, and emphasis.`,
-        `- If you don't know something, say so honestly rather than guessing.`,
-      ].join("\n"),
-    );
+    if (isPico) {
+      // Pico-specific personality instructions
+      systemSections.push(
+        [
+          `## Chat Instructions`,
+          `You are Pico, the user's friendly project assistant. You are chatting in a conversational interface.`,
+          ``,
+          `**Personality:**`,
+          `- Enthusiastic but not annoying. Warm and approachable.`,
+          `- Technically accurate — back up your answers with real data from the project.`,
+          `- Occasionally use dog puns and metaphors: "let me dig into that", "I'll fetch that for you", "sniffing through the codebase", "good boy status: all tests passing". Don't overdo it — once or twice per response at most.`,
+          `- Keep responses concise. Use markdown formatting for code, lists, and emphasis.`,
+          `- If you don't know something, say so honestly rather than guessing.`,
+        ].join("\n"),
+      );
+    } else {
+      // Generic chat instructions for non-Pico personas
+      systemSections.push(
+        [
+          `## Chat Instructions`,
+          `You are ${chatAgent.name}. You are chatting with the user in a conversational interface.`,
+          `Keep responses concise. Use markdown formatting for code, lists, and emphasis.`,
+        ].join("\n"),
+      );
+    }
 
     // Set SSE headers via Fastify so CORS plugin headers are preserved
     reply.header("Content-Type", "text/event-stream");
@@ -401,11 +417,12 @@ export async function chatRoutes(app: FastifyInstance) {
     };
 
     try {
+      const agentKey = chatAgent.name.toLowerCase().replace(/\s+/g, "-");
       const agentDef: AgentDefinition = {
-        description: pico.description,
+        description: chatAgent.description,
         prompt: systemSections.join("\n\n"),
-        tools: (pico.allowedTools as string[]).length > 0 ? (pico.allowedTools as string[]) : [],
-        model: MODEL_MAP[pico.model] ?? pico.model,
+        tools: (chatAgent.allowedTools as string[]).length > 0 ? (chatAgent.allowedTools as string[]) : [],
+        model: MODEL_MAP[chatAgent.model] ?? chatAgent.model,
         maxTurns: 15,
       };
 
@@ -416,10 +433,10 @@ export async function chatRoutes(app: FastifyInstance) {
           cwd: project?.path ?? process.cwd(),
           permissionMode: "bypassPermissions",
           allowDangerouslySkipPermissions: true,
-          maxBudgetUsd: pico.maxBudgetPerRun > 0 ? pico.maxBudgetPerRun : undefined,
+          maxBudgetUsd: chatAgent.maxBudgetPerRun > 0 ? chatAgent.maxBudgetPerRun : undefined,
           promptSuggestions: true,
-          agent: "pico",
-          agents: { pico: agentDef },
+          agent: agentKey,
+          agents: { [agentKey]: agentDef },
           mcpServers: {
             agentops: {
               command: "node",
@@ -429,10 +446,10 @@ export async function chatRoutes(app: FastifyInstance) {
                 new URL("../agent/mcp-server.ts", import.meta.url).pathname,
               ],
               env: {
-                PERSONA_NAME: pico.name,
-                PERSONA_ID: pico.id,
+                PERSONA_NAME: chatAgent.name,
+                PERSONA_ID: chatAgent.id,
                 ...(session.projectId ? { PROJECT_ID: session.projectId } : {}),
-                ALLOWED_TOOLS: (pico.mcpTools as string[]).join(","),
+                ALLOWED_TOOLS: (chatAgent.mcpTools as string[]).join(","),
               },
             },
           },
@@ -483,7 +500,7 @@ export async function chatRoutes(app: FastifyInstance) {
     } catch (err) {
       const errMsg =
         err instanceof Error ? err.message : String(err);
-      logger.error({ err, sessionId: id }, "Pico chat error");
+      logger.error({ err, sessionId: id, persona: chatAgent.name }, "Chat error");
       sendSSE({ type: "error", content: errMsg });
     }
 

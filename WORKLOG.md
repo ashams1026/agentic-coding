@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 04:35 PDT — ACH.3: Multi-persona chat message endpoint
+
+**Done:** Updated `POST /api/chat/sessions/:id/messages` to load persona from session's `persona_id` column (fallback chain: override personaId → session personaId → default Pico). Added `isPico` flag based on `settings.isAssistant`. Pico-skill.md and dog-pun personality instructions only injected when `isPico` is true. Non-Pico personas get generic chat instructions with their name. Agent key derived from persona name (lowercased, hyphenated). Conversation history uses persona name instead of hardcoded "Pico". SDK agent definition uses persona's own model, tools, budget, and description.
+**Files:** `packages/backend/src/routes/chat.ts`
+
+---
+
 ## 2026-04-02 04:25 PDT — Review: ACH.2 (approved)
 
 **Reviewed:** Chat session API updates in `packages/backend/src/routes/chat.ts`.
