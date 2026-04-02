@@ -93,23 +93,16 @@ BATCH REVIEW
     - Worker's WORKLOG.md entry (what they did, files changed)
   │
   ▼
-[DISPATCH REVIEWER SUBAGENTS] ─── one per [review] task, ALL IN PARALLEL
+[DISPATCH REVIEWERS] ─── use `reviewer` agent, one per [review] task, ALL IN PARALLEL
   │
-  │  Each reviewer subagent receives:
+  │  Spawn each reviewer using the project-level `reviewer` agent (.claude/agents/reviewer.md).
+  │  Do NOT use `frontend-developer`, `backend-architect`, `code-reviewer`, or other user-level agents.
+  │
+  │  Each reviewer receives a prompt containing:
   │    - Task description and acceptance criteria
   │    - List of files the worker changed (from WORKLOG entry)
-  │    - CLAUDE.md coding conventions
-  │    - Instruction: "Read the changed files. Check implementation against
-  │      the task description and coding conventions. Return your verdict
-  │      as APPROVE or REJECT with specific feedback. Do NOT modify any files."
   │
-  │  Reviewer checks:
-  │    - Does the implementation match the task description?
-  │    - Does it follow conventions in CLAUDE.md?
-  │    - Obvious bugs, missing imports, broken logic?
-  │    - Hardcoded values that should use mock data?
-  │    - Correct integration with existing code?
-  │
+  │  The reviewer agent already has the project review checklist built in.
   │  Reviewer returns: { verdict: "APPROVE" | "REJECT", feedback?: string }
   │
   ▼
@@ -248,45 +241,41 @@ BATCH WORK
   Mark ALL selected tasks [in-progress: YYYY-MM-DD HH:MM PDT] in TASKS.md
   │
   ▼
-[DISPATCH WORKER SUBAGENTS] ─── one per task, ALL IN PARALLEL
+[DISPATCH WORKERS] ─── use `worker` agent, one per task, ALL IN PARALLEL
   │
-  │  Each worker subagent receives:
+  │  Spawn each worker using the project-level `worker` agent (.claude/agents/worker.md).
+  │  Do NOT use `frontend-developer`, `backend-architect`, or other user-level agents.
+  │
+  │  Each worker receives a prompt containing:
   │    - Task description and acceptance criteria
   │    - Relevant source files to read for context
-  │    - CLAUDE.md coding conventions
   │    - If rework: the [feedback: ...] block with instructions to fix
-  │    - Instruction: "Implement this task. Follow the conventions in CLAUDE.md.
-  │      Do NOT modify TASKS.md, WORKLOG.md, or run git commands.
-  │      Do NOT modify files outside the scope of your task."
   │
+  │  The worker agent already has project stack knowledge and conventions built in.
   │  Worker implements the task and returns a summary of what was done.
   │
   ▼
-[DISPATCH REVIEWER SUBAGENTS] ─── one per completed worker, ALL IN PARALLEL
+[DISPATCH REVIEWERS] ─── use `reviewer` agent, one per completed worker, ALL IN PARALLEL
   │
-  │  Each reviewer subagent receives:
+  │  Spawn each reviewer using the project-level `reviewer` agent (.claude/agents/reviewer.md).
+  │  Do NOT use the user-level `code-reviewer` for batch reviews (it's Opus — too slow).
+  │
+  │  Each reviewer receives a prompt containing:
   │    - Task description (what was supposed to happen)
   │    - Files the worker created or modified
-  │    - CLAUDE.md coding conventions
-  │    - Instruction: "Review this implementation against the task description.
-  │      Check for bugs, convention violations, missing functionality.
-  │      Return APPROVE or REJECT with specific, actionable feedback.
-  │      Do NOT modify any files."
   │
+  │  The reviewer agent already has the project review checklist built in.
   │  Reviewer returns: { verdict: "APPROVE" | "REJECT", feedback?: string }
   │
   ▼
 [HANDLE REJECTIONS]
   │
   │  For each REJECTED task:
-  │    Spawn a fix subagent with:
+  │    Spawn a `worker` agent with:
   │      - Original task description
   │      - Reviewer's feedback (exactly what to fix)
-  │      - Current state of the files
-  │      - Instruction: "Fix the issues described in the feedback. Do NOT
-  │        modify TASKS.md, WORKLOG.md, or run git commands."
   │    │
-  │    After fix: spawn a re-reviewer subagent to verify the fix.
+  │    After fix: spawn a `reviewer` agent to verify the fix.
   │    │
   │    If still rejected after 2 fix attempts → mark task [blocked: review failed]
   │
@@ -371,63 +360,18 @@ STOP — do not start another cycle
 
 ---
 
-## Subagent Prompt Templates
+## Agent Roster
 
-### Worker Subagent
+**IMPORTANT:** Only use these project-level agents. See CLAUDE.md for the full allowlist and blocklist.
 
-```
-You are a worker agent implementing a single task for the AgentOps project.
+| Agent | Role | When to use |
+|-------|------|-------------|
+| `worker` | Implement code tasks | BATCH WORK — all implementation tasks (frontend, backend, full-stack) |
+| `reviewer` | Review implementations | BATCH WORK and BATCH REVIEW — all code reviews |
+| `doc-writer` | Write/update documentation | BATCH WORK — tasks with IDs like `*.DOC.*` or that update `docs/` |
+| `test-planner` | Write e2e test plans | BATCH WORK — tasks with IDs like `*.TEST.*` that create test plans |
 
-## Your Task
-{task_description}
-
-## Coding Conventions
-{contents of CLAUDE.md, or relevant sections}
-
-## Context
-{relevant WORKLOG entries, source file excerpts}
-
-{if rework:}
-## Rework Instructions
-This task was previously attempted and rejected. Fix these specific issues:
-{feedback block contents}
-
-## Rules
-- Implement ONLY this task. Do not modify unrelated files.
-- Do NOT modify TASKS.md, WORKLOG.md, or any project management files.
-- Do NOT run git commands (commit, push, etc.).
-- Follow the coding conventions exactly.
-- If you encounter a blocker, return a description of the blocker instead of partial work.
-```
-
-### Reviewer Subagent
-
-```
-You are a code reviewer for the AgentOps project.
-
-## Task That Was Implemented
-{task_description}
-
-## Files Changed
-{list of files modified by the worker}
-
-## Coding Conventions
-{contents of CLAUDE.md, or relevant sections}
-
-## Your Job
-1. Read each changed file carefully.
-2. Check: Does the implementation match the task description?
-3. Check: Does it follow the coding conventions?
-4. Check: Are there bugs, missing imports, broken logic, or hardcoded values?
-5. Check: Does it integrate correctly with existing code?
-
-## Rules
-- Do NOT modify any files. You are read-only.
-- Return your verdict: APPROVE or REJECT.
-- If REJECT: provide specific, actionable feedback with file names and line numbers.
-  The worker agent has no memory of its previous run — your feedback is all it gets.
-- If APPROVE: briefly note what was verified.
-```
+**Never use** `frontend-developer`, `backend-architect`, `pm`, `spec-writer`, `security`, `performance`, or `ui-designer` — they are configured for other projects and will produce incorrect results.
 
 ---
 
