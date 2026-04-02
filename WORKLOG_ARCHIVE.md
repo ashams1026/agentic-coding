@@ -181,3 +181,13 @@
 **Global Agents late (FND.GA.5-10, all approved):** Agent Monitor scope badges (violet "Global" / project name) + scope filter dropdown. "New Run" modal (persona picker, scope selector, prompt, budget, POST /api/executions/run). Backend standalone execution endpoint (nullable workItemId, migration 0010, 8 downstream TS fixes). Pico scope toggle + persona picker (scopeOverride/selectedPersonaId in Zustand, compact dropdowns). Backend nullable projectId + persona override in chat sessions (201 for empty body, optional personaId). E2E test plan for Global Agents (7 test cases).
 
 **Sprint 23 Testing (FND.TEST.1-6, all approved):** E2E test plans for Error Recovery (8 cases) and Work Item Lifecycle (10 cases). Executed Error Recovery tests — 8/8 PASS. Executed Work Item Lifecycle tests — 9/10 PASS, 1 SKIP. Executed Global Agents tests — 7/7 PASS. Full regression checkpoint — 34 suites, 24 UI-verified, 0 regressions.
+
+---
+
+### Sprint 23 completion + Sprint 24 early — 2026-04-02 03:10–05:35 PDT
+
+**Sprint 23 docs (FND.DOC.1-2, both approved):** Work Item Lifecycle API documentation (6 new endpoints, query params, 409 guard, cascade rules, schema additions). Global Agents data model documentation (AgentScope type, nullable projectId, global_memories table, scope-awareness rules, standalone execution endpoint).
+
+**Sprint 24 decomposition:** 26 tasks across Agent Chat (ACH.1-7), Persona Prompts (PPR.1-4), Notifications (NTF.1-8), Testing/Docs (CUX.TEST/DOC.1-5).
+
+**Agent Chat Phase 1 (ACH.1-7, all approved):** Schema migration (persona_id, work_item_id, sdk_session_id + backfill). Session creation persists personaId/workItemId, list joins persona name+avatar. Multi-persona message endpoint (isPico gating, persona-specific agent config). PersonaSelector grid modal (avatar cards, Pico default). Session sidebar (persona avatars, date grouping, persona filter, last message preview via batched SQLite). Chat header bar (persona info, project badge, editable title, context menu). Session management (right-click rename/delete with confirmation). ACH.5 rejected once for missing last message preview, reworked and approved.

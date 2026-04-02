@@ -163,3 +163,18 @@ Scheduling infrastructure, rollback UX, templates, analytics metrics/UX, inbound
 - [x] **ACH.4** — Frontend: persona selector grid for new chat sessions. *(completed 2026-04-02 05:00 PDT)*
 - [x] **ACH.5** — Frontend: session sidebar with persona avatars, date grouping, filter, last message preview. *(completed 2026-04-02 05:35 PDT)*
 - [x] **ACH.6** — Frontend: chat header bar with persona info, project badge, editable title, context menu. *(completed 2026-04-02 05:55 PDT)*
+- [x] **ACH.7** — Frontend: session management — right-click context menu with rename/delete + confirmation dialog. *(completed 2026-04-02 06:15 PDT)*
+
+### Persona Prompts Phase 1
+
+- [x] **PPR.1** — Backend: resolveVariables() + buildVariableContext() in prompt-variables.ts. *(completed 2026-04-02 06:30 PDT)*
+- [x] **PPR.2** — Backend: integrate resolveVariables() into buildSystemPrompt() and Pico chat path. *(completed 2026-04-02 06:45 PDT)*
+- [x] **PPR.3** — Frontend: autocomplete popup on {{ in system prompt editor (13 variables, 4 groups). *(completed 2026-04-02 07:05 PDT)*
+- [x] **PPR.4** — Frontend: collapsible variables reference panel + resolved preview with highlighting. *(completed 2026-04-02 07:25 PDT)*
+
+### Notifications UX Phase 1 (partial)
+
+- [x] **NTF.1** — Shared types: NotificationEventType, Notification, NotificationEvent in ws-events.ts. *(completed 2026-04-02 07:40 PDT)*
+- [x] **NTF.2** — Backend: broadcastNotification() helper + 4 emission points (completed/errored/proposal/budget). *(completed 2026-04-02 08:00 PDT)*
+- [x] **NTF.3** — Frontend: Zustand notification store with localStorage persist, 60s batching, quiet hours. *(completed 2026-04-02 08:15 PDT)*
+- [x] **NTF.4** — Frontend: NotificationBell in sidebar footer with unread count badge. *(completed 2026-04-02 08:30 PDT)*
