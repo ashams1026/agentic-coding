@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 20:30 PDT — RES.TOKENS.DASHBOARD: Research aggregated token usage dashboard UX
+
+**Done:** Researched aggregated token usage dashboard UX. Doc covers all 6 investigation areas: (1) dashboard location — recommended Tab within Analytics page (`/analytics?tab=usage`) over separate page, shares time range controls and avoids 8th sidebar nav item; relationship to RES.ANALYTICS.UX forward reference confirmed. (2) key views — 5 visualizations: usage over time (dual-axis LineChart, tokens + cost), breakdown by model (PieChart with cost/tokens toggle), breakdown by persona (horizontal BarChart with 3-metric toggle), breakdown by project (same pattern, JOIN via workItems), top N most expensive executions (sortable/paginated Table). (3) time range controls — shared with analytics page (24h/7d/30d/90d/custom), URL query params for shareability, comparison mode with delta arrows. (4) summary cards — 4 cards: total cost, total tokens, avg cost/exec, execution count; delta calculation vs prior period; K/M token formatting. (5) real-time vs batch — recommended on-the-fly SQL aggregation, no pre-computed tables; SQLite handles 10K rows in <10ms; identified missing index on startedAt; proposed 6 new API endpoints using SQL-level aggregation (improvement over current in-memory filter pattern at dashboard.ts:28-117). (6) export — server-side CSV streaming with Content-Disposition, JSON export Phase 2. Also: component architecture tree, responsive breakpoints, data dependency matrix (Phase 1 vs Phase 1.5), graceful degradation for missing columns, 9 cross-references, 6 design decisions.
+**Files:** `docs/proposals/token-usage/dashboard-ux.md` (new)
+
+---
+
 ## 2026-04-01 20:15 PDT — Review: RES.TOKENS.TRACKING (approved)
 
 **Reviewed:** Per-execution token usage collection and storage research doc.

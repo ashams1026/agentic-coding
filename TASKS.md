@@ -5,55 +5,13 @@
 
 ---
 
-> Sprints 1-22 complete and archived. Sprint 17 has blocked FX.SDK3/SDK5. All bug fixes, UX tasks, and research proposals archived. Research archived: RES.CHAT.UX/RICH/DATA, RES.LIFECYCLE.UX/DATA, RES.NOTIFY.UX/INTEGRATIONS, RES.COLLAB.CONTEXT/COORD, RES.SCHED.UX/INFRA, RES.ROLLBACK, RES.TEMPLATES, RES.ANALYTICS.METRICS/UX, RES.WEBHOOKS.INBOUND/OUTBOUND, RES.SWAP.ARCH/HOSTED/API.
+> Sprints 1-22 complete and archived. All bug fixes, UX tasks, and research proposals archived. Blocked tasks (FX.SDK3, FX.SDK5, SDK.V2.3) moved to `BLOCKED_TASKS.md`. PLUG.3c/3d superseded by RES.SWAP.* research. UX.WORK.BOARD removed (board view was removed from UI). Research archived: RES.CHAT.UX/RICH/DATA, RES.LIFECYCLE.UX/DATA, RES.NOTIFY.UX/INTEGRATIONS, RES.COLLAB.CONTEXT/COORD, RES.SCHED.UX/INFRA, RES.ROLLBACK, RES.TEMPLATES, RES.ANALYTICS.METRICS/UX, RES.WEBHOOKS.INBOUND/OUTBOUND, RES.SWAP.ARCH/HOSTED/API.
 
 ---
-
-## Sprint 17: Agent Pipeline Fixes & Monitor UX (remaining)
-
-> Blocked and remaining tasks.
-
-### SDK-Native Skills & Tool Discovery
-
-- [blocked: SDK initializationResult() does not return built-in tool names/descriptions — only commands (skills), agents, and models. No tool discovery API exists in the SDK. The hardcoded SDK_TOOLS list in tool-configuration.tsx is actually correct since built-in tools are a fixed set.]  **FX.SDK3** — Replace hardcoded tool list with SDK discovery in persona editor. In the persona editor UI (`packages/frontend/src/features/persona-manager/`): replace any freeform text input or hardcoded tool checkboxes for `allowedTools` with a multi-select populated from `GET /api/sdk/capabilities`. Show each tool with its name and description. Group by category: File tools, Search tools, Execution, Web, Agent, Other. Same for `mcpTools` — show available MCP tools from the discovery response. Validate on save: warn if a selected tool isn't in the available set.
-
-- [blocked: same as FX.SDK3 — no tool discovery API in SDK. Can validate skills (commands) and agents from capabilities, but not built-in tools.] **FX.SDK5** — Add startup tool validation. In `packages/backend/src/agent/execution-manager.ts`: on first dispatch (or server start), fetch the SDK capabilities and validate all persona `allowedTools` and `skills` against the actual available set. Log warnings for any mismatches: "Persona 'Engineer' references unknown tool 'FooBar' — will be ignored by SDK." This catches stale tool names early (like the `transition_state` vs `route_to_state` incident).
-
----
-
-## Sprint 19: SDK Deep Integration — Core
-
-> Leverage the full Claude Agent SDK surface. Priority-ordered: infrastructure first (unblocks everything), then agent quality, then safety.
-> V2 Sessions unblock SDK discovery (FX.SDK1) and simplify Pico (Sprint 18).
-> Each feature with UI changes includes a test plan update + visual verification task.
-
-### Part 1: Infrastructure — V2 Persistent Sessions
-
-- [blocked: SDKSessionOptions does not support agent/agents, mcpServers, cwd, skills, or maxBudgetUsd — only query() Options does. V2 sessions can't be configured as Pico (custom personality, MCP server, project cwd). Need SDK to add these fields to SDKSessionOptions first.] **SDK.V2.3** — Refactor Pico to use V2 sessions. Update PICO.2 and PICO.3 design: instead of a custom `chat_sessions`/`chat_messages` DB table + manual conversation history assembly, use the SDK's native session management. `POST /api/chat/sessions` → calls `unstable_v2_createSession()` and stores the SDK session ID. `POST /api/chat/sessions/:id/messages` → calls `session.send(message)` and streams from `session.stream()`. `GET /api/chat/sessions` → calls `listSessions()` from the SDK. `GET /api/chat/sessions/:id/messages` → calls `getSessionMessages(sessionId)`. This eliminates our custom chat persistence layer entirely — the SDK handles conversation history, context compaction, and session storage. Keep the `chat_sessions` table only as a lightweight index (sessionId, projectId, title, createdAt) for the UI list. Remove `chat_messages` table from the schema design.
-
----
-
-## Backlog: Pluggable Executor Architecture (remaining)
-
-> PLUG.1-10 archived (except PLUG.3c/3d blocked).
-
-- [blocked: ExecutionManager has 6+ non-DB dependencies beyond repositories (logger, audit, concurrency, runRouter, dispatchForState, drizzle eq operator). Moving to core requires abstracting ALL of these as interfaces — much larger scope than DB repositories alone. Defer until a broader service abstraction layer is designed.] **PLUG.3c** — Move ExecutionManager, dispatch, router, coordination to `@agentops/core`. Refactor these modules to use the repository interfaces from PLUG.3b instead of direct Drizzle imports. Move them to `packages/core/src/`. Update backend to inject concrete repository implementations via the composition root.
-
-- [blocked: same as PLUG.3c — mcp-server.ts depends on SDK MCP factory, logger, audit, coordination, memory modules beyond just DB. Requires broader service abstraction.] **PLUG.3d** — Move MCP server definition to `@agentops/core`. Refactor `mcp-server.ts` to use repository interfaces. The SDK MCP server factory (`createSdkMcpServer`) stays as a peer dependency since it's from the agent SDK.
-
----
-
-## Sprint 22: Visual UX Audit
-
-> Exploratory testing sprint. Each task: start dev servers (ports 3001 + 5173), open the page via chrome-devtools MCP, interact with every feature, screenshot each state, and file bugs as new `FX.UX.*` tasks in TASKS.md. Bugs should include: page, what's broken, expected behavior, and a screenshot path if possible.
-
-### Work Items (`/items`)
-
-- [blocked: Board view component exists (board-view.tsx) but is not exposed in the UI — WorkItemView type is "list" | "flow" only, viewOptions array has no board entry. Cannot audit what users can't access.] **UX.WORK.BOARD** — Audit Work Items board view. Switch to board/kanban view. Verify: columns render by workflow state, cards show title/status/assignee, drag-and-drop works (attempt to move a card between columns). Check empty columns display correctly. Screenshot. File bugs.
 
 ## Bug Fixes & UX
 
-- [blocked: TestRunPanel component exists in persona-editor.tsx but PersonaManagerPage uses PersonaDetailPanel instead. The test-run feature is not accessible from the UI — no route or button leads to persona-editor.tsx. Cannot audit what users can't reach.] **FX.UX.PERSONA.4** — Wire TestRunPanel into Persona Manager UI. The `TestRunPanel` component (`packages/frontend/src/features/persona-manager/test-run-panel.tsx`) exists and is imported in `persona-editor.tsx`, but the page (`pages/persona-manager.tsx` line 38) uses `PersonaDetailPanel` which does not include it. Users cannot test-run a persona. Fix: either add a collapsible TestRunPanel to `PersonaDetailPanel` (at the bottom of the read-only view), or replace `PersonaDetailPanel` with `PersonaEditor` in the page layout.
+- [ ] **FX.UX.PERSONA.4** — Wire TestRunPanel into Persona Manager UI. The `TestRunPanel` component (`packages/frontend/src/features/persona-manager/test-run-panel.tsx`) exists and is imported in `persona-editor.tsx`, but the page (`pages/persona-manager.tsx` line 38) uses `PersonaDetailPanel` which does not include it. Users cannot test-run a persona. Fix: either add a collapsible TestRunPanel to `PersonaDetailPanel` (at the bottom of the read-only view), or replace `PersonaDetailPanel` with `PersonaEditor` in the page layout.
 
 ---
 
@@ -91,5 +49,5 @@
 
 - [x] **RES.TOKENS.TRACKING** — Research per-execution token usage collection and storage. *(completed 2026-04-01 20:05 PDT)* Investigate: (1) what data to capture — input tokens, output tokens, cache read/write tokens, model used, cost in USD; where this data comes from (Claude Agent SDK `result` message fields: `total_cost_usd`, `duration_ms`, token counts); what's available today vs what we'd need to extract, (2) storage schema — dedicated `execution_token_usage` table or additional columns on the existing `executions` table; fields: execution_id, model, input_tokens, output_tokens, cache_read_tokens, cache_write_tokens, cost_usd, timestamp; indexing strategy for time-range queries, (3) collection points — agent executor (`claude-executor.ts`) already receives `result` messages with cost data; Pico chat (`chat.ts`) also gets cost; MCP tool calls; ensure all SDK `query()` call sites capture and persist token data consistently, (4) per-turn granularity — should we track tokens per assistant turn within an execution (useful for understanding multi-turn cost) or just the execution total; trade-off: granularity vs storage overhead, (5) relationship to existing data — the `metadata` column on `chatMessages` already stores `costUsd` and `durationMs`; the execution events table may have partial data; audit what's already being captured and identify gaps. Write to `docs/proposals/token-usage/tracking.md`. Commit the doc only.
 
-- [ ] **RES.TOKENS.DASHBOARD** — Research aggregated token usage dashboard UX. Investigate: (1) dashboard location — dedicated "Usage" page accessible from sidebar, or a tab/section within Settings, or widgets on the main Dashboard; relationship to RES.ANALYTICS.UX (analytics may be a superset that includes token usage as one view), (2) key views — usage over time (line chart: tokens/cost per day/week/month), breakdown by model (pie/bar chart: how much spend on Opus vs Sonnet vs Haiku), breakdown by persona (which agents cost the most), breakdown by project, top N most expensive executions (table with drill-down to execution detail), (3) time range controls — preset ranges (today, 7d, 30d, all time), custom date picker; comparison mode (this week vs last week), (4) summary cards — total tokens used, total cost, average cost per execution, number of executions; for the selected time range, (5) real-time vs batch — can the dashboard query aggregates on the fly from the token_usage table, or do we need a pre-computed summary table for performance; at what data volume does on-the-fly aggregation become too slow in SQLite, (6) export — download usage data as CSV for expense tracking or team reporting. Write to `docs/proposals/token-usage/dashboard-ux.md`. Commit the doc only.
+- [review] **RES.TOKENS.DASHBOARD** — Research aggregated token usage dashboard UX. Investigate: (1) dashboard location — dedicated "Usage" page accessible from sidebar, or a tab/section within Settings, or widgets on the main Dashboard; relationship to RES.ANALYTICS.UX (analytics may be a superset that includes token usage as one view), (2) key views — usage over time (line chart: tokens/cost per day/week/month), breakdown by model (pie/bar chart: how much spend on Opus vs Sonnet vs Haiku), breakdown by persona (which agents cost the most), breakdown by project, top N most expensive executions (table with drill-down to execution detail), (3) time range controls — preset ranges (today, 7d, 30d, all time), custom date picker; comparison mode (this week vs last week), (4) summary cards — total tokens used, total cost, average cost per execution, number of executions; for the selected time range, (5) real-time vs batch — can the dashboard query aggregates on the fly from the token_usage table, or do we need a pre-computed summary table for performance; at what data volume does on-the-fly aggregation become too slow in SQLite, (6) export — download usage data as CSV for expense tracking or team reporting. Write to `docs/proposals/token-usage/dashboard-ux.md`. Commit the doc only.
 
