@@ -8,7 +8,6 @@ const EVENT_LABELS: { type: NotificationEventType; label: string; description: s
   { type: "proposal_needs_approval", label: "Agent needs approval", description: "When an agent submits a proposal for review" },
   { type: "agent_errored", label: "Agent errored", description: "When an agent execution fails" },
   { type: "budget_threshold", label: "Budget threshold", description: "When monthly spend reaches 80% of cap" },
-  { type: "execution_stuck", label: "Execution stuck", description: "When an agent has no activity for 10+ minutes" },
   { type: "agent_completed", label: "Agent completed", description: "When an agent finishes a task" },
 ];
 

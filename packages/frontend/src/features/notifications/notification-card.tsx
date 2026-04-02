@@ -3,7 +3,6 @@ import {
   Lightbulb,
   AlertCircle,
   AlertTriangle,
-  Clock,
   CheckCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -24,7 +23,6 @@ const TYPE_CONFIG: Record<NotificationEventType, TypeConfig> = {
   proposal_needs_approval: { icon: Lightbulb, color: "text-amber-500", bgColor: "bg-amber-500/15" },
   agent_errored: { icon: AlertCircle, color: "text-red-500", bgColor: "bg-red-500/15" },
   budget_threshold: { icon: AlertTriangle, color: "text-yellow-500", bgColor: "bg-yellow-500/15" },
-  execution_stuck: { icon: Clock, color: "text-orange-500", bgColor: "bg-orange-500/15" },
   agent_completed: { icon: CheckCircle, color: "text-emerald-500", bgColor: "bg-emerald-500/15" },
 };
 
@@ -146,16 +144,6 @@ export function NotificationCard({ notification: n }: NotificationCardProps) {
               onClick={(e) => handleAction(e, "/settings")}
             >
               View settings
-            </Button>
-          )}
-          {n.type === "execution_stuck" && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-5 px-2 text-[10px]"
-              onClick={(e) => handleAction(e, "/agents")}
-            >
-              View agent
             </Button>
           )}
         </div>

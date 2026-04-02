@@ -1428,7 +1428,6 @@ Fired when a notification-worthy event occurs. Delivered to the frontend notific
 | `proposal_needs_approval` | critical | Proposal created with type `review_request` |
 | `agent_errored` | critical | Execution failed with error |
 | `budget_threshold` | high | Monthly spend >= 80% of cap |
-| `execution_stuck` | high | Agent inactive for 10+ minutes |
 | `agent_completed` | low | Execution completed successfully |
 
 **`NotificationPriority`:** `"critical" | "high" | "low" | "info"`

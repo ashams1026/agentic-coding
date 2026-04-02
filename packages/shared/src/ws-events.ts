@@ -18,7 +18,6 @@ export type NotificationEventType =
   | "proposal_needs_approval"
   | "agent_errored"
   | "budget_threshold"
-  | "execution_stuck"
   | "agent_completed";
 
 export type NotificationPriority = "critical" | "high" | "low" | "info";
