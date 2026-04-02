@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-01 20:53 PDT — FND.WIL.1: Add archived_at and deleted_at columns to work_items
+
+**Done:** Added `archivedAt` (integer, timestamp_ms) and `deletedAt` (integer, timestamp_ms) nullable columns to `workItems` table in schema.ts. Added matching `archivedAt: string | null` and `deletedAt: string | null` fields to `WorkItem` interface in entities.ts. Generated Drizzle migration `0008_glamorous_young_avengers.sql`. Fixed type error in dashboard.ts where explicit `WorkItem` construction needed the new fields.
+**Files:** `packages/backend/src/db/schema.ts`, `packages/shared/src/entities.ts`, `packages/backend/drizzle/0008_glamorous_young_avengers.sql` (new), `packages/backend/drizzle/meta/*`, `packages/backend/src/routes/dashboard.ts`
+**Notes:** `serializeWorkItem()` in work-items.ts uses `...row` spread so new columns flow through automatically. `WorkItemRow` in core package not updated (separate concern for FND.WIL.2+).
+
+---
+
 ## 2026-04-01 20:50 PDT — Review: FND.ERR.7 (approved)
 
 **Reviewed:** Pre-migration SQLite backup in migrate.ts.

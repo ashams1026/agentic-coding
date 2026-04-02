@@ -70,6 +70,8 @@ export interface WorkItem {
   executionContext: ExecutionContextEntry[];
   createdAt: string;
   updatedAt: string;
+  archivedAt: string | null;
+  deletedAt: string | null;
 }
 
 export interface ExecutionContextEntry {

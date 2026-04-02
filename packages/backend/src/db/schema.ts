@@ -43,6 +43,8 @@ export const workItems = sqliteTable("work_items", {
     .default([]),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+  archivedAt: integer("archived_at", { mode: "timestamp_ms" }),
+  deletedAt: integer("deleted_at", { mode: "timestamp_ms" }),
 });
 
 export const workItemsRelations = relations(workItems, ({ one, many }) => ({

@@ -152,6 +152,8 @@ export async function dashboardRoutes(app: FastifyInstance) {
         })),
         createdAt: toIso(wi.createdAt),
         updatedAt: toIso(wi.updatedAt),
+        archivedAt: wi.archivedAt ? toIso(wi.archivedAt) : null,
+        deletedAt: wi.deletedAt ? toIso(wi.deletedAt) : null,
       };
       const serializedPersona: Persona | null = persona
         ? {
