@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 21:20 PDT — Review: FND.WIL.4 (approved)
+
+**Reviewed:** Bulk operations API and background hard-delete job.
+- `POST /bulk/archive` at :382-417: 400 guard, BFS cascade with dedup, sets `archivedAt` ✓
+- `POST /bulk/unarchive` at :419-434: 400 guard, clears `archivedAt` ✓
+- `DELETE /bulk` at :436-498: 400 guard, cascade BFS, 409 guard for running execs, cascade-deletes related data, soft-deletes ✓
+- `lifecycle.ts`: `cleanupExpiredWorkItems()` with `lt(deletedAt, cutoff)`, cascades all related data + orphan executions, hard-deletes items ✓
+- `startLifecycleCleanup()` at boot + every 6h; `stopLifecycleCleanup()` in graceful shutdown ✓
+- Build passes
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 21:17 PDT — FND.WIL.4: Bulk operations API and background hard-delete job
 
 **Done:** Added three bulk endpoints to work-items.ts: `POST /api/work-items/bulk/archive` (with optional BFS cascade), `POST /api/work-items/bulk/unarchive`, `DELETE /api/work-items/bulk` (with 409 guard for running executions, cascade-deletes related data, soft-deletes items). Created `packages/backend/src/agent/lifecycle.ts` with `cleanupExpiredWorkItems()` that hard-deletes items where `deleted_at < now - 30 days` (cascades edges, comments, proposals, memories, executions). Registered `startLifecycleCleanup()` in start.ts to run at boot + every 6 hours; `stopLifecycleCleanup()` in graceful shutdown. Added `BulkWorkItemRequest` type to shared/api.ts.
