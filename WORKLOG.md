@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 06:10 PDT — S27.TEST.2: Inbound Webhooks + Data Management e2e test plan
+
+**Done:** Wrote test plan at `tests/e2e/plans/inbound-webhooks-data-mgmt.md`. 20 steps across 6 parts: trigger CRUD API (4 steps), receiver code review (3 steps — HMAC, template, execution), UI triggers (4 steps), backup/restore (4 steps — API + UI), log truncation (2 steps), storage stats (3 steps — API + UI).
+**Files:** `tests/e2e/plans/inbound-webhooks-data-mgmt.md`
+
+---
+
 ## 2026-04-03 06:00 PDT — Review: S27.TEST.1 (approved)
 
 **Reviewed:** Outbound Webhooks e2e test plan.
