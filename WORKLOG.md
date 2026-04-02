@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 22:55 PDT — ANL.3: Analytics aggregate endpoints
+
+**Done:** Created `packages/backend/src/routes/analytics.ts` with 4 endpoints. `GET /api/analytics/cost-by-persona` — groups by personaId, joins persona name, sums costUsd + totalTokens + count. `GET /api/analytics/cost-by-model` — groups by model, same aggregates. `GET /api/analytics/tokens-over-time` — daily aggregates using `DATE(startedAt/1000, 'unixepoch')`, ordered by date. `GET /api/analytics/top-executions` — top N by costUsd DESC with persona join, limit 10-50. All endpoints accept `projectId` and `range` (24h/7d/30d/90d) filters. CostUsd converted from cents to USD in responses. Registered in server.ts.
+**Files:** `packages/backend/src/routes/analytics.ts` (new), `packages/backend/src/server.ts`
+
+---
+
 ## 2026-04-02 22:45 PDT — Review: ANL.2 (approved)
 
 **Reviewed:** Token data persistence on execution completion.

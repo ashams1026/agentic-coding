@@ -15,6 +15,7 @@ import { chatRoutes } from "./routes/chat.js";
 import { sdkRoutes } from "./routes/sdk.js";
 import { workflowRoutes } from "./routes/workflows.js";
 import { searchRoutes } from "./routes/search.js";
+import { analyticsRoutes } from "./routes/analytics.js";
 import { registerWebSocket } from "./ws.js";
 import { getActiveCount } from "./agent/concurrency.js";
 import { executionManager } from "./agent/setup.js";
@@ -71,6 +72,7 @@ export async function buildServer() {
   await sdkRoutes(server);
   await workflowRoutes(server);
   await searchRoutes(server);
+  await analyticsRoutes(server);
 
   return server;
 }
