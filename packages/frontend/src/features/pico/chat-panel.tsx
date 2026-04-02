@@ -30,14 +30,25 @@ import { cn } from "@/lib/utils";
 import { usePicoStore } from "./pico-store";
 import { ChatMessage } from "./chat-message";
 import { usePicoChat } from "@/hooks/use-pico-chat";
+import { usePersonas, useProjects } from "@/hooks";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { ChatSessionId } from "@agentops/shared";
 
 // ── Component ─────────────────────────────────────────────────────
 
 export function ChatPanel() {
-  const { isOpen, setOpen, panelWidth, panelHeight, setPanelSize } = usePicoStore();
+  const { isOpen, setOpen, panelWidth, panelHeight, setPanelSize, scopeOverride, setScopeOverride, selectedPersonaId, setSelectedPersonaId } = usePicoStore();
   const navigate = useNavigate();
   const [input, setInput] = useState("");
+  const { data: personas = [] } = usePersonas();
+  const { data: projectsList = [] } = useProjects();
   const {
     messages,
     sessions,
@@ -329,6 +340,54 @@ export function ChatPanel() {
         >
           <ChevronDown className="h-4 w-4" />
         </Button>
+      </div>
+
+      {/* Scope & Persona bar */}
+      <div className="flex items-center gap-2 border-b border-border px-3 py-1.5 bg-muted/30">
+        <Select
+          value={scopeOverride ?? "__follow__"}
+          onValueChange={(v) => {
+            const newScope = v === "__follow__" ? null : v;
+            setScopeOverride(newScope);
+            newSession();
+          }}
+        >
+          <SelectTrigger className="h-6 w-[120px] text-[11px] border-none bg-transparent shadow-none px-1.5">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__follow__">Follows sidebar</SelectItem>
+            <SelectItem value="__global__">Global</SelectItem>
+            {projectsList.map((p) => (
+              <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select
+          value={selectedPersonaId ?? "__pico__"}
+          onValueChange={(v) => {
+            const newPersona = v === "__pico__" ? null : v;
+            setSelectedPersonaId(newPersona);
+            newSession();
+          }}
+        >
+          <SelectTrigger className="h-6 w-[100px] text-[11px] border-none bg-transparent shadow-none px-1.5">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="__pico__">Pico</SelectItem>
+            {personas.filter((p) => p.name !== "Pico").map((p) => (
+              <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {(scopeOverride || selectedPersonaId) && (
+          <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-normal ml-auto">
+            {scopeOverride === "__global__" ? "Global" : scopeOverride ? "Project" : ""}
+            {scopeOverride && selectedPersonaId ? " · " : ""}
+            {selectedPersonaId ? personas.find((p) => p.id === selectedPersonaId)?.name ?? "" : ""}
+          </Badge>
+        )}
       </div>
 
       {/* Messages */}

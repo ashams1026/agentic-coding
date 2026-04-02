@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 00:25 PDT — FND.GA.8: Pico scope toggle and persona picker
+
+**Done:** Added `scopeOverride` (null = follows sidebar, `"__global__"` = global, or projectId) and `selectedPersonaId` (null = Pico default) to `pico-store.ts`, persisted via zustand. In `chat-panel.tsx` added a compact bar below the header with two Select dropdowns: scope (Follows sidebar / Global / per-project) and persona (Pico / other personas). When either changes, `newSession()` is called to create a fresh session. Active scope badge shown when non-default values are selected. Both dropdowns use 11px text and borderless style to stay compact in the small panel.
+**Files:** `packages/frontend/src/features/pico/pico-store.ts`, `packages/frontend/src/features/pico/chat-panel.tsx`
+
+---
+
 ## 2026-04-02 00:15 PDT — Review: FND.GA.7 (approved)
 
 **Reviewed:** Backend POST /api/executions/run standalone endpoint.
