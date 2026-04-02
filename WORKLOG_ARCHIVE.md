@@ -161,3 +161,15 @@
 **Error Recovery (FND.ERR.1-7, all approved):** busy_timeout+synchronous PRAGMAs (connection.ts), WS exponential backoff+jitter (ws-client.ts), React error boundaries at app+page level (error-boundary.tsx, app.tsx, router.tsx), tri-state WS status indicator in status bar+Agent Monitor (ws-client.ts, status-bar.tsx, terminal-renderer.tsx, use-ws-status.ts hook), structured error JSON column on executions (schema migration 0007, execution-manager.ts classifies sdk_error/configuration_error/unknown), "interrupted" execution status for orphan recovery (entities.ts, start.ts), pre-migration SQLite backup with 3-backup rotation (migrate.ts).
 
 **Work Item Lifecycle early (FND.WIL.1-4, all approved):** archived_at/deleted_at nullable timestamp columns (schema migration 0008), soft delete with 409 guard for running executions + cascade-delete of related data (work-items.ts), archive/unarchive/restore API endpoints with BFS cascade + 30-day grace period + GET query params for filtering (work-items.ts, shared/api.ts), bulk operations API (bulk/archive, bulk/unarchive, bulk delete) + background hard-delete cleanup job every 6h (lifecycle.ts, start.ts).
+
+---
+
+### Sprint 23 Foundations batch 2 — 2026-04-01 21:25–22:24 PDT
+
+**Work Item Lifecycle late (FND.WIL.5-8, all approved):** "Show archived" toggle with muted styling + "Archived" badge (filter-bar.tsx, list-view.tsx, work-items-store.ts), archive/delete context menus + detail panel actions with toast Undo (context-menu.tsx, list-view.tsx, detail-panel.tsx), bulk action bar for multi-select with Archive/Delete/Clear (work-items-store selectedIds, bulk API hooks), bulkDeleteWorkItems error handling rework (rejected then fixed — added !res.ok guard matching del() pattern), "Recently deleted" recovery view in Settings > Data with 30-day countdown badge + Restore (recently-deleted.tsx, serializeWorkItem fix for archivedAt/deletedAt).
+
+---
+
+### Sprint 23 Foundations batch 3 — 2026-04-01 22:32–23:25 PDT
+
+**Global Agents early (FND.GA.1-4, all approved):** Schema migration — chatSessions.projectId nullable, executions.projectId added, global_memories table (migration 0009, chat.ts null-safety fixes). AgentScope discriminated union type + nullable workItemId/projectId on shared entities (4 downstream TS fixes). "All Projects" sidebar selector with "__all__" sentinel in zustand store, auto-select guards in sidebar + use-selected-project. Dashboard scope-awareness — "All Projects" heading with Global badge, Projects Overview table, dimmed Work Items link with tooltip.

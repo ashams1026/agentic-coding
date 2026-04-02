@@ -171,10 +171,22 @@ Scheduling infrastructure, rollback UX, templates, analytics metrics/UX, inbound
 - [x] **FND.WIL.7** — Frontend: bulk action bar for multi-select. *(completed 2026-04-01 22:08 PDT)*
 - [x] **FND.WIL.8** — Settings: "Recently deleted" recovery view. *(completed 2026-04-01 22:24 PDT)*
 
-### Global Agents Phase 1 (partial)
+### Global Agents Phase 1
 
 - [x] **FND.GA.1** — Schema migration: make chatSessions.projectId nullable, add projectId to executions, create global_memories table. *(completed 2026-04-01 22:36 PDT)*
 - [x] **FND.GA.2** — Add AgentScope type and update entity types in shared package. *(completed 2026-04-01 22:46 PDT)*
 - [x] **FND.GA.3** — Navigation: add "All Projects" option to sidebar project selector. *(completed 2026-04-01 23:10 PDT)*
 - [x] **FND.GA.4** — Dashboard scope-awareness: aggregated stats when no project selected. *(completed 2026-04-01 23:25 PDT)*
 - [x] **FND.GA.5** — Agent Monitor scope-awareness: scope badges and filter. *(completed 2026-04-01 23:40 PDT)*
+- [x] **FND.GA.6** — Agent Monitor "New Run" modal. *(completed 2026-04-02 00:00 PDT)*
+- [x] **FND.GA.7** — Backend: POST /api/executions/run standalone execution endpoint. *(completed 2026-04-02 00:15 PDT)*
+- [x] **FND.GA.8** — Pico scope toggle and persona picker in chat panel header. *(completed 2026-04-02 00:30 PDT)*
+- [x] **FND.GA.9** — Backend: support nullable projectId in chat sessions and persona override. *(completed 2026-04-02 00:45 PDT)*
+- [x] **FND.GA.10** — E2E test plan for Global Agents Phase 1. *(completed 2026-04-02 01:00 PDT)*
+
+### Testing & Documentation (partial)
+
+- [x] **FND.TEST.1** — E2E test plan for Error Recovery Phase 1. *(completed 2026-04-02 01:15 PDT)*
+- [x] **FND.TEST.2** — E2E test plan for Work Item Lifecycle. *(completed 2026-04-02 01:30 PDT)*
+- [x] **FND.TEST.3** — Execute Error Recovery e2e tests — 8/8 pass. *(completed 2026-04-02 01:45 PDT)*
+- [x] **FND.TEST.4** — Execute Work Item Lifecycle e2e tests — 9/10 pass, 1 skip. *(completed 2026-04-02 02:05 PDT)*
