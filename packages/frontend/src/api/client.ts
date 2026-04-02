@@ -763,6 +763,26 @@ export async function deleteWorkflow(id: string): Promise<boolean> {
   return del(`/api/workflows/${id}`);
 }
 
+// ── Search ──────────────────────────────────────────────────────
+
+export interface SearchResult {
+  type: "work_item" | "persona" | "comment" | "chat_message";
+  id: string;
+  title: string;
+  snippet: string;
+  score: number;
+  projectId: string | null;
+}
+
+export async function searchApi(q: string, opts?: { type?: string; projectId?: string; limit?: number }): Promise<SearchResult[]> {
+  const params = new URLSearchParams({ q });
+  if (opts?.type) params.set("type", opts.type);
+  if (opts?.projectId) params.set("projectId", opts.projectId);
+  if (opts?.limit) params.set("limit", String(opts.limit));
+  const res = await get<{ data: SearchResult[]; total: number }>(`/api/search?${params}`);
+  return res.data;
+}
+
 // ── Bundled API (mirrors mockApi shape) ──────────────────────────
 
 export const apiClient = {

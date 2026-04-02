@@ -9,13 +9,18 @@ import {
   Users,
   Settings,
   FileText,
-  CheckSquare,
+  MessageSquare,
+  User,
   Plus,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useWorkItems, useSelectedProject } from "@/hooks";
+import { useSelectedProject } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
+import { searchApi } from "@/api/client";
+import type { SearchResult } from "@/api/client";
+import type { WorkItemId } from "@agentops/shared";
 import { cn } from "@/lib/utils";
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -23,7 +28,8 @@ import { cn } from "@/lib/utils";
 interface CommandItem {
   id: string;
   label: string;
-  category: "navigation" | "work-items" | "actions";
+  snippet?: string;
+  category: string;
   icon: React.ReactNode;
   onSelect: () => void;
 }
@@ -48,8 +54,18 @@ const ACTION_ITEMS = [
 
 const CATEGORY_LABELS: Record<string, string> = {
   navigation: "Navigation",
-  "work-items": "Work Items",
   actions: "Quick Actions",
+  work_item: "Work Items",
+  persona: "Personas",
+  comment: "Comments",
+  chat_message: "Chat Messages",
+};
+
+const TYPE_ICONS: Record<string, React.ReactNode> = {
+  work_item: <FileText className="h-4 w-4" />,
+  persona: <User className="h-4 w-4" />,
+  comment: <MessageSquare className="h-4 w-4" />,
+  chat_message: <MessageSquare className="h-4 w-4" />,
 };
 
 // ── Component ──────────────────────────────────────────────────────
@@ -58,12 +74,14 @@ export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [searching, setSearching] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const navigate = useNavigate();
 
   const { projectId } = useSelectedProject();
-  const { data: workItems = [] } = useWorkItems(undefined, projectId ?? undefined);
   const setSelectedItemId = useWorkItemsStore((s) => s.setSelectedItemId);
 
   // ── Keyboard shortcut to open ────────────────────────────────
@@ -83,83 +101,112 @@ export function CommandPalette() {
     if (open) {
       setQuery("");
       setSelectedIndex(0);
+      setSearchResults([]);
+      setSearching(false);
     }
   }, [open]);
 
-  // ── Build items ──────────────────────────────────────────────
-  const allItems = useMemo((): CommandItem[] => {
-    const items: CommandItem[] = [];
+  // ── Debounced server search ──────────────────────────────────
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    // Navigation
+    if (!query.trim() || query.trim().length < 2) {
+      setSearchResults([]);
+      setSearching(false);
+      return;
+    }
+
+    setSearching(true);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const results = await searchApi(query.trim(), {
+          projectId: projectId ?? undefined,
+          limit: 20,
+        });
+        setSearchResults(results);
+      } catch {
+        setSearchResults([]);
+      } finally {
+        setSearching(false);
+      }
+    }, 300);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [query, projectId]);
+
+  // ── Build static items (nav + actions) ──────────────────────
+  const staticItems = useMemo((): CommandItem[] => {
+    const items: CommandItem[] = [];
+    const q = query.toLowerCase();
+
     for (const nav of NAV_ITEMS) {
+      if (q && !nav.label.toLowerCase().includes(q)) continue;
       const Icon = nav.icon;
       items.push({
         id: `nav-${nav.path}`,
         label: nav.label,
         category: "navigation",
         icon: <Icon className="h-4 w-4" />,
-        onSelect: () => {
-          navigate(nav.path);
-          setOpen(false);
-        },
+        onSelect: () => { navigate(nav.path); setOpen(false); },
       });
     }
 
-    // Work Items
-    for (const wi of workItems) {
-      items.push({
-        id: `work-item-${wi.id}`,
-        label: wi.title,
-        category: "work-items",
-        icon: wi.parentId ? <CheckSquare className="h-4 w-4" /> : <FileText className="h-4 w-4" />,
-        onSelect: () => {
-          setSelectedItemId(wi.id);
-          navigate("/items");
-          setOpen(false);
-        },
-      });
-    }
-
-    // Actions
     for (const action of ACTION_ITEMS) {
+      if (q && !action.label.toLowerCase().includes(q)) continue;
       const Icon = action.icon;
       items.push({
         id: action.id,
         label: action.label,
         category: "actions",
         icon: <Icon className="h-4 w-4" />,
-        onSelect: () => {
-          navigate(action.path);
-          setOpen(false);
-        },
+        onSelect: () => { navigate(action.path); setOpen(false); },
       });
     }
 
     return items;
-  }, [workItems, navigate, setSelectedItemId]);
+  }, [query, navigate]);
 
-  // ── Filter ───────────────────────────────────────────────────
-  const filtered = useMemo(() => {
-    if (!query.trim()) return allItems;
-    const q = query.toLowerCase();
-    return allItems.filter((item) => item.label.toLowerCase().includes(q));
-  }, [query, allItems]);
+  // ── Convert search results to CommandItems ───────────────────
+  const searchItems = useMemo((): CommandItem[] => {
+    return searchResults.map((r) => ({
+      id: `search-${r.type}-${r.id}`,
+      label: r.title,
+      snippet: r.snippet,
+      category: r.type,
+      icon: TYPE_ICONS[r.type] ?? <FileText className="h-4 w-4" />,
+      onSelect: () => {
+        if (r.type === "work_item") {
+          setSelectedItemId(r.id as WorkItemId);
+          navigate("/items");
+        } else if (r.type === "persona") {
+          navigate("/personas");
+        } else if (r.type === "comment") {
+          navigate("/items");
+        } else if (r.type === "chat_message") {
+          navigate("/chat");
+        }
+        setOpen(false);
+      },
+    }));
+  }, [searchResults, navigate, setSelectedItemId]);
 
-  // ── Group by category ────────────────────────────────────────
+  // ── Group all items ──────────────────────────────────────────
   const grouped = useMemo(() => {
+    const allItems = [...staticItems, ...searchItems];
     const groups: { category: string; items: CommandItem[] }[] = [];
-    const categoryOrder = ["navigation", "actions", "work-items"];
+    const categoryOrder = ["navigation", "actions", "work_item", "persona", "comment", "chat_message"];
 
     for (const cat of categoryOrder) {
-      const items = filtered.filter((i) => i.category === cat);
+      const items = allItems.filter((i) => i.category === cat);
       if (items.length > 0) {
         groups.push({ category: cat, items });
       }
     }
     return groups;
-  }, [filtered]);
+  }, [staticItems, searchItems]);
 
-  // ── Flat list for keyboard nav ───────────────────────────────
   const flatItems = useMemo(() => grouped.flatMap((g) => g.items), [grouped]);
 
   // ── Clamp selected index ─────────────────────────────────────
@@ -221,6 +268,7 @@ export function CommandPalette() {
             className="flex-1 bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
             autoFocus
           />
+          {searching && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />}
           <kbd className="hidden sm:inline-flex h-5 items-center gap-0.5 rounded border bg-muted px-1.5 text-xs font-medium text-muted-foreground">
             ESC
           </kbd>
@@ -230,7 +278,7 @@ export function CommandPalette() {
         <div ref={listRef} className="max-h-[320px] overflow-y-auto py-1">
           {flatItems.length === 0 ? (
             <div className="py-8 text-center text-sm text-muted-foreground">
-              No results found.
+              {searching ? "Searching..." : query.trim().length >= 2 ? "No results found." : "Type to search..."}
             </div>
           ) : (
             grouped.map((group) => (
@@ -255,9 +303,17 @@ export function CommandPalette() {
                       )}
                     >
                       <span className="text-muted-foreground shrink-0">{item.icon}</span>
-                      <span className="truncate">{item.label}</span>
+                      <div className="flex-1 min-w-0">
+                        <span className="truncate block">{item.label}</span>
+                        {item.snippet && (
+                          <span
+                            className="text-xs text-muted-foreground truncate block mt-0.5"
+                            dangerouslySetInnerHTML={{ __html: item.snippet }}
+                          />
+                        )}
+                      </div>
                       {isSelected && (
-                        <kbd className="ml-auto hidden sm:inline-flex h-5 items-center rounded border bg-muted px-1.5 text-xs text-muted-foreground">
+                        <kbd className="ml-auto hidden sm:inline-flex h-5 items-center rounded border bg-muted px-1.5 text-xs text-muted-foreground shrink-0">
                           Enter
                         </kbd>
                       )}
