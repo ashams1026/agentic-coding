@@ -123,11 +123,44 @@ GET /api/work-items
 |---|---|---|
 | `projectId` | `string` | Filter by project |
 | `parentId` | `string` | Filter by parent work item |
+| `includeArchived` | `"true"` | Include archived items (default: excluded) |
+| `deleted` | `"true"` | Show only soft-deleted items (for "Recently Deleted" view) |
+
+By default, both archived and deleted items are excluded. Use `includeArchived=true` to include archived items alongside active ones. Use `deleted=true` to show *only* soft-deleted items (overrides archive filter).
 
 **Response:** `{ data: WorkItem[], total: number }`
 
+WorkItem objects include `archivedAt` and `deletedAt` fields (ISO 8601 string or `null`):
+
+```typescript
+{
+  id: WorkItemId;
+  projectId: ProjectId;
+  parentId: WorkItemId | null;
+  title: string;
+  description: string;
+  currentState: string;
+  priority: string;
+  labels: string[];
+  assignedPersonaId: PersonaId | null;
+  context: Record<string, unknown>;
+  executionContext: unknown[];
+  createdAt: string;       // ISO 8601
+  updatedAt: string;       // ISO 8601
+  archivedAt: string | null;  // ISO 8601 — set when archived
+  deletedAt: string | null;   // ISO 8601 — set when soft-deleted
+}
+```
+
 ```bash
+# Active items only (default)
 curl "http://localhost:3001/api/work-items?projectId=pj-xxxx"
+
+# Include archived items
+curl "http://localhost:3001/api/work-items?projectId=pj-xxxx&includeArchived=true"
+
+# Recently deleted items only
+curl "http://localhost:3001/api/work-items?projectId=pj-xxxx&deleted=true"
 ```
 
 ### Get Work Item
@@ -217,15 +250,195 @@ Re-dispatches the persona assigned to the work item's current state. Fire-and-fo
 curl -X POST http://localhost:3001/api/work-items/wi-xxxx/retry
 ```
 
-### Delete Work Item
+### Delete Work Item (Soft Delete)
 
 ```
 DELETE /api/work-items/:id
 ```
 
-Recursively deletes the work item and all descendants (children, grandchildren).
+Soft-deletes the work item by setting `deleted_at`. Recursively collects all descendants (BFS) and applies the same treatment. Related data (edges, comments, proposals, project memories) is hard-deleted for all affected items.
 
-**Response:** 204
+**409 guard:** If any execution with status `"running"` is associated with the item or its descendants, the request is rejected.
+
+**Response:** 204 | 409
+
+```bash
+curl -X DELETE http://localhost:3001/api/work-items/wi-xxxx
+```
+
+**Error (409 — active execution):**
+
+```json
+{
+  "error": {
+    "code": "CONFLICT",
+    "message": "Cannot delete work item with active executions",
+    "activeExecutions": 1
+  }
+}
+```
+
+### Archive Work Item
+
+```
+POST /api/work-items/:id/archive
+```
+
+Sets `archived_at` on the work item. Archived items are excluded from the default list query but can be included with `?includeArchived=true`.
+
+**Request body:**
+
+```typescript
+{
+  cascade?: boolean;  // default: false — if true, archives all descendants too
+}
+```
+
+**Response:** `{ data: { archivedCount: number } }` | 404
+
+```bash
+# Archive single item
+curl -X POST http://localhost:3001/api/work-items/wi-xxxx/archive \
+  -H "Content-Type: application/json" \
+  -d '{}'
+
+# Archive with all children
+curl -X POST http://localhost:3001/api/work-items/wi-xxxx/archive \
+  -H "Content-Type: application/json" \
+  -d '{"cascade": true}'
+```
+
+### Unarchive Work Item
+
+```
+POST /api/work-items/:id/unarchive
+```
+
+Clears `archived_at`, restoring the item to the active list.
+
+**Response:** `{ data: WorkItem }` | 404
+
+```bash
+curl -X POST http://localhost:3001/api/work-items/wi-xxxx/unarchive
+```
+
+### Restore Deleted Work Item
+
+```
+POST /api/work-items/:id/restore
+```
+
+Restores a soft-deleted work item by clearing `deleted_at`. Subject to a **30-day grace period** — items deleted more than 30 days ago cannot be restored.
+
+**Response:** `{ data: WorkItem }` | 400 | 404 | 410
+
+| Status | Code | When |
+|--------|------|------|
+| 200 | — | Successfully restored |
+| 400 | `BAD_REQUEST` | Item is not deleted |
+| 404 | `NOT_FOUND` | Item does not exist |
+| 410 | `GONE` | Restore period expired (30 days) |
+
+```bash
+curl -X POST http://localhost:3001/api/work-items/wi-xxxx/restore
+```
+
+### Bulk Archive
+
+```
+POST /api/work-items/bulk/archive
+```
+
+Archives multiple work items in a single request.
+
+**Request body:**
+
+```typescript
+{
+  ids: string[];       // required — array of work item IDs
+  cascade?: boolean;   // default: false — if true, archives descendants of each item
+}
+```
+
+**Response:** `{ data: { archivedCount: number } }` | 400
+
+IDs are deduplicated before processing. Returns 400 if `ids` is empty.
+
+```bash
+curl -X POST http://localhost:3001/api/work-items/bulk/archive \
+  -H "Content-Type: application/json" \
+  -d '{"ids": ["wi-aaa", "wi-bbb"], "cascade": true}'
+```
+
+### Bulk Unarchive
+
+```
+POST /api/work-items/bulk/unarchive
+```
+
+Unarchives multiple work items in a single request.
+
+**Request body:**
+
+```typescript
+{
+  ids: string[];  // required — array of work item IDs
+}
+```
+
+**Response:** `{ data: { unarchivedCount: number } }` | 400
+
+```bash
+curl -X POST http://localhost:3001/api/work-items/bulk/unarchive \
+  -H "Content-Type: application/json" \
+  -d '{"ids": ["wi-aaa", "wi-bbb"]}'
+```
+
+### Bulk Delete (Soft Delete)
+
+```
+DELETE /api/work-items/bulk
+```
+
+Soft-deletes multiple work items. Same cascade and 409 guard behavior as single delete.
+
+**Request body:**
+
+```typescript
+{
+  ids: string[];       // required — array of work item IDs
+  cascade?: boolean;   // default: false — if true, includes descendants
+}
+```
+
+**Response:** 204 | 400 | 409
+
+Returns 400 if `ids` is empty. Returns 409 if any associated execution is running.
+
+```bash
+curl -X DELETE http://localhost:3001/api/work-items/bulk \
+  -H "Content-Type: application/json" \
+  -d '{"ids": ["wi-aaa", "wi-bbb"]}'
+```
+
+---
+
+## Schema Additions: `archived_at` / `deleted_at`
+
+The `work_items` table has two nullable timestamp columns supporting the lifecycle:
+
+```sql
+archived_at  INTEGER  -- timestamp_ms, NULL = not archived
+deleted_at   INTEGER  -- timestamp_ms, NULL = not deleted
+```
+
+- **`archived_at`**: Set by archive endpoints. Items with non-null `archived_at` are hidden from default queries but remain in the database. Clearing this field (unarchive) restores visibility.
+- **`deleted_at`**: Set by delete endpoints (soft delete). Items with non-null `deleted_at` are only visible via `?deleted=true`. Related data (edges, comments, proposals, memories) is hard-deleted at deletion time. The item itself can be restored within 30 days via the restore endpoint; after 30 days, the restore endpoint returns 410 GONE.
+
+**Cascade rules:**
+- Archive with `cascade: true`: BFS collects all descendants, sets `archived_at` on all.
+- Delete (single or bulk): BFS collects all descendants. Hard-deletes edges, comments, proposals, and memories for all items. Soft-deletes (sets `deleted_at`) on all work items.
+- 409 guard applies to delete only — blocks if any execution is running for the items or their descendants.
 
 ---
 
@@ -1172,7 +1385,7 @@ Switches the model mid-execution. Returns 404 if not running.
 | File | Purpose |
 |---|---|
 | `packages/backend/src/routes/projects.ts` | Project CRUD routes |
-| `packages/backend/src/routes/work-items.ts` | Work item CRUD + retry + recursive delete |
+| `packages/backend/src/routes/work-items.ts` | Work item CRUD + retry + archive/unarchive/restore + bulk ops + soft delete |
 | `packages/backend/src/routes/work-item-edges.ts` | Dependency edge routes |
 | `packages/backend/src/routes/personas.ts` | Persona CRUD routes |
 | `packages/backend/src/routes/persona-assignments.ts` | Persona assignment upsert |

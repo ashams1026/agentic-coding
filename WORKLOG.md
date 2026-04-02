@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 03:10 PDT — FND.DOC.1: Document Work Item Lifecycle API endpoints
+
+**Done:** Updated `docs/api.md` with all Work Item Lifecycle endpoints: archive (single + bulk with cascade), unarchive (single + bulk), restore (with 30-day grace period + 410 GONE), bulk delete (soft delete + 409 guard). Updated List Work Items to document `includeArchived` and `deleted` query params. Updated Delete to reflect soft-delete behavior with 409 guard and cascade rules. Added "Schema Additions" section documenting `archived_at`/`deleted_at` columns and cascade rules. Updated source files table.
+**Files:** `docs/api.md`
+
+---
+
 ## 2026-04-02 02:55 PDT — Review: FND.TEST.6 (approved)
 
 **Reviewed:** Post-Sprint 23 regression checkpoint results.
