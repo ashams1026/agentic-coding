@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 11:30 PDT — FX.NTF.1: Fix toast overflow count decrement
+
+**Done:** Fixed inverted ternary condition in `toast-store.ts:55`. The `overflowCount` decrement used `? 0 : 1` — subtracting 0 when the toast was visible (found in array) and 1 when not visible. Flipped to `? 1 : 0` so removing a visible toast correctly decrements the overflow count, clearing stale "+N more" badges.
+**Files:** `packages/frontend/src/stores/toast-store.ts`
+
+---
+
 ## 2026-04-03 11:25 PDT — Review: FX.WHK.1 (approved)
 
 **Reviewed:** HMAC verification raw body fix in webhook triggers.

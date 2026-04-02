@@ -52,7 +52,7 @@ export const useToastStore = create<ToastState>((set) => ({
       setTimeout(() => {
         set((state) => ({
           toasts: state.toasts.filter((t) => t.id !== id),
-          overflowCount: Math.max(0, state.overflowCount - (state.toasts.some((t) => t.id === id) ? 0 : 1)),
+          overflowCount: Math.max(0, state.overflowCount - (state.toasts.some((t) => t.id === id) ? 1 : 0)),
         }));
       }, AUTO_DISMISS_MS);
     }
