@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 03:35 PDT — FND.DOC.2: Document Global Agents data model and API changes
+
+**Done:** Updated `docs/api.md` with Global Agents documentation: added `projectId` query param to List Executions, added full `POST /api/executions/run` standalone execution endpoint (request/response shape, validation rules, curl examples). Updated Chat Create Session to show `projectId` as optional with nullable ChatSession type. Added "Global Agents Data Model" section documenting `AgentScope` type, nullable `projectId` on executions/chat_sessions tables, `global_memories` table schema, and scope-awareness rules for Dashboard, Agent Monitor, Work Items, Pico Chat, and Activity Feed. Updated source files table.
+**Files:** `docs/api.md`
+
+---
+
 ## 2026-04-02 03:25 PDT — Review: FND.DOC.1 (approved)
 
 **Reviewed:** Work Item Lifecycle API documentation in `docs/api.md`.

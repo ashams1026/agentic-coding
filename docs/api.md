@@ -442,6 +442,85 @@ deleted_at   INTEGER  -- timestamp_ms, NULL = not deleted
 
 ---
 
+## Global Agents Data Model
+
+Global Agents allow personas to operate across all projects or without any project context. This section documents the data model changes that support this capability.
+
+### `AgentScope` Type
+
+Defined in `packages/shared/src/entities.ts`:
+
+```typescript
+type AgentScope =
+  | { type: "project"; projectId: ProjectId; path: string }
+  | { type: "global"; workspacePath: string };
+```
+
+Used by the frontend to determine whether a session or execution is project-scoped or global. The sidebar "All Projects" selector sets scope to `{ type: "global" }`.
+
+### Nullable `projectId` on Executions and Chat Sessions
+
+Both `executions` and `chat_sessions` tables have nullable `project_id` columns:
+
+```sql
+-- executions table
+project_id  TEXT  REFERENCES projects(id)  -- NULL for standalone/global executions
+work_item_id TEXT REFERENCES work_items(id) -- NULL for standalone/global executions
+
+-- chat_sessions table
+project_id  TEXT  REFERENCES projects(id)  -- NULL for global sessions
+```
+
+- **Executions**: When created via `POST /api/executions/run`, both `workItemId` and `projectId` may be null (global execution). When created via `POST /api/executions` (work-item-driven), `workItemId` is required.
+- **Chat sessions**: When created via `POST /api/chat/sessions` with no `projectId`, the session is global — Pico operates without project context.
+
+### `global_memories` Table
+
+Cross-project memory for personas operating in global scope:
+
+```sql
+CREATE TABLE global_memories (
+  id                TEXT PRIMARY KEY,       -- GlobalMemoryId
+  persona_id        TEXT NOT NULL REFERENCES personas(id),
+  summary           TEXT NOT NULL DEFAULT '',
+  key_decisions     TEXT NOT NULL DEFAULT '[]',  -- JSON array of strings
+  created_at        INTEGER NOT NULL,       -- timestamp_ms
+  consolidated_into TEXT                    -- self-referencing FK (GlobalMemoryId | null)
+);
+```
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | `text` | Primary key (GlobalMemoryId) |
+| `persona_id` | `text` | Persona that generated this memory |
+| `summary` | `text` | Free-text summary of cross-project observations |
+| `key_decisions` | `json (string[])` | List of notable decisions or patterns |
+| `created_at` | `integer` | Creation timestamp (ms since epoch) |
+| `consolidated_into` | `text \| null` | Points to a newer consolidated memory, or null if current |
+
+### Scope-Awareness Rules
+
+**Dashboard:**
+- Project scope: shows stats for a single project (work items, executions, costs filtered by `projectId`).
+- Global scope ("All Projects"): shows aggregated stats across all projects. Displays a "Projects Overview" table listing each project.
+
+**Agent Monitor:**
+- Project scope: shows executions filtered to the selected project's work items.
+- Global scope: shows all executions across all projects. Scope badges indicate origin.
+- "New Run" button opens a dialog with Persona, Scope (project or global), Prompt, and Budget fields.
+
+**Work Items:**
+- Disabled in global scope (`aria-disabled` on the sidebar link). Work items always belong to a single project.
+
+**Pico Chat:**
+- Follows sidebar scope by default. A scope dropdown allows switching.
+- Global sessions have no project context — Pico operates across all projects.
+
+**Activity Feed:**
+- Global scope: aggregates events from all projects.
+
+---
+
 ## Work Item Edges
 
 ### List Edges
@@ -702,6 +781,7 @@ GET /api/executions
 | Param | Type | Description |
 |---|---|---|
 | `workItemId` | `string` | Filter by work item |
+| `projectId` | `string` | Filter by project (returns executions whose work item belongs to this project) |
 
 **Response:** `{ data: Execution[], total: number }`
 
@@ -762,6 +842,46 @@ DELETE /api/executions/:id
 ```
 
 **Response:** 204 | 404
+
+### Run Standalone Execution
+
+```
+POST /api/executions/run
+```
+
+Creates a standalone execution not tied to any work item. Used for ad-hoc agent runs from the Agent Monitor "New Run" dialog or global-scope operations.
+
+**Request body:**
+
+```typescript
+{
+  personaId: string;    // required — persona to execute with
+  prompt: string;       // required — instruction for the agent
+  projectId?: string;   // optional — scope to a project (null for global)
+  budgetUsd?: number;   // optional — max budget in USD
+}
+```
+
+**Validation:**
+- `personaId` and `prompt` are both required — 400 if missing
+- `personaId` must reference an existing persona — 404 if not found
+- `projectId` (if provided) must reference an existing project — 404 if not found
+
+**Response:** 201 `{ id: ExecutionId }`
+
+The created execution has `workItemId: null`, `status: "pending"`, and `summary` set to the prompt text.
+
+```bash
+# Global standalone execution
+curl -X POST http://localhost:3001/api/executions/run \
+  -H "Content-Type: application/json" \
+  -d '{"personaId": "ps-pico", "prompt": "Analyze cross-project patterns"}'
+
+# Project-scoped standalone execution
+curl -X POST http://localhost:3001/api/executions/run \
+  -H "Content-Type: application/json" \
+  -d '{"personaId": "ps-xxxx", "prompt": "Run security audit", "projectId": "pj-xxxx", "budgetUsd": 5.00}'
+```
 
 ### Rewind Execution Files
 
@@ -1280,15 +1400,42 @@ Fired when an execution status changes.
 POST /api/chat/sessions
 ```
 
-**Body:** `{ projectId: string }`
+**Body:**
 
-**Response:** `{ data: ChatSession }`
+```typescript
+{
+  projectId?: string;   // optional — null for global sessions (no project context)
+  personaId?: string;   // optional — override default Pico persona
+}
+```
+
+Body may be empty (`{}`) or omitted entirely to create a global (unscoped) session. If `projectId` is provided, it is validated — 404 if not found.
+
+**Response:** 201 `{ data: ChatSession }`
+
+ChatSession includes `projectId` as `string | null`:
+
+```typescript
+{
+  id: ChatSessionId;
+  projectId: ProjectId | null;  // null for global sessions
+  title: string;
+  createdAt: string;            // ISO 8601
+  updatedAt: string;            // ISO 8601
+}
+```
 
 ### List Chat Sessions
 
 ```
-GET /api/chat/sessions?projectId=pj-xxxx
+GET /api/chat/sessions
 ```
+
+**Query parameters:**
+
+| Param | Type | Description |
+|---|---|---|
+| `projectId` | `string` | Filter by project. Omit to list all sessions (global + project-scoped). |
 
 **Response:** `{ data: ChatSession[], total: number }`
 
@@ -1390,11 +1537,13 @@ Switches the model mid-execution. Returns 404 if not running.
 | `packages/backend/src/routes/personas.ts` | Persona CRUD routes |
 | `packages/backend/src/routes/persona-assignments.ts` | Persona assignment upsert |
 | `packages/backend/src/routes/comments.ts` | Comment CRUD routes |
-| `packages/backend/src/routes/executions.ts` | Execution CRUD routes |
+| `packages/backend/src/routes/executions.ts` | Execution CRUD + standalone run + rewind |
 | `packages/backend/src/routes/proposals.ts` | Proposal CRUD routes |
 | `packages/backend/src/routes/dashboard.ts` | Dashboard aggregate queries |
 | `packages/backend/src/routes/settings.ts` | API key, concurrency, DB stats, export/import |
 | `packages/backend/src/routes/audit.ts` | Audit log query |
 | `packages/backend/src/ws.ts` | WebSocket registration and broadcast |
+| `packages/backend/src/routes/chat.ts` | Pico chat sessions + SSE messaging |
 | `packages/shared/src/api.ts` | Request/response TypeScript types |
+| `packages/shared/src/entities.ts` | Entity types including AgentScope |
 | `packages/shared/src/ws-events.ts` | WebSocket event type definitions |
