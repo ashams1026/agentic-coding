@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 08:15 PDT — Review: NTF.3 (approved)
+
+**Reviewed:** Zustand notification store in notification-store.ts.
+- State: notifications[], preferences (enabledEvents/soundEvents/quietHours/scope), drawerOpen ✓
+- All 6 actions: addNotification, markRead, markAllRead, removeNotification, updatePreferences, setDrawerOpen ✓
+- localStorage persistence via zustand/middleware persist, partializes correctly ✓
+- 60-second batching: first added immediately, subsequent suppressed, batch flushed at window end ✓
+- Quiet hours with overnight range handling, critical bypasses ✓
+- Max 100 cap, selectUnreadCount selector ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 08:10 PDT — NTF.3: Zustand notification store
 
 **Done:** Created `packages/frontend/src/stores/notification-store.ts` with Zustand + persist middleware. State: `notifications[]`, `preferences` (enabledEvents/soundEvents maps, quietHours, scope), `drawerOpen`. Actions: addNotification (checks enabled, quiet hours, batching), markRead, markAllRead, removeNotification, updatePreferences, setDrawerOpen. Persists notifications + preferences to localStorage under `"woof-notifications"`. 60-second batching for `agent_completed` — first in window added immediately, subsequent suppressed, batch summary flushed at window end. Quiet hours support with overnight range handling. Max 100 notifications cap. `selectUnreadCount` derived selector exported.
