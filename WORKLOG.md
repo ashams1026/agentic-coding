@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 06:25 PDT — PPR.1: resolveVariables and buildVariableContext
+
+**Done:** Created `packages/backend/src/agent/prompt-variables.ts` with two exported functions. `resolveVariables(template, context)` uses regex to substitute `{{variable.name}}` placeholders — undefined variables left as literal text, escaped `\{{` not matched. `buildVariableContext(options)` assembles the built-in variable map from optional project, persona, and workItem data: `project.*` (name, path, description), `persona.*` (name, description, model), `date.*` (now ISO, today YYYY-MM-DD, dayOfWeek), `workItem.*` (id, title, state, description).
+**Files:** `packages/backend/src/agent/prompt-variables.ts` (new)
+
+---
+
 ## 2026-04-02 06:15 PDT — Review: ACH.7 (approved)
 
 **Reviewed:** Session management context menu in `packages/frontend/src/pages/chat.tsx`.
