@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-03 09:15 PDT — Review: TPL.2 (approved)
+
+**Reviewed:** Templates CRUD route + apply endpoint.
+- 5 endpoints: GET list (type filter), POST create, PATCH update, DELETE, POST apply ✓
+- Built-in guard on PATCH/DELETE (403) ✓
+- Type validation (work_item/persona) on create ✓
+- Apply: resolves workflow initial state, supports overrides, creates work item ✓
+- Follows existing route patterns (error codes, response shape) ✓
+- Registered in server.ts ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 09:10 PDT — TPL.2: Templates CRUD route + apply endpoint
 
 **Done:** Created `packages/backend/src/routes/templates.ts` with 5 endpoints: `GET /api/templates?type=` (list with optional type filter), `POST /api/templates` (create custom template with type validation), `PATCH /api/templates/:id` (update, guards built-in), `DELETE /api/templates/:id` (delete, guards built-in), `POST /api/templates/:id/apply` (create work item from template — resolves workflow initial state, supports overrides for title/description/priority/labels). Registered in `server.ts`.
