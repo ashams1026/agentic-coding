@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 09:05 PDT — Review: NTF.6 (approved)
+
+**Reviewed:** NotificationCard in notification-card.tsx.
+- 5 type-specific icons with correct colors (Lightbulb/amber, AlertCircle/red, AlertTriangle/yellow, Clock/orange, CheckCircle/green) ✓
+- Inline actions: Approve/Reject for proposals, View execution/result/settings/agent for others ✓
+- Actions: stopPropagation + markRead + close drawer + navigate ✓
+- Click marks as read ✓
+- Drawer uses NotificationCard component ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 09:00 PDT — NTF.6: NotificationCard with type icons and action buttons
 
 **Done:** Created `packages/frontend/src/features/notifications/notification-card.tsx`. Type-specific icons: proposal=Lightbulb/amber, error=AlertCircle/red, budget=AlertTriangle/yellow, stuck=Clock/orange, completed=CheckCircle/green — each with colored background circle. Inline action buttons per type: proposals get [Approve] [Reject], errors get [View execution] → /agents, completed get [View result] → /agents, budget get [View settings] → /settings, stuck get [View agent] → /agents. Actions close drawer + navigate. Click marks as read. Updated drawer to use NotificationCard, removed inline rendering and unused imports.
