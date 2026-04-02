@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 23:30 PDT — Review: ANL.7 (approved)
+
+**Reviewed:** Analytics React Query hooks + API client.
+- 4 hooks with 2-min staleTime, proper query keys ✓
+- 4 API functions + 4 interfaces + shared analyticsParams() ✓
+- TypeScript types match backend response shapes ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 23:25 PDT — ANL.7: Analytics React Query hooks + API client
 
 **Done:** Created `packages/frontend/src/hooks/use-analytics.ts` with 4 hooks: `useAnalyticsCostByPersona`, `useAnalyticsCostByModel`, `useAnalyticsTokensOverTime`, `useAnalyticsTopExecutions`. All with 2-minute staleTime, projectId + range/limit params. Added 4 API client functions + 4 TypeScript interfaces (CostByPersona, CostByModel, TokensOverTime, TopExecution) + shared `analyticsParams()` helper to `client.ts`. Implemented ANL.7 before ANL.5/6 since the tab components depend on these hooks.
