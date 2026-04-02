@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-03 14:15 PDT — Review: FX.TYPE.1 (approved)
+
+**Reviewed:** Double type cast removal in chat routes.
+- Both `as unknown as Project` and `as unknown as Persona` casts removed from chat.ts ✓
+- `VariableContextOptions` widened to minimal structural shapes matching actual field access ✓
+- claude-executor.ts (other caller) passes shared types — still compiles as supersets ✓
+- Unused `import type { Persona, Project }` removed from prompt-variables.ts ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 14:10 PDT — FX.TYPE.1: Fix unsafe double type casts in chat routes
 
 **Done:** Widened `VariableContextOptions` in `prompt-variables.ts` to accept minimal shapes (`{ name, path, settings }` for project, `{ name, description, model }` for persona) instead of requiring the full shared `Project`/`Persona` types. Removed the `import type { Persona, Project }` from prompt-variables.ts. Removed the double casts (`as unknown as Project`, `as unknown as Persona`) from `chat.ts` — Drizzle rows now satisfy the interface directly.
