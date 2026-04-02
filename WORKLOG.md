@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 21:35 PDT — SRC.3: Unified search API endpoint
+
+**Done:** Created `packages/backend/src/routes/search.ts` with `GET /api/search?q=...&type=...&projectId=...&limit=...`. Queries 4 FTS5 tables (work_items, personas, comments, chat_messages) with BM25 ranking. Returns unified `SearchResult[]` with type, id, title, snippet (using FTS5 `snippet()` with bold markers), score, projectId. Filters: `type` (comma-separated), `projectId` (joins to source tables), respects `deleted_at IS NULL` and `archived_at IS NULL` on work items. Results sorted by BM25 score across all types. Max 200 results. Registered in server.ts. Uses raw `sqlite.prepare()` for FTS5 queries (not Drizzle — FTS5 not ORM-compatible).
+**Files:** `packages/backend/src/routes/search.ts` (new), `packages/backend/src/server.ts`
+
+---
+
 ## 2026-04-02 21:25 PDT — Review: SRC.2 (approved)
 
 **Reviewed:** FTS5 sync triggers + backfill.
