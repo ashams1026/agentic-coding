@@ -2,19 +2,9 @@ import { useMemo, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useWorkItems, usePersonas, useExecutions, useSelectedProject, usePersonaAssignments } from "@/hooks";
+import { useWorkflowStates } from "@/hooks/use-workflows";
 import { useWorkItemsStore } from "@/stores/work-items-store";
-import { WORKFLOW } from "@agentops/shared";
 import type { WorkItem, Persona, WorkItemId, Priority } from "@agentops/shared";
-
-// ── Workflow order (excluding Blocked) ──────────────────────────
-
-const mainStates = WORKFLOW.states.filter((s) => s.name !== "Blocked");
-const blockedState = WORKFLOW.states.find((s) => s.name === "Blocked")!;
-
-// States that can transition to Blocked
-const blockedSources = Object.entries(WORKFLOW.transitions)
-  .filter(([, targets]) => (targets as readonly string[]).includes("Blocked"))
-  .map(([source]) => source);
 
 // ── Priority config ─────────────────────────────────────────────
 
@@ -243,13 +233,25 @@ function FilteredItemsList({
 // ── Main flow view ──────────────────────────────────────────────
 
 export function FlowView() {
-  const { projectId } = useSelectedProject();
+  const { projectId, project } = useSelectedProject();
+  const workflowId = project?.workflowId ?? null;
+  const { data: workflowStatesData } = useWorkflowStates(workflowId);
   const { data: allItems, isLoading } = useWorkItems(undefined, projectId ?? undefined);
   const { data: personas } = usePersonas();
   const { data: executions } = useExecutions(undefined, projectId ?? undefined);
   const { data: assignments } = usePersonaAssignments(projectId);
   const { filterState, setFilterState, selectedItemId, setSelectedItemId } =
     useWorkItemsStore();
+
+  // Dynamic workflow states (from DB or fallback)
+  const mainStates = useMemo(() => {
+    if (!workflowStatesData) return [];
+    return workflowStatesData.filter((s) => s.name.toLowerCase() !== "blocked");
+  }, [workflowStatesData]);
+
+  const blockedState = useMemo(() => {
+    return workflowStatesData?.find((s) => s.name.toLowerCase() === "blocked") ?? null;
+  }, [workflowStatesData]);
 
   const personaMap = useMemo(() => {
     const map = new Map<string, Persona>();
@@ -276,7 +278,7 @@ export function FlowView() {
   const stateData = useMemo(() => {
     const map = new Map<string, StateNodeData>();
 
-    for (const state of WORKFLOW.states) {
+    for (const state of (workflowStatesData ?? [])) {
       map.set(state.name, {
         items: [],
         activeAgents: 0,
@@ -348,7 +350,7 @@ export function FlowView() {
     }
 
     return map;
-  }, [allItems, executions, personaMap, statePersonaMap]);
+  }, [allItems, executions, personaMap, statePersonaMap, workflowStatesData]);
 
   const handleNodeClick = useCallback(
     (stateName: string) => {
@@ -365,12 +367,9 @@ export function FlowView() {
 
   // Index of "Blocked" branching point (roughly mid-pipeline)
   const blockedBranchIndex: number = useMemo(() => {
-    const sourceIndices = blockedSources.map((s) =>
-      mainStates.findIndex((ms) => ms.name === s),
-    ).filter((i) => i >= 0);
-    if (sourceIndices.length === 0) return 3;
-    return sourceIndices[Math.floor(sourceIndices.length / 2)] ?? 3;
-  }, []);
+    // Place the blocked branch approximately in the middle of the pipeline
+    return Math.max(1, Math.floor(mainStates.length / 2));
+  }, [mainStates]);
 
   if (isLoading) {
     return (
@@ -448,14 +447,15 @@ export function FlowView() {
               }}
             >
               {(() => {
-                const data = stateData.get("Blocked");
+                if (!blockedState) return null;
+                const data = stateData.get(blockedState.name);
                 if (!data) return null;
                 return (
                   <button
-                    onClick={() => handleNodeClick("Blocked")}
+                    onClick={() => handleNodeClick(blockedState.name)}
                     className={cn(
                       "w-full rounded-lg border border-dashed border-red-300 dark:border-red-800 bg-card text-left transition-all hover:shadow-md hover:border-red-400 overflow-hidden",
-                      filterState === "Blocked" && "ring-2 ring-red-500 border-red-500 shadow-md",
+                      filterState === blockedState.name && "ring-2 ring-red-500 border-red-500 shadow-md",
                     )}
                   >
                     <div
@@ -499,9 +499,9 @@ export function FlowView() {
             <div
               className="h-2.5 w-2.5 rounded-full"
               style={{
-                backgroundColor: WORKFLOW.states.find(
+                backgroundColor: workflowStatesData?.find(
                   (s) => s.name === filterState,
-                )?.color,
+                )?.color ?? "#6b7280",
               }}
             />
             <span className="text-sm font-medium">{filterState}</span>
