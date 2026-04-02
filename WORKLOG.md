@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 15:23 PDT — RICH.3, RICH.4: ThinkingBlock + ToolCallCard
+
+**Done:** (1) RICH.3: Enhanced ThinkingBlock at `features/chat/thinking-block.tsx`. Purple left border accent, expand/collapse with Brain icon, muted text, self-contained markdown renderer, truncation at 2000 chars with "Show more" link. (2) RICH.4: Enhanced ToolCallCard at `features/chat/tool-call-card.tsx`. Tool-specific icons (9 mappings), rich description, status badge (blue pulse/green/red), collapsible input key-values, placeholder output section (monospace pre). Expand defaults: Edit/Write/Bash expanded, Read/Grep/Glob collapsed.
+**Files:** `packages/frontend/src/features/chat/thinking-block.tsx` (new), `packages/frontend/src/features/chat/tool-call-card.tsx` (new)
+
+---
+
 ## 2026-04-02 15:22 PDT — RICH.2: Diff parser utility
 
 **Done:** Created `diff-parser.ts` exporting `computeDiff(oldString, newString)` and `formatDiffText(result)`. Implements Myers' diff algorithm (O(ND)) for optimal shortest-edit-script diffs. Returns typed `DiffLine[]` with `add/remove/context` types and separate old/new line numbers. Handles edge cases: empty/undefined inputs, identical strings, new file (all adds), deletion (all removes). Zero external dependencies.

@@ -84,8 +84,8 @@
 
 ### Phase 2: Core Components (P0)
 
-- [in-progress: 2026-04-02 15:19 PDT] **RICH.3** — Frontend: Enhanced ThinkingBlock component. Create `packages/frontend/src/features/chat/thinking-block.tsx`. Purple/gray left border accent, expand/collapse toggle with ChevronDown icon, muted text color (`text-muted-foreground/70`), markdown rendering via existing PicoMarkdown. Truncate at 2000 chars with "Show more" link. Multiple thinking blocks get a "Show all thinking" toggle. Props: `{ text: string; defaultExpanded?: boolean }`.
-- [in-progress: 2026-04-02 15:19 PDT] **RICH.4** — Frontend: Enhanced ToolCallCard component. Create `packages/frontend/src/features/chat/tool-call-card.tsx`. Header: tool icon + tool name + rich description + status badge (running/success/error) + duration. Collapsible input section (key-value pairs). Output dispatches by toolName to specialized renderers. Expand/collapse defaults: Edit/Write/Bash expanded, Read/Grep/Glob collapsed. Props: `{ block: ToolUseContentBlock }`.
+- [x] **RICH.3** — Frontend: Enhanced ThinkingBlock component. *(completed 2026-04-02 15:23 PDT)* Create `packages/frontend/src/features/chat/thinking-block.tsx`. Purple/gray left border accent, expand/collapse toggle with ChevronDown icon, muted text color (`text-muted-foreground/70`), markdown rendering via existing PicoMarkdown. Truncate at 2000 chars with "Show more" link. Multiple thinking blocks get a "Show all thinking" toggle. Props: `{ text: string; defaultExpanded?: boolean }`.
+- [x] **RICH.4** — Frontend: Enhanced ToolCallCard component. *(completed 2026-04-02 15:23 PDT)* Create `packages/frontend/src/features/chat/tool-call-card.tsx`. Header: tool icon + tool name + rich description + status badge (running/success/error) + duration. Collapsible input section (key-value pairs). Output dispatches by toolName to specialized renderers. Expand/collapse defaults: Edit/Write/Bash expanded, Read/Grep/Glob collapsed. Props: `{ block: ToolUseContentBlock }`.
 
 ### Phase 3: Specialized Output Renderers (P1)
 
