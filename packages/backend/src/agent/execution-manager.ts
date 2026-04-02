@@ -306,29 +306,39 @@ export class ExecutionManager {
       throw new Error(`Persona ${personaId} not found`);
     }
 
-    const [item] = await (this.db as any)
-      .select({ projectId: workItems.projectId, title: workItems.title, workflowId: workItems.workflowId, currentState: workItems.currentState })
-      .from(workItems)
-      .where(eq(workItems.id, workItemId));
+    // Standalone execution: workItemId may be null when triggered by webhook/schedule with a prompt
+    const isStandalone = !workItemId || workItemId === "null";
 
-    if (!item) {
-      throw new Error(`Work item ${workItemId} not found`);
-    }
+    let item: { projectId: string; title: string; workflowId: string | null; currentState: string | null } | undefined;
+    let project: any;
 
-    const [project] = await (this.db as any)
-      .select()
-      .from(projects)
-      .where(eq(projects.id, item.projectId));
+    if (!isStandalone) {
+      const [row] = await (this.db as any)
+        .select({ projectId: workItems.projectId, title: workItems.title, workflowId: workItems.workflowId, currentState: workItems.currentState })
+        .from(workItems)
+        .where(eq(workItems.id, workItemId));
 
-    if (!project) {
-      throw new Error(`Project ${item.projectId} not found`);
+      if (!row) {
+        throw new Error(`Work item ${workItemId} not found`);
+      }
+      item = row;
+
+      const [proj] = await (this.db as any)
+        .select()
+        .from(projects)
+        .where(eq(projects.id, item!.projectId));
+
+      if (!proj) {
+        throw new Error(`Project ${item!.projectId} not found`);
+      }
+      project = proj;
     }
 
     const allPersonaRows = await (this.db as any).select().from(personas);
 
     await (this.db as any).insert(executions).values({
       id: executionId,
-      workItemId,
+      workItemId: isStandalone ? null : workItemId,
       personaId,
       status: "running",
       startedAt: now,
@@ -338,8 +348,8 @@ export class ExecutionManager {
       outcome: null,
       rejectionPayload: null,
       logs: "",
-      workflowId: item.workflowId ?? null,
-      workflowStateName: item.currentState ?? null,
+      workflowId: item?.workflowId ?? null,
+      workflowStateName: item?.currentState ?? null,
     });
 
     trackExecution(executionId);
@@ -348,29 +358,29 @@ export class ExecutionManager {
       type: "agent_started",
       executionId: executionId as ExecutionId,
       personaId: personaId as PersonaId,
-      workItemId: workItemId as WorkItemId,
-      workItemTitle: item.title,
+      workItemId: (isStandalone ? "" : workItemId) as WorkItemId,
+      workItemTitle: item?.title ?? prompt?.slice(0, 100) ?? "Standalone execution",
       timestamp: now.toISOString(),
     });
 
     eventBus.emit({
       type: "execution.started",
       executionId: executionId as ExecutionId,
-      workItemId: workItemId as WorkItemId,
+      workItemId: (isStandalone ? "" : workItemId) as WorkItemId,
       personaId: personaId as PersonaId,
-      projectId: (item.projectId as ProjectId) ?? null,
+      projectId: (item?.projectId as ProjectId) ?? null,
       timestamp: now.toISOString(),
     });
 
     auditAgentDispatch({
-      workItemId,
+      workItemId: isStandalone ? "" : workItemId,
       executionId,
       personaId,
       personaName: persona.name,
     });
 
-    let task = await this.buildAgentTask(workItemId);
-    if (!task && prompt) {
+    let task: AgentTask | null = null;
+    if (isStandalone && prompt) {
       // Standalone execution with a prompt (e.g., webhook trigger, scheduled run)
       task = {
         workItemId: "" as WorkItemId,
@@ -383,6 +393,8 @@ export class ExecutionManager {
         },
         executionHistory: [],
       };
+    } else {
+      task = await this.buildAgentTask(workItemId);
     }
     if (!task) {
       await (this.db as any)
@@ -407,14 +419,23 @@ export class ExecutionManager {
       settings: persona.settings,
     };
 
-    const projectEntity = {
-      id: project.id as ProjectId,
-      name: project.name,
-      path: project.path,
-      settings: project.settings,
-      workflowId: project.workflowId ?? null,
-      createdAt: project.createdAt.toISOString(),
-    };
+    const projectEntity = project
+      ? {
+          id: project.id as ProjectId,
+          name: project.name,
+          path: project.path,
+          settings: project.settings,
+          workflowId: project.workflowId ?? null,
+          createdAt: project.createdAt.toISOString(),
+        }
+      : {
+          id: "" as ProjectId,
+          name: "Standalone",
+          path: "",
+          settings: {},
+          workflowId: null,
+          createdAt: now.toISOString(),
+        };
 
     const allPersonaEntities = allPersonaRows.map((p: typeof persona) => ({
       id: p.id as PersonaId,

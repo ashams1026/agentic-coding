@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 10:25 PDT — FX.DEAD.1 (rework): Wire prompt template into webhook execution
+
+**Done:** Reworked `runExecution()` to support standalone executions. Added `isStandalone` flag (`!workItemId || workItemId === "null"`). Made work item lookup + project lookup conditional — skipped for standalone. Execution insert uses `null` for workItemId, `null` for workflowId/state. Broadcast uses prompt snippet for title. Event emit uses empty string for workItemId. Audit uses empty string. Synthetic `AgentTask` created from prompt for standalone path. `projectEntity` falls back to a minimal standalone stub. All feedback points addressed — the early throw is now conditional.
+**Files:** `packages/backend/src/agent/execution-manager.ts`
+
+---
+
 ## 2026-04-03 10:15 PDT — Review: FX.DEAD.1 (rejected)
 
 **Reviewed:** Prompt template wiring into webhook execution.
