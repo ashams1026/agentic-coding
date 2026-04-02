@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 03:00 PDT — OWH.3: Webhook delivery worker
+
+**Done:** Created `packages/backend/src/events/webhook-delivery.ts`. `deliverWebhook()`: fetches delivery + subscription, sends HTTP POST with JSON payload + `X-Webhook-Signature: sha256=<hmac>` header, 10s timeout via AbortController. On success: marks delivered, resets subscription failureCount. On failure: `handleFailure()` with exponential backoff (30s/2m/8m/30m), max 5 attempts. Auto-disables subscription after 10 consecutive failures. `pollPendingDeliveries()`: queries pending deliveries where nextRetryAt <= now or attempt=0, processes up to 10 per poll. `startWebhookWorker()`/`stopWebhookWorker()` with 2s setInterval. Custom headers: X-Webhook-Event, X-Webhook-Delivery.
+**Files:** `packages/backend/src/events/webhook-delivery.ts` (new)
+
+---
+
 ## 2026-04-03 02:50 PDT — Review: OWH.2 (approved)
 
 **Reviewed:** Webhook subscriptions + deliveries schema.
