@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 20:28 PDT — Review: FND.ERR.2 (approved)
+
+**Reviewed:** WS reconnect exponential backoff + jitter in ws-client.ts.
+- `reconnectAttempt` counter at :45, reset in `onopen` at :61, incremented after delay computation at :143
+- Formula `Math.min(1000 * 2^attempt, 30_000) + 20% jitter` at :140-142 — correct exponential curve
+- Timing verified: attempt 1 ≥2s, attempt 3 ≥8s, cap at 30s — matches acceptance criteria
+- `disconnect()` correctly clears timer; counter resets on next successful open
+- Build passes cleanly
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 20:27 PDT — FND.ERR.2: WS reconnect exponential backoff + jitter
 
 **Done:** Replaced fixed 3s WS reconnect with exponential backoff + jitter. Added `reconnectAttempt` counter, reset on successful connection in `onopen`. Formula: `Math.min(1000 * 2^attempt, 30_000) + 20% jitter`. Delays: 1s → 2s → 4s → 8s → 16s → 30s cap.
