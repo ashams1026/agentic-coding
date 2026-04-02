@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 04:00 PDT — IWH.1: Webhook triggers schema + execution columns
+
+**Done:** Added `webhook_triggers` table to schema.ts: id, name, secret, personaId (FK), projectId (FK nullable), promptTemplate, isActive, createdAt. Added relations to persona + project. Added `triggerType` (TEXT nullable — manual/webhook/schedule) and `triggerId` (TEXT nullable) columns to executions table. Generated migration `0017_mute_tenebrous.sql` (CREATE TABLE + 2 ALTER TABLE ADD).
+**Files:** `packages/backend/src/db/schema.ts`, `packages/backend/drizzle/0017_mute_tenebrous.sql`
+
+---
+
 ## 2026-04-03 03:50 PDT — Review: OWH.6 (approved)
 
 **Reviewed:** Wire event bus → webhook delivery + startup.

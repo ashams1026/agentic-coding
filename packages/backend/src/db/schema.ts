@@ -168,6 +168,8 @@ export const executions = sqliteTable("executions", {
   model: text("model"), // nullable — persona model used (opus/sonnet/haiku)
   totalTokens: integer("total_tokens"), // nullable — cumulative tokens used
   toolUses: integer("tool_uses"), // nullable — count of tool calls made
+  triggerType: text("trigger_type"), // nullable — "manual" | "webhook" | "schedule"
+  triggerId: text("trigger_id"), // nullable — references webhook_triggers.id or schedule.id
 });
 
 export const executionsRelations = relations(executions, ({ one, many }) => ({
@@ -424,5 +426,29 @@ export const webhookDeliveriesRelations = relations(webhookDeliveries, ({ one })
   subscription: one(webhookSubscriptions, {
     fields: [webhookDeliveries.subscriptionId],
     references: [webhookSubscriptions.id],
+  }),
+}));
+
+// ── Webhook Triggers (Inbound) ────────────────────────────────────
+
+export const webhookTriggers = sqliteTable("webhook_triggers", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  secret: text("secret").notNull(),
+  personaId: text("persona_id").notNull().references(() => personas.id),
+  projectId: text("project_id").references(() => projects.id),
+  promptTemplate: text("prompt_template").notNull().default(""),
+  isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+});
+
+export const webhookTriggersRelations = relations(webhookTriggers, ({ one }) => ({
+  persona: one(personas, {
+    fields: [webhookTriggers.personaId],
+    references: [personas.id],
+  }),
+  project: one(projects, {
+    fields: [webhookTriggers.projectId],
+    references: [projects.id],
   }),
 }));
