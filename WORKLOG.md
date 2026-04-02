@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-04-03 08:45 PDT — Review: SCH.4 (approved)
+
+**Reviewed:** Frontend Schedules UI in Settings.
+- Scheduling section in Settings sidebar with Clock icon ✓
+- Schedule list: name, persona badge, human-readable cron, next/last run, failures badge, toggle ✓
+- Add/edit dialog: name, persona selector, 8 cron presets + custom, live next-runs preview, prompt template ✓
+- Active/disabled toggle (pill switch) ✓
+- Run Now / Edit / Delete actions per schedule ✓
+- Uses shadcn/ui components, dark-mode compatible ✓
+- Visual check: empty state and dialog render correctly ✓
+- Build passes ✓
+- **Verdict: approved. Scheduling (SCH.1-4) is complete.**
+
+---
+
 ## 2026-04-03 08:35 PDT — SCH.4: Frontend Schedules UI in Settings
 
 **Done:** Created `packages/frontend/src/features/settings/scheduling-section.tsx`. Added "Scheduling" section to Settings sidebar (Clock icon, between Agent Configuration and Security). Features: schedule list with name, persona badge, human-readable cron, next/last run dates, consecutive failures badge, active/disabled toggle (pill switch), Run Now / Edit / Delete actions. Add/edit dialog with name input, persona selector (on create), cron preset dropdown (every 30min, hourly, 2h, 6h, daily midnight, daily 9am, weekdays 9am, custom), custom cron input with format hint, live "Next runs" preview (3 upcoming), optional prompt template. All wired to `/api/schedules` endpoints. Visual check passed — empty state, dialog, and layout all render correctly.
