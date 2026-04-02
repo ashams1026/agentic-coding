@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-03 02:50 PDT — Review: OWH.2 (approved)
+
+**Reviewed:** Webhook subscriptions + deliveries schema.
+- webhook_subscriptions: 8 columns with events JSON, isActive boolean ✓
+- webhook_deliveries: 10 columns with cascade FK, status/attempt/nextRetryAt ✓
+- Relations defined ✓
+- Migration 0016 ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 02:45 PDT — OWH.2: Webhook subscriptions + deliveries schema
 
 **Done:** Added 2 tables to schema.ts: `webhook_subscriptions` (id, url, secret, events JSON array, isActive boolean, failureCount, timestamps) and `webhook_deliveries` (id, subscriptionId FK with cascade delete, event, payload JSON, status pending/delivered/failed, statusCode, latencyMs, attempt, nextRetryAt, createdAt). Added Drizzle relations (subscription → deliveries). Generated migration `0016_natural_dragon_lord.sql` (2 CREATE TABLE).
