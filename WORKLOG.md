@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 06:55 PDT — S27.DOC.1: Document Sprint 27 APIs
+
+**Done:** Added 4 sections to `docs/api.md`: Outbound Webhooks (event catalog table, subscription CRUD endpoints, HMAC delivery details, retry/auto-disable), Inbound Webhook Triggers (receiver with HMAC + template, CRUD endpoints, error codes), Data Management (backup/restore with WAL-safe + retention, log truncation with UPDATE-only approach, storage stats with per-table row counts, execution cleanup cascade fix). Added 6 source files to Source Files table.
+**Files:** `docs/api.md`
+
+---
+
 ## 2026-04-03 06:45 PDT — Review: S27.TEST.4 (approved)
 
 **Reviewed:** Inbound Webhooks + Data Management e2e test execution.

@@ -1985,6 +1985,97 @@ Persisted on execution completion alongside `costUsd`. `costUsd` is stored as **
 
 ---
 
+## Outbound Webhooks
+
+Subscribe to application events via HTTP POST with HMAC-signed payloads.
+
+### Event Catalog
+
+| Event | Emitted When |
+|-------|-------------|
+| `execution.started` | Agent execution spawned |
+| `execution.completed` | Agent execution finished successfully |
+| `execution.failed` | Agent execution errored |
+| `work_item.state_changed` | Work item transitions to a new state |
+
+### Webhook Subscriptions
+
+```
+GET /api/webhooks                    — list subscriptions
+POST /api/webhooks                   — create (returns secret once)
+PATCH /api/webhooks/:id              — update url/events/isActive
+DELETE /api/webhooks/:id             — delete (cascades deliveries)
+GET /api/webhooks/:id/deliveries     — delivery log
+```
+
+**Create body:** `{ "url": "https://...", "events": ["execution.completed"] }`
+
+**Response:** `{ data: { id, url, secret, events, isActive, failureCount, createdAt } }`
+
+Secret (`whsec_*`) is only returned on create. Delivery: HTTP POST with `X-Webhook-Signature: sha256=<hmac>`, `X-Webhook-Event`, `X-Webhook-Delivery` headers. Retry: 5 attempts with exponential backoff (30s→30min). Auto-disable after 10 consecutive failures.
+
+---
+
+## Inbound Webhook Triggers
+
+Receive external webhook calls to trigger agent executions.
+
+```
+POST /api/webhooks/trigger/:triggerId  — generic receiver (HMAC-validated)
+GET /api/webhook-triggers              — list triggers
+POST /api/webhook-triggers             — create (returns secret + triggerUrl)
+PATCH /api/webhook-triggers/:id        — update
+DELETE /api/webhook-triggers/:id       — delete
+```
+
+**Create body:** `{ "name": "CI Deploy", "personaId": "ps-xxx", "promptTemplate": "Deploy: {{payload.repo}}" }`
+
+**Receiver:** Validates `X-Webhook-Signature` via `timingSafeEqual`, resolves `{{payload.field}}` template (nested dot-path), spawns execution. Returns 401 (missing sig), 403 (invalid sig), 404 (inactive/missing trigger).
+
+---
+
+## Data Management
+
+### Backup & Restore
+
+```
+POST /api/settings/backup             — create manual backup (WAL-safe)
+GET /api/settings/backups             — list backups (filename, path, sizeMb, createdAt)
+POST /api/settings/restore            — restore from backup path
+```
+
+Backups stored in `~/.agentops/backups/` with 7-daily + 4-weekly retention. Pre-migration backup runs automatically before `runMigrations()`. Restore creates a safety backup before overwriting.
+
+### Log Truncation
+
+```
+POST /api/settings/truncate-logs?olderThanDays=30
+```
+
+`UPDATE executions SET logs = '' WHERE completed_at < threshold AND logs != ''`. Preserves all metadata (cost, duration, outcome) — only clears raw log text.
+
+**Response:** `{ data: { truncated: N, olderThanDays: 30 } }`
+
+### Storage Stats
+
+```
+GET /api/settings/storage-stats
+```
+
+**Response:** `{ data: { tables: [{ name, rowCount }], totalSizeBytes, totalSizeMb } }`
+
+Per-table row counts + total DB size via `page_size * page_count`.
+
+### Execution Cleanup (with cascade)
+
+```
+DELETE /api/settings/executions
+```
+
+Deletes executions older than 30 days. Now cascades: deletes linked proposals before deleting executions.
+
+---
+
 ## Source Files
 
 | File | Purpose |
@@ -2009,6 +2100,12 @@ Persisted on execution completion alongside `costUsd`. `costUsd` is stored as **
 | `packages/backend/src/routes/analytics.ts` | Analytics aggregate endpoints (4 routes) |
 | `packages/backend/src/db/fts5-setup.ts` | FTS5 virtual tables, triggers, backfill |
 | `packages/backend/src/agent/handoff-notes.ts` | Handoff note building, querying, context windowing |
+| `packages/backend/src/events/event-bus.ts` | TypedEventBus with 4 event types |
+| `packages/backend/src/events/webhook-delivery.ts` | Webhook delivery worker (HMAC, retry, auto-disable) |
+| `packages/backend/src/events/webhook-bridge.ts` | Event bus → delivery record bridge |
+| `packages/backend/src/routes/webhooks.ts` | Outbound webhook subscription CRUD + delivery log |
+| `packages/backend/src/routes/webhook-triggers.ts` | Inbound trigger receiver + CRUD |
+| `packages/backend/src/db/backup.ts` | SQLite backup/restore with retention |
 | `packages/shared/src/api.ts` | Request/response TypeScript types |
 | `packages/shared/src/entities.ts` | Entity types including AgentScope |
 | `packages/shared/src/ws-events.ts` | WebSocket event type definitions |
