@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-03 04:20 PDT — Review: IWH.2 (approved)
+
+**Reviewed:** Webhook triggers route with receiver + CRUD.
+- Generic receiver: HMAC validation (timingSafeEqual), template resolution, execution spawn ✓
+- Template: nested dot-path `{{payload.field}}` with undefined fallback ✓
+- CRUD: list (persona join), create (auto-secret, triggerUrl), update, delete ✓
+- 401/403/404 error handling ✓
+- Registered in server.ts ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 04:15 PDT — IWH.2: Webhook triggers route with receiver + CRUD
 
 **Done:** Created `packages/backend/src/routes/webhook-triggers.ts`. Generic receiver `POST /api/webhooks/trigger/:triggerId`: validates HMAC via `timingSafeEqual`, resolves Handlebars-style `{{payload.field}}` template with nested dot-path support, spawns standalone execution. CRUD: `GET /api/webhook-triggers` (list with persona name join), `POST` (create with auto `whtsec_` secret + `wht-` ID, returns triggerUrl), `PATCH` (update name/persona/project/template/active), `DELETE` (404 guard). Registered in server.ts.
