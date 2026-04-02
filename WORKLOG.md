@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 23:55 PDT — FND.GA.6: Agent Monitor "New Run" modal
+
+**Done:** Created `new-run-modal.tsx` with Dialog containing: persona picker (populated from `usePersonas()`), scope selector (Global / Project with conditional project picker), prompt textarea, budget input. "Start Run" disabled until persona + prompt + valid scope filled. On submit calls `POST /api/executions/run` via new `runExecution()` API function. Shows success/error toast via `useToastStore`. Added `runExecution` + `RunExecutionRequest` type to API client + exports. Wired "+ New Run" button into `agent-monitor-layout.tsx` tab bar next to scope filter (Live tab only).
+**Files:** `packages/frontend/src/features/agent-monitor/new-run-modal.tsx` (new), `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`
+
+---
+
 ## 2026-04-01 23:40 PDT — Review: FND.GA.5 (approved)
 
 **Reviewed:** Agent Monitor scope badges and filter.

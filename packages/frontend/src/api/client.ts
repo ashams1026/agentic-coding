@@ -321,6 +321,17 @@ export async function rewindExecution(id: ExecutionId, dryRun: boolean): Promise
   return res.data;
 }
 
+export interface RunExecutionRequest {
+  personaId: string;
+  prompt: string;
+  projectId?: string;
+  budgetUsd?: number;
+}
+
+export async function runExecution(req: RunExecutionRequest): Promise<{ id: string }> {
+  return post<{ id: string }>("/api/executions/run", req);
+}
+
 export interface McpServerStatusInfo {
   name: string;
   status: "connected" | "failed" | "needs-auth" | "pending" | "disabled";

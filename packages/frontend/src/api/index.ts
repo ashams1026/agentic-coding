@@ -41,6 +41,7 @@ export {
   getExecutions,
   getExecution,
   rewindExecution,
+  runExecution,
   // Comments
   getComments,
   getRecentComments,

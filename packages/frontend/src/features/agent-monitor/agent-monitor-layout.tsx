@@ -18,6 +18,7 @@ import { AgentHistory } from "./agent-history";
 import { TerminalRenderer } from "./terminal-renderer";
 import { SplitView } from "./split-view";
 import { DetailPanel } from "@/features/work-items/detail-panel";
+import { NewRunModal } from "./new-run-modal";
 import type { ExecutionId, WorkItemId } from "@agentops/shared";
 
 // ── Empty state ────────────────────────────────────────────────
@@ -209,20 +210,23 @@ export function AgentMonitorLayout() {
           </TabsList>
         </Tabs>
 
-        {/* Scope filter */}
+        {/* Scope filter + New Run */}
         {tab === "live" && (
-          <Select value={scopeFilter} onValueChange={setScopeFilter}>
-            <SelectTrigger className="h-7 w-[160px] text-xs">
-              <SelectValue placeholder="All scopes" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="__global__">Global Only</SelectItem>
-              {projectsList.map((p) => (
-                <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2">
+            <Select value={scopeFilter} onValueChange={setScopeFilter}>
+              <SelectTrigger className="h-7 w-[160px] text-xs">
+                <SelectValue placeholder="All scopes" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="__global__">Global Only</SelectItem>
+                {projectsList.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <NewRunModal />
+          </div>
         )}
       </div>
 
