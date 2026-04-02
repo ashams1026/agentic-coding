@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-01 22:36 PDT — Review: FND.GA.1 (approved)
+
+**Reviewed:** Schema migration for Global Agents Phase 1.
+- `chatSessions.projectId`: nullable, no cascade ✓
+- `executions.projectId`: new nullable column with FK ✓
+- `global_memories` table: all required columns with proper types/defaults ✓
+- Migration SQL correct (table create, chat_sessions rebuild, ALTER TABLE) ✓
+- chat.ts: null-safe project lookup and env var spread ✓
+- Build passes; backend starts; table verified
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 22:32 PDT — FND.GA.1: Schema migration for Global Agents
 
 **Done:** Made `chatSessions.projectId` nullable (removed `.notNull()` and `onDelete: "cascade"`). Added nullable `projectId` column to `executions` with FK to `projects.id`. Created `global_memories` table with `id`, `personaId` (NOT NULL), `summary`, `keyDecisions` (JSON), `createdAt`, `consolidatedInto`. Generated Drizzle migration `0009_sudden_mathemanic.sql`. Fixed two TypeScript errors in `chat.ts` where code assumed `session.projectId` was non-null (project lookup + MCP env var). Backend starts without errors; all three schema changes verified via sqlite3.
