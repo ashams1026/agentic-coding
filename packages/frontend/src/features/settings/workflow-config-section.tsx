@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useProjects, useUpdateProject, usePersonas, usePersonaAssignments, useUpdatePersonaAssignment, useSelectedProject } from "@/hooks";
-import { WORKFLOW } from "@agentops/shared";
+import { useWorkflowStates, useWorkflows } from "@/hooks/use-workflows";
 import type { PersonaId, Persona } from "@agentops/shared";
 import { cn } from "@/lib/utils";
 
@@ -87,10 +87,11 @@ function ModelBadge({ model }: { model: string }) {
 // ── Persona-per-state table ─────────────────────────────────────
 
 function PersonaStateTable() {
-  const { projectId } = useSelectedProject();
+  const { projectId, project } = useSelectedProject();
   const { data: personas = [] } = usePersonas();
   const { data: assignments = [] } = usePersonaAssignments(projectId);
   const updateAssignment = useUpdatePersonaAssignment();
+  const { data: workflowStatesData } = useWorkflowStates(project?.workflowId ?? null);
 
   const assignmentMap = useMemo(() => {
     const map = new Map<string, PersonaId>();
@@ -114,10 +115,13 @@ function PersonaStateTable() {
     });
   };
 
-  // States that can have personas (not Backlog, Done, or Blocked per PLANNING.md)
-  const configurableStates = WORKFLOW.states.filter(
-    (s) => s.name !== "Backlog" && s.name !== "Done" && s.name !== "Blocked",
-  );
+  // States that can have personas (exclude initial and terminal types)
+  const configurableStates = useMemo(() => {
+    if (!workflowStatesData) return [];
+    return workflowStatesData.filter(
+      (s) => s.type === "intermediate",
+    );
+  }, [workflowStatesData]);
 
   return (
     <div className="rounded-lg border">
@@ -186,7 +190,7 @@ function PersonaStateTable() {
 
       {/* Non-configurable states note */}
       <div className="px-3 py-2 text-xs text-muted-foreground bg-muted/20 border-t">
-        Backlog, Done, and Blocked have no assigned personas — they are manual or auto-triggered states.
+        Initial and terminal states have no assigned personas — they are manual or auto-triggered states.
       </div>
     </div>
   );
@@ -194,10 +198,44 @@ function PersonaStateTable() {
 
 // ── Main component ──────────────────────────────────────────────
 
+function WorkflowSelector() {
+  const { projectId, project } = useSelectedProject();
+  const { data: workflows = [] } = useWorkflows(projectId ?? undefined);
+  const updateProject = useUpdateProject();
+
+  if (workflows.length <= 1) return null;
+
+  return (
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium">Active Workflow</h3>
+      <Select
+        value={project?.workflowId ?? ""}
+        onValueChange={(v) => {
+          if (project) {
+            updateProject.mutate({ id: project.id, settings: { ...project.settings }, workflowId: v } as any);
+          }
+        }}
+      >
+        <SelectTrigger className="w-[200px] h-8 text-xs">
+          <SelectValue placeholder="Select workflow" />
+        </SelectTrigger>
+        <SelectContent>
+          {workflows.map((w) => (
+            <SelectItem key={w.id} value={w.id}>
+              {w.name} {w.isPublished ? "" : "(draft)"}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
 export function WorkflowConfigSection() {
   return (
     <div className="space-y-6">
       <AutoRoutingToggle />
+      <WorkflowSelector />
 
       <div>
         <h3 className="text-sm font-medium mb-2">Persona Assignments</h3>
