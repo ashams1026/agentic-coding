@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-04-02 08:50 PDT — Review: NTF.5 (approved)
+
+**Reviewed:** NotificationDrawer in notification-drawer.tsx + root-layout integration.
+- 320px panel (w-80), fixed right, z-50, backdrop overlay ✓
+- Header: "Notifications" + "Mark all read" (conditional) + close ✓
+- Date grouping (Today/Yesterday/This Week/Older) ✓
+- Notification items: priority dot, title (bold if unread), description (2-line), relative time ✓
+- Click marks as read, empty state with bell icon ✓
+- Dismisses on Escape + click outside (delayed handler) ✓
+- Rendered in root-layout.tsx ✓
+- Build passes ✓
+- **Verdict: approved.** NTF.6 will extract NotificationCard into standalone component with type-specific icons and actions.
+
+---
+
 ## 2026-04-02 08:45 PDT — NTF.5: NotificationDrawer component
 
 **Done:** Created `packages/frontend/src/features/notifications/notification-drawer.tsx` — 320px sliding panel from right with backdrop overlay (z-50). Header: "Notifications" title + "Mark all read" button (only shown when unread exist) + close button. Notifications grouped by date (Today/Yesterday/This Week/Older). Each notification shows priority dot (color-coded), title (bold if unread), description (2-line clamp), relative time. Click marks as read. Empty state: Bell icon + "All caught up!". Dismisses on click outside (delayed to avoid bell re-trigger) or Escape key. Rendered in root-layout.tsx alongside other global components.
