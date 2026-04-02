@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 20:24 PDT — FND.ERR.1: Add busy_timeout and synchronous PRAGMAs
+
+**Done:** Added `busy_timeout = 5000` and `synchronous = NORMAL` PRAGMAs to SQLite connection after existing WAL/FK pragmas. These improve reliability under concurrent access (5s wait before SQLITE_BUSY) and balance durability with performance (NORMAL sync is safe with WAL mode).
+**Files:** `packages/backend/src/db/connection.ts`
+
+---
+
 ## 2026-04-01 21:00 PDT — Review: FX.UX.PERSONA.4 (approved)
 
 **Reviewed:** TestRunPanel wired into Persona Manager detail panel.

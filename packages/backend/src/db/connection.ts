@@ -28,6 +28,8 @@ export const DB_PATH = resolveDbPath();
 const sqlite: BetterSqlite3.Database = new Database(DB_PATH);
 sqlite.pragma("journal_mode = WAL");
 sqlite.pragma("foreign_keys = ON");
+sqlite.pragma("busy_timeout = 5000");
+sqlite.pragma("synchronous = NORMAL");
 
 export const db = drizzle({ client: sqlite, schema });
 export { sqlite };
