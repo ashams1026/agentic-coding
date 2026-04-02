@@ -144,51 +144,10 @@
 
 ---
 
-## Sprint 25: Workflow Engine (partial) — archived 2026-04-02
+## Sprint 25: Workflow Engine — archived 2026-04-02
 
-### Schema & Data Model
-
-- [x] **CWF.1** — Schema: workflows, workflow_states, workflow_transitions tables + migration. *(completed 2026-04-02 12:20 PDT)*
-- [x] **CWF.2** — Add workflowId to projects/work_items/executions + workflowStateName on executions. *(completed 2026-04-02 12:40 PDT)*
-- [x] **CWF.3** — Seed default workflow from hardcoded WORKFLOW constant + backfill. *(completed 2026-04-02 12:55 PDT)*
-
-### Backend Runtime
-
-- [x] **CWF.4** — workflow-runtime.ts: 6 dynamic query functions with hardcoded fallback. *(completed 2026-04-02 13:10 PDT)*
-- [x] **CWF.5** — work-items.ts: dynamic initial state + async transition validation. *(completed 2026-04-02 13:25 PDT)*
-- [x] **CWF.6** — dispatch.ts: resolvePersonaForState. execution-manager.ts: track workflow context. *(completed 2026-04-02 13:40 PDT)*
-- [x] **CWF.7** — mcp-server.ts: 3 tools updated (route/create/block) for dynamic workflow. *(completed 2026-04-02 13:55 PDT)*
-- [x] **CWF.8** — router.ts: dynamic prompt from buildDynamicRouterPrompt(). *(completed 2026-04-02 14:10 PDT)*
-
-### API Routes
-
-- [x] **CWF.9** — Read-only endpoints: list, get (with states+transitions), states, transitions. *(completed 2026-04-02 14:25 PDT)*
-- [x] **CWF.10** — Builder CRUD: create, update, publish, delete (409 guard), clone, validate. *(completed 2026-04-02 14:40 PDT)*
-
-### Frontend: Dynamic Views
-
-- [x] **CWF.11** — Frontend: use-workflows.ts hooks + API client functions. *(completed 2026-04-02 15:00 PDT)*
-- [x] **CWF.12** — Frontend: flow-view.tsx dynamic workflow states. *(completed 2026-04-02 15:20 PDT)*
-- [x] **CWF.13** — Frontend: list-view, filter-bar, detail-panel dynamic workflow. *(completed 2026-04-02 15:40 PDT)*
-- [x] **CWF.14** — Frontend: workflow-config-section dynamic states + WorkflowSelector. *(completed 2026-04-02 15:55 PDT)*
-
-### Frontend: Workflow Builder
-
-- [x] **CWF.15** — Frontend: state-card.tsx + transition-row.tsx. *(completed 2026-04-02 16:15 PDT)*
-- [x] **CWF.16** — Frontend: workflow-preview.tsx SVG graph. *(completed 2026-04-02 16:30 PDT)*
-- [x] **CWF.17** — Frontend: workflow-builder.tsx + validation-panel.tsx + create-workflow-dialog.tsx. *(completed 2026-04-02 16:50 PDT)*
-- [x] **CWF.18** — Frontend: /workflows route, sidebar nav, CRUD API wiring. *(completed 2026-04-02 17:20 PDT)*
-
-### Testing
-
-- [x] **CWF.TEST.1** — E2e test plan for Custom Workflows (36 steps, 10 parts). *(completed 2026-04-02 17:35 PDT)*
-- [x] **CWF.TEST.2** — Execute Custom Workflows e2e tests (33/36 pass, 1 bug filed). *(completed 2026-04-02 18:00 PDT)*
-
-### Bugs & Remaining
-
-- [x] **FX.CWF.1** — Fix PATCH save with new states/transitions (stateIdMap remapping). *(completed 2026-04-02 18:25 PDT)*
-- [x] **CWF.DOC.1** — Document Custom Workflows API (10 endpoints, schemas, migration). *(completed 2026-04-02 18:40 PDT)*
-- [x] **CWF.TEST.3** — Regression checkpoint: 37 suites, 0 regressions. *(completed 2026-04-02 19:05 PDT)*
+**Schema (CWF.1-3):** 3 tables + workflowId columns + seed. **Backend (CWF.4-8):** 6 runtime functions, 5 backend files updated. **API (CWF.9-10):** 10 endpoints (4 read + 6 CRUD).
+**Frontend Views (CWF.11-14):** Dynamic workflow hooks + 4 views updated. **Builder (CWF.15-18):** state-card, preview SVG, builder layout, /workflows route. **Testing (CWF.TEST.1-3, FX.CWF.1, CWF.DOC.1):** 36-step test plan, 33/36 pass, save bug fix, API docs, regression 37 suites 0 regressions.
 
 ---
 
@@ -209,3 +168,19 @@
 - [x] **SRC.2** — FTS5 sync triggers (12 triggers) + backfill script. *(completed 2026-04-02 21:25 PDT)*
 - [x] **SRC.3** — Unified search API: GET /api/search with BM25 ranking. *(completed 2026-04-02 21:40 PDT)*
 - [x] **SRC.4** — Server-backed Command Palette with debounced FTS5 search. *(completed 2026-04-02 21:55 PDT)*
+- [x] **SRC.5** — FTS5 search in work items filter bar (ftsMatchIds). *(completed 2026-04-02 22:15 PDT)*
+
+### Analytics + Token Usage Phase 1
+
+- [x] **ANL.1** — model/totalTokens/toolUses columns + migration 0015. *(completed 2026-04-02 22:30 PDT)*
+- [x] **ANL.2** — Persist token data from ProgressEvents on completion. *(completed 2026-04-02 22:45 PDT)*
+- [x] **ANL.3** — 4 analytics aggregate endpoints (cost-by-persona/model, tokens-over-time, top-executions). *(completed 2026-04-02 23:00 PDT)*
+- [x] **ANL.4** — Analytics page with Overview/Token Usage tabs + sidebar link. *(completed 2026-04-02 23:15 PDT)*
+- [x] **ANL.5** — Overview tab: 4 stat cards, cost trend LineChart, cost-by-persona BarChart. *(completed 2026-04-02 23:45 PDT)*
+- [x] **ANL.6** — Token usage tab: ComposedChart, model PieChart, top executions table. *(completed 2026-04-03 00:00 PDT)*
+- [x] **ANL.7** — Analytics React Query hooks + API client (4 hooks + 4 functions). *(completed 2026-04-02 23:30 PDT)*
+
+### Testing
+
+- [x] **S26.TEST.1** — E2e test plan for Agent Collaboration P1 (10 steps). *(completed 2026-04-03 00:15 PDT)*
+- [x] **S26.TEST.2** — E2e test plan for Search P1 (16 steps). *(completed 2026-04-03 00:30 PDT)*

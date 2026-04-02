@@ -207,3 +207,11 @@
 **Frontend Workflow Builder (CWF.15-18, all approved):** state-card + transition-row (editable components). workflow-preview SVG graph (auto-layout, Bezier arrows). workflow-builder main layout (state list + preview + validation panel + create dialog). /workflows routes, sidebar nav, CRUD API wiring (5 mutation hooks).
 
 **Testing & Bugs (CWF.TEST.1-3, FX.CWF.1, CWF.DOC.1, all approved):** E2e test plan (36 steps, 10 parts). Test execution (33/36 pass, save bug found). FX.CWF.1 fix (stateIdMap remapping for temporary IDs). API documentation (10 endpoints, schemas, migration). Regression checkpoint (37 suites, 0 regressions). Sprint 25 complete.
+
+---
+
+### Sprint 26 Intelligence & Discovery — Collaboration + Search (2026-04-02 19:30–22:15 PDT)
+
+**Agent Collaboration P1 (COL.1-6, all approved):** HandoffNote type + handoffNotes column (migration 0014). buildHandoffNote() with regex extraction (files, decisions, questions). getLastHandoffNote() + formatHandoffForPrompt() + buildAccumulatedContext() with ~2000 token windowing. Dependency enforcement in dispatch (depends_on edges + terminal state check, system comment on block). Handoff context injected into buildSystemPrompt() via SpawnOptions.handoffContext. Frontend display: collapsible card in execution-timeline with icons (GitBranch, Lightbulb, FileText, HelpCircle).
+
+**Search P1 (SRC.1-4, all approved):** FTS5 virtual tables + bridging tables (startup setup, not Drizzle migration). 12 sync triggers (INSERT/UPDATE/DELETE x 4 tables) + backfill script. Unified search API (GET /api/search) with BM25 ranking, snippet extraction, type/project/archived filters. Server-backed Command Palette with 300ms debounce, type grouping, snippet highlights.
