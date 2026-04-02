@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-04-03 16:15 PDT — Review: UXO.5 (approved)
+
+**Reviewed:** Persona → Agent rename in shared types.
+- All 4 shared files updated: ids.ts, entities.ts, api.ts, ws-events.ts ✓
+- Type renames: PersonaId→AgentId, Persona→Agent, PersonaSettings→AgentSettings, PersonaAssignment→AgentAssignment, PersonaModel→AgentModel ✓
+- Field renames: personaId→agentId, assignedPersonaId→assignedAgentId, persona→agent ✓
+- API types renamed (Create/Update requests, Response/ListResponse) ✓
+- createId.persona→createId.agent ✓
+- AgentId keeps `ps-` prefix for DB compatibility ✓
+- Zero remaining persona references (grep confirmed) ✓
+- Shared package builds clean ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 16:05 PDT — UXO.5: Rename Persona → Agent in shared types
 
 **Done:** Renamed all Persona references to Agent across 4 shared files. `PersonaId` → `AgentId`, `PersonaModel` → `AgentModel`, `PersonaSettings` → `AgentSettings`, `PersonaAssignment` → `AgentAssignment`, `Persona` → `Agent` interface. Renamed all `personaId` fields → `agentId`, `assignedPersonaId` → `assignedAgentId`, `persona` field → `agent`. Updated `createId.persona` → `createId.agent`. Renamed API types: `CreatePersonaRequest` → `CreateAgentRequest`, `UpdatePersonaRequest` → `UpdateAgentRequest`, `PersonaResponse` → `AgentResponse`, `PersonaListResponse` → `AgentListResponse`. Updated ws-events.ts imports and fields. Shared package builds clean.
