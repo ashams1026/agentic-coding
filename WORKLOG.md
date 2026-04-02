@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 06:30 PDT — Review: PPR.1 (approved)
+
+**Reviewed:** prompt-variables.ts in `packages/backend/src/agent/`.
+- resolveVariables: regex with negative lookbehind for escaped \{{, whitespace-tolerant, undefined → literal ✓
+- buildVariableContext: project.* (3), persona.* (3), date.* (3), workItem.* (4) — all string|undefined ✓
+- Both functions exported, clean types ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 06:25 PDT — PPR.1: resolveVariables and buildVariableContext
 
 **Done:** Created `packages/backend/src/agent/prompt-variables.ts` with two exported functions. `resolveVariables(template, context)` uses regex to substitute `{{variable.name}}` placeholders — undefined variables left as literal text, escaped `\{{` not matched. `buildVariableContext(options)` assembles the built-in variable map from optional project, persona, and workItem data: `project.*` (name, path, description), `persona.*` (name, description, model), `date.*` (now ISO, today YYYY-MM-DD, dayOfWeek), `workItem.*` (id, title, state, description).
