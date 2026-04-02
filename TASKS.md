@@ -26,7 +26,7 @@
 - [x] **CWF.15** — Frontend: create `packages/frontend/src/features/workflow-builder/state-card.tsx` — editable state component with name input, type selector (initial/intermediate/terminal), color picker, optional persona selector, delete button. Create `transition-row.tsx` — target state dropdown + label input. *(completed 2026-04-02 16:15 PDT)*
 - [x] **CWF.16** — Frontend: create `packages/frontend/src/features/workflow-builder/workflow-preview.tsx` — read-only visual graph of states and transitions. Auto-layout states in a horizontal flow (CSS grid, no graph library in Phase 1). Color-coded state nodes, arrow connections for transitions. *(completed 2026-04-02 16:30 PDT)*
 - [x] **CWF.17** — Frontend: create `packages/frontend/src/features/workflow-builder/workflow-builder.tsx` — main layout: left panel (state list with add/remove/reorder), right panel (workflow-preview). Header with workflow name, publish button, validation status. Create `validation-panel.tsx` showing errors (missing initial state, unreachable states, dead-ends). Create `create-workflow-dialog.tsx` for new workflow modal. *(completed 2026-04-02 16:50 PDT)*
-- [review] **CWF.18** — Frontend: add `/workflows/:id` route in `packages/frontend/src/router.tsx`. Add "Workflows" link in sidebar navigation. Wire builder to CRUD API endpoints (create, update, publish, validate). Add workflow selector in Settings > Workflow section.
+- [x] **CWF.18** — Frontend: add `/workflows/:id` route in `packages/frontend/src/router.tsx`. Add "Workflows" link in sidebar navigation. Wire builder to CRUD API endpoints (create, update, publish, validate). Add workflow selector in Settings > Workflow section. *(completed 2026-04-02 17:20 PDT)*
 
 ### Testing & Documentation
 

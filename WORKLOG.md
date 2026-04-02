@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-04-02 17:20 PDT — Review: CWF.18 (approved)
+
+**Reviewed:** workflows page, router, sidebar, API client, mutation hooks.
+- `/workflows` list view: workflow cards with published badge, "New Workflow" dialog ✓
+- `/workflows/:id` builder: loads states/transitions from API, converts to StateCardData[] ✓
+- Sidebar: "Workflows" with GitBranch icon between Personas and Settings ✓
+- CRUD client: create, update, publish, validate, delete functions ✓
+- Mutation hooks: proper query invalidation on success ✓
+- handleSave strips `s-new-`/`t-new-` prefixes for new entities ✓
+- Visual check: list + builder both render correctly ✓
+- Build passes ✓
+- **Verdict: approved.** Frontend Workflow Builder phase (CWF.15-18) complete.
+
+---
+
 ## 2026-04-02 17:10 PDT — CWF.18: Workflow route, sidebar, API wiring
 
 **Done:** Added `/workflows` and `/workflows/:id` routes in router.tsx. Created `pages/workflows.tsx` — list view with workflow cards + "New Workflow" button, builder view loading data from `useWorkflow()` and converting to `StateCardData[]`. Added "Workflows" (GitBranch icon) to sidebar nav. Added CRUD API client functions: `createWorkflow`, `updateWorkflow`, `publishWorkflow`, `validateWorkflowApi`, `deleteWorkflow`. Added mutation hooks: `useCreateWorkflow`, `useUpdateWorkflow`, `usePublishWorkflow`, `useDeleteWorkflow` with query invalidation. Settings workflow selector already existed from CWF.14.
