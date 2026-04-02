@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 00:40 PDT — FND.GA.9: Backend nullable projectId in chat sessions + persona override
+
+**Done:** Updated `POST /api/chat/sessions` to accept optional `projectId` and `personaId`. Removed 400 guard for missing projectId — now creates session with `projectId: null` for global scope. Validates project/persona exist when provided (404). Returns 201 instead of 200. Updated `POST /api/chat/sessions/:id/messages` to accept optional `personaId` in body — when provided, loads that persona instead of default Pico for the chat response. Fixed `serializeSession` to handle nullable `projectId` with null coalescing.
+**Files:** `packages/backend/src/routes/chat.ts`
+
+---
+
 ## 2026-04-02 00:30 PDT — Review: FND.GA.8 (approved)
 
 **Reviewed:** Pico scope toggle and persona picker in chat panel header.

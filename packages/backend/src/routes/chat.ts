@@ -31,7 +31,7 @@ function toIso(d: Date): string {
 function serializeSession(row: typeof chatSessions.$inferSelect) {
   return {
     id: row.id as ChatSessionId,
-    projectId: row.projectId as ProjectId,
+    projectId: (row.projectId as ProjectId) ?? null,
     title: row.title,
     createdAt: toIso(row.createdAt),
     updatedAt: toIso(row.updatedAt),
@@ -52,11 +52,24 @@ function serializeMessage(row: typeof chatMessages.$inferSelect) {
 export async function chatRoutes(app: FastifyInstance) {
   // POST /api/chat/sessions — create a new chat session
   app.post<{
-    Body: { projectId: string };
+    Body: { projectId?: string; personaId?: string };
   }>("/api/chat/sessions", async (request, reply) => {
-    const { projectId } = request.body;
-    if (!projectId) {
-      return reply.status(400).send({ error: "projectId is required" });
+    const { projectId, personaId } = request.body ?? {};
+
+    // Validate project if provided
+    if (projectId) {
+      const [project] = await db.select().from(projects).where(eq(projects.id, projectId));
+      if (!project) {
+        return reply.status(404).send({ error: `Project ${projectId} not found` });
+      }
+    }
+
+    // Validate persona if provided
+    if (personaId) {
+      const [persona] = await db.select().from(personas).where(eq(personas.id, personaId));
+      if (!persona) {
+        return reply.status(404).send({ error: `Persona ${personaId} not found` });
+      }
     }
 
     const now = new Date();
@@ -64,7 +77,7 @@ export async function chatRoutes(app: FastifyInstance) {
 
     await db.insert(chatSessions).values({
       id,
-      projectId,
+      projectId: projectId ?? null,
       title: "New chat",
       createdAt: now,
       updatedAt: now,
@@ -75,7 +88,7 @@ export async function chatRoutes(app: FastifyInstance) {
       .from(chatSessions)
       .where(eq(chatSessions.id, id));
 
-    return { data: serializeSession(row!) };
+    return reply.status(201).send({ data: serializeSession(row!) });
   });
 
   // GET /api/chat/sessions?projectId= — list sessions (most recent first)
@@ -181,10 +194,10 @@ export async function chatRoutes(app: FastifyInstance) {
   // POST /api/chat/sessions/:id/messages — send a message and stream Pico's response via SSE
   app.post<{
     Params: { id: string };
-    Body: { content: string };
+    Body: { content: string; personaId?: string };
   }>("/api/chat/sessions/:id/messages", async (request, reply) => {
     const { id } = request.params;
-    const { content } = request.body;
+    const { content, personaId: overridePersonaId } = request.body;
 
     if (!content?.trim()) {
       return reply.status(400).send({ error: "content is required" });
@@ -240,16 +253,26 @@ export async function chatRoutes(app: FastifyInstance) {
         .where(eq(chatSessions.id, id));
     }
 
-    // Load Pico persona
-    const allPersonas = await db.select().from(personas);
-    const pico = allPersonas.find(
-      (p) =>
-        (p.settings as Record<string, unknown>)?.isAssistant === true,
-    );
+    // Load chat persona (override or default Pico)
+    let chatPersona;
+    if (overridePersonaId) {
+      const [persona] = await db.select().from(personas).where(eq(personas.id, overridePersonaId));
+      if (!persona) {
+        return reply.status(404).send({ error: `Persona ${overridePersonaId} not found` });
+      }
+      chatPersona = persona;
+    } else {
+      const allPersonas = await db.select().from(personas);
+      chatPersona = allPersonas.find(
+        (p) => (p.settings as Record<string, unknown>)?.isAssistant === true,
+      );
+    }
 
-    if (!pico) {
+    if (!chatPersona) {
       return reply.status(503).send({ error: "Pico persona not found" });
     }
+
+    const pico = chatPersona;
 
     // Load project for context (may be null for global sessions)
     const project = session.projectId
