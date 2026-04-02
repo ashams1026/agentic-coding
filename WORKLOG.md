@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 10:10 PDT — CUX.TEST.2: Execute Agent Chat Phase 1 e2e tests
+
+**Done:** Executed all 7 test cases from `agent-chat-phase1.md`. Results: **7/7 PASS**, no bugs filed. TC-ACH-1: persona selector modal with 6 cards (Router filtered), Pico default, Engineer session created. TC-ACH-2: sidebar avatars + TODAY date grouping. TC-ACH-3: persona filter dropdown filters correctly. TC-ACH-4: header bar with persona info, project badge, three-dot menu. TC-ACH-5: delete from header, auto-switch. TC-ACH-6: right-click context menu with delete confirmation dialog. TC-ACH-7: API verification — personaId persisted, persona join data, session in messages response.
+**Files:** `tests/e2e/results/2026-04-02_09-55_agent-chat-phase1/RESULTS.md`, 10 screenshot PNGs
+
+---
+
 ## 2026-04-02 09:50 PDT — Review: CUX.TEST.1 (approved)
 
 **Reviewed:** E2E test plan for Agent Chat Phase 1.

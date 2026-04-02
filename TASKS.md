@@ -24,7 +24,7 @@
 ### Testing & Documentation
 
 - [x] **CUX.TEST.1** — Write e2e test plan for Agent Chat Phase 1: `tests/e2e/plans/agent-chat-phase1.md`. Cover: persona selector grid, new session with non-Pico persona, session sidebar with persona avatars/date grouping/filter, chat header with persona info/project badge, session rename/delete, message streaming with selected persona. *(completed 2026-04-02 09:50 PDT)*
-- [ ] **CUX.TEST.2** — Execute Agent Chat Phase 1 e2e tests. Run the test plan from `tests/e2e/plans/agent-chat-phase1.md` via chrome-devtools MCP. Screenshot each test case. Record results to `tests/e2e/results/`. File bugs as `FX.*` tasks for any failures.
+- [review] **CUX.TEST.2** — Execute Agent Chat Phase 1 e2e tests. Run the test plan from `tests/e2e/plans/agent-chat-phase1.md` via chrome-devtools MCP. Screenshot each test case. Record results to `tests/e2e/results/`. File bugs as `FX.*` tasks for any failures.
 - [ ] **CUX.TEST.3** — Write e2e test plan for Notifications UX: `tests/e2e/plans/notifications-ux.md`. Cover: bell icon with badge, drawer open/close, notification grouping by date, notification card actions, mark all read, enhanced toasts (critical non-dismissable), notification preferences in Settings, quiet hours.
 - [ ] **CUX.TEST.4** — Execute Notifications UX e2e tests. Run the test plan via chrome-devtools MCP. Screenshot each test case. Record results to `tests/e2e/results/`. File bugs as `FX.*` tasks for any failures.
 - [ ] **CUX.DOC.1** — Document Agent Chat and Persona Prompts API changes. Update `docs/api.md` with: updated `POST /api/chat/sessions` (personaId, workItemId params), updated session response shape (persona info), template variable resolution behavior. Document built-in variable namespaces and resolution rules.
