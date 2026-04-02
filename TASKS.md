@@ -26,7 +26,7 @@
 
 - [x] **FX.TYPE.1** — Fix unsafe double type casts in chat routes. `packages/backend/src/routes/chat.ts:367-369` — `project as unknown as Project` and `chatAgent as unknown as Persona` are fragile double casts. Create proper mapping functions or use the correct types directly. *(completed 2026-04-03 14:15 PDT)*
 - [x] **FX.TYPE.2** — Import HandoffNote from shared instead of duplicating. `packages/backend/src/agent/handoff-notes.ts:11` — `HandoffNote` type is duplicated instead of imported from `@agentops/shared`. Remove the local definition and import from shared.
-- [ ] **FX.PERF.1** — Fix N+1 query in dependency check. `packages/backend/src/agent/dispatch.ts:56-63` — dependency check runs one query per upstream dependency. Batch into a single query with `IN (...)` clause.
+- [review] **FX.PERF.1** — Fix N+1 query in dependency check. `packages/backend/src/agent/dispatch.ts:56-63` — dependency check runs one query per upstream dependency. Batch into a single query with `IN (...)` clause.
 
 ---
 

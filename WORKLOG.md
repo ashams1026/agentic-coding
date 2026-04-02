@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 14:35 PDT — FX.PERF.1: Fix N+1 query in dependency check
+
+**Done:** Replaced per-dependency loop query (N queries for N upstream deps) with a single `inArray(workItems.id, depIds)` query. Collect all `fromId` values first, fetch all upstream items in one batch, then filter for non-terminal states in JS. Added `inArray` import from drizzle-orm.
+**Files:** `packages/backend/src/agent/dispatch.ts`
+
+---
+
 ## 2026-04-03 14:30 PDT — Review: FX.TYPE.2 (approved)
 
 **Reviewed:** HandoffNote import deduplication.

@@ -5,7 +5,7 @@
  * Respects concurrency limits: if at capacity, the task is enqueued.
  */
 
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { workItems, workItemEdges, comments } from "../db/schema.js";
 import { resolvePersonaForState, getWorkflowStates } from "./workflow-runtime.js";
@@ -51,17 +51,15 @@ export async function dispatchForState(
       workflowStates.filter((s) => s.type === "terminal").map((s) => s.name),
     );
 
-    // Check each upstream item's current state
-    const pendingDeps: { id: string; title: string; currentState: string }[] = [];
-    for (const dep of dependencies) {
-      const [upstream] = await db
-        .select({ id: workItems.id, title: workItems.title, currentState: workItems.currentState })
-        .from(workItems)
-        .where(eq(workItems.id, dep.fromId));
-      if (upstream && !terminalStateNames.has(upstream.currentState)) {
-        pendingDeps.push(upstream);
-      }
-    }
+    // Check all upstream items' current states in a single query
+    const depIds = dependencies.map((d) => d.fromId);
+    const upstreamItems = await db
+      .select({ id: workItems.id, title: workItems.title, currentState: workItems.currentState })
+      .from(workItems)
+      .where(inArray(workItems.id, depIds));
+    const pendingDeps = upstreamItems.filter(
+      (u) => !terminalStateNames.has(u.currentState),
+    );
 
     if (pendingDeps.length > 0) {
       const now = new Date();
