@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 22:24 PDT — Review: FND.WIL.8 (approved)
+
+**Reviewed:** "Recently deleted" recovery view in Settings > Data.
+- `recently-deleted.tsx`: fetches deleted items, renders title/date/days-left/[Restore], empty state, loading skeleton ✓
+- `getDeletedWorkItems`/`restoreWorkItem` API functions use centralized helpers with error handling ✓
+- Backend `serializeWorkItem` fix: `archivedAt`/`deletedAt` now explicitly serialized via `toIso()` ✓
+- Wired into `DataSection` between Database and Actions with proper separators ✓
+- Build passes; visual check clean (empty state + item row with Restore verified by worker)
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 22:18 PDT — FND.WIL.8: Settings "Recently deleted" recovery view
 
 **Done:** Created `recently-deleted.tsx` with a component that fetches `GET /api/work-items?deleted=true` and renders a table showing title, delete date, days remaining, and [Restore] button. Items past 30-day grace show "Permanently deleted" badge instead. Wired into `DataSection` in `appearance-section.tsx` between Database and Actions. Added `getDeletedWorkItems` and `restoreWorkItem` to API client + exports. Fixed `serializeWorkItem` in backend to explicitly serialize `archivedAt`/`deletedAt` fields (were missing from JSON responses). Visual check: delete date, countdown badge, Restore button all render correctly; restore removes item and shows success toast.
