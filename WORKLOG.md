@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 19:05 PDT — Review: CWF.TEST.3 (approved)
+
+**Reviewed:** Post-Sprint 25 regression checkpoint.
+- 37 suites: 27 UI-verified, 10 code-review, 0 regressions ✓
+- 8 API endpoints verified ✓
+- 8 screenshots covering all major pages ✓
+- Workflow-specific regression checks (8 items) all pass ✓
+- Sprint 24 baseline comparison: all prior PASS suites still PASS ✓
+- **Verdict: approved. Sprint 25 (Workflow Engine) is complete.**
+
+---
+
 ## 2026-04-02 19:00 PDT — CWF.TEST.3: Regression checkpoint post-Sprint 25
 
 **Done:** Full regression sweep: 37 suites, 27 UI-verified, 10 code-review, 0 regressions vs Sprint 24 baseline. Verified 8 API endpoints (projects, personas, work-items, workflows, dashboard, executions, chat). Screenshot-verified all 8 major UI pages (dashboard, work items list/flow, settings, agent monitor, personas, chat, activity). Workflow-specific checks: dynamic columns, filters, move-to transitions, settings persona table, sidebar nav, routes, API, FX.CWF.1 fix. 8 screenshots saved. Sprint 25 is complete with 0 regressions.
