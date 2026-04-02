@@ -63,7 +63,7 @@
 ### Remaining
 
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **S28.TEST.2** — Execute Scheduling + Templates e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
-- [ ] **S28.DOC.1** — Document Sprint 28 APIs. Update `docs/api.md` with: schedule CRUD, cron validation, template CRUD + apply, notification webhook channel.
+- [x] **S28.DOC.1** — Documented schedule CRUD (5 endpoints), templates (5 endpoints + built-in list), notification webhook channel (3 event types + flow). *(completed 2026-04-02 15:16 PDT)*
 - [blocked: Chrome DevTools MCP disconnected — cannot take screenshots] **S28.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans against current build. Compare against Sprint 27 baseline (44 suites, 0 regressions). File bugs as `FX.REG.*`.
 
 ---

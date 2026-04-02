@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 15:16 PDT — S28.DOC.1: Document Sprint 28 APIs
+
+**Done:** Updated `docs/api.md` with 3 new sections: Schedules (5 endpoints with cron validation, request/response shapes, curl examples), Templates (5 endpoints + built-in template table for frontend picker), Notification Webhook Channel (3 event types with payload schemas, flow diagram, subscription instructions). Added 3 notification events to webhook event catalog. Added 4 source file entries.
+**Files:** `docs/api.md`
+
+---
+
 ## 2026-04-02 15:10 PDT — TPL.3, NEC.1, NEC.2, S28.TEST.1: Templates, webhook channel, test plan
 
 **Done:** (1) TPL.3: Template picker dialog with 5 hardcoded templates (Blank, Bug Report, Feature Request, Task, Research Spike). "+ Add" button opens dialog, selecting a template pre-fills work item. New file `template-picker-dialog.tsx`. (2) NEC.1: Created `webhook-channel.ts` mapping notification types to event bus events. Added 3 new event types (`notification.agent_completed/errored/budget_threshold`). `broadcastNotification()` now emits to event bus, webhook bridge delivers. (3) NEC.2: Webhook Channel toggle in Notifications settings with Active/Inactive badge, event type list, "Manage webhooks in Integrations" link. (4) S28.TEST.1: 17-case test plan for scheduling, templates, notification channels.

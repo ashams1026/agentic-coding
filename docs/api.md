@@ -2037,6 +2037,9 @@ Subscribe to application events via HTTP POST with HMAC-signed payloads.
 | `execution.completed` | Agent execution finished successfully |
 | `execution.failed` | Agent execution errored |
 | `work_item.state_changed` | Work item transitions to a new state |
+| `notification.agent_completed` | Notification: agent completed successfully |
+| `notification.agent_errored` | Notification: agent execution failed |
+| `notification.budget_threshold` | Notification: budget >= 80% of cap |
 
 ### Webhook Subscriptions
 
@@ -2116,6 +2119,383 @@ Deletes executions older than 30 days. Now cascades: deletes linked proposals be
 
 ---
 
+## Schedules
+
+Cron-based agent run schedules. Each schedule links an agent + cron expression to run automatically.
+
+### List Schedules
+
+```
+GET /api/schedules
+```
+
+Returns all schedules with joined agent name, ordered by creation date (newest first).
+
+**Response:** `{ data: Schedule[], total: number }`
+
+```typescript
+{
+  id: string;                    // "sch-xxx"
+  name: string;
+  agentId: string;
+  agentName: string | null;      // joined from agents table
+  projectId: string;             // defaults to "pj-global"
+  cronExpression: string;        // standard 5-field cron
+  promptTemplate: string;
+  isActive: boolean;
+  lastRunAt: string | null;      // ISO 8601
+  nextRunAt: string | null;      // ISO 8601
+  consecutiveFailures: number;
+  createdAt: string;             // ISO 8601
+}
+```
+
+```bash
+curl http://localhost:3001/api/schedules
+```
+
+### Create Schedule
+
+```
+POST /api/schedules
+```
+
+**Request body:**
+
+```typescript
+{
+  name: string;              // required
+  agentId: string;           // required — must reference an existing agent
+  cronExpression: string;    // required — 5-field cron (minute hour dom month dow)
+  projectId?: string;        // defaults to "pj-global"
+  promptTemplate?: string;   // defaults to ""
+}
+```
+
+**Validation:**
+- `name`, `agentId`, and `cronExpression` are all required — 400 if missing
+- Cron expression must be valid 5-field format — 400 with code `INVALID_CRON` if malformed
+- `agentId` must reference an existing agent — 400 with code `INVALID_AGENT` if not found
+
+**Cron format:** `minute(0-59) hour(0-23) day-of-month(1-31) month(1-12) day-of-week(0-6)`. Supports `*`, `*/N` (step), `N-M` (range), and comma-separated values.
+
+**Response:** 201 `{ data: Schedule }`
+
+New schedules are created with `isActive: true` and `nextRunAt` computed from the cron expression.
+
+```bash
+curl -X POST http://localhost:3001/api/schedules \
+  -H "Content-Type: application/json" \
+  -d '{ "name": "Nightly Audit", "agentId": "ag-xxxx", "cronExpression": "0 2 * * *" }'
+```
+
+### Update Schedule
+
+```
+PATCH /api/schedules/:id
+```
+
+**Request body:**
+
+```typescript
+{
+  name?: string;
+  cronExpression?: string;        // validated if provided
+  promptTemplate?: string;
+  isActive?: boolean;
+  projectId?: string | null;      // null → "pj-global"
+}
+```
+
+When `cronExpression` changes or `isActive` is set to `true`, `nextRunAt` is recomputed. Re-enabling a schedule also resets `consecutiveFailures` to 0.
+
+**Response:** `{ data: Schedule }` | 400 | 404
+
+```bash
+# Disable a schedule
+curl -X PATCH http://localhost:3001/api/schedules/sch-xxxx \
+  -H "Content-Type: application/json" \
+  -d '{ "isActive": false }'
+
+# Change cron expression
+curl -X PATCH http://localhost:3001/api/schedules/sch-xxxx \
+  -H "Content-Type: application/json" \
+  -d '{ "cronExpression": "0 */6 * * *" }'
+```
+
+### Delete Schedule
+
+```
+DELETE /api/schedules/:id
+```
+
+**Response:** 204 | 404
+
+```bash
+curl -X DELETE http://localhost:3001/api/schedules/sch-xxxx
+```
+
+### Trigger Schedule (Manual Run)
+
+```
+POST /api/schedules/:id/run-now
+```
+
+Immediately triggers the agent execution for this schedule, regardless of the cron timing. Updates `lastRunAt` and recomputes `nextRunAt`.
+
+**Response:** 201 `{ data: { executionId, scheduleId, timestamp } }` | 404 | 500
+
+```bash
+curl -X POST http://localhost:3001/api/schedules/sch-xxxx/run-now
+```
+
+**Error (500):**
+
+```json
+{ "error": { "code": "EXECUTION_FAILED", "message": "Failed to spawn execution" } }
+```
+
+---
+
+## Templates
+
+Reusable templates for creating work items. Templates can be built-in (immutable) or user-created. Currently supports `work_item` and `agent` types.
+
+### List Templates
+
+```
+GET /api/templates
+GET /api/templates?type=work_item
+```
+
+**Query parameters:**
+
+| Param | Type | Description |
+|---|---|---|
+| `type` | `string` | Filter by template type (`work_item` or `agent`) |
+
+**Response:** `{ data: Template[], total: number }`
+
+```typescript
+{
+  id: string;                          // "tpl-xxx"
+  name: string;
+  type: "work_item" | "agent";
+  description: string;
+  content: Record<string, unknown>;    // template payload (shape depends on type)
+  isBuiltIn: boolean;                  // built-in templates cannot be modified or deleted
+  createdAt: string;                   // ISO 8601
+}
+```
+
+```bash
+curl http://localhost:3001/api/templates
+curl "http://localhost:3001/api/templates?type=work_item"
+```
+
+### Create Template
+
+```
+POST /api/templates
+```
+
+**Request body:**
+
+```typescript
+{
+  name: string;                        // required
+  type: "work_item" | "agent";        // required
+  description?: string;                // defaults to ""
+  content: Record<string, unknown>;    // required — template payload
+}
+```
+
+**Validation:**
+- `name`, `type`, and `content` are all required — 400 if missing
+- `type` must be `work_item` or `agent` — 400 with code `INVALID_TYPE` otherwise
+
+Custom templates are created with `isBuiltIn: false`.
+
+**Response:** 201 `{ data: Template }`
+
+```bash
+curl -X POST http://localhost:3001/api/templates \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Security Audit",
+    "type": "work_item",
+    "description": "Template for security audit tasks",
+    "content": { "title": "Security Audit: ", "description": "## Scope\n\n## Findings\n", "priority": "p1", "labels": ["security"] }
+  }'
+```
+
+### Update Template
+
+```
+PATCH /api/templates/:id
+```
+
+**Request body:**
+
+```typescript
+{
+  name?: string;
+  description?: string;
+  content?: Record<string, unknown>;
+}
+```
+
+Built-in templates cannot be modified — returns 403 with code `FORBIDDEN`.
+
+**Response:** `{ data: Template }` | 403 | 404
+
+### Delete Template
+
+```
+DELETE /api/templates/:id
+```
+
+Built-in templates cannot be deleted — returns 403 with code `FORBIDDEN`.
+
+**Response:** 204 | 403 | 404
+
+### Apply Template (Create Work Item)
+
+```
+POST /api/templates/:id/apply
+```
+
+Creates a new work item from a `work_item` template. The template's `content` fields (title, description, priority, labels) are used as defaults, with optional overrides.
+
+**Request body:**
+
+```typescript
+{
+  projectId: string;             // required — target project
+  parentId?: string;             // optional — parent work item
+  overrides?: {
+    title?: string;
+    description?: string;
+    priority?: string;           // "p0"-"p3"
+    labels?: string[];
+  };
+}
+```
+
+**Validation:**
+- `projectId` is required — 400 if missing
+- Template must exist — 404 if not found
+- Template must be type `work_item` — 400 with code `INVALID_TYPE` otherwise
+
+The new work item starts in the initial state of the project's workflow.
+
+**Response:** 201 `{ data: { workItemId, templateId, templateName } }`
+
+```bash
+curl -X POST http://localhost:3001/api/templates/tpl-xxxx/apply \
+  -H "Content-Type: application/json" \
+  -d '{ "projectId": "pj-xxxx", "overrides": { "title": "Audit: Login Flow" } }'
+```
+
+### Frontend Template Picker
+
+The template picker dialog (`template-picker-dialog.tsx`) provides 5 built-in templates as frontend constants:
+
+| Template | Default Title | Priority | Labels | Body Structure |
+|----------|--------------|----------|--------|----------------|
+| **Blank** | (empty) | p2 | (none) | (empty) |
+| **Bug Report** | `Bug: ` | p1 | `bug` | Steps to Reproduce, Expected/Actual Behavior |
+| **Feature Request** | `Feature: ` | p2 | `feature` | Description, Acceptance Criteria |
+| **Task** | (empty) | p2 | `task` | Objective, Steps |
+| **Research Spike** | `Spike: ` | p3 | `research` | Question, Findings |
+
+These frontend templates are separate from the API-backed templates — they pre-fill the work item creation form without an API call. The API template system (`/api/templates`) supports server-stored templates that persist and can be shared.
+
+---
+
+## Notification Webhook Channel
+
+The notification system bridges to outbound webhooks via the event bus. When `broadcastNotification()` emits a WebSocket notification, `emitNotificationEvent()` also publishes a corresponding event on the event bus. The existing webhook bridge then creates delivery records for any matching subscriptions.
+
+### Notification Event Types
+
+Three notification types flow to webhooks:
+
+| Event Bus Type | Trigger | Priority |
+|---|---|---|
+| `notification.agent_completed` | Agent execution completed successfully | low |
+| `notification.agent_errored` | Agent execution failed with error | critical |
+| `notification.budget_threshold` | Monthly spend >= 80% of budget cap | high |
+
+`proposal_needs_approval` notifications do **not** have a corresponding webhook event.
+
+### Event Payloads
+
+**`notification.agent_completed` / `notification.agent_errored`:**
+
+```typescript
+{
+  type: "notification.agent_completed" | "notification.agent_errored";
+  notificationId: string;
+  executionId: ExecutionId;
+  agentId: AgentId;
+  projectId: ProjectId | null;
+  workItemId: WorkItemId | null;
+  priority: NotificationPriority;
+  title: string;
+  description?: string;
+  timestamp: string;           // ISO 8601
+}
+```
+
+**`notification.budget_threshold`:**
+
+```typescript
+{
+  type: "notification.budget_threshold";
+  notificationId: string;
+  projectId: ProjectId | null;
+  priority: NotificationPriority;
+  title: string;
+  description?: string;
+  metadata?: Record<string, string>;
+  timestamp: string;           // ISO 8601
+}
+```
+
+### Flow
+
+```
+broadcastNotification() → WebSocket clients
+                        → emitNotificationEvent() → EventBus
+                              → WebhookBridge.onEvent() → webhookDeliveries table
+                                    → DeliveryWorker → HTTP POST to subscriber
+```
+
+1. A notification is broadcast via WebSocket (existing behavior)
+2. `emitNotificationEvent()` maps the notification type to an event bus event type
+3. The event bus emits the typed event
+4. The webhook bridge (listening on `*`) finds active subscriptions matching the event type
+5. Delivery records are created for each matching subscription
+6. The delivery worker picks up pending deliveries and sends HMAC-signed HTTP POSTs
+
+### Subscribing to Notification Events
+
+Use the existing webhook subscription API to subscribe to notification events:
+
+```bash
+curl -X POST http://localhost:3001/api/webhooks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/hooks/agentops",
+    "events": ["notification.agent_completed", "notification.agent_errored", "notification.budget_threshold"]
+  }'
+```
+
+These events are delivered using the same HMAC-signed, retry-enabled mechanism as all other webhook events.
+
+---
+
 ## Source Files
 
 | File | Purpose |
@@ -2140,12 +2520,16 @@ Deletes executions older than 30 days. Now cascades: deletes linked proposals be
 | `packages/backend/src/routes/analytics.ts` | Analytics aggregate endpoints (4 routes) |
 | `packages/backend/src/db/fts5-setup.ts` | FTS5 virtual tables, triggers, backfill |
 | `packages/backend/src/agent/handoff-notes.ts` | Handoff note building, querying, context windowing |
-| `packages/backend/src/events/event-bus.ts` | TypedEventBus with 4 event types |
+| `packages/backend/src/events/event-bus.ts` | TypedEventBus with 7 event types (4 execution/state + 3 notification) |
 | `packages/backend/src/events/webhook-delivery.ts` | Webhook delivery worker (HMAC, retry, auto-disable) |
 | `packages/backend/src/events/webhook-bridge.ts` | Event bus → delivery record bridge |
 | `packages/backend/src/routes/webhooks.ts` | Outbound webhook subscription CRUD + delivery log |
 | `packages/backend/src/routes/webhook-triggers.ts` | Inbound trigger receiver + CRUD |
 | `packages/backend/src/db/backup.ts` | SQLite backup/restore with retention |
+| `packages/backend/src/routes/schedules.ts` | Schedule CRUD + manual trigger |
+| `packages/backend/src/routes/templates.ts` | Template CRUD + apply (create work item from template) |
+| `packages/backend/src/notifications/webhook-channel.ts` | Notification-to-event-bus bridge for webhook delivery |
+| `packages/backend/src/scheduling/scheduler.ts` | Cron scheduling runtime (nextRunAt computation) |
 | `packages/shared/src/api.ts` | Request/response TypeScript types |
 | `packages/shared/src/entities.ts` | Entity types including AgentScope |
 | `packages/shared/src/ws-events.ts` | WebSocket event type definitions |
