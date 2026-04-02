@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 14:21 PDT — NAV.2: Refactor router for project-scoped routes
+
+**Done:** Rewrote `router.tsx` with 3 route groups: top-level (Dashboard `/`, App Settings `/app-settings`), project-scoped under `/p/:projectId` (9 pages wrapped in ProjectLayout), and legacy redirects from old flat routes to `/p/pj-global/...`. Updated `useParams` in workflows.tsx from `:id` to `:workflowId` with destructuring alias for backward compatibility.
+**Files:** `packages/frontend/src/router.tsx`, `packages/frontend/src/pages/workflows.tsx`
+
+---
+
 ## 2026-04-02 14:18 PDT — NAV.3: Create ProjectLayout wrapper component
 
 **Done:** Created `ProjectLayout` at `layouts/project-layout.tsx`. Uses `useProjectFromUrl()` to read project context from URL. Shows spinner while loading, 404 with "Go to Dashboard" CTA when project not found, and renders `<Outlet />` for valid projects. No Context Provider needed — children call `useProjectFromUrl()` directly.
