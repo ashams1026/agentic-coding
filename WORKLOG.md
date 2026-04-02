@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-03 07:00 PDT — Review: S27.DOC.1 (approved)
+
+**Reviewed:** Sprint 27 API documentation.
+- Outbound webhooks: event catalog + subscription CRUD + delivery details ✓
+- Inbound triggers: receiver + CRUD + template + error codes ✓
+- Data management: backup/restore, log truncation, storage stats, cascade fix ✓
+- 6 source files added ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 06:55 PDT — S27.DOC.1: Document Sprint 27 APIs
 
 **Done:** Added 4 sections to `docs/api.md`: Outbound Webhooks (event catalog table, subscription CRUD endpoints, HMAC delivery details, retry/auto-disable), Inbound Webhook Triggers (receiver with HMAC + template, CRUD endpoints, error codes), Data Management (backup/restore with WAL-safe + retention, log truncation with UPDATE-only approach, storage stats with per-table row counts, execution cleanup cascade fix). Added 6 source files to Source Files table.
