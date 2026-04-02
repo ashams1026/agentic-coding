@@ -31,11 +31,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+// Collapsible removed — was wrapping <div> inside <tbody> (invalid HTML, broke table layout)
 import {
   AlertDialog,
   AlertDialogAction,
@@ -422,68 +418,66 @@ function HistoryRow({
     : null;
 
   return (
-    <Collapsible open={isExpanded} onOpenChange={onToggle}>
-      <CollapsibleTrigger asChild>
-        <TableRow className="cursor-pointer hover:bg-accent/50">
-          <TableCell>
-            <div className="flex items-center gap-2">
-              <div
-                className="flex h-6 w-6 items-center justify-center rounded-full shrink-0"
-                style={{ backgroundColor: personaColor + "20" }}
-              >
-                <Bot className="h-3.5 w-3.5" style={{ color: personaColor }} />
-              </div>
-              <span className="text-sm font-medium truncate max-w-[120px]">
-                {personaName}
-              </span>
+    <>
+      <TableRow className="cursor-pointer hover:bg-accent/50" onClick={onToggle}>
+        <TableCell>
+          <div className="flex items-center gap-2">
+            <div
+              className="flex h-6 w-6 items-center justify-center rounded-full shrink-0"
+              style={{ backgroundColor: personaColor + "20" }}
+            >
+              <Bot className="h-3.5 w-3.5" style={{ color: personaColor }} />
             </div>
-          </TableCell>
-          <TableCell>
-            <span className="text-sm truncate max-w-[200px] block">
-              {targetName}
+            <span className="text-sm font-medium truncate max-w-[120px]">
+              {personaName}
             </span>
-          </TableCell>
-          <TableCell>
-            <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Clock className="h-3 w-3" />
-              {formatDate(execution.startedAt)}
-            </div>
-          </TableCell>
-          <TableCell>
-            <span className="text-xs tabular-nums">
-              {formatDuration(execution.durationMs)}
-            </span>
-          </TableCell>
-          <TableCell>
-            <div className="flex items-center gap-0.5 text-xs tabular-nums">
-              <DollarSign className="h-3 w-3 text-muted-foreground" />
-              {execution.costUsd.toFixed(2)}
-            </div>
-          </TableCell>
-          <TableCell>
-            {outcome ? (
-              <Badge variant="outline" className={`text-xs ${outcome.className}`}>
-                {outcome.label}
-              </Badge>
+          </div>
+        </TableCell>
+        <TableCell>
+          <span className="text-sm truncate max-w-[200px] block">
+            {targetName}
+          </span>
+        </TableCell>
+        <TableCell>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Clock className="h-3 w-3" />
+            {formatDate(execution.startedAt)}
+          </div>
+        </TableCell>
+        <TableCell>
+          <span className="text-xs tabular-nums">
+            {formatDuration(execution.durationMs)}
+          </span>
+        </TableCell>
+        <TableCell>
+          <div className="flex items-center gap-0.5 text-xs tabular-nums">
+            <DollarSign className="h-3 w-3 text-muted-foreground" />
+            {execution.costUsd.toFixed(2)}
+          </div>
+        </TableCell>
+        <TableCell>
+          {outcome ? (
+            <Badge variant="outline" className={`text-xs ${outcome.className}`}>
+              {outcome.label}
+            </Badge>
+          ) : (
+            <span className="text-xs text-muted-foreground">—</span>
+          )}
+        </TableCell>
+        <TableCell className="w-16">
+          <div className="flex items-center gap-1">
+            <RewindButton execution={execution} />
+            {isExpanded ? (
+              <ChevronUp className="h-4 w-4 text-muted-foreground" />
             ) : (
-              <span className="text-xs text-muted-foreground">—</span>
+              <ChevronDown className="h-4 w-4 text-muted-foreground" />
             )}
-          </TableCell>
-          <TableCell className="w-16">
-            <div className="flex items-center gap-1">
-              <RewindButton execution={execution} />
-              {isExpanded ? (
-                <ChevronUp className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              )}
-            </div>
-          </TableCell>
-        </TableRow>
-      </CollapsibleTrigger>
-      <CollapsibleContent>
-        <tr>
-          <td colSpan={7} className="p-0">
+          </div>
+        </TableCell>
+      </TableRow>
+      {isExpanded && (
+        <TableRow>
+          <TableCell colSpan={7} className="p-0">
             {isRouterDecision(execution.structuredOutput) && (
               <div className="px-4 py-3 border-b">
                 <RouterDecisionCard output={execution.structuredOutput} />
@@ -510,10 +504,10 @@ function HistoryRow({
                 })}
               </div>
             )}
-          </td>
-        </tr>
-      </CollapsibleContent>
-    </Collapsible>
+          </TableCell>
+        </TableRow>
+      )}
+    </>
   );
 }
 

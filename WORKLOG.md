@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 13:55 PDT — FX.HIST.1: Fix Agent Monitor history table row misalignment
+
+**Done:** Replaced Radix `<Collapsible>` wrapper in `HistoryRow` with plain conditional rendering. The Collapsible rendered a `<div>` inside `<tbody>` (invalid HTML), breaking table column alignment. Now: `<TableRow onClick={onToggle}>` for the main row + `{isExpanded && <TableRow>...</TableRow>}` for the expanded content. Replaced raw `<tr>/<td>` with `<TableRow>/<TableCell>`. Removed unused Collapsible imports.
+**Files:** `packages/frontend/src/features/agent-monitor/agent-history.tsx`
+
+---
+
 ## 2026-04-03 13:40 PDT — Review: FX.DOC.1 (approved)
 
 **Reviewed:** Workflow documentation update.

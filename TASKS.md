@@ -20,7 +20,7 @@
 
 ### Warning — Layout Bugs
 
-- [ ] **FX.HIST.1** — Fix Agent Monitor history table row width misalignment. `packages/frontend/src/features/agent-monitor/agent-history.tsx:424-517` — `HistoryRow` wraps content in a Radix `<Collapsible>` which renders a `<div>` inside `<tbody>`, breaking table layout (invalid HTML). Rows don't respect header column widths. Fix: replace `<Collapsible>` with conditional rendering using the `isExpanded` prop directly, keeping `<TableRow>` elements as direct children of `<TableBody>`. Also replace the raw `<tr>` on line 485 with `<TableRow>`.
+- [review] **FX.HIST.1** — Fix Agent Monitor history table row width misalignment. `packages/frontend/src/features/agent-monitor/agent-history.tsx:424-517` — `HistoryRow` wraps content in a Radix `<Collapsible>` which renders a `<div>` inside `<tbody>`, breaking table layout (invalid HTML). Rows don't respect header column widths. Fix: replace `<Collapsible>` with conditional rendering using the `isExpanded` prop directly, keeping `<TableRow>` elements as direct children of `<TableBody>`. Also replace the raw `<tr>` on line 485 with `<TableRow>`.
 
 ### Warning — Code Quality
 
