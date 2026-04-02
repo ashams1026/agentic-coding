@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 19:40 PDT — Review: RES.DATA.GROWTH (approved)
+
+**Reviewed:** Data growth and retention strategy research doc.
+- All 5 areas covered: what grows fast (8-table storage audit, logs at execution-manager.ts:489 are primary driver ~80%), retention policies (4-tier hot/warm/cold/ephemeral, truncate logs insight, per-project settings, cascade rules), SQLite scaling (6-metric comparison all within limits, PostgreSQL path estimated 2-3 days), cleanup tools (Settings wireframe, dbstat for per-table sizes, VACUUM as manual action), monitoring (4 health metrics, dev-mode slow query logging at 50ms)
+- Source code claims verified: `logs += chunk + "\n"` at :489, FATAL at :680. db-stats at settings.ts:116-135 (page_count :118, page_size :119). Execution cleanup at :137-142 (lt cutoff, no cascade — confirmed gap). onDelete cascade on chat_messages :262 and chatSessions :244. WAL at connection.ts:29.
+- All 5 cross-reference files exist (backup-restore.md, system-resilience.md, metrics.md, search/design.md, hosted-frontend.md)
+- "Truncate logs, don't delete executions" is a valuable non-obvious insight — saves 95% storage while preserving all analytics metrics
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 19:30 PDT — RES.DATA.GROWTH: Research data growth and retention strategy
 
 **Done:** Researched data growth and retention strategy. Doc covers all 5 investigation areas: (1) what grows fast — 8-table storage audit with per-column analysis; execution logs are primary growth driver (~80% of DB, 100-500KB per real execution, accumulated line-by-line at execution-manager.ts:489); projected 1.5-3.5GB after 1 year at 20 executions/day. (2) retention policies — 4 retention tiers (hot/warm/cold/ephemeral); key insight: truncate logs don't delete executions (save 95% storage, keep all metrics); per-project retention settings in projects.settings; cascade rules for cleanup (keep user comments, delete system comments). (3) SQLite scaling — 6-metric comparison (DB size, row count, query perf, writes, memory) all well within SQLite limits; PostgreSQL migration path estimated at 2-3 days via Drizzle ORM but not needed yet; WAL performance analysis under concurrent load. (4) cleanup tools — Settings > Data Management wireframe with storage breakdown visualization (dbstat virtual table for per-table sizes), retention config dropdowns, manual cleanup buttons, VACUUM with size estimation; fixed existing cleanup cascade gap. (5) monitoring — 4 health metrics with warning/critical thresholds, DB size in status bar, slow query logging (dev mode only, 50ms threshold). 3-phase implementation plan, 7 cross-references, 6 design decisions.
