@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 22:00 PDT — Review: FND.WIL.7 (rejected)
+
+**Reviewed:** Bulk action bar for multi-select — store, API, hooks, list-view UI.
+- Store: `selectedIds`, `toggleSelectId`, `clearSelection` correct, not persisted ✓
+- Hooks: `useBulkArchiveWorkItems`, `useBulkDeleteWorkItems` invalidate `["workItems"]` ✓
+- list-view.tsx: Checkbox, bulk bar, bulk delete dialog, both render paths wired ✓
+- Visual check: checkbox renders, Archived badge shows, layout clean ✓
+- **Issue:** `bulkDeleteWorkItems` in client.ts:205-212 bypasses centralized error handling — raw `fetch()` without `showErrorToast` or `throw`. On 409/500, React Query treats resolved promise as success, so `onSuccess` clears selection and closes dialog even though delete failed. User sees no error.
+- **Verdict: rejected.** Fix: add `!res.ok` guard with `showErrorToast` + throw, matching `del()` pattern.
+
+---
+
 ## 2026-04-01 21:50 PDT — FND.WIL.7: Frontend bulk action bar for multi-select
 
 **Done:** Added `selectedIds`, `toggleSelectId`, `clearSelection` to work-items-store.ts. Created `bulkArchiveWorkItems`/`bulkDeleteWorkItems` API functions in client.ts (bulk delete uses direct fetch since `del()` doesn't support body). Created `useBulkArchiveWorkItems`/`useBulkDeleteWorkItems` hooks. Added Checkbox to each `ListRow` for multi-select. When items are selected, a sticky bottom bar shows "N items selected" with [Archive], [Delete], [Clear] buttons. Bulk archive shows success toast; bulk delete opens confirmation AlertDialog. Both tree and grouped render paths pass `isMultiSelected`/`onToggleMultiSelect`. Visual check: checkbox toggles selection, bulk bar appears with correct count and buttons.
