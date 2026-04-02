@@ -92,7 +92,7 @@ export async function recoverOrphanedState(): Promise<RecoveryReport> {
       report.executionsReset = orphaned.length;
 
       // Collect affected work item IDs (deduplicated)
-      const workItemIds = [...new Set(orphaned.map((e) => e.workItemId))];
+      const workItemIds = [...new Set(orphaned.map((e) => e.workItemId).filter((id): id is string => id !== null))];
       report.affectedWorkItems = workItemIds;
 
       // Log affected work items and their current states (informational only)

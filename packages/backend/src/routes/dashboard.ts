@@ -33,7 +33,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
     const workItemIds = new Set(allWorkItems.map((w) => w.id));
 
     let allExecutions = await db.select().from(executions);
-    if (projectId) allExecutions = allExecutions.filter((e) => workItemIds.has(e.workItemId));
+    if (projectId) allExecutions = allExecutions.filter((e) => e.workItemId && workItemIds.has(e.workItemId));
 
     let allProposals = await db.select().from(proposals);
     if (projectId) allProposals = allProposals.filter((p) => workItemIds.has(p.workItemId));
@@ -59,7 +59,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
     if (projectId) {
       const projectWorkItems = await db.select().from(workItems).where(eq(workItems.projectId, projectId));
       const workItemIds = new Set(projectWorkItems.map((w) => w.id));
-      allExecutions = allExecutions.filter((e) => workItemIds.has(e.workItemId));
+      allExecutions = allExecutions.filter((e) => e.workItemId && workItemIds.has(e.workItemId));
     }
 
     const now = new Date();
@@ -101,7 +101,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
     if (projectId) {
       const projectWorkItems = await db.select().from(workItems).where(eq(workItems.projectId, projectId));
       const workItemIds = new Set(projectWorkItems.map((w) => w.id));
-      allExecutions = allExecutions.filter((e) => workItemIds.has(e.workItemId));
+      allExecutions = allExecutions.filter((e) => e.workItemId && workItemIds.has(e.workItemId));
     }
 
     const completed = allExecutions.filter((e) => e.status === "completed");

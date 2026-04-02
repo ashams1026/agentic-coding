@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import type { RewindFilesResult } from "@anthropic-ai/claude-agent-sdk";
 import { db } from "../db/connection.js";
-import { executions, workItems, comments, projects } from "../db/schema.js";
+import { executions, workItems, comments, projects, personas } from "../db/schema.js";
 import { getRunningQuery } from "../agent/claude-executor.js";
 import { createId } from "@agentops/shared";
 import type {
@@ -61,7 +61,7 @@ export async function executionRoutes(app: FastifyInstance) {
     if (projectId && !workItemId) {
       const projectWorkItems = await db.select().from(workItems).where(eq(workItems.projectId, projectId));
       const workItemIds = new Set(projectWorkItems.map((w) => w.id));
-      rows = rows.filter((r) => workItemIds.has(r.workItemId));
+      rows = rows.filter((r) => r.workItemId && workItemIds.has(r.workItemId));
     }
 
     return { data: rows.map(serializeExecution), total: rows.length };
@@ -111,6 +111,59 @@ export async function executionRoutes(app: FastifyInstance) {
       .returning();
 
     return reply.status(201).send({ data: serializeExecution(row!) });
+  });
+
+  // POST /api/executions/run — standalone execution (no work item)
+  app.post<{
+    Body: { personaId: string; prompt: string; projectId?: string; budgetUsd?: number };
+  }>("/api/executions/run", async (request, reply) => {
+    const { personaId, prompt, projectId, budgetUsd } = request.body;
+
+    if (!personaId || !prompt) {
+      return reply.status(400).send({
+        error: { code: "BAD_REQUEST", message: "personaId and prompt are required" },
+      });
+    }
+
+    // Validate persona exists
+    const [persona] = await db.select().from(personas).where(eq(personas.id, personaId));
+    if (!persona) {
+      return reply.status(404).send({
+        error: { code: "NOT_FOUND", message: `Persona ${personaId} not found` },
+      });
+    }
+
+    // Validate project if provided
+    if (projectId) {
+      const [project] = await db.select().from(projects).where(eq(projects.id, projectId));
+      if (!project) {
+        return reply.status(404).send({
+          error: { code: "NOT_FOUND", message: `Project ${projectId} not found` },
+        });
+      }
+    }
+
+    const id = createId.execution();
+    const [row] = await db
+      .insert(executions)
+      .values({
+        id,
+        workItemId: null,
+        personaId,
+        projectId: projectId ?? null,
+        status: "pending",
+        startedAt: new Date(),
+        completedAt: null,
+        costUsd: budgetUsd ? Math.round(budgetUsd * 100) : 0,
+        durationMs: 0,
+        summary: prompt,
+        outcome: null,
+        rejectionPayload: null,
+        logs: "",
+      })
+      .returning();
+
+    return reply.status(201).send({ id: row!.id });
   });
 
   // PATCH /api/executions/:id
@@ -203,6 +256,12 @@ export async function executionRoutes(app: FastifyInstance) {
     }
 
     // Look up the project path for cwd
+    if (!execution.workItemId) {
+      return reply.status(400).send({
+        error: { code: "NO_WORK_ITEM", message: "Cannot rewind a standalone execution (no work item)" },
+      });
+    }
+
     const [workItem] = await db
       .select({ projectId: workItems.projectId })
       .from(workItems)
@@ -288,7 +347,7 @@ export async function executionRoutes(app: FastifyInstance) {
 
       await db.insert(comments).values({
         id: commentId,
-        workItemId: execution.workItemId,
+        workItemId: execution.workItemId!, // guarded above
         authorType: "system",
         authorId: null,
         authorName: "System",
@@ -298,7 +357,7 @@ export async function executionRoutes(app: FastifyInstance) {
       });
 
       auditStateTransition({
-        workItemId: execution.workItemId,
+        workItemId: execution.workItemId!,
         fromState: "rewind",
         toState: "reverted",
         actor: "user",

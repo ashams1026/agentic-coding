@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 00:10 PDT — FND.GA.7: Backend POST /api/executions/run endpoint
+
+**Done:** Added `POST /api/executions/run` route to `executions.ts` accepting `{ personaId, prompt, projectId?, budgetUsd? }`. Validates persona and optional project exist (404 if not). Creates execution with `workItemId = null`, `status: "pending"`, stores prompt in summary. Returns 201 with execution id. Also made `workItemId` nullable in DB schema (removed `.notNull()`) and generated migration `0010_puzzling_micromax.sql`. Fixed 8 downstream TypeScript errors from nullable `workItemId`: dashboard.ts (3 filter guards), executions.ts (filter guard + rewind null check + non-null assertions), start.ts (filter null workItemIds for orphan recovery).
+**Files:** `packages/backend/src/routes/executions.ts`, `packages/backend/src/db/schema.ts`, `packages/backend/drizzle/0010_puzzling_micromax.sql` (new), `packages/backend/drizzle/meta/*`, `packages/backend/src/routes/dashboard.ts`, `packages/backend/src/start.ts`
+
+---
+
 ## 2026-04-02 00:00 PDT — Review: FND.GA.6 (approved)
 
 **Reviewed:** Agent Monitor "New Run" modal.

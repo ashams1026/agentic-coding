@@ -143,7 +143,7 @@ export const personasRelations = relations(personas, ({ many }) => ({
 
 export const executions = sqliteTable("executions", {
   id: text("id").primaryKey(), // ExecutionId
-  workItemId: text("work_item_id").notNull().references(() => workItems.id),
+  workItemId: text("work_item_id").references(() => workItems.id), // nullable — standalone/global executions
   personaId: text("persona_id").notNull().references(() => personas.id),
   projectId: text("project_id").references(() => projects.id), // nullable — for standalone/global executions
   status: text("status").notNull().default("pending"), // ExecutionStatus
