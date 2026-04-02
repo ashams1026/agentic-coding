@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-01 22:08 PDT — Review: FND.WIL.7 (approved after rework)
+
+**Reviewed:** Rework of `bulkDeleteWorkItems` error handling in client.ts.
+- `!res.ok` guard added with `showErrorToast()` + `throw new Error()` ✓
+- Pattern matches `del()` helper (lines 109-115) ✓
+- React Query will now correctly see rejection on 409/500, preventing false `onSuccess` ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 22:05 PDT — FND.WIL.7 (rework): Fix bulkDeleteWorkItems error handling
 
 **Done:** Added `!res.ok` guard to `bulkDeleteWorkItems` in client.ts — now calls `showErrorToast()` and throws on failure, matching the `del()` helper pattern. On 409/500, React Query will now correctly trigger `onError` instead of `onSuccess`.
