@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-03 16:05 PDT — UXO.5: Rename Persona → Agent in shared types
+
+**Done:** Renamed all Persona references to Agent across 4 shared files. `PersonaId` → `AgentId`, `PersonaModel` → `AgentModel`, `PersonaSettings` → `AgentSettings`, `PersonaAssignment` → `AgentAssignment`, `Persona` → `Agent` interface. Renamed all `personaId` fields → `agentId`, `assignedPersonaId` → `assignedAgentId`, `persona` field → `agent`. Updated `createId.persona` → `createId.agent`. Renamed API types: `CreatePersonaRequest` → `CreateAgentRequest`, `UpdatePersonaRequest` → `UpdateAgentRequest`, `PersonaResponse` → `AgentResponse`, `PersonaListResponse` → `AgentListResponse`. Updated ws-events.ts imports and fields. Shared package builds clean.
+**Files:** `packages/shared/src/ids.ts`, `packages/shared/src/entities.ts`, `packages/shared/src/api.ts`, `packages/shared/src/ws-events.ts`
+**Notes:** Backend/frontend will have build errors — those are addressed by UXO.6 and UXO.7 respectively.
+
+---
+
 ## 2026-04-03 15:55 PDT — Review: UXO.4 (approved)
 
 **Reviewed:** Scope breadcrumb indicator component.

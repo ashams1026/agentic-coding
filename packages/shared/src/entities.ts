@@ -2,7 +2,7 @@ import type {
   ProjectId,
   WorkItemId,
   WorkItemEdgeId,
-  PersonaId,
+  AgentId,
   ExecutionId,
   CommentId,
   ProjectMemoryId,
@@ -15,7 +15,7 @@ import type {
 
 export type Priority = "p0" | "p1" | "p2" | "p3";
 
-export type PersonaModel = "opus" | "sonnet" | "haiku";
+export type AgentModel = "opus" | "sonnet" | "haiku";
 
 export type ExecutionStatus = "pending" | "running" | "completed" | "failed" | "cancelled" | "interrupted";
 
@@ -75,7 +75,7 @@ export interface WorkItem {
   workflowId: string | null;
   priority: Priority;
   labels: string[];
-  assignedPersonaId: PersonaId | null;
+  assignedAgentId: AgentId | null;
   executionContext: ExecutionContextEntry[];
   createdAt: string;
   updatedAt: string;
@@ -104,16 +104,16 @@ export interface WorkItemEdge {
   type: WorkItemEdgeType;
 }
 
-export interface PersonaAssignment {
+export interface AgentAssignment {
   projectId: ProjectId;
   stateName: string;
-  personaId: PersonaId;
+  agentId: AgentId;
 }
 
 export type EffortLevel = "low" | "medium" | "high" | "max";
 export type ThinkingMode = "adaptive" | "enabled" | "disabled";
 
-export interface PersonaSettings {
+export interface AgentSettings {
   isSystem?: boolean;
   isAssistant?: boolean;
   isRouter?: boolean;
@@ -123,8 +123,8 @@ export interface PersonaSettings {
   [key: string]: unknown;
 }
 
-export interface Persona {
-  id: PersonaId;
+export interface Agent {
+  id: AgentId;
   name: string;
   description: string;
   avatar: {
@@ -132,19 +132,19 @@ export interface Persona {
     icon: string;
   };
   systemPrompt: string;
-  model: PersonaModel;
+  model: AgentModel;
   allowedTools: string[];
   mcpTools: string[];
   skills: string[];
   subagents: string[];
   maxBudgetPerRun: number;
-  settings: PersonaSettings;
+  settings: AgentSettings;
 }
 
 export interface Execution {
   id: ExecutionId;
   workItemId: WorkItemId | null;
-  personaId: PersonaId;
+  agentId: AgentId;
   status: ExecutionStatus;
   startedAt: string;
   completedAt: string | null;
@@ -160,7 +160,7 @@ export interface Execution {
   workflowId: string | null;
   workflowStateName: string | null;
   handoffNotes: HandoffNote | null;
-  model: string | null;        // persona model used (opus/sonnet/haiku)
+  model: string | null;        // agent model used (opus/sonnet/haiku)
   totalTokens: number | null;  // cumulative tokens used
   toolUses: number | null;     // count of tool calls made
 }
@@ -178,7 +178,7 @@ export interface Comment {
   id: CommentId;
   workItemId: WorkItemId;
   authorType: CommentAuthorType;
-  authorId: PersonaId | null;
+  authorId: AgentId | null;
   authorName: string;
   content: string;
   metadata: Record<string, unknown>;
@@ -213,7 +213,7 @@ export type ChatMessageRole = "user" | "assistant";
 export interface ChatSession {
   id: ChatSessionId;
   projectId: ProjectId | null;
-  personaId: PersonaId | null;
+  agentId: AgentId | null;
   workItemId: WorkItemId | null;
   sdkSessionId: string | null;
   title: string;
@@ -250,7 +250,7 @@ export interface WorkflowStateEntity {
   name: string;
   type: "initial" | "intermediate" | "terminal";
   color: string;
-  personaId: PersonaId | null;
+  agentId: AgentId | null;
   sortOrder: number;
 }
 

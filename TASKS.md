@@ -16,7 +16,7 @@
 
 ### Phase 2: Agent Rename (Persona → Agent)
 
-- [ ] **UXO.5** — Shared types: Rename `Persona` → `Agent`, `PersonaId` → `AgentId`, `PersonaSettings` → `AgentSettings` across `packages/shared/src/entities.ts`, `ws-events.ts`, and all shared exports. Rename `PersonaAssignment` → `AgentAssignment`.
+- [review] **UXO.5** — Shared types: Rename `Persona` → `Agent`, `PersonaId` → `AgentId`, `PersonaSettings` → `AgentSettings` across `packages/shared/src/entities.ts`, `ws-events.ts`, and all shared exports. Rename `PersonaAssignment` → `AgentAssignment`.
 - [ ] **UXO.6** — Schema + Backend: Rename `personas` table → `agents`, all `personaId` columns → `agentId` (chat_sessions, executions, workflow_states, persona_assignments → agent_assignments, schedules, etc.). Generate migration. Rename `routes/personas.ts` → `routes/agents.ts`, API paths `/api/personas` → `/api/agents`. Update all backend imports and queries.
 - [ ] **UXO.7** — Frontend: Rename all persona references → agent. Rename `features/persona-manager/` → `features/agent-builder/`. Update sidebar label to "Agent Builder". Rename hooks (`usePersonas` → `useAgents`), API client functions, stores, route paths. Update all imports.
 - [ ] **UXO.8** — Add project scope to agents. Add `scope` field (global/project) and nullable `projectId` FK to agents schema. Generate migration. Project-scoped agents only appear in that project's agent lists, chat selectors, workflow assignments. Global agents (default) available everywhere. Add scope badge on agent cards in Agent Builder. Update agent creation form with scope dropdown.

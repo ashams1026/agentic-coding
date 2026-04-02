@@ -1,6 +1,6 @@
 import type {
   WorkItemId,
-  PersonaId,
+  AgentId,
   ExecutionId,
   CommentId,
   ProposalId,
@@ -62,7 +62,7 @@ export interface StateChangeEvent {
   workItemId: WorkItemId;
   fromState: string;
   toState: string;
-  triggeredBy: PersonaId | "user" | "system";
+  triggeredBy: AgentId | "user" | "system";
   timestamp: string;
 }
 
@@ -78,7 +78,7 @@ export interface CommentCreatedEvent {
 export interface AgentOutputChunkEvent {
   type: "agent_output_chunk";
   executionId: ExecutionId;
-  personaId: PersonaId;
+  agentId: AgentId;
   chunk: string;
   chunkType: "text" | "code" | "thinking" | "tool_call" | "tool_result";
   timestamp: string;
@@ -87,7 +87,7 @@ export interface AgentOutputChunkEvent {
 export interface AgentStartedEvent {
   type: "agent_started";
   executionId: ExecutionId;
-  personaId: PersonaId;
+  agentId: AgentId;
   workItemId: WorkItemId;
   workItemTitle: string;
   timestamp: string;
@@ -96,7 +96,7 @@ export interface AgentStartedEvent {
 export interface AgentCompletedEvent {
   type: "agent_completed";
   executionId: ExecutionId;
-  personaId: PersonaId;
+  agentId: AgentId;
   workItemId: WorkItemId;
   outcome: ExecutionOutcome;
   durationMs: number;

@@ -2,7 +2,7 @@ import type {
   ProjectId,
   WorkItemId,
   WorkItemEdgeId,
-  PersonaId,
+  AgentId,
   ExecutionId,
   CommentId,
   ProposalId,
@@ -11,8 +11,8 @@ import type {
   Project,
   WorkItem,
   WorkItemEdge,
-  Persona,
-  PersonaAssignment,
+  Agent,
+  AgentAssignment,
   Execution,
   Comment,
   Proposal,
@@ -80,7 +80,7 @@ export interface UpdateWorkItemRequest {
   labels?: string[];
   currentState?: string;
   context?: Record<string, unknown>;
-  assignedPersonaId?: PersonaId | null;
+  assignedAgentId?: AgentId | null;
 }
 
 export type WorkItemResponse = ApiResponse<WorkItem>;
@@ -115,20 +115,20 @@ export interface CreateWorkItemEdgeRequest {
 export type WorkItemEdgeResponse = ApiResponse<WorkItemEdge>;
 export type WorkItemEdgeListResponse = ApiListResponse<WorkItemEdge>;
 
-// ── PersonaAssignment endpoints ────────────────────────────────────
+// ── AgentAssignment endpoints ────────────────────────────────────
 
-export interface UpsertPersonaAssignmentRequest {
+export interface UpsertAgentAssignmentRequest {
   projectId: ProjectId;
   stateName: string;
-  personaId: PersonaId;
+  agentId: AgentId;
 }
 
-export type PersonaAssignmentResponse = ApiResponse<PersonaAssignment>;
-export type PersonaAssignmentListResponse = ApiListResponse<PersonaAssignment>;
+export type AgentAssignmentResponse = ApiResponse<AgentAssignment>;
+export type AgentAssignmentListResponse = ApiListResponse<AgentAssignment>;
 
-// ── Persona endpoints ──────────────────────────────────────────────
+// ── Agent endpoints ────────────────────────────────────────────────
 
-export interface CreatePersonaRequest {
+export interface CreateAgentRequest {
   name: string;
   description?: string;
   avatar?: { color: string; icon: string };
@@ -141,7 +141,7 @@ export interface CreatePersonaRequest {
   maxBudgetPerRun?: number;
 }
 
-export interface UpdatePersonaRequest {
+export interface UpdateAgentRequest {
   name?: string;
   description?: string;
   avatar?: { color: string; icon: string };
@@ -155,14 +155,14 @@ export interface UpdatePersonaRequest {
   settings?: Record<string, unknown>;
 }
 
-export type PersonaResponse = ApiResponse<Persona>;
-export type PersonaListResponse = ApiListResponse<Persona>;
+export type AgentResponse = ApiResponse<Agent>;
+export type AgentListResponse = ApiListResponse<Agent>;
 
 // ── Execution endpoints ────────────────────────────────────────────
 
 export interface CreateExecutionRequest {
   workItemId: WorkItemId;
-  personaId: PersonaId;
+  agentId: AgentId;
 }
 
 export interface UpdateExecutionRequest {
@@ -184,7 +184,7 @@ export type ExecutionListResponse = ApiListResponse<Execution>;
 export interface CreateCommentRequest {
   workItemId: WorkItemId;
   authorType: CommentAuthorType;
-  authorId?: PersonaId;
+  authorId?: AgentId;
   authorName: string;
   content: string;
   metadata?: Record<string, unknown>;
@@ -214,7 +214,7 @@ export type ProposalListResponse = ApiListResponse<Proposal>;
 
 export interface ReadyWorkItem {
   workItem: WorkItem;
-  persona: Persona | null;
+  agent: Agent | null;
 }
 
 export type ReadyWorkResponse = ApiListResponse<ReadyWorkItem>;

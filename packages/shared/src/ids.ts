@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 export type ProjectId = `pj-${string}`;
 export type WorkItemId = `wi-${string}`;
 export type WorkItemEdgeId = `we-${string}`;
-export type PersonaId = `ps-${string}`;
+export type AgentId = `ps-${string}`;
 export type ExecutionId = `ex-${string}`;
 export type CommentId = `cm-${string}`;
 export type ProjectMemoryId = `pm-${string}`;
@@ -17,7 +17,7 @@ export type EntityId =
   | ProjectId
   | WorkItemId
   | WorkItemEdgeId
-  | PersonaId
+  | AgentId
   | ExecutionId
   | CommentId
   | ProjectMemoryId
@@ -37,7 +37,7 @@ export const createId = {
   project: () => makeId<ProjectId>("pj"),
   workItem: () => makeId<WorkItemId>("wi"),
   workItemEdge: () => makeId<WorkItemEdgeId>("we"),
-  persona: () => makeId<PersonaId>("ps"),
+  agent: () => makeId<AgentId>("ps"),
   execution: () => makeId<ExecutionId>("ex"),
   comment: () => makeId<CommentId>("cm"),
   projectMemory: () => makeId<ProjectMemoryId>("pm"),
