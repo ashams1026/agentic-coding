@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 02:50 PDT — FND.TEST.6: Regression checkpoint post-Sprint 23
+
+**Done:** Executed full regression sweep across all 34 test plans. 24 suites UI-verified via chrome-devtools MCP, 10 code-review only (require live agent). **0 regressions found.** All original Sprint 1-18 suites PASS, Sprint 19-20 features PASS, Sprint 23 features (error recovery, work-item lifecycle, global agents) confirmed. Build compiles clean. 10 API endpoints verified (projects, personas, work-items, executions, executions/run, archive/unarchive, chat sessions). 19 screenshots saved.
+**Files:** `tests/e2e/results/2026-04-02_02-35_regression-sprint23/RESULTS.md`, 19 screenshot PNGs
+
+---
+
 ## 2026-04-02 02:30 PDT — Review: FND.TEST.5 (approved)
 
 **Reviewed:** Global Agents Phase 1 e2e test execution results.
