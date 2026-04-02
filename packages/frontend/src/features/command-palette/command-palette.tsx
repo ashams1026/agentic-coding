@@ -16,9 +16,10 @@ import {
   Plus,
   ArrowRight,
   Loader2,
+  Cog,
 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useSelectedProject } from "@/hooks";
+import { useSelectedProject, useProjects } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { searchApi } from "@/api/client";
 import type { SearchResult } from "@/api/client";
@@ -63,16 +64,22 @@ interface CommandItem {
 
 // ── Navigation items ───────────────────────────────────────────────
 
-const NAV_ITEMS = [
+/** Top-level commands that don't require a project context */
+const GLOBAL_NAV_ITEMS = [
   { label: "Dashboard", path: "/", icon: LayoutDashboard },
-  { label: "Work Items", path: "/items", icon: ListTodo },
-  { label: "Automations", path: "/automations", icon: GitBranch },
-  { label: "Agent Monitor", path: "/agents", icon: Bot },
-  { label: "Activity Feed", path: "/activity", icon: Activity },
-  { label: "Analytics", path: "/analytics", icon: BarChart3 },
-  { label: "Chat", path: "/chat", icon: MessageSquare },
-  { label: "Agent Builder", path: "/agent-builder", icon: Users },
-  { label: "Settings", path: "/settings", icon: Settings },
+  { label: "App Settings", path: "/app-settings", icon: Cog },
+];
+
+/** Per-project sub-pages — used to generate "[Project] > [Label]" commands */
+const PROJECT_SUB_PAGES = [
+  { label: "Work Items", subpath: "items", icon: ListTodo },
+  { label: "Automations", subpath: "automations", icon: GitBranch },
+  { label: "Agents", subpath: "agents", icon: Users },
+  { label: "Agent Monitor", subpath: "monitor", icon: Bot },
+  { label: "Activity Feed", subpath: "activity", icon: Activity },
+  { label: "Analytics", subpath: "analytics", icon: BarChart3 },
+  { label: "Chat", subpath: "chat", icon: MessageSquare },
+  { label: "Settings", subpath: "settings", icon: Settings },
 ];
 
 const ACTION_ITEMS = [
@@ -82,7 +89,8 @@ const ACTION_ITEMS = [
 
 // ── Category labels ────────────────────────────────────────────────
 
-const CATEGORY_LABELS: Record<string, string> = {
+/** Static category labels for non-project groups */
+const STATIC_CATEGORY_LABELS: Record<string, string> = {
   navigation: "Navigation",
   actions: "Quick Actions",
   work_item: "Work Items",
@@ -112,6 +120,7 @@ export function CommandPalette() {
   const navigate = useNavigate();
 
   const { projectId } = useSelectedProject();
+  const { data: projects } = useProjects();
   const setSelectedItemId = useWorkItemsStore((s) => s.setSelectedItemId);
 
   // ── Keyboard shortcut to open ────────────────────────────────
@@ -166,12 +175,13 @@ export function CommandPalette() {
     };
   }, [query, projectId]);
 
-  // ── Build static items (nav + actions) ──────────────────────
+  // ── Build static items (global nav + per-project nav + actions) ──
   const staticItems = useMemo((): CommandItem[] => {
     const items: CommandItem[] = [];
     const q = query.toLowerCase();
 
-    for (const nav of NAV_ITEMS) {
+    // Global navigation items (Dashboard, App Settings)
+    for (const nav of GLOBAL_NAV_ITEMS) {
       if (q && !nav.label.toLowerCase().includes(q)) continue;
       const Icon = nav.icon;
       items.push({
@@ -183,6 +193,32 @@ export function CommandPalette() {
       });
     }
 
+    // Per-project navigation items — "[Project Name] > [Page]"
+    if (projects) {
+      for (const project of projects) {
+        const projectNameLower = project.name.toLowerCase();
+        for (const page of PROJECT_SUB_PAGES) {
+          const fullLabel = `${project.name} > ${page.label}`;
+          const matchesLabel = fullLabel.toLowerCase().includes(q);
+          const matchesProject = projectNameLower.includes(q);
+          // Match if query matches full label OR just the project name
+          if (q && !matchesLabel && !matchesProject) continue;
+
+          const Icon = page.icon;
+          const path = `/p/${project.id}/${page.subpath}`;
+          const categoryKey = `project-${project.id}`;
+          items.push({
+            id: `nav-${project.id}-${page.subpath}`,
+            label: fullLabel,
+            category: categoryKey,
+            icon: <Icon className="h-4 w-4" />,
+            onSelect: () => { navigate(path); setOpen(false); },
+          });
+        }
+      }
+    }
+
+    // Quick actions
     for (const action of ACTION_ITEMS) {
       if (q && !action.label.toLowerCase().includes(q)) continue;
       const Icon = action.icon;
@@ -196,7 +232,7 @@ export function CommandPalette() {
     }
 
     return items;
-  }, [query, navigate]);
+  }, [query, navigate, projects]);
 
   // ── Convert search results to CommandItems ───────────────────
   const searchItems = useMemo((): CommandItem[] => {
@@ -222,20 +258,53 @@ export function CommandPalette() {
     }));
   }, [searchResults, navigate, setSelectedItemId]);
 
+  // ── Build category labels dynamically ─────────────────────────
+  const categoryLabels = useMemo(() => {
+    const labels: Record<string, string> = { ...STATIC_CATEGORY_LABELS };
+    if (projects) {
+      for (const project of projects) {
+        labels[`project-${project.id}`] = project.name;
+      }
+    }
+    return labels;
+  }, [projects]);
+
   // ── Group all items ──────────────────────────────────────────
   const grouped = useMemo(() => {
     const allItems = [...staticItems, ...searchItems];
     const groups: { category: string; items: CommandItem[] }[] = [];
-    const categoryOrder = ["navigation", "actions", "work_item", "agent", "comment", "chat_message"];
 
-    for (const cat of categoryOrder) {
+    // Static categories first
+    const staticOrder = ["navigation", "actions"];
+    for (const cat of staticOrder) {
       const items = allItems.filter((i) => i.category === cat);
       if (items.length > 0) {
         groups.push({ category: cat, items });
       }
     }
+
+    // Project groups (in the order projects are returned)
+    if (projects) {
+      for (const project of projects) {
+        const catKey = `project-${project.id}`;
+        const items = allItems.filter((i) => i.category === catKey);
+        if (items.length > 0) {
+          groups.push({ category: catKey, items });
+        }
+      }
+    }
+
+    // Search result categories
+    const searchOrder = ["work_item", "agent", "comment", "chat_message"];
+    for (const cat of searchOrder) {
+      const items = allItems.filter((i) => i.category === cat);
+      if (items.length > 0) {
+        groups.push({ category: cat, items });
+      }
+    }
+
     return groups;
-  }, [staticItems, searchItems]);
+  }, [staticItems, searchItems, projects]);
 
   const flatItems = useMemo(() => grouped.flatMap((g) => g.items), [grouped]);
 
@@ -314,7 +383,7 @@ export function CommandPalette() {
             grouped.map((group) => (
               <div key={group.category}>
                 <p className="px-3 py-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  {CATEGORY_LABELS[group.category] ?? group.category}
+                  {categoryLabels[group.category] ?? group.category}
                 </p>
                 {group.items.map((item) => {
                   const idx = flatIndex++;

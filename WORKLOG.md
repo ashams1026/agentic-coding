@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 14:56 PDT — NAV.17, NAV.21, NAV.22: Project settings, command palette, status bar
+
+**Done:** (1) NAV.17: Created ProjectSettingsPage at `/p/:projectId/settings` with 4 sections (Security, Costs & Limits, Notifications, Integrations). Shows project name in sidebar header. Router updated. (2) NAV.21: Command palette updated with project-scoped commands — "[Project] > [Page]" for all 8 pages per project. Search matches project names. Grouped by Navigation + per-project. (3) NAV.22: Status bar shows current project name on project pages, "Dashboard"/"App Settings" on top-level pages. Removed old automations Zap indicator. Preserved WS/agent/cost indicators.
+**Files:** `pages/project-settings.tsx` (new), `router.tsx`, `features/command-palette/command-palette.tsx`, `components/status-bar.tsx`
+
+---
+
 ## 2026-04-02 14:48 PDT — NAV.19: Redesign Dashboard as cross-project overview
 
 **Done:** Rewrote `dashboard.tsx` from a project-specific dashboard to a cross-project overview. Removed old `StatCard`, `AllProjectsSummary`, and imports of `ActiveAgentsStrip`, `RecentActivity`, `UpcomingWork`, `CostSummary`, `useSelectedProject`, `Badge`, `Table*`. Added `ProjectCard` component showing: project name with globe/folder icon, work item count, active agents count (via `useDashboardStats`), last activity (relative time from work item updates), and quick-link buttons to Work Items / Agents / Chat. Global Workspace pinned first with violet accent border. Responsive grid (1/2/3 cols). Updated `GettingStartedChecklist` routes to project-scoped URLs (`/app-settings`, `/p/pj-global/items`). Loading skeleton and empty state preserved.

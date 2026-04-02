@@ -50,13 +50,13 @@
 
 ### Phase 4: Settings Split (remaining)
 
-- [ ] **NAV.17** — Frontend: Create Project Settings page at `/p/:projectId/settings`. Move from current Settings: Security, Costs & Limits (include max concurrent agents), Notifications, Integrations. Read projectId from URL. Break up "Agent Configuration" — API key → App Settings, concurrency → Costs & Limits, drop Per-Agent Limits table.
-- [ ] **NAV.18** — Frontend: Move workflow settings into workflow builder. Remove `workflow-config-section.tsx`. Move agent-state assignment table into builder as "State Agents" tab. Workflow/Scheduling tabs gone from settings.
+- [x] **NAV.17** — Frontend: Create Project Settings page at `/p/:projectId/settings`. 4 sections: Security, Costs & Limits, Notifications, Integrations. *(completed 2026-04-02 14:56 PDT)*
+- [x] **NAV.18** — N/A: `workflow-config-section.tsx` already deleted in UXO.26, agent assignments already in workflow builder. *(completed 2026-04-02 14:52 PDT)*
 
 ### Phase 6: Cleanup + Polish
 
-- [ ] **NAV.21** — Frontend: Update command palette. Commands include project context: "Go to [Project] > Work Items". Search matches project names.
-- [ ] **NAV.22** — Frontend: Update status bar. Remove old auto-routing toggle. Show current project name when on a project page. Keep WS connection, agent count, cost indicators.
+- [x] **NAV.21** — Frontend: Update command palette with project-scoped commands. "[Project] > [Page]" for all 8 pages per project. Search matches project names. *(completed 2026-04-02 14:56 PDT)*
+- [x] **NAV.22** — Frontend: Update status bar. Shows current project name on project pages. Removed old automations indicator. Preserved WS/agent/cost indicators. *(completed 2026-04-02 14:56 PDT)*
 - [ ] **NAV.23** — Frontend: Remove all scope badges, scope indicators, and "Global" vs "All Projects" labeling. Sidebar tree makes scope self-evident. Clean up `scope-indicator.tsx`, scope badges on agent cards, work item badges, chat headers.
 - [ ] **NAV.24** — Frontend: Handle navigation edge cases. Old flat URLs (`/items`, `/agents`, `/automations`) redirect to `/p/pj-global/items` etc. 404 page for invalid projectId. Browser back/forward works.
 - [ ] **NAV.25** — Frontend: Delete dead code from old nav model. Remove: `useSelectedProject()` hook, `selectedProjectId` from UI store, project selector component, scope breadcrumb component. Verify no remaining imports.

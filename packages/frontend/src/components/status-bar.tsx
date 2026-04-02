@@ -1,58 +1,40 @@
-import { Bot, Circle, Zap } from "lucide-react";
-import { Link } from "react-router";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Bot, Circle, FolderOpen } from "lucide-react";
+import { useLocation } from "react-router";
 import { cn } from "@/lib/utils";
-import { useDashboardStats, useSelectedProject, useHealth, useWsStatus, useWorkflows } from "@/hooks";
+import { useDashboardStats, useProjectFromUrl, useHealth, useWsStatus } from "@/hooks";
 
 export function StatusBar() {
-  const { projectId } = useSelectedProject();
+  const { projectId, project } = useProjectFromUrl();
   const { data: stats } = useDashboardStats(projectId ?? undefined);
-  const { data: workflows } = useWorkflows(projectId ?? undefined);
 
   const { data: health } = useHealth();
   const wsStatus = useWsStatus();
+  const location = useLocation();
 
   const activeAgents = stats?.activeAgents ?? 0;
   const todayCost = stats?.todayCostUsd ?? 0;
   const executorMode = health?.executor;
 
-  const activeAutomations = (workflows ?? []).filter((w) => w.autoRouting).length;
+  // Derive page label for non-project pages
+  const pageLabel = projectId
+    ? project?.name ?? "Loading..."
+    : location.pathname.startsWith("/settings")
+      ? "App Settings"
+      : "Dashboard";
 
   return (
     <footer className="flex h-9 items-center justify-between border-t border-border bg-card px-4 text-xs text-muted-foreground">
       <div className="flex items-center gap-3">
-        <span className="font-medium">Woof</span>
+        {projectId ? (
+          <span className="flex items-center gap-1.5 font-medium text-foreground">
+            <FolderOpen className="h-3 w-3 text-muted-foreground" />
+            {pageLabel}
+          </span>
+        ) : (
+          <span className="font-medium">{pageLabel}</span>
+        )}
       </div>
       <div className="flex items-center gap-4">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Link
-              to="/automations"
-              className={cn(
-                "flex items-center gap-1.5 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-accent-foreground",
-              )}
-            >
-              <Zap
-                className={cn(
-                  "h-3 w-3",
-                  activeAutomations > 0 ? "text-emerald-500" : "text-muted-foreground",
-                )}
-              />
-              <span
-                className={cn(
-                  activeAutomations > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground",
-                )}
-              >
-                {activeAutomations} active
-              </span>
-            </Link>
-          </TooltipTrigger>
-          <TooltipContent>
-            {activeAutomations > 0
-              ? `${activeAutomations} automation${activeAutomations !== 1 ? "s" : ""} running — click to manage`
-              : "No automations active — click to manage"}
-          </TooltipContent>
-        </Tooltip>
         <span className="flex items-center gap-1.5">
           <span className="relative flex h-2 w-2">
             {activeAgents > 0 && (
