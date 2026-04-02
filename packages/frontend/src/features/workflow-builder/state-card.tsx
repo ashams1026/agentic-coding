@@ -1,4 +1,5 @@
-import { Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Trash2, ChevronDown, ChevronRight, Plus, X, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,12 +23,18 @@ const COLOR_OPTIONS = [
 
 // ── Types ───────────────────────────────────────────────────────
 
+export interface AgentOverride {
+  labelMatch: string;
+  agentId: string;
+}
+
 export interface StateCardData {
   id: string;
   name: string;
   type: "initial" | "intermediate" | "terminal";
   color: string;
   agentId: string | null;
+  agentOverrides?: AgentOverride[];
   sortOrder: number;
   transitions: { id: string; toStateId: string; label: string }[];
 }
@@ -43,9 +50,44 @@ interface StateCardProps {
 
 export function StateCard({ state, allStates, onChange, onDelete }: StateCardProps) {
   const { data: agents = [] } = useAgents();
+  const nonAssistantAgents = agents.filter(
+    (p) => !(p.settings as Record<string, unknown>)?.isAssistant,
+  );
+
+  // Normalise optional field — UXO.20 will make this required once workflows.tsx is updated
+  const overrides: AgentOverride[] = state.agentOverrides ?? [];
+
+  // Overrides section is expanded by default if there are existing overrides
+  const [overridesExpanded, setOverridesExpanded] = useState(
+    () => overrides.length > 0,
+  );
 
   const updateField = <K extends keyof StateCardData>(key: K, value: StateCardData[K]) => {
     onChange({ ...state, [key]: value });
+  };
+
+  // ── Agent override helpers ──────────────────────────────────
+
+  const addOverride = () => {
+    onChange({
+      ...state,
+      agentOverrides: [...overrides, { labelMatch: "", agentId: "" }],
+    });
+    setOverridesExpanded(true);
+  };
+
+  const updateOverride = (index: number, patch: Partial<AgentOverride>) => {
+    const updated = overrides.map((o, i) =>
+      i === index ? { ...o, ...patch } : o,
+    );
+    onChange({ ...state, agentOverrides: updated });
+  };
+
+  const removeOverride = (index: number) => {
+    onChange({
+      ...state,
+      agentOverrides: overrides.filter((_, i) => i !== index),
+    });
   };
 
   const addTransition = () => {
@@ -145,7 +187,7 @@ export function StateCard({ state, allStates, onChange, onDelete }: StateCardPro
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="none">No default agent</SelectItem>
-              {agents.filter((p) => !(p.settings as Record<string, unknown>)?.isAssistant).map((p) => (
+              {nonAssistantAgents.map((p) => (
                 <SelectItem key={p.id} value={p.id}>
                   <span className="flex items-center gap-1.5">
                     <span className="h-2 w-2 rounded-full" style={{ backgroundColor: p.avatar.color }} />
@@ -155,6 +197,139 @@ export function StateCard({ state, allStates, onChange, onDelete }: StateCardPro
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Agent Overrides */}
+        <div className="space-y-1.5">
+          {/* Collapsible header */}
+          <button
+            type="button"
+            onClick={() => setOverridesExpanded((v) => !v)}
+            className="flex items-center gap-1.5 w-full group"
+          >
+            {overridesExpanded ? (
+              <ChevronDown className="h-3 w-3 text-muted-foreground" />
+            ) : (
+              <ChevronRight className="h-3 w-3 text-muted-foreground" />
+            )}
+            <span className="text-xs text-muted-foreground flex-1 text-left">Agent Overrides</span>
+            {overrides.length > 0 && (
+              <span className="text-[10px] bg-muted text-muted-foreground rounded px-1.5 py-0.5 font-mono">
+                {overrides.length}
+              </span>
+            )}
+          </button>
+
+          {/* Chips when collapsed */}
+          {!overridesExpanded && overrides.length > 0 && (
+            <div className="flex flex-wrap gap-1 pl-4">
+              {overrides.map((o, i) => {
+                const agent = nonAssistantAgents.find((a) => a.id === o.agentId);
+                return (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium border"
+                    style={{
+                      backgroundColor: agent ? agent.avatar.color + "20" : undefined,
+                      borderColor: agent ? agent.avatar.color + "60" : undefined,
+                      color: agent ? agent.avatar.color : undefined,
+                    }}
+                  >
+                    <Tag className="h-2.5 w-2.5 shrink-0" />
+                    {o.labelMatch || "…"}
+                    <span className="opacity-60">→</span>
+                    {agent ? agent.name : "Unknown"}
+                  </span>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Expanded rows */}
+          {overridesExpanded && (
+            <div className="space-y-1.5 pl-4">
+              {overrides.map((o, i) => {
+                const agent = nonAssistantAgents.find((a) => a.id === o.agentId);
+                return (
+                  <div key={i} className="flex items-center gap-1.5">
+                    <Input
+                      value={o.labelMatch}
+                      onChange={(e) => updateOverride(i, { labelMatch: e.target.value })}
+                      placeholder="e.g., bug, feature"
+                      className="h-6 text-[10px] flex-1 min-w-0"
+                    />
+                    <Select
+                      value={o.agentId || "none"}
+                      onValueChange={(v) => updateOverride(i, { agentId: v === "none" ? "" : v })}
+                    >
+                      <SelectTrigger className="h-6 text-[10px] flex-1 min-w-0">
+                        <SelectValue placeholder="Agent">
+                          {agent ? (
+                            <span className="flex items-center gap-1">
+                              <span
+                                className="h-1.5 w-1.5 rounded-full shrink-0"
+                                style={{ backgroundColor: agent.avatar.color }}
+                              />
+                              {agent.name}
+                            </span>
+                          ) : (
+                            "Select agent"
+                          )}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Select agent</SelectItem>
+                        {nonAssistantAgents.map((p) => (
+                          <SelectItem key={p.id} value={p.id}>
+                            <span className="flex items-center gap-1.5">
+                              <span
+                                className="h-2 w-2 rounded-full"
+                                style={{ backgroundColor: p.avatar.color }}
+                              />
+                              {p.name}
+                            </span>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 shrink-0"
+                      onClick={() => removeOverride(i)}
+                    >
+                      <X className="h-3 w-3 text-muted-foreground hover:text-red-400" />
+                    </Button>
+                  </div>
+                );
+              })}
+
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-5 px-1.5 text-[10px] gap-1 text-muted-foreground"
+                onClick={addOverride}
+              >
+                <Plus className="h-3 w-3" />
+                Add override
+              </Button>
+            </div>
+          )}
+
+          {/* "Add override" shortcut when collapsed and no overrides */}
+          {!overridesExpanded && overrides.length === 0 && (
+            <div className="pl-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-5 px-1.5 text-[10px] gap-1 text-muted-foreground"
+                onClick={addOverride}
+              >
+                <Plus className="h-3 w-3" />
+                Add override
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Transitions */}

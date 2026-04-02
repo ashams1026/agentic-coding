@@ -5,6 +5,27 @@
 
 ---
 
+## 2026-04-02 12:28 PDT — UXO.20: Redesign Automations page
+
+**Done:** Replaced old workflow list with unified Automations overview. Workflow cards show name, autoRouting status (play/pause), published/draft badge, state pipeline colored pills, and edit button. Schedule cards show name, active toggle, agent avatar, human-readable cron, next run time, last run status. "New Automation" dropdown with workflow/schedule creation dialogs. Empty states for both sections.
+**Files:** `packages/frontend/src/pages/workflows.tsx`
+
+---
+
+## 2026-04-02 12:28 PDT — UXO.21: Agent overrides in workflow builder
+
+**Done:** Added collapsible "Agent Overrides" section to state-card.tsx below the agent selector. Collapsed view shows override chips ("label → agent name" with agent color). Expanded view shows editable rows with label input + agent dropdown + delete button. "Add override" button. Data flows to parent via onChange callback. Added agentOverrides: [] to addState() in workflow-builder.tsx.
+**Files:** `packages/frontend/src/features/workflow-builder/state-card.tsx`, `packages/frontend/src/features/workflow-builder/workflow-builder.tsx`
+
+---
+
+## 2026-04-02 12:28 PDT — UXO.31: Status bar automations indicator
+
+**Done:** Removed old autoRouting play/pause toggle and all project.settings.autoRouting references. Replaced with read-only "Automations active" indicator showing count of workflows with autoRouting enabled. Zap icon + count, green for active, muted for zero. Clicking navigates to /automations via Link. Added useWorkflows to hooks barrel export.
+**Files:** `packages/frontend/src/components/status-bar.tsx`, `packages/frontend/src/hooks/index.ts`
+
+---
+
 ## 2026-04-02 12:17 PDT — UXO.13: Improved chat header
 
 **Done:** Enlarged agent avatar (h-10 w-10 with colored ring halo), promoted agent name to text-base font-semibold, added resolved project name below agent name, made session title editable (single-click with pencil icon), added context menu (rename, delete), tinted header border with agent color. Applied to both chat.tsx and chat-panel.tsx with consistent styling.

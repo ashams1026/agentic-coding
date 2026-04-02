@@ -9,6 +9,7 @@ export { useExecutions, useExecution } from "./use-executions";
 export { useComments, useRecentComments, useCreateComment } from "./use-comments";
 export { useProposals, useProposal, useUpdateProposal } from "./use-proposals";
 export { useDashboardStats, useCostSummary, useExecutionStats, useReadyWork, useProjectMemories } from "./use-dashboard";
+export { useWorkflows } from "./use-workflows";
 export { useHealth } from "./use-health";
 export { usePicoChat } from "./use-pico-chat";
 export { useWsStatus } from "./use-ws-status";
