@@ -1,11 +1,20 @@
 import { useNavigate } from "react-router";
-import { Bot, FileCheck, AlertTriangle, DollarSign } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { useDashboardStats, useSelectedProject } from "@/hooks";
+import { Bot, FileCheck, AlertTriangle, DollarSign, Layers } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useDashboardStats, useSelectedProject, useProjects } from "@/hooks";
 import { ActiveAgentsStrip } from "@/features/dashboard/active-agents-strip";
 import { RecentActivity } from "@/features/dashboard/recent-activity";
 import { UpcomingWork } from "@/features/dashboard/upcoming-work";
 import { CostSummary } from "@/features/dashboard/cost-summary";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 
 interface StatCardProps {
@@ -44,9 +53,59 @@ function StatCard({ title, value, icon, iconBgClass, onClick }: StatCardProps) {
   );
 }
 
+function AllProjectsSummary() {
+  const { data: projectsList } = useProjects();
+
+  if (!projectsList || projectsList.length === 0) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center text-muted-foreground">
+          No projects yet. Create a project in Settings to get started.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <Layers className="h-4 w-4" />
+          Projects Overview
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Project</TableHead>
+              <TableHead className="text-right">Path</TableHead>
+              <TableHead className="text-right">Created</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {projectsList.map((p) => (
+              <TableRow key={p.id}>
+                <TableCell className="font-medium">{p.name}</TableCell>
+                <TableCell className="text-right text-muted-foreground text-xs font-mono truncate max-w-[200px]">
+                  {p.path}
+                </TableCell>
+                <TableCell className="text-right text-muted-foreground text-sm">
+                  {new Date(p.createdAt).toLocaleDateString()}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
+
 export function DashboardPage() {
   const navigate = useNavigate();
   const { projectId } = useSelectedProject();
+  const isGlobalScope = projectId === null;
   const { data: stats, isLoading } = useDashboardStats(projectId ?? undefined);
 
   const activeAgents = stats?.activeAgents ?? 0;
@@ -58,9 +117,20 @@ export function DashboardPage() {
     <div className="p-6 space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            {isGlobalScope ? (
+              <>
+                All Projects
+                <Badge variant="secondary" className="text-xs font-normal">Global</Badge>
+              </>
+            ) : (
+              "Dashboard"
+            )}
+          </h1>
           <p className="text-muted-foreground mt-1">
-            At-a-glance status for your project.
+            {isGlobalScope
+              ? "Aggregated status across all projects."
+              : "At-a-glance status for your project."}
           </p>
         </div>
       </div>
@@ -96,14 +166,18 @@ export function DashboardPage() {
         />
       </div>
 
-      <ActiveAgentsStrip />
-
-      {/* Dashboard widgets */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <RecentActivity />
-        <UpcomingWork />
-        <CostSummary />
-      </div>
+      {isGlobalScope ? (
+        <AllProjectsSummary />
+      ) : (
+        <>
+          <ActiveAgentsStrip />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <RecentActivity />
+            <UpcomingWork />
+            <CostSummary />
+          </div>
+        </>
+      )}
     </div>
   );
 }
