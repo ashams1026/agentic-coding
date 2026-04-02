@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-03 12:15 PDT — Review: FX.WF.3 (approved)
+
+**Reviewed:** Workflow CRUD input validation.
+- POST: non-empty name, valid scope enum ✓
+- PATCH: non-empty name if provided, states array non-empty, state name non-empty, valid type enum ✓
+- Transition references validated against provided state IDs (only when both provided) ✓
+- All validation before DB operations, 400 with specific error messages ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 12:10 PDT — FX.WF.3: Add input validation to workflow CRUD
 
 **Done:** Added input validation to POST and PATCH workflow handlers in `workflows.ts`. POST: validates non-empty name after trim, validates scope enum (global/project). PATCH: validates non-empty name if provided, validates states array non-empty if provided, validates each state has non-empty name and valid type enum (initial/intermediate/terminal), validates transition fromStateId/toStateId reference existing states when both states and transitions are provided. All validation returns 400 with specific error messages.
