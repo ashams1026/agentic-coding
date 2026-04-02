@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 20:55 PDT — Review: COL.6 (approved)
+
+**Reviewed:** Frontend handoff notes display in execution timeline.
+- Collapsible card in expanded TimelineEntry, before logs ✓
+- State transition header, summary, decisions/files/questions sections ✓
+- Conditional rendering per section when array non-empty ✓
+- Dark mode: amber variants for open questions ✓
+- Correct file: execution-timeline.tsx (not detail-panel.tsx) ✓
+- Build passes ✓
+- **Verdict: approved.** Agent Collaboration P1 (COL.1-6) complete.
+
+---
+
 ## 2026-04-02 20:50 PDT — COL.6: Frontend handoff notes display in execution timeline
 
 **Done:** Added handoff notes card to `execution-timeline.tsx` inside each `TimelineEntry` expanded section (before logs). Shows when `execution.handoffNotes` exists: state transition badge (from → to), summary text, decisions list (Lightbulb icon), files changed as mono badges (FileText icon + count), open questions in amber (HelpCircle icon). All sections conditional — only render when array is non-empty. Uses existing card/badge styling conventions with compact sizing (10px labels, xs text).
