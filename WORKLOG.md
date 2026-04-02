@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 13:35 PDT — FX.DOC.1: Update docs/workflow.md for custom workflows
+
+**Done:** Rewrote `docs/workflow.md` to document the Sprint 25 custom workflow engine. Replaced "hardcoded" and "not user-configurable" language. Added: custom workflow creation/editing via Workflow Builder, 10 API endpoints table, validation rules, 3-table schema, dynamic runtime functions table, `resolvePersonaForState()` priority chain, `buildDynamicRouterPrompt()`, updated source files table. Kept existing sections (Router, rejection, parent-child, dispatch) with updated terminology (persona → agent where contextually appropriate) and workflow-aware descriptions.
+**Files:** `docs/workflow.md`
+
+---
+
 ## 2026-04-03 13:20 PDT — Review: FX.WF.4 (approved)
 
 **Reviewed:** Transition sortOrder in workflow save payload.

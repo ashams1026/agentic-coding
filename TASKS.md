@@ -16,7 +16,7 @@
 ### Warning — Missing Data & Stale UI
 
 - [x] **FX.WF.4** — Include transition sortOrder in workflow save payload. `packages/frontend/src/pages/workflows.tsx:28-35` — `sortOrder` is omitted from transitions when saving, so all transitions get `sortOrder: 0`. Preserve the correct order. *(completed 2026-04-03 13:20 PDT)*
-- [ ] **FX.DOC.1** — Update `docs/workflow.md` to reflect custom workflows. Still says "hardcoded" and "not user-configurable" — needs to document the Sprint 25 workflow engine.
+- [review] **FX.DOC.1** — Update `docs/workflow.md` to reflect custom workflows. Still says "hardcoded" and "not user-configurable" — needs to document the Sprint 25 workflow engine.
 
 ### Warning — Layout Bugs
 
@@ -67,6 +67,7 @@
 - [ ] **UXO.20** — Frontend: Redesign workflows page as live overview. Full-width workflow cards showing: name, auto-routing play/pause toggle, live state pipeline with item counts per state and active agents (extract metrics logic from deleted flow-view), edit button. One card per workflow in current scope.
 - [ ] **UXO.21** — Frontend: Update workflow builder for label-based agent overrides. In state card, add collapsible "Agent Overrides" section below default agent selector. Each row: label match input + agent dropdown. "Add override" button. Show overrides as chips on the state card.
 - [ ] **UXO.22** — Frontend: Per-workflow auto-routing toggle on overview page and in builder header. Calls `PATCH /api/workflows/:id { autoRouting }`. Label: "Auto-routing OFF" / "Auto-routing ON".
+- [ ] **UXO.26** — Frontend: Move workflow settings from Settings page into workflow builder. Remove `workflow-config-section.tsx` from Settings. Move the agent-state assignment table (PersonaStateTable → AgentStateTable) into the workflow builder as a "State Agents" tab or section alongside the state cards. The auto-routing toggle is already on the workflow (UXO.22). The workflow selector dropdown in Settings is no longer needed since each workflow is managed from its own builder page. Clean up any orphaned Settings references.
 
 ### Phase 5: Agent Monitor Queue
 
