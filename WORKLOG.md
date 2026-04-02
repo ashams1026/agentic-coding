@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 16:30 PDT — Review: CWF.16 (approved)
+
+**Reviewed:** workflow-preview.tsx visual graph component.
+- Read-only SVG graph with auto-layout by state type ✓
+- Color-coded nodes with name + type badge ✓
+- Bezier curve arrows with arrowhead markers and labels ✓
+- No graph library — pure SVG ✓
+- Uses SVG instead of task's "CSS grid" — correct choice since CSS grid can't draw arrows
+- Empty state handled, useMemo for performance ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 16:25 PDT — CWF.16: Workflow preview component
 
 **Done:** Created `workflow-preview.tsx` — read-only SVG-based visual graph of workflow states and transitions. States auto-layout horizontally by type (initial → intermediate → terminal) using computed positions. Color-coded nodes with name + type badge. Curved Bezier arrows for transitions with optional labels and arrowhead markers. Empty state placeholder when no states defined. All SVG, no graph library.
