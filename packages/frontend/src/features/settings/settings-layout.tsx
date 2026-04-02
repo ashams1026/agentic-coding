@@ -10,6 +10,7 @@ import {
   Shield,
   Bell,
   Webhook,
+  Clock,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -22,6 +23,7 @@ import { WorkflowConfigSection } from "./workflow-config-section";
 import { SecuritySection } from "./security-section";
 import { NotificationsSection } from "./notifications-section";
 import { IntegrationsSection } from "./integrations-section";
+import { SchedulingSection } from "./scheduling-section";
 
 // ── Section definitions ─────────────────────────────────────────
 
@@ -35,6 +37,7 @@ const SECTIONS: SectionDef[] = [
   { id: "projects", label: "Projects", icon: FolderOpen },
   { id: "workflow", label: "Workflow", icon: GitBranch },
   { id: "agent-config", label: "Agent Configuration", icon: Settings2 },
+  { id: "scheduling", label: "Scheduling", icon: Clock },
   { id: "security", label: "Security", icon: Shield },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "costs", label: "Costs", icon: DollarSign },
@@ -108,6 +111,8 @@ export function SettingsLayout() {
             <ProjectsSection />
           ) : activeSection === "workflow" ? (
             <WorkflowConfigSection />
+          ) : activeSection === "scheduling" ? (
+            <SchedulingSection />
           ) : activeSection === "security" ? (
             <SecuritySection />
           ) : activeSection === "agent-config" ? (

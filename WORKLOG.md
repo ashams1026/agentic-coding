@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 08:35 PDT — SCH.4: Frontend Schedules UI in Settings
+
+**Done:** Created `packages/frontend/src/features/settings/scheduling-section.tsx`. Added "Scheduling" section to Settings sidebar (Clock icon, between Agent Configuration and Security). Features: schedule list with name, persona badge, human-readable cron, next/last run dates, consecutive failures badge, active/disabled toggle (pill switch), Run Now / Edit / Delete actions. Add/edit dialog with name input, persona selector (on create), cron preset dropdown (every 30min, hourly, 2h, 6h, daily midnight, daily 9am, weekdays 9am, custom), custom cron input with format hint, live "Next runs" preview (3 upcoming), optional prompt template. All wired to `/api/schedules` endpoints. Visual check passed — empty state, dialog, and layout all render correctly.
+**Files:** `packages/frontend/src/features/settings/scheduling-section.tsx` (new), `packages/frontend/src/features/settings/settings-layout.tsx`
+
+---
+
 ## 2026-04-03 08:20 PDT — Review: SCH.3 (approved)
 
 **Reviewed:** Schedules CRUD route + startup integration.
