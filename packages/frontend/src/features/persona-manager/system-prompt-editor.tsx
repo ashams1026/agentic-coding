@@ -3,6 +3,56 @@ import { Eye, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+// ── Variable definitions for autocomplete ──────────────────────
+
+interface VariableGroup {
+  namespace: string;
+  label: string;
+  variables: { name: string; description: string }[];
+}
+
+const VARIABLE_GROUPS: VariableGroup[] = [
+  {
+    namespace: "project",
+    label: "Project",
+    variables: [
+      { name: "project.name", description: "Project display name" },
+      { name: "project.path", description: "Project working directory" },
+      { name: "project.description", description: "Project description" },
+    ],
+  },
+  {
+    namespace: "persona",
+    label: "Persona",
+    variables: [
+      { name: "persona.name", description: "Current persona name" },
+      { name: "persona.description", description: "Persona description" },
+      { name: "persona.model", description: "Model (opus/sonnet/haiku)" },
+    ],
+  },
+  {
+    namespace: "date",
+    label: "Date",
+    variables: [
+      { name: "date.now", description: "Current ISO timestamp" },
+      { name: "date.today", description: "Today (YYYY-MM-DD)" },
+      { name: "date.dayOfWeek", description: "Day name (e.g. Monday)" },
+    ],
+  },
+  {
+    namespace: "workItem",
+    label: "Work Item (executor only)",
+    variables: [
+      { name: "workItem.id", description: "Work item ID" },
+      { name: "workItem.title", description: "Work item title" },
+      { name: "workItem.state", description: "Current workflow state" },
+      { name: "workItem.description", description: "Work item description" },
+    ],
+  },
+];
+
+const ALL_VARIABLES = VARIABLE_GROUPS.flatMap((g) => g.variables);
+
 // ── Token estimate ──────────────────────────────────────────────
 
 function estimateTokens(text: string): number {
@@ -148,6 +198,14 @@ export function SystemPromptEditor({ value, onChange }: SystemPromptEditorProps)
   const [mode, setMode] = useState<"edit" | "preview">("edit");
   const [scrollTop, setScrollTop] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  // Autocomplete state
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const [autocompletePos, setAutocompletePos] = useState({ top: 0, left: 0 });
+  const [autocompleteFilter, setAutocompleteFilter] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [triggerStart, setTriggerStart] = useState(-1); // cursor position of `{{`
 
   const lineCount = Math.max(value.split("\n").length, 1);
   const tokenEstimate = estimateTokens(value);
@@ -162,6 +220,134 @@ export function SystemPromptEditor({ value, onChange }: SystemPromptEditorProps)
   useEffect(() => {
     setScrollTop(0);
   }, [mode]);
+
+  // Filtered variables for autocomplete
+  const filteredVars = autocompleteFilter
+    ? ALL_VARIABLES.filter((v) => v.name.toLowerCase().includes(autocompleteFilter.toLowerCase()))
+    : ALL_VARIABLES;
+
+  // Get grouped filtered variables
+  const filteredGroups = VARIABLE_GROUPS.map((g) => ({
+    ...g,
+    variables: g.variables.filter((v) =>
+      !autocompleteFilter || v.name.toLowerCase().includes(autocompleteFilter.toLowerCase()),
+    ),
+  })).filter((g) => g.variables.length > 0);
+
+  // Close autocomplete on click outside
+  useEffect(() => {
+    if (!showAutocomplete) return;
+    const handler = (e: MouseEvent) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+        setShowAutocomplete(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [showAutocomplete]);
+
+  // Detect `{{` typing and position the autocomplete
+  const handleInput = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const newValue = e.target.value;
+      onChange(newValue);
+
+      const cursorPos = e.target.selectionStart;
+      const textBefore = newValue.slice(0, cursorPos);
+
+      // Check if we just typed `{{` or are inside `{{...`
+      const lastOpen = textBefore.lastIndexOf("{{");
+      const lastClose = textBefore.lastIndexOf("}}");
+
+      if (lastOpen >= 0 && lastOpen > lastClose) {
+        // We're inside a `{{ ... ` — extract the partial variable name
+        const partial = textBefore.slice(lastOpen + 2).trim();
+        setAutocompleteFilter(partial);
+        setTriggerStart(lastOpen);
+        setSelectedIndex(0);
+
+        // Position: approximate based on textarea and cursor
+        const ta = textareaRef.current;
+        if (ta) {
+          const linesBefore = textBefore.split("\n");
+          const currentLine = linesBefore.length - 1;
+          const lineHeight = 26.4; // matches leading-[1.65rem] = 26.4px
+          const charWidth = 7.2; // approximate monospace char width at text-xs
+          const colInLine = (linesBefore[currentLine]?.length ?? 0);
+
+          const taRect = ta.getBoundingClientRect();
+          setAutocompletePos({
+            top: (currentLine + 1) * lineHeight - ta.scrollTop + 8,
+            left: Math.min(colInLine * charWidth + 48, taRect.width - 200), // 48px for line numbers gutter
+          });
+        }
+
+        if (!showAutocomplete) setShowAutocomplete(true);
+      } else {
+        if (showAutocomplete) setShowAutocomplete(false);
+      }
+    },
+    [onChange, showAutocomplete],
+  );
+
+  // Insert a variable at the trigger position
+  const insertVariable = useCallback(
+    (varName: string) => {
+      const ta = textareaRef.current;
+      if (!ta || triggerStart < 0) return;
+
+      const cursorPos = ta.selectionStart;
+      const before = value.slice(0, triggerStart);
+      const after = value.slice(cursorPos);
+      const inserted = `{{${varName}}}`;
+      const newValue = before + inserted + after;
+      onChange(newValue);
+
+      setShowAutocomplete(false);
+
+      // Restore cursor after the inserted variable
+      requestAnimationFrame(() => {
+        const newPos = triggerStart + inserted.length;
+        ta.focus();
+        ta.setSelectionRange(newPos, newPos);
+      });
+    },
+    [value, onChange, triggerStart],
+  );
+
+  // Keyboard navigation in autocomplete
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (!showAutocomplete) return;
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setShowAutocomplete(false);
+        return;
+      }
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSelectedIndex((prev) => Math.min(prev + 1, filteredVars.length - 1));
+        return;
+      }
+
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSelectedIndex((prev) => Math.max(prev - 1, 0));
+        return;
+      }
+
+      if (e.key === "Enter" || e.key === "Tab") {
+        if (filteredVars.length > 0) {
+          e.preventDefault();
+          insertVariable(filteredVars[selectedIndex]?.name ?? filteredVars[0]!.name);
+        }
+        return;
+      }
+    },
+    [showAutocomplete, filteredVars, selectedIndex, insertVariable],
+  );
 
   return (
     <div className="space-y-2">
@@ -190,7 +376,7 @@ export function SystemPromptEditor({ value, onChange }: SystemPromptEditorProps)
       {/* Editor / Preview */}
       <div className="rounded-md border border-border overflow-hidden bg-background">
         {mode === "edit" ? (
-          <div className="flex min-h-[200px] max-h-[400px]">
+          <div className="relative flex min-h-[200px] max-h-[400px]">
             {/* Line numbers */}
             <div className="w-10 shrink-0 border-r border-border bg-muted/30 overflow-hidden">
               <LineNumbers count={lineCount} scrollTop={scrollTop} />
@@ -200,7 +386,8 @@ export function SystemPromptEditor({ value, onChange }: SystemPromptEditorProps)
             <textarea
               ref={textareaRef}
               value={value}
-              onChange={(e) => onChange(e.target.value)}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
               onScroll={handleScroll}
               placeholder={PLACEHOLDER}
               className={cn(
@@ -210,6 +397,43 @@ export function SystemPromptEditor({ value, onChange }: SystemPromptEditorProps)
               )}
               spellCheck={false}
             />
+
+            {/* Autocomplete popover */}
+            {showAutocomplete && filteredGroups.length > 0 && (
+              <div
+                ref={popoverRef}
+                className="absolute z-20 bg-popover border border-border rounded-md shadow-lg py-1 w-64 max-h-56 overflow-y-auto"
+                style={{ top: autocompletePos.top, left: autocompletePos.left }}
+              >
+                {filteredGroups.map((group) => (
+                  <div key={group.namespace}>
+                    <div className="px-2 py-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                      {group.label}
+                    </div>
+                    {group.variables.map((v) => {
+                      const flatIndex = filteredVars.indexOf(v);
+                      return (
+                        <button
+                          key={v.name}
+                          type="button"
+                          onMouseDown={(e) => {
+                            e.preventDefault(); // prevent textarea blur
+                            insertVariable(v.name);
+                          }}
+                          className={cn(
+                            "flex flex-col w-full text-left px-3 py-1 text-xs hover:bg-muted",
+                            flatIndex === selectedIndex && "bg-muted",
+                          )}
+                        >
+                          <span className="font-mono text-foreground">{`{{${v.name}}}`}</span>
+                          <span className="text-[10px] text-muted-foreground">{v.description}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           <div className="min-h-[200px] max-h-[400px] overflow-y-auto p-3">

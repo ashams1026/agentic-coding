@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 07:00 PDT — PPR.3: Autocomplete popup for template variables
+
+**Done:** Added autocomplete popup to `system-prompt-editor.tsx`. Triggers on typing `{{` — detects open braces via `lastIndexOf("{{")` vs `lastIndexOf("}}")` comparison. Shows grouped dropdown (Project, Persona, Date, Work Item) with 13 variables, each showing `{{name}}` + description. Positioned relative to cursor in textarea (calculated from line/column). Type-ahead filtering narrows results. Keyboard navigation: ArrowUp/Down, Enter/Tab to insert, Escape to dismiss. Click outside dismisses. On selection, replaces from `{{` trigger position through cursor with `{{variable.name}}` and restores focus.
+**Files:** `packages/frontend/src/features/persona-manager/system-prompt-editor.tsx`
+
+---
+
 ## 2026-04-02 06:45 PDT — Review: PPR.2 (approved)
 
 **Reviewed:** resolveVariables integration in claude-executor.ts and chat.ts.
