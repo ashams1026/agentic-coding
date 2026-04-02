@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 09:40 PDT — FX.SEC.2: Fix FTS5 MATCH crash on special characters
+
+**Done:** Added `sanitizeFts5Query()` to `search.ts` — strips non-word/non-space characters (quotes, parens, operators), splits into tokens, wraps each in double quotes so FTS5 operators like AND/OR/NOT/NEAR are treated as literals. Wrapped all 4 FTS5 MATCH query blocks (work_items, personas, comments, chat_messages) in try-catch so any remaining FTS5 parse errors gracefully skip that entity type instead of crashing the endpoint with 500.
+**Files:** `packages/backend/src/routes/search.ts`
+
+---
+
 ## 2026-04-03 09:30 PDT — Review: FX.SEC.1 (approved)
 
 **Reviewed:** Path traversal fix in backup restore.
