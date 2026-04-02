@@ -10,6 +10,7 @@ import { clearAll as clearConcurrency, getActiveCount } from "./agent/concurrenc
 import { executionManager } from "./agent/setup.js";
 import { closeSdkSession } from "./agent/sdk-session.js";
 import { closeAllClients } from "./ws.js";
+import { startLifecycleCleanup, stopLifecycleCleanup } from "./agent/lifecycle.js";
 import { logger } from "./logger.js";
 
 const SHUTDOWN_TIMEOUT_MS = 30_000;
@@ -181,6 +182,9 @@ async function gracefulShutdown(
     }
   }
 
+  // Stop lifecycle cleanup interval
+  stopLifecycleCleanup();
+
   // Close persistent SDK session
   closeSdkSession();
 
@@ -233,6 +237,9 @@ export async function startServer(options: StartOptions = {}): Promise<void> {
       "Startup recovery completed with errors",
     );
   }
+
+  // Start background lifecycle cleanup (expired soft-deleted items)
+  startLifecycleCleanup();
 
   const server = await buildServer();
 

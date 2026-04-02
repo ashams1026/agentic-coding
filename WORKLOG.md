@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 21:17 PDT — FND.WIL.4: Bulk operations API and background hard-delete job
+
+**Done:** Added three bulk endpoints to work-items.ts: `POST /api/work-items/bulk/archive` (with optional BFS cascade), `POST /api/work-items/bulk/unarchive`, `DELETE /api/work-items/bulk` (with 409 guard for running executions, cascade-deletes related data, soft-deletes items). Created `packages/backend/src/agent/lifecycle.ts` with `cleanupExpiredWorkItems()` that hard-deletes items where `deleted_at < now - 30 days` (cascades edges, comments, proposals, memories, executions). Registered `startLifecycleCleanup()` in start.ts to run at boot + every 6 hours; `stopLifecycleCleanup()` in graceful shutdown. Added `BulkWorkItemRequest` type to shared/api.ts.
+**Files:** `packages/backend/src/routes/work-items.ts`, `packages/backend/src/agent/lifecycle.ts` (new), `packages/backend/src/start.ts`, `packages/shared/src/api.ts`
+
+---
+
 ## 2026-04-01 21:03 PDT — Review: FND.WIL.3 (approved)
 
 **Reviewed:** Archive/unarchive/restore API endpoints.

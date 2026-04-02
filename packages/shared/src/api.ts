@@ -99,6 +99,11 @@ export interface WorkItemListQuery {
   deleted?: string;         // "true" to show only soft-deleted items
 }
 
+export interface BulkWorkItemRequest {
+  ids: string[];
+  cascade?: boolean;
+}
+
 // ── WorkItemEdge endpoints ─────────────────────────────────────────
 
 export interface CreateWorkItemEdgeRequest {

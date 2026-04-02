@@ -378,4 +378,122 @@ export async function workItemRoutes(app: FastifyInstance) {
 
     return reply.status(204).send();
   });
+
+  // POST /api/work-items/bulk/archive — archive multiple items
+  app.post<{
+    Body: { ids: string[]; cascade?: boolean };
+  }>("/api/work-items/bulk/archive", async (request, reply) => {
+    const { ids, cascade } = request.body;
+    if (!ids || ids.length === 0) {
+      return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "ids array is required" } });
+    }
+
+    const now = new Date();
+    const idsToArchive = [...ids];
+
+    if (cascade) {
+      // BFS to collect all descendants of all provided IDs
+      let frontier = [...ids];
+      while (frontier.length > 0) {
+        const children = await db
+          .select({ id: workItems.id })
+          .from(workItems)
+          .where(inArray(workItems.parentId, frontier));
+        const childIds = children.map((c) => c.id);
+        idsToArchive.push(...childIds);
+        frontier = childIds;
+      }
+    }
+
+    // Deduplicate
+    const uniqueIds = [...new Set(idsToArchive)];
+
+    await db
+      .update(workItems)
+      .set({ archivedAt: now })
+      .where(inArray(workItems.id, uniqueIds));
+
+    return { data: { archivedCount: uniqueIds.length } };
+  });
+
+  // POST /api/work-items/bulk/unarchive — unarchive multiple items
+  app.post<{
+    Body: { ids: string[] };
+  }>("/api/work-items/bulk/unarchive", async (request, reply) => {
+    const { ids } = request.body;
+    if (!ids || ids.length === 0) {
+      return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "ids array is required" } });
+    }
+
+    await db
+      .update(workItems)
+      .set({ archivedAt: null })
+      .where(inArray(workItems.id, ids));
+
+    return { data: { unarchivedCount: ids.length } };
+  });
+
+  // DELETE /api/work-items/bulk — soft delete multiple items
+  app.delete<{
+    Body: { ids: string[]; cascade?: boolean };
+  }>("/api/work-items/bulk", async (request, reply) => {
+    const { ids, cascade } = request.body;
+    if (!ids || ids.length === 0) {
+      return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "ids array is required" } });
+    }
+
+    // Collect all IDs (including descendants if cascade)
+    const allIds = [...ids];
+    if (cascade) {
+      let frontier = [...ids];
+      while (frontier.length > 0) {
+        const children = await db
+          .select({ id: workItems.id })
+          .from(workItems)
+          .where(inArray(workItems.parentId, frontier));
+        const childIds = children.map((c) => c.id);
+        allIds.push(...childIds);
+        frontier = childIds;
+      }
+    }
+
+    const uniqueIds = [...new Set(allIds)];
+
+    // 409 guard: block if any execution is running
+    const runningExecs = await db
+      .select({ id: executions.id })
+      .from(executions)
+      .where(
+        and(
+          inArray(executions.workItemId, uniqueIds),
+          eq(executions.status, "running"),
+        ),
+      );
+
+    if (runningExecs.length > 0) {
+      return reply.status(409).send({
+        error: {
+          code: "CONFLICT",
+          message: "Cannot delete work items with active executions",
+          activeExecutions: runningExecs.length,
+        },
+      });
+    }
+
+    // Cascade-delete related data
+    await db.delete(workItemEdges).where(inArray(workItemEdges.fromId, uniqueIds));
+    await db.delete(workItemEdges).where(inArray(workItemEdges.toId, uniqueIds));
+    await db.delete(comments).where(inArray(comments.workItemId, uniqueIds));
+    await db.delete(proposals).where(inArray(proposals.workItemId, uniqueIds));
+    await db.delete(projectMemories).where(inArray(projectMemories.workItemId, uniqueIds));
+
+    // Soft delete
+    const now = new Date();
+    await db
+      .update(workItems)
+      .set({ deletedAt: now })
+      .where(inArray(workItems.id, uniqueIds));
+
+    return reply.status(204).send();
+  });
 }
