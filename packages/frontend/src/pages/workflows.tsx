@@ -923,7 +923,7 @@ function ControlledCreateWorkflowDialog({ open, onOpenChange, onCreate }: Contro
 // ── Main page component ──────────────────────────────────────────
 
 export function WorkflowsPage() {
-  const { id } = useParams<{ id: string }>();
+  const { workflowId: id } = useParams<{ workflowId: string }>();
   const { data: workflowData } = useWorkflow(id ?? null);
   const updateWorkflow = useUpdateWorkflow();
   const publishWorkflow = usePublishWorkflow();
