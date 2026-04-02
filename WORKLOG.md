@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 07:25 PDT — Review: PPR.4 (approved)
+
+**Reviewed:** Variables reference panel and resolved preview in system-prompt-editor.tsx.
+- Collapsible panel with ChevronDown/Right, Variable icon, 13 variables grouped by namespace ✓
+- Current values shown as green `= value` from previewContext ✓
+- Preview mode renders ResolvedPreview: green for resolved, amber for unresolved ✓
+- Persona editor passes useSelectedProject() + form state as previewContext ✓
+- Build passes ✓
+- **Verdict: approved.** Persona Prompts Phase 1 (PPR.1-4) complete.
+
+---
+
 ## 2026-04-02 07:20 PDT — PPR.4: Variables reference panel and resolved preview
 
 **Done:** Added collapsible "Available Variables" reference panel below the system prompt editor. Shows all 13 variables grouped by namespace with descriptions and current values (green `= value` indicators from project/persona context). Added `ResolvedPreview` component that replaces the plain MarkdownPreview in preview mode — resolves `{{variables}}` with context data, highlights resolved values in green and unresolved in amber. Added `previewContext` prop to `SystemPromptEditor` with project + persona data. Updated persona editor to pass `useSelectedProject()` data and current persona form state as preview context.
