@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-03 14:00 PDT — Review: FX.HIST.1 (approved)
+
+**Reviewed:** Agent Monitor history table row fix.
+- `<Collapsible>` removed, no remaining references ✓
+- `<>` fragment returns `<TableRow>` (main) + conditional `<TableRow>` (expanded) — valid HTML ✓
+- Raw `<tr>/<td>` replaced with `<TableRow>/<TableCell colSpan={7}>` ✓
+- `onClick={onToggle}` on main row replaces CollapsibleTrigger ✓
+- Expanded content (RouterDecisionCard, TerminalRenderer, SubagentCard) preserved ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 13:55 PDT — FX.HIST.1: Fix Agent Monitor history table row misalignment
 
 **Done:** Replaced Radix `<Collapsible>` wrapper in `HistoryRow` with plain conditional rendering. The Collapsible rendered a `<div>` inside `<tbody>` (invalid HTML), breaking table column alignment. Now: `<TableRow onClick={onToggle}>` for the main row + `{isExpanded && <TableRow>...</TableRow>}` for the expanded content. Replaced raw `<tr>/<td>` with `<TableRow>/<TableCell>`. Removed unused Collapsible imports.
