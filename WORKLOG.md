@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 01:45 PDT — Review: FND.TEST.3 (approved)
+
+**Reviewed:** Error Recovery e2e test execution results.
+- 8/8 PASS, no bugs filed ✓
+- RESULTS.md with summary table, per-test evidence (file+line refs) ✓
+- 2 screenshots saved (status bar, agent monitor) ✓
+- Limitations documented honestly (connection banner only visible with running agent) ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 01:40 PDT — FND.TEST.3: Execute Error Recovery e2e tests
 
 **Done:** Executed all 8 test cases from `error-recovery-phase1.md`. Results: **8/8 PASS**, no bugs filed. TC-ERR-1: PRAGMAs verified in connection.ts. TC-ERR-2: exponential backoff formula verified in ws-client.ts. TC-ERR-3: error boundaries wrap all 7 pages + app tree. TC-ERR-4: status bar shows "Disconnected" (screenshot saved). TC-ERR-5: connection lost banner code verified in terminal-renderer.tsx. TC-ERR-6: structured error classification in execution-manager.ts. TC-ERR-7: orphan recovery sets "interrupted" status. TC-ERR-8: 3 backup files exist (126KB each, correctly pruned).
