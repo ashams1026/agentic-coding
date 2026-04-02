@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 21:25 PDT — Review: SRC.2 (approved)
+
+**Reviewed:** FTS5 sync triggers + backfill.
+- 12 triggers: INSERT/UPDATE/DELETE x 4 tables ✓
+- DROP+CREATE pattern for idempotency ✓
+- INSERT: bridge + FTS. UPDATE: FTS in-place. DELETE: FTS then bridge ✓
+- Backfill: guards on empty bridge, bulk-inserts all source data ✓
+- Column mappings correct (COALESCE for nullable fields) ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 21:20 PDT — SRC.2: FTS5 sync triggers + backfill
 
 **Done:** Extended `fts5-setup.ts` with 12 triggers (INSERT/UPDATE/DELETE for each of 4 source tables: work_items, personas, comments, chat_messages). Triggers use DROP+CREATE pattern for idempotency. Each INSERT trigger populates bridging table then FTS table. UPDATE triggers update FTS in-place. DELETE triggers clean both FTS and bridge. Added `backfillFts5()` function — checks if bridging tables are empty, then bulk-inserts all existing records from source tables into bridge+FTS. Only runs on first startup (no-op if bridge has data).
