@@ -8,6 +8,7 @@ import { PersonaManagerPage } from "./pages/persona-manager";
 import { SettingsPage } from "./pages/settings";
 import { ChatPage } from "./pages/chat";
 import { WorkflowsPage } from "./pages/workflows";
+import { AnalyticsPage } from "./pages/analytics";
 import { PageErrorBoundary } from "./components/error-boundary";
 
 export const router = createBrowserRouter([
@@ -18,6 +19,7 @@ export const router = createBrowserRouter([
       { path: "items", element: <PageErrorBoundary><WorkItemsPage /></PageErrorBoundary> },
       { path: "agents", element: <PageErrorBoundary><AgentMonitorPage /></PageErrorBoundary> },
       { path: "activity", element: <PageErrorBoundary><ActivityFeedPage /></PageErrorBoundary> },
+      { path: "analytics", element: <PageErrorBoundary><AnalyticsPage /></PageErrorBoundary> },
       { path: "chat", element: <PageErrorBoundary><ChatPage /></PageErrorBoundary> },
       { path: "personas", element: <PageErrorBoundary><PersonaManagerPage /></PageErrorBoundary> },
       { path: "workflows", element: <PageErrorBoundary><WorkflowsPage /></PageErrorBoundary> },

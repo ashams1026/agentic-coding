@@ -16,6 +16,7 @@ import {
   Monitor,
   Dog,
   GitBranch,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useUIStore } from "@/stores/ui-store";
@@ -42,6 +43,7 @@ const navItems = [
   { to: "/items", icon: ListTodo, label: "Work Items" },
   { to: "/agents", icon: Bot, label: "Agent Monitor" },
   { to: "/activity", icon: Activity, label: "Activity Feed" },
+  { to: "/analytics", icon: BarChart3, label: "Analytics" },
   { to: "/chat", icon: MessageSquare, label: "Chat" },
   { to: "/personas", icon: Users, label: "Personas" },
   { to: "/workflows", icon: GitBranch, label: "Workflows" },
