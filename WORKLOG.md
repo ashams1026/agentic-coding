@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 20:50 PDT — FX.UX.PERSONA.4: Wire TestRunPanel into Persona Manager UI
+
+**Done:** Added TestRunPanel to the read-only view of PersonaDetailPanel. Imported TestRunPanel component and added it as a collapsible section at the bottom of the read-only mode, after the Tools/Skills/Subagents sections. Passes `persona.name` and `persona.model` as props. Visual check confirmed: collapsible trigger renders correctly, expands to show prompt input + test button + terminal output area, no layout issues.
+**Files:** `packages/frontend/src/features/persona-manager/persona-detail-panel.tsx`
+
+---
+
 ## 2026-04-01 20:40 PDT — Review: RES.TOKENS.DASHBOARD (approved)
 
 **Reviewed:** Aggregated token usage dashboard UX research doc.

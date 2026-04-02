@@ -34,6 +34,7 @@ import { SystemPromptEditor } from "./system-prompt-editor";
 import { ToolConfiguration } from "./tool-configuration";
 import { SkillBrowser } from "./skill-browser";
 import { SubagentBrowser } from "./subagent-browser";
+import { TestRunPanel } from "./test-run-panel";
 import { BUILT_IN_IDS } from "./persona-list";
 import type { PersonaId, PersonaModel, EffortLevel, ThinkingMode } from "@agentops/shared";
 import {
@@ -705,6 +706,12 @@ export function PersonaDetailPanel({ personaId, onClose }: PersonaDetailPanelPro
                 </section>
               </>
             )}
+
+            {/* ── Test Run ──────────────────────────────────── */}
+            <Separator />
+            <section>
+              <TestRunPanel personaName={persona.name} model={persona.model} />
+            </section>
           </>
         )}
       </div>
