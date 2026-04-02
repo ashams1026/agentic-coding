@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-03 10:00 PDT — Review: FX.SEC.3 (approved)
+
+**Reviewed:** FTS snippet XSS sanitization.
+- Placeholder-based sanitizer preserves only `<b>`/`</b>`, escapes all other HTML ✓
+- Null-byte placeholders prevent collision ✓
+- Applied at the single `dangerouslySetInnerHTML` site ✓
+- Attribute injection (`<b onload=...>`) correctly escaped (exact tag match only) ✓
+- Visual check passed ✓
+- Build passes ✓
+- **Verdict: approved. All 3 security fixes (FX.SEC.1-3) are complete.**
+
+---
+
 ## 2026-04-03 09:55 PDT — FX.SEC.3: Sanitize FTS snippets before rendering
 
 **Done:** Added `sanitizeSnippet()` to `command-palette.tsx`. Uses placeholder-based approach: temporarily replaces allowed `<b>`/`</b>` tags with null-byte placeholders, escapes all remaining HTML entities (`&`, `<`, `>`, `"`), then restores the allowed tags. Applied to the `dangerouslySetInnerHTML` usage at line 311. Prevents XSS from stored data appearing in FTS5 snippets while preserving match highlighting.
