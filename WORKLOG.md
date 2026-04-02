@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-04-02 18:25 PDT — Review: FX.CWF.1 (approved)
+
+**Reviewed:** Workflow PATCH save bug fix.
+- Root cause correct: client ID stripping + FK violation from stale references ✓
+- Backend stateIdMap remaps s-new-* → server IDs for transitions ✓
+- Frontend simplified: sends IDs as-is, no stripping logic ✓
+- Handles t-new-* transition IDs + sortOrder default ✓
+- Verified: screenshot shows successful save, no error toast ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 18:20 PDT — FX.CWF.1: Fix workflow PATCH save with new states/transitions
 
 **Done:** Root cause: frontend stripped temporary `s-new-*` IDs from states (sent `undefined`) but transitions still referenced `s-new-*` IDs for `fromStateId`/`toStateId`. Backend inserted states with server-generated IDs but transitions referenced non-existent client IDs → FK violation. Fix: (1) Backend PATCH handler now builds `stateIdMap` mapping client IDs (including `s-new-*`) to server-generated IDs, then remaps transition `fromStateId`/`toStateId` through the map. Also handles `t-new-*` transition IDs and defaults `sortOrder` to 0. (2) Frontend `handleSave` now sends client IDs as-is (no stripping) — backend handles all ID mapping. Verified: created new workflow with new states + transition, Save succeeds without error toast.
