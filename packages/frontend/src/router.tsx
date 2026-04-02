@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
       { path: "analytics", element: <PageErrorBoundary><AnalyticsPage /></PageErrorBoundary> },
       { path: "chat", element: <PageErrorBoundary><ChatPage /></PageErrorBoundary> },
       { path: "agent-builder", element: <PageErrorBoundary><AgentBuilderPage /></PageErrorBoundary> },
-      { path: "workflows", element: <PageErrorBoundary><WorkflowsPage /></PageErrorBoundary> },
+      { path: "automations", element: <PageErrorBoundary><WorkflowsPage /></PageErrorBoundary> },
       { path: "workflows/:id", element: <PageErrorBoundary><WorkflowsPage /></PageErrorBoundary> },
       { path: "settings", element: <PageErrorBoundary><SettingsPage /></PageErrorBoundary> },
     ],

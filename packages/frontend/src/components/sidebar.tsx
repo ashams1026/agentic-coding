@@ -42,12 +42,12 @@ import { ScopeIndicator } from "@/components/scope-indicator";
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/items", icon: ListTodo, label: "Work Items" },
+  { to: "/automations", icon: GitBranch, label: "Automations" },
   { to: "/agents", icon: Bot, label: "Agent Monitor" },
   { to: "/activity", icon: Activity, label: "Activity Feed" },
   { to: "/analytics", icon: BarChart3, label: "Analytics" },
   { to: "/chat", icon: MessageSquare, label: "Chat" },
   { to: "/agent-builder", icon: Users, label: "Agent Builder" },
-  { to: "/workflows", icon: GitBranch, label: "Workflows" },
   { to: "/settings", icon: Settings, label: "Settings" },
 ] as const;
 

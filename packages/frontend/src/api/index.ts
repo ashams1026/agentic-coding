@@ -42,6 +42,9 @@ export {
   getExecution,
   rewindExecution,
   runExecution,
+  getExecutionQueue,
+  type QueueEntry,
+  type QueueResponse,
   // Comments
   getComments,
   getRecentComments,

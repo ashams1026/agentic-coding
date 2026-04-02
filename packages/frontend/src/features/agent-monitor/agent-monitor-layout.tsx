@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { Monitor, ArrowRight, Columns2, Square, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,8 @@ import { TerminalRenderer } from "./terminal-renderer";
 import { SplitView } from "./split-view";
 import { DetailPanel } from "@/features/work-items/detail-panel";
 import { NewRunModal } from "./new-run-modal";
+import { QueueView } from "./queue-view";
+import { getExecutionQueue } from "@/api";
 import type { ExecutionId, WorkItemId } from "@agentops/shared";
 
 // ── Empty state ────────────────────────────────────────────────
@@ -141,9 +144,17 @@ export function AgentMonitorLayout() {
   const { data: allItems = [] } = useWorkItems(undefined, projectId ?? undefined);
   const { setSelectedItemId } = useWorkItemsStore();
 
+  // Queue data for tab badge
+  const { data: queueData } = useQuery({
+    queryKey: ["executionQueue", projectId],
+    queryFn: () => getExecutionQueue(projectId ?? undefined),
+    refetchInterval: 5000,
+  });
+  const queueLength = queueData?.queueLength ?? 0;
+
   const [selectedId, setSelectedId] = useState<ExecutionId | null>(null);
   const [splitMode, setSplitMode] = useState(false);
-  const [tab, setTab] = useState<"live" | "history">("live");
+  const [tab, setTab] = useState<"live" | "history" | "queue">("live");
   const [showDetailPanel, setShowDetailPanel] = useState(false);
   const [scopeFilter, setScopeFilter] = useState<string>("all");
 
@@ -194,7 +205,7 @@ export function AgentMonitorLayout() {
     <div className="flex flex-col h-full relative">
       {/* Tab bar */}
       <div className="flex items-center justify-between px-4 py-2 border-b">
-        <Tabs value={tab} onValueChange={(v) => setTab(v as "live" | "history")}>
+        <Tabs value={tab} onValueChange={(v) => setTab(v as "live" | "history" | "queue")}>
           <TabsList className="h-8">
             <TabsTrigger value="live" className="text-xs px-3 h-6">
               Live
@@ -206,6 +217,14 @@ export function AgentMonitorLayout() {
             </TabsTrigger>
             <TabsTrigger value="history" className="text-xs px-3 h-6">
               History
+            </TabsTrigger>
+            <TabsTrigger value="queue" className="text-xs px-3 h-6">
+              Queue
+              {queueLength > 0 && (
+                <span className="ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-xs font-bold text-white">
+                  {queueLength}
+                </span>
+              )}
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -243,6 +262,8 @@ export function AgentMonitorLayout() {
             hasActiveAgents={activeExecutions.length > 0}
             onWorkItemClick={handleWorkItemClick}
           />
+        ) : tab === "queue" ? (
+          <QueueView />
         ) : (
           <AgentHistory />
         )}

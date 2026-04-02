@@ -36,7 +36,7 @@ import { cn } from "@/lib/utils";
 import { usePicoStore } from "@/features/pico/pico-store";
 import { ChatMessage } from "@/features/pico/chat-message";
 import { usePicoChat } from "@/hooks/use-pico-chat";
-import { useProjects } from "@/hooks";
+import { useAgents, useProjects } from "@/hooks";
 import { AgentSelector } from "@/features/pico/agent-selector";
 import type { ChatSessionId } from "@agentops/shared";
 import type { ChatSessionWithAgent } from "@/api";
@@ -82,7 +82,7 @@ function groupSessionsByDate(sessions: ChatSessionWithAgent[]): { label: string;
 
 export function ChatPage() {
   const navigate = useNavigate();
-  const { setOpen } = usePicoStore();
+  const { setOpen, selectedAgentId } = usePicoStore();
   const [input, setInput] = useState("");
   const {
     messages,
@@ -104,6 +104,14 @@ export function ChatPage() {
 
   // Agent selector modal
   const [showAgentSelector, setShowAgentSelector] = useState(false);
+
+  // Agents list for dynamic empty state
+  const { data: agents = [] } = useAgents();
+  const selectedAgent = useMemo(() => {
+    if (!selectedAgentId) return null;
+    return agents.find((a) => a.id === selectedAgentId) ?? null;
+  }, [agents, selectedAgentId]);
+  const isPico = !selectedAgent || selectedAgent.name === "Pico" || selectedAgent.avatar.icon === "dog";
 
   // Project name lookup
   const { data: projects = [] } = useProjects();
@@ -190,6 +198,14 @@ export function ChatPage() {
     }
     setEditingSessionId(null);
   };
+
+  // Resolve empty-state avatar
+  const emptyStateIcon = isPico ? Dog : getIcon(selectedAgent!.avatar.icon);
+  const emptyStateColor = isPico ? "#f59e0b" : selectedAgent!.avatar.color;
+  const emptyStateName = isPico ? "Woof! I'm Pico" : selectedAgent!.name;
+  const emptyStateDesc = isPico
+    ? "Your project assistant. I know everything about this project \u2014 the architecture, the workflow, all the agents. Ask me anything, or I can help you manage work items."
+    : selectedAgent!.description;
 
   return (
     <div className="flex h-full">
@@ -463,22 +479,23 @@ export function ChatPage() {
                 <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
               </div>
             )}
-            {!isLoadingHistory && messages.length === 0 && (
-              <div className="flex flex-col items-center py-16 text-center">
-                <div
-                  className="flex h-16 w-16 items-center justify-center rounded-full mb-4"
-                  style={{ backgroundColor: "#f59e0b" }}
-                >
-                  <Dog className="h-10 w-10 text-white" />
+            {!isLoadingHistory && messages.length === 0 && (() => {
+              const EmptyIcon = emptyStateIcon;
+              return (
+                <div className="flex flex-col items-center py-16 text-center">
+                  <div
+                    className="flex h-16 w-16 items-center justify-center rounded-full mb-4"
+                    style={{ backgroundColor: emptyStateColor }}
+                  >
+                    <EmptyIcon className="h-10 w-10 text-white" />
+                  </div>
+                  <h2 className="text-lg font-semibold">{emptyStateName}</h2>
+                  <p className="mt-2 text-sm text-muted-foreground max-w-md">
+                    {emptyStateDesc}
+                  </p>
                 </div>
-                <h2 className="text-lg font-semibold">Woof! I'm Pico</h2>
-                <p className="mt-2 text-sm text-muted-foreground max-w-md">
-                  Your project assistant. I know everything about this project
-                  — the architecture, the workflow, all the agents. Ask me
-                  anything, or I can help you manage work items.
-                </p>
-              </div>
-            )}
+              );
+            })()}
             {messages.map((msg, i) => {
               const isEmptyStreaming =
                 isStreaming &&
@@ -535,7 +552,7 @@ export function ChatPage() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask Pico anything..."
+              placeholder={isPico ? "Ask Pico anything..." : `Ask ${selectedAgent!.name} anything...`}
               disabled={isStreaming}
               rows={1}
               className={cn(

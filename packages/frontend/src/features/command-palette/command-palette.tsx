@@ -66,12 +66,12 @@ interface CommandItem {
 const NAV_ITEMS = [
   { label: "Dashboard", path: "/", icon: LayoutDashboard },
   { label: "Work Items", path: "/items", icon: ListTodo },
+  { label: "Automations", path: "/automations", icon: GitBranch },
   { label: "Agent Monitor", path: "/agents", icon: Bot },
   { label: "Activity Feed", path: "/activity", icon: Activity },
   { label: "Analytics", path: "/analytics", icon: BarChart3 },
   { label: "Chat", path: "/chat", icon: MessageSquare },
   { label: "Agent Builder", path: "/agent-builder", icon: Users },
-  { label: "Workflows", path: "/workflows", icon: GitBranch },
   { label: "Settings", path: "/settings", icon: Settings },
 ];
 

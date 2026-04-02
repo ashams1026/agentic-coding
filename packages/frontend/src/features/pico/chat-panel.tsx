@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useState, useCallback, useMemo } from "react";
 import {
   Dog,
   Plus,
@@ -15,7 +15,21 @@ import {
   Activity,
   PenLine,
   Maximize2,
+  Bot,
+  ClipboardList,
+  Code,
+  Eye,
+  TestTube,
+  Shield,
+  Zap,
+  Sparkles,
+  Heart,
+  Star,
+  Flame,
+  Target,
+  Lightbulb,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -40,6 +54,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { ChatSessionId } from "@agentops/shared";
+
+// ── Icon map ──────────────────────────────────────────────────────
+
+const ICON_MAP: Record<string, LucideIcon> = {
+  "clipboard-list": ClipboardList, "git-branch": GitBranch, code: Code, eye: Eye,
+  "test-tube": TestTube, bot: Bot, shield: Shield, zap: Zap, sparkles: Sparkles,
+  heart: Heart, star: Star, flame: Flame, target: Target, lightbulb: Lightbulb, dog: Dog,
+};
+
+function getIcon(name: string): LucideIcon {
+  return ICON_MAP[name] ?? Bot;
+}
 
 // ── Component ─────────────────────────────────────────────────────
 
@@ -67,6 +93,13 @@ export function ChatPanel() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // Resolve selected agent for dynamic empty state
+  const selectedAgent = useMemo(() => {
+    if (!selectedAgentId) return null;
+    return agents.find((a) => a.id === selectedAgentId) ?? null;
+  }, [agents, selectedAgentId]);
+  const isPico = !selectedAgent || selectedAgent.name === "Pico" || selectedAgent.avatar.icon === "dog";
 
   // ── Resize logic ───────────────────────────────────────────────
   const MIN_W = 320;
@@ -177,6 +210,14 @@ export function ChatPanel() {
 
   const sessionTitle = currentSession?.title ?? "New conversation";
   const recentSessions = sessions.slice(0, 10);
+
+  // Resolve empty-state avatar
+  const emptyStateIcon = isPico ? Dog : getIcon(selectedAgent!.avatar.icon);
+  const emptyStateColor = isPico ? "#f59e0b" : selectedAgent!.avatar.color;
+  const emptyStateName = isPico ? "Woof! I'm Pico" : selectedAgent!.name;
+  const emptyStateDesc = isPico
+    ? "Your project assistant. I know everything about this project \u2014 the architecture, the workflow, all the agents. Ask me anything, or I can help you manage work items."
+    : selectedAgent!.description;
 
   if (!isOpen) return null;
 
@@ -381,40 +422,41 @@ export function ChatPanel() {
               <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
             </div>
           )}
-          {!isLoadingHistory && messages.length === 0 && (
-            <div className="flex flex-col items-center py-6 text-center">
-              <div
-                className="flex h-12 w-12 items-center justify-center rounded-full mb-3"
-                style={{ backgroundColor: "#f59e0b" }}
-              >
-                <Dog className="h-7 w-7 text-white" />
+          {!isLoadingHistory && messages.length === 0 && (() => {
+            const EmptyIcon = emptyStateIcon;
+            return (
+              <div className="flex flex-col items-center py-6 text-center">
+                <div
+                  className="flex h-12 w-12 items-center justify-center rounded-full mb-3"
+                  style={{ backgroundColor: emptyStateColor }}
+                >
+                  <EmptyIcon className="h-7 w-7 text-white" />
+                </div>
+                <p className="text-sm font-medium">{emptyStateName}</p>
+                <p className="mt-1 text-xs text-muted-foreground max-w-[300px]">
+                  {emptyStateDesc}
+                </p>
+                <div className="mt-4 flex flex-col gap-2 w-full max-w-[300px]">
+                  {QUICK_ACTIONS.map((action) => (
+                    <button
+                      key={action.label}
+                      type="button"
+                      onClick={() => sendMessage(action.label)}
+                      disabled={isStreaming}
+                      className={cn(
+                        "flex items-center gap-2 rounded-lg border border-border bg-background/50 px-3 py-2 text-left text-xs",
+                        "hover:bg-muted hover:border-muted-foreground/30 transition-colors",
+                        "disabled:opacity-50 disabled:cursor-not-allowed",
+                      )}
+                    >
+                      <action.icon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                      <span>{action.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <p className="text-sm font-medium">Woof! I'm Pico</p>
-              <p className="mt-1 text-xs text-muted-foreground max-w-[300px]">
-                Your project assistant. I know everything about this project
-                — the architecture, the workflow, all the agents. Ask me
-                anything, or I can help you manage work items.
-              </p>
-              <div className="mt-4 flex flex-col gap-2 w-full max-w-[300px]">
-                {QUICK_ACTIONS.map((action) => (
-                  <button
-                    key={action.label}
-                    type="button"
-                    onClick={() => sendMessage(action.label)}
-                    disabled={isStreaming}
-                    className={cn(
-                      "flex items-center gap-2 rounded-lg border border-border bg-background/50 px-3 py-2 text-left text-xs",
-                      "hover:bg-muted hover:border-muted-foreground/30 transition-colors",
-                      "disabled:opacity-50 disabled:cursor-not-allowed",
-                    )}
-                  >
-                    <action.icon className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                    <span>{action.label}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+            );
+          })()}
           {messages.map((msg, i) => {
             // Skip rendering the last message if it has no content yet (streaming)
             // — the TypingIndicator below will show instead
@@ -488,7 +530,7 @@ export function ChatPanel() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask Pico anything..."
+            placeholder={isPico ? "Ask Pico anything..." : `Ask ${selectedAgent!.name} anything...`}
             disabled={isStreaming}
             rows={1}
             className={cn(

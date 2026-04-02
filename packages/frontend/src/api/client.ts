@@ -215,8 +215,10 @@ export async function bulkDeleteWorkItems(ids: string[], cascade?: boolean): Pro
   return res.ok;
 }
 
-export async function getDeletedWorkItems(): Promise<WorkItem[]> {
-  const res = await get<{ data: WorkItem[]; total: number }>("/api/work-items?deleted=true");
+export async function getDeletedWorkItems(projectId?: string): Promise<WorkItem[]> {
+  const params = new URLSearchParams({ deleted: "true" });
+  if (projectId) params.set("projectId", projectId);
+  const res = await get<{ data: WorkItem[]; total: number }>(`/api/work-items?${params.toString()}`);
   return res.data;
 }
 
@@ -331,6 +333,29 @@ export interface RunExecutionRequest {
 
 export async function runExecution(req: RunExecutionRequest): Promise<{ id: string }> {
   return post<{ id: string }>("/api/executions/run", req);
+}
+
+export interface QueueEntry {
+  workItemId: string;
+  workItemTitle: string;
+  agentId: string;
+  agentName: string;
+  priority: string;
+  enqueuedAt: number;
+  position: number;
+}
+
+export interface QueueResponse {
+  queue: QueueEntry[];
+  activeCount: number;
+  maxConcurrent: number;
+  queueLength: number;
+}
+
+export async function getExecutionQueue(projectId?: string): Promise<QueueResponse> {
+  const params = projectId ? `?projectId=${projectId}` : "";
+  const res = await get<{ data: QueueResponse }>(`/api/executions/queue${params}`);
+  return res.data;
 }
 
 export interface McpServerStatusInfo {

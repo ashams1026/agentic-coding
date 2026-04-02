@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-04-02 11:23 PDT — UXO.11: Dynamic empty chat state
+
+**Done:** Replaced hardcoded "Woof! I'm Pico" empty state in `chat.tsx` and `chat-panel.tsx` with dynamic agent-aware rendering. When a non-Pico agent is selected, shows that agent's avatar icon, color, name, and description. Pico greeting preserved when Pico is selected. Textarea placeholder also dynamic ("Ask [agent name] anything...").
+**Files:** `packages/frontend/src/pages/chat.tsx`, `packages/frontend/src/features/pico/chat-panel.tsx`
+
+---
+
+## 2026-04-02 11:23 PDT — UXO.19: Rename Workflows → Automations
+
+**Done:** Renamed sidebar nav label "Workflows" → "Automations", moved it below Work Items. Changed route path `/workflows` → `/automations` (builder route `/workflows/:id` preserved). Updated command palette label and path. Updated nav item ordering in sidebar and command palette.
+**Files:** `packages/frontend/src/components/sidebar.tsx`, `packages/frontend/src/router.tsx`, `packages/frontend/src/features/command-palette/command-palette.tsx`
+
+---
+
+## 2026-04-02 11:23 PDT — UXO.25: Queue tab in Agent Monitor
+
+**Done:** Created `queue-view.tsx` component with TanStack Query polling (5s). Shows position, agent name, work item title, priority badge (color-coded p0-p3), and relative wait time. Empty state: "No queued agents". Added Queue tab to agent-monitor-layout with badge count. Added `getExecutionQueue` API client function and types.
+**Files:** `packages/frontend/src/features/agent-monitor/queue-view.tsx` (new), `packages/frontend/src/features/agent-monitor/agent-monitor-layout.tsx`, `packages/frontend/src/api/client.ts`, `packages/frontend/src/api/index.ts`
+
+---
+
+## 2026-04-02 11:23 PDT — UXO.30: Fix Recently Deleted scope
+
+**Done:** Updated `getDeletedWorkItems()` to accept optional projectId parameter. RecentlyDeleted component now uses `useSelectedProject()` and passes projectId to the API call. Added scope badge next to title showing "All Projects" (globe icon) for global or project name (folder icon) for project scope. Re-fetches on project switch.
+**Files:** `packages/frontend/src/api/client.ts`, `packages/frontend/src/features/settings/recently-deleted.tsx`
+
+---
+
 ## 2026-04-02 11:13 PDT — UXO.9: Fix chat session loading on /chat page
 
 **Done:** Added a mount-time `useEffect` in `use-pico-chat.ts` that calls `refreshSessions()` independent of `isOpen` panel state. Sessions now load on the full `/chat` page, not just when the sidebar panel opens.
