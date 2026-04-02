@@ -2,6 +2,31 @@
 
 A local-first, workflow-driven application that orchestrates AI coding agents. React/Vite/Tailwind frontend, Fastify backend, SQLite storage, Claude Agent SDK for agent execution.
 
+## Subagent Usage
+
+Use the **project-level agents** in `.claude/agents/` for all orchestrated work. These are tuned for this project's stack and conventions.
+
+**Project agents (use these):**
+- `worker` — implements tasks (frontend, backend, or full-stack). Knows the full stack. Sonnet model for speed.
+- `reviewer` — reviews implementations, returns APPROVE/REJECT with feedback. Read-only. Sonnet model.
+- `doc-writer` — writes/updates documentation in `docs/`. Reads actual code before documenting.
+- `test-planner` — writes e2e test plans in `tests/e2e/plans/` following the project template.
+
+**Generic agents (also safe to use):**
+- `code-reviewer` — deeper code review when needed (Opus model, more thorough than `reviewer`)
+- `context7-docs-fetcher` — library documentation lookup
+- `tech-decision-researcher` — technology evaluation
+- `fact-validator` — claim verification
+
+**Do NOT use these user-level agents** — they are configured for other projects with different stacks:
+- `pm` — uses `.pm/backlog.yaml`, conflicts with TASKS.md system
+- `spec-writer` — writes to `.pm/specs/`, should use `docs/proposals/`
+- `backend-architect` — configured for PostgreSQL/MongoDB/Kafka, not Fastify/SQLite
+- `security` — configured for Firebase Security Rules, not local-first SQLite
+- `performance` — configured for Cloud Functions/Firebase Hosting, not Vite/React
+- `ui-designer` — configured for TikTok/social apps, not dashboard UI
+- `frontend-developer` — configured for Vue/Angular/Next.js, not this stack
+
 ## Architecture Quick Reference
 
 Full architecture: see `PLANNING.md`
