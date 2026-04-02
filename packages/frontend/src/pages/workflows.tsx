@@ -48,10 +48,30 @@ export function WorkflowsPage() {
     });
   };
 
-  const handlePublish = (name: string, states: StateCardData[]) => {
+  const handlePublish = async (name: string, states: StateCardData[]) => {
     if (!id) return;
-    // Save first, then publish
-    handleSave(name, states);
+    // Save first, then publish — must be sequential to avoid race condition
+    const allTransitions = states.flatMap((s) =>
+      s.transitions.map((t) => ({
+        id: t.id,
+        fromStateId: s.id,
+        toStateId: t.toStateId,
+        label: t.label,
+      })),
+    );
+    await updateWorkflow.mutateAsync({
+      id,
+      name,
+      states: states.map((s) => ({
+        id: s.id,
+        name: s.name,
+        type: s.type,
+        color: s.color,
+        personaId: s.personaId,
+        sortOrder: s.sortOrder,
+      })),
+      transitions: allTransitions,
+    });
     publishWorkflow.mutate(id);
   };
 

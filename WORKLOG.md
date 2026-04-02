@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 11:50 PDT — FX.WF.1: Fix race condition in workflow publish
+
+**Done:** Fixed `handlePublish` in `workflows.tsx` to await save before publishing. Previously called `handleSave()` (which uses fire-and-forget `mutate()`) then immediately called `publishWorkflow.mutate(id)` — publish could race ahead of save. Changed to inline the save logic using `updateWorkflow.mutateAsync()` with `await`, then fire publish only after save completes.
+**Files:** `packages/frontend/src/pages/workflows.tsx`
+
+---
+
 ## 2026-04-03 11:45 PDT — Review: FX.NTF.2 (approved)
 
 **Reviewed:** Notification batching double-count fix.
