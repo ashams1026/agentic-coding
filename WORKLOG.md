@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 16:30 PDT — RB.4: Extract shared RewindButton
+
+**Done:** Extracted RewindButton (~160 lines) + formatTimeAgo helper from agent-history.tsx into `features/common/rewind-button.tsx`. Clean props: `{ execution: Execution }`. Both functions exported as named exports. Removed 15 now-unused imports from agent-history.tsx (AlertDialog*, Tooltip*, rewindExecution, etc.). Component behavior identical.
+**Files:** `features/common/rewind-button.tsx` (new), `features/agent-monitor/agent-history.tsx`
+
+---
+
 ## 2026-04-02 16:20 PDT — RB.3, RB.7: Conflict warning banner + git commit creation
 
 **Done:** (1) RB.3: Added conflict warning banner to rewind dialog — amber box listing files modified since execution, AlertTriangle icons on conflicted files in file list, "Reverting will overwrite these changes" message. Updated RewindResult type with `conflicts?: ConflictInfo[]`. (2) RB.7: Added optional git commit creation after rewind. Backend accepts `createCommit?: boolean`, uses `execFileSync` (safe argument arrays, no shell injection), creates revert commit with agent name, returns `commitSha`. Static import, graceful failure logging.

@@ -95,7 +95,7 @@
 
 ### Phase 2: Multi-Surface Rollback
 
-- [ ] **RB.4** — Frontend: Extract `RewindButton` + rewind dialog into a shared component at `features/common/rewind-button.tsx`. Currently embedded in `agent-history.tsx`. Extract with clean props: `{ execution: Execution }`. Import back into agent-history.tsx. This enables reuse in execution-timeline and other surfaces.
+- [x] **RB.4** — Frontend: Extract `RewindButton` + rewind dialog into a shared component at `features/common/rewind-button.tsx`. Currently embedded in `agent-history.tsx`. Extract with clean props: `{ execution: Execution }`. Import back into agent-history.tsx. This enables reuse in execution-timeline and other surfaces. *(completed 2026-04-02 16:30 PDT)*
 - [ ] **RB.5** — Frontend: Add "Revert Changes" button to execution timeline entries in `features/common/execution-timeline.tsx`. For completed executions with a `checkpointMessageId`, show the shared RewindButton component.
 - [ ] **RB.6** — Frontend: Add rewind action to Agent Monitor split-view execution detail. Add a "Revert Changes" button in the execution header/toolbar area. Uses the shared RewindButton.
 
