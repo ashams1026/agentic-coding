@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-04-02 07:05 PDT — Review: PPR.3 (approved)
+
+**Reviewed:** Autocomplete popup in system-prompt-editor.tsx.
+- Trigger on `{{` via lastIndexOf comparison ✓
+- 4 groups (Project/Persona/Date/Work Item), 13 variables with descriptions ✓
+- Type-ahead filtering as user types inside `{{...` ✓
+- Keyboard: ArrowUp/Down, Enter/Tab to insert, Escape to dismiss ✓
+- Click outside dismissal via mousedown listener ✓
+- Insertion replaces from trigger position, restores cursor ✓
+- Popover positioned at cursor (line/column approximation) ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 07:00 PDT — PPR.3: Autocomplete popup for template variables
 
 **Done:** Added autocomplete popup to `system-prompt-editor.tsx`. Triggers on typing `{{` — detects open braces via `lastIndexOf("{{")` vs `lastIndexOf("}}")` comparison. Shows grouped dropdown (Project, Persona, Date, Work Item) with 13 variables, each showing `{{name}}` + description. Positioned relative to cursor in textarea (calculated from line/column). Type-ahead filtering narrows results. Keyboard navigation: ArrowUp/Down, Enter/Tab to insert, Escape to dismiss. Click outside dismisses. On selection, replaces from `{{` trigger position through cursor with `{{variable.name}}` and restores focus.
