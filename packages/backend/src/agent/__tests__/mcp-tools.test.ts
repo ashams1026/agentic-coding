@@ -34,8 +34,8 @@ let testDb: TestDatabase;
 let client: Client;
 
 const TEST_CONTEXT: McpContext = {
-  personaName: "Test Agent",
-  personaId: TEST_IDS.PERSONA_ENGINEER,
+  agentName: "Test Agent",
+  agentId: TEST_IDS.AGENT_ENGINEER,
   projectId: TEST_IDS.PROJECT_ID,
   allowedTools: [],
 };

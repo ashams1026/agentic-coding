@@ -1,10 +1,10 @@
 import { db } from "./connection.js";
-import { personas, personaAssignments } from "./schema.js";
+import { agents, agentAssignments } from "./schema.js";
 import { createId } from "@agentops/shared";
 
-// ── Built-in persona definitions ─────────────────────────────────
+// ── Built-in agent definitions ──────────────────────────────────
 
-interface DefaultPersona {
+interface DefaultAgent {
   name: string;
   description: string;
   avatar: { color: string; icon: string };
@@ -14,7 +14,7 @@ interface DefaultPersona {
   maxBudgetPerRun: number;
 }
 
-const BUILT_IN_PERSONAS: DefaultPersona[] = [
+const BUILT_IN_AGENTS: DefaultAgent[] = [
   {
     name: "Product Manager",
     description: "Writes acceptance criteria, defines scope, and prioritizes work items.",
@@ -71,7 +71,7 @@ const BUILT_IN_PERSONAS: DefaultPersona[] = [
   },
 ];
 
-// Default state → persona name mapping for new projects
+// Default state → agent name mapping for new projects
 const DEFAULT_STATE_ASSIGNMENTS: Record<string, string> = {
   Planning: "Product Manager",
   Decomposition: "Tech Lead",
@@ -83,20 +83,20 @@ const DEFAULT_STATE_ASSIGNMENTS: Record<string, string> = {
 // ── Seed functions ───────────────────────────────────────────────
 
 /**
- * Ensure all built-in personas exist in the DB.
+ * Ensure all built-in agents exist in the DB.
  * Inserts any that are missing by name. Idempotent — safe to call on every startup.
  */
-export async function ensureBuiltInPersonas(): Promise<void> {
+export async function ensureBuiltInAgents(): Promise<void> {
   const existing = await db
-    .select({ id: personas.id, name: personas.name })
-    .from(personas);
+    .select({ id: agents.id, name: agents.name })
+    .from(agents);
   const existingNames = new Set(existing.map((p) => p.name));
 
-  const missing = BUILT_IN_PERSONAS.filter((p) => !existingNames.has(p.name));
+  const missing = BUILT_IN_AGENTS.filter((p) => !existingNames.has(p.name));
   if (missing.length === 0) return;
 
   const rows = missing.map((p) => ({
-    id: createId.persona() as string,
+    id: createId.agent() as string,
     name: p.name,
     description: p.description,
     avatar: p.avatar,
@@ -108,32 +108,32 @@ export async function ensureBuiltInPersonas(): Promise<void> {
     settings: p.name === "Router" ? { isSystem: true, isRouter: true } : p.name === "Pico" ? { isSystem: true, isAssistant: true } : {},
   }));
 
-  await db.insert(personas).values(rows);
+  await db.insert(agents).values(rows);
 }
 
 /**
- * Ensure built-in personas exist, then create default persona assignments for a project.
+ * Ensure built-in agents exist, then create default agent assignments for a project.
  */
-export async function seedDefaultPersonasForProject(projectId: string): Promise<void> {
-  await ensureBuiltInPersonas();
+export async function seedDefaultAgentsForProject(projectId: string): Promise<void> {
+  await ensureBuiltInAgents();
 
   // Build name→id lookup from DB
-  const allPersonas = await db
-    .select({ id: personas.id, name: personas.name })
-    .from(personas);
-  const personaNameToId = new Map(allPersonas.map((p) => [p.name, p.id]));
+  const allAgents = await db
+    .select({ id: agents.id, name: agents.name })
+    .from(agents);
+  const agentNameToId = new Map(allAgents.map((p) => [p.name, p.id]));
 
   // Create default assignments for this project
-  const assignments: { projectId: string; stateName: string; personaId: string }[] = [];
+  const assignments: { projectId: string; stateName: string; agentId: string }[] = [];
 
-  for (const [stateName, personaName] of Object.entries(DEFAULT_STATE_ASSIGNMENTS)) {
-    const personaId = personaNameToId.get(personaName);
-    if (personaId) {
-      assignments.push({ projectId, stateName, personaId });
+  for (const [stateName, agentName] of Object.entries(DEFAULT_STATE_ASSIGNMENTS)) {
+    const agentId = agentNameToId.get(agentName);
+    if (agentId) {
+      assignments.push({ projectId, stateName, agentId });
     }
   }
 
   if (assignments.length > 0) {
-    await db.insert(personaAssignments).values(assignments);
+    await db.insert(agentAssignments).values(assignments);
   }
 }

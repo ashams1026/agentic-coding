@@ -59,9 +59,9 @@ export async function templateRoutes(app: FastifyInstance) {
       });
     }
 
-    if (type !== "work_item" && type !== "persona") {
+    if (type !== "work_item" && type !== "agent") {
       return reply.status(400).send({
-        error: { code: "INVALID_TYPE", message: "type must be 'work_item' or 'persona'" },
+        error: { code: "INVALID_TYPE", message: "type must be 'work_item' or 'agent'" },
       });
     }
 
@@ -217,7 +217,7 @@ export async function templateRoutes(app: FastifyInstance) {
         workflowId: projectWorkflowId,
         priority: overrides?.priority ?? content.priority ?? "p2",
         labels: overrides?.labels ?? content.labels ?? [],
-        assignedPersonaId: null,
+        assignedAgentId: null,
         executionContext: [],
         createdAt: now,
         updatedAt: now,

@@ -41,11 +41,11 @@ export function createTestDb(): TestDatabase {
 
 const PROJECT_ID = "pj-test001";
 
-const PERSONA_PM = "ps-testpm1";
-const PERSONA_TECH_LEAD = "ps-testtl1";
-const PERSONA_ENGINEER = "ps-testen1";
-const PERSONA_REVIEWER = "ps-testrv1";
-const PERSONA_QA = "ps-testqa1";
+const AGENT_PM = "ps-testpm1";
+const AGENT_TECH_LEAD = "ps-testtl1";
+const AGENT_ENGINEER = "ps-testen1";
+const AGENT_REVIEWER = "ps-testrv1";
+const AGENT_QA = "ps-testqa1";
 
 const WI_TOP_1 = "wi-top0001";
 const WI_TOP_2 = "wi-top0002";
@@ -72,11 +72,11 @@ function d(iso: string): Date {
 /** Exported IDs for use in test assertions */
 export const TEST_IDS = {
   PROJECT_ID,
-  PERSONA_PM,
-  PERSONA_TECH_LEAD,
-  PERSONA_ENGINEER,
-  PERSONA_REVIEWER,
-  PERSONA_QA,
+  AGENT_PM,
+  AGENT_TECH_LEAD,
+  AGENT_ENGINEER,
+  AGENT_REVIEWER,
+  AGENT_QA,
   WI_TOP_1,
   WI_TOP_2,
   WI_TOP_3,
@@ -95,8 +95,8 @@ export const TEST_IDS = {
 /**
  * Seeds the database with a minimal but realistic dataset:
  * - 1 project
- * - 5 personas (PM, Tech Lead, Engineer, Reviewer, QA)
- * - 4 persona assignments
+ * - 5 agents (PM, Tech Lead, Engineer, Reviewer, QA)
+ * - 4 agent assignments
  * - 3 top-level work items with 6 children (9 total)
  * - 4 executions
  * - 5 comments
@@ -114,12 +114,12 @@ export async function seedTestDb(db: TestDb) {
     createdAt: d("2026-03-20T10:00:00Z"),
   });
 
-  // ── Personas ────────────────────────────────────────────────────
-  await db.insert(schema.personas).values([
+  // ── Agents ──────────────────────────────────────────────────────
+  await db.insert(schema.agents).values([
     {
-      id: PERSONA_PM,
+      id: AGENT_PM,
       name: "PM",
-      description: "Product manager persona",
+      description: "Product manager agent",
       avatar: { color: "#7c3aed", icon: "clipboard-list" },
       systemPrompt: "You are a PM.",
       model: "sonnet",
@@ -129,9 +129,9 @@ export async function seedTestDb(db: TestDb) {
       settings: {},
     },
     {
-      id: PERSONA_TECH_LEAD,
+      id: AGENT_TECH_LEAD,
       name: "Tech Lead",
-      description: "Technical lead persona",
+      description: "Technical lead agent",
       avatar: { color: "#2563eb", icon: "git-branch" },
       systemPrompt: "You are a tech lead.",
       model: "opus",
@@ -141,9 +141,9 @@ export async function seedTestDb(db: TestDb) {
       settings: {},
     },
     {
-      id: PERSONA_ENGINEER,
+      id: AGENT_ENGINEER,
       name: "Engineer",
-      description: "Software engineer persona",
+      description: "Software engineer agent",
       avatar: { color: "#059669", icon: "code" },
       systemPrompt: "You are an engineer.",
       model: "sonnet",
@@ -153,9 +153,9 @@ export async function seedTestDb(db: TestDb) {
       settings: {},
     },
     {
-      id: PERSONA_REVIEWER,
+      id: AGENT_REVIEWER,
       name: "Reviewer",
-      description: "Code reviewer persona",
+      description: "Code reviewer agent",
       avatar: { color: "#d97706", icon: "eye" },
       systemPrompt: "You are a reviewer.",
       model: "sonnet",
@@ -165,9 +165,9 @@ export async function seedTestDb(db: TestDb) {
       settings: {},
     },
     {
-      id: PERSONA_QA,
+      id: AGENT_QA,
       name: "QA",
-      description: "QA tester persona",
+      description: "QA tester agent",
       avatar: { color: "#dc2626", icon: "test-tube" },
       systemPrompt: "You are a QA tester.",
       model: "haiku",
@@ -178,12 +178,12 @@ export async function seedTestDb(db: TestDb) {
     },
   ]);
 
-  // ── Persona Assignments ─────────────────────────────────────────
-  await db.insert(schema.personaAssignments).values([
-    { projectId: PROJECT_ID, stateName: "Planning", personaId: PERSONA_PM },
-    { projectId: PROJECT_ID, stateName: "Decomposition", personaId: PERSONA_TECH_LEAD },
-    { projectId: PROJECT_ID, stateName: "In Progress", personaId: PERSONA_ENGINEER },
-    { projectId: PROJECT_ID, stateName: "In Review", personaId: PERSONA_REVIEWER },
+  // ── Agent Assignments ─────────────────────────────────────────
+  await db.insert(schema.agentAssignments).values([
+    { projectId: PROJECT_ID, stateName: "Planning", agentId: AGENT_PM },
+    { projectId: PROJECT_ID, stateName: "Decomposition", agentId: AGENT_TECH_LEAD },
+    { projectId: PROJECT_ID, stateName: "In Progress", agentId: AGENT_ENGINEER },
+    { projectId: PROJECT_ID, stateName: "In Review", agentId: AGENT_REVIEWER },
   ]);
 
   // ── Top-level Work Items ────────────────────────────────────────
@@ -198,7 +198,7 @@ export async function seedTestDb(db: TestDb) {
       currentState: "In Progress",
       priority: "p0",
       labels: ["auth"],
-      assignedPersonaId: null,
+      assignedAgentId: null,
       executionContext: [],
       createdAt: d("2026-03-21T09:00:00Z"),
       updatedAt: d("2026-03-27T14:00:00Z"),
@@ -213,7 +213,7 @@ export async function seedTestDb(db: TestDb) {
       currentState: "Decomposition",
       priority: "p1",
       labels: ["dashboard"],
-      assignedPersonaId: null,
+      assignedAgentId: null,
       executionContext: [],
       createdAt: d("2026-03-22T11:00:00Z"),
       updatedAt: d("2026-03-26T16:00:00Z"),
@@ -228,7 +228,7 @@ export async function seedTestDb(db: TestDb) {
       currentState: "Backlog",
       priority: "p2",
       labels: ["notifications"],
-      assignedPersonaId: null,
+      assignedAgentId: null,
       executionContext: [],
       createdAt: d("2026-03-23T08:00:00Z"),
       updatedAt: d("2026-03-23T08:00:00Z"),
@@ -247,7 +247,7 @@ export async function seedTestDb(db: TestDb) {
       currentState: "Done",
       priority: "p0",
       labels: ["auth"],
-      assignedPersonaId: PERSONA_ENGINEER,
+      assignedAgentId: AGENT_ENGINEER,
       executionContext: [],
       createdAt: d("2026-03-24T10:00:00Z"),
       updatedAt: d("2026-03-25T11:00:00Z"),
@@ -262,7 +262,7 @@ export async function seedTestDb(db: TestDb) {
       currentState: "In Progress",
       priority: "p0",
       labels: ["auth", "ui"],
-      assignedPersonaId: PERSONA_ENGINEER,
+      assignedAgentId: AGENT_ENGINEER,
       executionContext: [],
       createdAt: d("2026-03-24T10:05:00Z"),
       updatedAt: d("2026-03-27T14:00:00Z"),
@@ -277,7 +277,7 @@ export async function seedTestDb(db: TestDb) {
       currentState: "Ready",
       priority: "p0",
       labels: ["auth"],
-      assignedPersonaId: PERSONA_ENGINEER,
+      assignedAgentId: AGENT_ENGINEER,
       executionContext: [],
       createdAt: d("2026-03-24T10:10:00Z"),
       updatedAt: d("2026-03-24T10:10:00Z"),
@@ -296,7 +296,7 @@ export async function seedTestDb(db: TestDb) {
       currentState: "Backlog",
       priority: "p1",
       labels: ["dashboard"],
-      assignedPersonaId: null,
+      assignedAgentId: null,
       executionContext: [],
       createdAt: d("2026-03-25T09:00:00Z"),
       updatedAt: d("2026-03-25T09:00:00Z"),
@@ -311,7 +311,7 @@ export async function seedTestDb(db: TestDb) {
       currentState: "Backlog",
       priority: "p1",
       labels: ["dashboard"],
-      assignedPersonaId: null,
+      assignedAgentId: null,
       executionContext: [],
       createdAt: d("2026-03-25T09:05:00Z"),
       updatedAt: d("2026-03-25T09:05:00Z"),
@@ -330,7 +330,7 @@ export async function seedTestDb(db: TestDb) {
       currentState: "Backlog",
       priority: "p2",
       labels: ["notifications"],
-      assignedPersonaId: null,
+      assignedAgentId: null,
       executionContext: [],
       createdAt: d("2026-03-26T08:00:00Z"),
       updatedAt: d("2026-03-26T08:00:00Z"),
@@ -348,7 +348,7 @@ export async function seedTestDb(db: TestDb) {
     {
       id: EXEC_1,
       workItemId: WI_CHILD_1A,
-      personaId: PERSONA_ENGINEER,
+      agentId: AGENT_ENGINEER,
       projectId: PROJECT_ID,
       status: "completed",
       startedAt: d("2026-03-25T10:00:00Z"),
@@ -363,7 +363,7 @@ export async function seedTestDb(db: TestDb) {
     {
       id: EXEC_2,
       workItemId: WI_TOP_1,
-      personaId: PERSONA_PM,
+      agentId: AGENT_PM,
       projectId: PROJECT_ID,
       status: "completed",
       startedAt: d("2026-03-24T09:00:00Z"),
@@ -378,7 +378,7 @@ export async function seedTestDb(db: TestDb) {
     {
       id: EXEC_3,
       workItemId: WI_CHILD_1B,
-      personaId: PERSONA_ENGINEER,
+      agentId: AGENT_ENGINEER,
       projectId: PROJECT_ID,
       status: "running",
       startedAt: d("2026-03-27T14:00:00Z"),
@@ -393,7 +393,7 @@ export async function seedTestDb(db: TestDb) {
     {
       id: EXEC_4,
       workItemId: WI_TOP_2,
-      personaId: PERSONA_TECH_LEAD,
+      agentId: AGENT_TECH_LEAD,
       projectId: PROJECT_ID,
       status: "completed",
       startedAt: d("2026-03-26T10:00:00Z"),
@@ -423,7 +423,7 @@ export async function seedTestDb(db: TestDb) {
       id: "cm-test002",
       workItemId: WI_TOP_1,
       authorType: "agent",
-      authorId: PERSONA_PM,
+      authorId: AGENT_PM,
       authorName: "PM",
       content: "Acceptance criteria written for OAuth2.",
       metadata: {},
@@ -433,7 +433,7 @@ export async function seedTestDb(db: TestDb) {
       id: "cm-test003",
       workItemId: WI_CHILD_1A,
       authorType: "agent",
-      authorId: PERSONA_ENGINEER,
+      authorId: AGENT_ENGINEER,
       authorName: "Engineer",
       content: "OAuth routes implemented with passport.js.",
       metadata: { filesChanged: ["auth.ts"] },

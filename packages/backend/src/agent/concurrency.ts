@@ -19,7 +19,7 @@ const activeExecutions = new Set<string>(); // executionId set
 
 interface QueueEntry {
   workItemId: string;
-  personaId: string;
+  agentId: string;
   priority: string; // p0 > p1 > p2 > p3
   enqueuedAt: number;
 }
@@ -75,7 +75,7 @@ export function onComplete(executionId: string): QueueEntry | null {
  */
 export async function enqueue(
   workItemId: string,
-  personaId: string,
+  agentId: string,
 ): Promise<void> {
   // Look up work item priority
   const [item] = await db
@@ -87,7 +87,7 @@ export async function enqueue(
 
   const entry: QueueEntry = {
     workItemId,
-    personaId,
+    agentId,
     priority,
     enqueuedAt: Date.now(),
   };

@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-03 16:30 PDT — UXO.6: Schema + Backend persona→agent rename
+
+**Done:** Renamed `personas` table → `agents`, `persona_assignments` → `agent_assignments` in schema. Renamed all `persona_id` columns → `agent_id` across 7 tables. Renamed `assigned_persona_id` → `assigned_agent_id` in work_items. Wrote manual migration `0022_rename_persona_to_agent.sql` (10 ALTER TABLE statements). Renamed 5 files via `git mv` (routes/personas→agents, persona-assignments→agent-assignments, default-personas→default-agents, 2 test files). Updated 53 backend + 3 core source files: all imports, function names, variable names, API paths (`/api/personas`→`/api/agents`), FTS5 tables/triggers/bridge tables. Shared+core+backend all build clean.
+**Files:** 56+ backend/core files, `packages/backend/drizzle/0022_rename_persona_to_agent.sql` (new)
+**Notes:** Frontend still references old names — addressed by UXO.7.
+
+---
+
 ## 2026-04-03 16:15 PDT — Review: UXO.5 (approved)
 
 **Reviewed:** Persona → Agent rename in shared types.

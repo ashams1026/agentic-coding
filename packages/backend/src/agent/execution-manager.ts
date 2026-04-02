@@ -6,12 +6,12 @@
  */
 
 import { eq } from "drizzle-orm";
-import { executions, workItems, personas, projects, comments } from "../db/schema.js";
+import { executions, workItems, agents, projects, comments } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import type {
   ExecutionId,
   WorkItemId,
-  PersonaId,
+  AgentId,
   ProjectId,
   CommentId,
   ExecutionOutcome,
@@ -291,19 +291,19 @@ export class ExecutionManager {
 
   async runExecution(
     workItemId: string,
-    personaId: string,
+    agentId: string,
     prompt?: string,
   ): Promise<ExecutionId> {
     const now = new Date();
     const executionId = createId.execution();
 
-    const [persona] = await (this.db as any)
+    const [agent] = await (this.db as any)
       .select()
-      .from(personas)
-      .where(eq(personas.id, personaId));
+      .from(agents)
+      .where(eq(agents.id, agentId));
 
-    if (!persona) {
-      throw new Error(`Persona ${personaId} not found`);
+    if (!agent) {
+      throw new Error(`Agent ${agentId} not found`);
     }
 
     // Standalone execution: workItemId may be null when triggered by webhook/schedule with a prompt
@@ -334,12 +334,12 @@ export class ExecutionManager {
       project = proj;
     }
 
-    const allPersonaRows = await (this.db as any).select().from(personas);
+    const allAgentRows = await (this.db as any).select().from(agents);
 
     await (this.db as any).insert(executions).values({
       id: executionId,
       workItemId: isStandalone ? null : workItemId,
-      personaId,
+      agentId,
       projectId: item?.projectId ?? "pj-global",
       status: "running",
       startedAt: now,
@@ -358,7 +358,7 @@ export class ExecutionManager {
     this.broadcastFn({
       type: "agent_started",
       executionId: executionId as ExecutionId,
-      personaId: personaId as PersonaId,
+      agentId: agentId as AgentId,
       workItemId: (isStandalone ? "" : workItemId) as WorkItemId,
       workItemTitle: item?.title ?? prompt?.slice(0, 100) ?? "Standalone execution",
       timestamp: now.toISOString(),
@@ -368,7 +368,7 @@ export class ExecutionManager {
       type: "execution.started",
       executionId: executionId as ExecutionId,
       workItemId: (isStandalone ? "" : workItemId) as WorkItemId,
-      personaId: personaId as PersonaId,
+      agentId: agentId as AgentId,
       projectId: (item?.projectId as ProjectId) ?? null,
       timestamp: now.toISOString(),
     });
@@ -376,8 +376,8 @@ export class ExecutionManager {
     auditAgentDispatch({
       workItemId: isStandalone ? "" : workItemId,
       executionId,
-      personaId,
-      personaName: persona.name,
+      agentId,
+      agentName: agent.name,
     });
 
     let task: AgentTask | null = null;
@@ -405,19 +405,19 @@ export class ExecutionManager {
       return executionId as ExecutionId;
     }
 
-    const personaEntity = {
-      id: persona.id as PersonaId,
-      name: persona.name,
-      description: persona.description,
-      avatar: persona.avatar,
-      systemPrompt: persona.systemPrompt,
-      model: persona.model as "opus" | "sonnet" | "haiku",
-      allowedTools: persona.allowedTools,
-      mcpTools: persona.mcpTools,
-      skills: persona.skills,
-      subagents: persona.subagents ?? [],
-      maxBudgetPerRun: persona.maxBudgetPerRun,
-      settings: persona.settings,
+    const agentEntity = {
+      id: agent.id as AgentId,
+      name: agent.name,
+      description: agent.description,
+      avatar: agent.avatar,
+      systemPrompt: agent.systemPrompt,
+      model: agent.model as "opus" | "sonnet" | "haiku",
+      allowedTools: agent.allowedTools,
+      mcpTools: agent.mcpTools,
+      skills: agent.skills,
+      subagents: agent.subagents ?? [],
+      maxBudgetPerRun: agent.maxBudgetPerRun,
+      settings: agent.settings,
     };
 
     const projectEntity = project
@@ -440,8 +440,8 @@ export class ExecutionManager {
           createdAt: now.toISOString(),
         };
 
-    const allPersonaEntities = allPersonaRows.map((p: typeof persona) => ({
-      id: p.id as PersonaId,
+    const allAgentEntities = allAgentRows.map((p: typeof agent) => ({
+      id: p.id as AgentId,
       name: p.name,
       description: p.description,
       avatar: p.avatar,
@@ -458,9 +458,9 @@ export class ExecutionManager {
     this.runExecutionStream(
       executionId,
       task,
-      personaEntity,
+      agentEntity,
       projectEntity,
-      allPersonaEntities,
+      allAgentEntities,
     ).catch((err) => {
       logger.error({ err, executionId }, "Execution failed");
     });
@@ -473,9 +473,9 @@ export class ExecutionManager {
   private async runExecutionStream(
     executionId: string,
     task: AgentTask,
-    persona: Parameters<AgentExecutor["spawn"]>[1],
+    agent: Parameters<AgentExecutor["spawn"]>[1],
     project: Parameters<AgentExecutor["spawn"]>[2],
-    allPersonas: Parameters<AgentExecutor["spawn"]>[1][],
+    allAgents: Parameters<AgentExecutor["spawn"]>[1][],
   ): Promise<void> {
     let logs = "";
     let finalOutcome: ExecutionOutcome = "failure";
@@ -497,12 +497,12 @@ export class ExecutionManager {
         }
       }
 
-      const events = this.executor.spawn(task, persona, project, {
+      const events = this.executor.spawn(task, agent, project, {
         executionId,
-        model: persona.model,
-        maxBudget: persona.maxBudgetPerRun,
-        tools: persona.allowedTools.length > 0 ? persona.allowedTools : [],
-        allPersonas,
+        model: agent.model,
+        maxBudget: agent.maxBudgetPerRun,
+        tools: agent.allowedTools.length > 0 ? agent.allowedTools : [],
+        allAgents,
         handoffContext,
       });
 
@@ -516,7 +516,7 @@ export class ExecutionManager {
           this.broadcastFn({
             type: "agent_output_chunk",
             executionId: executionId as ExecutionId,
-            personaId: persona.id as PersonaId,
+            agentId: agent.id as AgentId,
             chunk: event.content,
             chunkType: "text",
             timestamp: new Date().toISOString(),
@@ -529,7 +529,7 @@ export class ExecutionManager {
           this.broadcastFn({
             type: "agent_output_chunk",
             executionId: executionId as ExecutionId,
-            personaId: persona.id as PersonaId,
+            agentId: agent.id as AgentId,
             chunk: `⏳ Rate limited — retrying in ${retrySeconds}s (attempt ${event.attempt}/${event.maxRetries})`,
             chunkType: "text",
             timestamp: new Date().toISOString(),
@@ -560,7 +560,7 @@ export class ExecutionManager {
         this.broadcastFn({
           type: "agent_output_chunk",
           executionId: executionId as ExecutionId,
-          personaId: persona.id as PersonaId,
+          agentId: agent.id as AgentId,
           chunk,
           chunkType: toChunkType(event),
           timestamp: new Date().toISOString(),
@@ -583,7 +583,7 @@ export class ExecutionManager {
 
       // Build handoff note for non-Router completions
       let handoffNotes = null;
-      if (persona.name !== "Router" && finalOutcome === "success" && task.workItemId) {
+      if (agent.name !== "Router" && finalOutcome === "success" && task.workItemId) {
         const [currentItem] = await (this.db as any)
           .select({ currentState: workItems.currentState, workflowStateName: executions.workflowStateName })
           .from(executions)
@@ -617,13 +617,13 @@ export class ExecutionManager {
           checkpointMessageId,
           structuredOutput,
           handoffNotes,
-          model: persona.model,
+          model: agent.model,
           totalTokens: accumulatedTokens || null,
           toolUses: accumulatedToolUses || null,
         })
         .where(eq(executions.id, executionId));
 
-      if (persona.name !== "Router") {
+      if (agent.name !== "Router") {
         await this.appendExecutionContext(task.workItemId, {
           executionId: executionId as ExecutionId,
           summary: finalSummary,
@@ -635,7 +635,7 @@ export class ExecutionManager {
       this.broadcastFn({
         type: "agent_completed",
         executionId: executionId as ExecutionId,
-        personaId: persona.id as PersonaId,
+        agentId: agent.id as AgentId,
         workItemId: task.workItemId,
         outcome: finalOutcome,
         durationMs: finalDurationMs,
@@ -647,7 +647,7 @@ export class ExecutionManager {
         type: "execution.completed",
         executionId: executionId as ExecutionId,
         workItemId: task.workItemId ?? null,
-        personaId: persona.id as PersonaId,
+        agentId: agent.id as AgentId,
         projectId: (project.id as ProjectId) ?? null,
         outcome: finalOutcome,
         costUsd: finalCostUsd,
@@ -659,7 +659,7 @@ export class ExecutionManager {
       auditAgentComplete({
         workItemId: task.workItemId,
         executionId,
-        personaName: persona.name,
+        agentName: agent.name,
         outcome: finalOutcome,
         costUsd: finalCostUsd,
         durationMs: finalDurationMs,
@@ -669,7 +669,7 @@ export class ExecutionManager {
       broadcastNotification({
         type: "agent_completed",
         priority: "low",
-        title: `${persona.name} completed`,
+        title: `${agent.name} completed`,
         description: finalSummary?.slice(0, 100) || undefined,
         workItemId: task.workItemId,
         executionId,
@@ -680,7 +680,7 @@ export class ExecutionManager {
           workItemId: task.workItemId,
           executionId,
           costUsd: finalCostUsd,
-          actor: persona.name,
+          actor: agent.name,
         });
       }
 
@@ -708,7 +708,7 @@ export class ExecutionManager {
 
       const nextTask = onComplete(executionId);
       if (nextTask) {
-        this.runExecution(nextTask.workItemId, nextTask.personaId).catch((err) => {
+        this.runExecution(nextTask.workItemId, nextTask.agentId).catch((err) => {
           logger.error({ err, workItemId: nextTask.workItemId }, "Dequeued execution failed");
         });
       }
@@ -716,7 +716,7 @@ export class ExecutionManager {
       if (finalOutcome === "success" && this.canTransition(task.workItemId)) {
         this.recordTransition(task.workItemId);
 
-        if (persona.name === "Router") {
+        if (agent.name === "Router") {
           const [updated] = await (this.db as any)
             .select({ currentState: workItems.currentState })
             .from(workItems)
@@ -811,7 +811,7 @@ export class ExecutionManager {
 
       const errorCategory = err instanceof Error && err.message.includes("API")
         ? "sdk_error"
-        : err instanceof Error && (err.message.includes("persona") || err.message.includes("config") || err.message.includes("not found"))
+        : err instanceof Error && (err.message.includes("agent") || err.message.includes("config") || err.message.includes("not found"))
           ? "configuration_error"
           : "unknown";
 
@@ -830,7 +830,7 @@ export class ExecutionManager {
       this.broadcastFn({
         type: "agent_completed",
         executionId: executionId as ExecutionId,
-        personaId: persona.id as PersonaId,
+        agentId: agent.id as AgentId,
         workItemId: task.workItemId,
         outcome: "failure",
         durationMs: 0,
@@ -842,7 +842,7 @@ export class ExecutionManager {
         type: "execution.failed",
         executionId: executionId as ExecutionId,
         workItemId: task.workItemId ?? null,
-        personaId: persona.id as PersonaId,
+        agentId: agent.id as AgentId,
         projectId: (project.id as ProjectId) ?? null,
         error: errorMsg,
         timestamp: new Date().toISOString(),
@@ -852,7 +852,7 @@ export class ExecutionManager {
       broadcastNotification({
         type: "agent_errored",
         priority: "critical",
-        title: `${persona.name} failed`,
+        title: `${agent.name} failed`,
         description: errorMsg.slice(0, 100),
         workItemId: task.workItemId,
         executionId,
@@ -860,7 +860,7 @@ export class ExecutionManager {
 
       const nextTask = onComplete(executionId);
       if (nextTask) {
-        this.runExecution(nextTask.workItemId, nextTask.personaId).catch((e) => {
+        this.runExecution(nextTask.workItemId, nextTask.agentId).catch((e) => {
           logger.error({ err: e, workItemId: nextTask.workItemId }, "Dequeued execution failed");
         });
       }

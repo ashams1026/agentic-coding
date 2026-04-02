@@ -43,7 +43,7 @@ describe("router auto-routing toggle", () => {
       .set({ settings: { maxConcurrent: 3, monthCap: 50, autoRouting: true } })
       .where(eq(schema.projects.id, TEST_IDS.PROJECT_ID));
 
-    // Seed a Router persona (runRouter will getOrCreate one)
+    // Seed a Router agent (runRouter will getOrCreate one)
     const result = await runRouter(TEST_IDS.WI_TOP_1);
 
     expect(result).toBe(true);

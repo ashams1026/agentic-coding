@@ -3,7 +3,7 @@ import { eq, desc, and } from "drizzle-orm";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import type { AgentDefinition } from "@anthropic-ai/claude-agent-sdk";
 import { db, sqlite } from "../db/connection.js";
-import { chatSessions, chatMessages, personas, projects } from "../db/schema.js";
+import { chatSessions, chatMessages, agents, projects } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import { getClaudeCodeExecutablePath } from "../config.js";
 import { resolveVariables, buildVariableContext } from "../agent/prompt-variables.js";
@@ -11,7 +11,7 @@ import type {
   ChatSessionId,
   ChatMessageId,
   ProjectId,
-  PersonaId,
+  AgentId,
   WorkItemId,
 } from "@agentops/shared";
 import { readFileSync } from "node:fs";
@@ -35,7 +35,7 @@ function serializeSession(row: typeof chatSessions.$inferSelect) {
   return {
     id: row.id as ChatSessionId,
     projectId: row.projectId as ProjectId,
-    personaId: (row.personaId as PersonaId) ?? null,
+    agentId: (row.agentId as AgentId) ?? null,
     workItemId: (row.workItemId as WorkItemId) ?? null,
     sdkSessionId: row.sdkSessionId ?? null,
     title: row.title,
@@ -58,9 +58,9 @@ function serializeMessage(row: typeof chatMessages.$inferSelect) {
 export async function chatRoutes(app: FastifyInstance) {
   // POST /api/chat/sessions — create a new chat session
   app.post<{
-    Body: { projectId?: string; personaId?: string; workItemId?: string };
+    Body: { projectId?: string; agentId?: string; workItemId?: string };
   }>("/api/chat/sessions", async (request, reply) => {
-    const { projectId, personaId, workItemId } = request.body ?? {};
+    const { projectId, agentId, workItemId } = request.body ?? {};
 
     // Validate project if provided
     if (projectId) {
@@ -70,11 +70,11 @@ export async function chatRoutes(app: FastifyInstance) {
       }
     }
 
-    // Validate persona if provided
-    if (personaId) {
-      const [persona] = await db.select().from(personas).where(eq(personas.id, personaId));
-      if (!persona) {
-        return reply.status(404).send({ error: `Persona ${personaId} not found` });
+    // Validate agent if provided
+    if (agentId) {
+      const [agent] = await db.select().from(agents).where(eq(agents.id, agentId));
+      if (!agent) {
+        return reply.status(404).send({ error: `Agent ${agentId} not found` });
       }
     }
 
@@ -84,7 +84,7 @@ export async function chatRoutes(app: FastifyInstance) {
     await db.insert(chatSessions).values({
       id,
       projectId: projectId ?? "pj-global",
-      personaId: personaId ?? null,
+      agentId: agentId ?? null,
       workItemId: workItemId ?? null,
       title: "New chat",
       createdAt: now,
@@ -114,21 +114,21 @@ export async function chatRoutes(app: FastifyInstance) {
       ? await db
           .select({
             session: chatSessions,
-            personaName: personas.name,
-            personaAvatar: personas.avatar,
+            agentName: agents.name,
+            agentAvatar: agents.avatar,
           })
           .from(chatSessions)
-          .leftJoin(personas, eq(chatSessions.personaId, personas.id))
+          .leftJoin(agents, eq(chatSessions.agentId, agents.id))
           .where(and(...conditions))
           .orderBy(desc(chatSessions.updatedAt))
       : await db
           .select({
             session: chatSessions,
-            personaName: personas.name,
-            personaAvatar: personas.avatar,
+            agentName: agents.name,
+            agentAvatar: agents.avatar,
           })
           .from(chatSessions)
-          .leftJoin(personas, eq(chatSessions.personaId, personas.id))
+          .leftJoin(agents, eq(chatSessions.agentId, agents.id))
           .orderBy(desc(chatSessions.updatedAt));
 
     // Fetch last message preview per session in one query using raw SQLite
@@ -154,7 +154,7 @@ export async function chatRoutes(app: FastifyInstance) {
 
     const data = rows.map((r) => ({
       ...serializeSession(r.session),
-      persona: r.personaName ? { name: r.personaName, avatar: r.personaAvatar } : null,
+      agent: r.agentName ? { name: r.agentName, avatar: r.agentAvatar } : null,
       lastMessagePreview: lastMessages.get(r.session.id) ?? null,
     }));
 
@@ -167,15 +167,15 @@ export async function chatRoutes(app: FastifyInstance) {
   }>("/api/chat/sessions/:id/messages", async (request, reply) => {
     const { id } = request.params;
 
-    // Verify session exists and load persona info
+    // Verify session exists and load agent info
     const sessionRows = await db
       .select({
         session: chatSessions,
-        personaName: personas.name,
-        personaAvatar: personas.avatar,
+        agentName: agents.name,
+        agentAvatar: agents.avatar,
       })
       .from(chatSessions)
-      .leftJoin(personas, eq(chatSessions.personaId, personas.id))
+      .leftJoin(agents, eq(chatSessions.agentId, agents.id))
       .where(eq(chatSessions.id, id));
 
     if (sessionRows.length === 0) {
@@ -195,7 +195,7 @@ export async function chatRoutes(app: FastifyInstance) {
       total: rows.length,
       session: {
         ...serializeSession(sessionRow.session),
-        persona: sessionRow.personaName ? { name: sessionRow.personaName, avatar: sessionRow.personaAvatar } : null,
+        agent: sessionRow.agentName ? { name: sessionRow.agentName, avatar: sessionRow.agentAvatar } : null,
       },
     };
   });
@@ -255,10 +255,10 @@ export async function chatRoutes(app: FastifyInstance) {
   // POST /api/chat/sessions/:id/messages — send a message and stream Pico's response via SSE
   app.post<{
     Params: { id: string };
-    Body: { content: string; personaId?: string };
+    Body: { content: string; agentId?: string };
   }>("/api/chat/sessions/:id/messages", async (request, reply) => {
     const { id } = request.params;
-    const { content, personaId: overridePersonaId } = request.body;
+    const { content, agentId: overrideAgentId } = request.body;
 
     if (!content?.trim()) {
       return reply.status(400).send({ error: "content is required" });
@@ -314,29 +314,28 @@ export async function chatRoutes(app: FastifyInstance) {
         .where(eq(chatSessions.id, id));
     }
 
-    // Load chat persona: override > session's persona > default Pico
-    let chatPersona;
-    const personaIdToLoad = overridePersonaId || session.personaId;
+    // Load chat agent: override > session's agent > default Pico
+    let chatAgent;
+    const agentIdToLoad = overrideAgentId || session.agentId;
 
-    if (personaIdToLoad) {
-      const [persona] = await db.select().from(personas).where(eq(personas.id, personaIdToLoad));
-      if (!persona) {
-        return reply.status(404).send({ error: `Persona ${personaIdToLoad} not found` });
+    if (agentIdToLoad) {
+      const [agent] = await db.select().from(agents).where(eq(agents.id, agentIdToLoad));
+      if (!agent) {
+        return reply.status(404).send({ error: `Agent ${agentIdToLoad} not found` });
       }
-      chatPersona = persona;
+      chatAgent = agent;
     } else {
       // Fallback to default Pico assistant
-      const allPersonas = await db.select().from(personas);
-      chatPersona = allPersonas.find(
+      const allAgents = await db.select().from(agents);
+      chatAgent = allAgents.find(
         (p) => (p.settings as Record<string, unknown>)?.isAssistant === true,
       );
     }
 
-    if (!chatPersona) {
-      return reply.status(503).send({ error: "No chat persona found" });
+    if (!chatAgent) {
+      return reply.status(503).send({ error: "No chat agent found" });
     }
 
-    const chatAgent = chatPersona;
     const isPico = (chatAgent.settings as Record<string, unknown>)?.isAssistant === true;
 
     // Load project for context (may be null for global sessions)
@@ -365,7 +364,7 @@ export async function chatRoutes(app: FastifyInstance) {
       // Resolve template variables (no workItem in chat path)
       const varContext = buildVariableContext({
         project: project ?? null,
-        persona: chatAgent,
+        agent: chatAgent,
       });
       systemSections.push(resolveVariables(chatAgent.systemPrompt, varContext));
     }
@@ -406,7 +405,7 @@ export async function chatRoutes(app: FastifyInstance) {
         ].join("\n"),
       );
     } else {
-      // Generic chat instructions for non-Pico personas
+      // Generic chat instructions for non-Pico agents
       systemSections.push(
         [
           `## Chat Instructions`,
@@ -474,8 +473,8 @@ export async function chatRoutes(app: FastifyInstance) {
                 new URL("../agent/mcp-server.ts", import.meta.url).pathname,
               ],
               env: {
-                PERSONA_NAME: chatAgent.name,
-                PERSONA_ID: chatAgent.id,
+                AGENT_NAME: chatAgent.name,
+                AGENT_ID: chatAgent.id,
                 ...(session.projectId ? { PROJECT_ID: session.projectId } : {}),
                 ALLOWED_TOOLS: (chatAgent.mcpTools as string[]).join(","),
               },
@@ -528,7 +527,7 @@ export async function chatRoutes(app: FastifyInstance) {
     } catch (err) {
       const errMsg =
         err instanceof Error ? err.message : String(err);
-      logger.error({ err, sessionId: id, persona: chatAgent.name }, "Chat error");
+      logger.error({ err, sessionId: id, agent: chatAgent.name }, "Chat error");
       sendSSE({ type: "error", content: errMsg });
     }
 

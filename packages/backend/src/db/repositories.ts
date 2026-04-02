@@ -10,25 +10,25 @@ import { db } from "./connection.js";
 import {
   workItems,
   executions,
-  personas,
+  agents,
   comments,
   projects,
-  personaAssignments,
+  agentAssignments,
   workItemEdges,
 } from "./schema.js";
 import type {
   WorkItemRepository,
   WorkItemRow,
   ExecutionRepository,
-  PersonaRepository,
-  PersonaRow,
+  AgentRepository,
+  AgentRow,
   CommentRepository,
   ProjectRepository,
   ProjectRow,
   WorkItemEdgeRepository,
   Repositories,
 } from "@agentops/core";
-import type { ExecutionContextEntry, ExecutionOutcome, RejectionPayload, Priority, PersonaModel, PersonaSettings } from "@agentops/shared";
+import type { ExecutionContextEntry, ExecutionOutcome, RejectionPayload, Priority, AgentModel, AgentSettings } from "@agentops/shared";
 
 // ── WorkItem Repository ─────────────────────────────────────────
 
@@ -43,7 +43,7 @@ function toWorkItemRow(row: typeof workItems.$inferSelect): WorkItemRow {
     currentState: row.currentState,
     priority: row.priority as Priority,
     labels: row.labels,
-    assignedPersonaId: row.assignedPersonaId,
+    assignedAgentId: row.assignedAgentId,
     executionContext: row.executionContext as ExecutionContextEntry[],
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
@@ -119,7 +119,7 @@ export class DrizzleWorkItemRepository implements WorkItemRepository {
     currentState: string;
     priority: Priority;
     labels: string[];
-    assignedPersonaId: string | null;
+    assignedAgentId: string | null;
     executionContext: ExecutionContextEntry[];
   }): Promise<void> {
     const now = new Date();
@@ -144,7 +144,7 @@ export class DrizzleExecutionRepository implements ExecutionRepository {
   async create(execution: {
     id: string;
     workItemId: string;
-    personaId: string;
+    agentId: string;
     projectId: string;
     status: string;
     startedAt: Date;
@@ -183,45 +183,45 @@ export class DrizzleExecutionRepository implements ExecutionRepository {
   }
 }
 
-// ── Persona Repository ──────────────────────────────────────────
+// ── Agent Repository ──────────────────────────────────────────
 
-function toPersonaRow(row: typeof personas.$inferSelect): PersonaRow {
+function toAgentRow(row: typeof agents.$inferSelect): AgentRow {
   return {
     id: row.id,
     name: row.name,
     description: row.description,
     avatar: row.avatar,
     systemPrompt: row.systemPrompt,
-    model: row.model as PersonaModel,
+    model: row.model as AgentModel,
     allowedTools: row.allowedTools,
     mcpTools: row.mcpTools,
     skills: row.skills,
     subagents: row.subagents ?? [],
     maxBudgetPerRun: row.maxBudgetPerRun,
-    settings: row.settings as PersonaSettings,
+    settings: row.settings as AgentSettings,
   };
 }
 
-export class DrizzlePersonaRepository implements PersonaRepository {
-  async getById(id: string): Promise<PersonaRow | null> {
-    const [row] = await db.select().from(personas).where(eq(personas.id, id));
-    return row ? toPersonaRow(row) : null;
+export class DrizzleAgentRepository implements AgentRepository {
+  async getById(id: string): Promise<AgentRow | null> {
+    const [row] = await db.select().from(agents).where(eq(agents.id, id));
+    return row ? toAgentRow(row) : null;
   }
 
-  async getAll(): Promise<PersonaRow[]> {
-    const rows = await db.select().from(personas);
-    return rows.map(toPersonaRow);
+  async getAll(): Promise<AgentRow[]> {
+    const rows = await db.select().from(agents);
+    return rows.map(toAgentRow);
   }
 
   async findByName(name: string): Promise<string | null> {
     const [row] = await db
-      .select({ id: personas.id })
-      .from(personas)
-      .where(eq(personas.name, name));
+      .select({ id: agents.id })
+      .from(agents)
+      .where(eq(agents.name, name));
     return row?.id ?? null;
   }
 
-  async create(persona: {
+  async create(agent: {
     id: string;
     name: string;
     description: string;
@@ -233,22 +233,22 @@ export class DrizzlePersonaRepository implements PersonaRepository {
     maxBudgetPerRun: number;
     settings: Record<string, unknown>;
   }): Promise<void> {
-    await db.insert(personas).values(persona);
+    await db.insert(agents).values(agent);
   }
 
   async updateSystemPrompt(id: string, systemPrompt: string): Promise<void> {
-    await db.update(personas).set({ systemPrompt }).where(eq(personas.id, id));
+    await db.update(agents).set({ systemPrompt }).where(eq(agents.id, id));
   }
 
   async getAssignment(projectId: string, stateName: string): Promise<string | null> {
     const [row] = await db
-      .select({ personaId: personaAssignments.personaId })
-      .from(personaAssignments)
+      .select({ agentId: agentAssignments.agentId })
+      .from(agentAssignments)
       .where(and(
-        eq(personaAssignments.projectId, projectId),
-        eq(personaAssignments.stateName, stateName),
+        eq(agentAssignments.projectId, projectId),
+        eq(agentAssignments.stateName, stateName),
       ));
-    return row?.personaId ?? null;
+    return row?.agentId ?? null;
   }
 }
 
@@ -328,7 +328,7 @@ export function createDrizzleRepositories(): Repositories {
   return {
     workItems: new DrizzleWorkItemRepository(),
     executions: new DrizzleExecutionRepository(),
-    personas: new DrizzlePersonaRepository(),
+    agents: new DrizzleAgentRepository(),
     comments: new DrizzleCommentRepository(),
     projects: new DrizzleProjectRepository(),
     workItemEdges: new DrizzleWorkItemEdgeRepository(),

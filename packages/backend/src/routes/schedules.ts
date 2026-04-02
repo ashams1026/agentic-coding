@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { eq, desc } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { schedules, personas } from "../db/schema.js";
+import { schedules, agents } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import { getNextRunTime } from "../scheduling/scheduler.js";
 import { executionManager } from "../agent/setup.js";
@@ -55,14 +55,14 @@ function isValidCron(expression: string): boolean {
 // ── Routes ─────────────────────────────────────────────────────
 
 export async function scheduleRoutes(app: FastifyInstance) {
-  // GET /api/schedules — list all schedules with persona name
+  // GET /api/schedules — list all schedules with agent name
   app.get("/api/schedules", async () => {
     const rows = await db
       .select({
         id: schedules.id,
         name: schedules.name,
-        personaId: schedules.personaId,
-        personaName: personas.name,
+        agentId: schedules.agentId,
+        agentName: agents.name,
         projectId: schedules.projectId,
         cronExpression: schedules.cronExpression,
         promptTemplate: schedules.promptTemplate,
@@ -73,7 +73,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
         createdAt: schedules.createdAt,
       })
       .from(schedules)
-      .leftJoin(personas, eq(schedules.personaId, personas.id))
+      .leftJoin(agents, eq(schedules.agentId, agents.id))
       .orderBy(desc(schedules.createdAt));
 
     return {
@@ -91,17 +91,17 @@ export async function scheduleRoutes(app: FastifyInstance) {
   app.post<{
     Body: {
       name: string;
-      personaId: string;
+      agentId: string;
       projectId?: string;
       cronExpression: string;
       promptTemplate?: string;
     };
   }>("/api/schedules", async (request, reply) => {
-    const { name, personaId, projectId, cronExpression, promptTemplate } = request.body;
+    const { name, agentId, projectId, cronExpression, promptTemplate } = request.body;
 
-    if (!name || !personaId || !cronExpression) {
+    if (!name || !agentId || !cronExpression) {
       return reply.status(400).send({
-        error: { code: "VALIDATION_ERROR", message: "name, personaId, and cronExpression are required" },
+        error: { code: "VALIDATION_ERROR", message: "name, agentId, and cronExpression are required" },
       });
     }
 
@@ -111,11 +111,11 @@ export async function scheduleRoutes(app: FastifyInstance) {
       });
     }
 
-    // Verify persona exists
-    const [persona] = await db.select({ id: personas.id }).from(personas).where(eq(personas.id, personaId));
-    if (!persona) {
+    // Verify agent exists
+    const [agent] = await db.select({ id: agents.id }).from(agents).where(eq(agents.id, agentId));
+    if (!agent) {
       return reply.status(400).send({
-        error: { code: "INVALID_PERSONA", message: `Persona "${personaId}" not found` },
+        error: { code: "INVALID_AGENT", message: `Agent "${agentId}" not found` },
       });
     }
 
@@ -126,7 +126,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
     await db.insert(schedules).values({
       id,
       name,
-      personaId,
+      agentId,
       projectId: projectId ?? "pj-global",
       cronExpression,
       promptTemplate: promptTemplate ?? "",
@@ -141,8 +141,8 @@ export async function scheduleRoutes(app: FastifyInstance) {
       data: {
         id,
         name,
-        personaId,
-        personaName: null,
+        agentId,
+        agentName: null,
         projectId: projectId ?? "pj-global",
         cronExpression,
         promptTemplate: promptTemplate ?? "",
@@ -201,13 +201,13 @@ export async function scheduleRoutes(app: FastifyInstance) {
 
     await db.update(schedules).set(updates).where(eq(schedules.id, id));
 
-    // Fetch updated record with persona name
+    // Fetch updated record with agent name
     const [updated] = await db
       .select({
         id: schedules.id,
         name: schedules.name,
-        personaId: schedules.personaId,
-        personaName: personas.name,
+        agentId: schedules.agentId,
+        agentName: agents.name,
         projectId: schedules.projectId,
         cronExpression: schedules.cronExpression,
         promptTemplate: schedules.promptTemplate,
@@ -218,7 +218,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
         createdAt: schedules.createdAt,
       })
       .from(schedules)
-      .leftJoin(personas, eq(schedules.personaId, personas.id))
+      .leftJoin(agents, eq(schedules.agentId, agents.id))
       .where(eq(schedules.id, id));
 
     return {
@@ -256,7 +256,7 @@ export async function scheduleRoutes(app: FastifyInstance) {
     try {
       const executionId = await executionManager.runExecution(
         null as any, // standalone schedule execution — no work item
-        schedule.personaId,
+        schedule.agentId,
       );
 
       // Update lastRunAt + compute nextRunAt

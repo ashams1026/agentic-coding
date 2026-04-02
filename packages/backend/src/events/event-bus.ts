@@ -6,7 +6,7 @@
  */
 
 import { EventEmitter } from "node:events";
-import type { ExecutionId, WorkItemId, PersonaId, ProjectId } from "@agentops/shared";
+import type { ExecutionId, WorkItemId, AgentId, ProjectId } from "@agentops/shared";
 import { logger } from "../logger.js";
 
 // ── Event Catalog ───────────────────────────────────────────────
@@ -15,7 +15,7 @@ export interface ExecutionStartedEvent {
   type: "execution.started";
   executionId: ExecutionId;
   workItemId: WorkItemId | null;
-  personaId: PersonaId;
+  agentId: AgentId;
   projectId: ProjectId | null;
   timestamp: string;
 }
@@ -24,7 +24,7 @@ export interface ExecutionCompletedEvent {
   type: "execution.completed";
   executionId: ExecutionId;
   workItemId: WorkItemId | null;
-  personaId: PersonaId;
+  agentId: AgentId;
   projectId: ProjectId | null;
   outcome: string;
   costUsd: number;
@@ -37,7 +37,7 @@ export interface ExecutionFailedEvent {
   type: "execution.failed";
   executionId: ExecutionId;
   workItemId: WorkItemId | null;
-  personaId: PersonaId;
+  agentId: AgentId;
   projectId: ProjectId | null;
   error: string;
   timestamp: string;

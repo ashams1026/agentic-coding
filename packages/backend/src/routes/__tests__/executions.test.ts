@@ -65,7 +65,7 @@ describe("execution routes", () => {
         url: "/api/executions",
         payload: {
           workItemId: TEST_IDS.WI_TOP_3,
-          personaId: TEST_IDS.PERSONA_PM,
+          agentId: TEST_IDS.AGENT_PM,
         },
       });
 
@@ -73,7 +73,7 @@ describe("execution routes", () => {
       const data = res.json().data;
       expect(data.id).toMatch(/^ex-/);
       expect(data.workItemId).toBe(TEST_IDS.WI_TOP_3);
-      expect(data.personaId).toBe(TEST_IDS.PERSONA_PM);
+      expect(data.agentId).toBe(TEST_IDS.AGENT_PM);
       expect(data.status).toBe("pending");
       expect(data.costUsd).toBe(0);
       expect(data.durationMs).toBe(0);

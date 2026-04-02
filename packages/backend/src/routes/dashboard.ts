@@ -1,21 +1,21 @@
 import type { FastifyInstance } from "fastify";
 import { eq, and } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { executions, proposals, workItems, personas, projects } from "../db/schema.js";
+import { executions, proposals, workItems, agents, projects } from "../db/schema.js";
 import type {
   DashboardStats,
   CostSummary,
   ExecutionStats,
   ReadyWorkItem,
   WorkItem,
-  Persona,
+  Agent,
   WorkItemId,
-  PersonaId,
+  AgentId,
   ProjectId,
   Priority,
   ExecutionId,
   ExecutionOutcome,
-  PersonaModel,
+  AgentModel,
   RejectionPayload,
 } from "@agentops/shared";
 
@@ -141,11 +141,11 @@ export async function dashboardRoutes(app: FastifyInstance) {
       .from(workItems)
       .where(conditions.length > 1 ? and(...conditions) : conditions[0]);
 
-    const allPersonas = await db.select().from(personas);
-    const personaMap = new Map(allPersonas.map((p) => [p.id, p]));
+    const allAgents = await db.select().from(agents);
+    const agentMap = new Map(allAgents.map((p) => [p.id, p]));
 
     const data: ReadyWorkItem[] = readyItems.slice(0, 5).map((wi) => {
-      const persona = wi.assignedPersonaId ? personaMap.get(wi.assignedPersonaId) ?? null : null;
+      const agent = wi.assignedAgentId ? agentMap.get(wi.assignedAgentId) ?? null : null;
       const workItem: WorkItem = {
         id: wi.id as WorkItemId,
         parentId: (wi.parentId as WorkItemId) ?? null,
@@ -157,7 +157,7 @@ export async function dashboardRoutes(app: FastifyInstance) {
         workflowId: wi.workflowId ?? null,
         priority: wi.priority as Priority,
         labels: wi.labels,
-        assignedPersonaId: (wi.assignedPersonaId as PersonaId) ?? null,
+        assignedAgentId: (wi.assignedAgentId as AgentId) ?? null,
         executionContext: wi.executionContext.map((ec) => ({
           executionId: ec.executionId as ExecutionId,
           summary: ec.summary,
@@ -169,23 +169,23 @@ export async function dashboardRoutes(app: FastifyInstance) {
         archivedAt: wi.archivedAt ? toIso(wi.archivedAt) : null,
         deletedAt: wi.deletedAt ? toIso(wi.deletedAt) : null,
       };
-      const serializedPersona: Persona | null = persona
+      const serializedAgent: Agent | null = agent
         ? {
-            id: persona.id as PersonaId,
-            name: persona.name,
-            description: persona.description,
-            avatar: persona.avatar,
-            systemPrompt: persona.systemPrompt,
-            model: persona.model as PersonaModel,
-            allowedTools: persona.allowedTools,
-            mcpTools: persona.mcpTools,
-            skills: persona.skills,
-            subagents: persona.subagents ?? [],
-            maxBudgetPerRun: persona.maxBudgetPerRun,
-            settings: persona.settings,
+            id: agent.id as AgentId,
+            name: agent.name,
+            description: agent.description,
+            avatar: agent.avatar,
+            systemPrompt: agent.systemPrompt,
+            model: agent.model as AgentModel,
+            allowedTools: agent.allowedTools,
+            mcpTools: agent.mcpTools,
+            skills: agent.skills,
+            subagents: agent.subagents ?? [],
+            maxBudgetPerRun: agent.maxBudgetPerRun,
+            settings: agent.settings,
           }
         : null;
-      return { workItem, persona: serializedPersona };
+      return { workItem, agent: serializedAgent };
     });
 
     return { data, total: data.length };

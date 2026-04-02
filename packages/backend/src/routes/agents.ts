@@ -1,17 +1,17 @@
 import type { FastifyInstance } from "fastify";
 import { eq } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { personas } from "../db/schema.js";
+import { agents } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import type {
-  PersonaId,
-  CreatePersonaRequest,
-  UpdatePersonaRequest,
+  AgentId,
+  CreateAgentRequest,
+  UpdateAgentRequest,
 } from "@agentops/shared";
 
-function serializePersona(row: typeof personas.$inferSelect) {
+function serializeAgent(row: typeof agents.$inferSelect) {
   return {
-    id: row.id as PersonaId,
+    id: row.id as AgentId,
     name: row.name,
     description: row.description,
     avatar: row.avatar,
@@ -26,40 +26,40 @@ function serializePersona(row: typeof personas.$inferSelect) {
   };
 }
 
-export async function personaRoutes(app: FastifyInstance) {
-  // GET /api/personas — list all personas
-  app.get("/api/personas", async () => {
-    const rows = await db.select().from(personas);
-    return { data: rows.map(serializePersona), total: rows.length };
+export async function agentRoutes(app: FastifyInstance) {
+  // GET /api/agents — list all agents
+  app.get("/api/agents", async () => {
+    const rows = await db.select().from(agents);
+    return { data: rows.map(serializeAgent), total: rows.length };
   });
 
-  // GET /api/personas/:id
+  // GET /api/agents/:id
   app.get<{
     Params: { id: string };
-  }>("/api/personas/:id", async (request, reply) => {
+  }>("/api/agents/:id", async (request, reply) => {
     const { id } = request.params;
 
     const [row] = await db
       .select()
-      .from(personas)
-      .where(eq(personas.id, id));
+      .from(agents)
+      .where(eq(agents.id, id));
 
     if (!row) {
-      return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Persona ${id} not found` } });
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Agent ${id} not found` } });
     }
 
-    return { data: serializePersona(row) };
+    return { data: serializeAgent(row) };
   });
 
-  // POST /api/personas
+  // POST /api/agents
   app.post<{
-    Body: CreatePersonaRequest;
-  }>("/api/personas", async (request, reply) => {
+    Body: CreateAgentRequest;
+  }>("/api/agents", async (request, reply) => {
     const body = request.body;
-    const id = createId.persona();
+    const id = createId.agent();
 
     const [row] = await db
-      .insert(personas)
+      .insert(agents)
       .values({
         id,
         name: body.name,
@@ -76,14 +76,14 @@ export async function personaRoutes(app: FastifyInstance) {
       })
       .returning();
 
-    return reply.status(201).send({ data: serializePersona(row!) });
+    return reply.status(201).send({ data: serializeAgent(row!) });
   });
 
-  // PATCH /api/personas/:id
+  // PATCH /api/agents/:id
   app.patch<{
     Params: { id: string };
-    Body: UpdatePersonaRequest;
-  }>("/api/personas/:id", async (request, reply) => {
+    Body: UpdateAgentRequest;
+  }>("/api/agents/:id", async (request, reply) => {
     const { id } = request.params;
     const body = request.body;
 
@@ -100,7 +100,7 @@ export async function personaRoutes(app: FastifyInstance) {
     if (body.maxBudgetPerRun !== undefined) updates["maxBudgetPerRun"] = body.maxBudgetPerRun;
     if (body.settings !== undefined) {
       // Merge with existing settings to preserve system flags
-      const [existing] = await db.select({ settings: personas.settings }).from(personas).where(eq(personas.id, id));
+      const [existing] = await db.select({ settings: agents.settings }).from(agents).where(eq(agents.id, id));
       updates["settings"] = { ...(existing?.settings ?? {}), ...body.settings };
     }
 
@@ -109,29 +109,29 @@ export async function personaRoutes(app: FastifyInstance) {
     }
 
     const [row] = await db
-      .update(personas)
+      .update(agents)
       .set(updates)
-      .where(eq(personas.id, id))
+      .where(eq(agents.id, id))
       .returning();
 
     if (!row) {
-      return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Persona ${id} not found` } });
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Agent ${id} not found` } });
     }
 
-    return { data: serializePersona(row) };
+    return { data: serializeAgent(row) };
   });
 
-  // DELETE /api/personas/:id
+  // DELETE /api/agents/:id
   app.delete<{
     Params: { id: string };
-  }>("/api/personas/:id", async (request, reply) => {
+  }>("/api/agents/:id", async (request, reply) => {
     const [row] = await db
-      .delete(personas)
-      .where(eq(personas.id, request.params.id))
+      .delete(agents)
+      .where(eq(agents.id, request.params.id))
       .returning();
 
     if (!row) {
-      return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Persona ${request.params.id} not found` } });
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Agent ${request.params.id} not found` } });
     }
 
     return reply.status(204).send();

@@ -96,7 +96,7 @@ describe("comment routes", () => {
         payload: {
           workItemId: TEST_IDS.WI_TOP_2,
           authorType: "agent",
-          authorId: TEST_IDS.PERSONA_ENGINEER,
+          authorId: TEST_IDS.AGENT_ENGINEER,
           authorName: "Engineer",
           content: "Agent analysis complete.",
         },
@@ -105,7 +105,7 @@ describe("comment routes", () => {
       expect(res.statusCode).toBe(201);
       const data = res.json().data;
       expect(data.authorType).toBe("agent");
-      expect(data.authorId).toBe(TEST_IDS.PERSONA_ENGINEER);
+      expect(data.authorId).toBe(TEST_IDS.AGENT_ENGINEER);
     });
 
     it("creates a system comment", async () => {

@@ -5,10 +5,10 @@
 
 import type {
   WorkItemId,
-  PersonaModel,
+  AgentModel,
   ExecutionOutcome,
   ExecutionContextEntry,
-  Persona,
+  Agent,
   Project,
 } from "@agentops/shared";
 
@@ -116,13 +116,13 @@ export interface SpawnOptions {
   /** Execution ID for audit trail logging */
   executionId: string;
   /** Model to use for this execution */
-  model: PersonaModel;
+  model: AgentModel;
   /** Maximum cost in USD for this execution (0 = unlimited) */
   maxBudget: number;
-  /** SDK built-in tool names this persona is allowed to use (e.g., 'Read', 'Bash') */
+  /** SDK built-in tool names this agent is allowed to use (e.g., 'Read', 'Bash') */
   tools: string[];
-  /** All project personas available as subagents */
-  allPersonas: Persona[];
+  /** All project agents available as subagents */
+  allAgents: Agent[];
   /** Formatted handoff context from previous agent (injected into system prompt) */
   handoffContext?: string;
 }
@@ -136,7 +136,7 @@ export interface AgentExecutor {
    */
   spawn(
     task: AgentTask,
-    persona: Persona,
+    agent: Agent,
     project: Project,
     options: SpawnOptions,
   ): AsyncIterable<AgentEvent>;

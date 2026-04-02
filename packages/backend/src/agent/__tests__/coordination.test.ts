@@ -15,7 +15,7 @@ vi.mock("../../ws.js", () => ({
   broadcast: vi.fn(),
 }));
 
-// Mock dispatch — coordination should trigger persona dispatch after auto-advancing parent
+// Mock dispatch — coordination should trigger agent dispatch after auto-advancing parent
 const mockDispatchForState = vi.fn().mockResolvedValue(undefined);
 vi.mock("../dispatch.js", () => ({
   dispatchForState: (...args: unknown[]) => mockDispatchForState(...args),
@@ -77,7 +77,7 @@ describe("parent-child coordination", () => {
     const parentState = await getState(TEST_IDS.WI_TOP_1);
     expect(parentState).toBe("In Review");
 
-    // Should dispatch persona for the parent's new state
+    // Should dispatch agent for the parent's new state
     expect(mockDispatchForState).toHaveBeenCalledWith(
       TEST_IDS.WI_TOP_1,
       "In Review",

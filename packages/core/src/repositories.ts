@@ -16,8 +16,8 @@ import type {
   ExecutionOutcome,
   RejectionPayload,
   Priority,
-  PersonaModel,
-  PersonaSettings,
+  AgentModel,
+  AgentSettings,
 } from "@agentops/shared";
 
 // ── WorkItem Repository ─────────────────────────────────────────
@@ -32,7 +32,7 @@ export interface WorkItemRow {
   currentState: string;
   priority: Priority;
   labels: string[];
-  assignedPersonaId: string | null;
+  assignedAgentId: string | null;
   executionContext: ExecutionContextEntry[];
   createdAt: Date;
   updatedAt: Date;
@@ -74,7 +74,7 @@ export interface WorkItemRepository {
     currentState: string;
     priority: Priority;
     labels: string[];
-    assignedPersonaId: string | null;
+    assignedAgentId: string | null;
     executionContext: ExecutionContextEntry[];
   }): Promise<void>;
 
@@ -89,7 +89,7 @@ export interface ExecutionRepository {
   create(execution: {
     id: string;
     workItemId: string;
-    personaId: string;
+    agentId: string;
     projectId: string;
     status: string;
     startedAt: Date;
@@ -124,35 +124,35 @@ export interface ExecutionRepository {
   }): Promise<void>;
 }
 
-// ── Persona Repository ──────────────────────────────────────────
+// ── Agent Repository ──────────────────────────────────────────
 
-export interface PersonaRow {
+export interface AgentRow {
   id: string;
   name: string;
   description: string;
   avatar: { color: string; icon: string };
   systemPrompt: string;
-  model: PersonaModel;
+  model: AgentModel;
   allowedTools: string[];
   mcpTools: string[];
   skills: string[];
   subagents: string[];
   maxBudgetPerRun: number;
-  settings: PersonaSettings;
+  settings: AgentSettings;
 }
 
-export interface PersonaRepository {
-  /** Get a persona by ID. */
-  getById(id: string): Promise<PersonaRow | null>;
+export interface AgentRepository {
+  /** Get a agent by ID. */
+  getById(id: string): Promise<AgentRow | null>;
 
-  /** Get all personas. */
-  getAll(): Promise<PersonaRow[]>;
+  /** Get all agents. */
+  getAll(): Promise<AgentRow[]>;
 
-  /** Find a persona by name. Returns ID if found, null otherwise. */
+  /** Find a agent by name. Returns ID if found, null otherwise. */
   findByName(name: string): Promise<string | null>;
 
-  /** Create a new persona. */
-  create(persona: {
+  /** Create a new agent. */
+  create(agent: {
     id: string;
     name: string;
     description: string;
@@ -165,10 +165,10 @@ export interface PersonaRepository {
     settings: Record<string, unknown>;
   }): Promise<void>;
 
-  /** Update a persona's system prompt. */
+  /** Update an agent's system prompt. */
   updateSystemPrompt(id: string, systemPrompt: string): Promise<void>;
 
-  /** Get the persona assignment for a project + state. Returns personaId or null. */
+  /** Get the agent assignment for a project + state. Returns agentId or null. */
   getAssignment(projectId: string, stateName: string): Promise<string | null>;
 }
 
@@ -233,7 +233,7 @@ export interface WorkItemEdgeRepository {
 export interface Repositories {
   workItems: WorkItemRepository;
   executions: ExecutionRepository;
-  personas: PersonaRepository;
+  agents: AgentRepository;
   comments: CommentRepository;
   projects: ProjectRepository;
   workItemEdges: WorkItemEdgeRepository;

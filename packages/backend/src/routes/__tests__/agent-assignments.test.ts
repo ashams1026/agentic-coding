@@ -9,18 +9,18 @@ vi.mock("../../db/connection.js", () => ({
   },
 }));
 
-import { personaAssignmentRoutes } from "../persona-assignments.js";
+import { agentAssignmentRoutes } from "../agent-assignments.js";
 
 let testDb: TestDatabase;
 let app: FastifyInstance;
 
-describe("persona-assignment routes", () => {
+describe("agent-assignment routes", () => {
   beforeEach(async () => {
     testDb = createTestDb();
     mockDb.db = testDb.db;
     await seedTestDb(testDb.db);
     app = Fastify({ logger: false });
-    await personaAssignmentRoutes(app);
+    await agentAssignmentRoutes(app);
   });
 
   afterEach(async () => {
@@ -28,13 +28,13 @@ describe("persona-assignment routes", () => {
     testDb.cleanup();
   });
 
-  // ── GET /api/persona-assignments ─────────────────────────────────
+  // ── GET /api/agent-assignments ─────────────────────────────────
 
-  describe("GET /api/persona-assignments", () => {
+  describe("GET /api/agent-assignments", () => {
     it("lists all assignments", async () => {
       const res = await app.inject({
         method: "GET",
-        url: "/api/persona-assignments",
+        url: "/api/agent-assignments",
       });
 
       expect(res.statusCode).toBe(200);
@@ -46,7 +46,7 @@ describe("persona-assignment routes", () => {
     it("filters by projectId", async () => {
       const res = await app.inject({
         method: "GET",
-        url: `/api/persona-assignments?projectId=${TEST_IDS.PROJECT_ID}`,
+        url: `/api/agent-assignments?projectId=${TEST_IDS.PROJECT_ID}`,
       });
 
       expect(res.statusCode).toBe(200);
@@ -60,7 +60,7 @@ describe("persona-assignment routes", () => {
     it("returns empty for non-existent projectId", async () => {
       const res = await app.inject({
         method: "GET",
-        url: "/api/persona-assignments?projectId=pj-nonexist",
+        url: "/api/agent-assignments?projectId=pj-nonexist",
       });
 
       expect(res.statusCode).toBe(200);
@@ -68,17 +68,17 @@ describe("persona-assignment routes", () => {
     });
   });
 
-  // ── PUT /api/persona-assignments (upsert) ────────────────────────
+  // ── PUT /api/agent-assignments (upsert) ────────────────────────
 
-  describe("PUT /api/persona-assignments", () => {
+  describe("PUT /api/agent-assignments", () => {
     it("creates a new assignment", async () => {
       const res = await app.inject({
         method: "PUT",
-        url: "/api/persona-assignments",
+        url: "/api/agent-assignments",
         payload: {
           projectId: TEST_IDS.PROJECT_ID,
           stateName: "Done",
-          personaId: TEST_IDS.PERSONA_QA,
+          agentId: TEST_IDS.AGENT_QA,
         },
       });
 
@@ -86,12 +86,12 @@ describe("persona-assignment routes", () => {
       const data = res.json().data;
       expect(data.projectId).toBe(TEST_IDS.PROJECT_ID);
       expect(data.stateName).toBe("Done");
-      expect(data.personaId).toBe(TEST_IDS.PERSONA_QA);
+      expect(data.agentId).toBe(TEST_IDS.AGENT_QA);
 
       // Verify total increased
       const list = await app.inject({
         method: "GET",
-        url: `/api/persona-assignments?projectId=${TEST_IDS.PROJECT_ID}`,
+        url: `/api/agent-assignments?projectId=${TEST_IDS.PROJECT_ID}`,
       });
       expect(list.json().total).toBe(5); // 4 seeded + 1 new
     });
@@ -100,40 +100,40 @@ describe("persona-assignment routes", () => {
       // Seed has Planning → PM. Upsert Planning → Tech Lead.
       const res = await app.inject({
         method: "PUT",
-        url: "/api/persona-assignments",
+        url: "/api/agent-assignments",
         payload: {
           projectId: TEST_IDS.PROJECT_ID,
           stateName: "Planning",
-          personaId: TEST_IDS.PERSONA_TECH_LEAD,
+          agentId: TEST_IDS.AGENT_TECH_LEAD,
         },
       });
 
       expect(res.statusCode).toBe(200);
-      expect(res.json().data.personaId).toBe(TEST_IDS.PERSONA_TECH_LEAD);
+      expect(res.json().data.agentId).toBe(TEST_IDS.AGENT_TECH_LEAD);
 
       // Verify total didn't change (upsert, not insert)
       const list = await app.inject({
         method: "GET",
-        url: `/api/persona-assignments?projectId=${TEST_IDS.PROJECT_ID}`,
+        url: `/api/agent-assignments?projectId=${TEST_IDS.PROJECT_ID}`,
       });
       expect(list.json().total).toBe(4);
     });
 
-    it("links a valid persona to a valid state", async () => {
+    it("links a valid agent to a valid state", async () => {
       const res = await app.inject({
         method: "PUT",
-        url: "/api/persona-assignments",
+        url: "/api/agent-assignments",
         payload: {
           projectId: TEST_IDS.PROJECT_ID,
           stateName: "Ready",
-          personaId: TEST_IDS.PERSONA_ENGINEER,
+          agentId: TEST_IDS.AGENT_ENGINEER,
         },
       });
 
       expect(res.statusCode).toBe(200);
       const data = res.json().data;
       expect(data.stateName).toBe("Ready");
-      expect(data.personaId).toBe(TEST_IDS.PERSONA_ENGINEER);
+      expect(data.agentId).toBe(TEST_IDS.AGENT_ENGINEER);
     });
   });
 });

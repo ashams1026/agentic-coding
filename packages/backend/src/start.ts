@@ -2,7 +2,7 @@ import { eq, or } from "drizzle-orm";
 import type { FastifyInstance } from "fastify";
 import { buildServer } from "./server.js";
 import { runMigrations } from "./db/migrate.js";
-import { ensureBuiltInPersonas } from "./db/default-personas.js";
+import { ensureBuiltInAgents } from "./db/default-agents.js";
 import { db, DB_PATH } from "./db/connection.js";
 import { sqlite } from "./db/connection.js";
 import { executions, workItems } from "./db/schema.js";
@@ -51,7 +51,7 @@ export async function recoverOrphanedState(): Promise<RecoveryReport> {
       .select({
         id: executions.id,
         workItemId: executions.workItemId,
-        personaId: executions.personaId,
+        agentId: executions.agentId,
         status: executions.status,
         startedAt: executions.startedAt,
       })
@@ -67,7 +67,7 @@ export async function recoverOrphanedState(): Promise<RecoveryReport> {
       // Log each orphaned execution
       for (const exec of orphaned) {
         logger.info(
-          { executionId: exec.id, status: exec.status, workItemId: exec.workItemId, personaId: exec.personaId },
+          { executionId: exec.id, status: exec.status, workItemId: exec.workItemId, agentId: exec.agentId },
           "Recovery: resetting orphaned execution",
         );
       }
@@ -228,8 +228,8 @@ export async function startServer(options: StartOptions = {}): Promise<void> {
 
   await runMigrations();
 
-  // Ensure built-in personas exist (idempotent)
-  await ensureBuiltInPersonas();
+  // Ensure built-in agents exist (idempotent)
+  await ensureBuiltInAgents();
 
   // Ensure default workflow exists (idempotent) + backfill references
   const { seedDefaultWorkflow } = await import("./db/seed-workflow.js");

@@ -59,7 +59,7 @@ export async function seedDefaultWorkflow(): Promise<void> {
       name: s.name,
       type: STATE_TYPES[s.name] ?? "intermediate",
       color: s.color,
-      personaId: null,
+      agentId: null,
       sortOrder: i,
     });
   }

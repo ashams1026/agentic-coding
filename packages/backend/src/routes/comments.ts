@@ -6,7 +6,7 @@ import { createId } from "@agentops/shared";
 import type {
   CommentId,
   WorkItemId,
-  PersonaId,
+  AgentId,
   CreateCommentRequest,
 } from "@agentops/shared";
 
@@ -19,7 +19,7 @@ function serializeComment(row: typeof comments.$inferSelect) {
     id: row.id as CommentId,
     workItemId: row.workItemId as WorkItemId,
     authorType: row.authorType,
-    authorId: (row.authorId as PersonaId) ?? null,
+    authorId: (row.authorId as AgentId) ?? null,
     authorName: row.authorName,
     content: row.content,
     metadata: row.metadata,

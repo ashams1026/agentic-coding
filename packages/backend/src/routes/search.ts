@@ -4,7 +4,7 @@ import { sqlite } from "../db/connection.js";
 // ── Types ────────────────────────────────────────────────────────
 
 interface SearchResult {
-  type: "work_item" | "persona" | "comment" | "chat_message";
+  type: "work_item" | "agent" | "comment" | "chat_message";
   id: string;
   title: string;
   snippet: string;
@@ -99,29 +99,29 @@ export async function searchRoutes(app: FastifyInstance) {
       } catch { /* FTS5 query error — skip work_item results */ }
     }
 
-    // Search personas
-    if (!typeFilter || typeFilter.has("persona")) {
+    // Search agents
+    if (!typeFilter || typeFilter.has("agent")) {
       try {
-        const personaRows = sqlite.prepare(`
+        const agentRows = sqlite.prepare(`
           SELECT
             b.entity_id as id,
-            snippet(personas_fts, 0, '<b>', '</b>', '...', 32) as name_snippet,
-            snippet(personas_fts, 1, '<b>', '</b>', '...', 32) as prompt_snippet,
-            bm25(personas_fts) as score,
-            p.name as title
-          FROM personas_fts
-          JOIN fts_personas_bridge b ON b.rowid = personas_fts.rowid
-          JOIN personas p ON p.id = b.entity_id
-          WHERE personas_fts MATCH ?
+            snippet(agents_fts, 0, '<b>', '</b>', '...', 32) as name_snippet,
+            snippet(agents_fts, 1, '<b>', '</b>', '...', 32) as prompt_snippet,
+            bm25(agents_fts) as score,
+            a.name as title
+          FROM agents_fts
+          JOIN fts_agents_bridge b ON b.rowid = agents_fts.rowid
+          JOIN agents a ON a.id = b.entity_id
+          WHERE agents_fts MATCH ?
           ORDER BY score
           LIMIT ?
         `).all(query, limit) as Array<{
           id: string; name_snippet: string; prompt_snippet: string; score: number; title: string;
         }>;
 
-        for (const row of personaRows) {
+        for (const row of agentRows) {
           results.push({
-            type: "persona",
+            type: "agent",
             id: row.id,
             title: row.title,
             snippet: row.prompt_snippet || row.name_snippet,
@@ -129,7 +129,7 @@ export async function searchRoutes(app: FastifyInstance) {
             projectId: null,
           });
         }
-      } catch { /* FTS5 query error — skip persona results */ }
+      } catch { /* FTS5 query error — skip agent results */ }
     }
 
     // Search comments

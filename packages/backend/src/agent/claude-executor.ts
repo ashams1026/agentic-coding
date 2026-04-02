@@ -11,7 +11,7 @@ import type {
   AgentEvent,
   SpawnOptions,
 } from "./types.js";
-import type { Persona, Project } from "@agentops/shared";
+import type { Agent, Project } from "@agentops/shared";
 import { loadConfig, getClaudeCodeExecutablePath } from "../config.js";
 import { validateCommand, buildSandboxPrompt } from "./sandbox.js";
 import { resolveVariables, buildVariableContext } from "./prompt-variables.js";
@@ -24,18 +24,18 @@ import type { ExecutionId } from "@agentops/shared";
 // ── System prompt assembly ────────────────────────────────────────
 
 export function buildSystemPrompt(
-  persona: Persona,
+  agent: Agent,
   task: AgentTask,
   project: Project,
   opts?: { handoffContext?: string },
 ): string {
   const sections: string[] = [];
 
-  // (1) Persona identity — resolve template variables before adding
-  if (persona.systemPrompt) {
+  // (1) Agent identity — resolve template variables before adding
+  if (agent.systemPrompt) {
     const varContext = buildVariableContext({
       project,
-      persona,
+      agent,
       workItem: {
         id: task.workItemId,
         title: task.context.title,
@@ -43,7 +43,7 @@ export function buildSystemPrompt(
         description: task.context.description,
       },
     });
-    sections.push(resolveVariables(persona.systemPrompt, varContext));
+    sections.push(resolveVariables(agent.systemPrompt, varContext));
   }
 
   // (2) Project context
@@ -116,7 +116,7 @@ export function buildSystemPrompt(
 // ── Available SDK built-in tool names ─────────────────────────────
 // These are the short names the Claude Agent SDK expects in the
 // `tools` option of query(). Passing [] disables all built-in tools.
-// Persona `allowedTools` arrays should use these exact names.
+// Agent `allowedTools` arrays should use these exact names.
 //
 // File tools:    Read, Edit, Write, NotebookEdit
 // Search tools:  Glob, Grep
@@ -297,8 +297,8 @@ function buildAuditHooks(executionId: string): {
 
 function buildSessionHooks(ctx: {
   executionId: string;
-  personaName: string;
-  personaId: string;
+  agentName: string;
+  agentId: string;
   model: string;
   workItemId: string;
 }): {
@@ -313,7 +313,7 @@ function buildSessionHooks(ctx: {
 
     auditSessionStart({
       executionId: ctx.executionId,
-      personaName: ctx.personaName,
+      agentName: ctx.agentName,
       model: startInput.model ?? ctx.model,
       workItemId: ctx.workItemId,
     });
@@ -373,14 +373,14 @@ function buildFileChangedHook(executionId: string): HookCallback {
 
 function buildSubagentHooks(
   parentExecutionId: string,
-  allPersonas: Persona[],
+  allAgents: Agent[],
 ): { subagentStart: HookCallback; subagentStop: HookCallback } {
-  const personaMap = new Map(allPersonas.map((p) => [p.id as string, p]));
+  const agentMap = new Map(allAgents.map((p) => [p.id as string, p]));
 
   const subagentStart: HookCallback = async (input, _toolUseID, _options) => {
     const startInput = input as SubagentStartHookInput;
-    const persona = personaMap.get(startInput.agent_id);
-    const agentName = persona?.name ?? startInput.agent_type ?? startInput.agent_id;
+    const agent = agentMap.get(startInput.agent_id);
+    const agentName = agent?.name ?? startInput.agent_type ?? startInput.agent_id;
 
     broadcast({
       type: "subagent_started",
@@ -396,8 +396,8 @@ function buildSubagentHooks(
 
   const subagentStop: HookCallback = async (input, _toolUseID, _options) => {
     const stopInput = input as SubagentStopHookInput;
-    const persona = personaMap.get(stopInput.agent_id);
-    const agentName = persona?.name ?? stopInput.agent_type ?? stopInput.agent_id;
+    const agent = agentMap.get(stopInput.agent_id);
+    const agentName = agent?.name ?? stopInput.agent_type ?? stopInput.agent_id;
 
     broadcast({
       type: "subagent_completed",
@@ -484,7 +484,7 @@ export function getRunningQuery(executionId: string) {
 export class ClaudeExecutor implements AgentExecutor {
   async *spawn(
     task: AgentTask,
-    persona: Persona,
+    agent: Agent,
     project: Project,
     options: SpawnOptions,
   ): AsyncIterable<AgentEvent> {
@@ -522,16 +522,16 @@ export class ClaudeExecutor implements AgentExecutor {
     const abortController = new AbortController();
 
     try {
-      // Build agent definitions for all personas — the primary persona runs
+      // Build agent definitions for all agents — the primary agent runs
       // the execution, and all others are available as subagents via the Agent tool.
-      const agentId = persona.id;
+      const agentId = agent.id;
       const agents: Record<string, AgentDefinition> = {};
 
-      for (const p of options.allPersonas) {
-        const isPrimary = p.id === persona.id;
+      for (const p of options.allAgents) {
+        const isPrimary = p.id === agent.id;
         agents[p.id] = {
           description: p.description,
-          prompt: isPrimary ? buildSystemPrompt(persona, task, project, { handoffContext: options.handoffContext }) : (p.systemPrompt || p.description),
+          prompt: isPrimary ? buildSystemPrompt(agent, task, project, { handoffContext: options.handoffContext }) : (p.systemPrompt || p.description),
           tools: p.allowedTools.length > 0 ? p.allowedTools : [],
           model: resolveModel(p.model),
           maxTurns: isPrimary ? 30 : 15,
@@ -539,35 +539,35 @@ export class ClaudeExecutor implements AgentExecutor {
         };
       }
 
-      // Ensure the primary persona is always present (even if allPersonas is empty)
+      // Ensure the primary agent is always present (even if allAgents is empty)
       if (!agents[agentId]) {
         agents[agentId] = {
-          description: persona.description,
-          prompt: buildSystemPrompt(persona, task, project, { handoffContext: options.handoffContext }),
-          tools: persona.allowedTools.length > 0 ? persona.allowedTools : [],
+          description: agent.description,
+          prompt: buildSystemPrompt(agent, task, project, { handoffContext: options.handoffContext }),
+          tools: agent.allowedTools.length > 0 ? agent.allowedTools : [],
           model: resolveModel(options.model),
           maxTurns: 30,
-          ...(persona.skills.length > 0 ? { skills: persona.skills } : {}),
+          ...(agent.skills.length > 0 ? { skills: agent.skills } : {}),
         };
       }
 
       const auditHooks = buildAuditHooks(options.executionId);
       const sessionHooks = buildSessionHooks({
         executionId: options.executionId,
-        personaName: persona.name,
-        personaId: persona.id,
+        agentName: agent.name,
+        agentId: agent.id,
         model: resolveModel(options.model),
         workItemId: task.workItemId,
       });
 
-      const subagentHooks = buildSubagentHooks(options.executionId, options.allPersonas);
-      const isRouter = persona.settings?.isRouter === true;
+      const subagentHooks = buildSubagentHooks(options.executionId, options.allAgents);
+      const isRouter = agent.settings?.isRouter === true;
 
-      // Build effort and thinking config from persona settings
-      const effort = persona.settings?.effort ?? "high";
-      const thinkingMode = persona.settings?.thinking ?? "adaptive";
+      // Build effort and thinking config from agent settings
+      const effort = agent.settings?.effort ?? "high";
+      const thinkingMode = agent.settings?.thinking ?? "adaptive";
       const thinking = thinkingMode === "enabled"
-        ? { type: "enabled" as const, budgetTokens: persona.settings?.thinkingBudgetTokens ?? 10000 }
+        ? { type: "enabled" as const, budgetTokens: agent.settings?.thinkingBudgetTokens ?? 10000 }
         : { type: thinkingMode as "adaptive" | "disabled" };
 
       const q = query({
@@ -624,10 +624,10 @@ export class ClaudeExecutor implements AgentExecutor {
           mcpServers: {
             // In-process MCP server for common tools (eliminates child process overhead)
             "agentops-inprocess": createInProcessMcpServer({
-              personaName: persona.name,
-              personaId: persona.id,
+              agentName: agent.name,
+              agentId: agent.id,
               projectId: project.id,
-              allowedTools: persona.mcpTools,
+              allowedTools: agent.mcpTools,
             } as McpContext),
             // Child-process MCP server for remaining tools (full 8-tool set)
             agentops: {
@@ -638,10 +638,10 @@ export class ClaudeExecutor implements AgentExecutor {
                 new URL("./mcp-server.ts", import.meta.url).pathname,
               ],
               env: {
-                PERSONA_NAME: persona.name,
-                PERSONA_ID: persona.id,
+                AGENT_NAME: agent.name,
+                AGENT_ID: agent.id,
                 PROJECT_ID: project.id,
-                ALLOWED_TOOLS: persona.mcpTools.join(","),
+                ALLOWED_TOOLS: agent.mcpTools.join(","),
               },
             },
           },

@@ -9,7 +9,7 @@ import { getActiveCount, getQueueLength, getActiveExecutionIds, clearAll } from 
 import { executionManager } from "../agent/setup.js";
 import { db, sqlite } from "../db/connection.js";
 import { createBackup, listBackups, restoreBackup } from "../db/backup.js";
-import { projects, personas, personaAssignments, executions, workItems, proposals } from "../db/schema.js";
+import { projects, agents, agentAssignments, executions, workItems, proposals } from "../db/schema.js";
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
@@ -123,14 +123,14 @@ export async function settingsRoutes(app: FastifyInstance) {
 
     const allExecutions = await db.select().from(executions);
     const allProjects = await db.select().from(projects);
-    const allPersonas = await db.select().from(personas);
+    const allAgents = await db.select().from(agents);
 
     return {
       sizeBytes,
       sizeMB: +(sizeBytes / (1024 * 1024)).toFixed(1),
       executionCount: allExecutions.length,
       projectCount: allProjects.length,
-      personaCount: allPersonas.length,
+      agentCount: allAgents.length,
     };
   });
 
@@ -160,17 +160,17 @@ export async function settingsRoutes(app: FastifyInstance) {
     return { deleted: toDelete.length };
   });
 
-  // GET /api/settings/export — export projects, personas, persona-assignments
+  // GET /api/settings/export — export projects, agents, agent-assignments
   app.get("/api/settings/export", async () => {
     const allProjects = await db.select().from(projects);
-    const allPersonas = await db.select().from(personas);
-    const allAssignments = await db.select().from(personaAssignments);
+    const allAgents = await db.select().from(agents);
+    const allAssignments = await db.select().from(agentAssignments);
 
     return {
       exportedAt: new Date().toISOString(),
       projects: allProjects,
-      personas: allPersonas,
-      personaAssignments: allAssignments,
+      agents: allAgents,
+      agentAssignments: allAssignments,
     };
   });
 
@@ -241,12 +241,12 @@ export async function settingsRoutes(app: FastifyInstance) {
     }
   });
 
-  // POST /api/settings/import — import projects, personas, persona-assignments
+  // POST /api/settings/import — import projects, agents, agent-assignments
   app.post<{
     Body: {
       projects?: unknown[];
-      personas?: unknown[];
-      personaAssignments?: unknown[];
+      agents?: unknown[];
+      agentAssignments?: unknown[];
     };
   }>("/api/settings/import", async (request, reply) => {
     const body = request.body;
@@ -254,7 +254,7 @@ export async function settingsRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: "Invalid import payload" });
     }
 
-    let imported = { projects: 0, personas: 0, personaAssignments: 0 };
+    let imported = { projects: 0, agents: 0, agentAssignments: 0 };
 
     try {
       if (Array.isArray(body.projects)) {
@@ -271,10 +271,10 @@ export async function settingsRoutes(app: FastifyInstance) {
         }
       }
 
-      if (Array.isArray(body.personas)) {
-        for (const p of body.personas) {
+      if (Array.isArray(body.agents)) {
+        for (const p of body.agents) {
           const per = p as Record<string, unknown>;
-          await db.insert(personas).values({
+          await db.insert(agents).values({
             id: per.id as string,
             name: per.name as string,
             description: per.description as string,
@@ -286,19 +286,19 @@ export async function settingsRoutes(app: FastifyInstance) {
             maxBudgetPerRun: (per.maxBudgetPerRun ?? 0) as number,
             settings: (per.settings ?? {}) as Record<string, unknown>,
           }).onConflictDoNothing();
-          imported.personas++;
+          imported.agents++;
         }
       }
 
-      if (Array.isArray(body.personaAssignments)) {
-        for (const a of body.personaAssignments) {
+      if (Array.isArray(body.agentAssignments)) {
+        for (const a of body.agentAssignments) {
           const assign = a as Record<string, unknown>;
-          await db.insert(personaAssignments).values({
+          await db.insert(agentAssignments).values({
             projectId: assign.projectId as string,
             stateName: assign.stateName as string,
-            personaId: assign.personaId as string,
+            agentId: assign.agentId as string,
           }).onConflictDoNothing();
-          imported.personaAssignments++;
+          imported.agentAssignments++;
         }
       }
 
@@ -319,16 +319,16 @@ export async function settingsRoutes(app: FastifyInstance) {
       return { activeExecutions: [] };
     }
 
-    // Join executions with personas and work items to get names
+    // Join executions with agents and work items to get names
     const rows = await db
       .select({
         executionId: executions.id,
-        personaName: personas.name,
+        agentName: agents.name,
         workItemTitle: workItems.title,
         startedAt: executions.startedAt,
       })
       .from(executions)
-      .innerJoin(personas, eq(executions.personaId, personas.id))
+      .innerJoin(agents, eq(executions.agentId, agents.id))
       .innerJoin(workItems, eq(executions.workItemId, workItems.id))
       .where(inArray(executions.id, activeIds));
 
@@ -336,7 +336,7 @@ export async function settingsRoutes(app: FastifyInstance) {
     return {
       activeExecutions: rows.map((r) => ({
         executionId: r.executionId,
-        personaName: r.personaName,
+        agentName: r.agentName,
         workItemTitle: r.workItemTitle,
         elapsedMs: now - (r.startedAt?.getTime() ?? now),
       })),

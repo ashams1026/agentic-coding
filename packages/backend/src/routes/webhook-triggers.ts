@@ -3,7 +3,7 @@ import { eq, desc } from "drizzle-orm";
 import { randomBytes, createHmac, timingSafeEqual } from "node:crypto";
 import { Readable } from "node:stream";
 import { db } from "../db/connection.js";
-import { webhookTriggers, personas } from "../db/schema.js";
+import { webhookTriggers, agents } from "../db/schema.js";
 import { executionManager } from "../agent/setup.js";
 import { logger } from "../logger.js";
 
@@ -95,11 +95,11 @@ export async function webhookTriggerRoutes(app: FastifyInstance) {
     try {
       const executionId = await executionManager.runExecution(
         null as any, // no work item — standalone trigger
-        trigger.personaId,
+        trigger.agentId,
         prompt,
       );
 
-      logger.info({ triggerId, executionId, personaId: trigger.personaId }, "Webhook trigger fired");
+      logger.info({ triggerId, executionId, agentId: trigger.agentId }, "Webhook trigger fired");
 
       return reply.status(201).send({
         data: {
@@ -123,21 +123,21 @@ export async function webhookTriggerRoutes(app: FastifyInstance) {
       .select({
         id: webhookTriggers.id,
         name: webhookTriggers.name,
-        personaId: webhookTriggers.personaId,
-        personaName: personas.name,
+        agentId: webhookTriggers.agentId,
+        agentName: agents.name,
         projectId: webhookTriggers.projectId,
         promptTemplate: webhookTriggers.promptTemplate,
         isActive: webhookTriggers.isActive,
         createdAt: webhookTriggers.createdAt,
       })
       .from(webhookTriggers)
-      .leftJoin(personas, eq(webhookTriggers.personaId, personas.id))
+      .leftJoin(agents, eq(webhookTriggers.agentId, agents.id))
       .orderBy(desc(webhookTriggers.createdAt));
 
     return {
       data: rows.map((r) => ({
         ...r,
-        personaName: r.personaName ?? "Unknown",
+        agentName: r.agentName ?? "Unknown",
         createdAt: r.createdAt?.toISOString() ?? null,
       })),
       total: rows.length,
@@ -146,9 +146,9 @@ export async function webhookTriggerRoutes(app: FastifyInstance) {
 
   // POST /api/webhook-triggers — create trigger
   app.post<{
-    Body: { name: string; personaId: string; projectId?: string; promptTemplate?: string };
+    Body: { name: string; agentId: string; projectId?: string; promptTemplate?: string };
   }>("/api/webhook-triggers", async (_request, reply) => {
-    const { name, personaId, projectId, promptTemplate } = _request.body;
+    const { name, agentId, projectId, promptTemplate } = _request.body;
     const now = new Date();
     const id = generateId("wht");
     const secret = generateSecret();
@@ -157,7 +157,7 @@ export async function webhookTriggerRoutes(app: FastifyInstance) {
       id,
       name,
       secret,
-      personaId,
+      agentId,
       projectId: projectId ?? "pj-global",
       promptTemplate: promptTemplate ?? "",
       isActive: true,
@@ -169,7 +169,7 @@ export async function webhookTriggerRoutes(app: FastifyInstance) {
         id,
         name,
         secret,
-        personaId,
+        agentId,
         projectId: projectId ?? "pj-global",
         promptTemplate: promptTemplate ?? "",
         isActive: true,
@@ -183,14 +183,14 @@ export async function webhookTriggerRoutes(app: FastifyInstance) {
   // PATCH /api/webhook-triggers/:id — update trigger
   app.patch<{
     Params: { id: string };
-    Body: { name?: string; personaId?: string; projectId?: string; promptTemplate?: string; isActive?: boolean };
+    Body: { name?: string; agentId?: string; projectId?: string; promptTemplate?: string; isActive?: boolean };
   }>("/api/webhook-triggers/:id", async (request, reply) => {
     const { id } = request.params;
     const body = request.body;
 
     const updates: Record<string, unknown> = {};
     if (body.name !== undefined) updates.name = body.name;
-    if (body.personaId !== undefined) updates.personaId = body.personaId;
+    if (body.agentId !== undefined) updates.agentId = body.agentId;
     if (body.projectId !== undefined) updates.projectId = body.projectId;
     if (body.promptTemplate !== undefined) updates.promptTemplate = body.promptTemplate;
     if (body.isActive !== undefined) updates.isActive = body.isActive;

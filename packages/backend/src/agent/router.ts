@@ -1,5 +1,5 @@
 /**
- * Router agent — decides the next workflow state after a persona
+ * Router agent — decides the next workflow state after a agent
  * completes execution on a work item.
  *
  * Uses a haiku-model agent with read-only tools + route_to_state.
@@ -11,7 +11,7 @@ import { db } from "../db/connection.js";
 import { workItems, projects, comments } from "../db/schema.js";
 import { executionManager } from "./setup.js";
 import { createId } from "@agentops/shared";
-import { personas } from "../db/schema.js";
+import { agents } from "../db/schema.js";
 import { buildDynamicRouterPrompt } from "./workflow-runtime.js";
 
 /** MCP tools the router can use */
@@ -24,7 +24,7 @@ const ROUTER_MCP_TOOLS = [
 
 const ROUTER_BASE_PROMPT = `You are a routing agent for the AgentOps workflow system.
 
-Your job is to decide the next workflow state for a work item after a persona has completed work on it.
+Your job is to decide the next workflow state for a work item after a agent has completed work on it.
 
 Use the get_context tool to understand the work item's current state and execution history.
 Use the list_items tool to check the status of child work items if relevant.
@@ -99,8 +99,8 @@ async function buildRouterSystemPrompt(
 
   parts.push(
     "IMPORTANT: Do NOT route to a state this item was just in. " +
-      "If the persona's work appears incomplete, route to Blocked with a reason " +
-      "rather than re-triggering the same persona.",
+      "If the agent's work appears incomplete, route to Blocked with a reason " +
+      "rather than re-triggering the same agent.",
   );
 
   return parts.join("\n\n");
@@ -108,7 +108,7 @@ async function buildRouterSystemPrompt(
 
 /**
  * Run the router agent to decide the next state for a work item.
- * Called after a persona execution completes successfully.
+ * Called after a agent execution completes successfully.
  *
  * Returns true if routing was performed, false if skipped.
  */
@@ -132,41 +132,41 @@ export async function runRouter(workItemId: string): Promise<boolean> {
   const autoRouting = project.settings.autoRouting;
   if (autoRouting === false) return false; // Explicitly disabled
 
-  // Find or create a router persona for this project
-  const routerPersonaId = await getOrCreateRouterPersona();
+  // Find or create a router agent for this project
+  const routerAgentId = await getOrCreateRouterAgent();
 
   // Query recent transitions and build dynamic system prompt with workflow context
   const transitions = await getRecentTransitions(workItemId);
   const dynamicPrompt = await buildRouterSystemPrompt(item.workflowId ?? null, item.currentState, transitions);
 
-  // Update the Router persona's systemPrompt with transition context
+  // Update the Router agent's systemPrompt with transition context
   await db
-    .update(personas)
+    .update(agents)
     .set({ systemPrompt: dynamicPrompt })
-    .where(eq(personas.id, routerPersonaId));
+    .where(eq(agents.id, routerAgentId));
 
   // Spawn the router execution
-  await executionManager.runExecution(workItemId, routerPersonaId);
+  await executionManager.runExecution(workItemId, routerAgentId);
 
   return true;
 }
 
 /**
- * Get or create the built-in Router persona.
+ * Get or create the built-in Router agent.
  * The router uses haiku model for cost efficiency.
  */
-async function getOrCreateRouterPersona(): Promise<string> {
-  // Check if router persona already exists
+async function getOrCreateRouterAgent(): Promise<string> {
+  // Check if router agent already exists
   const [existing] = await db
-    .select({ id: personas.id })
-    .from(personas)
-    .where(eq(personas.name, "Router"));
+    .select({ id: agents.id })
+    .from(agents)
+    .where(eq(agents.name, "Router"));
 
   if (existing) return existing.id;
 
-  // Create the router persona
-  const id = createId.persona();
-  await db.insert(personas).values({
+  // Create the router agent
+  const id = createId.agent();
+  await db.insert(agents).values({
     id,
     name: "Router",
     description: "Built-in routing agent that decides workflow state transitions",

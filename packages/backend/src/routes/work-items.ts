@@ -13,7 +13,7 @@ import { auditStateTransition } from "../audit.js";
 import type {
   WorkItemId,
   ProjectId,
-  PersonaId,
+  AgentId,
   CreateWorkItemRequest,
   UpdateWorkItemRequest,
 } from "@agentops/shared";
@@ -28,7 +28,7 @@ function serializeWorkItem(row: typeof workItems.$inferSelect) {
     id: row.id as WorkItemId,
     parentId: (row.parentId as WorkItemId) ?? null,
     projectId: row.projectId as ProjectId,
-    assignedPersonaId: (row.assignedPersonaId as PersonaId) ?? null,
+    assignedAgentId: (row.assignedAgentId as AgentId) ?? null,
     createdAt: toIso(row.createdAt),
     updatedAt: toIso(row.updatedAt),
     archivedAt: row.archivedAt ? toIso(row.archivedAt) : null,
@@ -114,7 +114,7 @@ export async function workItemRoutes(app: FastifyInstance) {
         workflowId: projectWorkflowId,
         priority: body.priority ?? "p2",
         labels: body.labels ?? [],
-        assignedPersonaId: null,
+        assignedAgentId: null,
         executionContext: [],
         createdAt: now,
         updatedAt: now,
@@ -165,7 +165,7 @@ export async function workItemRoutes(app: FastifyInstance) {
     if (body.labels !== undefined) updates["labels"] = body.labels;
     if (body.currentState !== undefined) updates["currentState"] = body.currentState;
     if (body.context !== undefined) updates["context"] = body.context;
-    if (body.assignedPersonaId !== undefined) updates["assignedPersonaId"] = body.assignedPersonaId;
+    if (body.assignedAgentId !== undefined) updates["assignedAgentId"] = body.assignedAgentId;
 
     const [row] = await db
       .update(workItems)
@@ -177,7 +177,7 @@ export async function workItemRoutes(app: FastifyInstance) {
       return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Work item ${id} not found` } });
     }
 
-    // Dispatch persona execution if state changed
+    // Dispatch agent execution if state changed
     if (body.currentState !== undefined && previousState !== undefined) {
       broadcast({
         type: "state_change",
@@ -220,7 +220,7 @@ export async function workItemRoutes(app: FastifyInstance) {
     return { data: serializeWorkItem(row) };
   });
 
-  // POST /api/work-items/:id/retry — re-dispatch persona for current state
+  // POST /api/work-items/:id/retry — re-dispatch agent for current state
   app.post<{
     Params: { id: string };
   }>("/api/work-items/:id/retry", async (request, reply) => {

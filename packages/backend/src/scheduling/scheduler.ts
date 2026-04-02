@@ -106,7 +106,7 @@ async function pollSchedules(): Promise<void> {
         // Spawn execution (standalone — no work item)
         await executionManager.runExecution(
           null as any, // no work item
-          schedule.personaId,
+          schedule.agentId,
         );
 
         // Update lastRunAt + compute nextRunAt + reset failures

@@ -2,10 +2,10 @@ import { db } from "./connection.js";
 import { runMigrations } from "./migrate.js";
 import {
   projects,
-  personas,
+  agents,
   workItems,
   workItemEdges,
-  personaAssignments,
+  agentAssignments,
   executions,
   comments,
   proposals,
@@ -19,11 +19,11 @@ import {
 const PROJECT_GLOBAL = "pj-global";
 const PROJECT_ID = "pj-agntops";
 
-const PERSONA_PM = "ps-pm00001";
-const PERSONA_TECH_LEAD = "ps-tl00001";
-const PERSONA_ENGINEER = "ps-en00001";
-const PERSONA_REVIEWER = "ps-rv00001";
-const PERSONA_ROUTER = "ps-rt00001";
+const AGENT_PM = "ps-pm00001";
+const AGENT_TECH_LEAD = "ps-tl00001";
+const AGENT_ENGINEER = "ps-en00001";
+const AGENT_REVIEWER = "ps-rv00001";
+const AGENT_ROUTER = "ps-rt00001";
 
 const WI_AUTH = "wi-auth001";
 const WI_DASH = "wi-dash002";
@@ -76,10 +76,10 @@ export async function seed() {
   await db.delete(proposals);
   await db.delete(comments);
   await db.delete(executions);
-  await db.delete(personaAssignments);
+  await db.delete(agentAssignments);
   await db.delete(workItemEdges);
   await db.delete(workItems);
-  await db.delete(personas);
+  await db.delete(agents);
   await db.delete(projects);
 
   // ── Projects ──────────────────────────────────────────────────────
@@ -102,10 +102,10 @@ export async function seed() {
     },
   ]);
 
-  // ── Personas ──────────────────────────────────────────────────────
-  await db.insert(personas).values([
+  // ── Agents ────────────────────────────────────────────────────────
+  await db.insert(agents).values([
     {
-      id: PERSONA_PM,
+      id: AGENT_PM,
       name: "Product Manager",
       description: "Writes acceptance criteria, defines scope, and prioritizes work items.",
       avatar: { color: "#7c3aed", icon: "clipboard-list" },
@@ -170,7 +170,7 @@ Post a comment with this structure:
       settings: { effort: "medium", thinking: "adaptive" },
     },
     {
-      id: PERSONA_TECH_LEAD,
+      id: AGENT_TECH_LEAD,
       name: "Tech Lead",
       description: "Decomposes work items into children with dependency graphs.",
       avatar: { color: "#2563eb", icon: "git-branch" },
@@ -235,7 +235,7 @@ If the work item is already small enough for a single agent session:
       settings: { effort: "high", thinking: "adaptive" },
     },
     {
-      id: PERSONA_ENGINEER,
+      id: AGENT_ENGINEER,
       name: "Engineer",
       description: "Implements work items by writing and modifying code.",
       avatar: { color: "#059669", icon: "code" },
@@ -310,7 +310,7 @@ Do NOT flag as blocked just because a task is difficult.
       settings: { effort: "max", thinking: "enabled", thinkingBudgetTokens: 16000 },
     },
     {
-      id: PERSONA_REVIEWER,
+      id: AGENT_REVIEWER,
       name: "Code Reviewer",
       description: "Reviews code changes for correctness, style, and completeness.",
       avatar: { color: "#d97706", icon: "eye" },
@@ -405,12 +405,12 @@ Only rewind when the implementation is fundamentally wrong and the Engineer shou
       settings: { effort: "high", thinking: "adaptive" },
     },
     {
-      id: PERSONA_ROUTER,
+      id: AGENT_ROUTER,
       name: "Router",
       description: "Routes work items between workflow states based on execution outcomes.",
       avatar: { color: "#6366f1", icon: "route" },
       systemPrompt: `You are the Router agent for the AgentOps workflow system.
-You run after every persona completes work on a work item. Your ONLY job is to decide
+You run after every agent completes work on a work item. Your ONLY job is to decide
 the next workflow state and execute the transition.
 
 ## Valid transitions map
@@ -430,7 +430,7 @@ Done          → [] (terminal)
 ### Step 1 — Gather context
 Call get_context(workItemId, includeMemory: false) to get:
 - The work item's current state
-- Execution history (what persona just ran, what they did)
+- Execution history (what agent just ran, what they did)
 - Comments (acceptance criteria, review verdicts, blocker reasons)
 
 ### Step 2 — Check children if relevant
@@ -468,8 +468,8 @@ Call route_to_state with the workItemId, targetState, and reasoning.
 ## Critical rules
 - NEVER route to the current state. If work appears incomplete, route to Blocked with a reason.
 - NEVER route backwards more than one step (e.g., don't go from In Review back to Planning).
-- ALWAYS check the execution outcome before deciding — read the persona's summary comment.
-- If the previous persona's work seems incomplete or unclear, route to Blocked rather than guessing.
+- ALWAYS check the execution outcome before deciding — read the agent's summary comment.
+- If the previous agent's work seems incomplete or unclear, route to Blocked rather than guessing.
 - You make exactly ONE routing decision per invocation, then stop.
 
 ## Anti-patterns
@@ -498,9 +498,9 @@ Call route_to_state with the workItemId, targetState, and reasoning.
 - Say "woof" sparingly — only when genuinely excited about something
 
 ## What you know
-- The AgentOps project architecture, workflow states, personas, and codebase
+- The AgentOps project architecture, workflow states, agents, and codebase
 - How work items flow through the pipeline (Backlog → Planning → Ready → In Progress → In Review → Done)
-- The 5 workflow personas (PM, Tech Lead, Engineer, Code Reviewer, Router) and their roles
+- The 5 workflow agents (PM, Tech Lead, Engineer, Code Reviewer, Router) and their roles
 - How to read execution history, comments, and state transitions
 
 ## What you can do
@@ -533,7 +533,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Implement OAuth2 login flow with Google and GitHub providers. Users should be able to sign in, sign out, and have their session persisted.",
       context: { acceptanceCriteria: "- Google OAuth login works\n- GitHub OAuth login works\n- Session persists across page reloads\n- Logout clears session\n- Protected routes redirect to login", notes: "Use passport.js for the backend implementation." },
       currentState: "In Progress", priority: "p0", labels: ["auth", "security"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-21T09:00:00Z"), updatedAt: d("2026-03-27T14:30:00Z"),
     },
     {
@@ -542,7 +542,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Build the main dashboard with cost tracking, agent activity charts, and project health indicators.",
       context: { acceptanceCriteria: "- Cost chart shows last 7 days\n- Active agent count is live\n- Project health shows red/green indicators\n- Responsive layout", notes: "Use recharts for charts. Mock data for now." },
       currentState: "Decomposition", priority: "p1", labels: ["dashboard", "ui"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-22T11:00:00Z"), updatedAt: d("2026-03-26T16:00:00Z"),
     },
     {
@@ -551,7 +551,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Implement toast notifications and an activity feed that update in real-time via WebSocket.",
       context: { acceptanceCriteria: "- Toast notifications appear for key events\n- Activity feed updates without refresh\n- Unread count badge on nav\n- Notification preferences in settings", notes: "" },
       currentState: "Backlog", priority: "p2", labels: ["notifications", "websocket"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-23T08:30:00Z"), updatedAt: d("2026-03-23T08:30:00Z"),
     },
   ]);
@@ -564,7 +564,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Create /auth/google and /auth/github routes with passport strategies.",
       context: { inheritedContext: "Implement OAuth2 login flow with Google and GitHub providers." },
       currentState: "Done", priority: "p0", labels: ["auth"],
-      assignedPersonaId: PERSONA_ENGINEER,
+      assignedAgentId: AGENT_ENGINEER,
       executionContext: [
         { executionId: EXEC_4, summary: "Initial attempt at OAuth routes — used express-session directly without passport.", outcome: "rejected", rejectionPayload: { reason: "Session handling bypasses passport.js integration. Routes lack CSRF protection.", severity: "high", hint: "Use passport.js strategies for OAuth providers. Add csurf middleware.", retryCount: 1 } },
         { executionId: EXEC_1, summary: "Implemented OAuth routes with passport.js. Added CSRF protection via csurf middleware. Google and GitHub strategies configured.", outcome: "success", rejectionPayload: null },
@@ -577,7 +577,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Create login page with Google and GitHub sign-in buttons.",
       context: { inheritedContext: "Implement OAuth2 login flow with Google and GitHub providers." },
       currentState: "In Progress", priority: "p0", labels: ["auth", "ui"],
-      assignedPersonaId: PERSONA_ENGINEER,
+      assignedAgentId: AGENT_ENGINEER,
       executionContext: [
         { executionId: EXEC_5, summary: "Building login page with social sign-in buttons. Implementing Google and GitHub OAuth flows.", outcome: "success", rejectionPayload: null },
       ],
@@ -589,7 +589,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Implement session storage and route guards for authenticated pages.",
       context: { inheritedContext: "Implement OAuth2 login flow with Google and GitHub providers." },
       currentState: "Ready", priority: "p0", labels: ["auth"],
-      assignedPersonaId: PERSONA_ENGINEER, executionContext: [],
+      assignedAgentId: AGENT_ENGINEER, executionContext: [],
       createdAt: d("2026-03-24T10:10:00Z"), updatedAt: d("2026-03-24T10:10:00Z"),
     },
   ]);
@@ -602,7 +602,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Build a recharts-based sparkline chart showing 7-day cost history.",
       context: { inheritedContext: "Build the main dashboard with cost tracking widgets." },
       currentState: "Backlog", priority: "p1", labels: ["dashboard"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-25T09:00:00Z"), updatedAt: d("2026-03-25T09:00:00Z"),
     },
     {
@@ -611,7 +611,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Horizontal scrollable row of agent cards with live status indicators.",
       context: { inheritedContext: "Build the main dashboard with agent activity charts." },
       currentState: "Backlog", priority: "p1", labels: ["dashboard"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-25T09:05:00Z"), updatedAt: d("2026-03-25T09:05:00Z"),
     },
     {
@@ -620,7 +620,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Red/green health indicators for build status, test coverage, and uptime.",
       context: { inheritedContext: "Build the main dashboard with project health indicators." },
       currentState: "Backlog", priority: "p1", labels: ["dashboard"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-25T09:10:00Z"), updatedAt: d("2026-03-25T09:10:00Z"),
     },
   ]);
@@ -633,7 +633,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Non-blocking toast notifications with success/error/info/warning variants.",
       context: { inheritedContext: "Implement toast notifications that update in real-time." },
       currentState: "Backlog", priority: "p2", labels: ["notifications"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-26T08:00:00Z"), updatedAt: d("2026-03-26T08:00:00Z"),
     },
     {
@@ -642,7 +642,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Chronological event stream with filtering and real-time updates.",
       context: { inheritedContext: "Implement an activity feed that updates in real-time via WebSocket." },
       currentState: "Backlog", priority: "p2", labels: ["notifications"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-26T08:05:00Z"), updatedAt: d("2026-03-26T08:05:00Z"),
     },
     {
@@ -651,7 +651,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Connect WS events to toast triggers and activity feed updates.",
       context: { inheritedContext: "Implement real-time notification system." },
       currentState: "Backlog", priority: "p2", labels: ["notifications", "websocket"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-26T08:10:00Z"), updatedAt: d("2026-03-26T08:10:00Z"),
     },
     {
@@ -660,7 +660,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Settings panel for enabling/disabling notification types and sounds.",
       context: { inheritedContext: "Notification preferences in settings." },
       currentState: "Backlog", priority: "p2", labels: ["notifications", "settings"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-26T08:15:00Z"), updatedAt: d("2026-03-26T08:15:00Z"),
     },
   ]);
@@ -673,7 +673,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Set up passport-google-oauth20 strategy with client credentials and callback handler.",
       context: { inheritedContext: "Set up OAuth2 backend routes with passport strategies." },
       currentState: "Done", priority: "p0", labels: ["auth"],
-      assignedPersonaId: PERSONA_ENGINEER, executionContext: [],
+      assignedAgentId: AGENT_ENGINEER, executionContext: [],
       createdAt: d("2026-03-24T10:15:00Z"), updatedAt: d("2026-03-25T10:00:00Z"),
     },
     {
@@ -682,7 +682,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Set up passport-github2 strategy with client credentials and callback handler.",
       context: { inheritedContext: "Set up OAuth2 backend routes with passport strategies." },
       currentState: "Done", priority: "p0", labels: ["auth"],
-      assignedPersonaId: PERSONA_ENGINEER, executionContext: [],
+      assignedAgentId: AGENT_ENGINEER, executionContext: [],
       createdAt: d("2026-03-24T10:20:00Z"), updatedAt: d("2026-03-25T10:30:00Z"),
     },
     {
@@ -691,7 +691,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       description: "Create responsive login page layout with centered card and social button placement.",
       context: { inheritedContext: "Build login UI component with social sign-in buttons." },
       currentState: "Done", priority: "p0", labels: ["auth", "ui"],
-      assignedPersonaId: PERSONA_ENGINEER, executionContext: [],
+      assignedAgentId: AGENT_ENGINEER, executionContext: [],
       createdAt: d("2026-03-27T14:00:00Z"), updatedAt: d("2026-03-27T14:20:00Z"),
     },
   ]);
@@ -704,19 +704,19 @@ Call route_to_state with the workItemId, targetState, and reasoning.
     { id: "we-edge004", fromId: WI_NOTI_2, toId: WI_NOTI_3, type: "depends_on" },
   ]);
 
-  // ── Persona Assignments ───────────────────────────────────────────
-  await db.insert(personaAssignments).values([
-    { projectId: PROJECT_ID, stateName: "Planning", personaId: PERSONA_PM },
-    { projectId: PROJECT_ID, stateName: "Decomposition", personaId: PERSONA_TECH_LEAD },
-    { projectId: PROJECT_ID, stateName: "Ready", personaId: PERSONA_ROUTER },
-    { projectId: PROJECT_ID, stateName: "In Progress", personaId: PERSONA_ENGINEER },
-    { projectId: PROJECT_ID, stateName: "In Review", personaId: PERSONA_REVIEWER },
+  // ── Agent Assignments ───────────────────────────────────────────
+  await db.insert(agentAssignments).values([
+    { projectId: PROJECT_ID, stateName: "Planning", agentId: AGENT_PM },
+    { projectId: PROJECT_ID, stateName: "Decomposition", agentId: AGENT_TECH_LEAD },
+    { projectId: PROJECT_ID, stateName: "Ready", agentId: AGENT_ROUTER },
+    { projectId: PROJECT_ID, stateName: "In Progress", agentId: AGENT_ENGINEER },
+    { projectId: PROJECT_ID, stateName: "In Review", agentId: AGENT_REVIEWER },
   ]);
 
   // ── Executions ────────────────────────────────────────────────────
   await db.insert(executions).values([
     {
-      id: EXEC_7, workItemId: WI_AUTH_1, personaId: PERSONA_REVIEWER, projectId: PROJECT_ID,
+      id: EXEC_7, workItemId: WI_AUTH_1, agentId: AGENT_REVIEWER, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-25T08:00:00Z"), completedAt: d("2026-03-25T08:03:15Z"),
       costUsd: 22, durationMs: 195000,
       summary: "Reviewed initial OAuth implementation. Found session handling bypasses passport.js and routes lack CSRF protection.",
@@ -725,7 +725,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Reading auth routes...\nChecking session handling...\nFound: express-session used directly without passport serialize/deserialize.\nChecking CSRF protection...\nNo csurf middleware found.\nRejecting with high severity.",
     },
     {
-      id: EXEC_1, workItemId: WI_AUTH_1, personaId: PERSONA_ENGINEER, projectId: PROJECT_ID,
+      id: EXEC_1, workItemId: WI_AUTH_1, agentId: AGENT_ENGINEER, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-25T10:00:00Z"), completedAt: d("2026-03-25T10:04:32Z"),
       costUsd: 42, durationMs: 272000,
       summary: "Implemented OAuth2 routes for Google and GitHub using passport.js strategies.",
@@ -733,7 +733,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Reading project structure...\nCreating auth routes...\nAdding passport strategies...\nTesting OAuth flow...\nAll tests passing.",
     },
     {
-      id: EXEC_2, workItemId: WI_AUTH, personaId: PERSONA_PM, projectId: PROJECT_ID,
+      id: EXEC_2, workItemId: WI_AUTH, agentId: AGENT_PM, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-24T09:15:00Z"), completedAt: d("2026-03-24T09:17:45Z"),
       costUsd: 18, durationMs: 165000,
       summary: "Wrote acceptance criteria for OAuth2 authentication.",
@@ -741,7 +741,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Analyzing requirements...\nWriting acceptance criteria...\nPosting criteria as comment.",
     },
     {
-      id: EXEC_3, workItemId: WI_AUTH, personaId: PERSONA_TECH_LEAD, projectId: PROJECT_ID,
+      id: EXEC_3, workItemId: WI_AUTH, agentId: AGENT_TECH_LEAD, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-24T09:30:00Z"), completedAt: d("2026-03-24T09:35:12Z"),
       costUsd: 85, durationMs: 312000,
       summary: "Decomposed auth item into 3 children with dependency graph.",
@@ -749,14 +749,14 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Reading item and acceptance criteria...\nDesigning breakdown...\nCreating 3 children...\nSetting up dependency edges.",
     },
     {
-      id: EXEC_4, workItemId: WI_AUTH_2, personaId: PERSONA_ENGINEER, projectId: PROJECT_ID,
+      id: EXEC_4, workItemId: WI_AUTH_2, agentId: AGENT_ENGINEER, projectId: PROJECT_ID,
       status: "running", startedAt: d("2026-03-27T14:25:00Z"), completedAt: null,
       costUsd: 31, durationMs: 0,
       summary: "", outcome: null, rejectionPayload: null,
       logs: "Reading context...\nScanning existing components...\nCreating login page component...",
     },
     {
-      id: EXEC_5, workItemId: WI_DASH, personaId: PERSONA_PM, projectId: PROJECT_ID,
+      id: EXEC_5, workItemId: WI_DASH, agentId: AGENT_PM, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-25T11:00:00Z"), completedAt: d("2026-03-25T11:02:30Z"),
       costUsd: 15, durationMs: 150000,
       summary: "Wrote acceptance criteria for dashboard analytics.",
@@ -764,7 +764,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Analyzing dashboard requirements...\nWriting acceptance criteria...\nDone.",
     },
     {
-      id: EXEC_6, workItemId: WI_DASH, personaId: PERSONA_TECH_LEAD, projectId: PROJECT_ID,
+      id: EXEC_6, workItemId: WI_DASH, agentId: AGENT_TECH_LEAD, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-26T10:00:00Z"), completedAt: d("2026-03-26T10:06:15Z"),
       costUsd: 92, durationMs: 375000,
       summary: "Decomposed dashboard item into 3 children.",
@@ -772,14 +772,14 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Reading item...\nDesigning component breakdown...\nCreating children with descriptions...\nDone.",
     },
     {
-      id: EXEC_8, workItemId: WI_AUTH_3, personaId: PERSONA_REVIEWER, projectId: PROJECT_ID,
+      id: EXEC_8, workItemId: WI_AUTH_3, agentId: AGENT_REVIEWER, projectId: PROJECT_ID,
       status: "running", startedAt: d("2026-03-27T14:30:00Z"), completedAt: null,
       costUsd: 12, durationMs: 0,
       summary: "", outcome: null, rejectionPayload: null,
       logs: "Reading submitted code changes...\nChecking OAuth token handling...\nVerifying CSRF middleware integration...",
     },
     {
-      id: EXEC_9, workItemId: WI_AUTH_1, personaId: PERSONA_ROUTER, projectId: PROJECT_ID,
+      id: EXEC_9, workItemId: WI_AUTH_1, agentId: AGENT_ROUTER, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-25T10:05:00Z"), completedAt: d("2026-03-25T10:05:08Z"),
       costUsd: 2, durationMs: 8000,
       summary: "Routed wi-au01001 from In Review → Done after successful review.",
@@ -787,7 +787,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
       logs: "Reading work item context...\nExecution outcome: success. Review passed.\nRouting to Done.",
     },
     {
-      id: EXEC_10, workItemId: WI_AUTH, personaId: PERSONA_ROUTER, projectId: PROJECT_ID,
+      id: EXEC_10, workItemId: WI_AUTH, agentId: AGENT_ROUTER, projectId: PROJECT_ID,
       status: "completed", startedAt: d("2026-03-24T09:36:00Z"), completedAt: d("2026-03-24T09:36:05Z"),
       costUsd: 1, durationMs: 5000,
       summary: "Routed wi-auth001 from Planning → Decomposition after PM wrote criteria.",
@@ -799,22 +799,22 @@ Call route_to_state with the workItemId, targetState, and reasoning.
   // ── Comments ──────────────────────────────────────────────────────
   await db.insert(comments).values([
     { id: "cm-cmt0001", workItemId: WI_AUTH, authorType: "user", authorId: null, authorName: "Amin", content: "This is our highest priority. We need auth before we can build any user-facing features.", metadata: {}, createdAt: d("2026-03-21T09:05:00Z") },
-    { id: "cm-cmt0002", workItemId: WI_AUTH, authorType: "agent", authorId: PERSONA_PM, authorName: "Product Manager", content: "I've written the acceptance criteria. Key requirements: Google + GitHub OAuth, session persistence, protected routes, and clean logout flow.", metadata: { filesReferenced: ["src/routes/auth.ts"] }, createdAt: d("2026-03-24T09:17:45Z") },
-    { id: "cm-cmt0003", workItemId: WI_AUTH, authorType: "agent", authorId: PERSONA_TECH_LEAD, authorName: "Tech Lead", content: "Decomposed into 3 children:\n1. OAuth backend routes (passport.js)\n2. Login UI component\n3. Session persistence + protected routes\n\nItems are ordered by dependency — each blocks the next.", metadata: { childrenCreated: 3, toolsUsed: ["create_children"] }, createdAt: d("2026-03-24T09:35:12Z") },
-    { id: "cm-cmt0004", workItemId: WI_AUTH_1, authorType: "agent", authorId: PERSONA_ENGINEER, authorName: "Engineer", content: "OAuth routes implemented. Created `/auth/google` and `/auth/github` endpoints with passport strategies. Added callback handlers and session middleware.", metadata: { filesChanged: ["src/routes/auth.ts", "src/middleware/session.ts", "src/config/passport.ts"], toolsUsed: ["Edit", "Write", "Bash"] }, createdAt: d("2026-03-25T10:04:32Z") },
+    { id: "cm-cmt0002", workItemId: WI_AUTH, authorType: "agent", authorId: AGENT_PM, authorName: "Product Manager", content: "I've written the acceptance criteria. Key requirements: Google + GitHub OAuth, session persistence, protected routes, and clean logout flow.", metadata: { filesReferenced: ["src/routes/auth.ts"] }, createdAt: d("2026-03-24T09:17:45Z") },
+    { id: "cm-cmt0003", workItemId: WI_AUTH, authorType: "agent", authorId: AGENT_TECH_LEAD, authorName: "Tech Lead", content: "Decomposed into 3 children:\n1. OAuth backend routes (passport.js)\n2. Login UI component\n3. Session persistence + protected routes\n\nItems are ordered by dependency — each blocks the next.", metadata: { childrenCreated: 3, toolsUsed: ["create_children"] }, createdAt: d("2026-03-24T09:35:12Z") },
+    { id: "cm-cmt0004", workItemId: WI_AUTH_1, authorType: "agent", authorId: AGENT_ENGINEER, authorName: "Engineer", content: "OAuth routes implemented. Created `/auth/google` and `/auth/github` endpoints with passport strategies. Added callback handlers and session middleware.", metadata: { filesChanged: ["src/routes/auth.ts", "src/middleware/session.ts", "src/config/passport.ts"], toolsUsed: ["Edit", "Write", "Bash"] }, createdAt: d("2026-03-25T10:04:32Z") },
     { id: "cm-cmt0005", workItemId: WI_AUTH_1, authorType: "system", authorId: null, authorName: "System", content: "Work item moved to Done", metadata: {}, createdAt: d("2026-03-25T11:30:00Z") },
-    { id: "cm-cmt0006", workItemId: WI_DASH, authorType: "agent", authorId: PERSONA_PM, authorName: "Product Manager", content: "Acceptance criteria defined. Focus on cost chart (recharts sparkline), live agent count, and project health indicators.", metadata: {}, createdAt: d("2026-03-25T11:02:30Z") },
-    { id: "cm-cmt0007", workItemId: WI_DASH, authorType: "agent", authorId: PERSONA_TECH_LEAD, authorName: "Tech Lead", content: "Decomposed into 3 children: cost chart, agents strip, health widget. No hard dependencies between them — can be worked in parallel.", metadata: { childrenCreated: 3, toolsUsed: ["create_children"] }, createdAt: d("2026-03-26T10:06:15Z") },
+    { id: "cm-cmt0006", workItemId: WI_DASH, authorType: "agent", authorId: AGENT_PM, authorName: "Product Manager", content: "Acceptance criteria defined. Focus on cost chart (recharts sparkline), live agent count, and project health indicators.", metadata: {}, createdAt: d("2026-03-25T11:02:30Z") },
+    { id: "cm-cmt0007", workItemId: WI_DASH, authorType: "agent", authorId: AGENT_TECH_LEAD, authorName: "Tech Lead", content: "Decomposed into 3 children: cost chart, agents strip, health widget. No hard dependencies between them — can be worked in parallel.", metadata: { childrenCreated: 3, toolsUsed: ["create_children"] }, createdAt: d("2026-03-26T10:06:15Z") },
     { id: "cm-cmt0008", workItemId: WI_NOTI, authorType: "user", authorId: null, authorName: "Amin", content: "Let's tackle this after the dashboard is done. Good to have the items scoped though.", metadata: {}, createdAt: d("2026-03-23T09:00:00Z") },
     { id: "cm-cmt0009", workItemId: WI_AUTH_2, authorType: "system", authorId: null, authorName: "System", content: "Work item started — Engineer agent running", metadata: {}, createdAt: d("2026-03-27T14:25:00Z") },
     { id: "cm-cmt0010", workItemId: WI_DASH_1, authorType: "user", authorId: null, authorName: "Amin", content: "Use recharts for consistency with the rest of the app. Sparkline style — no axes, just the line.", metadata: {}, createdAt: d("2026-03-25T09:30:00Z") },
     { id: "cm-cmt0011", workItemId: WI_AUTH, authorType: "system", authorId: null, authorName: "System", content: "Work item moved to In Progress", metadata: {}, createdAt: d("2026-03-25T10:00:00Z") },
     { id: "cm-cmt0012", workItemId: WI_DASH, authorType: "system", authorId: null, authorName: "System", content: "Work item moved to Decomposition", metadata: {}, createdAt: d("2026-03-26T10:00:00Z") },
-    { id: "cm-cmt0013", workItemId: WI_AUTH_2, authorType: "agent", authorId: PERSONA_ENGINEER, authorName: "Engineer", content: "Starting work on the login UI. Will create a clean login page with social sign-in buttons matching our design system.", metadata: { toolsUsed: ["Read", "Glob"] }, createdAt: d("2026-03-27T14:26:00Z") },
+    { id: "cm-cmt0013", workItemId: WI_AUTH_2, authorType: "agent", authorId: AGENT_ENGINEER, authorName: "Engineer", content: "Starting work on the login UI. Will create a clean login page with social sign-in buttons matching our design system.", metadata: { toolsUsed: ["Read", "Glob"] }, createdAt: d("2026-03-27T14:26:00Z") },
     { id: "cm-cmt0014", workItemId: WI_AUTH, authorType: "user", authorId: null, authorName: "Amin", content: "Looking good so far. Make sure the login page has a nice loading state while OAuth redirects.", metadata: {}, createdAt: d("2026-03-27T15:00:00Z") },
     { id: "cm-cmt0015", workItemId: WI_NOTI_1, authorType: "user", authorId: null, authorName: "Amin", content: "For the toast component, use shadcn/ui's Sonner integration.", metadata: {}, createdAt: d("2026-03-26T08:30:00Z") },
-    { id: "cm-cmt0016", workItemId: WI_AUTH_1, authorType: "agent", authorId: PERSONA_REVIEWER, authorName: "Code Reviewer", content: "Review passed. OAuth routes are correctly implemented with passport strategies. CSRF protection via csurf middleware is in place. Session handling uses passport serialize/deserialize.", metadata: { filesReviewed: ["src/routes/auth.ts", "src/middleware/session.ts", "src/config/passport.ts"] }, createdAt: d("2026-03-25T10:04:00Z") },
-    { id: "cm-cmt0017", workItemId: WI_AUTH, authorType: "agent", authorId: PERSONA_ROUTER, authorName: "Router", content: "State transition: Planning → Decomposition\n\nPM has completed acceptance criteria. Moving to Decomposition for Tech Lead breakdown.", metadata: {}, createdAt: d("2026-03-24T09:36:05Z") },
+    { id: "cm-cmt0016", workItemId: WI_AUTH_1, authorType: "agent", authorId: AGENT_REVIEWER, authorName: "Code Reviewer", content: "Review passed. OAuth routes are correctly implemented with passport strategies. CSRF protection via csurf middleware is in place. Session handling uses passport serialize/deserialize.", metadata: { filesReviewed: ["src/routes/auth.ts", "src/middleware/session.ts", "src/config/passport.ts"] }, createdAt: d("2026-03-25T10:04:00Z") },
+    { id: "cm-cmt0017", workItemId: WI_AUTH, authorType: "agent", authorId: AGENT_ROUTER, authorName: "Router", content: "State transition: Planning → Decomposition\n\nPM has completed acceptance criteria. Moving to Decomposition for Tech Lead breakdown.", metadata: {}, createdAt: d("2026-03-24T09:36:05Z") },
   ]);
 
   // ── Proposals ─────────────────────────────────────────────────────
@@ -857,7 +857,7 @@ Call route_to_state with the workItemId, targetState, and reasoning.
     },
   ]);
 
-  console.log("Seed complete: 1 project, 6 personas, 16 work items, 4 edges, 5 assignments, 10 executions, 17 comments, 2 proposals, 2 memories");
+  console.log("Seed complete: 1 project, 6 agents, 16 work items, 4 edges, 5 assignments, 10 executions, 17 comments, 2 proposals, 2 memories");
 }
 
 // Run if executed directly (not when imported by seed-e2e or seed-demo)

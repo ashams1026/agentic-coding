@@ -73,7 +73,7 @@ describe("startup crash recovery", () => {
     await testDb.db.insert(schema.executions).values({
       id: "ex-pending1",
       workItemId: TEST_IDS.WI_TOP_1,
-      personaId: TEST_IDS.PERSONA_PM,
+      agentId: TEST_IDS.AGENT_PM,
       projectId: TEST_IDS.PROJECT_ID,
       status: "pending",
       startedAt: new Date(),
@@ -131,7 +131,7 @@ describe("startup crash recovery", () => {
   it("clearAll resets concurrency tracker and queue", async () => {
     trackExecution("ex-1");
     trackExecution("ex-2");
-    await enqueue(TEST_IDS.WI_TOP_1, TEST_IDS.PERSONA_PM);
+    await enqueue(TEST_IDS.WI_TOP_1, TEST_IDS.AGENT_PM);
 
     expect(getActiveCount()).toBe(2);
     expect(getQueueLength()).toBe(1);

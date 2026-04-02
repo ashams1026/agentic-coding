@@ -22,7 +22,7 @@ export function resolveVariables(
 // without requiring unsafe double casts (e.g., `as unknown as Project`)
 interface VariableContextOptions {
   project?: { name: string; path: string; settings: Record<string, unknown> } | null;
-  persona?: { name: string; description: string; model: string } | null;
+  agent?: { name: string; description: string; model: string } | null;
   workItem?: {
     id: string;
     title: string;
@@ -46,11 +46,11 @@ export function buildVariableContext(options: VariableContextOptions): Record<st
     ctx["project.description"] = settings?.description ? String(settings.description) : undefined;
   }
 
-  // persona.* namespace
-  if (options.persona) {
-    ctx["persona.name"] = options.persona.name;
-    ctx["persona.description"] = options.persona.description || undefined;
-    ctx["persona.model"] = options.persona.model;
+  // agent.* namespace
+  if (options.agent) {
+    ctx["agent.name"] = options.agent.name;
+    ctx["agent.description"] = options.agent.description || undefined;
+    ctx["agent.model"] = options.agent.model;
   }
 
   // date.* namespace

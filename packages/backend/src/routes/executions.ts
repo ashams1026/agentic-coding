@@ -3,13 +3,13 @@ import { eq } from "drizzle-orm";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import type { RewindFilesResult } from "@anthropic-ai/claude-agent-sdk";
 import { db } from "../db/connection.js";
-import { executions, workItems, comments, projects, personas } from "../db/schema.js";
+import { executions, workItems, comments, projects, agents } from "../db/schema.js";
 import { getRunningQuery } from "../agent/claude-executor.js";
 import { createId } from "@agentops/shared";
 import type {
   ExecutionId,
   WorkItemId,
-  PersonaId,
+  AgentId,
   CreateExecutionRequest,
   UpdateExecutionRequest,
 } from "@agentops/shared";
@@ -25,7 +25,7 @@ function serializeExecution(row: typeof executions.$inferSelect) {
   return {
     id: row.id as ExecutionId,
     workItemId: row.workItemId as WorkItemId,
-    personaId: row.personaId as PersonaId,
+    agentId: row.agentId as AgentId,
     status: row.status,
     startedAt: toIso(row.startedAt),
     completedAt: row.completedAt ? toIso(row.completedAt) : null,
@@ -109,7 +109,7 @@ export async function executionRoutes(app: FastifyInstance) {
       .values({
         id,
         workItemId: body.workItemId,
-        personaId: body.personaId,
+        agentId: body.agentId,
         projectId: workItem?.projectId ?? "pj-global",
         status: "pending",
         startedAt: new Date(),
@@ -128,21 +128,21 @@ export async function executionRoutes(app: FastifyInstance) {
 
   // POST /api/executions/run — standalone execution (no work item)
   app.post<{
-    Body: { personaId: string; prompt: string; projectId?: string; budgetUsd?: number };
+    Body: { agentId: string; prompt: string; projectId?: string; budgetUsd?: number };
   }>("/api/executions/run", async (request, reply) => {
-    const { personaId, prompt, projectId, budgetUsd } = request.body;
+    const { agentId, prompt, projectId, budgetUsd } = request.body;
 
-    if (!personaId || !prompt) {
+    if (!agentId || !prompt) {
       return reply.status(400).send({
-        error: { code: "BAD_REQUEST", message: "personaId and prompt are required" },
+        error: { code: "BAD_REQUEST", message: "agentId and prompt are required" },
       });
     }
 
-    // Validate persona exists
-    const [persona] = await db.select().from(personas).where(eq(personas.id, personaId));
-    if (!persona) {
+    // Validate agent exists
+    const [agent] = await db.select().from(agents).where(eq(agents.id, agentId));
+    if (!agent) {
       return reply.status(404).send({
-        error: { code: "NOT_FOUND", message: `Persona ${personaId} not found` },
+        error: { code: "NOT_FOUND", message: `Agent ${agentId} not found` },
       });
     }
 
@@ -162,7 +162,7 @@ export async function executionRoutes(app: FastifyInstance) {
       .values({
         id,
         workItemId: null,
-        personaId,
+        agentId,
         projectId: projectId ?? "pj-global",
         status: "pending",
         startedAt: new Date(),

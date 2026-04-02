@@ -1,6 +1,6 @@
 /**
- * Persona dispatch — triggers agent execution when a work item
- * enters a state that has an assigned persona.
+ * Agent dispatch — triggers agent execution when a work item
+ * enters a state that has an assigned agent.
  *
  * Respects concurrency limits: if at capacity, the task is enqueued.
  */
@@ -8,7 +8,7 @@
 import { eq, and, inArray } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { workItems, workItemEdges, comments } from "../db/schema.js";
-import { resolvePersonaForState, getWorkflowStates } from "./workflow-runtime.js";
+import { resolveAgentForState, getWorkflowStates } from "./workflow-runtime.js";
 import { executionManager } from "./setup.js";
 import { canSpawn, enqueue, checkMonthlyCost } from "./concurrency.js";
 import { createId } from "@agentops/shared";
@@ -16,10 +16,10 @@ import type { CommentId, WorkItemId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 
 /**
- * Check if the given state has an assigned persona for the work item's project,
+ * Check if the given state has an assigned agent for the work item's project,
  * and if so, spawn an execution (or enqueue if at capacity).
  *
- * No-op for states without assigned personas (e.g., Backlog, Done).
+ * No-op for states without assigned agents (e.g., Backlog, Done).
  */
 export async function dispatchForState(
   workItemId: string,
@@ -33,10 +33,10 @@ export async function dispatchForState(
 
   if (!item) return;
 
-  // Resolve persona for this state via workflow runtime (with persona_assignments fallback)
-  const personaId = await resolvePersonaForState(item.projectId, item.workflowId ?? null, stateName);
+  // Resolve agent for this state via workflow runtime (with agent_assignments fallback)
+  const agentId = await resolveAgentForState(item.projectId, item.workflowId ?? null, stateName);
 
-  if (!personaId) return; // No persona assigned to this state
+  if (!agentId) return; // No agent assigned to this state
 
   // Check dependency enforcement — block if upstream items aren't complete
   const dependencies = await db
@@ -87,7 +87,7 @@ export async function dispatchForState(
     }
   }
 
-  const assignment = { personaId };
+  const assignment = { agentId };
 
   // Check monthly cost cap before spawning
   const costCheck = await checkMonthlyCost(item.projectId);
@@ -118,10 +118,10 @@ export async function dispatchForState(
   // Check concurrency before spawning
   const allowed = await canSpawn(item.projectId);
   if (!allowed) {
-    await enqueue(workItemId, assignment.personaId);
+    await enqueue(workItemId, assignment.agentId);
     return;
   }
 
   // Spawn execution
-  await executionManager.runExecution(workItemId, assignment.personaId);
+  await executionManager.runExecution(workItemId, assignment.agentId);
 }

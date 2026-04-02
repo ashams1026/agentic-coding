@@ -9,7 +9,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ExecutorRegistry } from "@agentops/core";
 import type { AgentExecutor, AgentEvent, AgentTask, SpawnOptions } from "@agentops/core";
-import type { Persona, Project } from "@agentops/shared";
+import type { Agent, Project } from "@agentops/shared";
 import { ExecutionManager } from "../execution-manager.js";
 import type { DbHandle, BroadcastFn } from "../execution-manager.js";
 
@@ -25,7 +25,7 @@ class TestExecutor implements AgentExecutor {
 
   async *spawn(
     _task: AgentTask,
-    _persona: Persona,
+    _agent: Agent,
     _project: Project,
     _options: SpawnOptions,
   ): AsyncIterable<AgentEvent> {

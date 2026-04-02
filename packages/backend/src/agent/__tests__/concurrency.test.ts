@@ -116,13 +116,13 @@ describe("concurrency limiter", () => {
     });
 
     it("enqueue adds to queue", async () => {
-      await enqueue(TEST_IDS.WI_TOP_1, TEST_IDS.PERSONA_PM);
+      await enqueue(TEST_IDS.WI_TOP_1, TEST_IDS.AGENT_PM);
       expect(getQueueLength()).toBe(1);
     });
 
     it("multiple enqueues increase length", async () => {
-      await enqueue(TEST_IDS.WI_TOP_1, TEST_IDS.PERSONA_PM);
-      await enqueue(TEST_IDS.WI_TOP_2, TEST_IDS.PERSONA_TECH_LEAD);
+      await enqueue(TEST_IDS.WI_TOP_1, TEST_IDS.AGENT_PM);
+      await enqueue(TEST_IDS.WI_TOP_2, TEST_IDS.AGENT_TECH_LEAD);
       expect(getQueueLength()).toBe(2);
     });
   });
@@ -138,22 +138,22 @@ describe("concurrency limiter", () => {
     });
 
     it("dequeues next entry from queue", async () => {
-      await enqueue(TEST_IDS.WI_TOP_1, TEST_IDS.PERSONA_PM);
+      await enqueue(TEST_IDS.WI_TOP_1, TEST_IDS.AGENT_PM);
       track("ex-1");
 
       const next = onComplete("ex-1");
       trackedIds = trackedIds.filter((id) => id !== "ex-1");
       expect(next).not.toBeNull();
       expect(next!.workItemId).toBe(TEST_IDS.WI_TOP_1);
-      expect(next!.personaId).toBe(TEST_IDS.PERSONA_PM);
+      expect(next!.agentId).toBe(TEST_IDS.AGENT_PM);
     });
 
     it("dequeues by priority (P0 before P3)", async () => {
       // WI_TOP_3 is in Backlog with default priority p2
       // WI_CHILD_1A has priority p1 in seed
       // Enqueue low priority first, then high priority
-      await enqueue(TEST_IDS.WI_TOP_3, TEST_IDS.PERSONA_PM); // p2
-      await enqueue(TEST_IDS.WI_CHILD_1A, TEST_IDS.PERSONA_ENGINEER); // p1
+      await enqueue(TEST_IDS.WI_TOP_3, TEST_IDS.AGENT_PM); // p2
+      await enqueue(TEST_IDS.WI_CHILD_1A, TEST_IDS.AGENT_ENGINEER); // p1
 
       track("ex-done");
       const first = onComplete("ex-done");
@@ -166,8 +166,8 @@ describe("concurrency limiter", () => {
 
     it("FIFO within same priority", async () => {
       // Both WI_TOP_2 and WI_TOP_3 have p2 priority
-      await enqueue(TEST_IDS.WI_TOP_2, TEST_IDS.PERSONA_PM); // first p2
-      await enqueue(TEST_IDS.WI_TOP_3, TEST_IDS.PERSONA_TECH_LEAD); // second p2
+      await enqueue(TEST_IDS.WI_TOP_2, TEST_IDS.AGENT_PM); // first p2
+      await enqueue(TEST_IDS.WI_TOP_3, TEST_IDS.AGENT_TECH_LEAD); // second p2
 
       track("ex-done1");
       const first = onComplete("ex-done1");

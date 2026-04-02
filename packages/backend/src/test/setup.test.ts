@@ -53,10 +53,10 @@ describe("seedTestDb", () => {
     expect(projects).toHaveLength(1);
     expect(projects[0]!.id).toBe(TEST_IDS.PROJECT_ID);
 
-    const personas = await testDb.db.select().from(schema.personas);
-    expect(personas).toHaveLength(5);
+    const agents = await testDb.db.select().from(schema.agents);
+    expect(agents).toHaveLength(5);
 
-    const assignments = await testDb.db.select().from(schema.personaAssignments);
+    const assignments = await testDb.db.select().from(schema.agentAssignments);
     expect(assignments).toHaveLength(4);
 
     const workItems = await testDb.db.select().from(schema.workItems);

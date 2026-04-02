@@ -22,7 +22,7 @@ export function setupFts5(): void {
       entity_id TEXT NOT NULL UNIQUE
     );
 
-    CREATE TABLE IF NOT EXISTS fts_personas_bridge (
+    CREATE TABLE IF NOT EXISTS fts_agents_bridge (
       rowid INTEGER PRIMARY KEY AUTOINCREMENT,
       entity_id TEXT NOT NULL UNIQUE
     );
@@ -47,7 +47,7 @@ export function setupFts5(): void {
       content_rowid=rowid
     );
 
-    CREATE VIRTUAL TABLE IF NOT EXISTS personas_fts USING fts5(
+    CREATE VIRTUAL TABLE IF NOT EXISTS agents_fts USING fts5(
       name,
       system_prompt,
       content_rowid=rowid
@@ -96,30 +96,30 @@ export function setupFts5(): void {
     END;
   `);
 
-  // Personas triggers
+  // Agents triggers
   sqlite.exec(`
-    DROP TRIGGER IF EXISTS fts_personas_insert;
-    CREATE TRIGGER fts_personas_insert AFTER INSERT ON personas
+    DROP TRIGGER IF EXISTS fts_agents_insert;
+    CREATE TRIGGER fts_agents_insert AFTER INSERT ON agents
     BEGIN
-      INSERT OR IGNORE INTO fts_personas_bridge (entity_id) VALUES (NEW.id);
-      INSERT INTO personas_fts (rowid, name, system_prompt)
+      INSERT OR IGNORE INTO fts_agents_bridge (entity_id) VALUES (NEW.id);
+      INSERT INTO agents_fts (rowid, name, system_prompt)
         SELECT b.rowid, NEW.name, COALESCE(NEW.system_prompt, '')
-        FROM fts_personas_bridge b WHERE b.entity_id = NEW.id;
+        FROM fts_agents_bridge b WHERE b.entity_id = NEW.id;
     END;
 
-    DROP TRIGGER IF EXISTS fts_personas_update;
-    CREATE TRIGGER fts_personas_update AFTER UPDATE ON personas
+    DROP TRIGGER IF EXISTS fts_agents_update;
+    CREATE TRIGGER fts_agents_update AFTER UPDATE ON agents
     BEGIN
-      INSERT OR IGNORE INTO fts_personas_bridge (entity_id) VALUES (NEW.id);
-      UPDATE personas_fts SET name = NEW.name, system_prompt = COALESCE(NEW.system_prompt, '')
-        WHERE rowid = (SELECT b.rowid FROM fts_personas_bridge b WHERE b.entity_id = NEW.id);
+      INSERT OR IGNORE INTO fts_agents_bridge (entity_id) VALUES (NEW.id);
+      UPDATE agents_fts SET name = NEW.name, system_prompt = COALESCE(NEW.system_prompt, '')
+        WHERE rowid = (SELECT b.rowid FROM fts_agents_bridge b WHERE b.entity_id = NEW.id);
     END;
 
-    DROP TRIGGER IF EXISTS fts_personas_delete;
-    CREATE TRIGGER fts_personas_delete AFTER DELETE ON personas
+    DROP TRIGGER IF EXISTS fts_agents_delete;
+    CREATE TRIGGER fts_agents_delete AFTER DELETE ON agents
     BEGIN
-      DELETE FROM personas_fts WHERE rowid = (SELECT b.rowid FROM fts_personas_bridge b WHERE b.entity_id = OLD.id);
-      DELETE FROM fts_personas_bridge WHERE entity_id = OLD.id;
+      DELETE FROM agents_fts WHERE rowid = (SELECT b.rowid FROM fts_agents_bridge b WHERE b.entity_id = OLD.id);
+      DELETE FROM fts_agents_bridge WHERE entity_id = OLD.id;
     END;
   `);
 
@@ -201,14 +201,14 @@ function backfillFts5(): void {
       JOIN fts_work_items_bridge b ON b.entity_id = wi.id;
   `);
 
-  // Personas
+  // Agents
   sqlite.exec(`
-    INSERT OR IGNORE INTO fts_personas_bridge (entity_id)
-      SELECT id FROM personas;
-    INSERT INTO personas_fts (rowid, name, system_prompt)
+    INSERT OR IGNORE INTO fts_agents_bridge (entity_id)
+      SELECT id FROM agents;
+    INSERT INTO agents_fts (rowid, name, system_prompt)
       SELECT b.rowid, p.name, COALESCE(p.system_prompt, '')
-      FROM personas p
-      JOIN fts_personas_bridge b ON b.entity_id = p.id;
+      FROM agents p
+      JOIN fts_agents_bridge b ON b.entity_id = p.id;
   `);
 
   // Comments

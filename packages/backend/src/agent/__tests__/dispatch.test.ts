@@ -56,27 +56,27 @@ describe("dispatch logic", () => {
     trackedIds.push(id);
   }
 
-  // ── Spawns execution when persona is assigned ────────────────────
+  // ── Spawns execution when agent is assigned ────────────────────
 
-  it("spawns executor when persona is assigned to state", async () => {
-    // Seed has Planning → PM persona assignment
+  it("spawns executor when agent is assigned to state", async () => {
+    // Seed has Planning → PM agent assignment
     await dispatchForState(TEST_IDS.WI_TOP_1, "Planning");
 
     expect(mockRunExecution).toHaveBeenCalledOnce();
     expect(mockRunExecution).toHaveBeenCalledWith(
       TEST_IDS.WI_TOP_1,
-      TEST_IDS.PERSONA_PM,
+      TEST_IDS.AGENT_PM,
     );
   });
 
-  // ── No-op when no persona assigned ───────────────────────────────
+  // ── No-op when no agent assigned ───────────────────────────────
 
-  it("does nothing for Backlog state (no persona assigned)", async () => {
+  it("does nothing for Backlog state (no agent assigned)", async () => {
     await dispatchForState(TEST_IDS.WI_TOP_3, "Backlog");
     expect(mockRunExecution).not.toHaveBeenCalled();
   });
 
-  it("does nothing for Done state (no persona assigned)", async () => {
+  it("does nothing for Done state (no agent assigned)", async () => {
     await dispatchForState(TEST_IDS.WI_TOP_1, "Done");
     expect(mockRunExecution).not.toHaveBeenCalled();
   });

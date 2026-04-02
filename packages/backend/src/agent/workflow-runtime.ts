@@ -5,9 +5,9 @@
 
 import { eq, and } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { workflowStates, workflowTransitions, personaAssignments } from "../db/schema.js";
+import { workflowStates, workflowTransitions, agentAssignments } from "../db/schema.js";
 import { WORKFLOW, isValidTransition as isValidTransitionSync, getValidTransitions } from "@agentops/shared";
-import type { PersonaId } from "@agentops/shared";
+import type { AgentId } from "@agentops/shared";
 
 // ── Types ───────────────────────────────────────────────────────
 
@@ -16,7 +16,7 @@ export interface DynamicWorkflowState {
   name: string;
   type: "initial" | "intermediate" | "terminal";
   color: string;
-  personaId: string | null;
+  agentId: string | null;
   sortOrder: number;
 }
 
@@ -39,7 +39,7 @@ export async function getWorkflowStates(workflowId: string | null): Promise<Dyna
       name: s.name,
       type: s.name === WORKFLOW.initialState ? "initial" : WORKFLOW.finalStates.includes(s.name as any) ? "terminal" : "intermediate",
       color: s.color,
-      personaId: null,
+      agentId: null,
       sortOrder: i,
     }));
   }
@@ -55,7 +55,7 @@ export async function getWorkflowStates(workflowId: string | null): Promise<Dyna
     name: r.name,
     type: r.type as "initial" | "intermediate" | "terminal",
     color: r.color,
-    personaId: r.personaId,
+    agentId: r.agentId,
     sortOrder: r.sortOrder,
   }));
 }
@@ -135,34 +135,34 @@ export async function getWorkflowInitialState(workflowId: string | null): Promis
   return initial?.name ?? WORKFLOW.initialState;
 }
 
-// ── Persona resolution ──────────────────────────────────────────
+// ── Agent resolution ──────────────────────────────────────────
 
-export async function resolvePersonaForState(
+export async function resolveAgentForState(
   projectId: string,
   workflowId: string | null,
   stateName: string,
-): Promise<PersonaId | null> {
-  // Priority 1: Check workflow state's default persona
+): Promise<AgentId | null> {
+  // Priority 1: Check workflow state's default agent
   if (workflowId) {
     const states = await getWorkflowStates(workflowId);
     const state = states.find((s) => s.name === stateName);
-    if (state?.personaId) {
-      return state.personaId as PersonaId;
+    if (state?.agentId) {
+      return state.agentId as AgentId;
     }
   }
 
-  // Priority 2: Check persona_assignments table (existing behavior)
+  // Priority 2: Check agent_assignments table (existing behavior)
   const [assignment] = await db
-    .select({ personaId: personaAssignments.personaId })
-    .from(personaAssignments)
+    .select({ agentId: agentAssignments.agentId })
+    .from(agentAssignments)
     .where(
       and(
-        eq(personaAssignments.projectId, projectId),
-        eq(personaAssignments.stateName, stateName),
+        eq(agentAssignments.projectId, projectId),
+        eq(agentAssignments.stateName, stateName),
       ),
     );
 
-  return (assignment?.personaId as PersonaId) ?? null;
+  return (assignment?.agentId as AgentId) ?? null;
 }
 
 // ── Dynamic router prompt builder ───────────────────────────────

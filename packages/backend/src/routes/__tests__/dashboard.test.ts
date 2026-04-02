@@ -134,7 +134,7 @@ describe("dashboard routes", () => {
         expect(body.data.length).toBeGreaterThan(0);
         for (const item of body.data) {
           expect(item.workItem.currentState).toBe("Ready");
-          expect(item).toHaveProperty("persona");
+          expect(item).toHaveProperty("agent");
         }
       });
     });

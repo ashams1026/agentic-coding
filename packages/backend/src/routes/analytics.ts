@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import { eq, sql, and, gte } from "drizzle-orm";
 import { db } from "../db/connection.js";
-import { executions, personas } from "../db/schema.js";
+import { executions, agents } from "../db/schema.js";
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -19,10 +19,10 @@ function getRangeStart(range: string): Date {
 // ── Routes ───────────────────────────────────────────────────────
 
 export async function analyticsRoutes(app: FastifyInstance) {
-  // GET /api/analytics/cost-by-persona — cost breakdown by persona
+  // GET /api/analytics/cost-by-agent — cost breakdown by agent
   app.get<{
     Querystring: { projectId?: string; range?: string };
-  }>("/api/analytics/cost-by-persona", async (request) => {
+  }>("/api/analytics/cost-by-agent", async (request) => {
     const { projectId, range } = request.query;
     const rangeStart = getRangeStart(range ?? "30d");
 
@@ -34,21 +34,21 @@ export async function analyticsRoutes(app: FastifyInstance) {
 
     const rows = await db
       .select({
-        personaId: executions.personaId,
-        personaName: personas.name,
+        agentId: executions.agentId,
+        agentName: agents.name,
         totalCostCents: sql<number>`SUM(${executions.costUsd})`,
         totalTokens: sql<number>`SUM(${executions.totalTokens})`,
         executionCount: sql<number>`COUNT(*)`,
       })
       .from(executions)
-      .leftJoin(personas, eq(executions.personaId, personas.id))
+      .leftJoin(agents, eq(executions.agentId, agents.id))
       .where(and(...conditions))
-      .groupBy(executions.personaId);
+      .groupBy(executions.agentId);
 
     return {
       data: rows.map((r) => ({
-        personaId: r.personaId,
-        personaName: r.personaName ?? "Unknown",
+        agentId: r.agentId,
+        agentName: r.agentName ?? "Unknown",
         costUsd: (r.totalCostCents ?? 0) / 100,
         totalTokens: r.totalTokens ?? 0,
         executionCount: r.executionCount ?? 0,
@@ -142,8 +142,8 @@ export async function analyticsRoutes(app: FastifyInstance) {
     const rows = await db
       .select({
         id: executions.id,
-        personaId: executions.personaId,
-        personaName: personas.name,
+        agentId: executions.agentId,
+        agentName: agents.name,
         model: executions.model,
         costCents: executions.costUsd,
         totalTokens: executions.totalTokens,
@@ -152,7 +152,7 @@ export async function analyticsRoutes(app: FastifyInstance) {
         startedAt: executions.startedAt,
       })
       .from(executions)
-      .leftJoin(personas, eq(executions.personaId, personas.id))
+      .leftJoin(agents, eq(executions.agentId, agents.id))
       .where(and(...conditions))
       .orderBy(sql`${executions.costUsd} DESC`)
       .limit(limit);
@@ -160,8 +160,8 @@ export async function analyticsRoutes(app: FastifyInstance) {
     return {
       data: rows.map((r) => ({
         id: r.id,
-        personaId: r.personaId,
-        personaName: r.personaName ?? "Unknown",
+        agentId: r.agentId,
+        agentName: r.agentName ?? "Unknown",
         model: r.model ?? "unknown",
         costUsd: (r.costCents ?? 0) / 100,
         totalTokens: r.totalTokens ?? 0,

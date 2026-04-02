@@ -126,7 +126,7 @@ async function handleChildDone(parentId: string): Promise<void> {
     timestamp: now.toISOString(),
   });
 
-  // Dispatch persona for the parent's new state (e.g., reviewer for "In Review")
+  // Dispatch agent for the parent's new state (e.g., reviewer for "In Review")
   dispatchForState(parentId, PARENT_ADVANCE_STATE).catch((err) => {
     logger.error({ err, parentId }, "Dispatch after parent coordination failed");
   });

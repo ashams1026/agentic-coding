@@ -3,7 +3,7 @@ import { eq, or } from "drizzle-orm";
 import { db } from "../db/connection.js";
 import { workflows, workflowStates, workflowTransitions, workItems } from "../db/schema.js";
 import { createId } from "@agentops/shared";
-import type { ProjectId, PersonaId } from "@agentops/shared";
+import type { ProjectId, AgentId } from "@agentops/shared";
 
 // ── Serialization ───────────────────────────────────────────────
 
@@ -32,7 +32,7 @@ function serializeState(row: typeof workflowStates.$inferSelect) {
     name: row.name,
     type: row.type as "initial" | "intermediate" | "terminal",
     color: row.color,
-    personaId: (row.personaId as PersonaId) ?? null,
+    agentId: (row.agentId as AgentId) ?? null,
     sortOrder: row.sortOrder,
   };
 }
@@ -195,7 +195,7 @@ export async function workflowRoutes(app: FastifyInstance) {
     Body: {
       name?: string;
       description?: string;
-      states?: Array<{ id?: string; name: string; type: string; color: string; personaId?: string; sortOrder: number }>;
+      states?: Array<{ id?: string; name: string; type: string; color: string; agentId?: string; sortOrder: number }>;
       transitions?: Array<{ id?: string; fromStateId: string; toStateId: string; label?: string; sortOrder: number }>;
     };
   }>("/api/workflows/:id", async (request, reply) => {
@@ -265,7 +265,7 @@ export async function workflowRoutes(app: FastifyInstance) {
             name: s.name,
             type: s.type,
             color: s.color,
-            personaId: s.personaId ?? null,
+            agentId: s.agentId ?? null,
             sortOrder: s.sortOrder,
           }).run();
         }
@@ -389,7 +389,7 @@ export async function workflowRoutes(app: FastifyInstance) {
         name: s.name,
         type: s.type,
         color: s.color,
-        personaId: s.personaId,
+        agentId: s.agentId,
         sortOrder: s.sortOrder,
       });
     }

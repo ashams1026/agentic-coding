@@ -15,7 +15,7 @@ export const projects = sqliteTable("projects", {
 
 export const projectsRelations = relations(projects, ({ many }) => ({
   workItems: many(workItems),
-  personaAssignments: many(personaAssignments),
+  agentAssignments: many(agentAssignments),
   memories: many(projectMemories),
 }));
 
@@ -32,7 +32,7 @@ export const workItems = sqliteTable("work_items", {
   workflowId: text("workflow_id"), // nullable FK — references workflows.id; pinned workflow version
   priority: text("priority").notNull().default("p2"), // Priority enum
   labels: text("labels", { mode: "json" }).notNull().$type<string[]>().default([]),
-  assignedPersonaId: text("assigned_persona_id").references(() => personas.id),
+  assignedAgentId: text("assigned_agent_id").references(() => agents.id),
   executionContext: text("execution_context", { mode: "json" })
     .notNull()
     .$type<
@@ -61,9 +61,9 @@ export const workItemsRelations = relations(workItems, ({ one, many }) => ({
     fields: [workItems.projectId],
     references: [projects.id],
   }),
-  assignedPersona: one(personas, {
-    fields: [workItems.assignedPersonaId],
-    references: [personas.id],
+  assignedAgent: one(agents, {
+    fields: [workItems.assignedAgentId],
+    references: [agents.id],
   }),
   executions: many(executions),
   comments: many(comments),
@@ -95,40 +95,40 @@ export const workItemEdgesRelations = relations(workItemEdges, ({ one }) => ({
   }),
 }));
 
-// ── Persona Assignments ────────────────────────────────────────────
+// ── Agent Assignments ──────────────────────────────────────────────
 
-export const personaAssignments = sqliteTable(
-  "persona_assignments",
+export const agentAssignments = sqliteTable(
+  "agent_assignments",
   {
     projectId: text("project_id").notNull().references(() => projects.id),
     stateName: text("state_name").notNull(), // WorkflowStateName
-    personaId: text("persona_id").notNull().references(() => personas.id),
+    agentId: text("agent_id").notNull().references(() => agents.id),
   },
   (table) => [
     primaryKey({ columns: [table.projectId, table.stateName] }),
   ],
 );
 
-export const personaAssignmentsRelations = relations(personaAssignments, ({ one }) => ({
+export const agentAssignmentsRelations = relations(agentAssignments, ({ one }) => ({
   project: one(projects, {
-    fields: [personaAssignments.projectId],
+    fields: [agentAssignments.projectId],
     references: [projects.id],
   }),
-  persona: one(personas, {
-    fields: [personaAssignments.personaId],
-    references: [personas.id],
+  agent: one(agents, {
+    fields: [agentAssignments.agentId],
+    references: [agents.id],
   }),
 }));
 
-// ── Personas ───────────────────────────────────────────────────────
+// ── Agents ─────────────────────────────────────────────────────────
 
-export const personas = sqliteTable("personas", {
-  id: text("id").primaryKey(), // PersonaId
+export const agents = sqliteTable("agents", {
+  id: text("id").primaryKey(), // AgentId
   name: text("name").notNull(),
   description: text("description").notNull().default(""),
   avatar: text("avatar", { mode: "json" }).notNull().$type<{ color: string; icon: string }>(),
   systemPrompt: text("system_prompt").notNull().default(""),
-  model: text("model").notNull().default("sonnet"), // PersonaModel
+  model: text("model").notNull().default("sonnet"), // AgentModel
   allowedTools: text("allowed_tools", { mode: "json" }).notNull().$type<string[]>().default([]),
   mcpTools: text("mcp_tools", { mode: "json" }).notNull().$type<string[]>().default([]),
   skills: text("skills", { mode: "json" }).notNull().$type<string[]>().default([]),
@@ -137,9 +137,9 @@ export const personas = sqliteTable("personas", {
   settings: text("settings", { mode: "json" }).notNull().$type<Record<string, unknown>>().default({}),
 });
 
-export const personasRelations = relations(personas, ({ many }) => ({
+export const agentsRelations = relations(agents, ({ many }) => ({
   executions: many(executions),
-  assignments: many(personaAssignments),
+  assignments: many(agentAssignments),
 }));
 
 // ── Executions ─────────────────────────────────────────────────────
@@ -147,7 +147,7 @@ export const personasRelations = relations(personas, ({ many }) => ({
 export const executions = sqliteTable("executions", {
   id: text("id").primaryKey(), // ExecutionId
   workItemId: text("work_item_id").references(() => workItems.id), // nullable — standalone/global executions
-  personaId: text("persona_id").notNull().references(() => personas.id),
+  agentId: text("agent_id").notNull().references(() => agents.id),
   projectId: text("project_id").notNull().references(() => projects.id),
   status: text("status").notNull().default("pending"), // ExecutionStatus
   startedAt: integer("started_at", { mode: "timestamp_ms" }).notNull(),
@@ -166,7 +166,7 @@ export const executions = sqliteTable("executions", {
   workflowId: text("workflow_id"), // nullable — references workflows.id; workflow context for this execution
   workflowStateName: text("workflow_state_name"), // nullable — state name at time of execution
   handoffNotes: text("handoff_notes", { mode: "json" }).$type<{ fromState: string; targetState: string; summary: string; decisions: string[]; filesChanged: string[]; openQuestions: string[] } | null>(),
-  model: text("model"), // nullable — persona model used (opus/sonnet/haiku)
+  model: text("model"), // nullable — agent model used (opus/sonnet/haiku)
   totalTokens: integer("total_tokens"), // nullable — cumulative tokens used
   toolUses: integer("tool_uses"), // nullable — count of tool calls made
   triggerType: text("trigger_type"), // nullable — "manual" | "webhook" | "schedule"
@@ -178,9 +178,9 @@ export const executionsRelations = relations(executions, ({ one, many }) => ({
     fields: [executions.workItemId],
     references: [workItems.id],
   }),
-  persona: one(personas, {
-    fields: [executions.personaId],
-    references: [personas.id],
+  agent: one(agents, {
+    fields: [executions.agentId],
+    references: [agents.id],
   }),
   proposals: many(proposals),
 }));
@@ -191,7 +191,7 @@ export const comments = sqliteTable("comments", {
   id: text("id").primaryKey(), // CommentId
   workItemId: text("work_item_id").notNull().references(() => workItems.id),
   authorType: text("author_type").notNull(), // CommentAuthorType
-  authorId: text("author_id"), // PersonaId | null
+  authorId: text("author_id"), // AgentId | null
   authorName: text("author_name").notNull(),
   content: text("content").notNull(),
   metadata: text("metadata", { mode: "json" }).notNull().$type<Record<string, unknown>>().default({}),
@@ -257,7 +257,7 @@ export const projectMemoriesRelations = relations(projectMemories, ({ one }) => 
 export const chatSessions = sqliteTable("chat_sessions", {
   id: text("id").primaryKey(), // ChatSessionId
   projectId: text("project_id").notNull().references(() => projects.id),
-  personaId: text("persona_id").references(() => personas.id), // nullable — null means default Pico
+  agentId: text("agent_id").references(() => agents.id), // nullable — null means default Pico
   workItemId: text("work_item_id").references(() => workItems.id), // nullable — for chat-in-context
   sdkSessionId: text("sdk_session_id"), // nullable — for future SDK session tracking
   title: text("title").notNull().default("New chat"),
@@ -270,9 +270,9 @@ export const chatSessionsRelations = relations(chatSessions, ({ one, many }) => 
     fields: [chatSessions.projectId],
     references: [projects.id],
   }),
-  persona: one(personas, {
-    fields: [chatSessions.personaId],
-    references: [personas.id],
+  agent: one(agents, {
+    fields: [chatSessions.agentId],
+    references: [agents.id],
   }),
   workItem: one(workItems, {
     fields: [chatSessions.workItemId],
@@ -303,7 +303,7 @@ export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
 
 export const globalMemories = sqliteTable("global_memories", {
   id: text("id").primaryKey(), // GlobalMemoryId
-  personaId: text("persona_id").notNull().references(() => personas.id),
+  agentId: text("agent_id").notNull().references(() => agents.id),
   summary: text("summary").notNull().default(""),
   keyDecisions: text("key_decisions", { mode: "json" }).notNull().$type<string[]>().default([]),
   createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
@@ -311,9 +311,9 @@ export const globalMemories = sqliteTable("global_memories", {
 });
 
 export const globalMemoriesRelations = relations(globalMemories, ({ one }) => ({
-  persona: one(personas, {
-    fields: [globalMemories.personaId],
-    references: [personas.id],
+  agent: one(agents, {
+    fields: [globalMemories.agentId],
+    references: [agents.id],
   }),
 }));
 
@@ -348,7 +348,7 @@ export const workflowStates = sqliteTable("workflow_states", {
   name: text("name").notNull(),
   type: text("type").notNull().default("intermediate"), // "initial" | "intermediate" | "terminal"
   color: text("color").notNull().default("#6b7280"),
-  personaId: text("persona_id").references(() => personas.id), // nullable — default persona for this state
+  agentId: text("agent_id").references(() => agents.id), // nullable — default agent for this state
   sortOrder: integer("sort_order").notNull().default(0),
 });
 
@@ -357,9 +357,9 @@ export const workflowStatesRelations = relations(workflowStates, ({ one }) => ({
     fields: [workflowStates.workflowId],
     references: [workflows.id],
   }),
-  persona: one(personas, {
-    fields: [workflowStates.personaId],
-    references: [personas.id],
+  agent: one(agents, {
+    fields: [workflowStates.agentId],
+    references: [agents.id],
   }),
 }));
 
@@ -436,7 +436,7 @@ export const webhookTriggers = sqliteTable("webhook_triggers", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   secret: text("secret").notNull(),
-  personaId: text("persona_id").notNull().references(() => personas.id),
+  agentId: text("agent_id").notNull().references(() => agents.id),
   projectId: text("project_id").notNull().references(() => projects.id),
   promptTemplate: text("prompt_template").notNull().default(""),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
@@ -444,9 +444,9 @@ export const webhookTriggers = sqliteTable("webhook_triggers", {
 });
 
 export const webhookTriggersRelations = relations(webhookTriggers, ({ one }) => ({
-  persona: one(personas, {
-    fields: [webhookTriggers.personaId],
-    references: [personas.id],
+  agent: one(agents, {
+    fields: [webhookTriggers.agentId],
+    references: [agents.id],
   }),
   project: one(projects, {
     fields: [webhookTriggers.projectId],
@@ -459,7 +459,7 @@ export const webhookTriggersRelations = relations(webhookTriggers, ({ one }) => 
 export const schedules = sqliteTable("schedules", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
-  personaId: text("persona_id").notNull().references(() => personas.id),
+  agentId: text("agent_id").notNull().references(() => agents.id),
   projectId: text("project_id").notNull().references(() => projects.id),
   cronExpression: text("cron_expression").notNull(), // e.g. "*/30 * * * *"
   promptTemplate: text("prompt_template").notNull().default(""),
@@ -471,9 +471,9 @@ export const schedules = sqliteTable("schedules", {
 });
 
 export const schedulesRelations = relations(schedules, ({ one }) => ({
-  persona: one(personas, {
-    fields: [schedules.personaId],
-    references: [personas.id],
+  agent: one(agents, {
+    fields: [schedules.agentId],
+    references: [agents.id],
   }),
   project: one(projects, {
     fields: [schedules.projectId],
@@ -486,7 +486,7 @@ export const schedulesRelations = relations(schedules, ({ one }) => ({
 export const templates = sqliteTable("templates", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
-  type: text("type").notNull(), // "work_item" | "persona"
+  type: text("type").notNull(), // "work_item" | "agent"
   description: text("description").notNull().default(""),
   content: text("content", { mode: "json" }).notNull(), // JSON content blob
   isBuiltIn: integer("is_built_in", { mode: "boolean" }).notNull().default(false),

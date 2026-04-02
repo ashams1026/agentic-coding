@@ -98,7 +98,7 @@ describe("execution manager", () => {
         ]),
       );
 
-      const executionId = await runExecution(TEST_IDS.WI_TOP_1, TEST_IDS.PERSONA_PM);
+      const executionId = await runExecution(TEST_IDS.WI_TOP_1, TEST_IDS.AGENT_PM);
 
       expect(executionId).toMatch(/^ex-/);
 
@@ -110,7 +110,7 @@ describe("execution manager", () => {
       expect(record).toBeDefined();
       expect(record!.status).toBe("running");
       expect(record!.workItemId).toBe(TEST_IDS.WI_TOP_1);
-      expect(record!.personaId).toBe(TEST_IDS.PERSONA_PM);
+      expect(record!.agentId).toBe(TEST_IDS.AGENT_PM);
 
       // Verify trackExecution was called
       expect(mockTrackExecution).toHaveBeenCalledWith(executionId);
@@ -124,7 +124,7 @@ describe("execution manager", () => {
         ]),
       );
 
-      const executionId = await runExecution(TEST_IDS.WI_TOP_1, TEST_IDS.PERSONA_PM);
+      const executionId = await runExecution(TEST_IDS.WI_TOP_1, TEST_IDS.AGENT_PM);
 
       // Wait for background stream to complete
       await vi.waitFor(async () => {
@@ -152,7 +152,7 @@ describe("execution manager", () => {
         },
       });
 
-      const executionId = await runExecution(TEST_IDS.WI_TOP_1, TEST_IDS.PERSONA_PM);
+      const executionId = await runExecution(TEST_IDS.WI_TOP_1, TEST_IDS.AGENT_PM);
 
       // Wait for background stream to fail
       await vi.waitFor(async () => {

@@ -22,10 +22,10 @@ async function main() {
   const { runMigrations } = await import("./migrate.js");
   const {
     projects,
-    personas,
+    agents,
     workItems,
     workItemEdges,
-    personaAssignments,
+    agentAssignments,
     executions,
     comments,
     proposals,
@@ -43,10 +43,10 @@ async function main() {
   await db.delete(proposals);
   await db.delete(comments);
   await db.delete(executions);
-  await db.delete(personaAssignments);
+  await db.delete(agentAssignments);
   await db.delete(workItemEdges);
   await db.delete(workItems);
-  await db.delete(personas);
+  await db.delete(agents);
   await db.delete(projects);
 
   const d = (iso: string) => new Date(iso);
@@ -77,7 +77,7 @@ async function main() {
     },
   ]);
 
-  // ── Personas ──────────────────────────────────────────────────────
+  // ── Agents ────────────────────────────────────────────────────────
 
   const PS_PM = "ps-pm00001";
   const PS_TL = "ps-tl00001";
@@ -85,7 +85,7 @@ async function main() {
   const PS_RV = "ps-rv00001";
   const PS_RT = "ps-rt00001";
 
-  await db.insert(personas).values([
+  await db.insert(agents).values([
     {
       id: PS_PM, name: "Product Manager",
       description: "Writes acceptance criteria, defines scope, and prioritizes work items.",
@@ -144,9 +144,9 @@ async function main() {
 - Say "woof" sparingly — only when genuinely excited about something
 
 ## What you know
-- The AgentOps project architecture, workflow states, personas, and codebase
+- The AgentOps project architecture, workflow states, agents, and codebase
 - How work items flow through the pipeline (Backlog → Planning → Ready → In Progress → In Review → Done)
-- The 5 workflow personas (PM, Tech Lead, Engineer, Code Reviewer, Router) and their roles
+- The 5 workflow agents (PM, Tech Lead, Engineer, Code Reviewer, Router) and their roles
 - How to read execution history, comments, and state transitions
 
 ## What you can do
@@ -177,7 +177,7 @@ async function main() {
       description: "Create a complete TicTacToe game with React. Include game board, turn tracking, win detection, and reset functionality.",
       context: { acceptanceCriteria: "- 3x3 game board renders\n- Players alternate X and O\n- Win detection works (rows, cols, diagonals)\n- Draw detection works\n- Reset button clears the board" },
       currentState: "Done", priority: "p1", labels: ["game", "react"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-01T10:00:00Z"), updatedAt: d("2026-03-05T16:00:00Z"),
     },
     {
@@ -186,7 +186,7 @@ async function main() {
       description: "3x3 CSS grid of clickable cells. Each cell shows X, O, or empty.",
       context: {},
       currentState: "Done", priority: "p1", labels: ["game", "ui"],
-      assignedPersonaId: PS_EN, executionContext: [],
+      assignedAgentId: PS_EN, executionContext: [],
       createdAt: d("2026-03-02T09:00:00Z"), updatedAt: d("2026-03-03T11:00:00Z"),
     },
     {
@@ -195,7 +195,7 @@ async function main() {
       description: "Check all rows, columns, and diagonals after each move. Detect draw when board is full.",
       context: {},
       currentState: "Done", priority: "p1", labels: ["game", "logic"],
-      assignedPersonaId: PS_EN, executionContext: [],
+      assignedAgentId: PS_EN, executionContext: [],
       createdAt: d("2026-03-02T09:05:00Z"), updatedAt: d("2026-03-04T14:00:00Z"),
     },
     {
@@ -204,7 +204,7 @@ async function main() {
       description: "Show current player turn, winner announcement, and a reset button.",
       context: {},
       currentState: "Done", priority: "p1", labels: ["game", "ui"],
-      assignedPersonaId: PS_EN, executionContext: [],
+      assignedAgentId: PS_EN, executionContext: [],
       createdAt: d("2026-03-02T09:10:00Z"), updatedAt: d("2026-03-05T16:00:00Z"),
     },
   ]);
@@ -218,7 +218,7 @@ async function main() {
       description: "CRUD endpoints for blog posts with validation, pagination, and search.",
       context: { acceptanceCriteria: "- GET /posts returns paginated list\n- POST /posts creates with validation\n- PUT /posts/:id updates\n- DELETE /posts/:id removes\n- GET /posts?q= searches title/body" },
       currentState: "In Progress", priority: "p0", labels: ["api", "crud"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-10T09:00:00Z"), updatedAt: d("2026-03-28T10:00:00Z"),
     },
     {
@@ -227,7 +227,7 @@ async function main() {
       description: "Define posts table with id, title, body, authorId, tags, createdAt, updatedAt.",
       context: {},
       currentState: "Done", priority: "p0", labels: ["api", "db"],
-      assignedPersonaId: PS_EN, executionContext: [],
+      assignedAgentId: PS_EN, executionContext: [],
       createdAt: d("2026-03-11T10:00:00Z"), updatedAt: d("2026-03-12T15:00:00Z"),
     },
     {
@@ -236,7 +236,7 @@ async function main() {
       description: "List endpoint with page/limit params, total count header, sorted by createdAt desc.",
       context: {},
       currentState: "In Review", priority: "p0", labels: ["api"],
-      assignedPersonaId: PS_RV, executionContext: [],
+      assignedAgentId: PS_RV, executionContext: [],
       createdAt: d("2026-03-11T10:05:00Z"), updatedAt: d("2026-03-28T09:00:00Z"),
     },
     {
@@ -245,7 +245,7 @@ async function main() {
       description: "Create endpoint with zod validation for title (required, max 200), body (required), tags (optional array).",
       context: {},
       currentState: "In Progress", priority: "p0", labels: ["api", "validation"],
-      assignedPersonaId: PS_EN, executionContext: [],
+      assignedAgentId: PS_EN, executionContext: [],
       createdAt: d("2026-03-11T10:10:00Z"), updatedAt: d("2026-03-28T10:00:00Z"),
     },
     {
@@ -254,7 +254,7 @@ async function main() {
       description: "Update and delete with proper 404 handling and authorization check.",
       context: {},
       currentState: "Ready", priority: "p0", labels: ["api"],
-      assignedPersonaId: PS_EN, executionContext: [],
+      assignedAgentId: PS_EN, executionContext: [],
       createdAt: d("2026-03-11T10:15:00Z"), updatedAt: d("2026-03-11T10:15:00Z"),
     },
     {
@@ -263,7 +263,7 @@ async function main() {
       description: "GET /posts?q= with full-text search on title and body using SQLite FTS.",
       context: {},
       currentState: "Backlog", priority: "p1", labels: ["api", "search"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-11T10:20:00Z"), updatedAt: d("2026-03-11T10:20:00Z"),
     },
     {
@@ -272,7 +272,7 @@ async function main() {
       description: "Register/login endpoints, JWT token issuance, middleware for protected routes.",
       context: {},
       currentState: "Planning", priority: "p0", labels: ["auth", "security"],
-      assignedPersonaId: PS_PM, executionContext: [],
+      assignedAgentId: PS_PM, executionContext: [],
       createdAt: d("2026-03-15T09:00:00Z"), updatedAt: d("2026-03-27T11:00:00Z"),
     },
     {
@@ -281,7 +281,7 @@ async function main() {
       description: "Add rate limiting to prevent API abuse. Configure per-route limits.",
       context: {},
       currentState: "Blocked", priority: "p2", labels: ["security", "middleware"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-20T14:00:00Z"), updatedAt: d("2026-03-25T09:00:00Z"),
     },
   ]);
@@ -295,7 +295,7 @@ async function main() {
       description: "Build a dashboard with multiple chart types: line, bar, pie. Support date range filtering and data export.",
       context: {},
       currentState: "Decomposition", priority: "p1", labels: ["dashboard", "charts"],
-      assignedPersonaId: PS_TL, executionContext: [],
+      assignedAgentId: PS_TL, executionContext: [],
       createdAt: d("2026-03-15T14:00:00Z"), updatedAt: d("2026-03-26T10:00:00Z"),
     },
     {
@@ -304,7 +304,7 @@ async function main() {
       description: "CSV/JSON file upload with parsing, validation, and storage in SQLite.",
       context: {},
       currentState: "Backlog", priority: "p1", labels: ["data", "pipeline"],
-      assignedPersonaId: null, executionContext: [],
+      assignedAgentId: null, executionContext: [],
       createdAt: d("2026-03-16T10:00:00Z"), updatedAt: d("2026-03-16T10:00:00Z"),
     },
   ]);
@@ -320,15 +320,15 @@ async function main() {
     { id: "we-dem0006", fromId: "wi-blg0004", toId: "wi-blg0005", type: "depends_on" },
   ]);
 
-  // ── Persona Assignments ───────────────────────────────────────────
+  // ── Agent Assignments ───────────────────────────────────────────
 
   for (const projId of ["pj-tictacto", "pj-blogapi0", "pj-dashbrd0"]) {
-    await db.insert(personaAssignments).values([
-      { projectId: projId, stateName: "Planning", personaId: PS_PM },
-      { projectId: projId, stateName: "Decomposition", personaId: PS_TL },
-      { projectId: projId, stateName: "Ready", personaId: PS_RT },
-      { projectId: projId, stateName: "In Progress", personaId: PS_EN },
-      { projectId: projId, stateName: "In Review", personaId: PS_RV },
+    await db.insert(agentAssignments).values([
+      { projectId: projId, stateName: "Planning", agentId: PS_PM },
+      { projectId: projId, stateName: "Decomposition", agentId: PS_TL },
+      { projectId: projId, stateName: "Ready", agentId: PS_RT },
+      { projectId: projId, stateName: "In Progress", agentId: PS_EN },
+      { projectId: projId, stateName: "In Review", agentId: PS_RV },
     ]);
   }
 
@@ -337,88 +337,88 @@ async function main() {
   await db.insert(executions).values([
     // TicTacToe — completed pipeline
     {
-      id: "ex-dem0001", workItemId: "wi-ttt0001", personaId: PS_PM, projectId: "pj-tictacto",
+      id: "ex-dem0001", workItemId: "wi-ttt0001", agentId: PS_PM, projectId: "pj-tictacto",
       status: "completed", startedAt: d("2026-03-01T10:05:00Z"), completedAt: d("2026-03-01T10:07:00Z"),
       costUsd: 12, durationMs: 120000, summary: "Wrote acceptance criteria for TicTacToe game.", outcome: "success",
       rejectionPayload: null, logs: "Analyzing game requirements...\nWriting criteria...\nDone.",
     },
     {
-      id: "ex-dem0002", workItemId: "wi-ttt0001", personaId: PS_TL, projectId: "pj-tictacto",
+      id: "ex-dem0002", workItemId: "wi-ttt0001", agentId: PS_TL, projectId: "pj-tictacto",
       status: "completed", startedAt: d("2026-03-01T10:10:00Z"), completedAt: d("2026-03-01T10:15:00Z"),
       costUsd: 45, durationMs: 300000, summary: "Decomposed into 3 children: board, win detection, reset/status.", outcome: "success",
       rejectionPayload: null, logs: "Reading codebase...\nDesigning component structure...\nCreating 3 children.",
     },
     {
-      id: "ex-dem0003", workItemId: "wi-ttt0002", personaId: PS_EN, projectId: "pj-tictacto",
+      id: "ex-dem0003", workItemId: "wi-ttt0002", agentId: PS_EN, projectId: "pj-tictacto",
       status: "completed", startedAt: d("2026-03-02T09:30:00Z"), completedAt: d("2026-03-02T09:38:00Z"),
       costUsd: 65, durationMs: 480000, summary: "Built 3x3 game board with CSS grid and click handlers.", outcome: "success",
       rejectionPayload: null, logs: "Creating Board component...\nAdding CSS grid layout...\nImplementing cell click handler...\nBuild passes.",
     },
     {
-      id: "ex-dem0004", workItemId: "wi-ttt0003", personaId: PS_EN, projectId: "pj-tictacto",
+      id: "ex-dem0004", workItemId: "wi-ttt0003", agentId: PS_EN, projectId: "pj-tictacto",
       status: "completed", startedAt: d("2026-03-03T14:00:00Z"), completedAt: d("2026-03-03T14:06:00Z"),
       costUsd: 55, durationMs: 360000, summary: "Implemented win detection for rows, columns, and diagonals.", outcome: "success",
       rejectionPayload: null, logs: "Adding checkWinner function...\nTesting all win conditions...\nAdding draw detection...\nBuild passes.",
     },
     {
-      id: "ex-dem0005", workItemId: "wi-ttt0004", personaId: PS_EN, projectId: "pj-tictacto",
+      id: "ex-dem0005", workItemId: "wi-ttt0004", agentId: PS_EN, projectId: "pj-tictacto",
       status: "completed", startedAt: d("2026-03-04T10:00:00Z"), completedAt: d("2026-03-04T10:05:00Z"),
       costUsd: 40, durationMs: 300000, summary: "Added status display and reset button.", outcome: "success",
       rejectionPayload: null, logs: "Adding status bar...\nImplementing reset handler...\nStyling with Tailwind...\nBuild passes.",
     },
     // Blog API — active pipeline with rejections
     {
-      id: "ex-dem0006", workItemId: "wi-blg0001", personaId: PS_PM, projectId: "pj-blogapi0",
+      id: "ex-dem0006", workItemId: "wi-blg0001", agentId: PS_PM, projectId: "pj-blogapi0",
       status: "completed", startedAt: d("2026-03-10T09:05:00Z"), completedAt: d("2026-03-10T09:08:00Z"),
       costUsd: 15, durationMs: 180000, summary: "Wrote acceptance criteria for Blog API CRUD.", outcome: "success",
       rejectionPayload: null, logs: "Analyzing REST API requirements...\nDefining endpoints...\nDone.",
     },
     {
-      id: "ex-dem0007", workItemId: "wi-blg0001", personaId: PS_TL, projectId: "pj-blogapi0",
+      id: "ex-dem0007", workItemId: "wi-blg0001", agentId: PS_TL, projectId: "pj-blogapi0",
       status: "completed", startedAt: d("2026-03-10T09:15:00Z"), completedAt: d("2026-03-10T09:22:00Z"),
       costUsd: 78, durationMs: 420000, summary: "Decomposed into 5 children: schema, GET list, POST create, PUT/DELETE, search.", outcome: "success",
       rejectionPayload: null, logs: "Designing API layer...\nCreating 5 children with dependencies...\nDone.",
     },
     {
-      id: "ex-dem0008", workItemId: "wi-blg0002", personaId: PS_EN, projectId: "pj-blogapi0",
+      id: "ex-dem0008", workItemId: "wi-blg0002", agentId: PS_EN, projectId: "pj-blogapi0",
       status: "completed", startedAt: d("2026-03-11T10:30:00Z"), completedAt: d("2026-03-11T10:35:00Z"),
       costUsd: 35, durationMs: 300000, summary: "Created posts table schema with Drizzle ORM.", outcome: "success",
       rejectionPayload: null, logs: "Defining posts table...\nRunning migrations...\nBuild passes.",
     },
     {
-      id: "ex-dem0009", workItemId: "wi-blg0003", personaId: PS_EN, projectId: "pj-blogapi0",
+      id: "ex-dem0009", workItemId: "wi-blg0003", agentId: PS_EN, projectId: "pj-blogapi0",
       status: "completed", startedAt: d("2026-03-25T09:00:00Z"), completedAt: d("2026-03-25T09:08:00Z"),
       costUsd: 72, durationMs: 480000, summary: "Implemented GET /posts with pagination. First attempt had off-by-one in page calculation.", outcome: "rejected",
       rejectionPayload: { reason: "Pagination offset calculation is wrong: page 2 shows same results as page 1.", severity: "high", hint: "Use (page - 1) * limit for offset, not page * limit.", retryCount: 1 },
       logs: "Creating GET route...\nAdding pagination...\nBuild passes.",
     },
     {
-      id: "ex-dem0010", workItemId: "wi-blg0003", personaId: PS_EN, projectId: "pj-blogapi0",
+      id: "ex-dem0010", workItemId: "wi-blg0003", agentId: PS_EN, projectId: "pj-blogapi0",
       status: "completed", startedAt: d("2026-03-27T14:00:00Z"), completedAt: d("2026-03-27T14:05:00Z"),
       costUsd: 28, durationMs: 300000, summary: "Fixed pagination offset: (page-1)*limit. Added total count header.", outcome: "success",
       rejectionPayload: null, logs: "Fixing pagination offset...\nAdding X-Total-Count header...\nBuild passes.",
     },
     {
-      id: "ex-dem0011", workItemId: "wi-blg0004", personaId: PS_EN, projectId: "pj-blogapi0",
+      id: "ex-dem0011", workItemId: "wi-blg0004", agentId: PS_EN, projectId: "pj-blogapi0",
       status: "running", startedAt: d("2026-03-28T10:00:00Z"), completedAt: null,
       costUsd: 18, durationMs: 0, summary: "", outcome: null,
       rejectionPayload: null, logs: "Reading zod docs...\nDefining post creation schema...\nImplementing validation middleware...",
     },
     {
-      id: "ex-dem0012", workItemId: "wi-blg0007", personaId: PS_PM, projectId: "pj-blogapi0",
+      id: "ex-dem0012", workItemId: "wi-blg0007", agentId: PS_PM, projectId: "pj-blogapi0",
       status: "running", startedAt: d("2026-03-27T11:00:00Z"), completedAt: null,
       costUsd: 8, durationMs: 0, summary: "", outcome: null,
       rejectionPayload: null, logs: "Analyzing JWT authentication requirements...\nResearching best practices...",
     },
     // Analytics Dashboard
     {
-      id: "ex-dem0013", workItemId: "wi-ana0001", personaId: PS_PM, projectId: "pj-dashbrd0",
+      id: "ex-dem0013", workItemId: "wi-ana0001", agentId: PS_PM, projectId: "pj-dashbrd0",
       status: "completed", startedAt: d("2026-03-15T14:05:00Z"), completedAt: d("2026-03-15T14:08:00Z"),
       costUsd: 14, durationMs: 180000, summary: "Wrote acceptance criteria for chart dashboard.", outcome: "success",
       rejectionPayload: null, logs: "Analyzing dashboard requirements...\nDefining chart types...\nDone.",
     },
     {
-      id: "ex-dem0014", workItemId: "wi-ana0001", personaId: PS_TL, projectId: "pj-dashbrd0",
+      id: "ex-dem0014", workItemId: "wi-ana0001", agentId: PS_TL, projectId: "pj-dashbrd0",
       status: "completed", startedAt: d("2026-03-26T10:00:00Z"), completedAt: d("2026-03-26T10:08:00Z"),
       costUsd: 88, durationMs: 480000, summary: "Decomposing dashboard into chart components and data layer.", outcome: "success",
       rejectionPayload: null, logs: "Reading existing codebase...\nDesigning chart architecture...\nCreating children...",
@@ -502,7 +502,7 @@ async function main() {
   const totalWI = 4 + 8 + 2;  // tictactoe + blog + analytics
   const totalExec = 14;
   const totalComments = 13;
-  console.log(`Demo seed complete: 3 projects, 6 personas, ${totalWI} work items, 6 edges, 15 assignments, ${totalExec} executions, ${totalComments} comments, 3 proposals, 2 memories`);
+  console.log(`Demo seed complete: 3 projects, 6 agents, ${totalWI} work items, 6 edges, 15 assignments, ${totalExec} executions, ${totalComments} comments, 3 proposals, 2 memories`);
 }
 
 main().catch((err) => {

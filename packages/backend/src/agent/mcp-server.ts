@@ -1,5 +1,5 @@
 /**
- * AgentOps MCP Server — provides tools for AI agent personas.
+ * AgentOps MCP Server — provides tools for AI agent agents.
  *
  * Tools registered here are made available to agents via the Claude Agent SDK.
  * Each tool interacts with the database and broadcasts WS events.
@@ -16,7 +16,7 @@ import { db } from "../db/connection.js";
 import { comments, workItems, workItemEdges } from "../db/schema.js";
 import { createId } from "@agentops/shared";
 import { isValidTransitionDynamic, getWorkflowInitialState, getWorkflowStates } from "./workflow-runtime.js";
-import type { CommentId, WorkItemId, PersonaId } from "@agentops/shared";
+import type { CommentId, WorkItemId, AgentId } from "@agentops/shared";
 import { broadcast } from "../ws.js";
 import { checkParentCoordination } from "./coordination.js";
 import { checkMemoryGeneration, getRecentMemories } from "./memory.js";
@@ -27,13 +27,13 @@ import { auditStateTransition } from "../audit.js";
 // ── Context passed to the MCP server ────────────────────────────
 
 export interface McpContext {
-  /** Persona name (used as comment author) */
-  personaName: string;
-  /** Persona ID */
-  personaId: string;
+  /** Agent name (used as comment author) */
+  agentName: string;
+  /** Agent ID */
+  agentId: string;
   /** Project ID */
   projectId: string;
-  /** Allowed tool names for this persona (empty = all tools) */
+  /** Allowed tool names for this agent (empty = all tools) */
   allowedTools: string[];
 }
 
@@ -84,8 +84,8 @@ export function createMcpServer(context: McpContext): McpServer {
           id,
           workItemId,
           authorType: "agent",
-          authorId: context.personaId || null,
-          authorName: context.personaName,
+          authorId: context.agentId || null,
+          authorName: context.agentName,
           content,
           metadata: metadata ?? {},
           createdAt: now,
@@ -95,7 +95,7 @@ export function createMcpServer(context: McpContext): McpServer {
           type: "comment_created",
           commentId: id as CommentId,
           workItemId: workItemId as WorkItemId,
-          authorName: context.personaName,
+          authorName: context.agentName,
           contentPreview: content.slice(0, 100),
           timestamp: now.toISOString(),
         });
@@ -107,7 +107,7 @@ export function createMcpServer(context: McpContext): McpServer {
               text: JSON.stringify({
                 id,
                 workItemId,
-                authorName: context.personaName,
+                authorName: context.agentName,
                 createdAt: now.toISOString(),
               }),
             },
@@ -191,7 +191,7 @@ export function createMcpServer(context: McpContext): McpServer {
             workflowId: parent.workflowId ?? null,
             priority: "p2",
             labels: [],
-            assignedPersonaId: null,
+            assignedAgentId: null,
             executionContext: [],
             createdAt: now,
             updatedAt: now,
@@ -202,7 +202,7 @@ export function createMcpServer(context: McpContext): McpServer {
             workItemId: id as WorkItemId,
             fromState: "",
             toState: initialState,
-            triggeredBy: (context.personaId as PersonaId) || "system",
+            triggeredBy: (context.agentId as AgentId) || "system",
             timestamp: now.toISOString(),
           });
         }
@@ -337,7 +337,7 @@ export function createMcpServer(context: McpContext): McpServer {
           id: commentId,
           workItemId,
           authorType: "system",
-          authorId: context.personaId || null,
+          authorId: context.agentId || null,
           authorName: "Router",
           content: `State transition: ${fromState} → ${finalTargetState}\n\n${reasoning}`,
           metadata: { fromState, toState: finalTargetState, reasoning },
@@ -350,7 +350,7 @@ export function createMcpServer(context: McpContext): McpServer {
           workItemId: workItemId as WorkItemId,
           fromState,
           toState: finalTargetState,
-          triggeredBy: (context.personaId as PersonaId) || "system",
+          triggeredBy: (context.agentId as AgentId) || "system",
           timestamp: now.toISOString(),
         });
 
@@ -359,8 +359,8 @@ export function createMcpServer(context: McpContext): McpServer {
           workItemId,
           fromState,
           toState: finalTargetState,
-          actor: context.personaName || "Router",
-          actorType: "persona",
+          actor: context.agentName || "Router",
+          actorType: "agent",
         });
 
         // Parent-child coordination (non-blocking)
@@ -541,8 +541,8 @@ export function createMcpServer(context: McpContext): McpServer {
           id: commentId,
           workItemId,
           authorType: "system",
-          authorId: context.personaId || null,
-          authorName: context.personaName,
+          authorId: context.agentId || null,
+          authorName: context.agentName,
           content: `Blocked: ${reason}`,
           metadata: { reason, previousState: fromState },
           createdAt: now,
@@ -554,7 +554,7 @@ export function createMcpServer(context: McpContext): McpServer {
           workItemId: workItemId as WorkItemId,
           fromState,
           toState: blockedStateName,
-          triggeredBy: (context.personaId as PersonaId) || "system",
+          triggeredBy: (context.agentId as AgentId) || "system",
           timestamp: now.toISOString(),
         });
 
@@ -563,8 +563,8 @@ export function createMcpServer(context: McpContext): McpServer {
           workItemId,
           fromState,
           toState: "Blocked",
-          actor: context.personaName,
-          actorType: "persona",
+          actor: context.agentName,
+          actorType: "agent",
         });
 
         // Parent-child coordination (non-blocking)
@@ -606,8 +606,8 @@ export function createMcpServer(context: McpContext): McpServer {
           id: commentId,
           workItemId,
           authorType: "system",
-          authorId: context.personaId || null,
-          authorName: context.personaName,
+          authorId: context.agentId || null,
+          authorName: context.agentName,
           content: `🔍 Review requested: ${message}`,
           metadata: { type: "review_request", message },
           createdAt: now,
@@ -617,7 +617,7 @@ export function createMcpServer(context: McpContext): McpServer {
           type: "comment_created",
           commentId: commentId as CommentId,
           workItemId: workItemId as WorkItemId,
-          authorName: context.personaName,
+          authorName: context.agentName,
           contentPreview: `Review requested: ${message.slice(0, 80)}`,
           timestamp: now.toISOString(),
         });
@@ -705,13 +705,13 @@ export function createInProcessMcpServer(context: McpContext) {
           id,
           workItemId,
           authorType: "agent",
-          authorName: context.personaName,
+          authorName: context.agentName,
           content,
           metadata: {},
           createdAt: new Date(),
         });
-        broadcast({ type: "comment_created", commentId: id as CommentId, workItemId: workItemId as WorkItemId, authorName: context.personaName, contentPreview: content.slice(0, 100), timestamp: new Date().toISOString() });
-        return { content: [{ type: "text" as const, text: JSON.stringify({ id, workItemId, authorName: context.personaName }) }] };
+        broadcast({ type: "comment_created", commentId: id as CommentId, workItemId: workItemId as WorkItemId, authorName: context.agentName, contentPreview: content.slice(0, 100), timestamp: new Date().toISOString() });
+        return { content: [{ type: "text" as const, text: JSON.stringify({ id, workItemId, authorName: context.agentName }) }] };
       }),
     );
   }
@@ -743,8 +743,8 @@ if (isMainModule) {
   );
 
   const context: McpContext = {
-    personaName: process.env.PERSONA_NAME ?? "Agent",
-    personaId: process.env.PERSONA_ID ?? "",
+    agentName: process.env.AGENT_NAME ?? "Agent",
+    agentId: process.env.AGENT_ID ?? "",
     projectId: process.env.PROJECT_ID ?? "",
     allowedTools: process.env.ALLOWED_TOOLS
       ? process.env.ALLOWED_TOOLS.split(",")

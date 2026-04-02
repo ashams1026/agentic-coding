@@ -9,18 +9,18 @@ vi.mock("../../db/connection.js", () => ({
   },
 }));
 
-import { personaRoutes } from "../personas.js";
+import { agentRoutes } from "../agents.js";
 
 let testDb: TestDatabase;
 let app: FastifyInstance;
 
-describe("persona routes", () => {
+describe("agent routes", () => {
   beforeEach(async () => {
     testDb = createTestDb();
     mockDb.db = testDb.db;
     await seedTestDb(testDb.db);
     app = Fastify({ logger: false });
-    await personaRoutes(app);
+    await agentRoutes(app);
   });
 
   afterEach(async () => {
@@ -28,31 +28,31 @@ describe("persona routes", () => {
     testDb.cleanup();
   });
 
-  // ── GET /api/personas ────────────────────────────────────────────
+  // ── GET /api/agents ────────────────────────────────────────────
 
-  describe("GET /api/personas", () => {
-    it("lists all personas", async () => {
-      const res = await app.inject({ method: "GET", url: "/api/personas" });
+  describe("GET /api/agents", () => {
+    it("lists all agents", async () => {
+      const res = await app.inject({ method: "GET", url: "/api/agents" });
 
       expect(res.statusCode).toBe(200);
       const body = res.json();
-      expect(body.data).toHaveLength(5); // 5 seeded personas
+      expect(body.data).toHaveLength(5); // 5 seeded agents
       expect(body.total).toBe(5);
     });
   });
 
-  // ── GET /api/personas/:id ────────────────────────────────────────
+  // ── GET /api/agents/:id ────────────────────────────────────────
 
-  describe("GET /api/personas/:id", () => {
-    it("returns a persona by id", async () => {
+  describe("GET /api/agents/:id", () => {
+    it("returns a agent by id", async () => {
       const res = await app.inject({
         method: "GET",
-        url: `/api/personas/${TEST_IDS.PERSONA_PM}`,
+        url: `/api/agents/${TEST_IDS.AGENT_PM}`,
       });
 
       expect(res.statusCode).toBe(200);
       const data = res.json().data;
-      expect(data.id).toBe(TEST_IDS.PERSONA_PM);
+      expect(data.id).toBe(TEST_IDS.AGENT_PM);
       expect(data.name).toBe("PM");
       expect(data.model).toBe("sonnet");
       expect(data.systemPrompt).toBeDefined();
@@ -61,7 +61,7 @@ describe("persona routes", () => {
     it("returns 404 for non-existent id", async () => {
       const res = await app.inject({
         method: "GET",
-        url: "/api/personas/ps-nonexistent",
+        url: "/api/agents/ps-nonexistent",
       });
 
       expect(res.statusCode).toBe(404);
@@ -69,13 +69,13 @@ describe("persona routes", () => {
     });
   });
 
-  // ── POST /api/personas ───────────────────────────────────────────
+  // ── POST /api/agents ───────────────────────────────────────────
 
-  describe("POST /api/personas", () => {
-    it("creates a persona with required fields", async () => {
+  describe("POST /api/agents", () => {
+    it("creates a agent with required fields", async () => {
       const res = await app.inject({
         method: "POST",
-        url: "/api/personas",
+        url: "/api/agents",
         payload: {
           name: "Tester",
           systemPrompt: "You are a tester.",
@@ -94,13 +94,13 @@ describe("persona routes", () => {
       expect(data.maxBudgetPerRun).toBe(0);
     });
 
-    it("creates a persona with all optional fields", async () => {
+    it("creates a agent with all optional fields", async () => {
       const res = await app.inject({
         method: "POST",
-        url: "/api/personas",
+        url: "/api/agents",
         payload: {
-          name: "Full Persona",
-          description: "A fully configured persona",
+          name: "Full Agent",
+          description: "A fully configured agent",
           avatar: { color: "#ff0000", icon: "star" },
           systemPrompt: "You are everything.",
           model: "opus",
@@ -112,7 +112,7 @@ describe("persona routes", () => {
 
       expect(res.statusCode).toBe(201);
       const data = res.json().data;
-      expect(data.description).toBe("A fully configured persona");
+      expect(data.description).toBe("A fully configured agent");
       expect(data.avatar).toEqual({ color: "#ff0000", icon: "star" });
       expect(data.allowedTools).toEqual(["Read", "Bash"]);
       expect(data.mcpTools).toEqual(["post_comment", "route_to_state"]);
@@ -120,13 +120,13 @@ describe("persona routes", () => {
     });
   });
 
-  // ── PATCH /api/personas/:id ──────────────────────────────────────
+  // ── PATCH /api/agents/:id ──────────────────────────────────────
 
-  describe("PATCH /api/personas/:id", () => {
+  describe("PATCH /api/agents/:id", () => {
     it("updates name and model", async () => {
       const res = await app.inject({
         method: "PATCH",
-        url: `/api/personas/${TEST_IDS.PERSONA_PM}`,
+        url: `/api/agents/${TEST_IDS.AGENT_PM}`,
         payload: { name: "Senior PM", model: "opus" },
       });
 
@@ -139,7 +139,7 @@ describe("persona routes", () => {
     it("updates allowedTools", async () => {
       const res = await app.inject({
         method: "PATCH",
-        url: `/api/personas/${TEST_IDS.PERSONA_ENGINEER}`,
+        url: `/api/agents/${TEST_IDS.AGENT_ENGINEER}`,
         payload: { allowedTools: ["Read", "Write", "Bash", "Grep"] },
       });
 
@@ -150,7 +150,7 @@ describe("persona routes", () => {
     it("returns 404 for non-existent id", async () => {
       const res = await app.inject({
         method: "PATCH",
-        url: "/api/personas/ps-nonexistent",
+        url: "/api/agents/ps-nonexistent",
         payload: { name: "nope" },
       });
 
@@ -161,7 +161,7 @@ describe("persona routes", () => {
     it("returns 400 for empty update body", async () => {
       const res = await app.inject({
         method: "PATCH",
-        url: `/api/personas/${TEST_IDS.PERSONA_PM}`,
+        url: `/api/agents/${TEST_IDS.AGENT_PM}`,
         payload: {},
       });
 
@@ -170,14 +170,14 @@ describe("persona routes", () => {
     });
   });
 
-  // ── DELETE /api/personas/:id ─────────────────────────────────────
+  // ── DELETE /api/agents/:id ─────────────────────────────────────
 
-  describe("DELETE /api/personas/:id", () => {
-    it("deletes a persona", async () => {
-      // Use QA persona — not referenced by persona assignments in seed
+  describe("DELETE /api/agents/:id", () => {
+    it("deletes an agent", async () => {
+      // Use QA agent — not referenced by agent assignments in seed
       const res = await app.inject({
         method: "DELETE",
-        url: `/api/personas/${TEST_IDS.PERSONA_QA}`,
+        url: `/api/agents/${TEST_IDS.AGENT_QA}`,
       });
 
       expect(res.statusCode).toBe(204);
@@ -185,7 +185,7 @@ describe("persona routes", () => {
       // Verify it's gone
       const get = await app.inject({
         method: "GET",
-        url: `/api/personas/${TEST_IDS.PERSONA_QA}`,
+        url: `/api/agents/${TEST_IDS.AGENT_QA}`,
       });
       expect(get.statusCode).toBe(404);
     });
@@ -193,7 +193,7 @@ describe("persona routes", () => {
     it("returns 404 for non-existent id", async () => {
       const res = await app.inject({
         method: "DELETE",
-        url: "/api/personas/ps-nonexistent",
+        url: "/api/agents/ps-nonexistent",
       });
 
       expect(res.statusCode).toBe(404);

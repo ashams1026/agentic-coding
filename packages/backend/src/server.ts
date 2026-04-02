@@ -2,10 +2,10 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { projectRoutes } from "./routes/projects.js";
 import { workItemRoutes } from "./routes/work-items.js";
-import { personaAssignmentRoutes } from "./routes/persona-assignments.js";
+import { agentAssignmentRoutes } from "./routes/agent-assignments.js";
 import { workItemEdgeRoutes } from "./routes/work-item-edges.js";
 import { commentRoutes } from "./routes/comments.js";
-import { personaRoutes } from "./routes/personas.js";
+import { agentRoutes } from "./routes/agents.js";
 import { executionRoutes } from "./routes/executions.js";
 import { proposalRoutes } from "./routes/proposals.js";
 import { dashboardRoutes } from "./routes/dashboard.js";
@@ -63,10 +63,10 @@ export async function buildServer() {
   // API routes
   await projectRoutes(server);
   await workItemRoutes(server);
-  await personaAssignmentRoutes(server);
+  await agentAssignmentRoutes(server);
   await workItemEdgeRoutes(server);
   await commentRoutes(server);
-  await personaRoutes(server);
+  await agentRoutes(server);
   await executionRoutes(server);
   await proposalRoutes(server);
   await dashboardRoutes(server);

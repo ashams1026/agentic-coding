@@ -9,7 +9,7 @@ import type {
   AgentEvent,
   SpawnOptions,
 } from "./types.js";
-import type { Persona, Project } from "@agentops/shared";
+import type { Agent, Project } from "@agentops/shared";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -28,7 +28,7 @@ export class MockExecutor implements AgentExecutor {
 
   async *spawn(
     task: AgentTask,
-    _persona: Persona,
+    _agent: Agent,
     _project: Project,
     _options: SpawnOptions,
   ): AsyncIterable<AgentEvent> {

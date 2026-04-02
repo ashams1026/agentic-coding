@@ -30,7 +30,7 @@ export function auditStateTransition(opts: {
   fromState: string;
   toState: string;
   actor: string;
-  actorType: "persona" | "system" | "user";
+  actorType: "agent" | "system" | "user";
 }): void {
   auditLogger.info({
     workItemId: opts.workItemId,
@@ -46,23 +46,23 @@ export function auditStateTransition(opts: {
 export function auditAgentDispatch(opts: {
   workItemId: string;
   executionId: string;
-  personaId: string;
-  personaName: string;
+  agentId: string;
+  agentName: string;
 }): void {
   auditLogger.info({
     workItemId: opts.workItemId,
     action: "agent_dispatch",
-    actor: opts.personaName,
+    actor: opts.agentName,
     outcome: "started",
     executionId: opts.executionId,
-    personaId: opts.personaId,
+    agentId: opts.agentId,
   });
 }
 
 export function auditAgentComplete(opts: {
   workItemId: string;
   executionId: string;
-  personaName: string;
+  agentName: string;
   outcome: string;
   costUsd: number;
   durationMs: number;
@@ -70,7 +70,7 @@ export function auditAgentComplete(opts: {
   auditLogger.info({
     workItemId: opts.workItemId,
     action: "agent_complete",
-    actor: opts.personaName,
+    actor: opts.agentName,
     outcome: opts.outcome,
     executionId: opts.executionId,
     costUsd: opts.costUsd,
@@ -113,14 +113,14 @@ export function auditToolUse(opts: {
 
 export function auditSessionStart(opts: {
   executionId: string;
-  personaName: string;
+  agentName: string;
   model: string;
   workItemId: string;
 }): void {
   auditLogger.info({
     action: "session_start",
     executionId: opts.executionId,
-    actor: opts.personaName,
+    actor: opts.agentName,
     model: opts.model,
     workItemId: opts.workItemId,
   });
@@ -177,7 +177,7 @@ export function queryAuditLog(opts: {
         actor: parsed.actor,
         outcome: parsed.outcome,
         ...(parsed.executionId ? { executionId: parsed.executionId } : {}),
-        ...(parsed.personaId ? { personaId: parsed.personaId } : {}),
+        ...(parsed.agentId ? { agentId: parsed.agentId } : {}),
         ...(parsed.fromState ? { fromState: parsed.fromState } : {}),
         ...(parsed.toState ? { toState: parsed.toState } : {}),
         ...(parsed.costUsd !== undefined ? { costUsd: parsed.costUsd } : {}),
