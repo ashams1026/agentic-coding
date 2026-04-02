@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 15:25 PDT — RICH.1: ANSI color parser utility
+
+**Done:** Created `ansi-parser.tsx` exporting `parseAnsi(text)` and `stripAnsi(text)`. Supports standard foreground (30-37), bright foreground (90-97), 256-color mode (38;5;N), bold/dim/italic, combined codes, and reset. Maps to Tailwind classes. Uses `React.createElement` with proper keys. Fast path returns plain string when no ANSI codes present.
+**Files:** `packages/frontend/src/lib/ansi-parser.tsx`
+
+---
+
 ## 2026-04-02 15:20 PDT — Plan: Decompose Sprint 31 — Agent Chat P2 (Rich Messages)
 
 **Done:** Planned Sprint 31 from `docs/proposals/agent-chat/rich-messages.md`. 13 tasks across 4 phases + testing/docs: (1) Utilities — ANSI parser, diff parser. (2) Core P0 — enhanced ThinkingBlock, enhanced ToolCallCard. (3) Specialized P1 — TerminalBlock, DiffBlock, FileTreeSummary. (4) Integration — ContentBlockRenderer dispatch update, expand/collapse state. ProposalCard, ImageBlock, MultiStepProgress deferred as P2/P3.
