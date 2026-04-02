@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 05:00 PDT — Review: ACH.4 (approved)
+
+**Reviewed:** Persona selector grid component and chat page wiring.
+- PersonaSelector: avatar cards with color+icon, name, description, model badge ✓
+- Pico highlighted (amber ring + "default" label), Router filtered out ✓
+- Sorted: Pico first, then alphabetical ✓
+- createChatSession() accepts optional personaId ✓
+- newSession(personaId?) passes through correctly ✓
+- Plus button → modal → onSelect → newSession(personaId) flow ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 04:55 PDT — ACH.4: Persona selector grid for chat
 
 **Done:** Created `packages/frontend/src/features/pico/persona-selector.tsx` — modal grid showing all personas as cards with avatar (color+icon), name, description, and model badge. Pico highlighted as default with amber ring. Router (system-only) persona filtered out. Updated `createChatSession()` API client to accept optional `personaId`. Updated `usePicoChat.newSession()` to accept optional `personaId` and pass it through. Wired Plus button on `/chat` page to open persona selector modal; on selection creates new session with chosen persona.
