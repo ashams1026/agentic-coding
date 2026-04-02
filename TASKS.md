@@ -16,20 +16,8 @@
 
 ### Bug Fixes (Sprint 29 Review — remaining)
 
-- [x] **FX.UXO6** — Warning: "All Projects" scope in `recently-deleted.tsx` passes `projectId="pj-global"` to API. When `isGlobal` is true, should pass `undefined` to return items from ALL projects. *(completed 2026-04-02 12:53 PDT)*
-- [x] **FX.UXO7** — Warning: Queue endpoint (`routes/executions.ts`) accepts `projectId` param but doesn't filter by it. Either filter or remove the param. *(completed 2026-04-02 12:53 PDT)*
-- [x] **FX.UXO8** — Warning: Chat panel overlay (`chat-panel.tsx`) has no agent-based session grouping — only the full `/chat` page got it. Apply same `groupSessionsByAgent` pattern. *(completed 2026-04-02 12:58 PDT)*
-- [x] **FX.UXO9** — Warning: Chat header Globe icon (`chat.tsx`) checks `projectId === null` but projectId is notNull in schema. Should also check for `"pj-global"`. *(completed 2026-04-02 12:58 PDT)*
-- [x] **FX.UXO11** — Warning: `isPico` heuristic in `chat.tsx` and `chat-panel.tsx` matches `avatar.icon === "dog"`. Remove icon check, match on name only. *(completed 2026-04-02 12:53 PDT)*
-- [x] **FX.UXO12** — Warning: `use-pico-chat.ts` stale closure in `deleteSession`. Compute `remaining` before updating sessions array. *(completed 2026-04-02 13:14 PDT)*
 - [ ] **FX.UXO13** — Warning: Chat page shows empty state with no feedback when no project selected. Show "Select a project" message.
-- [x] **FX.UXO14** — Warning: Chat header context menu (`chat.tsx`) lacks keyboard accessibility. Migrate to `DropdownMenu` component. *(completed 2026-04-02 13:14 PDT)*
-- [x] **FX.UXO16** — Warning: `agent-list.tsx:handleCreate` creates agents without `scope`/`projectId`. Pass based on `useSelectedProject()`. *(completed 2026-04-02 12:53 PDT)*
-- [x] **FX.UXO17** — Warning: `agent-editor.tsx` is dead code. Delete it. *(completed 2026-04-02 12:58 PDT)*
 - [ ] **FX.UXO20** — Info: Dead `toolCallMap` in `use-pico-chat.ts`. Remove.
-- [x] **FX.UXO22** — Info: Dead `AgentScope` type in `shared/src/entities.ts`. Remove. *(completed 2026-04-02 12:58 PDT)*
-- [x] **FX.UXO23** — Info: `BUILT_IN_IDS` in `agent-list.tsx` has wrong ID `"ps-qa00001"`. Fix to match seed data. *(completed 2026-04-02 13:14 PDT)*
-- [x] **FX.UXO24** — Info: `AgentId` type uses `ps-` prefix. Tech debt — track only. *(completed 2026-04-02 13:10 PDT)*
 
 ### Phase 4: Workflow Rework (remaining)
 
@@ -50,7 +38,6 @@
 - [ ] **DES.2** — Dashboard: Improve Projects Overview table. Add columns: work item count, active agents, workflow name, last activity. Currently just shows name + date — not useful.
 - [ ] **DES.3** — Chat: Auto-generate session names from first user message (first 40 chars). "New chat" repeated 15+ times makes the session sidebar unusable. Fall back to timestamp if no message yet.
 - [ ] **DES.4** — Chat: Reduce session sidebar width. Currently takes disproportionate horizontal space. Cap at ~240px and truncate long session names with ellipsis.
-- [x] **DES.5** — Agent Monitor: Fix "stories" terminology in Live empty state. "Agents start when stories move through workflow states" should say "work items" not "stories". *(completed 2026-04-02 13:14 PDT)*
 - [ ] **DES.6** — Agent Monitor: Add label to the filter dropdown next to the tabs. Currently just shows "All" with no context of what it filters (agents? projects?).
 - [ ] **DES.7** — Automations: Normalize workflow card heights. Default card (with state chips) is taller than cards with no states. Add min-height so cards align in a grid. Cards with no states should show a "Configure states" CTA instead of just "No states defined".
 - [ ] **DES.8** — Automations: Change ALL CAPS section headers ("WORKFLOWS", "SCHEDULES") to Title Case ("Workflows", "Schedules"). Reduce visual heaviness. Apply consistent icon sizing on section headers.
@@ -65,6 +52,18 @@
 - [ ] **DES.17** — Activity Feed: Add filter bar with time range selector and event type filter. Currently completely bare — just empty state text. Even in empty state, show the filter controls so users understand what the page will look like.
 - [ ] **DES.18** — Global: Increase status bar font size slightly — current text is hard to read at small size. Consider 12px minimum.
 - [ ] **DES.19** — Empty states: Audit all empty states across the app for consistency. Every empty state should have: (1) an icon, (2) a heading, (3) a one-line description, (4) a primary CTA button. Pages missing CTAs: Dashboard, Activity Feed. Pages with good empty states to use as template: Agent Monitor, Scheduling.
+
+### Rename "All Projects" → "Global Workspace"
+
+> The `pj-global` project is a real workspace for things not tied to a specific project. "All Projects" falsely implies aggregation. Rename to "Global Workspace" everywhere and defer cross-project aggregation to a future feature.
+
+- [ ] **GW.1** — Backend + Seed: Rename global project name from "All Projects" to "Global Workspace" in `ensure-global-project.ts` and `seed.ts`. Update any seed data or default-agents that reference the old name.
+- [ ] **GW.2** — Frontend: Update project selector dropdown. Show "Global Workspace" instead of "All Projects". Use a globe icon to distinguish it from regular projects. The dropdown label when global is selected should read "Global Workspace".
+- [ ] **GW.3** — Frontend: Update scope breadcrumb/indicator. `scope-indicator.tsx` should show "Global Workspace" with globe icon (violet) when `isGlobal` is true, not "All Projects".
+- [ ] **GW.4** — Frontend: Update dashboard header. Currently says "All Projects — Aggregated status across all projects." Change to "Global Workspace — Work items and agents not tied to a specific project." Remove the aggregation language.
+- [ ] **GW.5** — Frontend: Update all scope badges across the app. Agent cards, work item badges, chat headers, recently-deleted — anywhere that shows "All Projects" or "Global" as a scope label should consistently say "Global Workspace" or just "Global" (short form for badges). Pick one short form and use it everywhere.
+- [ ] **GW.6** — Frontend: Update sidebar project list. The global project entry should visually stand out — globe icon, possibly a subtle separator between it and regular projects. It should feel like a persistent workspace, not just another project in the list.
+- [ ] **GW.7** — Docs: Update all documentation references from "All Projects" / "global project" to "Global Workspace". Files: `docs/data-model.md`, `docs/architecture.md`, `docs/api.md`, any others that mention the concept.
 
 ### Testing & Documentation
 

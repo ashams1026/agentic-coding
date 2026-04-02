@@ -161,3 +161,11 @@
 **Phase 4 — Workflow Rework (UXO.14-21):** autoRouting + agentOverrides schema migration (0002), per-workflow router prompt (3-section structured), label-based agent resolution (3-tier priority), Backlog/Done immutable states, flow view removal, Workflows→Automations rename, Automations page redesign (workflow + schedule cards), agent overrides in workflow builder (collapsible with chips).
 
 **Phase 5-9 + Testing:** Queue endpoint + tab (UXO.24-25), global work items + seeded workflow (UXO.23), recently deleted scope (UXO.30), status bar automations indicator (UXO.31). E2e test plan with 37 cases (UXO.TEST.1). Full docs update — persona→agent rename across 10 files, global model, autoRouting, agentOverrides (UXO.DOC.1).
+
+### Sprint 29 Implementation Detail — 2026-04-02 11:44–11:56 PDT
+
+**UXO.14 (Schema):** autoRouting boolean + agentOverrides JSON column, migration 0002, shared types update, workflow routes + router.ts updated, router regression fix for null workflowId.
+**UXO.12 (Chat):** Agent-grouped sessions with collapsible headers, avatars, session counts, recency sorting.
+**UXO.17 (Workflow):** Backlog/Done auto-create on POST, immutable guards on PATCH, canonical ID anchoring.
+**UXO.23 (Global):** Sidebar dimming removed, migration 0001 seeding 3-state workflow for pj-global.
+**UXO.TEST.1:** 37 e2e test cases across all 8 UX Overhaul phases.

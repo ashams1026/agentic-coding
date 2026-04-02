@@ -176,3 +176,5 @@
 **Testing (UXO.TEST.1, UXO.DOC.1):** 2 tasks. E2e test plan (37 cases), full docs update (persona→agent, global model, autoRouting, agentOverrides).
 
 **Bug Fixes (FX.UXO1-21):** 10 tasks. Router paths /automations (FX.UXO1), dead board view removed (FX.UXO2/21), auto-routing toggle fixed to use workflow (FX.UXO3), built-in state guards in builder (FX.UXO4), global project workflow backfill fix (FX.UXO5), Automations page strings (FX.UXO10), agent scope UI in detail panel (FX.UXO15), agent route FK validation (FX.UXO18/19).
+
+**Bug Fixes Continued (FX.UXO6-24, DES.5):** 13 tasks. All Projects scope fix in recently-deleted (FX.UXO6), queue endpoint projectId filter (FX.UXO7), chat panel agent grouping (FX.UXO8), Globe icon pj-global check (FX.UXO9), isPico name-only match (FX.UXO11), stale closure in deleteSession (FX.UXO12), chat header DropdownMenu a11y (FX.UXO14), agent create scope/projectId (FX.UXO16), dead agent-editor.tsx deleted (FX.UXO17), dead AgentScope type removed (FX.UXO22), BUILT_IN_IDS wrong ID fixed (FX.UXO23), ps- prefix tech debt tracked (FX.UXO24). Design: "stories"→"work items" in agent monitor (DES.5).
