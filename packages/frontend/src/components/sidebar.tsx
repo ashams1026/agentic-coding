@@ -56,27 +56,34 @@ const themeLabel = { system: "System", light: "Light", dark: "Dark" } as const;
 
 export function Sidebar() {
   const { sidebarCollapsed, toggleSidebar, mobileSidebarOpen, setMobileSidebarOpen, theme, setTheme, selectedProjectId, setSelectedProjectId } = useUIStore();
-  const isGlobalScope = selectedProjectId === "__all__";
-  const effectiveProjectId = isGlobalScope ? undefined : (selectedProjectId ?? undefined);
+  const { data: projectsList } = useProjects();
+  const selectedProject = projectsList?.find((p) => p.id === selectedProjectId);
+  const isGlobal = selectedProject?.isGlobal ?? false;
+  const effectiveProjectId = isGlobal ? undefined : (selectedProjectId ?? undefined);
   const { data: executions } = useExecutions(undefined, effectiveProjectId);
   const { data: dashboardStats } = useDashboardStats(effectiveProjectId);
-  const { data: projectsList } = useProjects();
   const activeAgentCount = executions?.filter((e) => e.status === "running").length ?? 0;
   const pendingProposalCount = dashboardStats?.pendingProposals ?? 0;
   const unreadActivityCount = useActivityStore((s) => s.unreadCount);
   const location = useLocation();
 
-  // Auto-select the first project if none is selected or selected project no longer exists
-  // Skip when user has explicitly chosen "All Projects" (global scope)
+  // Sort projects: global first, then alphabetical
+  const sortedProjects = projectsList ? [...projectsList].sort((a, b) => {
+    if (a.isGlobal) return -1;
+    if (b.isGlobal) return 1;
+    return a.name.localeCompare(b.name);
+  }) : [];
+
+  // Auto-select global project if none selected or selected project no longer exists
   useEffect(() => {
-    if (isGlobalScope) return;
     if (projectsList && projectsList.length > 0) {
       const selectedExists = selectedProjectId && projectsList.some((p) => p.id === selectedProjectId);
       if (!selectedExists) {
-        setSelectedProjectId(projectsList[0]!.id);
+        const globalProject = projectsList.find((p) => p.isGlobal);
+        setSelectedProjectId(globalProject?.id ?? projectsList[0]!.id);
       }
     }
-  }, [isGlobalScope, selectedProjectId, projectsList, setSelectedProjectId]);
+  }, [selectedProjectId, projectsList, setSelectedProjectId]);
 
   // Close mobile sidebar on navigation
   useEffect(() => {
@@ -116,7 +123,7 @@ export function Sidebar() {
               </Button>
             </TooltipTrigger>
             <TooltipContent side="right">
-              {isGlobalScope ? "All Projects" : (projectsList?.find((p) => p.id === selectedProjectId)?.name ?? "No project")}
+              {selectedProject?.name ?? "No project"}
             </TooltipContent>
           </Tooltip>
         ) : (
@@ -128,10 +135,15 @@ export function Sidebar() {
               <SelectValue placeholder="No projects" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="__all__">All Projects</SelectItem>
-              {projectsList && projectsList.length > 0 ? (
-                projectsList.map((p) => (
-                  <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+              {sortedProjects.length > 0 ? (
+                sortedProjects.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.isGlobal ? (
+                      <span className="font-semibold text-violet-500">{p.name}</span>
+                    ) : (
+                      p.name
+                    )}
+                  </SelectItem>
                 ))
               ) : (
                 <SelectItem value="none" disabled>No projects</SelectItem>
@@ -147,7 +159,7 @@ export function Sidebar() {
           const isActive = to === "/"
             ? location.pathname === "/"
             : location.pathname.startsWith(to);
-          const isDimmed = isGlobalScope && to === "/items";
+          const isDimmed = isGlobal && to === "/items";
 
           return (
             <Tooltip key={to}>

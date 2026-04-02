@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 15:35 PDT — UXO.3: Replace __all__ sentinel with global project
+
+**Done:** Rewrote `useSelectedProject` to return `"pj-global"` as `projectId` (never null) and `isGlobal` flag from project data. Defaults to global project when no project selected. Removed `"__all__"` sentinel from sidebar — global project now comes from API, sorted first with violet bold styling. Replaced all `isGlobalScope === "__all__"` checks with `isGlobal` from hook (sidebar, dashboard, analytics tabs). Zero remaining `__all__` or `isGlobalScope` references.
+**Files:** `packages/frontend/src/hooks/use-selected-project.ts`, `packages/frontend/src/components/sidebar.tsx`, `packages/frontend/src/pages/dashboard.tsx`, `packages/frontend/src/features/analytics/overview-tab.tsx`, `packages/frontend/src/features/analytics/token-usage-tab.tsx`
+
+---
+
 ## 2026-04-03 15:25 PDT — Review: UXO.2 (approved)
 
 **Reviewed:** Nullable projectId migration to pj-global.

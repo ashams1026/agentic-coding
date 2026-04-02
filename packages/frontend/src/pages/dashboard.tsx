@@ -104,8 +104,7 @@ function AllProjectsSummary() {
 
 export function DashboardPage() {
   const navigate = useNavigate();
-  const { projectId } = useSelectedProject();
-  const isGlobalScope = projectId === null;
+  const { projectId, isGlobal } = useSelectedProject();
   const { data: stats, isLoading } = useDashboardStats(projectId ?? undefined);
 
   const activeAgents = stats?.activeAgents ?? 0;
@@ -118,7 +117,7 @@ export function DashboardPage() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            {isGlobalScope ? (
+            {isGlobal ? (
               <>
                 All Projects
                 <Badge variant="secondary" className="text-xs font-normal">Global</Badge>
@@ -128,7 +127,7 @@ export function DashboardPage() {
             )}
           </h1>
           <p className="text-muted-foreground mt-1">
-            {isGlobalScope
+            {isGlobal
               ? "Aggregated status across all projects."
               : "At-a-glance status for your project."}
           </p>
@@ -166,7 +165,7 @@ export function DashboardPage() {
         />
       </div>
 
-      {isGlobalScope ? (
+      {isGlobal ? (
         <AllProjectsSummary />
       ) : (
         <>

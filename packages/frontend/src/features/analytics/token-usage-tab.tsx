@@ -48,8 +48,8 @@ function formatDuration(ms: number): string {
 
 export function TokenUsageTab() {
   const [range, setRange] = useState("7d");
-  const { projectId } = useSelectedProject();
-  const effectiveProjectId = (projectId as string) === "__all__" ? undefined : (projectId ?? undefined);
+  const { projectId, isGlobal } = useSelectedProject();
+  const effectiveProjectId = isGlobal ? undefined : (projectId ?? undefined);
 
   const { data: tokensOverTime = [] } = useAnalyticsTokensOverTime(effectiveProjectId, range);
   const { data: costByModel = [] } = useAnalyticsCostByModel(effectiveProjectId, range);

@@ -50,8 +50,8 @@ const PERSONA_COLORS = [
 
 export function OverviewTab() {
   const [range, setRange] = useState("7d");
-  const { projectId } = useSelectedProject();
-  const effectiveProjectId = (projectId as string) === "__all__" ? undefined : (projectId ?? undefined);
+  const { projectId, isGlobal } = useSelectedProject();
+  const effectiveProjectId = isGlobal ? undefined : (projectId ?? undefined);
 
   const { data: execStats } = useExecutionStats(effectiveProjectId);
   const { data: costSummary } = useCostSummary(effectiveProjectId);

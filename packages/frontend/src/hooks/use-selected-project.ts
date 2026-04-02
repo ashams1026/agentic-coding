@@ -3,29 +3,36 @@ import type { ProjectId } from "@agentops/shared";
 import { useUIStore } from "@/stores/ui-store";
 import { useProject, useProjects } from "./use-projects";
 
+const GLOBAL_PROJECT_ID = "pj-global";
+
 export function useSelectedProject() {
   const selectedProjectId = useUIStore((s) => s.selectedProjectId);
   const setSelectedProjectId = useUIStore((s) => s.setSelectedProjectId);
-  const isGlobalScope = selectedProjectId === "__all__";
-  const { data: project, isLoading, isError } = useProject(isGlobalScope ? null : selectedProjectId as ProjectId | null);
   const { data: projects } = useProjects();
 
-  // Fall back to first available project when stored ID is stale (404/error)
-  // Skip when user has explicitly chosen "All Projects" (global scope)
+  // Default to global project when nothing selected or stored ID is stale
   useEffect(() => {
-    if (isGlobalScope) return;
     if (!selectedProjectId && projects && projects.length > 0) {
-      setSelectedProjectId(projects[0]!.id);
+      const globalProject = projects.find((p) => p.isGlobal);
+      setSelectedProjectId(globalProject?.id ?? projects[0]!.id);
       return;
     }
-    if (selectedProjectId && isError && projects && projects.length > 0) {
-      setSelectedProjectId(projects[0]!.id);
+    if (selectedProjectId && projects && projects.length > 0) {
+      const exists = projects.some((p) => p.id === selectedProjectId);
+      if (!exists) {
+        const globalProject = projects.find((p) => p.isGlobal);
+        setSelectedProjectId(globalProject?.id ?? projects[0]!.id);
+      }
     }
-  }, [isGlobalScope, selectedProjectId, isError, projects, setSelectedProjectId]);
+  }, [selectedProjectId, projects, setSelectedProjectId]);
+
+  const effectiveId = selectedProjectId ?? GLOBAL_PROJECT_ID;
+  const { data: project, isLoading } = useProject(effectiveId as ProjectId);
 
   return {
-    project: isGlobalScope ? null : (project ?? null),
-    projectId: isGlobalScope ? null : (selectedProjectId as ProjectId | null),
-    isLoading: isGlobalScope ? false : isLoading,
+    project: project ?? null,
+    projectId: effectiveId as ProjectId,
+    isLoading,
+    isGlobal: project?.isGlobal ?? (effectiveId === GLOBAL_PROJECT_ID),
   };
 }
