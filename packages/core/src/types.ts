@@ -123,6 +123,8 @@ export interface SpawnOptions {
   tools: string[];
   /** All project personas available as subagents */
   allPersonas: Persona[];
+  /** Formatted handoff context from previous agent (injected into system prompt) */
+  handoffContext?: string;
 }
 
 // ── Agent Executor Interface ──────────────────────────────────────

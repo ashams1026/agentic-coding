@@ -4,6 +4,10 @@
  * handoff note that the next agent receives as injected context.
  */
 
+import { eq, desc, and } from "drizzle-orm";
+import { db } from "../db/connection.js";
+import { executions } from "../db/schema.js";
+
 export interface HandoffNote {
   fromState: string;
   targetState: string;
@@ -55,4 +59,49 @@ export function buildHandoffNote(opts: {
     filesChanged: Array.from(filesSet).slice(0, 20),
     openQuestions: openQuestions.slice(0, 5),
   };
+}
+
+/**
+ * Query the most recent handoff note for a work item.
+ * Returns null if no prior completed execution has handoff notes.
+ */
+export async function getLastHandoffNote(workItemId: string): Promise<HandoffNote | null> {
+  const [row] = await db
+    .select({ handoffNotes: executions.handoffNotes })
+    .from(executions)
+    .where(
+      and(
+        eq(executions.workItemId, workItemId),
+        eq(executions.status, "completed"),
+      ),
+    )
+    .orderBy(desc(executions.completedAt))
+    .limit(1);
+
+  return (row?.handoffNotes as HandoffNote | null) ?? null;
+}
+
+/**
+ * Format a handoff note as a text section for system prompt injection.
+ */
+export function formatHandoffForPrompt(note: HandoffNote): string {
+  const lines = [
+    `## Previous Agent Context`,
+    `Previous state: ${note.fromState} → ${note.targetState}`,
+    `Summary: ${note.summary}`,
+  ];
+
+  if (note.decisions.length > 0) {
+    lines.push(`Decisions made:\n${note.decisions.map((d) => `- ${d}`).join("\n")}`);
+  }
+
+  if (note.filesChanged.length > 0) {
+    lines.push(`Files changed:\n${note.filesChanged.map((f) => `- ${f}`).join("\n")}`);
+  }
+
+  if (note.openQuestions.length > 0) {
+    lines.push(`Open questions:\n${note.openQuestions.map((q) => `- ${q}`).join("\n")}`);
+  }
+
+  return lines.join("\n");
 }

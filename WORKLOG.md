@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 20:05 PDT — COL.3: Inject handoff context into system prompt
+
+**Done:** Added `getLastHandoffNote(workItemId)` query and `formatHandoffForPrompt(note)` formatter to `handoff-notes.ts`. Added `handoffContext?: string` to `SpawnOptions` in `@agentops/core`. In `execution-manager.ts`, queries the most recent completed execution's handoff notes before spawning, formats as "Previous Agent Context" section, passes via `SpawnOptions`. In `claude-executor.ts`, `buildSystemPrompt()` now accepts optional `opts.handoffContext` and appends it as section (6). Both call sites (primary agent + fallback) pass `options.handoffContext` through.
+**Files:** `packages/backend/src/agent/handoff-notes.ts`, `packages/backend/src/agent/execution-manager.ts`, `packages/backend/src/agent/claude-executor.ts`, `packages/core/src/types.ts`
+
+---
+
 ## 2026-04-02 19:50 PDT — Review: COL.2 (approved)
 
 **Reviewed:** Handoff note persistence in execution-manager.

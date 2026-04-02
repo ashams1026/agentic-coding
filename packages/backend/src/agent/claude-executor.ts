@@ -27,6 +27,7 @@ export function buildSystemPrompt(
   persona: Persona,
   task: AgentTask,
   project: Project,
+  opts?: { handoffContext?: string },
 ): string {
   const sections: string[] = [];
 
@@ -102,6 +103,11 @@ export function buildSystemPrompt(
       }
     }
     sections.push(historyLines.join("\n"));
+  }
+
+  // (6) Handoff context from previous agent
+  if (opts?.handoffContext) {
+    sections.push(opts.handoffContext);
   }
 
   return sections.join("\n\n");
@@ -525,7 +531,7 @@ export class ClaudeExecutor implements AgentExecutor {
         const isPrimary = p.id === persona.id;
         agents[p.id] = {
           description: p.description,
-          prompt: isPrimary ? buildSystemPrompt(persona, task, project) : (p.systemPrompt || p.description),
+          prompt: isPrimary ? buildSystemPrompt(persona, task, project, { handoffContext: options.handoffContext }) : (p.systemPrompt || p.description),
           tools: p.allowedTools.length > 0 ? p.allowedTools : [],
           model: resolveModel(p.model),
           maxTurns: isPrimary ? 30 : 15,
@@ -537,7 +543,7 @@ export class ClaudeExecutor implements AgentExecutor {
       if (!agents[agentId]) {
         agents[agentId] = {
           description: persona.description,
-          prompt: buildSystemPrompt(persona, task, project),
+          prompt: buildSystemPrompt(persona, task, project, { handoffContext: options.handoffContext }),
           tools: persona.allowedTools.length > 0 ? persona.allowedTools : [],
           model: resolveModel(options.model),
           maxTurns: 30,

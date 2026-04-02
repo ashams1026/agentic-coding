@@ -26,7 +26,7 @@ import { trackExecution, onComplete, getProjectCostSummary } from "./concurrency
 import { broadcastNotification } from "../ws.js";
 import { runRouter } from "./router.js";
 import { dispatchForState } from "./dispatch.js";
-import { buildHandoffNote } from "./handoff-notes.js";
+import { buildHandoffNote, getLastHandoffNote, formatHandoffForPrompt } from "./handoff-notes.js";
 
 // ── Types ────────────────────────────────────────────────────────
 
@@ -437,12 +437,22 @@ export class ExecutionManager {
     let structuredOutput: Record<string, unknown> | null = null;
 
     try {
+      // Query previous agent's handoff notes for context injection
+      let handoffContext: string | undefined;
+      if (task.workItemId) {
+        const lastNote = await getLastHandoffNote(task.workItemId);
+        if (lastNote) {
+          handoffContext = formatHandoffForPrompt(lastNote);
+        }
+      }
+
       const events = this.executor.spawn(task, persona, project, {
         executionId,
         model: persona.model,
         maxBudget: persona.maxBudgetPerRun,
         tools: persona.allowedTools.length > 0 ? persona.allowedTools : [],
         allPersonas,
+        handoffContext,
       });
 
       for await (const event of events) {
