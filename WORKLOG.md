@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-04-02 11:44 PDT — UXO.12: Agent-grouped chat sessions
+
+**Done:** Replaced date-based session grouping with agent-based collapsible groups in `chat.tsx`. Each group shows agent avatar (colored circle with icon), agent name, session count, and expand/collapse chevron. Sessions sorted by recency within groups. All groups default expanded. Removed redundant agent filter dropdown.
+**Files:** `packages/frontend/src/pages/chat.tsx`
+
+---
+
+## 2026-04-02 11:44 PDT — UXO.17: Enforce Backlog/Done immutable states
+
+**Done:** Auto-creates "Backlog" (initial) and "Done" (terminal) states on `POST /api/workflows`. PATCH handler prevents renaming, type-changing, or removing built-in states (400 errors). Added canonical ID anchoring — built-in states always keep their original DB IDs regardless of client-submitted IDs, preventing immutability bypass.
+**Files:** `packages/backend/src/routes/workflows.ts`
+
+---
+
+## 2026-04-02 11:44 PDT — UXO.23: Enable global scope work items
+
+**Done:** Removed sidebar nav dimming for Work Items when global project selected — no more `isDimmed`, `opacity-40`, or `cursor-not-allowed`. Created migration `0001_seed_global_workflow.sql` seeding a 3-state workflow (Backlog → In Progress → Done) for `pj-global` with transitions and no agents assigned. Added corresponding Drizzle snapshot.
+**Files:** `packages/frontend/src/components/sidebar.tsx`, `packages/backend/drizzle/0001_seed_global_workflow.sql` (new), `packages/backend/drizzle/meta/0001_snapshot.json` (new), `packages/backend/drizzle/meta/_journal.json`
+
+---
+
+## 2026-04-02 11:44 PDT — UXO.TEST.1: UX Overhaul e2e test plan
+
+**Done:** Wrote comprehensive e2e test plan with 37 test cases (UXO-E2E-001 through UXO-E2E-037) covering all 8 UX Overhaul phases. Implemented features marked `pending`, unimplemented marked `skip` with UXO task references. Follows project test plan template with visual inspection protocol and screenshot checkpoints.
+**Files:** `tests/e2e/plans/ux-overhaul.md` (new)
+
+---
+
 ## 2026-04-02 11:23 PDT — UXO.11: Dynamic empty chat state
 
 **Done:** Replaced hardcoded "Woof! I'm Pico" empty state in `chat.tsx` and `chat-panel.tsx` with dynamic agent-aware rendering. When a non-Pico agent is selected, shows that agent's avatar icon, color, name, and description. Pico greeting preserved when Pico is selected. Textarea placeholder also dynamic ("Ask [agent name] anything...").

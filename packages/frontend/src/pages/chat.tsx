@@ -23,10 +23,11 @@ import {
   Flame,
   Target,
   Lightbulb,
-  Filter,
   MoreVertical,
   Globe,
   Pencil,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -53,31 +54,44 @@ function getIcon(name: string): LucideIcon {
   return ICON_MAP[name] ?? Bot;
 }
 
-// ── Date grouping ───────────────────────────────────────────────
+// ── Agent grouping ───────────────────────────────────────────────
 
-function getDateGroup(dateStr: string): string {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yesterday = new Date(today.getTime() - 86400000);
-  const weekAgo = new Date(today.getTime() - 7 * 86400000);
-
-  if (date >= today) return "Today";
-  if (date >= yesterday) return "Yesterday";
-  if (date >= weekAgo) return "This Week";
-  return "Older";
+interface AgentGroup {
+  agentId: string | null;
+  agentName: string;
+  agentAvatar: { color: string; icon: string } | null;
+  sessions: ChatSessionWithAgent[];
 }
 
-function groupSessionsByDate(sessions: ChatSessionWithAgent[]): { label: string; sessions: ChatSessionWithAgent[] }[] {
-  const groups: Record<string, ChatSessionWithAgent[]> = {};
-  const order = ["Today", "Yesterday", "This Week", "Older"];
+function groupSessionsByAgent(sessions: ChatSessionWithAgent[]): AgentGroup[] {
+  const groupMap = new Map<string, AgentGroup>();
 
   for (const s of sessions) {
-    const group = getDateGroup(s.updatedAt);
-    (groups[group] ??= []).push(s);
+    const key = s.agentId ?? "__pico__";
+    if (!groupMap.has(key)) {
+      groupMap.set(key, {
+        agentId: s.agentId ?? null,
+        agentName: s.agent?.name ?? "Pico",
+        agentAvatar: s.agent?.avatar ?? null,
+        sessions: [],
+      });
+    }
+    groupMap.get(key)!.sessions.push(s);
   }
 
-  return order.filter((label) => groups[label]?.length).map((label) => ({ label, sessions: groups[label]! }));
+  // Sort sessions within each group by recency (most recent first)
+  for (const group of groupMap.values()) {
+    group.sessions.sort(
+      (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
+    );
+  }
+
+  // Sort groups by the most recent session in each group
+  return Array.from(groupMap.values()).sort(
+    (a, b) =>
+      new Date(b.sessions[0]!.updatedAt).getTime() -
+      new Date(a.sessions[0]!.updatedAt).getTime(),
+  );
 }
 
 export function ChatPage() {
@@ -121,28 +135,20 @@ export function ChatPage() {
     return map;
   }, [projects]);
 
-  // Agent filter for sidebar
-  const [agentFilter, setAgentFilter] = useState<string | null>(null);
-  const [showAgentFilter, setShowAgentFilter] = useState(false);
+  // Agent-based grouped sessions
+  const groupedSessions = useMemo(() => groupSessionsByAgent(sessions), [sessions]);
 
-  // Filtered and grouped sessions
-  const filteredSessions = useMemo(() => {
-    if (!agentFilter) return sessions;
-    return sessions.filter((s) => s.agentId === agentFilter);
-  }, [sessions, agentFilter]);
+  // Collapse state: set of agentId keys that are collapsed (default: all expanded)
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
 
-  const groupedSessions = useMemo(() => groupSessionsByDate(filteredSessions), [filteredSessions]);
-
-  // Unique agent names for the filter dropdown
-  const agentNames = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const s of sessions) {
-      if (s.agentId && s.agent?.name) {
-        map.set(s.agentId, s.agent.name);
-      }
-    }
-    return Array.from(map.entries()); // [agentId, name][]
-  }, [sessions]);
+  const toggleGroup = (key: string) => {
+    setCollapsedGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
 
   // Header context menu
   const [showHeaderMenu, setShowHeaderMenu] = useState(false);
@@ -238,120 +244,108 @@ export function ChatPage() {
           </div>
         </div>
 
-        {/* Agent filter */}
-        {agentNames.length > 1 && (
-          <div className="px-2 py-1.5 border-b border-border">
-            <div className="relative">
-              <button
-                type="button"
-                onClick={() => setShowAgentFilter(!showAgentFilter)}
-                className={cn(
-                  "flex items-center gap-1.5 w-full rounded-md px-2 py-1 text-xs transition-colors",
-                  agentFilter ? "text-foreground bg-muted" : "text-muted-foreground hover:bg-muted",
-                )}
-              >
-                <Filter className="h-3 w-3" />
-                {agentFilter ? agentNames.find(([id]) => id === agentFilter)?.[1] ?? "Filter" : "All agents"}
-              </button>
-              {showAgentFilter && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-lg z-10 py-1">
-                  <button
-                    type="button"
-                    onClick={() => { setAgentFilter(null); setShowAgentFilter(false); }}
-                    className={cn("w-full text-left px-3 py-1.5 text-xs hover:bg-muted", !agentFilter && "font-medium")}
-                  >
-                    All agents
-                  </button>
-                  {agentNames.map(([id, name]) => (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => { setAgentFilter(id); setShowAgentFilter(false); }}
-                      className={cn("w-full text-left px-3 py-1.5 text-xs hover:bg-muted", agentFilter === id && "font-medium")}
-                    >
-                      {name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
         <ScrollArea className="flex-1">
-          <div className="flex flex-col gap-0.5 p-2">
-            {filteredSessions.length === 0 && (
+          <div className="flex flex-col p-2">
+            {sessions.length === 0 && (
               <p className="px-2 py-4 text-xs text-muted-foreground text-center">
-                {agentFilter ? "No conversations with this agent" : "No conversations yet"}
+                No conversations yet
               </p>
             )}
-            {groupedSessions.map((group) => (
-              <div key={group.label}>
-                <p className="px-2 pt-2 pb-1 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                  {group.label}
-                </p>
-                {group.sessions.map((s) => {
-                  const avatar = s.agent?.avatar;
-                  const color = avatar?.color ?? "#6b7280";
-                  const Icon = getIcon(avatar?.icon ?? "bot");
+            {groupedSessions.map((group) => {
+              const groupKey = group.agentId ?? "__pico__";
+              const isCollapsed = collapsedGroups.has(groupKey);
+              const groupColor = group.agentAvatar?.color ?? "#f59e0b";
+              const GroupIcon = group.agentAvatar?.icon
+                ? getIcon(group.agentAvatar.icon)
+                : Dog;
 
-                  return (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => switchSession(s.id as ChatSessionId)}
-                      onDoubleClick={() => startRename(s.id, s.title)}
-                      onContextMenu={(e) => {
-                        e.preventDefault();
-                        setContextMenu({ sessionId: s.id, title: s.title, x: e.clientX, y: e.clientY });
-                      }}
-                      className={cn(
-                        "flex items-start gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors w-full",
-                        "hover:bg-muted",
-                        s.id === currentSession?.id
-                          ? "bg-muted text-foreground"
-                          : "text-muted-foreground",
-                      )}
+              return (
+                <div key={groupKey} className="mb-1">
+                  {/* Group header */}
+                  <button
+                    type="button"
+                    onClick={() => toggleGroup(groupKey)}
+                    className="flex items-center gap-2 w-full rounded-md px-2 py-1.5 hover:bg-muted transition-colors group"
+                  >
+                    {/* Agent avatar */}
+                    <div
+                      className="h-5 w-5 rounded-full flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: groupColor + "25" }}
                     >
-                      {/* Agent avatar */}
-                      <div
-                        className="h-5 w-5 rounded-full flex items-center justify-center shrink-0 mt-0.5"
-                        style={{ backgroundColor: color + "20" }}
-                      >
-                        <Icon className="h-3 w-3" style={{ color }} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        {editingSessionId === s.id ? (
-                          <input
-                            value={editTitle}
-                            onChange={(e) => setEditTitle(e.target.value)}
-                            onBlur={saveRename}
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") { e.preventDefault(); saveRename(); }
-                              if (e.key === "Escape") setEditingSessionId(null);
-                            }}
-                            autoFocus
-                            className="w-full rounded border border-input bg-transparent px-1 py-0.5 text-xs outline-none focus-visible:border-ring"
-                            maxLength={100}
-                          />
-                        ) : (
-                          <>
-                            <span className={cn("block truncate text-xs", s.id === currentSession?.id && "font-medium")}>
-                              {s.title}
-                            </span>
-                            {s.lastMessagePreview && (
-                              <span className="block truncate text-[10px] text-muted-foreground mt-0.5">
-                                {s.lastMessagePreview}
-                              </span>
+                      <GroupIcon className="h-3 w-3" style={{ color: groupColor }} />
+                    </div>
+                    {/* Agent name */}
+                    <span className="flex-1 text-left text-xs font-medium text-foreground truncate">
+                      {group.agentName}
+                    </span>
+                    {/* Session count badge */}
+                    <span className="text-[10px] text-muted-foreground shrink-0">
+                      {group.sessions.length}
+                    </span>
+                    {/* Collapse caret */}
+                    {isCollapsed ? (
+                      <ChevronRight className="h-3 w-3 text-muted-foreground shrink-0" />
+                    ) : (
+                      <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0" />
+                    )}
+                  </button>
+
+                  {/* Sessions list */}
+                  {!isCollapsed && (
+                    <div className="flex flex-col gap-0.5 mt-0.5 pl-2">
+                      {group.sessions.map((s) => (
+                        <button
+                          key={s.id}
+                          type="button"
+                          onClick={() => switchSession(s.id as ChatSessionId)}
+                          onDoubleClick={() => startRename(s.id, s.title)}
+                          onContextMenu={(e) => {
+                            e.preventDefault();
+                            setContextMenu({ sessionId: s.id, title: s.title, x: e.clientX, y: e.clientY });
+                          }}
+                          className={cn(
+                            "flex items-start gap-2 rounded-md px-2 py-1.5 text-left transition-colors w-full",
+                            "hover:bg-muted",
+                            s.id === currentSession?.id
+                              ? "bg-muted text-foreground"
+                              : "text-muted-foreground",
+                          )}
+                        >
+                          <MessageSquare className="h-3 w-3 shrink-0 mt-0.5 text-muted-foreground/60" />
+                          <div className="flex-1 min-w-0">
+                            {editingSessionId === s.id ? (
+                              <input
+                                value={editTitle}
+                                onChange={(e) => setEditTitle(e.target.value)}
+                                onBlur={saveRename}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") { e.preventDefault(); saveRename(); }
+                                  if (e.key === "Escape") setEditingSessionId(null);
+                                }}
+                                autoFocus
+                                className="w-full rounded border border-input bg-transparent px-1 py-0.5 text-xs outline-none focus-visible:border-ring"
+                                maxLength={100}
+                              />
+                            ) : (
+                              <>
+                                <span className={cn("block truncate text-xs", s.id === currentSession?.id && "font-medium text-foreground")}>
+                                  {s.title}
+                                </span>
+                                {s.lastMessagePreview && (
+                                  <span className="block truncate text-[10px] text-muted-foreground/70 mt-0.5">
+                                    {s.lastMessagePreview}
+                                  </span>
+                                )}
+                              </>
                             )}
-                          </>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </ScrollArea>
 

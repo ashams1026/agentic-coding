@@ -163,21 +163,16 @@ export function Sidebar() {
           const isActive = to === "/"
             ? location.pathname === "/"
             : location.pathname.startsWith(to);
-          const isDimmed = isGlobal && to === "/items";
 
           return (
             <Tooltip key={to}>
               <TooltipTrigger asChild>
                 <Link
-                  to={isDimmed ? "#" : to}
-                  onClick={isDimmed ? (e: React.MouseEvent) => e.preventDefault() : undefined}
-                  aria-disabled={isDimmed}
+                  to={to}
                   className={cn(
                     "flex w-full items-center rounded-md text-sm transition-colors duration-150",
-                    isDimmed
-                      ? "opacity-40 cursor-not-allowed"
-                      : "hover:bg-muted",
-                    isActive && !isDimmed
+                    "hover:bg-muted",
+                    isActive
                       ? "bg-muted text-foreground font-semibold border-l-[3px] border-l-primary"
                       : "text-muted-foreground font-medium border-l-[3px] border-l-transparent",
                     sidebarCollapsed
@@ -242,9 +237,9 @@ export function Sidebar() {
                   )}
                 </Link>
               </TooltipTrigger>
-              {(sidebarCollapsed || isDimmed) && (
+              {sidebarCollapsed && (
                 <TooltipContent side="right">
-                  {isDimmed ? "Select a project to view work items" : label}
+                  {label}
                 </TooltipContent>
               )}
             </Tooltip>

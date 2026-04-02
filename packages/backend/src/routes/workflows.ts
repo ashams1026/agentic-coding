@@ -52,6 +52,11 @@ function serializeTransition(row: typeof workflowTransitions.$inferSelect) {
 
 const VALID_STATE_TYPES = new Set(["initial", "intermediate", "terminal"]);
 
+// Built-in states that are immutable and cannot be renamed or deleted
+const BUILTIN_STATE_NAMES = new Set(["Backlog", "Done"]);
+const BUILTIN_BACKLOG = { name: "Backlog", type: "initial", color: "#6b7280" } as const;
+const BUILTIN_DONE = { name: "Done", type: "terminal", color: "#10b981" } as const;
+
 // ── Routes ──────────────────────────────────────────────────────
 
 export async function workflowRoutes(app: FastifyInstance) {
@@ -186,6 +191,28 @@ export async function workflowRoutes(app: FastifyInstance) {
       updatedAt: now,
     }).returning();
 
+    // Auto-create immutable built-in states: Backlog (initial) and Done (terminal)
+    await db.insert(workflowStates).values([
+      {
+        id: createId.workflowState(),
+        workflowId: id,
+        name: BUILTIN_BACKLOG.name,
+        type: BUILTIN_BACKLOG.type,
+        color: BUILTIN_BACKLOG.color,
+        agentId: null,
+        sortOrder: 0,
+      },
+      {
+        id: createId.workflowState(),
+        workflowId: id,
+        name: BUILTIN_DONE.name,
+        type: BUILTIN_DONE.type,
+        color: BUILTIN_DONE.color,
+        agentId: null,
+        sortOrder: 1000,
+      },
+    ]);
+
     return reply.status(201).send({ data: serializeWorkflow(row!) });
   });
 
@@ -217,12 +244,70 @@ export async function workflowRoutes(app: FastifyInstance) {
       if (body.states.length === 0) {
         return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "At least one state is required" } });
       }
+
+      // Fetch existing built-in states for this workflow so we can validate renames
+      const existingStates = await db
+        .select()
+        .from(workflowStates)
+        .where(eq(workflowStates.workflowId, id));
+      const existingById = new Map(existingStates.map((s) => [s.id, s]));
+
       for (const s of body.states) {
         if (!s.name || !s.name.trim()) {
           return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "All states must have a non-empty name" } });
         }
         if (!VALID_STATE_TYPES.has(s.type)) {
           return reply.status(400).send({ error: { code: "BAD_REQUEST", message: `Invalid state type "${s.type}". Must be initial, intermediate, or terminal` } });
+        }
+        // Prevent renaming a built-in state to a different name
+        if (s.id) {
+          const existing = existingById.get(s.id);
+          if (existing && BUILTIN_STATE_NAMES.has(existing.name) && s.name.trim() !== existing.name) {
+            return reply.status(400).send({
+              error: {
+                code: "BAD_REQUEST",
+                message: `Cannot rename built-in state "${existing.name}". It is immutable.`,
+              },
+            });
+          }
+        }
+        // Prevent a state with a built-in name from changing its type
+        if (BUILTIN_STATE_NAMES.has(s.name.trim())) {
+          const expected = s.name.trim() === "Backlog" ? BUILTIN_BACKLOG.type : BUILTIN_DONE.type;
+          if (s.type !== expected) {
+            return reply.status(400).send({
+              error: {
+                code: "BAD_REQUEST",
+                message: `Built-in state "${s.name.trim()}" must have type "${expected}".`,
+              },
+            });
+          }
+        }
+      }
+
+      // Ensure both built-in states are present in the new state list
+      const newStateNames = new Set(body.states.map((s) => s.name.trim()));
+      for (const builtinName of BUILTIN_STATE_NAMES) {
+        if (!newStateNames.has(builtinName)) {
+          return reply.status(400).send({
+            error: {
+              code: "BAD_REQUEST",
+              message: `Built-in state "${builtinName}" cannot be removed. Every workflow must contain "Backlog" and "Done".`,
+            },
+          });
+        }
+      }
+
+      // Prevent multiple states claiming the same built-in name
+      for (const builtinName of BUILTIN_STATE_NAMES) {
+        const count = body.states.filter((s) => s.name.trim() === builtinName).length;
+        if (count > 1) {
+          return reply.status(400).send({
+            error: {
+              code: "BAD_REQUEST",
+              message: `Duplicate built-in state name "${builtinName}". Each built-in state must appear exactly once.`,
+            },
+          });
         }
       }
     }
@@ -245,19 +330,43 @@ export async function workflowRoutes(app: FastifyInstance) {
     if (body.name !== undefined) updates.name = body.name.trim();
     if (body.description !== undefined) updates.description = body.description;
 
+    // Build a name→id map for existing built-in states so we can anchor their IDs
+    // regardless of what the client sends. This prevents ID drift after a round-trip.
+    let builtinNameToDbId = new Map<string, string>();
+    if (body.states) {
+      const existingStatesForAnchor = await db
+        .select({ id: workflowStates.id, name: workflowStates.name })
+        .from(workflowStates)
+        .where(eq(workflowStates.workflowId, id));
+      for (const s of existingStatesForAnchor) {
+        if (BUILTIN_STATE_NAMES.has(s.name)) {
+          builtinNameToDbId.set(s.name, s.id);
+        }
+      }
+    }
+
     const stateIdMap = new Map<string, string>();
     db.transaction((tx) => {
       tx.update(workflows).set(updates).where(eq(workflows.id, id)).run();
 
       // Replace states if provided — build ID mapping for transition remapping
       // Client may send temporary IDs (e.g. "s-new-123") for new states — generate real IDs
-      // and track the mapping so transitions can be remapped
+      // and track the mapping so transitions can be remapped.
+      // Built-in states always use their canonical DB IDs, ignoring whatever id the client sent.
       if (body.states) {
         tx.delete(workflowStates).where(eq(workflowStates.workflowId, id)).run();
         for (const s of body.states) {
           const clientId = s.id;
-          const isTemporary = !clientId || clientId.startsWith("s-new-");
-          const dbId = isTemporary ? createId.workflowState() : clientId;
+          const trimmedName = s.name.trim();
+          // Force the canonical DB ID for built-in states, ignoring client-supplied id
+          const builtinDbId = builtinNameToDbId.get(trimmedName);
+          let dbId: string;
+          if (builtinDbId) {
+            dbId = builtinDbId;
+          } else {
+            const isTemporary = !clientId || clientId.startsWith("s-new-");
+            dbId = isTemporary ? createId.workflowState() : clientId;
+          }
           if (clientId) stateIdMap.set(clientId, dbId);
           tx.insert(workflowStates).values({
             id: dbId,
