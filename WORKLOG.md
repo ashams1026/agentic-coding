@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-01 21:00 PDT — Review: FX.UX.PERSONA.4 (approved)
+
+**Reviewed:** TestRunPanel wired into Persona Manager detail panel.
+- Import added at persona-detail-panel.tsx:37, component placed at bottom of read-only view :710-714
+- Props correctly match interface: `personaName: string` and `model: PersonaModel` (test-run-panel.tsx:59-62)
+- Separator + section wrapping follows the existing pattern used by all other sections in the panel
+- Build passes cleanly (tsc + vite, no errors)
+- Visual check on two personas (Engineer, Code Reviewer): collapsible renders correctly, expands to show prompt input + test button + terminal output, no layout issues
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-01 20:50 PDT — FX.UX.PERSONA.4: Wire TestRunPanel into Persona Manager UI
 
 **Done:** Added TestRunPanel to the read-only view of PersonaDetailPanel. Imported TestRunPanel component and added it as a collapsible section at the bottom of the read-only mode, after the Tools/Skills/Subagents sections. Passes `persona.name` and `persona.model` as props. Visual check confirmed: collapsible trigger renders correctly, expands to show prompt input + test button + terminal output area, no layout issues.

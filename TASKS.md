@@ -11,7 +11,7 @@
 
 ## Bug Fixes & UX
 
-- [review] **FX.UX.PERSONA.4** — Wire TestRunPanel into Persona Manager UI. The `TestRunPanel` component (`packages/frontend/src/features/persona-manager/test-run-panel.tsx`) exists and is imported in `persona-editor.tsx`, but the page (`pages/persona-manager.tsx` line 38) uses `PersonaDetailPanel` which does not include it. Users cannot test-run a persona. Fix: either add a collapsible TestRunPanel to `PersonaDetailPanel` (at the bottom of the read-only view), or replace `PersonaDetailPanel` with `PersonaEditor` in the page layout.
+- [x] **FX.UX.PERSONA.4** — Wire TestRunPanel into Persona Manager UI. *(completed 2026-04-01 20:50 PDT)* The `TestRunPanel` component (`packages/frontend/src/features/persona-manager/test-run-panel.tsx`) exists and is imported in `persona-editor.tsx`, but the page (`pages/persona-manager.tsx` line 38) uses `PersonaDetailPanel` which does not include it. Users cannot test-run a persona. Fix: either add a collapsible TestRunPanel to `PersonaDetailPanel` (at the bottom of the read-only view), or replace `PersonaDetailPanel` with `PersonaEditor` in the page layout.
 
 ---
 
