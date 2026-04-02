@@ -36,6 +36,7 @@ import { cn } from "@/lib/utils";
 import { usePicoStore } from "@/features/pico/pico-store";
 import { ChatMessage } from "@/features/pico/chat-message";
 import { usePicoChat } from "@/hooks/use-pico-chat";
+import { useProjects } from "@/hooks";
 import { PersonaSelector } from "@/features/pico/persona-selector";
 import type { ChatSessionId } from "@agentops/shared";
 import type { ChatSessionWithPersona } from "@/api";
@@ -103,6 +104,14 @@ export function ChatPage() {
 
   // Persona selector modal
   const [showPersonaSelector, setShowPersonaSelector] = useState(false);
+
+  // Project name lookup
+  const { data: projects = [] } = useProjects();
+  const projectNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const p of projects) map.set(p.id, p.name);
+    return map;
+  }, [projects]);
 
   // Persona filter for sidebar
   const [personaFilter, setPersonaFilter] = useState<string | null>(null);
@@ -373,7 +382,7 @@ export function ChatPage() {
               {/* Project badge */}
               <span className="text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground shrink-0 flex items-center gap-1">
                 {cs.projectId ? (
-                  <>{cs.projectId}</>
+                  <>{projectNameMap.get(cs.projectId) ?? cs.projectId}</>
                 ) : (
                   <><Globe className="h-3 w-3" /> Global</>
                 )}

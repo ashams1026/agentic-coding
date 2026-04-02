@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 12:35 PDT — FX.CHAT.1: Show project name in chat header
+
+**Done:** Replaced raw `projectId` display in chat header badge with resolved project name. Added `useProjects()` hook call and a `useMemo`-based name lookup map (`projectNameMap`). Falls back to raw ID if project not yet loaded.
+**Files:** `packages/frontend/src/pages/chat.tsx`
+
+---
+
 ## 2026-04-03 12:15 PDT — Review: FX.WF.3 (approved)
 
 **Reviewed:** Workflow CRUD input validation.
