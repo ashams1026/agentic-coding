@@ -20,13 +20,7 @@
 
 ## Sprint 17 (final SDK) + Sprint 19 (V2 Sessions) — 2026-03-31
 
-**FX.SDK1:** Superseded by SDK.V2.2. `GET /api/sdk/capabilities` + `POST /api/sdk/reload` implemented using Query control methods.
-
-**FX.SDK4:** Replaced filesystem skill browser with SDK capabilities picker. Fetches `commands` from capabilities endpoint, searchable list with name/description/argumentHint, manual path fallback.
-
-**SDK.V2.1:** Persistent SDK session manager (`sdk-session.ts`). Lazy singleton via `getSdkSession()`, `unstable_v2_createSession()` with sonnet model, bypassPermissions, core tools. Exponential backoff retry (3 attempts). Reads first stream message to capture sessionId. `closeSdkSession()` in graceful shutdown. `reconnectSdkSession()` tries resume then fallback.
-
-**SDK.V2.2:** SDK capabilities discovery endpoint (`routes/sdk.ts`). `withDiscoveryQuery()` — temporary `query()` subprocess, reads first message, calls control method, interrupts/drains. `initializationResult()` returns commands/agents/models. Cache on first call. `reloadPlugins()` for refresh. Unblocked FX.SDK3-6. Key finding: `initializationResult()` does NOT return built-in tool names — FX.SDK3/SDK5 remain blocked.
+**SDK work (FX.SDK1, FX.SDK4, SDK.V2.1-2):** Persistent SDK session manager with lazy singleton, exponential backoff retry. SDK capabilities discovery endpoint via `withDiscoveryQuery()`. Replaced filesystem skill browser with SDK capabilities picker. Key finding: `initializationResult()` does NOT return built-in tool names.
 
 ---
 
@@ -205,3 +199,11 @@
 **Sprint 29 Phase 1 — Global as Project (UXO.1-4, all approved):** Added `isGlobal` boolean to projects schema + `pj-global` seed + 409 delete guard (migration 0020). Made projectId NOT NULL on 5 tables with backfill migration 0021, updated all route handlers and dashboard aggregation. Replaced `"__all__"` frontend sentinel with real global project from API, `useSelectedProject` returns `isGlobal` flag. Added scope breadcrumb indicator (colored dot + accent strip in sidebar).
 
 **Dead code fix (FX.DEAD.1, rejected then reworked and approved):** Wired prompt template into webhook execution via standalone execution support in runExecution(). Initial implementation rejected because synthetic task fallback was unreachable (early throw on null workItemId). Rework made all lookups conditional for standalone path.
+
+---
+
+### Sprint 29 Phase 1 continued + Phase 2 start — 2026-04-03 15:15–16:45 PDT
+
+**Phase 1 completion (UXO.1-2 implementations + reviews):** Migrated nullable projectId → pj-global with NOT NULL on 5 tables (migration 0021). Updated all route handlers, dashboard aggregation, seed/test files. Replaced `__all__` frontend sentinel with real global project. Added scope breadcrumb indicator.
+
+**Bug fixes batch 3 (FX.NAV.1, FX.WF.4, FX.DOC.1, FX.HIST.1, FX.TYPE.1, FX.TYPE.2, FX.PERF.1, all approved):** Updated command palette nav items to match sidebar (9 items). Added transition sortOrder to workflow save payload. Rewrote docs/workflow.md for custom workflow engine. Fixed Agent Monitor history table row misalignment (Collapsible → conditional rendering). Widened VariableContextOptions to remove unsafe double casts in chat routes. Deduplicated HandoffNote import from shared. Batched N+1 dependency check query with inArray.

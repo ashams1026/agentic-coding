@@ -12,20 +12,10 @@
 ## Sprint 29: UX Overhaul (Priority)
 
 > Major UX rework based on user feedback. **Prioritized ahead of remaining Sprint 28 and future roadmap work.** Themes: global-as-project foundation, persona→agent rename, chat UX fixes, workflow rework with label triggers, scope clarity.
-> Bug Fixes (Sprints 24-27) and Phase 1 (Global as Project) complete and archived.
-
-### Phase 2: Agent Rename (Persona → Agent)
-
-- [x] **UXO.5** — Shared types: Rename `Persona` → `Agent`, `PersonaId` → `AgentId`, `PersonaSettings` → `AgentSettings` across `packages/shared/src/entities.ts`, `ws-events.ts`, and all shared exports. Rename `PersonaAssignment` → `AgentAssignment`.
-- [x] **UXO.6** — Schema + Backend: Rename `personas` table → `agents`, all `personaId` columns → `agentId` (chat_sessions, executions, workflow_states, persona_assignments → agent_assignments, schedules, etc.). Generate migration. Rename `routes/personas.ts` → `routes/agents.ts`, API paths `/api/personas` → `/api/agents`. Update all backend imports and queries. *(completed 2026-04-03 16:45 PDT)*
-- [x] **UXO.7** — Frontend: Rename all persona references → agent. Rename `features/persona-manager/` → `features/agent-builder/`. Update sidebar label to "Agent Builder". Rename hooks (`usePersonas` → `useAgents`), API client functions, stores, route paths. Update all imports. *(completed 2026-04-02 10:49 PDT)*
-- [x] **UXO.8** — Add project scope to agents. Add `scope` field (global/project) and nullable `projectId` FK to agents schema. Generate migration. Project-scoped agents only appear in that project's agent lists, chat selectors, workflow assignments. Global agents (default) available everywhere. Add scope badge on agent cards in Agent Builder. Update agent creation form with scope dropdown. *(completed 2026-04-02 11:07 PDT)*
+> Bug Fixes (Sprints 24-27), Phase 1 (Global as Project), Phase 2 (Agent Rename), and Phase 5 (Agent Monitor Queue) complete and archived. Phases 3, 4, 8 partially complete.
 
 ### Phase 3: Chat UX Fixes
 
-- [x] **UXO.9** — Fix: Chat session list doesn't load on `/chat` page mount. `use-pico-chat.ts:215` gates session loading on `isOpen` (panel state), which is `false` on the full page. Add a separate `useEffect` that calls `refreshSessions()` on page mount independent of panel state. *(completed 2026-04-02 11:13 PDT)*
-- [x] **UXO.10** — Fix: Chat panel minimizes on dropdown interaction and outside clicks. `chat-panel.tsx:131-146` click-outside handler only excludes `dropdown-menu-content` but misses `select-content`. Remove the click-outside-to-close behavior entirely — panel should ONLY close via the minimize button. *(completed 2026-04-02 11:13 PDT)*
-- [x] **UXO.11** — Fix: Empty chat state always shows "Woof I'm Pico". Update empty state in `chat.tsx` and `chat-panel.tsx` to dynamically show the selected agent's name, avatar, and description. Pico greeting only when Pico is selected. Other agents show their own description. *(completed 2026-04-02 11:23 PDT)*
 - [ ] **UXO.12** — Frontend: Group chat sessions by agent name. Replace date-based grouping in session sidebar with agent-based collapsible groups. Each group header: agent avatar + name + session count + expand/collapse caret. Sessions within each group sorted by recency. Default all expanded.
 - [ ] **UXO.13** — Frontend: Improve chat header. Show agent avatar + name prominently (larger, left-aligned). Show resolved project name. Editable session title. Context menu (rename, delete). Clear visual identity of which agent you're talking to.
 
@@ -35,18 +25,11 @@
 - [ ] **UXO.15** — Backend: Per-workflow auto-routing. Update `runRouter()` to read `workflow.autoRouting` instead of `project.settings.autoRouting`. Build Router system prompt from the specific workflow's state machine via `workflowId`.
 - [ ] **UXO.16** — Backend: Label-based agent resolution. Update `resolveAgentForState()` to check work item labels against `workflowStates.agentOverrides`. Priority: label match override → state default agent → null.
 - [ ] **UXO.17** — Backend: Enforce Backlog/Done as immutable built-in states. Every workflow must have exactly one initial state ("Backlog") and at least one terminal state ("Done"). These names cannot be changed or deleted. Auto-create them on `POST /api/workflows`.
-- [x] **UXO.18** — Frontend: Remove flow view from work items page. Delete `flow-view.tsx` and the list/flow view toggle. Work items page is list-only. *(completed 2026-04-02 11:13 PDT)*
-- [x] **UXO.19** — Frontend: Rename Workflows → Automations. Update sidebar nav label to "Automations", move it below Work Items. Update route path `/workflows` → `/automations` (keep `/workflows/:id` for the builder). Update all navigation references. *(completed 2026-04-02 11:23 PDT)*
 - [ ] **UXO.20** — Frontend: Redesign Automations page as unified live overview. Two card types side by side: **Workflow cards** (name, auto-routing play/pause, live state pipeline with item counts per state and active agents, edit button) and **Schedule cards** (name, agent avatar+name, cron expression in human-readable form, next run time, active play/pause toggle, last run status). "New Automation" button offers choice: Workflow or Schedule. Extract flow-view metrics logic for workflow cards.
 - [ ] **UXO.27** — Frontend: Move Schedules out of Settings onto Automations page. Remove the schedules section from Settings. Schedule cards on the Automations page link to an edit view (inline dialog or dedicated page) for cron expression, agent selection, prompt template, and project scope. Active/disabled toggle directly on the card.
 - [ ] **UXO.21** — Frontend: Update workflow builder for label-based agent overrides. In state card, add collapsible "Agent Overrides" section below default agent selector. Each row: label match input + agent dropdown. "Add override" button. Show overrides as chips on the state card.
 - [ ] **UXO.22** — Frontend: Per-workflow auto-routing toggle on overview page and in builder header. Calls `PATCH /api/workflows/:id { autoRouting }`. Label: "Auto-routing OFF" / "Auto-routing ON".
 - [ ] **UXO.26** — Frontend: Move workflow settings from Settings page into workflow builder. Remove `workflow-config-section.tsx` from Settings. Move the agent-state assignment table (PersonaStateTable → AgentStateTable) into the workflow builder as a "State Agents" tab or section alongside the state cards. The auto-routing toggle is already on the workflow (UXO.22). The workflow selector dropdown in Settings is no longer needed since each workflow is managed from its own builder page. Clean up any orphaned Settings references.
-
-### Phase 5: Agent Monitor Queue
-
-- [x] **UXO.24** — Backend: Add `GET /api/executions/queue` endpoint. Expose the in-memory concurrency queue from `concurrency.ts`. Return array of `{ workItemId, workItemTitle, agentId, agentName, priority, enqueuedAt, position }`. Resolve workItemId and personaId (→ agentId) to display names via DB joins. Also return `{ activeCount, maxConcurrent, queueLength }` metadata. *(completed 2026-04-02 11:13 PDT)*
-- [x] **UXO.25** — Frontend: Add "Queue" tab to Agent Monitor alongside Live and History. Show queued executions as a list: position number, agent avatar + name, work item title, priority badge (p0=red, p1=orange, p2=blue, p3=gray), time waiting (relative). Show empty state "No queued agents" when queue is empty. Show active/max count in tab badge: "Queue (3)". Auto-refresh via polling or WS event when queue changes. *(completed 2026-04-02 11:23 PDT)*
 
 ### Phase 6: Global Work Items
 
@@ -56,7 +39,6 @@
 
 - [ ] **UXO.28** — Frontend: Reorganize Settings page into Global and Project sections. Split the settings sidebar into two labeled groups with headers: "Global" (API Keys & Executor, Appearance, Notifications, Service, Data) and "Project: {name}" (Security, Costs & Limits, Integrations). Project section shows current project name and scope badge. When global project is selected, project section shows "All Projects" settings. Remove the "Workflow" and "Scheduling" tabs (moved to Automations in UXO.26/UXO.27).
 - [ ] **UXO.29** — Frontend: Break up "Agent Configuration" section. Move API Key and Executor Mode into a new "API Keys & Executor" global section. Move Max Concurrent Agents into "Costs & Limits" project section (alongside monthly cap, warning threshold, daily limit). Remove the empty "Agent Configuration" tab. Drop the unpersisted "Per-Persona Limits" table (local-only state that does nothing).
-- [x] **UXO.30** — Frontend: Fix Recently Deleted scope. `GET /api/work-items/deleted` should filter by the current projectId so users only see deleted items from the selected project. Add the project filter to the API call in the Recently Deleted component. Show scope badge on the section. *(completed 2026-04-02 11:23 PDT)*
 
 ### Phase 9: Status Bar Update
 

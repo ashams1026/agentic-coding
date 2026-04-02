@@ -74,45 +74,7 @@
 
 ---
 
-## Sprint 24: Core UX (partial) — archived 2026-04-02
-
-### Agent Chat Phase 1
-
-- [x] **ACH.1** — Schema migration: add persona_id, work_item_id, sdk_session_id to chat_sessions + backfill. *(completed 2026-04-02 04:10 PDT)*
-- [x] **ACH.2** — Backend: persist personaId/workItemId, join persona data on session list/messages. *(completed 2026-04-02 04:25 PDT)*
-- [x] **ACH.3** — Backend: multi-persona chat — load persona from session, gate Pico-specific behavior. *(completed 2026-04-02 04:40 PDT)*
-- [x] **ACH.4** — Frontend: persona selector grid for new chat sessions. *(completed 2026-04-02 05:00 PDT)*
-- [x] **ACH.5** — Frontend: session sidebar with persona avatars, date grouping, filter, last message preview. *(completed 2026-04-02 05:35 PDT)*
-- [x] **ACH.6** — Frontend: chat header bar with persona info, project badge, editable title, context menu. *(completed 2026-04-02 05:55 PDT)*
-- [x] **ACH.7** — Frontend: session management — right-click context menu with rename/delete + confirmation dialog. *(completed 2026-04-02 06:15 PDT)*
-
-### Persona Prompts Phase 1
-
-- [x] **PPR.1** — Backend: resolveVariables() + buildVariableContext() in prompt-variables.ts. *(completed 2026-04-02 06:30 PDT)*
-- [x] **PPR.2** — Backend: integrate resolveVariables() into buildSystemPrompt() and Pico chat path. *(completed 2026-04-02 06:45 PDT)*
-- [x] **PPR.3** — Frontend: autocomplete popup on {{ in system prompt editor (13 variables, 4 groups). *(completed 2026-04-02 07:05 PDT)*
-- [x] **PPR.4** — Frontend: collapsible variables reference panel + resolved preview with highlighting. *(completed 2026-04-02 07:25 PDT)*
-
-### Notifications UX Phase 1
-
-- [x] **NTF.1** — Shared types: NotificationEventType, Notification, NotificationEvent in ws-events.ts. *(completed 2026-04-02 07:40 PDT)*
-- [x] **NTF.2** — Backend: broadcastNotification() helper + 4 emission points (completed/errored/proposal/budget). *(completed 2026-04-02 08:00 PDT)*
-- [x] **NTF.3** — Frontend: Zustand notification store with localStorage persist, 60s batching, quiet hours. *(completed 2026-04-02 08:15 PDT)*
-- [x] **NTF.4** — Frontend: NotificationBell in sidebar footer with unread count badge. *(completed 2026-04-02 08:30 PDT)*
-- [x] **NTF.5** — Frontend: NotificationDrawer — 320px sliding panel with date grouping, empty state. *(completed 2026-04-02 08:50 PDT)*
-- [x] **NTF.6** — Frontend: NotificationCard with 5 type-specific icons + action buttons. *(completed 2026-04-02 09:05 PDT)*
-- [x] **NTF.7** — Frontend: enhanced toasts — critical non-dismiss, overflow +N link, dual dispatch. *(completed 2026-04-02 09:20 PDT)*
-- [x] **NTF.8** — Frontend: Notifications tab in Settings — event toggles, quiet hours, scope. *(completed 2026-04-02 09:35 PDT)*
-
-### Testing & Documentation
-
-- [x] **CUX.TEST.1** — E2E test plan for Agent Chat Phase 1 — 7 test cases. *(completed 2026-04-02 09:50 PDT)*
-- [x] **CUX.TEST.2** — Execute Agent Chat e2e tests — 7/7 PASS, 10 screenshots. *(completed 2026-04-02 10:15 PDT)*
-- [x] **CUX.TEST.3** — E2E test plan for Notifications UX — 7 test cases. *(completed 2026-04-02 10:30 PDT)*
-- [x] **CUX.TEST.4** — Execute Notifications UX e2e tests — 7/7 PASS, 6 screenshots. *(completed 2026-04-02 10:50 PDT)*
-- [x] **CUX.DOC.1** — Document Agent Chat multi-persona API + template variables in docs/api.md. *(completed 2026-04-02 11:05 PDT)*
-- [x] **CUX.DOC.2** — Document Notifications system — WS event, types, preferences in docs/api.md. *(completed 2026-04-02 11:20 PDT)*
-- [x] **CUX.TEST.5** — Regression checkpoint post-Sprint 24 — 36 suites, 0 regressions. *(completed 2026-04-02 11:45 PDT)*
+**Sprint 24 (ACH.1-7, PPR.1-4, NTF.1-8, CUX.TEST.1-5, CUX.DOC.1-2):** 26 tasks. Agent Chat P1 (schema migration + multi-persona sessions + selector grid + sidebar + header + context menu). Persona Prompts P1 (resolveVariables + buildSystemPrompt + autocomplete + preview). Notifications UX P1 (shared types + broadcastNotification + Zustand store + bell + drawer + card + toasts + Settings tab). Testing: 4 e2e suites (14/14 pass), 2 doc updates, regression 36 suites 0 regressions.
 
 ---
 
@@ -199,3 +161,34 @@
 - [x] **UXO.2** — Backend: Migrate nullable projectId → pj-global, NOT NULL on 5 tables, dashboard aggregation. *(completed 2026-04-03 15:25 PDT)*
 - [x] **UXO.3** — Frontend: Replace __all__ sentinel with global project from API, isGlobal flag. *(completed 2026-04-03 15:45 PDT)*
 - [x] **UXO.4** — Frontend: Add scope breadcrumb indicator (colored dot + accent strip). *(completed 2026-04-03 15:55 PDT)*
+
+---
+
+## Sprint 29: UX Overhaul Phases 2-5 — archived 2026-04-02
+
+### Phase 2: Agent Rename (Persona → Agent)
+
+- [x] **UXO.5** — Shared types: Rename Persona → Agent, PersonaId → AgentId, PersonaSettings → AgentSettings across shared exports. *(completed 2026-04-03 16:15 PDT)*
+- [x] **UXO.6** — Schema + Backend: Rename personas table → agents, all personaId columns → agentId, migration 0022, API paths /api/agents. *(completed 2026-04-03 16:45 PDT)*
+- [x] **UXO.7** — Frontend: Rename all persona references → agent across 54 files, features/persona-manager/ → agent-builder/, hooks, API client, routes. *(completed 2026-04-02 10:49 PDT)*
+- [x] **UXO.8** — Add project scope to agents: scope field (global/project), projectId FK, migration 0023, filtered GET, scope badge + editor dropdown. *(completed 2026-04-02 11:07 PDT)*
+
+### Phase 3: Chat UX Fixes (partial)
+
+- [x] **UXO.9** — Fix: Chat session list loading on /chat page mount (independent of panel isOpen state). *(completed 2026-04-02 11:13 PDT)*
+- [x] **UXO.10** — Fix: Remove click-outside-to-close from chat panel (minimize button only). *(completed 2026-04-02 11:13 PDT)*
+- [x] **UXO.11** — Fix: Dynamic empty chat state — shows selected agent's name/avatar/description instead of always Pico. *(completed 2026-04-02 11:23 PDT)*
+
+### Phase 4: Workflow Rework (partial)
+
+- [x] **UXO.18** — Frontend: Remove flow view from work items page, delete flow-view.tsx, list-only. *(completed 2026-04-02 11:13 PDT)*
+- [x] **UXO.19** — Frontend: Rename Workflows → Automations in sidebar/routes/command palette. *(completed 2026-04-02 11:23 PDT)*
+
+### Phase 5: Agent Monitor Queue
+
+- [x] **UXO.24** — Backend: GET /api/executions/queue endpoint with name resolution and metadata. *(completed 2026-04-02 11:13 PDT)*
+- [x] **UXO.25** — Frontend: Queue tab in Agent Monitor with priority badges, polling, empty state. *(completed 2026-04-02 11:23 PDT)*
+
+### Phase 8: Settings Reorganization (partial)
+
+- [x] **UXO.30** — Frontend: Fix Recently Deleted scope filter by projectId with scope badge. *(completed 2026-04-02 11:23 PDT)*
