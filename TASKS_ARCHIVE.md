@@ -164,3 +164,22 @@
 
 - [x] **CWF.9** — Read-only endpoints: list, get (with states+transitions), states, transitions. *(completed 2026-04-02 14:25 PDT)*
 - [x] **CWF.10** — Builder CRUD: create, update, publish, delete (409 guard), clone, validate. *(completed 2026-04-02 14:40 PDT)*
+
+### Frontend: Dynamic Views
+
+- [x] **CWF.11** — Frontend: use-workflows.ts hooks + API client functions. *(completed 2026-04-02 15:00 PDT)*
+- [x] **CWF.12** — Frontend: flow-view.tsx dynamic workflow states. *(completed 2026-04-02 15:20 PDT)*
+- [x] **CWF.13** — Frontend: list-view, filter-bar, detail-panel dynamic workflow. *(completed 2026-04-02 15:40 PDT)*
+- [x] **CWF.14** — Frontend: workflow-config-section dynamic states + WorkflowSelector. *(completed 2026-04-02 15:55 PDT)*
+
+### Frontend: Workflow Builder
+
+- [x] **CWF.15** — Frontend: state-card.tsx + transition-row.tsx. *(completed 2026-04-02 16:15 PDT)*
+- [x] **CWF.16** — Frontend: workflow-preview.tsx SVG graph. *(completed 2026-04-02 16:30 PDT)*
+- [x] **CWF.17** — Frontend: workflow-builder.tsx + validation-panel.tsx + create-workflow-dialog.tsx. *(completed 2026-04-02 16:50 PDT)*
+- [x] **CWF.18** — Frontend: /workflows route, sidebar nav, CRUD API wiring. *(completed 2026-04-02 17:20 PDT)*
+
+### Testing
+
+- [x] **CWF.TEST.1** — E2e test plan for Custom Workflows (36 steps, 10 parts). *(completed 2026-04-02 17:35 PDT)*
+- [x] **CWF.TEST.2** — Execute Custom Workflows e2e tests (33/36 pass, 1 bug filed). *(completed 2026-04-02 18:00 PDT)*
