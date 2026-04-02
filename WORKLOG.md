@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 10:45 PDT — CUX.TEST.4: Execute Notifications UX e2e tests
+
+**Done:** Executed all 7 test cases from `notifications-ux.md`. Results: **7/7 PASS**, no bugs filed. TC-NTF-1: bell icon between theme+collapse, no badge when 0 unread. TC-NTF-2: drawer open/close (click/X/Escape), empty state "All caught up!". TC-NTF-3: injected 5 notifications via localStorage, badge shows count, "Mark all read" clears unread. TC-NTF-4: all 5 card types with correct icons/colors/action buttons. TC-NTF-5: code review — critical skip auto-dismiss, overflow link, dual dispatch. TC-NTF-6: Settings tab with event toggles, quiet hours, scope. TC-NTF-7: code review — WS types + emission points.
+**Files:** `tests/e2e/results/2026-04-02_10-35_notifications-ux/RESULTS.md`, 6 screenshot PNGs
+
+---
+
 ## 2026-04-02 10:30 PDT — Review: CUX.TEST.3 (approved)
 
 **Reviewed:** E2E test plan for Notifications UX.
