@@ -23,52 +23,104 @@
 
 - [x] **UXO.27** — Frontend: Move Schedules out of Settings onto Automations page. Remove the schedules section from Settings. Schedule cards on the Automations page link to an edit view (inline dialog or dedicated page) for cron expression, agent selection, prompt template, and project scope. Active/disabled toggle directly on the card. *(completed 2026-04-02 13:42 PDT)*
 - [x] **UXO.22** — Frontend: Per-workflow auto-routing toggle on overview page and in builder header. Calls `PATCH /api/workflows/:id { autoRouting }`. Label: "Auto-routing OFF" / "Auto-routing ON". *(completed 2026-04-02 13:28 PDT)*
-- [ ] **UXO.26** — Frontend: Move workflow settings from Settings page into workflow builder. Remove `workflow-config-section.tsx` from Settings. Move the agent-state assignment table (PersonaStateTable → AgentStateTable) into the workflow builder as a "State Agents" tab or section alongside the state cards. The auto-routing toggle is already on the workflow (UXO.22). The workflow selector dropdown in Settings is no longer needed since each workflow is managed from its own builder page. Clean up any orphaned Settings references.
+- [x] **UXO.26** — Frontend: Move workflow settings from Settings page into workflow builder. Remove `workflow-config-section.tsx` from Settings. Move the agent-state assignment table (PersonaStateTable → AgentStateTable) into the workflow builder as a "State Agents" tab or section alongside the state cards. The auto-routing toggle is already on the workflow (UXO.22). The workflow selector dropdown in Settings is no longer needed since each workflow is managed from its own builder page. Clean up any orphaned Settings references. *(completed 2026-04-02 13:55 PDT)*
 
-### Phase 8: Settings Reorganization
+### Remaining Sprint 29 (not superseded by Sprint 30)
 
-- [ ] **UXO.28** — Frontend: Reorganize Settings page into Global and Project sections. Split the settings sidebar into two labeled groups with headers: "Global" (API Keys & Executor, Appearance, Notifications, Service, Data) and "Project: {name}" (Security, Costs & Limits, Integrations). Project section shows current project name and scope badge. When global project is selected, project section shows "All Projects" settings. Remove the "Workflow" and "Scheduling" tabs (moved to Automations in UXO.26/UXO.27).
-- [ ] **UXO.29** — Frontend: Break up "Agent Configuration" section. Move API Key and Executor Mode into a new "API Keys & Executor" global section. Move Max Concurrent Agents into "Costs & Limits" project section (alongside monthly cap, warning threshold, daily limit). Remove the empty "Agent Configuration" tab. Drop the unpersisted "Per-Persona Limits" table (local-only state that does nothing).
+> These tasks are independent of the navigation rewrite. UXO.28-29, GW.*, DES.2, DES.15 are superseded by Sprint 30.
 
-### Design Polish
+- [ ] **FX.WI1** — Critical: Work item edit revert bug. Edits snap back immediately. Root cause: `onSettled` in `use-work-items.ts:89-92` always invalidates queries, and `use-ws-sync.ts:20-22` WebSocket `state_change` broadly invalidates `["workItems"]`. Both refetch stale data over optimistic updates. Fix: use `onSuccess` to set response data directly; guard WS invalidation during active mutations.
+- [ ] **DES.1** — Dashboard: Add onboarding/getting-started section for fresh installs. Guided checklist: register project, configure API key, create work item, watch agent run.
+- [ ] **DES.3** — Chat: Auto-generate session names from first user message (first 40 chars). "New chat" repeated 15+ times is unusable.
+- [ ] **DES.7** — Automations: Normalize workflow card heights with min-height. Cards with no states show "Configure states" CTA.
+- [ ] **DES.13** — Settings: Fix grammar in terminal states note. Rewrite to "Terminal states (like Done) don't need assigned agents."
+- [ ] **DES.14** — Settings: Fix Per-Agent Limits table — empty columns. Hide when no limits configured.
+- [ ] **DES.17** — Activity Feed: Add filter bar with time range selector and event type filter.
+- [ ] **DES.19** — Empty states: Audit all pages for consistent empty states (icon + heading + description + CTA).
+- [ ] **FX.UXO24** — Info: `AgentId` type uses `ps-` prefix. Tech debt — requires migration.
+- [ ] **UXO.TEST.2** — Execute UX Overhaul e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
+- [ ] **UXO.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
 
-> Visual and UX quality issues found during full-app design audit. These are polish, not bugs — the features work but look rough, have poor labeling, or lack expected affordances.
+---
 
-- [ ] **DES.1** — Dashboard: Add onboarding/getting-started section for fresh installs. When no work items exist, show a guided checklist: (1) Register a project, (2) Configure API key, (3) Create a work item, (4) Watch an agent run. Replace the empty stat cards + empty table with this flow. Hide once first work item is created.
-- [ ] **DES.2** — Dashboard: Improve Projects Overview table. Add columns: work item count, active agents, workflow name, last activity. Currently just shows name + date — not useful.
-- [ ] **DES.3** — Chat: Auto-generate session names from first user message (first 40 chars). "New chat" repeated 15+ times makes the session sidebar unusable. Fall back to timestamp if no message yet.
-- [x] **DES.4** — Chat: Reduce session sidebar width. Currently takes disproportionate horizontal space. Cap at ~240px and truncate long session names with ellipsis. *(completed 2026-04-02 13:42 PDT)*
-- [x] **DES.6** — Agent Monitor: Add label to the filter dropdown next to the tabs. Currently just shows "All" with no context of what it filters (agents? projects?). *(completed 2026-04-02 13:42 PDT)*
-- [ ] **DES.7** — Automations: Normalize workflow card heights. Default card (with state chips) is taller than cards with no states. Add min-height so cards align in a grid. Cards with no states should show a "Configure states" CTA instead of just "No states defined".
-- [ ] **DES.8** — Automations: Change ALL CAPS section headers ("WORKFLOWS", "SCHEDULES") to Title Case ("Workflows", "Schedules"). Reduce visual heaviness. Apply consistent icon sizing on section headers.
-- [ ] **DES.9** — Agent Builder: Add search/filter input above agent card grid. As agent count grows, users need to find agents by name or scope. Simple text filter is sufficient for v1.
-- [ ] **DES.10** — Agent Builder: Truncate long agent descriptions to 2 lines with ellipsis on cards. Some cards have long descriptions that push card heights inconsistent.
-- [ ] **DES.11** — Agent Builder: Rewrite "Router" agent description from developer jargon ("Routes work items between workflow states based on execution outcomes") to user-friendly language ("Automatically moves work items to the next step when an agent finishes").
-- [x] **DES.12** — Settings: Change "SETTINGS" header from ALL CAPS to Title Case. Consistent with the rest of the app's heading style. *(completed 2026-04-02 13:28 PDT)*
-- [ ] **DES.13** — Settings > Workflow: Fix grammar in note below agent assignments table. "Ended at terminal states have no assignable agents" is confusing — rewrite to "Terminal states (like Done) don't need assigned agents."
-- [ ] **DES.14** — Settings > Agent Configuration: Fix Per-Agent Limits table — "Max Concurrent" column is empty for all agents. Either populate with default values from project settings, or hide the table when no per-agent limits are configured, showing "Per-agent limits not configured" with an enable button.
-- [ ] **DES.15** — Settings > Projects: Add useful columns to projects table — work item count, active agents, workflow name, path. Currently just name + date.
-- [ ] **DES.16** — Work Items: Add tooltip or label explaining the "Auto" badge next to the page title. Users have no context for what this means.
-- [ ] **DES.17** — Activity Feed: Add filter bar with time range selector and event type filter. Currently completely bare — just empty state text. Even in empty state, show the filter controls so users understand what the page will look like.
-- [x] **DES.18** — Global: Increase status bar font size slightly — current text is hard to read at small size. Consider 12px minimum. *(completed 2026-04-02 13:42 PDT)*
-- [ ] **DES.19** — Empty states: Audit all empty states across the app for consistency. Every empty state should have: (1) an icon, (2) a heading, (3) a one-line description, (4) a primary CTA button. Pages missing CTAs: Dashboard, Activity Feed. Pages with good empty states to use as template: Agent Monitor, Scheduling.
+## Sprint 30: Project-Scoped Navigation (Priority)
 
-### Rename "All Projects" → "Global Workspace"
+> **Fundamental navigation rewrite.** Replace the global project dropdown with a sidebar tree where each project has its own nested pages. Eliminates scope confusion at the root. Supersedes GW.*, UXO.28-29, DES.2/15, scope badges/breadcrumbs.
+>
+> **Target sidebar structure:**
+> ```
+> ─── Woof ─────────────────
+> Dashboard                  ← cross-project overview
+> App Settings               ← API keys, appearance, service, data
+>
+> ─── Projects ─────────────
+> ▼ Global Workspace    🌐
+>     Work Items
+>     Automations
+>     Agents
+>     Agent Monitor
+>     Activity Feed
+>     Analytics
+>     Chat
+>     Project Settings
+>
+> ▼ my-react-app        📁
+>     (same pages)
+>
+> ▶ another-project     📁  ← collapsed
+> ```
 
-> The `pj-global` project is a real workspace for things not tied to a specific project. "All Projects" falsely implies aggregation. Rename to "Global Workspace" everywhere and defer cross-project aggregation to a future feature.
+### Phase 1: Router + Project Context
 
-- [ ] **GW.1** — Backend + Seed: Rename global project name from "All Projects" to "Global Workspace" in `ensure-global-project.ts` and `seed.ts`. Update any seed data or default-agents that reference the old name.
-- [ ] **GW.2** — Frontend: Update project selector dropdown. Show "Global Workspace" instead of "All Projects". Use a globe icon to distinguish it from regular projects. The dropdown label when global is selected should read "Global Workspace".
-- [ ] **GW.3** — Frontend: Update scope breadcrumb/indicator. `scope-indicator.tsx` should show "Global Workspace" with globe icon (violet) when `isGlobal` is true, not "All Projects".
-- [ ] **GW.4** — Frontend: Update dashboard header. Currently says "All Projects — Aggregated status across all projects." Change to "Global Workspace — Work items and agents not tied to a specific project." Remove the aggregation language.
-- [ ] **GW.5** — Frontend: Update all scope badges across the app. Agent cards, work item badges, chat headers, recently-deleted — anywhere that shows "All Projects" or "Global" as a scope label should consistently say "Global Workspace" or just "Global" (short form for badges). Pick one short form and use it everywhere.
-- [ ] **GW.6** — Frontend: Update sidebar project list. The global project entry should visually stand out — globe icon, possibly a subtle separator between it and regular projects. It should feel like a persistent workspace, not just another project in the list.
-- [ ] **GW.7** — Docs: Update all documentation references from "All Projects" / "global project" to "Global Workspace". Files: `docs/data-model.md`, `docs/architecture.md`, `docs/api.md`, any others that mention the concept.
+- [ ] **NAV.1** — Frontend: Create `useProjectFromUrl()` hook. Reads `projectId` from URL params via React Router `useParams()`. Returns `{ projectId, project, isGlobal }` by looking up the project. Replaces `useSelectedProject()`. File: `packages/frontend/src/hooks/use-project-from-url.ts`.
+- [ ] **NAV.2** — Frontend: Refactor router for project-scoped routes. New structure: `{ path: "p/:projectId", element: <ProjectLayout />, children: [ { path: "items" }, { path: "automations" }, { path: "automations/:workflowId" }, { path: "agents" }, { path: "monitor" }, { path: "activity" }, { path: "analytics" }, { path: "chat" }, { path: "settings" } ] }`. Keep top-level: Dashboard (`/`) and App Settings (`/app-settings`). Update `router.tsx`.
+- [ ] **NAV.3** — Frontend: Create `ProjectLayout` wrapper component at `layouts/project-layout.tsx`. Reads `projectId` from URL, validates project exists (404 if not), provides project context to children via `<Outlet />`.
+
+### Phase 2: Sidebar Redesign
+
+- [ ] **NAV.4** — Frontend: Redesign sidebar as project tree. Replace flat nav + project dropdown with: (1) Global section at top: Dashboard + App Settings, (2) "Projects" separator, (3) Collapsible project sections — each with globe/folder icon, project name, nested child links (Work Items, Automations, Agents, Agent Monitor, Activity Feed, Analytics, Chat, Project Settings). Global Workspace pinned at top with globe icon + violet accent. Child links navigate to `/p/:projectId/:page`.
+- [ ] **NAV.5** — Frontend: Sidebar state persistence. Store expanded/collapsed per project in localStorage. Auto-expand the project matching current URL. Highlight active child link. Add expand/collapse all toggle.
+- [ ] **NAV.6** — Frontend: Remove old project selector dropdown, scope breadcrumb (`scope-indicator.tsx`), and `selectedProjectId` from `useUIStore`. All replaced by sidebar tree + URL params.
+- [ ] **NAV.7** — Frontend: Add "New Project" button at bottom of Projects section. Opens inline form or dialog for project name + path.
+
+### Phase 3: Migrate Pages to URL-based Project Context
+
+> Each page currently calls `useSelectedProject()` (32 files). Migrate each to `useProjectFromUrl()`. Pages render inside `ProjectLayout` which guarantees `projectId` in URL.
+
+- [ ] **NAV.8** — Frontend: Migrate Work Items page. Replace `useSelectedProject()` with `useProjectFromUrl()`. Update all query keys and API calls. Verify `/p/pj-global/items` and `/p/pj-xyz/items` show different data.
+- [ ] **NAV.9** — Frontend: Migrate Automations page + Workflow Builder. Replace project context. Update `navigate()` calls to include project prefix (`/p/:projectId/automations/:workflowId`).
+- [ ] **NAV.10** — Frontend: Migrate Agents page (rename from Agent Builder). Replace `useSelectedProject()`. Show project-scoped agents + inherited global agents. Rename route from `agent-builder` to `agents`. Update page title.
+- [ ] **NAV.11** — Frontend: Migrate Agent Monitor page. Replace project context. Filter agents/executions by project from URL.
+- [ ] **NAV.12** — Frontend: Migrate Activity Feed page. Replace project context. Filter events by project from URL.
+- [ ] **NAV.13** — Frontend: Migrate Analytics page. Replace project context. Show per-project cost/usage.
+- [ ] **NAV.14** — Frontend: Migrate Chat page. Replace project context. Sessions scoped to project from URL. Agent selector shows project + global agents.
+- [ ] **NAV.15** — Frontend: Migrate Pico chat panel (overlay). Use current project from URL context. Default to Global Workspace when on Dashboard/App Settings (no project in URL).
+
+### Phase 4: Settings Split
+
+- [ ] **NAV.16** — Frontend: Create App Settings page at `/app-settings`. Move from current Settings: API Keys & Executor Mode, Appearance, Service, Data Management. Simple sidebar with 4 sections. No project context.
+- [ ] **NAV.17** — Frontend: Create Project Settings page at `/p/:projectId/settings`. Move from current Settings: Security, Costs & Limits (include max concurrent agents), Notifications, Integrations. Read projectId from URL. Break up "Agent Configuration" — API key → App Settings, concurrency → Costs & Limits, drop Per-Agent Limits table.
+- [ ] **NAV.18** — Frontend: Move workflow settings into workflow builder. Remove `workflow-config-section.tsx`. Move agent-state assignment table into builder as "State Agents" tab. Workflow/Scheduling tabs gone from settings.
+
+### Phase 5: Dashboard + Global
+
+- [ ] **NAV.19** — Frontend: Redesign Dashboard as cross-project overview. Project cards showing: name, work item counts by state, active agents, last activity, quick-links into `/p/:projectId/items`. Global Workspace card pinned at top.
+- [ ] **NAV.20** — Backend + Seed: Rename global project from "All Projects" to "Global Workspace" in `ensure-global-project.ts` and seed data.
+
+### Phase 6: Cleanup + Polish
+
+- [ ] **NAV.21** — Frontend: Update command palette. Commands include project context: "Go to [Project] > Work Items". Search matches project names.
+- [ ] **NAV.22** — Frontend: Update status bar. Remove old auto-routing toggle. Show current project name when on a project page. Keep WS connection, agent count, cost indicators.
+- [ ] **NAV.23** — Frontend: Remove all scope badges, scope indicators, and "Global" vs "All Projects" labeling. Sidebar tree makes scope self-evident. Clean up `scope-indicator.tsx`, scope badges on agent cards, work item badges, chat headers.
+- [ ] **NAV.24** — Frontend: Handle navigation edge cases. Old flat URLs (`/items`, `/agents`, `/automations`) redirect to `/p/pj-global/items` etc. 404 page for invalid projectId. Browser back/forward works.
+- [ ] **NAV.25** — Frontend: Delete dead code from old nav model. Remove: `useSelectedProject()` hook, `selectedProjectId` from UI store, project selector component, scope breadcrumb component. Verify no remaining imports.
 
 ### Testing & Documentation
 
-- [ ] **UXO.TEST.2** — Execute UX Overhaul e2e tests. Screenshot each case. Record results. File bugs as `FX.*`.
-- [ ] **UXO.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
+- [ ] **NAV.TEST.1** — Write e2e test plan: `tests/e2e/plans/project-nav.md`. Cover: sidebar tree, project expand/collapse, navigation to each project page, URL structure, old URL redirects, dashboard project cards, App Settings vs Project Settings, command palette.
+- [ ] **NAV.TEST.2** — Execute project navigation e2e tests. Screenshot each case. File bugs as `FX.NAV.*`.
+- [ ] **NAV.DOC.1** — Update docs for navigation rewrite. New URL structure, sidebar tree, settings split, project context hook. Update `docs/architecture.md`, `docs/api.md`.
+- [ ] **NAV.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
 
 ---
 

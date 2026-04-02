@@ -1,9 +1,18 @@
-import { useState, useCallback } from "react";
-import { Save, Upload, Plus, GripVertical, Play, Pause } from "lucide-react";
+import { useState, useCallback, useMemo } from "react";
+import { Save, Upload, Plus, GripVertical, Play, Pause, ChevronDown, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useAgents, useAgentAssignments, useUpdateAgentAssignment, useSelectedProject } from "@/hooks";
+import type { AgentId, Agent } from "@agentops/shared";
 import { StateCard } from "./state-card";
 import { WorkflowPreview } from "./workflow-preview";
 import { ValidationPanel, validateWorkflow } from "./validation-panel";
@@ -28,6 +37,149 @@ const DEFAULT_COLORS = [
   "#6b7280", "#7c3aed", "#4f46e5", "#2563eb", "#d97706",
   "#ea580c", "#16a34a", "#dc2626", "#059669", "#0891b2",
 ];
+
+// ── Model badge ────────────────────────────────────────────────
+
+function ModelBadge({ model }: { model: string }) {
+  const colors: Record<string, string> = {
+    opus: "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300",
+    sonnet: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+    haiku: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300",
+  };
+  return (
+    <Badge variant="secondary" className={`text-xs px-1.5 py-0 ${colors[model] ?? ""}`}>
+      {model}
+    </Badge>
+  );
+}
+
+// ── Agent Assignments Section ──────────────────────────────────
+
+function AgentAssignmentsSection({ states }: { states: StateCardData[] }) {
+  const [collapsed, setCollapsed] = useState(false);
+  const { projectId } = useSelectedProject();
+  const { data: agents = [] } = useAgents();
+  const { data: assignments = [] } = useAgentAssignments(projectId);
+  const updateAssignment = useUpdateAgentAssignment();
+
+  const assignmentMap = useMemo(() => {
+    const map = new Map<string, AgentId>();
+    assignments.forEach((a) => map.set(a.stateName, a.agentId));
+    return map;
+  }, [assignments]);
+
+  const agentMap = useMemo(() => {
+    const map = new Map<string, Agent>();
+    agents.forEach((a) => map.set(a.id, a));
+    return map;
+  }, [agents]);
+
+  const intermediateStates = useMemo(
+    () => states.filter((s) => s.type === "intermediate"),
+    [states],
+  );
+
+  const handleChange = (stateName: string, agentId: string) => {
+    if (agentId === "none") return;
+    if (!projectId) return;
+    updateAssignment.mutate({
+      projectId,
+      stateName,
+      agentId: agentId as AgentId,
+    });
+  };
+
+  return (
+    <div className="pt-2">
+      <button
+        type="button"
+        onClick={() => setCollapsed((v) => !v)}
+        className="flex w-full items-center gap-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2"
+      >
+        {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+        Agent Assignments
+      </button>
+
+      {!collapsed && (
+        <>
+          {intermediateStates.length === 0 ? (
+            <p className="text-xs text-muted-foreground">
+              Add intermediate states to assign agents.
+            </p>
+          ) : (
+            <div className="rounded-lg border">
+              <div className="grid grid-cols-[1fr_1fr_auto] gap-0">
+                {/* Header */}
+                <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground border-b bg-muted/30">
+                  State
+                </div>
+                <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground border-b bg-muted/30">
+                  Agent
+                </div>
+                <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground border-b bg-muted/30">
+                  Model
+                </div>
+
+                {/* Rows */}
+                {intermediateStates.map((state, i) => {
+                  const assignedAgentId = assignmentMap.get(state.name);
+                  const assignedAgent = assignedAgentId ? agentMap.get(assignedAgentId) : null;
+                  const isLast = i === intermediateStates.length - 1;
+
+                  return (
+                    <div key={state.id} className="contents">
+                      <div className={cn("flex items-center gap-1.5 px-2 py-2", !isLast && "border-b")}>
+                        <span
+                          className="h-2 w-2 rounded-full shrink-0"
+                          style={{ backgroundColor: state.color }}
+                        />
+                        <span className="text-xs truncate">{state.name || "Unnamed"}</span>
+                      </div>
+                      <div className={cn("flex items-center px-2 py-2", !isLast && "border-b")}>
+                        <Select
+                          value={assignedAgentId ?? "none"}
+                          onValueChange={(v) => handleChange(state.name, v)}
+                          disabled={!state.name}
+                        >
+                          <SelectTrigger className="h-6 text-xs">
+                            <SelectValue placeholder="Not assigned" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Not assigned</SelectItem>
+                            {agents
+                              .filter((a) => !a.settings?.isAssistant)
+                              .map((a) => (
+                                <SelectItem key={a.id} value={a.id}>
+                                  <span className="flex items-center gap-1.5">
+                                    <span
+                                      className="inline-block h-2 w-2 rounded-full"
+                                      style={{ backgroundColor: a.avatar.color }}
+                                    />
+                                    {a.name}
+                                  </span>
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className={cn("flex items-center px-2 py-2", !isLast && "border-b")}>
+                        {assignedAgent ? (
+                          <ModelBadge model={assignedAgent.model} />
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
 
 // ── Component ───────────────────────────────────────────────────
 
@@ -184,6 +336,9 @@ export function WorkflowBuilder({
               <p className="text-xs text-muted-foreground">No states yet. Click "Add State" to begin.</p>
             </div>
           )}
+
+          {/* Agent Assignments */}
+          <AgentAssignmentsSection states={states} />
 
           {/* Validation */}
           <div className="pt-2">

@@ -124,7 +124,7 @@ async function main() {
     },
     {
       id: PS_RT, name: "Router",
-      description: "Routes work items between workflow states based on execution outcomes.",
+      description: "Automatically moves work items to the next step when an agent finishes.",
       avatar: { color: "#6366f1", icon: "arrow-right-left" },
       systemPrompt: "You are a Router. Route work items to the correct next state.",
       model: "haiku", allowedTools: [],

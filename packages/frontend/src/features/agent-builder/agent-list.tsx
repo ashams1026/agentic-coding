@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ClipboardList,
   Code,
@@ -8,6 +8,7 @@ import {
   Globe,
   FolderOpen,
   Plus,
+  Search,
   TestTube,
   Trash2,
   Bot,
@@ -238,7 +239,18 @@ export function AgentList({ selectedId, onSelect }: AgentListProps) {
   const createMutation = useCreateAgent();
   const deleteMutation = useDeleteAgent();
   const [deleteTarget, setDeleteTarget] = useState<Agent | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const { project, isGlobal } = useSelectedProject();
+
+  const filteredAgents = useMemo(() => {
+    if (!agents || !searchQuery.trim()) return agents;
+    const q = searchQuery.toLowerCase();
+    return agents.filter(
+      (a) =>
+        a.name.toLowerCase().includes(q) ||
+        (a.description ?? "").toLowerCase().includes(q),
+    );
+  }, [agents, searchQuery]);
 
   const handleCreate = () => {
     createMutation.mutate(
@@ -322,8 +334,19 @@ export function AgentList({ selectedId, onSelect }: AgentListProps) {
 
   return (
     <>
+      {/* Search filter */}
+      <div className="mb-4 relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search agents..."
+          className="w-full rounded-lg border border-input bg-transparent pl-9 pr-3 py-2 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring"
+        />
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {agents.map((p) => (
+        {filteredAgents?.map((p) => (
           <AgentCard
             key={p.id as string}
             agent={p}

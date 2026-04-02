@@ -5,7 +5,6 @@ import {
   Palette,
   Server,
   Database,
-  GitBranch,
   Settings2,
   Shield,
   Bell,
@@ -18,7 +17,6 @@ import { ProjectsSection } from "./projects-section";
 import { ApiKeysSection } from "./api-keys-section";
 import { CostsSection } from "./costs-section";
 import { AppearanceSection, ServiceSection, DataSection } from "./appearance-section";
-import { WorkflowConfigSection } from "./workflow-config-section";
 import { SecuritySection } from "./security-section";
 import { NotificationsSection } from "./notifications-section";
 import { IntegrationsSection } from "./integrations-section";
@@ -33,7 +31,6 @@ interface SectionDef {
 
 const SECTIONS: SectionDef[] = [
   { id: "projects", label: "Projects", icon: FolderOpen },
-  { id: "workflow", label: "Workflow", icon: GitBranch },
   { id: "agent-config", label: "Agent Configuration", icon: Settings2 },
   { id: "security", label: "Security", icon: Shield },
   { id: "notifications", label: "Notifications", icon: Bell },
@@ -106,8 +103,6 @@ export function SettingsLayout() {
           {/* Section content */}
           {activeSection === "projects" ? (
             <ProjectsSection />
-          ) : activeSection === "workflow" ? (
-            <WorkflowConfigSection />
           ) : activeSection === "security" ? (
             <SecuritySection />
           ) : activeSection === "agent-config" ? (

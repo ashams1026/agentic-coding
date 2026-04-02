@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-04-02 13:55 PDT — UXO.26: Move workflow settings into builder
+
+**Done:** Added collapsible AgentAssignmentsSection to workflow builder left panel (between state cards and Validation). Shows intermediate states with agent dropdowns and model badges. Uses useAgentAssignments/useUpdateAgentAssignment for persistence. Removed Workflow tab from settings-layout.tsx (GitBranch import, SECTIONS entry, WorkflowConfigSection import/rendering). Deleted dead workflow-config-section.tsx.
+**Files:** `packages/frontend/src/features/workflow-builder/workflow-builder.tsx`, `packages/frontend/src/features/settings/settings-layout.tsx`, `packages/frontend/src/features/settings/workflow-config-section.tsx` (deleted)
+
+---
+
+## 2026-04-02 13:55 PDT — DES.8, DES.9, DES.11: Design polish batch
+
+**Done:** (1) DES.8: Removed `uppercase tracking-wide` from Automations page section headers — now Title Case. (2) DES.9: Added search input with magnifying glass icon above agent card grid, filters by name/description via useMemo. (3) DES.11: Rewrote Router agent description from "Routes work items between workflow states based on execution outcomes" to "Automatically moves work items to the next step when an agent finishes" across seed.ts, seed-demo.ts, default-agents.ts.
+**Files:** `packages/frontend/src/pages/workflows.tsx`, `packages/frontend/src/features/agent-builder/agent-list.tsx`, `packages/backend/src/db/seed.ts`, `packages/backend/src/db/seed-demo.ts`, `packages/backend/src/db/default-agents.ts`
+
 ## 2026-04-02 13:42 PDT — UXO.27: Move Schedules to Automations page
 
 **Done:** Extended ScheduleCard with edit, delete, and run-now action buttons. Renamed NewScheduleDialog → ScheduleDialog with `editingSchedule` prop for edit mode (pre-fills form, uses PATCH). Added `updateScheduleApi`, `deleteScheduleApi`, `runNowApi` helpers. Removed Scheduling tab from settings-layout.tsx (Clock import, SECTIONS entry, SchedulingSection import/rendering). Deleted dead `scheduling-section.tsx`. Reviewer caught missing `res.ok` check in deleteScheduleApi — fixed.

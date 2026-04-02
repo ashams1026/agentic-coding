@@ -53,7 +53,7 @@ const BUILT_IN_AGENTS: DefaultAgent[] = [
   },
   {
     name: "Router",
-    description: "Routes work items between workflow states based on execution outcomes.",
+    description: "Automatically moves work items to the next step when an agent finishes.",
     avatar: { color: "#6366f1", icon: "route" },
     model: "haiku",
     allowedTools: [],

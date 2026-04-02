@@ -407,7 +407,7 @@ Only rewind when the implementation is fundamentally wrong and the Engineer shou
     {
       id: AGENT_ROUTER,
       name: "Router",
-      description: "Routes work items between workflow states based on execution outcomes.",
+      description: "Automatically moves work items to the next step when an agent finishes.",
       avatar: { color: "#6366f1", icon: "route" },
       systemPrompt: `You are the Router agent for the AgentOps workflow system.
 You run after every agent completes work on a work item. Your ONLY job is to decide

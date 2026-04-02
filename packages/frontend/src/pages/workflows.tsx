@@ -745,7 +745,7 @@ function AutomationsOverview() {
             <section>
               <div className="flex items-center gap-2 mb-4">
                 <GitBranch className="h-4 w-4 text-muted-foreground" />
-                <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                <h2 className="text-sm font-semibold text-muted-foreground">
                   Automations
                 </h2>
                 <span className="ml-auto text-xs text-muted-foreground">{workflows.length}</span>
@@ -782,7 +782,7 @@ function AutomationsOverview() {
             <section>
               <div className="flex items-center gap-2 mb-4">
                 <Clock className="h-4 w-4 text-muted-foreground" />
-                <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                <h2 className="text-sm font-semibold text-muted-foreground">
                   Schedules
                 </h2>
                 <span className="ml-auto text-xs text-muted-foreground">{schedules.length}</span>
