@@ -76,8 +76,8 @@ React single-page application served by Vite in development.
 | `pages/` | Route-level page components |
 | `components/` | Shared UI components (sidebar, status bar, shadcn/ui primitives) |
 | `hooks/` | TanStack Query hooks wrapping the API layer |
-| `stores/` | Zustand stores for UI state (theme, density, sidebar, selected project) |
-| `layouts/` | Root layout with sidebar, mobile nav, status bar |
+| `stores/` | Zustand stores for UI state (theme, density, sidebar) |
+| `layouts/` | `RootLayout` (sidebar, mobile nav, status bar) + `ProjectLayout` (project context with loading/404) |
 
 **Key libraries:**
 - **React 19** — UI framework

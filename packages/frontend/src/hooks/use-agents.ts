@@ -8,13 +8,13 @@ import {
   deleteAgent,
 } from "@/api";
 import { queryKeys } from "./query-keys";
-import { useSelectedProject } from "./use-selected-project";
+import { useProjectFromUrl } from "./use-project-from-url";
 
 export function useAgents() {
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   return useQuery({
-    queryKey: queryKeys.agents(projectId),
-    queryFn: () => getAgents(projectId),
+    queryKey: queryKeys.agents(projectId ?? undefined),
+    queryFn: () => getAgents(projectId ?? undefined),
   });
 }
 

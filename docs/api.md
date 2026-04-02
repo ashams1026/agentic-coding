@@ -456,7 +456,7 @@ type AgentScope =
   | { type: "global"; workspacePath: string };
 ```
 
-Used by the frontend to determine whether a session or execution is project-scoped or global. The sidebar "All Projects" selector sets scope to `{ type: "global" }`.
+Used by the frontend to determine whether a session or execution is project-scoped or global. In the sidebar project tree, navigating to the Global Workspace (`pj-global`) sets scope to `{ type: "global" }`.
 
 ### Nullable `projectId` on Executions and Chat Sessions
 
@@ -500,24 +500,25 @@ CREATE TABLE global_memories (
 
 ### Scope-Awareness Rules
 
-**Dashboard:**
-- Project scope: shows stats for a single project (work items, executions, costs filtered by `projectId`).
-- Global scope ("All Projects"): shows aggregated stats across all projects. Displays a "Projects Overview" table listing each project.
+Project context is determined by the URL (`/p/:projectId/...`). The sidebar project tree navigates between projects.
 
-**Agent Monitor:**
-- Project scope: shows executions filtered to the selected project's work items.
-- Global scope: shows all executions across all projects. Scope badges indicate origin.
+**Dashboard** (`/`):
+- Top-level route, not project-scoped. Shows aggregated stats across all projects.
+
+**Agent Monitor** (`/p/:projectId/monitor`):
+- Shows executions filtered to the project in the URL.
+- Global Workspace (`/p/pj-global/monitor`): shows all executions across all projects. Scope badges indicate origin.
 - "New Run" button opens a dialog with Agent, Scope (project or global), Prompt, and Budget fields.
 
-**Work Items:**
-- Disabled in global scope (`aria-disabled` on the sidebar link). Work items always belong to a single project.
+**Work Items** (`/p/:projectId/items`):
+- Always project-scoped. Work items belong to a single project.
 
-**Pico Chat:**
-- Follows sidebar scope by default. A scope dropdown allows switching.
+**Pico Chat** (`/p/:projectId/chat`):
+- Scoped to the project in the URL. A scope dropdown allows switching.
 - Global sessions have no project context — Pico operates across all projects.
 
-**Activity Feed:**
-- Global scope: aggregates events from all projects.
+**Activity Feed** (`/p/:projectId/activity`):
+- Shows events for the project in the URL. Global Workspace shows aggregated events from all projects.
 
 ---
 

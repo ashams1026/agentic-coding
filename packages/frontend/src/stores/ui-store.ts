@@ -7,14 +7,12 @@ export type Density = "comfortable" | "compact";
 interface UIState {
   sidebarCollapsed: boolean;
   mobileSidebarOpen: boolean;
-  selectedProjectId: string | null;
   theme: Theme;
   density: Density;
 
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   setMobileSidebarOpen: (open: boolean) => void;
-  setSelectedProjectId: (id: string | null) => void;
   setTheme: (theme: Theme) => void;
   setDensity: (density: Density) => void;
 }
@@ -24,14 +22,12 @@ export const useUIStore = create<UIState>()(
     (set) => ({
       sidebarCollapsed: false,
       mobileSidebarOpen: false,
-      selectedProjectId: null,
       theme: "system",
       density: "comfortable",
 
       toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
       setMobileSidebarOpen: (open) => set({ mobileSidebarOpen: open }),
-      setSelectedProjectId: (id) => set({ selectedProjectId: id }),
       setTheme: (theme) => set({ theme }),
       setDensity: (density) => set({ density }),
     }),
@@ -39,7 +35,6 @@ export const useUIStore = create<UIState>()(
       name: "agentops-ui",
       partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
-        selectedProjectId: state.selectedProjectId,
         theme: state.theme,
         density: state.density,
       }),

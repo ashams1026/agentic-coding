@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 15:02 PDT — NAV.23, NAV.25, NAV.TEST.1, NAV.DOC.1: Cleanup, dead code, test plan, docs
+
+**Done:** (1) NAV.23: Removed scope badges from agent-list, active-agent-sidebar, chat-panel, recently-deleted. (2) NAV.25: Deleted 5 dead files (4 dashboard sub-components + use-selected-project.ts), migrated 5 files from useSelectedProject to useProjectFromUrl (use-agents, recently-deleted, security-section, costs-section, command-palette), removed selectedProjectId from ui-store. (3) NAV.TEST.1: 35-case e2e test plan across 8 phases. (4) NAV.DOC.1: Updated frontend.md (routes, sidebar, project context, settings split), architecture.md, api.md, data-model.md, roadmap.md.
+**Files:** 15 frontend files modified/deleted, `tests/e2e/plans/project-nav.md` (new), 5 doc files updated
+
+---
+
 ## 2026-04-02 14:56 PDT — NAV.17, NAV.21, NAV.22: Project settings, command palette, status bar
 
 **Done:** (1) NAV.17: Created ProjectSettingsPage at `/p/:projectId/settings` with 4 sections (Security, Costs & Limits, Notifications, Integrations). Shows project name in sidebar header. Router updated. (2) NAV.21: Command palette updated with project-scoped commands — "[Project] > [Page]" for all 8 pages per project. Search matches project names. Grouped by Navigation + per-project. (3) NAV.22: Status bar shows current project name on project pages, "Dashboard"/"App Settings" on top-level pages. Removed old automations Zap indicator. Preserved WS/agent/cost indicators.

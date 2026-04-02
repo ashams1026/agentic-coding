@@ -98,8 +98,8 @@ Agent Prompts P1 ──→ (standalone, no hard dependencies)
 - `AgentScope` discriminated union type in shared package
 
 **Key decisions from proposals:**
-- URLs stay flat (no `/global/agents` restructure) — correct for current stage
-- "All Projects" in the project selector is the navigation approach (not a sidebar restructure)
+- URLs now use project-scoped structure: `/p/:projectId/:page` (e.g., `/p/pj-global/items`). Legacy flat routes redirect.
+- Sidebar uses a project tree model (collapsible project sections with child links), replacing the old flat link list + project dropdown
 - Global agents use `~/.agentops/workspace/runs/<execution>/` for artifacts — new filesystem concern outside project sandbox
 - `set_project_context` MCP tool for mid-conversation context switching is Phase 2 — don't build yet
 - Full-page `/chat` route is Phase 2 (covered by Agent Chat sprint)

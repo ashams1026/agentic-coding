@@ -8,7 +8,7 @@ The AgentOps frontend is a React single-page application built with Vite, Tailwi
 packages/frontend/src/
   main.tsx              # Entry point — mounts React app
   app.tsx               # App root — providers (QueryClient, RouterProvider, TooltipProvider)
-  router.tsx            # Route definitions (6 routes)
+  router.tsx            # Route definitions — project-scoped routes under /p/:projectId
   index.css             # Tailwind config, theme tokens, typography scale, dark mode, density overrides
   api/                  # API layer
     index.ts            # Re-exports all API functions
@@ -29,13 +29,17 @@ packages/frontend/src/
     demo/               # Demo mode controls
   pages/                # Route-level page components
     dashboard.tsx       # Dashboard page (/ route)
-    work-items.tsx      # Work items page (/items) — view switcher + detail panel
-    agent-monitor.tsx   # Agent monitor page (/agents)
-    activity-feed.tsx   # Activity feed page (/activity)
-    agent-manager.tsx   # Agent manager page (/agents)
-    settings.tsx        # Settings page (/settings)
+    work-items.tsx      # Work items page (/p/:projectId/items)
+    agent-monitor.tsx   # Agent monitor page (/p/:projectId/monitor)
+    activity-feed.tsx   # Activity feed page (/p/:projectId/activity)
+    agent-builder.tsx   # Agent builder page (/p/:projectId/agents)
+    app-settings.tsx    # App settings page (/app-settings) — API keys, appearance, service, data
+    project-settings.tsx # Project settings page (/p/:projectId/settings) — security, costs, notifications, integrations
+    workflows.tsx       # Workflows page (/p/:projectId/automations)
+    analytics.tsx       # Analytics page (/p/:projectId/analytics)
+    chat.tsx            # Chat page (/p/:projectId/chat)
   components/           # Shared UI components
-    sidebar.tsx         # App sidebar with navigation and project switcher
+    sidebar.tsx         # App sidebar with project tree navigation
     status-bar.tsx      # Bottom status bar (active agents, cost, WebSocket status)
     ui/                 # shadcn/ui primitives (18 components)
   hooks/                # TanStack Query hooks wrapping the API layer
@@ -49,32 +53,109 @@ packages/frontend/src/
     use-executions.ts   # Execution hooks
     use-proposals.ts    # Proposal hooks
     use-dashboard.ts    # Dashboard aggregate hooks
+    use-project-from-url.ts # Project context from URL (/p/:projectId) — replaces useSelectedProject for page components
+    use-selected-project.ts # Legacy: selected project from Zustand store (used by non-routed components)
     use-theme.ts        # Theme + density sync to DOM
     use-ws-sync.ts      # WebSocket → query cache invalidation
     use-demo.ts         # Demo mode hook
   stores/               # Zustand stores for UI state
-    ui-store.ts         # Sidebar, theme, apiMode, density, selected project
+    ui-store.ts         # Sidebar, theme, apiMode, density
     work-items-store.ts # View mode, filters, sort, selected item, panel width
     toast-store.ts      # Toast notification queue
     activity-store.ts   # Activity feed filter state
   layouts/
     root-layout.tsx     # Root layout with sidebar, mobile nav, status bar
+    project-layout.tsx  # Project context wrapper (/p/:projectId) — loading spinner, 404 state
   lib/
     utils.ts            # cn() utility for class merging
 ```
 
 ## Routes
 
+Routes use a project-scoped URL structure: `/p/:projectId/:page`. Top-level routes operate outside project context.
+
+### Top-level routes (no project context)
+
 | Path | Page | Description |
 |---|---|---|
 | `/` | Dashboard | Stats cards, cost chart, active agents, recent activity |
-| `/items` | Work Items | Board/list/flow views with detail panel |
-| `/agents` | Agent Monitor | Live terminal output, split view, execution history |
-| `/activity` | Activity Feed | Chronological event stream |
-| `/agents` | Agent Manager | Agent cards, editor, tool config |
-| `/settings` | Settings | API keys, costs, workflow, appearance, data |
+| `/app-settings` | App Settings | API keys, appearance, service, data management |
 
-All routes are wrapped in `RootLayout` which provides the sidebar, mobile navigation, and status bar.
+### Project-scoped routes (`/p/:projectId/...`)
+
+| Path | Page | Description |
+|---|---|---|
+| `/p/:projectId/items` | Work Items | List view with detail panel |
+| `/p/:projectId/automations` | Workflows | Workflow builder and management |
+| `/p/:projectId/agents` | Agent Builder | Agent cards, editor, tool config |
+| `/p/:projectId/monitor` | Agent Monitor | Live terminal output, split view, execution history |
+| `/p/:projectId/activity` | Activity Feed | Chronological event stream |
+| `/p/:projectId/analytics` | Analytics | Token usage, cost breakdowns |
+| `/p/:projectId/chat` | Chat | Pico chat interface |
+| `/p/:projectId/settings` | Project Settings | Security, costs, notifications, integrations |
+
+### Legacy redirects
+
+Old flat routes redirect to their project-scoped equivalents under `/p/pj-global/...`:
+
+| Old Path | Redirects To |
+|---|---|
+| `/items` | `/p/pj-global/items` |
+| `/agents` | `/p/pj-global/monitor` |
+| `/activity` | `/p/pj-global/activity` |
+| `/settings` | `/app-settings` |
+
+### Layout hierarchy
+
+All routes are wrapped in `RootLayout` which provides the sidebar, mobile navigation, and status bar. Project-scoped routes are additionally wrapped in `ProjectLayout` which reads the `:projectId` URL parameter and provides loading/404 states.
+
+```
+RootLayout (sidebar, status bar, command palette, toasts, Pico)
+  ├── DashboardPage                     (/)
+  ├── AppSettingsPage                   (/app-settings)
+  └── ProjectLayout                     (/p/:projectId)
+       ├── WorkItemsPage               (/p/:projectId/items)
+       ├── WorkflowsPage               (/p/:projectId/automations)
+       ├── AgentBuilderPage             (/p/:projectId/agents)
+       ├── AgentMonitorPage             (/p/:projectId/monitor)
+       ├── ActivityFeedPage             (/p/:projectId/activity)
+       ├── AnalyticsPage                (/p/:projectId/analytics)
+       ├── ChatPage                     (/p/:projectId/chat)
+       └── ProjectSettingsPage          (/p/:projectId/settings)
+```
+
+## Sidebar Navigation
+
+The sidebar uses a **project tree** model instead of a flat link list. It has three sections:
+
+1. **Top-level links** — Dashboard (`/`) and App Settings (`/app-settings`), always visible.
+2. **Projects section** — Each project is a collapsible tree node. Expanding a project reveals its child page links (Work Items, Automations, Agents, Monitor, Activity, Analytics, Chat, Project Settings). The Global Workspace (`pj-global`) is always listed first, followed by other projects alphabetically.
+3. **Footer** — Theme toggle, notifications bell, sidebar collapse/expand.
+
+The sidebar auto-expands the project matching the current URL. Expand/collapse state is persisted to localStorage. A "New Project" button and an "Expand/Collapse All" toggle are available in the projects section header.
+
+In collapsed mode, the sidebar shows icon-only tooltips for Dashboard and App Settings, plus badge indicators for pending proposals, active agents, and unread activity.
+
+## Project Context
+
+Project-scoped pages get their project context from the URL, not from a global store.
+
+**`useProjectFromUrl()`** — The primary hook for project context. Reads `:projectId` from the URL (`/p/:projectId/...`) and fetches the project. Returns `{ projectId, project, isGlobal, isLoading }`. When on a non-project page (Dashboard, App Settings), returns `null` values.
+
+**`useSelectedProject()`** — Legacy hook that reads `selectedProjectId` from the Zustand store. Still used by some non-routed components (e.g., status bar, dashboard widgets). Defaults to the global project (`pj-global`) when nothing is selected.
+
+**`ProjectLayout`** — Route wrapper at `/p/:projectId`. Renders a loading spinner while the project is being fetched, and a 404 state if the project ID doesn't exist. On success, renders child routes via `<Outlet />`.
+
+### Settings Split
+
+Settings are split into two separate pages:
+
+| Page | Route | Sections |
+|---|---|---|
+| **App Settings** | `/app-settings` | API Keys & Executor Mode, Appearance, Service, Data Management |
+| **Project Settings** | `/p/:projectId/settings` | Security, Costs & Limits, Notifications, Integrations |
+
+App Settings controls global application configuration. Project Settings controls per-project configuration and requires a project context.
 
 ## Feature Directory Pattern
 
@@ -106,7 +187,7 @@ This pattern keeps imports short and features self-contained. Pages are thin wra
 
 ### Work Items Page
 
-The work items page (`/items`) shows a single list view:
+The work items page (`/p/:projectId/items`) shows a single list view:
 
 **List View** — Tabular layout with sortable columns (title, state, priority, agent, updated). Supports inline state transitions, search filtering, agent/label filtering, and click-to-select for the detail panel.
 
@@ -129,7 +210,7 @@ The panel width is persisted in the work-items store.
 
 ### Agent Monitor — Streaming & Observability
 
-The agent monitor (`/agents`) provides real-time visibility into agent executions via several streaming and observability features:
+The agent monitor (`/p/:projectId/monitor`) provides real-time visibility into agent executions via several streaming and observability features:
 
 **Live Token Streaming** — When `includePartialMessages` is enabled, the terminal renderer receives individual tokens via `agent_output_chunk` WebSocket events. Small text chunks (<50 chars) are batched using `requestAnimationFrame` and appended to the current message bubble (not creating new bubbles per token). A blinking emerald cursor (`animate-pulse`) appears during active streaming and disappears after 500ms of inactivity.
 
@@ -214,12 +295,11 @@ Client-only UI state is managed by Zustand stores, persisted to localStorage:
 |---|---|---|---|
 | `sidebarCollapsed` | `boolean` | `false` | Sidebar collapsed state |
 | `mobileSidebarOpen` | `boolean` | `false` | Mobile sidebar drawer state |
-| `selectedProjectId` | `string \| null` | `null` | Currently selected project |
+| `selectedProjectId` | `string \| null` | `null` | Legacy — used by non-routed components. Page components use `useProjectFromUrl()` instead. |
 | `theme` | `"light" \| "dark" \| "system"` | `"system"` | Color theme |
-| `apiMode` | `"mock" \| "api"` | `"mock"` | Data source (mock or real backend) |
 | `density` | `"comfortable" \| "compact"` | `"comfortable"` | UI density |
 
-Persisted fields: `sidebarCollapsed`, `selectedProjectId`, `theme`, `apiMode`, `density`.
+Persisted fields: `sidebarCollapsed`, `selectedProjectId`, `theme`, `density`.
 
 **`work-items-store.ts`:** Search query, sort direction, filter agents, filter labels, selected item ID, detail panel width.
 
@@ -326,11 +406,14 @@ Two density modes controlled by `data-density` attribute on `<html>`:
 
 | File | Purpose |
 |---|---|
-| `packages/frontend/src/router.tsx` | Route definitions (6 routes) |
-| `packages/frontend/src/api/index.ts` | Unified API layer with mock/real delegation |
-| `packages/frontend/src/mocks/fixtures.ts` | Seed data for mock mode |
-| `packages/frontend/src/mocks/api.ts` | In-memory CRUD mock implementations |
-| `packages/frontend/src/stores/ui-store.ts` | UI state (theme, apiMode, density, sidebar) |
+| `packages/frontend/src/router.tsx` | Route definitions — top-level + project-scoped (`/p/:projectId/...`) + legacy redirects |
+| `packages/frontend/src/layouts/root-layout.tsx` | Root layout — sidebar, mobile nav, status bar, command palette, toasts, Pico |
+| `packages/frontend/src/layouts/project-layout.tsx` | Project context wrapper — reads `:projectId` from URL, shows loading/404 |
+| `packages/frontend/src/components/sidebar.tsx` | Sidebar with project tree — collapsible project sections with child page links |
+| `packages/frontend/src/hooks/use-project-from-url.ts` | `useProjectFromUrl()` — reads projectId from URL, returns project context |
+| `packages/frontend/src/hooks/use-selected-project.ts` | `useSelectedProject()` — legacy Zustand-based project selection |
+| `packages/frontend/src/api/index.ts` | Unified API layer (real HTTP) |
+| `packages/frontend/src/stores/ui-store.ts` | UI state (theme, density, sidebar) |
 | `packages/frontend/src/stores/work-items-store.ts` | Work items view state (filters, sort, selection) |
 | `packages/frontend/src/hooks/index.ts` | TanStack Query hook barrel export |
 | `packages/frontend/src/hooks/use-ws-sync.ts` | WebSocket → query cache invalidation |

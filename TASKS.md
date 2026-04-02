@@ -57,15 +57,15 @@
 
 - [x] **NAV.21** — Frontend: Update command palette with project-scoped commands. "[Project] > [Page]" for all 8 pages per project. Search matches project names. *(completed 2026-04-02 14:56 PDT)*
 - [x] **NAV.22** — Frontend: Update status bar. Shows current project name on project pages. Removed old automations indicator. Preserved WS/agent/cost indicators. *(completed 2026-04-02 14:56 PDT)*
-- [ ] **NAV.23** — Frontend: Remove all scope badges, scope indicators, and "Global" vs "All Projects" labeling. Sidebar tree makes scope self-evident. Clean up `scope-indicator.tsx`, scope badges on agent cards, work item badges, chat headers.
-- [ ] **NAV.24** — Frontend: Handle navigation edge cases. Old flat URLs (`/items`, `/agents`, `/automations`) redirect to `/p/pj-global/items` etc. 404 page for invalid projectId. Browser back/forward works.
-- [ ] **NAV.25** — Frontend: Delete dead code from old nav model. Remove: `useSelectedProject()` hook, `selectedProjectId` from UI store, project selector component, scope breadcrumb component. Verify no remaining imports.
+- [x] **NAV.23** — Frontend: Removed scope badges from agent cards, agent monitor sidebar, chat panel, recently-deleted. *(completed 2026-04-02 15:02 PDT)*
+- [x] **NAV.24** — N/A: Legacy redirects already in router (NAV.2), 404 in ProjectLayout (NAV.3), React Router handles back/forward. *(completed 2026-04-02 14:58 PDT)*
+- [x] **NAV.25** — Deleted 5 dead files (4 dashboard sub-components + use-selected-project.ts). Migrated 5 files to useProjectFromUrl. Removed selectedProjectId from UI store. *(completed 2026-04-02 15:02 PDT)*
 
 ### Testing & Documentation
 
-- [ ] **NAV.TEST.1** — Write e2e test plan: `tests/e2e/plans/project-nav.md`. Cover: sidebar tree, project expand/collapse, navigation to each project page, URL structure, old URL redirects, dashboard project cards, App Settings vs Project Settings, command palette.
+- [x] **NAV.TEST.1** — Write e2e test plan: `tests/e2e/plans/project-nav.md`. 35 test cases across 8 phases. *(completed 2026-04-02 15:02 PDT)* Cover: sidebar tree, project expand/collapse, navigation to each project page, URL structure, old URL redirects, dashboard project cards, App Settings vs Project Settings, command palette.
 - [ ] **NAV.TEST.2** — Execute project navigation e2e tests. Screenshot each case. File bugs as `FX.NAV.*`.
-- [ ] **NAV.DOC.1** — Update docs for navigation rewrite. New URL structure, sidebar tree, settings split, project context hook. Update `docs/architecture.md`, `docs/api.md`.
+- [x] **NAV.DOC.1** — Updated docs: frontend.md (routes, sidebar, project context, settings split), architecture.md, api.md, data-model.md, roadmap.md. *(completed 2026-04-02 15:02 PDT)* New URL structure, sidebar tree, settings split, project context hook. Update `docs/architecture.md`, `docs/api.md`.
 - [ ] **NAV.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
 
 ---

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { useProjects, useUpdateProject, useCostSummary, useSelectedProject } from "@/hooks";
+import { useProjects, useUpdateProject, useCostSummary, useProjectFromUrl } from "@/hooks";
 
 // ── Chart tooltip ──────────────────────────────────────────────────
 
@@ -35,7 +35,7 @@ function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
 // ── Cost cap section ───────────────────────────────────────────────
 
 function CostCapSection() {
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const { data: projectsList } = useProjects();
   const updateProject = useUpdateProject();
   const { data: costData } = useCostSummary(projectId ?? undefined);
@@ -192,7 +192,7 @@ function CostCapSection() {
 // ── Cost history chart ─────────────────────────────────────────────
 
 function CostHistoryChart() {
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const { data: costData, isLoading } = useCostSummary(projectId ?? undefined);
 
   const chartData = (costData?.dailySpend ?? []).map((entry) => {

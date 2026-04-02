@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
-import { RotateCcw, Trash2, Clock, Globe, FolderOpen } from "lucide-react";
+import { RotateCcw, Trash2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToastStore } from "@/stores/toast-store";
 import { getDeletedWorkItems, restoreWorkItem } from "@/api";
-import { useSelectedProject } from "@/hooks/use-selected-project";
+import { useProjectFromUrl } from "@/hooks/use-project-from-url";
 import type { WorkItem } from "@agentops/shared";
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
@@ -26,7 +26,7 @@ export function RecentlyDeleted() {
   const [loading, setLoading] = useState(true);
   const [restoringIds, setRestoringIds] = useState<Set<string>>(new Set());
   const addToast = useToastStore((s) => s.addToast);
-  const { projectId, project, isGlobal } = useSelectedProject();
+  const { projectId, isGlobal } = useProjectFromUrl();
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -61,22 +61,10 @@ export function RecentlyDeleted() {
     }
   };
 
-  const scopeLabel = isGlobal ? "Global Workspace" : (project?.name ?? "Current Project");
-
   return (
     <div className="space-y-3">
       <div>
-        <div className="flex items-center gap-2 mb-1">
-          <p className="text-sm font-medium">Recently Deleted</p>
-          <Badge variant="outline" className="text-xs px-1.5 py-0 gap-1 text-muted-foreground">
-            {isGlobal ? (
-              <Globe className="h-3 w-3" />
-            ) : (
-              <FolderOpen className="h-3 w-3" />
-            )}
-            {scopeLabel}
-          </Badge>
-        </div>
+        <p className="text-sm font-medium mb-1">Recently Deleted</p>
         <p className="text-xs text-muted-foreground mb-3">
           Soft-deleted work items are kept for 30 days before permanent removal.
         </p>

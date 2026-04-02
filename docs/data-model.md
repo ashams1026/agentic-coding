@@ -74,12 +74,12 @@ The top-level container. Each project maps to a directory on disk.
 | `id` | `ProjectId` (`pj-xxxx`) | Unique identifier |
 | `name` | `string` | Display name |
 | `path` | `string` | Absolute path to project directory (validated on create) |
-| `isGlobal` | `boolean` | If `true`, this is the "All Projects" sentinel project (`pj-global`) |
+| `isGlobal` | `boolean` | If `true`, this is the "Global Workspace" sentinel project (`pj-global`) |
 | `settings` | `ProjectSettings` | Typed settings: `maxConcurrent`, `monthCap`, `description`, `patterns`, `sandbox` (see `SandboxConfig`) |
 | `workflowId` | `string \| null` | Default workflow for this project |
 | `createdAt` | `string` (ISO 8601) | Creation timestamp |
 
-**Global project model:** The project with `id === "pj-global"` serves as the "All Projects" scope sentinel. All nullable `projectId` columns that previously accepted `null` now use `"pj-global"` as a stable foreign key. The helper `isGlobalProject(id)` checks `id === "pj-global"`. The `isGlobal` boolean flag identifies this sentinel project in the UI.
+**Global project model:** The project with `id === "pj-global"` serves as the "Global Workspace" scope sentinel (renamed from "All Projects"). All nullable `projectId` columns that previously accepted `null` now use `"pj-global"` as a stable foreign key. The helper `isGlobalProject(id)` checks `id === "pj-global"`. The `isGlobal` boolean flag identifies this sentinel project in the UI. In the sidebar, the Global Workspace appears first in the project tree with a globe icon.
 
 **Relationships:** has many WorkItems, AgentAssignments, ProjectMemories.
 

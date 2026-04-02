@@ -19,7 +19,7 @@ import {
   Cog,
 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useSelectedProject, useProjects } from "@/hooks";
+import { useProjectFromUrl, useProjects } from "@/hooks";
 import { useWorkItemsStore } from "@/stores/work-items-store";
 import { searchApi } from "@/api/client";
 import type { SearchResult } from "@/api/client";
@@ -119,7 +119,7 @@ export function CommandPalette() {
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const navigate = useNavigate();
 
-  const { projectId } = useSelectedProject();
+  const { projectId } = useProjectFromUrl();
   const { data: projects } = useProjects();
   const setSelectedItemId = useWorkItemsStore((s) => s.setSelectedItemId);
 

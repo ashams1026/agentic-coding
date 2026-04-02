@@ -29,7 +29,6 @@ import {
   Flame,
   Target,
   Lightbulb,
-  Globe,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -315,14 +314,13 @@ export function ChatPanel() {
 
         // Resolve the project name shown in the header based on scopeOverride
         const resolvedProjectName = (() => {
-          if (scopeOverride === "__global__") return "Global";
+          if (scopeOverride === "__global__") return null;
           if (scopeOverride && scopeOverride !== "__follow__") {
             return projectsList.find((p) => p.id === scopeOverride)?.name ?? scopeOverride;
           }
           // Follows sidebar
           return selectedProject?.name ?? null;
         })();
-        const isGlobalScope = scopeOverride === "__global__" || (!scopeOverride && selectedProject?.isGlobal);
 
         return (
           <div
@@ -347,7 +345,6 @@ export function ChatPanel() {
               </div>
               {resolvedProjectName && (
                 <div className="flex items-center gap-1 text-xs text-muted-foreground leading-tight mt-0.5">
-                  {isGlobalScope && <Globe className="h-2.5 w-2.5 shrink-0" />}
                   <span className="truncate">{resolvedProjectName}</span>
                 </div>
               )}
@@ -540,7 +537,7 @@ export function ChatPanel() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="__follow__">Follows sidebar</SelectItem>
-            <SelectItem value="__global__">Global</SelectItem>
+            <SelectItem value="__global__">All Projects</SelectItem>
             {projectsList.map((p) => (
               <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
             ))}
@@ -564,11 +561,9 @@ export function ChatPanel() {
             ))}
           </SelectContent>
         </Select>
-        {(scopeOverride || selectedAgentId) && (
+        {selectedAgentId && (
           <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 font-normal ml-auto">
-            {scopeOverride === "__global__" ? "Global" : scopeOverride ? "Project" : ""}
-            {scopeOverride && selectedAgentId ? " · " : ""}
-            {selectedAgentId ? agents.find((p) => p.id === selectedAgentId)?.name ?? "" : ""}
+            {agents.find((p) => p.id === selectedAgentId)?.name ?? ""}
           </Badge>
         )}
       </div>
