@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-04-02 13:40 PDT — Review: CWF.6 (approved)
+
+**Reviewed:** dispatch.ts + execution-manager.ts workflow integration.
+- dispatch: resolvePersonaForState() with workflowId from item, removed direct persona_assignments query ✓
+- execution-manager: selects workflowId + currentState, sets both on execution insert ✓
+- Unused imports cleaned up ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 13:35 PDT — CWF.6: Update dispatch.ts and execution-manager.ts for dynamic workflow
 
 **Done:** Updated `dispatch.ts`: replaced direct persona_assignments query with `resolvePersonaForState(projectId, workflowId, stateName)` from workflow-runtime. Now selects `workflowId` from work item alongside `projectId`. Removed `personaAssignments` schema import and unused `and` import. Updated `execution-manager.ts`: selects `workflowId` and `currentState` from work item. Sets `workflowId` and `workflowStateName` on execution records when inserting.
