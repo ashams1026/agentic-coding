@@ -194,7 +194,7 @@ export function ToolCallCard({ block, defaultExpanded }: ToolCallCardProps) {
   const inputEntries = Object.entries(block.input);
 
   return (
-    <div className="rounded-lg border border-border/60 bg-card/50 overflow-hidden">
+    <div id={block.toolCallId} className="rounded-lg border border-border/60 bg-card/50 overflow-hidden">
       {/* Header row — always visible */}
       <button
         type="button"

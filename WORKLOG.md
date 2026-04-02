@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 15:35 PDT — RICH.5, RICH.6, RICH.7, RICH.TEST.1: Specialized renderers + test plan
+
+**Done:** (1) RICH.5: TerminalBlock at `features/chat/terminal-block.tsx`. Dark bg-zinc-900, `$ command` header, ANSI-colored output via parseAnsi(), 300px max-height scroll, copy strips ANSI, exit code in green/red, >500 lines truncation with expand. (2) RICH.6: DiffBlock at `features/chat/diff-block.tsx`. File path header with basename, red/green line highlighting with dual-column line numbers, handles Edit (old→new diff), Write (all adds), copy produces unified diff via formatDiffText(), useMemo for diff computation. (3) RICH.7: FileTreeSummary at `features/chat/file-tree-summary.tsx`. Aggregates Edit/Write tool calls into directory tree, amber Pencil for edits, green Plus for writes, +N/-M line counts, collapses single-child directories, collapsed by default if >10 files, click-to-scroll via scrollIntoView. Also added `id={block.toolCallId}` to ToolCallCard root div for scroll targeting. (4) RICH.TEST.1: 29-case e2e test plan (47 steps, 30+ screenshots) covering all 5 rich message components + integration.
+**Files:** `features/chat/terminal-block.tsx` (new), `features/chat/diff-block.tsx` (new), `features/chat/file-tree-summary.tsx` (new), `features/chat/tool-call-card.tsx` (id attr), `tests/e2e/plans/rich-messages.md` (new)
+
+---
+
 ## 2026-04-02 15:23 PDT — RICH.3, RICH.4: ThinkingBlock + ToolCallCard
 
 **Done:** (1) RICH.3: Enhanced ThinkingBlock at `features/chat/thinking-block.tsx`. Purple left border accent, expand/collapse with Brain icon, muted text, self-contained markdown renderer, truncation at 2000 chars with "Show more" link. (2) RICH.4: Enhanced ToolCallCard at `features/chat/tool-call-card.tsx`. Tool-specific icons (9 mappings), rich description, status badge (blue pulse/green/red), collapsible input key-values, placeholder output section (monospace pre). Expand defaults: Edit/Write/Bash expanded, Read/Grep/Glob collapsed.

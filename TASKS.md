@@ -89,9 +89,9 @@
 
 ### Phase 3: Specialized Output Renderers (P1)
 
-- [ ] **RICH.5** — Frontend: TerminalBlock component at `features/chat/terminal-block.tsx`. Dark background (`bg-zinc-900`), monospace font, command header `$ {command}`, ANSI-colored output via `parseAnsi()`, max-height 300px with scroll, copy button (strips ANSI), exit code display in red if non-zero. Truncate >500 lines with "Show all N lines" expand. Props: `{ command: string; output: string; exitCode?: number }`.
-- [ ] **RICH.6** — Frontend: DiffBlock component at `features/chat/diff-block.tsx`. File path header with file icon, diff body with red/green line highlighting and line numbers, monospace font. Handle: Edit (old_string→new_string diff), Write (all-green new file), minimal before/after when no line context. Copy button copies raw diff. Props: `{ filePath: string; oldString?: string; newString: string; isNewFile?: boolean }`.
-- [ ] **RICH.7** — Frontend: FileTreeSummary component at `features/chat/file-tree-summary.tsx`. Aggregates Edit/Write tool calls in a message. Shows tree: directories as folders, files with ✏️ modified (amber) or ➕ added (green) indicators, line counts `(+N, -M)`. Only shows when 2+ files changed. Collapsed by default if >10 files. Clicking a file scrolls to its tool call card. Props: `{ toolCalls: ToolUseContentBlock[] }`.
+- [x] **RICH.5** — Frontend: TerminalBlock component at `features/chat/terminal-block.tsx`. Dark background (`bg-zinc-900`), monospace font, command header `$ {command}`, ANSI-colored output via `parseAnsi()`, max-height 300px with scroll, copy button (strips ANSI), exit code display in red if non-zero. Truncate >500 lines with "Show all N lines" expand. Props: `{ command: string; output: string; exitCode?: number }`. *(completed 2026-04-02 15:35 PDT)*
+- [x] **RICH.6** — Frontend: DiffBlock component at `features/chat/diff-block.tsx`. File path header with file icon, diff body with red/green line highlighting and line numbers, monospace font. Handle: Edit (old_string→new_string diff), Write (all-green new file), minimal before/after when no line context. Copy button copies raw diff. Props: `{ filePath: string; oldString?: string; newString: string; isNewFile?: boolean }`. *(completed 2026-04-02 15:35 PDT)*
+- [x] **RICH.7** — Frontend: FileTreeSummary component at `features/chat/file-tree-summary.tsx`. Aggregates Edit/Write tool calls in a message. Shows tree: directories as folders, files with ✏️ modified (amber) or ➕ added (green) indicators, line counts `(+N, -M)`. Only shows when 2+ files changed. Collapsed by default if >10 files. Clicking a file scrolls to its tool call card. Props: `{ toolCalls: ToolUseContentBlock[] }`. *(completed 2026-04-02 15:35 PDT)*
 
 ### Phase 4: Integration
 
@@ -100,7 +100,7 @@
 
 ### Testing & Documentation
 
-- [ ] **RICH.TEST.1** — Write e2e test plan: `tests/e2e/plans/rich-messages.md`. Cover: ThinkingBlock expand/collapse/truncation, ToolCallCard per tool type (Edit→diff, Bash→terminal, Grep→generic), TerminalBlock ANSI colors/scroll/copy, DiffBlock line highlighting, FileTreeSummary for multi-file changes, expand/collapse defaults.
+- [x] **RICH.TEST.1** — Write e2e test plan: `tests/e2e/plans/rich-messages.md`. Cover: ThinkingBlock expand/collapse/truncation, ToolCallCard per tool type (Edit→diff, Bash→terminal, Grep→generic), TerminalBlock ANSI colors/scroll/copy, DiffBlock line highlighting, FileTreeSummary for multi-file changes, expand/collapse defaults. *(completed 2026-04-02 15:35 PDT)*
 - [ ] **RICH.DOC.1** — Update `docs/frontend.md` with rich message component hierarchy, rendering dispatch logic, and new component descriptions.
 - [ ] **RICH.TEST.2** — Execute rich messages e2e tests. Screenshot each case. File bugs as `FX.RICH.*`.
 - [ ] **RICH.TEST.3** — Regression checkpoint: re-run ALL existing e2e test plans. File bugs as `FX.REG.*`.
