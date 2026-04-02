@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 17:55 PDT — CWF.TEST.2: Execute Custom Workflows e2e tests
+
+**Done:** Executed 36-step e2e test plan via chrome-devtools MCP. 33 pass, 1 fail, 2 skipped. All 10 parts tested: default workflow seeding, dynamic flow view columns, state filters, move-to transitions, workflow builder (create/add states/transitions/validation/save/publish), settings workflow selector. Filed bug FX.CWF.1 — PATCH API returns 206 when saving workflow with new states (temporary IDs). 16 screenshots saved.
+**Files:** `tests/e2e/results/custom-workflows/results.md`, `tests/e2e/results/custom-workflows/*.png` (16 screenshots)
+**Notes:** The save bug (FX.CWF.1) is in the backend PATCH handler — likely issue with bulk state/transition replacement when IDs are undefined/new. Publish endpoint works fine.
+
+---
+
 ## 2026-04-02 17:35 PDT — Review: CWF.TEST.1 (approved)
 
 **Reviewed:** Custom Workflows e2e test plan.
