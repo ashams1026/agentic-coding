@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-04-02 16:50 PDT — Review: CWF.17 (approved)
+
+**Reviewed:** workflow-builder.tsx, validation-panel.tsx, create-workflow-dialog.tsx.
+- Main split layout: left state list + right preview ✓
+- State CRUD: add/update/delete/reorder with sortOrder update ✓
+- Delete cascades: removes transitions pointing to deleted state ✓
+- Header: name input, draft/published badge, save/publish buttons ✓
+- Publish disabled when validation errors ✓
+- Validation: exactly 1 initial, >=1 terminal, unreachable, dead-ends, broken transitions ✓
+- Create dialog: controlled Dialog, name input, Enter key, Create/Cancel ✓
+- Conventions: named exports, cn(), dark mode, shadcn/ui, TypeScript ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 16:45 PDT — CWF.17: Workflow builder main layout + validation + create dialog
 
 **Done:** Created 3 files: `workflow-builder.tsx` — main split layout with left panel (state list with add/remove/reorder via move up/down, StateCard per state) and right panel (WorkflowPreview). Header has workflow name input, draft/published badge, Save + Publish buttons (publish disabled if validation errors). `validation-panel.tsx` — validates: exactly 1 initial state, >=1 terminal state, unreachable states, dead-ends, broken transitions. Green "valid" or red/amber error list. Exports `validateWorkflow` for reuse. `create-workflow-dialog.tsx` — Dialog with name input, Create/Cancel buttons, Enter key support.
