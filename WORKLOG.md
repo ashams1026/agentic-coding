@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-03 04:30 PDT — IWH.3: Frontend inbound triggers in integrations section
+
+**Done:** Added `InboundTriggersSection` component to `integrations-section.tsx`. Trigger list with name, persona name, project scope, template preview, active badge, delete button. Add form: name input, persona ID input, prompt template textarea with `{{payload.field}}` hint, secret display (show/hide/copy), trigger URL display + copy. Separated from outbound webhooks with border-top divider. Empty state for no triggers.
+**Files:** `packages/frontend/src/features/settings/integrations-section.tsx`
+**Notes:** Persona selector uses text input for persona ID (not dropdown) — acceptable for Phase 1. Full persona picker dropdown would need usePersonas() hook integration.
+
+---
+
 ## 2026-04-03 04:20 PDT — Review: IWH.2 (approved)
 
 **Reviewed:** Webhook triggers route with receiver + CRUD.

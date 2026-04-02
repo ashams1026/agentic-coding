@@ -27,7 +27,7 @@
 
 - [x] **IWH.1** — Backend: add `webhook_triggers` table to schema (id, name, secret, personaId, projectId, promptTemplate TEXT, isActive, createdAt). Add `triggerType` (TEXT nullable) and `triggerId` (TEXT nullable) columns to executions table. Generate migration. *(completed 2026-04-03 04:05 PDT)*
 - [x] **IWH.2** — Backend: create `packages/backend/src/routes/webhook-triggers.ts`. Generic receiver: `POST /api/webhooks/trigger/:triggerId` — validate HMAC, extract payload, resolve prompt template (Handlebars-style `{{payload.field}}`), spawn execution with trigger context. CRUD: `GET/POST/PATCH/DELETE /api/webhook-triggers`. Delivery log for inbound. Register in server.ts. *(completed 2026-04-03 04:20 PDT)*
-- [ ] **IWH.3** — Frontend: add inbound webhook triggers to `integrations-section.tsx`. Trigger list with add/edit/delete. Form: name, persona selector, project selector, prompt template editor with `{{payload.*}}` autocomplete hint, secret display + copy button.
+- [review] **IWH.3** — Frontend: add inbound webhook triggers to `integrations-section.tsx`. Trigger list with add/edit/delete. Form: name, persona selector, project selector, prompt template editor with `{{payload.*}}` autocomplete hint, secret display + copy button.
 
 ### Data Management Phase 1
 

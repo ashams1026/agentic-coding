@@ -261,6 +261,148 @@ export function IntegrationsSection() {
           <p className="text-xs text-muted-foreground text-center py-6">No webhooks configured. Click "Add Webhook" to get started.</p>
         )}
       </div>
+
+      {/* ── Inbound Triggers ──────────────────────────────────── */}
+      <InboundTriggersSection />
     </div>
+  );
+}
+
+// ── Inbound Triggers Section ────────────────────────────────────
+
+interface WebhookTrigger {
+  id: string;
+  name: string;
+  secret?: string;
+  personaId: string;
+  personaName: string;
+  projectId: string | null;
+  promptTemplate: string;
+  isActive: boolean;
+  createdAt: string;
+  triggerUrl?: string;
+}
+
+function InboundTriggersSection() {
+  const [triggers, setTriggers] = useState<WebhookTrigger[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [showAdd, setShowAdd] = useState(false);
+  const [name, setName] = useState("");
+  const [personaId, setPersonaId] = useState("");
+  const [promptTemplate, setPromptTemplate] = useState("");
+  const [newSecret, setNewSecret] = useState<string | null>(null);
+  const [showSecret, setShowSecret] = useState(false);
+  const addToast = useToastStore((s) => s.addToast);
+
+  if (!loaded) {
+    setLoaded(true);
+    fetch(`${BASE_URL}/api/webhook-triggers`).then((r) => r.json()).then((d) => setTriggers(d.data)).catch(() => {});
+  }
+
+  const handleCreate = async () => {
+    if (!name.trim() || !personaId) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/webhook-triggers`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), personaId, promptTemplate }),
+      });
+      const { data } = await res.json();
+      setNewSecret(data.secret ?? null);
+      setTriggers((prev) => [data, ...prev]);
+      setName("");
+      setPersonaId("");
+      setPromptTemplate("");
+      addToast({ type: "success", title: "Trigger created", description: "Copy the secret and trigger URL." });
+    } catch {
+      addToast({ type: "error", title: "Failed to create trigger" });
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await fetch(`${BASE_URL}/api/webhook-triggers/${id}`, { method: "DELETE" });
+      setTriggers((prev) => prev.filter((t) => t.id !== id));
+    } catch {
+      addToast({ type: "error", title: "Failed to delete trigger" });
+    }
+  };
+
+  return (
+    <>
+      <div className="pt-4 border-t">
+        <h3 className="text-sm font-medium mb-1">Inbound Triggers</h3>
+        <p className="text-xs text-muted-foreground mb-4">
+          Receive external webhook calls to trigger agent executions. Use <code className="text-[10px] bg-muted px-1 rounded">{"{{payload.field}}"}</code> in templates.
+        </p>
+      </div>
+
+      {showAdd ? (
+        <div className="rounded-lg border p-4 space-y-3">
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Trigger name (e.g. CI Deploy)" className="h-8 text-xs" />
+          <Input value={personaId} onChange={(e) => setPersonaId(e.target.value)} placeholder="Persona ID (e.g. ps-xxx)" className="h-8 text-xs font-mono" />
+          <textarea
+            value={promptTemplate}
+            onChange={(e) => setPromptTemplate(e.target.value)}
+            placeholder="Prompt template — use {{payload.field}} for dynamic values"
+            className="w-full h-20 rounded-md border bg-background px-3 py-2 text-xs font-mono resize-none focus:outline-none focus:ring-1 focus:ring-ring"
+          />
+          {newSecret && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 rounded-md bg-amber-500/10 px-3 py-2">
+                <span className="text-xs font-mono flex-1 truncate">{showSecret ? newSecret : "••••••••••••••••"}</span>
+                <button type="button" onClick={() => setShowSecret(!showSecret)} className="text-muted-foreground hover:text-foreground">
+                  {showSecret ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                </button>
+                <button type="button" onClick={() => { navigator.clipboard.writeText(newSecret); addToast({ type: "success", title: "Secret copied" }); }} className="text-muted-foreground hover:text-foreground">
+                  <Copy className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              {triggers[0]?.triggerUrl && (
+                <div className="flex items-center gap-2 rounded-md bg-muted px-3 py-2">
+                  <span className="text-[10px] text-muted-foreground">URL:</span>
+                  <span className="text-xs font-mono flex-1 truncate">{`POST ${BASE_URL}${triggers[0].triggerUrl}`}</span>
+                  <button type="button" onClick={() => { navigator.clipboard.writeText(`${BASE_URL}${triggers[0]?.triggerUrl}`); addToast({ type: "success", title: "URL copied" }); }} className="text-muted-foreground hover:text-foreground">
+                    <Copy className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+          <div className="flex gap-2">
+            <Button size="sm" className="h-7 text-xs" onClick={handleCreate} disabled={!name.trim() || !personaId}>Create</Button>
+            <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => { setShowAdd(false); setNewSecret(null); }}>Cancel</Button>
+          </div>
+        </div>
+      ) : (
+        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setShowAdd(true)}>
+          <Plus className="h-3.5 w-3.5" />
+          Add Trigger
+        </Button>
+      )}
+
+      <div className="space-y-2 mt-4">
+        {triggers.map((t) => (
+          <div key={t.id} className="flex items-center gap-3 rounded-lg border bg-card p-3">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium">{t.name}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{t.personaName} {t.projectId ? `• ${t.projectId}` : "• Global"}</p>
+              {t.promptTemplate && (
+                <p className="text-[10px] font-mono text-muted-foreground mt-1 truncate">{t.promptTemplate.slice(0, 80)}</p>
+              )}
+            </div>
+            <Badge variant={t.isActive ? "default" : "secondary"} className="text-[9px]">
+              {t.isActive ? "Active" : "Disabled"}
+            </Badge>
+            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDelete(t.id)}>
+              <Trash2 className="h-3.5 w-3.5 text-red-400" />
+            </Button>
+          </div>
+        ))}
+        {triggers.length === 0 && loaded && (
+          <p className="text-xs text-muted-foreground text-center py-4">No inbound triggers configured.</p>
+        )}
+      </div>
+    </>
   );
 }
