@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-04-02 16:45 PDT — CWF.17: Workflow builder main layout + validation + create dialog
+
+**Done:** Created 3 files: `workflow-builder.tsx` — main split layout with left panel (state list with add/remove/reorder via move up/down, StateCard per state) and right panel (WorkflowPreview). Header has workflow name input, draft/published badge, Save + Publish buttons (publish disabled if validation errors). `validation-panel.tsx` — validates: exactly 1 initial state, >=1 terminal state, unreachable states, dead-ends, broken transitions. Green "valid" or red/amber error list. Exports `validateWorkflow` for reuse. `create-workflow-dialog.tsx` — Dialog with name input, Create/Cancel buttons, Enter key support.
+**Files:** `packages/frontend/src/features/workflow-builder/workflow-builder.tsx`, `packages/frontend/src/features/workflow-builder/validation-panel.tsx`, `packages/frontend/src/features/workflow-builder/create-workflow-dialog.tsx`
+**Notes:** Components not routed yet — CWF.18 adds the route, sidebar link, and API wiring.
+
+---
+
 ## 2026-04-02 16:30 PDT — Review: CWF.16 (approved)
 
 **Reviewed:** workflow-preview.tsx visual graph component.
