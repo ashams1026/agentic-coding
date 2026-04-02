@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-04-03 07:40 PDT — Review: SCH.1 (approved)
+
+**Reviewed:** Schedules table + migration.
+- 11 columns with persona/project FKs ✓
+- Migration 0018 ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 07:35 PDT — SCH.1: Schedules table + migration
 
 **Done:** Added `schedules` table to schema.ts: id, name, personaId (FK NOT NULL), projectId (FK nullable), cronExpression, promptTemplate, isActive, lastRunAt, nextRunAt, consecutiveFailures, createdAt. Added Drizzle relations to persona + project. Generated migration `0018_pretty_slayback.sql` (CREATE TABLE with 2 FKs).
