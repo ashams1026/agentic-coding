@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 11:00 PDT — FX.DEAD.3: Wire proposal approve/reject into notification actions
+
+**Done:** Added `metadata` field (optional `Record<string, string>`) to `Notification` interface in `ws-events.ts`. Backend now passes `proposalId` in metadata when broadcasting `proposal_needs_approval` notifications (`proposals.ts` + `ws.ts`). Frontend Approve/Reject buttons now call `updateProposal(proposalId, { status })` via API client instead of navigating to `/items`. Added loading state with Loader2 spinner, toast on success/error, marks notification read on success.
+**Files:** `packages/shared/src/ws-events.ts`, `packages/backend/src/ws.ts`, `packages/backend/src/routes/proposals.ts`, `packages/frontend/src/features/notifications/notification-card.tsx`
+
+---
+
 ## 2026-04-03 10:50 PDT — Review: FX.DEAD.2 (approved)
 
 **Reviewed:** Removal of dead `execution_stuck` notification type.

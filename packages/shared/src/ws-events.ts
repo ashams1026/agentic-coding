@@ -31,6 +31,7 @@ export interface Notification {
   projectId?: ProjectId;
   workItemId?: WorkItemId;
   executionId?: ExecutionId;
+  metadata?: Record<string, string>;
   read: boolean;
   createdAt: string; // ISO 8601
 }

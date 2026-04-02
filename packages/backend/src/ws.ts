@@ -31,6 +31,7 @@ export function broadcastNotification(opts: {
   projectId?: string;
   workItemId?: string;
   executionId?: string;
+  metadata?: Record<string, string>;
 }): void {
   const notification: Notification = {
     id: `ntf-${crypto.randomBytes(6).toString("hex")}`,
@@ -41,6 +42,7 @@ export function broadcastNotification(opts: {
     projectId: opts.projectId as ProjectId | undefined,
     workItemId: opts.workItemId as WorkItemId | undefined,
     executionId: opts.executionId as ExecutionId | undefined,
+    metadata: opts.metadata,
     read: false,
     createdAt: new Date().toISOString(),
   };

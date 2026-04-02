@@ -1,15 +1,19 @@
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
   Lightbulb,
   AlertCircle,
   AlertTriangle,
   CheckCircle,
+  Loader2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNotificationStore } from "@/stores/notification-store";
+import { useToastStore } from "@/stores/toast-store";
 import { cn } from "@/lib/utils";
-import type { Notification, NotificationEventType } from "@agentops/shared";
+import type { Notification, NotificationEventType, ProposalId } from "@agentops/shared";
+import { updateProposal } from "@/api/client";
 
 // ── Type-specific icon + color config ───────────────────────────
 
@@ -48,6 +52,8 @@ interface NotificationCardProps {
 export function NotificationCard({ notification: n }: NotificationCardProps) {
   const navigate = useNavigate();
   const { markRead, setDrawerOpen } = useNotificationStore();
+  const addToast = useToastStore((s) => s.addToast);
+  const [acting, setActing] = useState(false);
   const config = TYPE_CONFIG[n.type];
   const Icon = config.icon;
 
@@ -60,6 +66,25 @@ export function NotificationCard({ notification: n }: NotificationCardProps) {
     markRead(n.id);
     setDrawerOpen(false);
     navigate(path);
+  };
+
+  const handleProposalAction = async (e: React.MouseEvent, status: "approved" | "rejected") => {
+    e.stopPropagation();
+    const proposalId = n.metadata?.proposalId;
+    if (!proposalId) {
+      addToast({ type: "error", title: "Missing proposal ID" });
+      return;
+    }
+    setActing(true);
+    try {
+      await updateProposal(proposalId as ProposalId, { status });
+      markRead(n.id);
+      addToast({ type: "success", title: `Proposal ${status}` });
+    } catch {
+      addToast({ type: "error", title: `Failed to ${status === "approved" ? "approve" : "reject"} proposal` });
+    } finally {
+      setActing(false);
+    }
   };
 
   return (
@@ -102,17 +127,19 @@ export function NotificationCard({ notification: n }: NotificationCardProps) {
                 variant="outline"
                 size="sm"
                 className="h-5 px-2 text-[10px]"
-                onClick={(e) => handleAction(e, "/items")}
+                disabled={acting}
+                onClick={(e) => handleProposalAction(e, "approved")}
               >
-                Approve
+                {acting ? <Loader2 className="h-3 w-3 animate-spin" /> : "Approve"}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 className="h-5 px-2 text-[10px] text-red-400 hover:text-red-300"
-                onClick={(e) => handleAction(e, "/items")}
+                disabled={acting}
+                onClick={(e) => handleProposalAction(e, "rejected")}
               >
-                Reject
+                {acting ? <Loader2 className="h-3 w-3 animate-spin" /> : "Reject"}
               </Button>
             </>
           )}

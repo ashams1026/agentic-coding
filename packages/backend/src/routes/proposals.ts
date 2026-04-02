@@ -101,6 +101,7 @@ export async function proposalRoutes(app: FastifyInstance) {
         description: `Review request for work item ${body.workItemId}`,
         workItemId: body.workItemId,
         executionId: body.executionId,
+        metadata: { proposalId: id },
       });
     }
 
