@@ -440,7 +440,7 @@ export function ListView() {
 
   const runningItemIds = useMemo(() => {
     const ids = new Set<string>();
-    executions?.filter((e) => e.status === "running").forEach((e) => ids.add(e.workItemId));
+    executions?.filter((e) => e.status === "running").forEach((e) => { if (e.workItemId) ids.add(e.workItemId); });
     return ids;
   }, [executions]);
 

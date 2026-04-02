@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 22:42 PDT — FND.GA.2: Add AgentScope type and update entity types
+
+**Done:** Added `AgentScope` discriminated union type to `entities.ts`. Made `Execution.workItemId` nullable (`WorkItemId | null`) and `ChatSession.projectId` nullable (`ProjectId | null`). Fixed 4 downstream TypeScript errors: `active-agent-sidebar.tsx` and `agent-history.tsx` (show "Standalone" for null workItemId), `flow-view.tsx` (null-guard on map lookup), `list-view.tsx` (null-guard on Set.add). All packages build.
+**Files:** `packages/shared/src/entities.ts`, `packages/frontend/src/features/agent-monitor/active-agent-sidebar.tsx`, `packages/frontend/src/features/agent-monitor/agent-history.tsx`, `packages/frontend/src/features/work-items/flow-view.tsx`, `packages/frontend/src/features/work-items/list-view.tsx`
+
+---
+
 ## 2026-04-01 22:36 PDT — Review: FND.GA.1 (approved)
 
 **Reviewed:** Schema migration for Global Agents Phase 1.

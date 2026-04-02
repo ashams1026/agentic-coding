@@ -710,7 +710,7 @@ export function AgentHistory() {
                     personaName={persona?.name ?? "Agent"}
                     personaColor={persona?.avatar.color ?? "#6b7280"}
                     targetName={
-                      workItemNameMap.get(exec.workItemId as string) ?? exec.workItemId
+                      exec.workItemId ? (workItemNameMap.get(exec.workItemId as string) ?? exec.workItemId) : "Standalone"
                     }
                     isExpanded={expandedId === exec.id}
                     onToggle={() =>

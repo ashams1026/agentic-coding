@@ -29,6 +29,12 @@ export type ProposalStatus = "pending" | "approved" | "rejected" | "expired";
 
 export type WorkItemEdgeType = "blocks" | "depends_on" | "related_to";
 
+// ── Scope ─────────────────────────────────────────────────────────
+
+export type AgentScope =
+  | { type: "project"; projectId: ProjectId; path: string }
+  | { type: "global"; workspacePath: string };
+
 // ── Entities ───────────────────────────────────────────────────────
 
 export interface SandboxConfig {
@@ -134,7 +140,7 @@ export interface Persona {
 
 export interface Execution {
   id: ExecutionId;
-  workItemId: WorkItemId;
+  workItemId: WorkItemId | null;
   personaId: PersonaId;
   status: ExecutionStatus;
   startedAt: string;
@@ -188,7 +194,7 @@ export type ChatMessageRole = "user" | "assistant";
 
 export interface ChatSession {
   id: ChatSessionId;
-  projectId: ProjectId;
+  projectId: ProjectId | null;
   title: string;
   createdAt: string;
   updatedAt: string;

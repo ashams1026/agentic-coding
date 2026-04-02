@@ -303,7 +303,7 @@ export function FlowView() {
       const activeByState = new Map<string, Set<string>>();
       for (const exec of executions) {
         if (exec.status === "running") {
-          const state = itemStateMap.get(exec.workItemId);
+          const state = exec.workItemId ? itemStateMap.get(exec.workItemId) : undefined;
           if (state) {
             const set = activeByState.get(state) ?? new Set();
             set.add(exec.personaId);

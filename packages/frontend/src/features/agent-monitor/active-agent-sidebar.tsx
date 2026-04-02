@@ -151,7 +151,7 @@ export function ActiveAgentSidebar({ selectedId, onSelect }: ActiveAgentSidebarP
                 execution={exec}
                 personaName={persona?.name ?? "Agent"}
                 personaColor={persona?.avatar.color ?? "#6b7280"}
-                targetName={workItemNameMap.get(exec.workItemId as string) ?? exec.workItemId}
+                targetName={exec.workItemId ? (workItemNameMap.get(exec.workItemId as string) ?? exec.workItemId) : "Standalone"}
                 isSelected={exec.id === selectedId}
                 onSelect={() => onSelect(exec.id)}
               />
