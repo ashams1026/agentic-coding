@@ -146,10 +146,3 @@
 
 ---
 
-## 2026-04-02 13:41 PDT — DES.7: Normalize workflow card heights
-
-**Done:** Added `min-h-[180px]` to WorkflowCard for uniform card heights. Replaced "No states defined" italic text with centered "Configure States" CTA button that opens the workflow builder.
-**Files:** `packages/frontend/src/pages/workflows.tsx`
-
----
-

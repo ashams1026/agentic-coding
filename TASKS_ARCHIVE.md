@@ -173,6 +173,20 @@
 
 **Phase 3 (NAV.8-15):** 8 tasks. Migrated all pages from `useSelectedProject()` to `useProjectFromUrl()`: Work Items (NAV.8), Automations + navigate() updates (NAV.9), Agents page title rename (NAV.10), Agent Monitor 6 files + Links (NAV.11), Activity Feed + EventRow route (NAV.12), Analytics (NAV.13), Chat page from UIStore (NAV.14), Pico chat panel with pj-global fallback (NAV.15).
 
-**Phase 4 partial (NAV.16):** 1 task. AppSettingsPage at /app-settings with 4 sections (API Keys, Appearance, Service, Data).
+**Phase 4 (NAV.16-18):** 3 tasks. AppSettingsPage at /app-settings (NAV.16). ProjectSettingsPage at /p/:projectId/settings with Security, Costs, Notifications, Integrations (NAV.17). NAV.18 N/A (already done in UXO.26).
 
-**Phase 5 (NAV.19-20):** 2 tasks. Dashboard redesigned as cross-project overview with project cards (NAV.19). Global project renamed "All Projects" → "Global Workspace" across 6 files (NAV.20).
+**Phase 5 (NAV.19-20):** 2 tasks. Dashboard cross-project overview with project cards (NAV.19). Global project renamed "All Projects" → "Global Workspace" (NAV.20).
+
+**Phase 6 (NAV.21-25):** 5 tasks. Command palette with project-scoped commands (NAV.21). Status bar shows project name (NAV.22). Scope badges removed (NAV.23). NAV.24 N/A (redirects/404 already done). Dead code deleted: 5 files removed, 5 migrated to useProjectFromUrl, selectedProjectId removed from UI store (NAV.25).
+
+**Testing/Docs (NAV.TEST.1, NAV.DOC.1):** 35-case e2e test plan. 5 doc files updated for navigation rewrite.
+
+---
+
+## Sprint 28: Scheduling, Templates & Notification Channels — archived 2026-04-02
+
+**Templates (TPL.3):** Template picker dialog with 5 templates (Blank, Bug, Feature, Task, Research) pre-filling work item fields.
+
+**Notification Channels (NEC.1-2):** Backend webhook-channel.ts mapping 3 notification event types to event bus for webhook delivery. Frontend toggle in Notifications settings.
+
+**Testing (S28.TEST.1):** 17-case e2e test plan for scheduling, templates, notification channels.
