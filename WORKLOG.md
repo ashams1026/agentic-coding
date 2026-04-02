@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-04-03 16:45 PDT — Review: UXO.6 (approved)
+
+**Reviewed:** Schema + Backend persona→agent rename.
+- Schema: `personas` → `agents`, `persona_assignments` → `agent_assignments` table renames ✓
+- All 7 `persona_id` → `agent_id` column renames + `assigned_persona_id` → `assigned_agent_id` ✓
+- Migration `0022`: 10 valid `ALTER TABLE RENAME` statements (SQLite 3.25+) ✓
+- Zero remaining persona code references in backend/core/shared (grep confirmed) ✓
+- 3 "persona" hits are "Personality" in prompt content — correct ✓
+- Route files renamed, re-registered in server.ts, API paths `/api/agents` ✓
+- `default-agents.ts` exports `BUILT_IN_AGENTS` ✓
+- Shared + core + backend all build clean ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-03 16:30 PDT — UXO.6: Schema + Backend persona→agent rename
 
 **Done:** Renamed `personas` table → `agents`, `persona_assignments` → `agent_assignments` in schema. Renamed all `persona_id` columns → `agent_id` across 7 tables. Renamed `assigned_persona_id` → `assigned_agent_id` in work_items. Wrote manual migration `0022_rename_persona_to_agent.sql` (10 ALTER TABLE statements). Renamed 5 files via `git mv` (routes/personas→agents, persona-assignments→agent-assignments, default-personas→default-agents, 2 test files). Updated 53 backend + 3 core source files: all imports, function names, variable names, API paths (`/api/personas`→`/api/agents`), FTS5 tables/triggers/bridge tables. Shared+core+backend all build clean.
