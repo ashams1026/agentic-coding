@@ -183,3 +183,29 @@
 
 - [x] **CWF.TEST.1** — E2e test plan for Custom Workflows (36 steps, 10 parts). *(completed 2026-04-02 17:35 PDT)*
 - [x] **CWF.TEST.2** — Execute Custom Workflows e2e tests (33/36 pass, 1 bug filed). *(completed 2026-04-02 18:00 PDT)*
+
+### Bugs & Remaining
+
+- [x] **FX.CWF.1** — Fix PATCH save with new states/transitions (stateIdMap remapping). *(completed 2026-04-02 18:25 PDT)*
+- [x] **CWF.DOC.1** — Document Custom Workflows API (10 endpoints, schemas, migration). *(completed 2026-04-02 18:40 PDT)*
+- [x] **CWF.TEST.3** — Regression checkpoint: 37 suites, 0 regressions. *(completed 2026-04-02 19:05 PDT)*
+
+---
+
+## Sprint 26: Intelligence & Discovery — archived 2026-04-02
+
+### Agent Collaboration Phase 1
+
+- [x] **COL.1** — HandoffNote type + handoffNotes column + migration 0014. *(completed 2026-04-02 19:35 PDT)*
+- [x] **COL.2** — buildHandoffNote() + persist on execution completion. *(completed 2026-04-02 19:50 PDT)*
+- [x] **COL.3** — Inject handoff context via buildAccumulatedContext → SpawnOptions → buildSystemPrompt. *(completed 2026-04-02 20:10 PDT)*
+- [x] **COL.4** — Dependency enforcement in dispatch (depends_on edges + terminal state check). *(completed 2026-04-02 20:25 PDT)*
+- [x] **COL.5** — Context windowing: buildAccumulatedContext with ~2000 token budget. *(completed 2026-04-02 20:40 PDT)*
+- [x] **COL.6** — Frontend handoff notes display in execution timeline. *(completed 2026-04-02 20:55 PDT)*
+
+### Search Phase 1
+
+- [x] **SRC.1** — FTS5 virtual tables + bridging tables (startup setup). *(completed 2026-04-02 21:10 PDT)*
+- [x] **SRC.2** — FTS5 sync triggers (12 triggers) + backfill script. *(completed 2026-04-02 21:25 PDT)*
+- [x] **SRC.3** — Unified search API: GET /api/search with BM25 ranking. *(completed 2026-04-02 21:40 PDT)*
+- [x] **SRC.4** — Server-backed Command Palette with debounced FTS5 search. *(completed 2026-04-02 21:55 PDT)*

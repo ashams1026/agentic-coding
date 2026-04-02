@@ -199,3 +199,11 @@
 **Backend Runtime (CWF.4-8, all approved):** workflow-runtime.ts with 6 dynamic query functions (all fall back to hardcoded WORKFLOW). work-items.ts uses getWorkflowInitialState + isValidTransitionDynamic. dispatch.ts uses resolvePersonaForState. execution-manager.ts tracks workflowId+workflowStateName. mcp-server.ts 3 tools updated (route/create/block). router.ts uses buildDynamicRouterPrompt for valid target states.
 
 **API Routes (CWF.9-10, all approved):** 4 read-only endpoints (list, get with states+transitions, states, transitions). 6 builder CRUD endpoints (create draft, bulk update states/transitions, publish, delete with 409 guard, clone with state ID remapping, validate for unreachable/dead-end/missing initial-terminal).
+
+### Sprint 25 Workflow Engine — Frontend + Testing + Completion (2026-04-02 14:55–19:05 PDT)
+
+**Frontend Dynamic Views (CWF.11-14, all approved):** use-workflows.ts hooks + API client (4 queries, 5min staleTime). flow-view, list-view, filter-bar, detail-panel all switched from hardcoded WORKFLOW to useWorkflowStates/useWorkflowTransitions. Settings workflow-config-section dynamic states + WorkflowSelector.
+
+**Frontend Workflow Builder (CWF.15-18, all approved):** state-card + transition-row (editable components). workflow-preview SVG graph (auto-layout, Bezier arrows). workflow-builder main layout (state list + preview + validation panel + create dialog). /workflows routes, sidebar nav, CRUD API wiring (5 mutation hooks).
+
+**Testing & Bugs (CWF.TEST.1-3, FX.CWF.1, CWF.DOC.1, all approved):** E2e test plan (36 steps, 10 parts). Test execution (33/36 pass, save bug found). FX.CWF.1 fix (stateIdMap remapping for temporary IDs). API documentation (10 endpoints, schemas, migration). Regression checkpoint (37 suites, 0 regressions). Sprint 25 complete.
