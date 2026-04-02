@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 00:45 PDT — S26.TEST.3: Analytics e2e test plan
+
+**Done:** Wrote test plan at `tests/e2e/plans/analytics-phase1.md`. 17 steps across 6 parts: page navigation + tabs (4 steps), summary cards (1 step), time range selector (3 steps), overview charts (2 steps), token usage charts + table (4 steps), API verification (3 steps). Covers both Overview and Token Usage tabs, all chart types (LineChart, BarChart, ComposedChart, PieChart), summary cards, range selector, and API JSON shape verification.
+**Files:** `tests/e2e/plans/analytics-phase1.md`
+
+---
+
 ## 2026-04-03 00:30 PDT — Review: S26.TEST.2 (approved)
 
 **Reviewed:** Search e2e test plan.
