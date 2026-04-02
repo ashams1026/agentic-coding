@@ -153,38 +153,7 @@
 
 ## Sprint 26: Intelligence & Discovery — archived 2026-04-02
 
-### Agent Collaboration Phase 1
-
-- [x] **COL.1** — HandoffNote type + handoffNotes column + migration 0014. *(completed 2026-04-02 19:35 PDT)*
-- [x] **COL.2** — buildHandoffNote() + persist on execution completion. *(completed 2026-04-02 19:50 PDT)*
-- [x] **COL.3** — Inject handoff context via buildAccumulatedContext → SpawnOptions → buildSystemPrompt. *(completed 2026-04-02 20:10 PDT)*
-- [x] **COL.4** — Dependency enforcement in dispatch (depends_on edges + terminal state check). *(completed 2026-04-02 20:25 PDT)*
-- [x] **COL.5** — Context windowing: buildAccumulatedContext with ~2000 token budget. *(completed 2026-04-02 20:40 PDT)*
-- [x] **COL.6** — Frontend handoff notes display in execution timeline. *(completed 2026-04-02 20:55 PDT)*
-
-### Search Phase 1
-
-- [x] **SRC.1** — FTS5 virtual tables + bridging tables (startup setup). *(completed 2026-04-02 21:10 PDT)*
-- [x] **SRC.2** — FTS5 sync triggers (12 triggers) + backfill script. *(completed 2026-04-02 21:25 PDT)*
-- [x] **SRC.3** — Unified search API: GET /api/search with BM25 ranking. *(completed 2026-04-02 21:40 PDT)*
-- [x] **SRC.4** — Server-backed Command Palette with debounced FTS5 search. *(completed 2026-04-02 21:55 PDT)*
-- [x] **SRC.5** — FTS5 search in work items filter bar (ftsMatchIds). *(completed 2026-04-02 22:15 PDT)*
-
-### Analytics + Token Usage Phase 1
-
-- [x] **ANL.1** — model/totalTokens/toolUses columns + migration 0015. *(completed 2026-04-02 22:30 PDT)*
-- [x] **ANL.2** — Persist token data from ProgressEvents on completion. *(completed 2026-04-02 22:45 PDT)*
-- [x] **ANL.3** — 4 analytics aggregate endpoints (cost-by-persona/model, tokens-over-time, top-executions). *(completed 2026-04-02 23:00 PDT)*
-- [x] **ANL.4** — Analytics page with Overview/Token Usage tabs + sidebar link. *(completed 2026-04-02 23:15 PDT)*
-- [x] **ANL.5** — Overview tab: 4 stat cards, cost trend LineChart, cost-by-persona BarChart. *(completed 2026-04-02 23:45 PDT)*
-- [x] **ANL.6** — Token usage tab: ComposedChart, model PieChart, top executions table. *(completed 2026-04-03 00:00 PDT)*
-- [x] **ANL.7** — Analytics React Query hooks + API client (4 hooks + 4 functions). *(completed 2026-04-02 23:30 PDT)*
-
-### Testing
-
-- [x] **S26.TEST.1** — E2e test plan for Agent Collaboration P1 (10 steps). *(completed 2026-04-03 00:15 PDT)*
-- [x] **S26.TEST.2** — E2e test plan for Search P1 (16 steps). *(completed 2026-04-03 00:30 PDT)*
-- [x] **S26.TEST.3-7, S26.DOC.1** — Analytics test plan, 3 test executions, API docs, regression (40 suites, 0 regressions). *(completed 2026-04-03 00:50–02:10 PDT)*
+**Agent Collaboration P1 (COL.1-6):** HandoffNote schema + persistence + context injection + dependency enforcement + windowing + frontend display. **Search P1 (SRC.1-5):** FTS5 tables + triggers + search API + Command Palette + filter bar. **Analytics P1 (ANL.1-7):** Token tracking schema + persistence + 4 aggregate endpoints + analytics page (Overview + Token Usage tabs). **Testing (S26.TEST.1-7, S26.DOC.1):** 3 test plans, 3 executions, API docs, regression (40 suites, 0 regressions).
 
 ---
 
@@ -205,6 +174,14 @@
 - [x] **IWH.2** — Generic receiver with HMAC + template resolver + CRUD. *(completed 2026-04-03 04:20 PDT)*
 - [x] **IWH.3** — Inbound triggers UI in Settings Integrations. *(completed 2026-04-03 04:35 PDT)*
 
-### Data Management P1 (partial)
+### Data Management P1
 
 - [x] **DM.1** — SQLite backup() API + retention (7d+4w) + restore. *(completed 2026-04-03 04:50 PDT)*
+- [x] **DM.2** — Pre-migration backup hook via createBackup(). *(completed 2026-04-03 05:00 PDT)*
+- [x] **DM.3** — Backup/restore/truncate-logs API endpoints. *(completed 2026-04-03 05:15 PDT)*
+- [x] **DM.4** — Storage stats + execution delete cascade fix. *(completed 2026-04-03 05:30 PDT)*
+- [x] **DM.5** — Data management UI (backup list, truncation, storage table). *(completed 2026-04-03 05:45 PDT)*
+
+### Testing & Docs
+
+- [x] **S27.TEST.1-5, S27.DOC.1** — 2 test plans, 2 test executions, API docs, regression (44 suites, 0 regressions). *(completed 2026-04-03 06:00–07:15 PDT)*
