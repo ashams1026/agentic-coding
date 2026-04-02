@@ -130,6 +130,12 @@ export function ChatPage() {
   // Header context menu
   const [showHeaderMenu, setShowHeaderMenu] = useState(false);
 
+  // Sidebar right-click context menu
+  const [contextMenu, setContextMenu] = useState<{ sessionId: string; title: string; x: number; y: number } | null>(null);
+
+  // Delete confirmation dialog
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
   // Editable title (used in both sidebar and header)
   const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
@@ -270,6 +276,10 @@ export function ChatPage() {
                       type="button"
                       onClick={() => switchSession(s.id as ChatSessionId)}
                       onDoubleClick={() => startRename(s.id, s.title)}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        setContextMenu({ sessionId: s.id, title: s.title, x: e.clientX, y: e.clientY });
+                      }}
                       className={cn(
                         "flex items-start gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors w-full",
                         "hover:bg-muted",
@@ -547,6 +557,71 @@ export function ChatPage() {
           </p>
         </div>
       </div>
+
+      {/* Sidebar right-click context menu */}
+      {contextMenu && (
+        <div
+          className="fixed inset-0 z-50"
+          onClick={() => setContextMenu(null)}
+          onContextMenu={(e) => { e.preventDefault(); setContextMenu(null); }}
+        >
+          <div
+            className="absolute bg-popover border border-border rounded-md shadow-lg py-1 w-36"
+            style={{ left: contextMenu.x, top: contextMenu.y }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => {
+                startRename(contextMenu.sessionId, contextMenu.title);
+                setContextMenu(null);
+              }}
+              className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs hover:bg-muted"
+            >
+              <Pencil className="h-3 w-3" />
+              Rename
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setDeleteConfirmId(contextMenu.sessionId);
+                setContextMenu(null);
+              }}
+              className="flex items-center gap-2 w-full text-left px-3 py-1.5 text-xs text-red-400 hover:bg-red-500/10"
+            >
+              <Trash2 className="h-3 w-3" />
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete confirmation dialog */}
+      {deleteConfirmId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setDeleteConfirmId(null)}>
+          <div className="bg-card border border-border rounded-lg shadow-xl p-5 max-w-sm" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-sm font-semibold">Delete session?</h3>
+            <p className="mt-2 text-xs text-muted-foreground">
+              This will permanently delete this conversation and all its messages. This action cannot be undone.
+            </p>
+            <div className="mt-4 flex justify-end gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setDeleteConfirmId(null)}>
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => {
+                  deleteSession(deleteConfirmId as ChatSessionId);
+                  setDeleteConfirmId(null);
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Persona selector modal */}
       {showPersonaSelector && (

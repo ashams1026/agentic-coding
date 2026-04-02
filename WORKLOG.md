@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 06:10 PDT — ACH.7: Session management context menu and delete confirmation
+
+**Done:** Added right-click context menu to sidebar session items with Rename and Delete options. Rename triggers the existing inline edit flow. Delete opens a confirmation dialog with "Delete session?" title, warning text, Cancel/Delete buttons. Delete wired to `deleteSession()` which calls API, removes from local state, and auto-selects most recent remaining session (or shows empty state). Context menu positioned at cursor coordinates, dismisses on click outside.
+**Files:** `packages/frontend/src/pages/chat.tsx`
+
+---
+
 ## 2026-04-02 05:55 PDT — Review: ACH.6 (approved)
 
 **Reviewed:** Chat header bar in `packages/frontend/src/pages/chat.tsx`.
