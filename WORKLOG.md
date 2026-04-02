@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 12:47 PDT — FX.UXO5: Fix global project workflow reference
+
+**Done:** Added `ne(projects.isGlobal, true)` to backfillWorkflowReferences WHERE clause in seed-workflow.ts. Global project now keeps `wf-global` instead of being overwritten with `wf-default` on every startup.
+**Files:** `packages/backend/src/db/seed-workflow.ts`
+
+---
+
+## 2026-04-02 12:47 PDT — FX.UXO10, FX.UXO18, FX.UXO21: Rename strings, agent validation, dead code
+
+**Done:** (1) Renamed 3 user-visible "Workflows" → "Automations" strings in workflows.tsx (subtitle, section header, empty state). (2) Added FK constraint try/catch to POST and PATCH in agents route — invalid projectId now returns 400 instead of 500. PATCH scope validation was already correct. (3) Deleted dead board-view.tsx and removed vestigial WorkItemView type, view state, setView action from work-items-store.ts. Also resolved FX.UXO2 (dead code) and FX.UXO19 (FK validation).
+**Files:** `packages/frontend/src/pages/workflows.tsx`, `packages/backend/src/routes/agents.ts`, `packages/frontend/src/features/work-items/board-view.tsx` (deleted), `packages/frontend/src/stores/work-items-store.ts`
+
+---
+
 ## 2026-04-02 12:42 PDT — FX.UXO1: Fix router paths to /automations
 
 **Done:** Changed workflow builder route from `workflows/:id` to `automations/:id` in router.tsx. Updated two navigate() calls in workflows.tsx from `/workflows/` to `/automations/`. Sidebar and command palette were already correct.

@@ -4,7 +4,7 @@
  * Also backfills projects.workflowId and work_items.workflowId.
  */
 
-import { eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, ne } from "drizzle-orm";
 import { db } from "./connection.js";
 import { workflows, workflowStates, workflowTransitions, projects, workItems } from "./schema.js";
 import { WORKFLOW } from "@agentops/shared";
@@ -95,11 +95,12 @@ export async function seedDefaultWorkflow(): Promise<void> {
 }
 
 async function backfillWorkflowReferences(): Promise<void> {
-  // Set workflowId on all projects that don't have one
+  // Set workflowId on all non-global projects that don't have one.
+  // Skip global projects (e.g. pj-global) so their workflowId (wf-global) is not overwritten.
   await db
     .update(projects)
     .set({ workflowId: DEFAULT_WORKFLOW_ID })
-    .where(isNull(projects.workflowId));
+    .where(and(isNull(projects.workflowId), ne(projects.isGlobal, true)));
 
   // Set workflowId on all work items that don't have one
   await db

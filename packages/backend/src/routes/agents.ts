@@ -85,25 +85,33 @@ export async function agentRoutes(app: FastifyInstance) {
     }
     const projectId = scope === "project" ? body.projectId! : null;
 
-    const [row] = await db
-      .insert(agents)
-      .values({
-        id,
-        name: body.name,
-        description: body.description ?? "",
-        avatar: body.avatar ?? { color: "#6b7280", icon: "user" },
-        systemPrompt: body.systemPrompt,
-        model: body.model,
-        allowedTools: body.allowedTools ?? [],
-        mcpTools: body.mcpTools ?? [],
-        skills: body.skills ?? [],
-        subagents: body.subagents ?? [],
-        maxBudgetPerRun: body.maxBudgetPerRun ?? 0,
-        settings: {},
-        scope,
-        projectId,
-      })
-      .returning();
+    let row: typeof agents.$inferSelect | undefined;
+    try {
+      [row] = await db
+        .insert(agents)
+        .values({
+          id,
+          name: body.name,
+          description: body.description ?? "",
+          avatar: body.avatar ?? { color: "#6b7280", icon: "user" },
+          systemPrompt: body.systemPrompt,
+          model: body.model,
+          allowedTools: body.allowedTools ?? [],
+          mcpTools: body.mcpTools ?? [],
+          skills: body.skills ?? [],
+          subagents: body.subagents ?? [],
+          maxBudgetPerRun: body.maxBudgetPerRun ?? 0,
+          settings: {},
+          scope,
+          projectId,
+        })
+        .returning();
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("FOREIGN KEY constraint failed")) {
+        return reply.status(400).send({ error: { code: "BAD_REQUEST", message: `projectId '${projectId}' does not exist` } });
+      }
+      throw err;
+    }
 
     return reply.status(201).send({ data: serializeAgent(row!) });
   });
@@ -115,6 +123,20 @@ export async function agentRoutes(app: FastifyInstance) {
   }>("/api/agents/:id", async (request, reply) => {
     const { id } = request.params;
     const body = request.body;
+
+    // Fetch existing record upfront — needed for settings merge and scope validation
+    const [existing] = await db.select().from(agents).where(eq(agents.id, id));
+    if (!existing) {
+      return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Agent ${id} not found` } });
+    }
+
+    // Scope validation: switching to "project" scope requires a projectId
+    if (body.scope === "project") {
+      const resolvedProjectId = body.projectId ?? existing.projectId;
+      if (!resolvedProjectId) {
+        return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "projectId is required when scope is 'project'" } });
+      }
+    }
 
     const updates: Record<string, unknown> = {};
     if (body.name !== undefined) updates["name"] = body.name;
@@ -129,8 +151,7 @@ export async function agentRoutes(app: FastifyInstance) {
     if (body.maxBudgetPerRun !== undefined) updates["maxBudgetPerRun"] = body.maxBudgetPerRun;
     if (body.settings !== undefined) {
       // Merge with existing settings to preserve system flags
-      const [existing] = await db.select({ settings: agents.settings }).from(agents).where(eq(agents.id, id));
-      updates["settings"] = { ...(existing?.settings ?? {}), ...body.settings };
+      updates["settings"] = { ...(existing.settings ?? {}), ...body.settings };
     }
     if (body.scope !== undefined) {
       updates["scope"] = body.scope;
@@ -147,11 +168,20 @@ export async function agentRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: { code: "BAD_REQUEST", message: "No fields to update" } });
     }
 
-    const [row] = await db
-      .update(agents)
-      .set(updates)
-      .where(eq(agents.id, id))
-      .returning();
+    let row: typeof agents.$inferSelect | undefined;
+    try {
+      [row] = await db
+        .update(agents)
+        .set(updates)
+        .where(eq(agents.id, id))
+        .returning();
+    } catch (err: unknown) {
+      if (err instanceof Error && err.message.includes("FOREIGN KEY constraint failed")) {
+        const badProjectId = (body.projectId ?? (updates["projectId"] as string | undefined));
+        return reply.status(400).send({ error: { code: "BAD_REQUEST", message: `projectId '${badProjectId}' does not exist` } });
+      }
+      throw err;
+    }
 
     if (!row) {
       return reply.status(404).send({ error: { code: "NOT_FOUND", message: `Agent ${id} not found` } });

@@ -2,13 +2,11 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { WorkItemId } from "@agentops/shared";
 
-export type WorkItemView = "list";
 export type GroupBy = "none" | "state" | "parent" | "priority";
 export type SortBy = "priority" | "created" | "updated";
 export type SortDir = "asc" | "desc";
 
 interface WorkItemsState {
-  view: WorkItemView;
   groupBy: GroupBy;
   sortBy: SortBy;
   sortDir: SortDir;
@@ -25,7 +23,6 @@ interface WorkItemsState {
   showArchived: boolean;
   selectedIds: string[];
 
-  setView: (view: WorkItemView) => void;
   setGroupBy: (groupBy: GroupBy) => void;
   setSortBy: (sortBy: SortBy) => void;
   setSortDir: (sortDir: SortDir) => void;
@@ -47,7 +44,6 @@ interface WorkItemsState {
 export const useWorkItemsStore = create<WorkItemsState>()(
   persist(
     (set) => ({
-      view: "list",
       groupBy: "state",
       sortBy: "priority",
       sortDir: "asc",
@@ -63,7 +59,6 @@ export const useWorkItemsStore = create<WorkItemsState>()(
       showArchived: false,
       selectedIds: [],
 
-      setView: (view) => set({ view }),
       setGroupBy: (groupBy) => set({ groupBy }),
       setSortBy: (sortBy) => set({ sortBy }),
       setSortDir: (sortDir) => set({ sortDir }),
@@ -110,7 +105,6 @@ export const useWorkItemsStore = create<WorkItemsState>()(
     {
       name: "agentops-work-items",
       partialize: (state) => ({
-        view: state.view,
         groupBy: state.groupBy,
         sortBy: state.sortBy,
         sortDir: state.sortDir,

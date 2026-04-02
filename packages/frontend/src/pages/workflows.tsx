@@ -565,7 +565,7 @@ function AutomationsOverview() {
         <div>
           <h1 className="text-2xl font-bold">Automations</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Workflows and scheduled agent runs for this project.
+            Automations and scheduled agent runs for this project.
           </p>
         </div>
 
@@ -604,14 +604,14 @@ function AutomationsOverview() {
               <div className="flex items-center gap-2 mb-4">
                 <GitBranch className="h-4 w-4 text-muted-foreground" />
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  Workflows
+                  Automations
                 </h2>
                 <span className="ml-auto text-xs text-muted-foreground">{workflows.length}</span>
               </div>
               {workflows.length === 0 ? (
                 <div className="rounded-lg border border-dashed p-10 text-center">
                   <GitBranch className="h-8 w-8 mx-auto mb-2 text-muted-foreground/40" />
-                  <p className="text-sm text-muted-foreground">No workflows yet.</p>
+                  <p className="text-sm text-muted-foreground">No automations yet.</p>
                   <Button
                     variant="outline"
                     size="sm"
