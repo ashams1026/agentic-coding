@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-02 03:50 PDT — DECOMPOSE: Sprint 24 — Core UX
+
+**Done:** Decomposed Sprint 24 into 26 tasks across 4 sections: Agent Chat Phase 1 (ACH.1-7), Persona Prompts Phase 1 (PPR.1-4), Notifications UX Phase 1 (NTF.1-8), Testing & Documentation (CUX.TEST.1-5, CUX.DOC.1-2). Read all 6 proposal docs and explored current codebase state (chat, persona editor, notifications, sidebar, WS client, schema). Key findings: chat_sessions lacks persona_id column (API accepts it but doesn't persist), no resolveVariables() exists, no notification bell/drawer exists, toast system exists but is basic. Tasks ordered by dependency: schema first, backend API, then frontend. Rich messages deferred to Phase 2 per roadmap.
+**Files:** `TASKS.md`
+
+---
+
 ## 2026-04-02 03:40 PDT — Review: FND.DOC.2 (approved)
 
 **Reviewed:** Global Agents data model and API documentation in `docs/api.md`.
