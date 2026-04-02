@@ -189,3 +189,7 @@
 **Design/DX (DES.1, DES.3, DES.7-9, DES.11, DES.14, DES.17, DX.1):** Dashboard onboarding checklist (DES.1), chat auto-titles already done (DES.3), workflow card min-height + CTA (DES.7), section title case + agent search + router description (DES.8/9/11), Per-Agent Limits collapsed when empty (DES.14), activity feed filter bar already done (DES.17). Split dev scripts with mock API (DX.1).
 
 **Sprint 29 Completion (UXO.26-27):** Workflow settings moved into builder with AgentAssignmentsSection (UXO.26). Schedules moved to Automations page with edit/delete/run-now (UXO.27).
+
+**Bug fix (FX.WI1):** Work item edit revert — removed onSettled query invalidation, added onSuccess cache set, isMutating WS guard. Later reverted when mutationFn stopped firing.
+
+**Design polish (DES.19):** 15 empty states audited and normalized across all pages (icon, heading, description, CTA pattern).

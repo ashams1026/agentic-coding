@@ -73,61 +73,9 @@
 
 ---
 
-## Bug Fixes: Post-Sprint Review (Sprints 24-27) — archived 2026-04-03
+**Bug Fixes (Sprints 24-27, FX.SEC.1-3 + FX.DEAD.1-3 + FX.WHK.1 + FX.NTF.1-2 + FX.WF.1-3 + FX.CHAT.1 + FX.NAV.1):** 13 tasks. Path traversal fix, FTS5 crash fix, XSS sanitization, webhook prompt wiring, dead notification type, proposal actions, HMAC raw bytes, toast overflow, batch double-count, workflow publish race, DB transactions, input validation, project name in chat, command palette nav.
 
-### Security & Data Loss
-
-- [x] **FX.SEC.1** — Fix path traversal in backup restore. *(completed 2026-04-03 09:30 PDT)*
-- [x] **FX.SEC.2** — Fix FTS5 MATCH crash on special characters. *(completed 2026-04-03 09:45 PDT)*
-- [x] **FX.SEC.3** — Sanitize FTS snippets before rendering. *(completed 2026-04-03 10:00 PDT)*
-
-### Dead Code & Unimplemented Stubs
-
-- [x] **FX.DEAD.1** — Wire prompt template into inbound webhook execution. *(completed 2026-04-03 10:30 PDT)*
-- [x] **FX.DEAD.2** — Implement or remove `execution_stuck` notification type. Backend never emits `execution_stuck` — the type is defined in `packages/shared/src/ws-events.ts`, UI handles it in notification cards, and Settings has a toggle for it, but no backend code ever fires it. Either implement a periodic check for stalled executions (e.g., no progress events for >10min) or remove the type, UI, and settings toggle entirely. *(completed 2026-04-03 10:50 PDT)*
-- [x] **FX.DEAD.3** — Replace stub navigation on proposal notification actions. `packages/frontend/src/features/notifications/notification-card.tsx:107-108` — Approve/Reject buttons just navigate to `/items` without passing proposal ID. Wire them to actually call `PATCH /api/proposals/:id` with the approve/reject action, then mark notification as read. *(completed 2026-04-03 11:10 PDT)*
-
-### HMAC & Webhook Integrity
-
-- [x] **FX.WHK.1** — Fix HMAC verification to use raw request bytes. `packages/backend/src/routes/webhook-triggers.ts:70` uses `JSON.stringify(request.body)` for HMAC verification instead of raw request body bytes. Re-serialized JSON may differ from the original payload (key ordering, whitespace), causing all HMAC checks to fail. Use Fastify's `rawBody` or `request.rawBody` instead. *(completed 2026-04-03 11:25 PDT)*
-
-### Logic Bugs
-
-- [x] **FX.NTF.1** — Fix toast overflow count decrement. `packages/frontend/src/stores/toast-store.ts:55` — the `overflowCount` decrement condition is inverted. When a visible toast is auto-dismissed, the overflow count doesn't decrement correctly, leaving stale "+N more" badges. *(completed 2026-04-03 11:35 PDT)*
-- [x] **FX.NTF.2** — Fix notification batching double-count. `packages/frontend/src/stores/notification-store.ts:117-128` — first `agent_completed` notification is added immediately, then the batch summary also counts it, so users see both the individual notification AND a summary that includes it. Either suppress the first individual notification or exclude it from the batch count. *(completed 2026-04-03 11:45 PDT)*
-- [x] **FX.WF.1** — Fix race condition in workflow publish. `packages/frontend/src/pages/workflows.tsx:51-56` — save and publish fire concurrently. Publish must wait for save to complete. Make them sequential (await save, then publish). *(completed 2026-04-03 11:55 PDT)*
-- [x] **FX.WF.2** — Wrap workflow CRUD mutations in DB transactions. `packages/backend/src/routes/workflows.ts:209-244` — PATCH and DELETE handlers do delete-then-insert for states/transitions without a transaction. Server crash between delete and insert loses data. Wrap in `db.transaction()`. *(completed 2026-04-03 12:05 PDT)*
-- [x] **FX.WF.3** — Add input validation to workflow CRUD. `packages/backend/src/routes/workflows.ts` POST/PATCH handlers accept empty names, invalid state types, garbage data. Add validation: require non-empty name, valid state type enum, at least one state, valid transition references. *(completed 2026-04-03 12:15 PDT)*
-
-### Missing Data & Stale UI
-
-- [x] **FX.CHAT.1** — Show project name instead of raw ID in chat header. `packages/frontend/src/pages/chat.tsx:374-379` — the project badge shows the raw `projectId` string (e.g., `pj-x7k2m`) instead of the project's display name. Fetch and display the project name. *(completed 2026-04-03 12:40 PDT)*
-- [x] **FX.NAV.1** — Update command palette navigation items. `packages/frontend/src/features/command-palette/command-palette.tsx:39-46` — NAV_ITEMS is stale, missing Analytics, Chat, and Workflows pages. Add all current sidebar pages. *(completed 2026-04-03 12:55 PDT)*
-
----
-
-## Sprint 28: Scheduling, Templates & Notification Channels — archived 2026-04-03
-
-### Scheduling
-
-- [x] **SCH.1** — Schedules table + migration. *(completed 2026-04-03 07:40 PDT)*
-- [x] **SCH.2** — Cron scheduler with polling + catch-up. *(completed 2026-04-03 08:00 PDT)*
-- [x] **SCH.3** — Schedules CRUD API + startup integration. *(completed 2026-04-03 08:20 PDT)*
-- [x] **SCH.4** — Frontend Schedules UI in Settings. *(completed 2026-04-03 08:45 PDT)*
-
-### Templates Phase 1
-
-- [x] **TPL.1** — Templates table + seed 3 built-in templates + migration. *(completed 2026-04-03 09:00 PDT)*
-- [x] **TPL.2** — Templates CRUD API + apply endpoint. *(completed 2026-04-03 09:15 PDT)*
-
-### Bug Fixes Continued (Sprints 24-27)
-
-- [x] **FX.WF.4** — Include transition sortOrder in workflow save payload. *(completed 2026-04-03 13:20 PDT)*
-- [x] **FX.DOC.1** — Update docs/workflow.md to reflect custom workflows. *(completed 2026-04-03 13:40 PDT)*
-- [x] **FX.HIST.1** — Fix Agent Monitor history table row width misalignment (Collapsible → conditional rendering). *(completed 2026-04-03 14:00 PDT)*
-- [x] **FX.TYPE.1** — Fix unsafe double type casts in chat routes. *(completed 2026-04-03 14:15 PDT)*
-- [x] **FX.TYPE.2** — Import HandoffNote from shared instead of duplicating. *(completed 2026-04-03 14:30 PDT)*
-- [x] **FX.PERF.1** — Fix N+1 query in dependency check (batched with inArray). *(completed 2026-04-03 14:40 PDT)*
+**Sprint 28 (SCH.1-4, TPL.1-2, FX.WF.4, FX.DOC.1, FX.HIST.1, FX.TYPE.1-2, FX.PERF.1):** 12 tasks. Schedules (cron scheduler, CRUD API, Settings UI). Templates (table + seed, CRUD + apply). Bug fixes (sortOrder, workflow docs, history alignment, type casts, deduplicate import, N+1 batch).
 
 ---
 
@@ -190,3 +138,20 @@
 **Notification Channels (NEC.1-2):** Backend webhook-channel.ts mapping 3 notification event types to event bus for webhook delivery. Frontend toggle in Notifications settings.
 
 **Testing (S28.TEST.1):** 17-case e2e test plan for scheduling, templates, notification channels.
+
+**Documentation (S28.DOC.1):** Schedule CRUD (5 endpoints), templates (5 endpoints + built-in list), notification webhook channel (3 event types + flow). *(completed 2026-04-02 15:16 PDT)*
+
+---
+
+## Sprint 31: Agent Chat P2 — Rich Messages — archived 2026-04-02
+
+- [x] **RICH.1** — ANSI color parser utility (`lib/ansi-parser.tsx`). parseAnsi() + stripAnsi(), standard/bright/256 colors, bold/dim/italic, Tailwind classes. *(completed 2026-04-02 15:25 PDT)*
+- [x] **RICH.2** — Diff parser utility (`lib/diff-parser.ts`). Myers' O(ND) algorithm, computeDiff() + formatDiffText(), DiffLine types. *(completed 2026-04-02 15:22 PDT)*
+- [x] **RICH.3** — Enhanced ThinkingBlock (`features/chat/thinking-block.tsx`). Purple border, expand/collapse, markdown, 2000-char truncation. *(completed 2026-04-02 15:23 PDT)*
+- [x] **RICH.4** — Enhanced ToolCallCard (`features/chat/tool-call-card.tsx`). Tool icons, status badges, collapsible I/O, expand defaults. *(completed 2026-04-02 15:23 PDT)*
+- [x] **RICH.5** — TerminalBlock (`features/chat/terminal-block.tsx`). Dark bg, ANSI colors, copy, exit code, 500-line truncation. *(completed 2026-04-02 15:35 PDT)*
+- [x] **RICH.6** — DiffBlock (`features/chat/diff-block.tsx`). Red/green line highlighting, line numbers, unified diff copy. *(completed 2026-04-02 15:35 PDT)*
+- [x] **RICH.7** — FileTreeSummary (`features/chat/file-tree-summary.tsx`). Directory tree, M/A indicators, line counts, click-to-scroll. *(completed 2026-04-02 15:35 PDT)*
+- [x] **RICH.8** — ContentBlockRenderer integration. Dispatch to enhanced components, FileTreeSummary at message top, dead code removed. *(completed 2026-04-02 15:45 PDT)*
+- [x] **RICH.TEST.1** — 29-case e2e test plan covering all 5 rich message components + integration. *(completed 2026-04-02 15:35 PDT)*
+- [x] **RICH.DOC.1** — Frontend docs updated with component hierarchy, dispatch logic, utilities. *(completed 2026-04-02 15:45 PDT)*
