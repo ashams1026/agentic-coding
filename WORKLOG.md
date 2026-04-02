@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-03 00:25 PDT — S26.TEST.2: Search e2e test plan
+
+**Done:** Wrote test plan at `tests/e2e/plans/search-phase1.md`. 16 steps across 3 parts: Command Palette search (6 steps — open, single char, matching query, persona search, select result, no matches), work items filter bar (5 steps — type query, FTS match, clear, empty results), API verification (4 steps — JSON response, type filter, projectId filter, empty query 400). Covers debounce behavior, snippet highlights, type grouping, BM25 ranking.
+**Files:** `tests/e2e/plans/search-phase1.md`
+
+---
+
 ## 2026-04-03 00:15 PDT — Review: S26.TEST.1 (approved)
 
 **Reviewed:** Agent Collaboration e2e test plan.

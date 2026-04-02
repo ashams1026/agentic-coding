@@ -31,7 +31,7 @@
 ### Testing & Documentation
 
 - [x] **S26.TEST.1** — Write e2e test plan for Agent Collaboration: `tests/e2e/plans/agent-collaboration-phase1.md`. Cover: handoff notes display in execution history, dependency blocking in dispatch, context windowing summary. *(completed 2026-04-03 00:15 PDT)*
-- [ ] **S26.TEST.2** — Write e2e test plan for Search: `tests/e2e/plans/search-phase1.md`. Cover: command palette search, work items filter bar search, result ranking, type filtering, empty results.
+- [review] **S26.TEST.2** — Write e2e test plan for Search: `tests/e2e/plans/search-phase1.md`. Cover: command palette search, work items filter bar search, result ranking, type filtering, empty results.
 - [ ] **S26.TEST.3** — Write e2e test plan for Analytics: `tests/e2e/plans/analytics-phase1.md`. Cover: analytics page tabs, summary cards, cost charts, token usage charts, time range selector, per-persona/model breakdowns.
 - [ ] **S26.TEST.4** — Execute Agent Collaboration e2e tests. Run test plan via chrome-devtools MCP. Screenshot each case. Record to `tests/e2e/results/`. File bugs as `FX.*`.
 - [ ] **S26.TEST.5** — Execute Search e2e tests. Run test plan via chrome-devtools MCP. Screenshot each case. Record to `tests/e2e/results/`. File bugs as `FX.*`.
