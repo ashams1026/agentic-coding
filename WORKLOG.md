@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-04-02 20:25 PDT — Review: COL.4 (approved)
+
+**Reviewed:** Dependency enforcement in dispatch.ts.
+- Queries depends_on edges before cost/concurrency checks ✓
+- Resolves terminal states from workflow dynamically ✓
+- Checks each upstream item's currentState against terminal set ✓
+- Blocks with system comment listing pending deps (title + state) ✓
+- Metadata includes dependencyBlock flag + pending dep IDs ✓
+- WS broadcast for real-time UI update ✓
+- Build passes ✓
+- **Verdict: approved.**
+
+---
+
 ## 2026-04-02 20:20 PDT — COL.4: Dependency enforcement in dispatch
 
 **Done:** Added dependency enforcement to `dispatch.ts`. Before dispatching, queries `workItemEdges` where `type = 'depends_on'` and `toId = currentItemId`. Gets terminal state names from workflow via `getWorkflowStates()`. For each upstream dependency, queries its current state. If any upstream is not in a terminal state, blocks dispatch with a system comment listing pending deps (title + state) and broadcasts via WS. Imports added: `and` from drizzle-orm, `workItemEdges` from schema, `getWorkflowStates` from workflow-runtime.
