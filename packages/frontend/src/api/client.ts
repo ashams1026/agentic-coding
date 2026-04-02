@@ -208,6 +208,10 @@ export async function bulkDeleteWorkItems(ids: string[], cascade?: boolean): Pro
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ ids, cascade }),
   });
+  if (!res.ok) {
+    showErrorToast("DELETE", "/api/work-items/bulk", res.status);
+    throw new Error(`DELETE /api/work-items/bulk failed: ${res.status}`);
+  }
   return res.ok;
 }
 

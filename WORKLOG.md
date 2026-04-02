@@ -5,6 +5,13 @@
 
 ---
 
+## 2026-04-01 22:05 PDT — FND.WIL.7 (rework): Fix bulkDeleteWorkItems error handling
+
+**Done:** Added `!res.ok` guard to `bulkDeleteWorkItems` in client.ts — now calls `showErrorToast()` and throws on failure, matching the `del()` helper pattern. On 409/500, React Query will now correctly trigger `onError` instead of `onSuccess`.
+**Files:** `packages/frontend/src/api/client.ts`
+
+---
+
 ## 2026-04-01 22:00 PDT — Review: FND.WIL.7 (rejected)
 
 **Reviewed:** Bulk action bar for multi-select — store, API, hooks, list-view UI.
